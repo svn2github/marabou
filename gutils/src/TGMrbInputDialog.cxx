@@ -11,6 +11,7 @@ namespace std {} using namespace std;
 #include "TRootHelpDialog.h"
 #include <TList.h>
 #include <TObjString.h>
+#include <TRegexp.h>
 
 #include <TGClient.h>
 #include <TGFrame.h>
@@ -77,6 +78,38 @@ namespace std {} using namespace std;
 
 //________________________________________________________________________________________
 
+Ssiz_t IndexOfLastSpecial(TString &str) 
+{
+   // return index  of not (letter, number or _ ) in str searching backwards
+   // Skip ::
+   TRegexp spc("[^a-zA-Z0-9_]", kFALSE);
+   if (str.Index(spc) < 0) return -1;    // no occurence
+   Int_t len = str.Length();
+   Int_t ind = len - 1;
+   Int_t indspc;
+   TString onec;
+   const char *sp = str.Data();
+   char c = {':'};
+   while (ind >= 0) {
+//      cout << ind << " " << str.Index(spc, ind) << endl;
+      onec = str(ind, 1);
+      indspc = onec.Index(spc);
+      if (indspc == 0) {
+         if (sp[ind] != c) return ind;
+         if (sp[ind] == c && (sp[ind -1] != c || ind == 0)) {
+            if (ind == 0) cout << setred 
+                         << "Warning: Expression begins with ':' "
+                         << setblack << endl;
+            return ind;
+         }
+         ind--;
+      }
+      ind--;
+   }
+   return -1;
+} 
+//________________________________________________________________________________________
+
 Ssiz_t IndexOfLast(TString &str, char &c) 
 {
    // return index of detached char c in str searching backwards
@@ -129,7 +162,7 @@ Int_t Matches(TList * list, const char * s, Int_t * matchlength)
             } else {
                if (var[l] != cm) {
                   *matchlength = lm;
-                  cout << "pso, lm: " << pos << " " << lm << endl;
+//                  cout << "pso, lm: " << pos << " " << lm << endl;
                   return pos;
                } 
             }
@@ -173,9 +206,8 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    tbuf->AddText(0, DefVal);
 
    fTE = new TGTextEntry(this, tbuf);
-   Int_t wid = 50+10*strlen(DefVal);
-   Int_t tewidth = TMath::Max(wid,320);
-   fTE->Resize(tewidth, fTE->GetDefaultHeight());
+   Int_t wid = 8 * strlen(DefVal);
+   fTE->Resize(TMath::Max(wid,320), fTE->GetDefaultHeight());
    fTE->Associate(this);
    fWidgets->AddFirst(fTE);
 
@@ -210,13 +242,16 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
          }
          selections.close();
          cout << "Entries: " << id << endl;
-         fListBox->Resize(320, TMath::Min(200, id*20));
+         wid = 8 * fTE->GetBuffer()->GetTextLength();
+         fListBox->Resize(TMath::Max(wid,320), TMath::Min(200, id*20));
          fListBox->Layout();
          fListBox->Associate(this);
          fWidgets->AddFirst(fListBox);
          this->AddFrame(fListBox, l2);
       }
    }
+   wid = 8 * fTE->GetBuffer()->GetTextLength();
+   fTE->Resize(TMath::Max(wid,320), fTE->GetDefaultHeight());
    // create frame and layout hints for Ok and Cancel buttons
 
    TGHorizontalFrame *hf = new TGHorizontalFrame(this, 60, 20, kFixedWidth);
@@ -394,8 +429,9 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 //               cout << "Tab " << endl;
                 if (fCompList) {
                    TString temp = fTE->GetBuffer()->GetString();
-                   char colon = ':';
-                   Int_t indcol = IndexOfLast(temp, colon);
+//                   cout << "temp: " << temp << endl;
+//                   char colon = ':';
+                   Int_t indcol = IndexOfLastSpecial(temp);
                    TString var = temp(indcol+1, temp.Length() - indcol - 1);
 //                   cout << "var: " << var << endl;
                    Int_t matchlength;
