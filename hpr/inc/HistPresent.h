@@ -131,6 +131,8 @@ protected:
    Int_t fUseAttributeMacro;
    Int_t fShowAllAsFirst; 
    Int_t fAlwaysNewLimits; 
+   Int_t fNtupleVersioning; 
+   Int_t fNtupleSeqNr; 
    Int_t fRealStack; 
 
    Int_t fNofColorLevels;

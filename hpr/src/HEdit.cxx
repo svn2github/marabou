@@ -92,6 +92,16 @@ void SetAllTextSizes(TList *list, Double_t size, Bool_t abs)
    }
 }
 //______________________________________________________________________________
+void  HTCanvas::SetUseEditGrid(Bool_t use) 
+{
+   fUseEditGrid = use;
+   Int_t temp = 0;
+   if (use) temp = 1;
+   TEnv env(".rootrc");
+   env.SetValue("HistPresent.UseEditGrid", temp);
+   env.SaveLevel(kEnvUser);
+};
+//______________________________________________________________________________
 
 void HTCanvas::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
 {
@@ -99,7 +109,7 @@ void HTCanvas::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
    fEditGridY = y;
    fVisibleGridX = xvis; 
    fVisibleGridY = yvis;
-   SetUseEditGrid(kTRUE);
+//   SetUseEditGrid(kTRUE);
    DrawEditGrid(kTRUE);
 }
 //______________________________________________________________________________
@@ -351,7 +361,7 @@ Int_t HTCanvas::ExtractGObjects()
 }
 //______________________________________________________________________________
 
-void HTCanvas::InsertGObjects(const char * objname, Bool_t asGroup)
+void HTCanvas::InsertGObjects(const char * objname)
 {
    if (!fGObjectGroups) {
       cout << "No Macro objects defined" << endl;
@@ -382,7 +392,7 @@ void HTCanvas::InsertGObjects(const char * objname, Bool_t asGroup)
 	}
 	cout << fMouseX << " " << fMouseY << endl;
 
-   if (asGroup) {
+   if (fInsertMacrosAsGroup) {
       TString pad_name(gg->GetName());
       pad_name += "_pad";
       Double_t dx = gg->fXUpEdge - gg->fXLowEdge;
@@ -451,6 +461,7 @@ void HTCanvas::ReadGObjects()
    if (!ok) return;
    TFile * infile = new TFile(name);
    env.SetValue("HistPresent.GraphMacrosFileName", name.Data());
+   env.SaveLevel(kEnvUser);
    if (!fGObjectGroups) fGObjectGroups = new TList();
    GroupOfGObjects * obj;
    TIter next(infile->GetListOfKeys());
@@ -496,13 +507,15 @@ void HTCanvas::ShowGallery()
       cmd += this->GetName();
       cmd += "\")))->InsertGObjects(\"";
       cmd += oname;
-      cmd += "\",kTRUE);";
+      cmd += "\");";
 //      cout << cmd << endl;
       b = new TButton("", cmd.Data(),x, y, x + dx, y + dy);
       Double_t xr = go->fXUpEdge - go->fXLowEdge;
       Double_t yr = go->fYUpEdge - go->fYLowEdge;
-      b->Range(0,0, xr, yr);
+      b->Range(-0.1 * xr, -0.1 * yr , 1.1 * xr, 1.1 * yr);
+      tt = new TText(0,0, "");
       TList * lop = b->GetListOfPrimitives();
+      lop->Add(tt);
       go->AddMembersToList(b, 0, 0, 5);
 //      SetAllCurlySizes(lop, 5, 5, kFALSE);
 //      SetAllArrowSizes(lop, 5, kFALSE);

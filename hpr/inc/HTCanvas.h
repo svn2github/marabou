@@ -49,6 +49,7 @@ private:
    Double_t       fVisibleGridX;
    Double_t       fVisibleGridY;
    Bool_t         fUseEditGrid;
+   Bool_t         fInsertMacrosAsGroup;
    Double_t       fMouseX;
    Double_t       fMouseY;
    Bool_t         fGetMouse;
@@ -82,7 +83,7 @@ public:
    void    SetEditGridY(Double_t y) {fEditGridY = y;};
    void    SetVisibleGridX(Double_t x) {fVisibleGridX = x;};
    void    SetVisibleGridY(Double_t y) {fVisibleGridY = y;};
-   void    SetUseEditGrid(Bool_t use = kTRUE) {fUseEditGrid = use;};
+   void    SetUseEditGrid(Bool_t use = kTRUE);
    Bool_t  GetUseEditGrid() {return fUseEditGrid;};
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
@@ -90,7 +91,7 @@ public:
    void    WritePrimitives();
    void    GetPrimitives();
    Int_t   ExtractGObjects();
-   void    InsertGObjects(const char * fname = 0, Bool_t asGroup = kTRUE);
+   void    InsertGObjects(const char * fname = 0);
    void    WriteGObjects();
    void    ReadGObjects();
    void    ShowGallery();

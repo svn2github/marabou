@@ -1970,7 +1970,7 @@ Int_t FindHistsInFile(const char * rootf, const char * listf)
 TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 {
    if (!hist) return NULL;
-   cout << "Enter rotate_hist" << endl << flush;
+//   cout << "Enter rotate_hist" << endl << flush;
    TString hname(hist->GetName());
    Int_t us = hname.Index("_");
    if (us >= 0) hname.Remove(0, us + 1); // remove all before first underscore
@@ -1984,9 +1984,9 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
       delete hold;
 //      cout << "rotate_hist,hold: " << hold << endl;
    }
-   cout << "rotate_hist before  hist->Clone()" << endl << flush;
+//   cout << "rotate_hist before  hist->Clone()" << endl << flush;
    TH2 * hrot = (TH2*)hist->Clone();
-   cout << "rotate_hist after hist->Clone()" << endl << flush;
+//   cout << "rotate_hist after hist->Clone()" << endl << flush;
    hrot->Reset();
    hrot->SetName(hname);
    hrot->SetTitle(htitle);
@@ -2001,7 +2001,7 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 //   Axis_t yoff = 0.5 * (Axis_t)(lasty - firsty + 2);
    Axis_t xoff = 0.5 * (Axis_t)(nbinsx + 1);
    Axis_t yoff = 0.5 * (Axis_t)(nbinsy + 1);
-   cout << xoff << " " << yoff << endl;
+//   cout << xoff << " " << yoff << endl;
    Float_t angle = TMath::Pi() * angle_deg / 180.;
 //   Float_t angle = TMath::ATan(tan_a);
    Float_t sina = TMath::Sin(angle);
@@ -2016,6 +2016,6 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
             hrot->SetBinContent(binx, biny, hist->GetBinContent(xr, yr));
       }
    }  
-   cout << "Exit rotate_hist" << endl << flush;
+//   cout << "Exit rotate_hist" << endl << flush;
    return hrot;
 }

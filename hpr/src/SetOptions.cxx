@@ -259,6 +259,7 @@ void HistPresent::RestoreOptions()
    fShowPSFile        = env.GetValue("HistPresent.AutoShowPSFile", 1);
    fShowListsOnly     = env.GetValue("HistPresent.ShowListsOnly", 0);
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
+   fNtupleVersioning  = env.GetValue("HistPresent.NtupleVersioning", 1);
    fAlwaysNewLimits   = env.GetValue("HistPresent.AlwaysNewLimits", 0);
    fRememberLastSet   = env.GetValue("HistPresent.RememberLastSet", 1);
    fRememberZoom      = env.GetValue("HistPresent.RememberZoom", 0);
@@ -534,6 +535,7 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.ShowListsOnly", fShowListsOnly);
    env.SetValue("HistPresent.RememberTreeHists", fRememberTreeHists);
    env.SetValue("HistPresent.AlwaysNewLimits", fAlwaysNewLimits);
+   env.SetValue("HistPresent.NtupleVersioning", fNtupleVersioning);
    env.SetValue("HistPresent.RememberLastSet", fRememberLastSet);
    env.SetValue("HistPresent.RememberZoom", fRememberZoom);
    env.SetValue("HistPresent.UseAttributeMacro", fUseAttributeMacro);
@@ -1921,9 +1923,9 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 16;
+   Int_t nopt = 17;
    enum e_opt { e_force, e_listsonly, e_psfile, e_enablecal, e_displaycal, 
-      e_fitted, e_treehists, e_treenew, e_savelast,
+      e_fitted, e_treehists, e_treenew, e_treevers, e_savelast,
       e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp, e_auto_1, e_auto_2,
       e_auto_x, e_auto_y
    };
@@ -1934,8 +1936,9 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
       "Enable calibration",
       "Auto Display calibrated hist",
       "Display compents of fit function",
-      "Remember hist limits if showing trees",
-      "Ask always for hist limits if showing trees",
+      "Remember hist limits when showing trees",
+      "Ask always for hist limits when showing trees",
+      "Keep old hists when showing trees (add version # to name)",
       "Remember Expand settings (Marks)",
       "Remember Zoomings (by left mouse)",
       "Use Attribute Macro",
@@ -2052,6 +2055,7 @@ Auto exec project Y \n\
       else if (i == e_fitted && fShowFittedCurves)      flags[i] = 1;
       else if (i == e_treehists && fRememberTreeHists)  flags[i] = 1;
       else if (i == e_treenew && fAlwaysNewLimits)      flags[i] = 1;
+      else if (i == e_treevers && fNtupleVersioning)    flags[i] = 1;
       else if (i == e_savelast && fRememberLastSet)     flags[i] = 1;
       else if (i == e_savezoom && fRememberZoom)        flags[i] = 1;
       else if (i == e_useattr && fUseAttributeMacro)    flags[i] = 1;
@@ -2083,6 +2087,7 @@ Auto exec project Y \n\
    fShowListsOnly = 0;
    fRememberTreeHists = 0;
    fAlwaysNewLimits = 0;
+   fNtupleVersioning = 0;
    fRememberLastSet = 0;
    fRememberZoom = 0;
    fUseAttributeMacro = 0;
@@ -2103,6 +2108,7 @@ Auto exec project Y \n\
          else if (i == e_fitted)     fShowFittedCurves = 1;
          else if (i == e_treehists)  fRememberTreeHists = 1;
          else if (i == e_treenew)    fAlwaysNewLimits = 1;
+         else if (i == e_treevers)   fNtupleVersioning = 1;
          else if (i == e_savelast)   fRememberLastSet = 1;
          else if (i == e_savezoom)   fRememberZoom = 1;
          else if (i == e_useattr)    fUseAttributeMacro = 1;

@@ -115,6 +115,14 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
+   TEnv env(".rootrc");
+   Int_t temp = env.GetValue("HistPresent.InsertMacrosAsGroup", 0);
+   if (temp == 0) fInsertMacrosAsGroup = kFALSE;
+   else  fInsertMacrosAsGroup = kTRUE;
+   temp = env.GetValue("HistPresent.UseEditGrid", 1);
+   if (temp == 0) fUseEditGrid = kFALSE;
+   else  fUseEditGrid = kTRUE;
+   
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);         
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
   fHandleMenus->BuildMenus(); 

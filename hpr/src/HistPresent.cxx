@@ -202,6 +202,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fRebin = 2;
    fRMethod = 0;
    fSeqNumberMany = 0;
+   fNtupleSeqNr = 0;
 
    fNwindows=   0;
 
@@ -1207,7 +1208,7 @@ void HistPresent::ComposeList(const char* bp)
       TString question=listname;
       question += " exists, Overwrite?";
 
-      if (QuestionBox(question.Data(), GetMyCanvas()) == kMBNo) return;
+      if (!QuestionBox(question.Data(), GetMyCanvas())) return;
    }
    ofstream wstream;
    wstream.open(listname.Data(), ios::out);
@@ -1426,10 +1427,10 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    sel = "mypres->ToggleGraphCut()";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
-   cmd = "mypres->UseHist()";
-   nam = "Use selected hist";
-   sel = "mypres->ToggleUseHist()";
-   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
+//   cmd = "mypres->UseHist()";
+//   nam = "Use selected hist";
+//   sel = "mypres->ToggleUseHist()";
+//   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
    cmd = "mypres->ShowLeaf(\"";
    cmd = cmd + fname + "\",\"" + dir + "\",\"" + tname + "\",\"\")";
@@ -1769,11 +1770,6 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          }
       }
    }
-   const char * cchname; 
-   if (nent > 0) hname += leaf0;
-   else hname += "userdef";
-   if (nent > 1) hname += "_"; hname += leaf1;
-   if (nent > 2) hname += "_"; hname += leaf2;
 
    if (fApplyExpression) {
       cmd = *fExpression;
@@ -1794,7 +1790,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          *leaf[nent] = cmd(sind, cmd.Length() -1);
          nent++;
       }
-//     inver order
+//     invert order
       TString * temp;
       if (nent == 2) {
          temp = leaf[0];
@@ -1829,8 +1825,14 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       	} else {while (cmd.Index(a3)>=0) {cmd(a3)=leaf2.Data();}}
       }  
    }
+   if (nent > 0) hname += leaf0;
+   else hname += "userdef";
+   if (nent > 1) hname += "_"; hname += leaf1;
+   if (nent > 2) hname += "_"; hname += leaf2;
+
    TString option = "goff";
    cmd += ">>";
+/*
 //  look if a histogram is defined to be used instead of a default
    TH1* hist1 =0;
    if (fUseHist && nent !=3) {
@@ -1854,18 +1856,33 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       option += "same";
 
    } else {
-      cmd += hname;
-      gDirectory=gROOT;
-      TString fh_name;
-      fh_name = hname;
-      fh_name.Prepend("F");
-//      cout << "look for:" << fh_name << endl;
-      TObject *obj = (TObject *)gROOT->FindObject(fh_name.Data());
-      if (obj) {
-//         cout << " deleting " << fh_name << endl;
-         delete obj;
+*/
+      if (fNtupleVersioning) {
+         hname += "_v";
+         hname += fNtupleSeqNr;
+         fNtupleSeqNr++;
       }
-   }
+      TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
+      while (hname.Index(notascii) >= 0) {
+         hname(notascii) = "_";
+      }
+
+      TString fh_name(hname);
+      fh_name.Prepend("F");
+
+//      cout << "look for:" << fh_name << endl;
+      TObject *fobj = (TObject *)gROOT->FindObject(fh_name.Data());
+      if (fobj) {
+         cout << " deleting " << fh_name << endl;
+         delete fobj;
+      }
+      fobj = (TObject *)gROOT->FindObject(hname.Data());
+      if (fobj) {
+         cout << " deleting " << hname << endl;
+         delete fobj;
+      }
+//   }
+   cmd += hname;
 
    gDirectory=gROOT;
 //   if (nent==3) new TCanvas("ctemp","ctemp",800,800);
@@ -1880,7 +1897,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TEnv * env = 0;
    Bool_t limits_defined = kFALSE;
    TString tag = leaf0.Data(); 
-   if (!hist1 && nent > 0 && fRememberTreeHists) {
+   if (nent > 0 && fRememberTreeHists) {
       if (gSystem->AccessPathName("ntuplerc")) {
          ofstream rcfile("ntuplerc", ios::out);
          if (!rcfile) {
@@ -1921,13 +1938,13 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       }
    }
 //  look if we need to redefine limits
-   Bool_t find_limits = kFALSE;
+   Bool_t must_find_limits = kFALSE;
    for(Int_t i = 0; i < nent; i++) {
-     if (nbin[i] == 0) find_limits = kTRUE;
+     if (nbin[i] == 0) must_find_limits = kTRUE;
    } 
-   if (find_limits) limits_defined = kFALSE;
+   if (must_find_limits) limits_defined = kFALSE;
 
-   if (find_limits || fAlwaysNewLimits) {
+   if (must_find_limits) {
       
       for(Int_t i = 0; i < nent; i++) {
          TString bname;
@@ -1960,7 +1977,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          nbin[i] = 100;
       }
    }
-   if (!limits_defined) {
+   if (!limits_defined || fAlwaysNewLimits) {
       TOrdCollection *row_lab = new TOrdCollection(); 
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString("Nbins"));
@@ -1995,14 +2012,33 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          return;
       }
       p = 0;
-      for(Int_t i = 0; i < nent; i++) { nbin[i] = xyvals[p]; p++;}
-      for(Int_t i = 0; i < nent; i++) { vmin[i] = xyvals[p]; p++;}
-      for(Int_t i = 0; i < nent; i++) { vmax[i] = xyvals[p]; p++;}
+      Bool_t modified = kFALSE;
+      for(Int_t i = 0; i < nent; i++) { 
+         if   (nbin[i] != xyvals[p]) {
+            nbin[i] = xyvals[p];
+            modified = kTRUE;
+         } 
+         p++;
+      }
+      for(Int_t i = 0; i < nent; i++) { 
+         if   (vmin[i] != xyvals[p]) {
+            vmin[i] = xyvals[p];
+            modified = kTRUE;
+         } 
+         p++;
+      }
+      for(Int_t i = 0; i < nent; i++) { 
+         if   (vmax[i] != xyvals[p]) {
+            vmax[i] = xyvals[p];
+            modified = kTRUE;
+         } 
+         p++;
+      }
 //      delete [] xyvals;
-      if (fRememberTreeHists) {
+      if (modified && fRememberTreeHists) {
          Int_t buttons= kMBYes | kMBNo, retval;
          EMsgBoxIcon icontype = kMBIconQuestion;
-         new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
+         new TGMsgBox(gClient->GetRoot(), pwin,
           "Qustion","Save values to ntuplerc",
           icontype, buttons, &retval);
          if (retval == kMBYes) {
@@ -2017,11 +2053,6 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             env->SaveLevel(kEnvLocal);
          }
       }
-   }
-   TH1 * hold = (TH1*)gDirectory->GetList()->FindObject(hname.Data());
-   if (hold) {
-//       cout << "Delete existing: " <<hname.Data() << endl;
-       delete hold;
    }
 
    if (nent==1) new TH1F(hname.Data(),hname.Data(),
@@ -2074,8 +2105,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    }
    fRootFile->Close();
    fRootFile=NULL;
-   cchname = (const char *)hname;
-   TObject *obj = (TObject *)gROOT->FindObject(cchname);
+   TObject *obj = (TObject *)gROOT->FindObject(hname.Data());
 //  if (!obj)WarnBox("No Object"); 
    TH1* hist = (TH1*)obj;
    if (hist) {
@@ -3479,6 +3509,7 @@ void HistPresent::CloseAllCanvases()
    fNwindows= 0;
    fWincury = fWintopy;
    fWincurx = fWintopx;
+   fNtupleSeqNr = 0;
    if (fHelpBrowser) fHelpBrowser->Clear();
 }
 //_______________________________________________________________________

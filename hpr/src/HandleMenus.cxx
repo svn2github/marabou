@@ -556,11 +556,25 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFH_GetPrim:
                         fHCanvas->GetPrimitives();
                      break;
-                  case kFH_InsertGObjectsG:
-                       fHCanvas->InsertGObjects(NULL, kTRUE);
-                     break;
                   case kFH_InsertGObjects:
-                       fHCanvas->InsertGObjects(NULL, kFALSE);
+                       fHCanvas->InsertGObjects(NULL);
+                     break;
+                  case kFH_InsertGObjectsG:
+                     {
+                     Int_t temp =0;
+                     if (fHCanvas->fInsertMacrosAsGroup) {
+                        fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
+                        fHCanvas->fInsertMacrosAsGroup = kFALSE;
+
+                     } else {
+                        fEditMenu->CheckEntry(kFH_InsertGObjectsG);
+                        fHCanvas->fInsertMacrosAsGroup = kTRUE;
+                        temp = 1;
+                     } 
+                     TEnv env(".rootrc");
+                     env.SetValue("HistPresent.InsertMacrosAsGroup", temp);
+                     env.SaveLevel(kEnvUser);
+                     }                   
                      break;
                   case kFH_ExtractGObjects:
                        fHCanvas->ExtractGObjects();
@@ -1591,8 +1605,10 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
    	fEditMenu->AddEntry("Extract objects as macro",  kFH_ExtractGObjects);
-   	fEditMenu->AddEntry("Insert macro object, keep connection",  kFH_InsertGObjectsG);
-   	fEditMenu->AddEntry("Insert macro object, break connection",  kFH_InsertGObjects);
+   	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
+   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
+      if (fHCanvas->fInsertMacrosAsGroup) fEditMenu->CheckEntry(kFH_InsertGObjectsG);
+      else                                fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
    	fEditMenu->AddEntry("Write macro objects to file",  kFH_WriteGObjects);
    	fEditMenu->AddEntry("Read macro objects from file",  kFH_ReadGObjects);
    	fEditMenu->AddEntry("Display list of macro objects",  kFH_ShowGallery);
