@@ -29,10 +29,6 @@ TMbsSetup.Readout1.TriggerModule.ConvTime:		500
 TMbsSetup.Readout1.TriggerModule.FastClearTime:	20
 TMbsSetup.Readout1.CratesToBeRead:				1
 TMbsSetup.Readout1.Controller:					CBV(5)
-TMbsSetup.Readout1.RemoteMemoryBase:			0xd0380000
-TMbsSetup.Readout1.RemoteMemoryLength:			0x00200000
-TMbsSetup.Readout1.RemoteCamacBase: 			0xd0380000
-TMbsSetup.Readout1.RemoteCamacLength:			0x00200000
 TMbsSetup.Readout1.PipeBase:					0xd0000000
 TMbsSetup.Readout1.VSBAddr:						0xf0000000
 TMbsSetup.Readout1.SevtSize:					2048
