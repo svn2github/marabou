@@ -665,7 +665,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				dlf << "NofCrates:			" << nofCrates << endl;
 				dlf.close();
 
-				TString dlPgm = gEnv->GetValue("TMrbDGF.ProgramToDownLoadCode", "/nfs/mbssys/bin/dgfdown");
+				TString dlPgm = gEnv->GetValue("TMrbDGF.ProgramToDownLoadCode", "/nfs/mbssys/standalone/dgfdown");
 				gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
 				gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 
