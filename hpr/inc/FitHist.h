@@ -75,6 +75,7 @@ private:
    Int_t fSerialPx;
    Int_t fSerialPy;
    Int_t fSerialPf;
+   Int_t fSerialRot;
    Int_t func_numb;
    Int_t fCutNumber;
    Int_t wdw_numb;
@@ -220,6 +221,7 @@ public:
    void  ProjectBoth();
    void  ProjectF();                   // project along a function 
    void  Transpose();
+   void  Rotate(Int_t sense);
    void OutputStat();
 //   void ListFunctions();
    void WriteFunctions();

@@ -103,6 +103,12 @@ Int_t    getcol();
 TString * GetStringArg(TString * arg,  Int_t nth);
 TList * BuildList(const char *bp);
 Int_t FindHistsInFile(const char * rootf, const char * listf); 
+Double_t xa_new(Double_t a, Double_t b, Double_t alpha);
+Double_t ya_new(Double_t a, Double_t b, Double_t alpha);
+Double_t y_orig(Double_t a, Double_t b, Double_t alpha, Double_t x, Double_t y);
+Double_t x_orig(Double_t a, Double_t b, Double_t alpha, Double_t x, Double_t y);
+Stat_t get_bincontent(TH2 * hist, Axis_t x, Axis_t y);
+TH2 * rotate_hist(TH2 * hist, Double_t alpha_deg, Int_t serial_nr = 0);
 
 inline void nothing();
 #endif

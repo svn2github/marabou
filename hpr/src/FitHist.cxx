@@ -342,14 +342,20 @@ void FitHist::SaveDefaults(Bool_t recalculate)
       cerr << "Canvas deleted, cant find lin/log state" << endl;
    }
    if (recalculate && fSelHist->TestBit(TObject::kNotDeleted)) {
-      wstream << "fBinlx:  " << fSelHist->GetXaxis()-> GetFirst() << endl;
-//      cout  << "recalculate fBinlx:  " << fSelHist->GetXaxis()-> GetFirst() << endl;
-      wstream << "fBinux:  " << fSelHist->GetXaxis()-> GetLast() << endl;
+      Int_t first = fSelHist->GetXaxis()->GetFirst();
+      Int_t last  = fSelHist->GetXaxis()->GetLast();
+      if (first > 1 || last < fSelHist->GetXaxis()->GetNbins()) {
+         wstream << "fBinlx:  " << first << endl;
+//      cout  << "recalculate fBinlx,ux:  " << first << " " << last << endl;
+         wstream << "fBinux:  " << last << endl;
+      }
       if (fDimension == 2) {
-         wstream << "fBinly:  " << fSelHist->GetYaxis()->
-             GetFirst() << endl;
-         wstream << "fBinuy:  " << fSelHist->GetYaxis()->
-             GetLast() << endl;
+         first = fSelHist->GetYaxis()->GetFirst();
+         last  = fSelHist->GetYaxis()->GetLast();
+         if (first > 1 || last < fSelHist->GetYaxis()->GetNbins()) {
+            wstream << "fBinly:  " << first << endl;
+            wstream << "fBinuy:  " << last << endl;
+         }
       }
    } else {
 //      cout << "take current fBinlx " << fBinlx  << endl;
@@ -958,7 +964,12 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    }
    cHist->Update();
    cHist->GetFrame()->SetBit(TBox::kCannotMove);
+   gSystem->ProcessEvents();
+//  set the drawing area taking intoa account toolbars and decoration
+   cHist->SetWindowSize(win_widx + (win_widx - cHist->GetWw()),
+                        win_widy + (win_widy - cHist->GetWh()));
 //  look if there exists a calibrated version of this histogram
+   gSystem->ProcessEvents();
    TEnv *lastset = 0;
    if (hp && hp->fDisplayCalibrated && (lastset = GetDefaults(fHname)) ) {
       if (lastset->Lookup("CalFuncName")) {
@@ -2285,7 +2296,54 @@ void FitHist::ProjectF()
 
 //____________________________________________________________________________________ 
 
-// Transpsoe 2dim histograms
+// Rotate 2dim histograms
+
+void FitHist::Rotate(Int_t sense)
+{
+   if (!is2dim(fSelHist)) {
+      WarnBox("Only 2dim hist can be rotated");
+      return;
+   }
+   Double_t tan_alpha = 0;
+   Double_t alpha_deg = 0;
+   TList * fl = fSelHist->GetListOfFunctions();
+   if (fl->GetSize() > 0) {
+      TIter next(fl);
+      while (TObject * obj = next()){
+         if(obj->IsA() == TF1::Class()) {
+            TF1 * func = (TF1*)obj;
+            if (func->GetNpar() == 2) {
+               if (tan_alpha != 0) 
+                cout << setred << "More than 1 Pol1 defined, take last"
+                     << setblack << endl;
+              tan_alpha = func->GetParameter(1);
+            }
+         }
+      }
+   } 
+   if (tan_alpha == 0) {
+      Bool_t ok;
+      alpha_deg = (Double_t)GetFloat("Enter angle in degrees or 0 to define Pol1",
+         0, &ok, mycanvas);
+      if (!ok ||  alpha_deg == 0) {
+         WarnBox("Please fit a Pol1 to define rotation angle");
+         return;
+      }
+      alpha_deg = TMath::Abs(alpha_deg);
+      if (sense == 1) alpha_deg = - alpha_deg;
+   } else {
+      if (sense == 1) tan_alpha = - 1 / tan_alpha;      
+      alpha_deg = TMath::ATan(tan_alpha) * 180. / TMath::Pi(); 
+   } 
+   TH2 * hrot = rotate_hist((TH2*)fSelHist, alpha_deg, fSerialRot); 
+   fSerialRot++;
+   cHist->cd();
+   if  (hp) hp->ShowHist(hrot);
+//   Draw2Dim();
+}
+//____________________________________________________________________________________ 
+
+// Transpose 2dim histograms
 
 void FitHist::Transpose()
 {

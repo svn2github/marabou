@@ -286,6 +286,7 @@ HistPresent::~HistPresent()
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
 {
+//   cout << "------> EnterHistPresent::RecursiveRemove for: " << obj<< endl;
    fCanvasList->Remove(obj);
    fAllCuts->Remove(obj);
    fAllWindows->Remove(obj);
@@ -349,14 +350,14 @@ void HistPresent::ShowMain()
    b->SetToolTipText(
    "Show files ending .root, .map or .histlist in CWD in alphabetical order",hint_delay);
    y-=dy;
-//
-//   cmd="mypres->ShowFiles(\"R\")";
-//   tit="Show FileList (reverse)";
-//   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
-//   b->SetToolTipText(
-//   "Show files ending .root, .map or .histlist in CWD in reverse alphabetical order",hint_delay);
-//
-//   y-=dy;
+
+   cmd="mypres->ShowFiles(\"R\")";
+   tit="Show FileList (reverse)";
+   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
+   b->SetToolTipText(
+   "Show files ending .root, .map or .histlist in CWD in reverse alphabetical order",hint_delay);
+
+   y-=dy;
    cmd="mypres->ShowFiles(\"D\")";
    tit="Show FileList (bydate)";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
@@ -399,13 +400,14 @@ void HistPresent::ShowMain()
    "Create a histogram optionally to be used when projecting tree entries",hint_delay);
    y-=dy;
 */
+/*
    cmd = "mypres->ListMacros()";
    tit = "List Macros";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "List files ending with .C (root macros) in CWD with first line starting with //Hint:",hint_delay);
    y-=dy;
-
+*/
    cmd = "mypres->StackSelectedHists()";
    tit = "Stack selected hists";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
@@ -3271,6 +3273,23 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
    gDirectory=gROOT;
    return hist;
 }
+//_____________________________________________________________________________________________
+/*
+void HistPresent::RemoveFromLists(TObject * obj)
+{
+   if (!obj) return;
+   fAllCuts->Remove(obj);
+   fAllWindows->Remove(obj);
+   fAllFunctions->Remove(obj);
+   fSelectCut->Remove(obj);
+   fSelectWindow->Remove(obj);
+   fHistLists->Remove(obj);
+   fSelectHist->Remove(obj);
+   fSelectContour->Remove(obj);
+   fSelectGraph->Remove(obj);
+   fAllContours->Remove(obj);
+}
+*/
 //_____________________________________________________________________________________________
 
 void HistPresent::CleanWindowLists(TH1* hist)

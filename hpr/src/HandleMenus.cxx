@@ -114,6 +114,8 @@ enum ERootCanvasCommands {
 //   kFHSetDrawMode,
 //   kFHSetLabAtt,
    kFHLogY,
+   kFHRotateClock,
+   kFHRotateCClock,
    kFHTranspose,
    kFHProfileX,
    kFHProfileY,
@@ -825,6 +827,12 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      fFitHist->GetCanvas()->Modified(kTRUE);
                      fFitHist->GetCanvas()->Update();
                      break;
+                  case kFHRotateClock:
+                     fFitHist->Rotate(0); 
+                     break;
+                  case kFHRotateCClock:
+                     fFitHist->Rotate(1); 
+                     break;
                   case kFHTranspose:
                      fFitHist->Transpose(); 
                      break;
@@ -1360,9 +1368,12 @@ void HandleMenus::BuildMenus()
       	   fDisplayMenu->AddEntry("ProfileX",    kFHProfileX   );
       	   fDisplayMenu->AddEntry("ProfileY",    kFHProfileY   );
       	   fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
+      	   fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
+      	   fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
+         } else {
+      	   fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
+      	   fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
          }
-      	fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
-      	if(!is2dim)fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
       	fDisplayMenu->AddEntry("Show in same Range",    kFHGetRange   );
 
       	fDisplayMenu->AddSeparator();
@@ -1410,6 +1421,7 @@ void HandleMenus::BuildMenus()
       	fDisplayMenu->AddSeparator();
 	//      fDisplayMenu->AddEntry("Help",  kFH_Help_ShowSelected);
    	}
+/*
    	fDisplayMenu->AddSeparator();
    	fDisplayMenu->AddEntry("Show Colors",             kViewColors);
    	fDisplayMenu->AddEntry("Show Fonts",              kViewFonts);
@@ -1417,6 +1429,7 @@ void HandleMenus::BuildMenus()
       fDisplayMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
       fDisplayMenu->AddEntry("Show Line Attr",          kViewLineStyles);
    	fDisplayMenu->AddEntry("Graph Editor",            kEditEditor);
+*/
    }
    if(fh_menus){
       fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());

@@ -209,6 +209,7 @@ void HistPresent::RestoreOptions()
    fWinwidy_1dim = 550;
    fWinwidx_2dim = 750;
    fWinwidy_2dim = 750;
+//   fWinwidy_2dim = 750 + 28 + 20;  // 28 for top, 20 for eventstatus
    fWinshifty = 30;
    fWinshiftx = 0;
    fWinwidx_hlist = 0; 
