@@ -5,6 +5,7 @@
 // Syntax:           .x MBcal.C(Int_t CalibSource,
 //                               const Char_t * FirstHisto,
 //                               const Char_t * LastHisto,
+//                               const Char_t * Wildcard,
 //                               const Char_t * CalFile,
 //                               const Char_t * ResFile,
 //                               const Char_t * PrecalFile,
@@ -21,6 +22,7 @@
 // Arguments:        Int_t CalibSource         -- Calibration source
 //                   Char_t * FirstHisto       -- Histo file / first histo
 //                   Char_t * LastHisto        -- Histo file / last histo
+//                   Char_t * Wildcard         -- Wildcard mask
 //                   Char_t * CalFile          -- Calibration output file (*.cal)
 //                   Char_t * ResFile          -- Results file (*.res)
 //                   Char_t * PrecalFile       -- Precalibration file (needed if Eu152)
@@ -37,14 +39,14 @@
 // Description:      Calibrate miniball histograms
 // @(#)Author:       miniball
 // @(#)Revision:     SCCS:  %W%
-// @(#)Date:         Tue Dec 14 09:17:11 2004
+// @(#)Date:         Tue Dec 14 13:53:43 2004
 // URL:              
 // Keywords:
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                MBcal.C
 //                   Title:               Calibrate miniball histograms
 //                   Width:               800
-//                   NofArgs:             16
+//                   NofArgs:             17
 //                   Arg1.Name:           CalibSource
 //                   Arg1.Title:          Calibration source
 //                   Arg1.Type:           Int_t
@@ -72,116 +74,123 @@
 //                   Arg3.AddLofValues:   No
 //                   Arg3.Base:           dec
 //                   Arg3.Orientation:    horizontal
-//                   Arg4.Name:           CalFile
-//                   Arg4.Title:          Calibration output file (*.cal)
+//                   Arg4.Name:           Wildcard
+//                   Arg4.Title:          Wildcard mask (* and/or ?)
 //                   Arg4.Type:           Char_t *
-//                   Arg4.EntryType:      File
-//                   Arg4.Width:          400
-//                   Arg4.Default:        MBcal.cal
-//                   Arg4.Values:         Calib files:*.cal
+//                   Arg4.EntryType:      Entry
 //                   Arg4.AddLofValues:   No
 //                   Arg4.Base:           dec
 //                   Arg4.Orientation:    horizontal
-//                   Arg5.Name:           ResFile
-//                   Arg5.Title:          Results file (*.res)
+//                   Arg5.Name:           CalFile
+//                   Arg5.Title:          Calibration output file (*.cal)
 //                   Arg5.Type:           Char_t *
 //                   Arg5.EntryType:      File
 //                   Arg5.Width:          400
-//                   Arg5.Default:        MBcal.res
-//                   Arg5.Values:         Results files:*.res
+//                   Arg5.Default:        MBcal.cal
+//                   Arg5.Values:         Calib files:*.cal
 //                   Arg5.AddLofValues:   No
 //                   Arg5.Base:           dec
 //                   Arg5.Orientation:    horizontal
-//                   Arg6.Name:           PrecalFile
-//                   Arg6.Title:          Precalibration file (needed if Eu152)
+//                   Arg6.Name:           ResFile
+//                   Arg6.Title:          Results file (*.res)
 //                   Arg6.Type:           Char_t *
 //                   Arg6.EntryType:      File
 //                   Arg6.Width:          400
-//                   Arg6.Default:        MBcal.cal
-//                   Arg6.Values:         Calib files:*.cal
+//                   Arg6.Default:        MBcal.res
+//                   Arg6.Values:         Results files:*.res
 //                   Arg6.AddLofValues:   No
 //                   Arg6.Base:           dec
 //                   Arg6.Orientation:    horizontal
-//                   Arg7.Name:           VerboseFlag
-//                   Arg7.Title:          Verbose output
-//                   Arg7.Type:           Bool_t
-//                   Arg7.EntryType:      YesNo
-//                   Arg7.Default:        No
+//                   Arg7.Name:           PrecalFile
+//                   Arg7.Title:          Precalibration file (needed if Eu152)
+//                   Arg7.Type:           Char_t *
+//                   Arg7.EntryType:      File
+//                   Arg7.Width:          400
+//                   Arg7.Default:        MBcal.cal
+//                   Arg7.Values:         Calib files:*.cal
 //                   Arg7.AddLofValues:   No
 //                   Arg7.Base:           dec
 //                   Arg7.Orientation:    horizontal
-//                   Arg8.Name:           SigmaPeakFind
-//                   Arg8.Title:          Sigma for PeakFind() [bins]
-//                   Arg8.Type:           Int_t
-//                   Arg8.EntryType:      UpDown
-//                   Arg8.Default:        2
+//                   Arg8.Name:           VerboseFlag
+//                   Arg8.Title:          Verbose output
+//                   Arg8.Type:           Bool_t
+//                   Arg8.EntryType:      YesNo
+//                   Arg8.Default:        No
 //                   Arg8.AddLofValues:   No
 //                   Arg8.Base:           dec
 //                   Arg8.Orientation:    horizontal
-//                   Arg9.Name:           PercentagePeakFind
-//                   Arg9.Title:          Relative percentage for PeakFind()
+//                   Arg9.Name:           SigmaPeakFind
+//                   Arg9.Title:          Sigma for PeakFind() [bins]
 //                   Arg9.Type:           Int_t
 //                   Arg9.EntryType:      UpDown
-//                   Arg9.Default:        3
+//                   Arg9.Default:        2
 //                   Arg9.AddLofValues:   No
 //                   Arg9.Base:           dec
 //                   Arg9.Orientation:    horizontal
-//                   Arg10.Name:          FitFlag
-//                   Arg10.Title:         Peaks to be fitted
-//                   Arg10.Type:          Bool_t
-//                   Arg10.EntryType:     YesNo
-//                   Arg10.Default:       No
+//                   Arg10.Name:          PercentagePeakFind
+//                   Arg10.Title:         Relative percentage for PeakFind()
+//                   Arg10.Type:          Int_t
+//                   Arg10.EntryType:     UpDown
+//                   Arg10.Default:       3
 //                   Arg10.AddLofValues:  No
 //                   Arg10.Base:          dec
 //                   Arg10.Orientation:   horizontal
-//                   Arg11.Name:          SigmaFit
-//                   Arg11.Title:         Sigma for FitSinglePeak()
-//                   Arg11.Type:          Int_t
-//                   Arg11.EntryType:     UpDown
-//                   Arg11.Default:       0
+//                   Arg11.Name:          FitFlag
+//                   Arg11.Title:         Peaks to be fitted
+//                   Arg11.Type:          Bool_t
+//                   Arg11.EntryType:     YesNo
+//                   Arg11.Default:       No
 //                   Arg11.AddLofValues:  No
 //                   Arg11.Base:          dec
 //                   Arg11.Orientation:   horizontal
-//                   Arg12.Name:          FitRange
-//                   Arg12.Title:         Fit range (bins)
+//                   Arg12.Name:          SigmaFit
+//                   Arg12.Title:         Sigma for FitSinglePeak()
 //                   Arg12.Type:          Int_t
 //                   Arg12.EntryType:     UpDown
 //                   Arg12.Default:       0
 //                   Arg12.AddLofValues:  No
 //                   Arg12.Base:          dec
 //                   Arg12.Orientation:   horizontal
-//                   Arg13.Name:          HistoLowLim
-//                   Arg13.Title:         Lower limit
+//                   Arg13.Name:          FitRange
+//                   Arg13.Title:         Fit range (bins)
 //                   Arg13.Type:          Int_t
 //                   Arg13.EntryType:     UpDown
-//                   Arg13.Default:       100
+//                   Arg13.Default:       0
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
-//                   Arg14.Name:          HistoUpperLim
-//                   Arg14.Title:         Upper limit
+//                   Arg14.Name:          HistoLowLim
+//                   Arg14.Title:         Lower limit
 //                   Arg14.Type:          Int_t
 //                   Arg14.EntryType:     UpDown
-//                   Arg14.Default:       0
+//                   Arg14.Default:       100
 //                   Arg14.AddLofValues:  No
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
-//                   Arg15.Name:          DebugFlag
-//                   Arg15.Title:         Debug
-//                   Arg15.Type:          Bool_t
-//                   Arg15.EntryType:     YesNo
-//                   Arg15.Default:       No
+//                   Arg15.Name:          HistoUpperLim
+//                   Arg15.Title:         Upper limit
+//                   Arg15.Type:          Int_t
+//                   Arg15.EntryType:     UpDown
+//                   Arg15.Default:       0
 //                   Arg15.AddLofValues:  No
 //                   Arg15.Base:          dec
 //                   Arg15.Orientation:   horizontal
-//                   Arg16.Name:          DebugFlagPeakFind
-//                   Arg16.Title:         Debug for PeakFind()
+//                   Arg16.Name:          DebugFlag
+//                   Arg16.Title:         Debug
 //                   Arg16.Type:          Bool_t
 //                   Arg16.EntryType:     YesNo
 //                   Arg16.Default:       No
 //                   Arg16.AddLofValues:  No
 //                   Arg16.Base:          dec
 //                   Arg16.Orientation:   horizontal
+//                   Arg17.Name:          DebugFlagPeakFind
+//                   Arg17.Title:         Debug for PeakFind()
+//                   Arg17.Type:          Bool_t
+//                   Arg17.EntryType:     YesNo
+//                   Arg17.Default:       No
+//                   Arg17.AddLofValues:  No
+//                   Arg17.Base:          dec
+//                   Arg17.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -191,6 +200,7 @@
 void MBcal(Int_t CalibSource = 0,
            const Char_t * FirstHisto,
            const Char_t * LastHisto,
+           const Char_t * Wildcard,
            const Char_t * CalFile = "MBcal.cal",
            const Char_t * ResFile = "MBcal.res",
            const Char_t * PrecalFile = "MBcal.cal",
@@ -200,7 +210,7 @@ void MBcal(Int_t CalibSource = 0,
            Bool_t FitFlag = kFALSE,
            Int_t SigmaFit = 0,
            Int_t FitRange = 0,
-           Int_t HistoLowLim = 0,
+           Int_t HistoLowLim = 100,
            Int_t HistoUpperLim = 0,
            Bool_t DebugFlag = kFALSE,
            Bool_t DebugFlagPeakFind = kFALSE)
@@ -211,33 +221,47 @@ void MBcal(Int_t CalibSource = 0,
 	TString firstHisto, lastHisto;
 
 	TString histoFile = FirstHisto;
-	Int_t idx = histoFile.Index(":");
-	if (idx > 0) {
-		firstHisto = histoFile(idx + 1, 1000);
-		firstHisto = firstHisto.Strip(TString::kBoth);
-		histoFile.Resize(idx);
-		histoFile = histoFile.Strip(TString::kBoth);
+	TString wildCard = Wildcard;
+	TString hf;
+	if (wildCard.Length() == 0) {
+		Int_t idx = histoFile.Index(":");
+		if (idx > 0) {
+			firstHisto = histoFile(idx + 1, 1000);
+			firstHisto = firstHisto.Strip(TString::kBoth);
+			histoFile.Resize(idx);
+			histoFile = histoFile.Strip(TString::kBoth);
+		} else {
+			cout << "MBcal.C: Start histo missing" << endl;
+			return;
+		}
+
+		hf = LastHisto;
+		if (hf.Length() == 0) {
+			hf = histoFile;
+			lastHisto = firstHisto;
+		} else {
+			idx = hf.Index(":");
+			if (idx > 0) {
+				lastHisto = hf(idx + 1, 1000);
+				lastHisto = lastHisto.Strip(TString::kBoth);
+				hf.Resize(idx);
+				hf = hf.Strip(TString::kBoth);
+			}
+		}
 	} else {
-		cout << "MBcal.C: Start histo missing" << endl;
-		return;
-	}
+		Int_t idx = histoFile.Index(":");
+		if (idx > 0) {
+			histoFile.Resize(idx);
+			histoFile = histoFile.Strip(TString::kBoth);
+		}
+		hf = histoFile;
+		firstHisto = wildCard;
+		lastHisto = "";
+	}			
+
 	if (histoFile.Length() == 0) {
 		cout << "MBcal.C: No histogram file given" << endl;
 		return;
-	}
-
-	TString hf = LastHisto;
-	if (hf.Length() == 0) {
-		hf = histoFile;
-		lastHisto = firstHisto;
-	} else {
-		idx = hf.Index(":");
-		if (idx > 0) {
-			lastHisto = hf(idx + 1, 1000);
-			lastHisto = lastHisto.Strip(TString::kBoth);
-			hf.Resize(idx);
-			hf = hf.Strip(TString::kBoth);
-		}
 	}
 
 	if (histoFile.CompareTo(hf.Data()) != 0) {
