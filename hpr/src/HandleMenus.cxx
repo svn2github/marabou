@@ -424,14 +424,21 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      {
                      THStack * st = (THStack *)fHCanvas->GetListOfPrimitives()
                                                ->FindObject("hstack");
+                     fHCanvas->cd();
                      if (fHistPresent->fRealStack) {
                         fHistPresent->fRealStack = 0;
                         fViewMenu->UnCheckEntry(kFHStack);
-                        if (st) st->SetDrawOption("nostack");
+                        if (st) {
+                           st->SetDrawOption("nostack");
+//                           cout << "nostack" << endl;
+                        }
                      } else {
                         fHistPresent->fRealStack = 1;
                         fViewMenu->CheckEntry(kFHStack);
-                        if (st) st->SetDrawOption("stack");
+                        if (st) { 
+                          st->SetDrawOption("stack");
+ //                         cout << "stack" << endl;
+                        }
                      }
                      fHCanvas->Modified();
                      fHCanvas->Update();

@@ -365,14 +365,14 @@ void HistPresent::ShowMain()
    "Show files ending .root, .map or .histlist in CWD ordered by date",hint_delay);
    y-=dy;
 
-   cmd="mypres->ShowContents(\"Memory\")";
+   cmd="mypres->ShowContents(\"Memory\",\"\")";
    tit="List Objects in Memory";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "Show objects (hists, windows, functions currently in memory",hint_delay);
    y-=dy;
 
-   cmd="mypres->ShowContents(\"Socket\")";
+   cmd="mypres->ShowContents(\"Socket\",\"\")";
    tit="Hists from M_analyze";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
@@ -1220,13 +1220,9 @@ void HistPresent::ComposeList(const char* bp)
       hname.Remove(0,pp+1);
       pp = hname.Index(";");
       if (pp > 0) hname.Resize(pp);
-//      hist = GetSelHistAt(i);
-//      if (!hist) {WarnBox("Histogram not found");return;};
-//      name = hist->GetName();
       if (put_file) wstream << fname.Data() << " "; 
       wstream << hname.Data() << endl;
    }
-//   ClearSelect();
    wstream.close();
 };
 //_______________________________ShowList_________________________________________________________
@@ -1581,7 +1577,7 @@ void HistPresent::ToggleExpression(const char* bp)
   
 void HistPresent::UseHist(const char* bp)
 {
-   ShowContents("Memory");
+   ShowContents("Memory", "");
    if (!fUseHist) ToggleUseHist();
 }
 //________________________________________________________________________________________
@@ -2526,21 +2522,14 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
 
    TString hname = obj->String();
    hname.Remove(0,pp+1);
+   hname = hname.Strip(TString::kBoth);
    TH1* hist;
-   const char * hn = (const char*)hname;
-   hist=(TH1*)gROOT->FindObject((char*)hn);
+//   cout << "GetSelHistAt: " << hname << " Fn: " << fname <<  endl;
+   hist = (TH1*)gROOT->GetList()->FindObject(hname);
+//   if (hist) hist->Print();
    if (hist && fname == "Memory") return hist;
-//   if (hist) {
-//      cout << "Hist already in memory ???" << hn << endl;
-//      TString newname(hn);
-//      newname += "_old";
-//      hist->SetName(newname.Data());
-//   } else {
-//       cout << "Hist no longer in memory ???" << hn << endl;
-//       return 0;
-//   }     
    if (!(fname == "Memory")) {
-      hist=(TH1*)gROOT->FindObject(hn);
+      hist=(TH1*)gROOT->GetList()->FindObject(hname);
 //     gROOT->ls();
       if (hist) {
 //         WarnBox("Deleting existing histogram");
@@ -2554,7 +2543,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
           cout << setred << "No connection open"  << setblack << endl;
           return NULL;
       }
-      hist = gethist(hn, fComSocket);
+      hist = gethist(hname.Data(), fComSocket);
       if (!hist){
          cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
          fComSocket->Close("force");
@@ -2573,14 +2562,14 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
    } else {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile((const char *)fname);
-      hist = (TH1*)fRootFile->Get(hn);
+      hist = (TH1*)fRootFile->Get(hname);
       if (hist) hist->SetDirectory(gROOT);
-      else      cout << "Histogram: " << hn << " not found" << endl;
+      else      cout << "Histogram: " << hname << " not found" << endl;
       if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
    }
    gDirectory=gROOT;
 //  gROOT->ls();
-   TString newname(hn);
+   TString newname(hname.Data());
    newname += "_",
    newname += pos;
    if (hist) hist->SetName(newname.Data());
@@ -3262,7 +3251,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       }
       mfile->Close();
    } else {
-      hist=(TH1*)gROOT->FindObject(shname.Data());
+      hist=(TH1*)gROOT->GetList()->FindObject(shname.Data());
    }
    gDirectory=gROOT;
    return hist;
@@ -3449,12 +3438,11 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    fWincurx = fWintopx; fWincury += fWinshifty;
 
    fCanvasList->Add(cmany);
-//   cmany->SetEditable(kTRUE);ShowSele
-//   TEnv * lastset = 0;
    TString hname;
-   TString stitle;
+   TString stitle("Stacked: ");
    
-//   TString ytitle(""); 
+//   TString ytitle("");
+   Int_t nbins; 
    THStack * hs = new THStack("hstack","");
    fAnyFromSocket = kFALSE;
    for(Int_t i=0; i<nsel; i++) {
@@ -3463,6 +3451,15 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 //         cout << " Hist not found at: " << i << endl;  
          continue;
       }  
+      if (i == 0) {
+         nbins = hist->GetNbinsX();
+      } else {
+         if (nbins != hist->GetNbinsX()) {
+            cout << "Number of bins " << hist->GetNbinsX() << " in "
+                 << hist->GetName() << " differ, expected: " <<  nbins << endl;
+            continue;
+         }
+      }
       TString fname = ((TObjString *)hlist->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();
@@ -3471,8 +3468,8 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
       Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
       if(last_us >0)hname.Remove(last_us);
       last_us = hname.Last(';');    // chop off version
-      if(last_us >0)hname.Remove(last_us);
-      if (stitle.Length() > 0) stitle += "_";
+      if (last_us >0) hname.Remove(last_us);
+      if (stitle.Length() > 0) stitle += ", ";
       stitle += hname.Data();
 //      cout << "Aft: "  << hname << endl;
       hs->Add(hist);
@@ -3480,7 +3477,8 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
       hist->SetFillStyle(1001);
       hist->SetDrawOption("hist");
    }
-   hs->Draw();
+   if (fRealStack)hs->Draw();
+   else           hs->Draw("nostack");
    hs->SetTitle(stitle.Data());
    cmany->Modified();
    cmany->Update();
