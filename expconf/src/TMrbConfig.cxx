@@ -123,6 +123,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 							{
 								{TMrbConfig::kRdoPath,					"READOUT_PATH"				},
 								{TMrbConfig::kRdoFile,					"READOUT_FILE"				},
+								{TMrbConfig::kRdoDebug,					"DEBUG_READOUT"				},
 								{TMrbConfig::kRdoNameLC, 				"EXP_NAME_LC"				},
 								{TMrbConfig::kRdoNameUC, 				"EXP_NAME_UC"				},
 								{TMrbConfig::kRdoTitle,					"EXP_TITLE" 				},
@@ -1336,6 +1337,13 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoFile:
 						rdoStrm << rdoTmpl.Encode(line, pp->GetF()) << endl;
+						break;
+					case TMrbConfig::kRdoDebug:
+						if (gEnv->GetValue("TMrbConfig.DebugReadout", kFALSE)) {
+							rdoStrm << rdoTmpl.Encode(line, "m_read_meb_debug") << endl;
+						} else {
+							rdoStrm << rdoTmpl.Encode(line, "m_read_meb_no_debug") << endl;
+						}
 						break;
 					case TMrbConfig::kRdoCamacController:
 						contrType = this->GetControllerType(1);
