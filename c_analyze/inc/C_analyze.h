@@ -28,7 +28,6 @@ static const Int_t NPPC = 12, MBSV = 2, TRIGS = 2;
 
 static const Char_t * masters[] = {"ppc-0", "ppc-1", "ppc-2", "ppc-3", "ppc-4", "ppc-5", "ppc-6", "ppc-7", "ppc-8", "cvc-1", "cvc-2","cvc-3"};   
 static const Char_t * slaves[]  = {"ppc-0", "ppc-0", "ppc-2", "ppc-2", "ppc-4", "ppc-4", "ppc-6", "ppc-6", "ppc-8",  "    ", "     ","     "};   
-static const Char_t * mbsversions[]  = {"deve", "prod"};   
 static const Char_t * triggers[]  = {"VME", "CAMAC"}; 
 
 static const Int_t  MINSOCKET = 9090, MAXSOCKET = 9095;
