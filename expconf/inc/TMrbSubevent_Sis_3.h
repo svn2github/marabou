@@ -50,8 +50,8 @@ class TMrbSubevent_Sis_3 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent
 											TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };				// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kTRUE); };				// can store multiple modules
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
 		inline Bool_t CheckModuleID(TMrbModule * Module) {						// needs modules of type Sis
 			return(Module->CheckID(TMrbConfig::kModuleSis_3600) || Module->CheckID(TMrbConfig::kModuleSis_3801));
