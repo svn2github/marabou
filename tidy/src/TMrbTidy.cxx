@@ -6,8 +6,49 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.1 2004-11-16 15:12:18 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.2 2004-11-17 09:35:07 marabou Exp $       
 // Date:           
+//Begin_Html
+/*
+<b>Example of a HTML document (file "tidy.html")</b><br>
+<pre>
+&lt;!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN"&gt;
+&lt;html&gt;
+&lt;!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  --&gt;
+&lt;head&gt;&lt;title&gt;TMrbTidyDoc.html&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="#ebfcb0"&gt;
+&lt;h1&gt;TMrbTidyDoc: A MARaBOU class interfacing Dave Raggett's TidyLib&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+</body>
+<p>
+<b>ROOT script to invoke TIDY:</b>
+<pre>
+{
+&#160;&#160;&#160;&#160;gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+&#160;&#160;&#160;&#160;gSystem->Load("$MARABOU/lib/libTMrbTidy.so");
+&#160;&#160;&#160;&#160;gSystem->Load("$MARABOU/lib/libTidy.so");
+&#160;&#160;&#160;&#160;TMrbTidyDoc * tdoc = new TMrbTidyDoc("demo", "tidy.html");
+&#160;&#160;&#160;&#160;tdoc->Print();
+}
+</pre>
+<b>Output from method TMrbTidyDoc::Print():</b>
+<pre>
+Document demo (file tidy.html): structure as analyzed by D. Raggett's TIDY
+----------------------------------------------------------------------------------------------
+[ 0] node root: type=Root(0) parent=root
+[ 1] . node HTML: type=DOCTYPE(1) parent=root text='&lt;!DOCTYPE HTML&gt;&lt;cr&gt;&lt;cr&gt;' PUBLIC=
+[ 1] . node html: type=StartTag(5) tagid=HTML(48) parent=root
+[ 2] .. node comment: type=Comment(2) parent=html text='&lt;!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  --&gt;&lt;cr&gt;&lt;cr&gt;'
+[ 2] .. node head: type=StartTag(5) tagid=HEAD(46) parent=html
+[ 3] ... node title: type=StartTag(5) tagid=TITLE(111) parent=head
+[ 4] .... node text: type=Text(4) parent=title text='TMrbTidyDoc.html&lt;cr&gt;'
+[ 2] .. node body: type=StartTag(5) tagid=BODY(16) parent=html bgcolor=#EBFCB0
+[ 3] ... node h1: type=StartTag(5) tagid=H1(40) parent=body
+[ 4] .... node text: type=Text(4) parent=h1 text='TMrbTidyDoc: A MARaBOU class interfacing Dave Raggett's TidyLib&lt;cr&gt;'
+</pre>
+*/
+//End_Html
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -261,13 +302,15 @@ Bool_t TMrbTidyDoc::LoadConfig(const Char_t * CfgFile) {
 
 	fCfgFile.Resize(0); 							// no config
 	if (CfgFile) {
-		if (gSystem->AccessPathName(CfgFile)) { 	// check if file exists
+		TString cfgFile = CfgFile;
+		gSystem->ExpandPathName(cfgFile);
+		if (gSystem->AccessPathName(cfgFile.Data())) { 	// check if file exists
 			gMrbLog->Err()	<< "Can't access config file - " << CfgFile << endl;
 			gMrbLog->Flush(this->ClassName(), "LoadConfig");
 			return(kFALSE);
 		}
-		fCfgFile = CfgFile;
-		tidyLoadConfig(fHandle, (Char_t *) CfgFile);			// load config data
+		fCfgFile = cfgFile;
+		tidyLoadConfig(fHandle, (Char_t *) cfgFile.Data());			// load config data
 	}
 	return(kTRUE);
 }
@@ -309,18 +352,20 @@ Bool_t TMrbTidyDoc::ParseFile(const Char_t * DocFile, Bool_t Repair) {
 //////////////////////////////////////////////////////////////////////////////
 
 	fDocFile.Resize(0); 							// no document
-	if (gSystem->AccessPathName(DocFile)) { 		// check if file exists
-		gMrbLog->Err()	<< "Can't access document file - " << DocFile << endl;
+	TString docFile = DocFile;
+	gSystem->ExpandPathName(docFile);
+	if (gSystem->AccessPathName(docFile.Data())) { 		// check if file exists
+		gMrbLog->Err()	<< "Can't access document file - " << docFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ParseFile");
 		return(kFALSE);
 	}
-	ifstream docStrm(DocFile, ios::in); 			// try to open file
+	ifstream docStrm(docFile.Data(), ios::in); 			// try to open file
 	if (!docStrm.good()) {							// some error
-		gMrbLog->Err() << gSystem->GetError() << " - " << DocFile << endl;
+		gMrbLog->Err() << gSystem->GetError() << " - " << docFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ParseFile");
 		return(kFALSE);
 	}
-	fDocFile = DocFile;
+	fDocFile = docFile;
 	TString tidyBuffer; 							// fill buffer
 	tidyBuffer.ReadFile(docStrm);					// from file
 	docStrm.close();
@@ -770,6 +815,27 @@ Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
 Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
 Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
 
+void TMrbTidyDoc::Print(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::Print
+// Purpose:        Print data
+// Arguments:      ostream & Out    -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Prints document data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fTidyRoot) {
+		Out 	<< endl << "Document " << this->GetName();
+		if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
+		Out 	<< ": structure as analyzed by D. Raggett's TIDY" << endl
+				<< "----------------------------------------------------------------------------------------------" << endl;
+		fTidyRoot->PrintTree(Out);
+	}
+}
+
 void TMrbTidyNode::PrintTree(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -809,18 +875,26 @@ void TMrbTidyNode::Print(ostream & Out) {
 
 	printf("[%2d] ", fTreeLevel);
 	for (Int_t lev = 0; lev < fTreeLevel; lev++) printf(".");
+	if (fTreeLevel > 0) printf(" ");
 	TString parentName = fParent ? fParent->GetName() : "root";
 	TMrbNamedX * ty = (TMrbNamedX *) lofNodeTypes.FindByIndex((Int_t) this->GetType());
 	TString tyStr;
 	if (ty) tyStr = Form("%s(%d)", ty->GetName(), ty->GetIndex()); else tyStr = this->GetType();
-	TMrbNamedX * tag = (TMrbNamedX *) lofTagIds.FindByIndex(this->GetIndex());
-	TString tagStr;
-	if (tag) tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex()); else tagStr = this->GetIndex();
-	printf(" node %s: type=%s tagid=%s parent=%s",
+	if (this->GetIndex() != TidyTag_UNKNOWN) {
+		TMrbNamedX * tag = (TMrbNamedX *) lofTagIds.FindByIndex(this->GetIndex());
+		TString tagStr;
+		if (tag) tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex()); else tagStr = this->GetIndex();
+		printf("node %s: type=%s tagid=%s parent=%s",
 								this->GetName(),
 								tyStr.Data(),
 								tagStr.Data(),
 								parentName.Data());
+	} else {
+		printf("node %s: type=%s parent=%s",
+								this->GetName(),
+								tyStr.Data(),
+								parentName.Data());
+	}
 	if (tidyNodeHasText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)) {
 		TidyBuffer text = {'\0'};
 		tidyNodeGetText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle, &text);
