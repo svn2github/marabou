@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbFileObject.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbFileObject.cxx,v 1.7 2004-12-14 09:04:43 rudi Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -259,16 +259,20 @@ const Char_t * TGMrbFileObjectCombo::GetSelection(TString & SelItem, Bool_t Full
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TString itemString = ((TGTextLBEntry *) fCombo->GetSelectedEntry())->GetText()->GetString();
-	this->GetFileEntry(SelItem, FullPath);
-	SelItem += ":";
-	Int_t idx = itemString.Index(")", 0) + 1;
-	if (idx < 0) idx = 0;
-	itemString = itemString(idx, itemString.Length());
-	idx = itemString.Index("[", 0) - 1;
-	if (idx < 0) idx = itemString.Length();
-	itemString.Resize(idx);
-	itemString = itemString.Strip(TString::kBoth);
-	SelItem += itemString; 
+	SelItem = "";
+	TGTextLBEntry * lbEntry = (TGTextLBEntry *) fCombo->GetSelectedEntry();
+	if (lbEntry) {
+		TString itemString = lbEntry->GetText()->GetString();
+		this->GetFileEntry(SelItem, FullPath);
+		SelItem += ":";
+		Int_t idx = itemString.Index(")", 0) + 1;
+		if (idx < 0) idx = 0;
+		itemString = itemString(idx, itemString.Length());
+		idx = itemString.Index("[", 0) - 1;
+		if (idx < 0) idx = itemString.Length();
+		itemString.Resize(idx);
+		itemString = itemString.Strip(TString::kBoth);
+		SelItem += itemString; 
+	}
 	return(SelItem.Data());
 }
