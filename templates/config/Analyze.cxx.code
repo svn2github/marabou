@@ -158,9 +158,17 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%INITIALIZE_EVT_SEVT_MODS%%
 
 %%BeginOfCode%%
+// user-specific method to initialize objects and/or variables
+	this->$initialize(IOSpec);
+%%EndOfCode%%
+%%INCLUDE_USER_INITIALIZE%%
+
+%%BeginOfCode%%
 %B%// book histograms defined by user
 %UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%UD1C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
+%UD2C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
 %%EndOfCode%%
 %%HISTO_BOOK_USER_DEFINED%%
 
@@ -169,12 +177,6 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %FHA%	if ($hArrayName.FindObject("$hName") == NULL) $hArrayName.Add($hName);
 %%EndOfCode%%
 %%HISTO_FILL_ARRAYS%%
-
-%%BeginOfCode%%
-// user-specific method to initialize objects and/or variables
-	this->$initialize(IOSpec);
-%%EndOfCode%%
-%%INCLUDE_USER_INITIALIZE%%
 
 	return(kTRUE);
 }

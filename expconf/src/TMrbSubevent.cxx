@@ -388,8 +388,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 			paramName = paramName(0,nch);
 		}
 
-		histoMode = this->HistosToBeAllocated() ?	TMrbModuleChannel::kMrbHasHistogramDefault :
-																TMrbModuleChannel::kMrbHasHistogramFalse;
+		histoMode = TMrbModuleChannel::kMrbHasHistogramDefault;
 
 		if (chnStatus == TMrbConfig::kChannelArray) {
 			histoFlag = paramName(nx2 + 1);
@@ -1009,7 +1008,15 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							stdHistosOK = kTRUE;
 							doIt = kTRUE;
 						}
-						if (doIt) {
+
+						if (!this->HistosToBeAllocated()) {
+							anaTmpl.Substitute("$evtNameLC", evtNameLC);
+							anaTmpl.Substitute("$evtNameUC", evtNameUC);
+							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+							anaTmpl.WriteCode(AnaStrm);
+							stdHistosOK = kTRUE;
+						} else if (doIt) {
 							anaTmpl.Substitute("$evtNameLC", evtNameLC);
 							anaTmpl.Substitute("$evtNameUC", evtNameUC);
 							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);

@@ -704,16 +704,16 @@ class TMrbConfig : public TNamed {
 		Bool_t TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) const;	// check if tag has already been processed
 
 		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
-									Int_t Xbin, Double_t Xlow, Double_t Xup);
+									Int_t Xbin, Double_t Xlow, Double_t Xup, const Char_t * Condition = NULL);
 		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
-									Int_t Xbin, Double_t Xlow, Double_t Xup);
+									Int_t Xbin, Double_t Xlow, Double_t Xup, const Char_t * Condition = NULL);
 
 		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t Xbin, Double_t Xlow, Double_t Xup,
-									Int_t Ybin, Double_t Ylow, Double_t Yup);
+									Int_t Ybin, Double_t Ylow, Double_t Yup, const Char_t * Condition = NULL);
 		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t Xbin, Double_t Xlow, Double_t Xup,
-									Int_t Ybin, Double_t Ylow, Double_t Yup);
+									Int_t Ybin, Double_t Ylow, Double_t Yup, const Char_t * Condition = NULL);
 
 		TMrbNamedX * AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName);
 		TMrbNamedX * FindHistoArray(const Char_t * HistoName, TMrbNamedX * After = NULL) const;	// find array histo is to be assigned to
@@ -844,6 +844,7 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofOnceOnlyTags; 		// list of tags already processed
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
+		TObjArray fLofHistoConditions;		// list of histogram booking conds
 		
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent

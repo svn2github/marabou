@@ -628,6 +628,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
+		fLofHistoConditions.Delete();							// init list of histogram booking conds
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
@@ -2893,7 +2894,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.WriteCode(anaStrm);
 							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
 							while (h) {
-								anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+								TMrbNamedX * cnd = (TMrbNamedX *) fLofHistoConditions.FindObject(h->GetName());
+								if (cnd == NULL) {
+									anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+								} else {
+									anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1C%" : "%UD2C%");
+									anaTmpl.Substitute("$condition", cnd->GetTitle());
+								}
 								anaTmpl.Substitute("$hName", h->GetName());
 								anaTmpl.Substitute("$hTitle", h->GetTitle());
 								TMrbNamedArrayD * a = (TMrbNamedArrayD *) h->GetAssignedObject();
@@ -5103,14 +5110,14 @@ Int_t TMrbConfig::PrintErrors() const {
 	Int_t nofErrors = gMrbLog->GetErrors(err);
 	if (nofErrors > 0) {
 		cerr	<< setred << endl
-				<< "ERROR(S) while processing config script:" << endl;
+				<< "ERROR(S) while processing config script:" << setblack << endl;
 		gMrbLog->Print(0, "Error");
 	}
 	TObjArray wrn;
 	Int_t nofWarnings = gMrbLog->GetWarnings(wrn);
 	if (nofWarnings > 0) {
 		cerr	<< setmagenta << endl
-				<< "WARNING(S) while processing config script:" << endl;
+				<< "WARNING(S) while processing config script:" << setblack << endl;
 		gMrbLog->Print(0, "Warning");
 	}
 	if (nofErrors || nofWarnings) cerr	<< setblack << endl;
@@ -5628,7 +5635,8 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 }
 
 Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
-																Int_t Xbin, Double_t Xlow, Double_t Xup) {
+																Int_t Xbin, Double_t Xlow, Double_t Xup,
+																const Char_t * Condition) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::BookHistogram
@@ -5639,6 +5647,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 //                 Int_t Xbin              -- bins in X
 //                 Double_t Xlow           -- lower edge X
 //                 Double_t Xup            -- upper edge X
+//                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Books user-defined histograms.
@@ -5675,11 +5684,13 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 
 	TMrbNamedArrayD * a = new TMrbNamedArrayD(histoType->GetName(), histoType->GetTitle(), 3, argList.GetArray());
 	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, HistoTitle, a));
+	if (Condition != NULL) fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
 	return(kTRUE);
 }
 
 Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
-																Int_t Xbin, Double_t Xlow, Double_t Xup) {
+																Int_t Xbin, Double_t Xlow, Double_t Xup,
+																const Char_t * Condition) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::BookHistogram
@@ -5691,6 +5702,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 //                 Int_t Xbin              -- bins in X
 //                 Double_t Xlow           -- lower edge X
 //                 Double_t Xup            -- upper edge X
+//                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Books user-defined histograms.
@@ -5705,12 +5717,13 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 	}
 
 	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
-	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Xbin, Xlow, Xup));
+	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Xbin, Xlow, Xup, Condition));
 }
 
 Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 																Int_t Xbin, Double_t Xlow, Double_t Xup,
-																Int_t Ybin, Double_t Ylow, Double_t Yup) {
+																Int_t Ybin, Double_t Ylow, Double_t Yup,
+																const Char_t * Condition) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::BookHistogram
@@ -5724,6 +5737,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 //                 Int_t Ybin              -- bins in Y
 //                 Double_t Ylow           -- lower edge Y
 //                 Double_t Yup            -- upper edge Y
+//                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Books user-defined histograms.
@@ -5763,12 +5777,14 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 
 	TMrbNamedArrayD * a = new TMrbNamedArrayD(histoType->GetName(), histoType->GetTitle(), 6, argList.GetArray());
 	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, HistoTitle, a));
+	if (Condition != NULL) fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
 	return(kTRUE);
 }
 
 Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 																Int_t Xbin, Double_t Xlow, Double_t Xup,
-																Int_t Ybin, Double_t Ylow, Double_t Yup) {
+																Int_t Ybin, Double_t Ylow, Double_t Yup,
+																const Char_t * Condition) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::BookHistogram
@@ -5797,7 +5813,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 	}
 
 	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
-	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Xbin, Xlow, Xup, Ybin, Ylow, Yup));
+	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Xbin, Xlow, Xup, Ybin, Ylow, Yup, Condition));
 }
 
 TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName) {
@@ -6736,6 +6752,13 @@ Bool_t TMrbConfig::CheckConfig() {
 							gMrbLog->Out()	<< "Subevent \"" << sevt->GetName()
 											<< "\" (serial " << sevt->GetSerial()
 											<< ") has " << sevt->GetNofModules() << " module(s) assigned" << endl;
+							gMrbLog->Flush(this->ClassName(), "CheckConfig");
+						}
+						if (!sevt->HistosToBeAllocated()) {
+							gMrbLog->Wrn()	<< "Subevent \"" << sevt->GetName()
+											<< "\" (serial " << sevt->GetSerial()
+											<< ") has " << sevt->GetNofModules()
+											<< " module(s) assigned - but no histogram(s) allocated" << endl;
 							gMrbLog->Flush(this->ClassName(), "CheckConfig");
 						}
 					}
