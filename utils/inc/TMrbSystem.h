@@ -33,6 +33,12 @@ class TMrbSystem: public TObject {
 									kMrbSpecialFile		= BIT(2)
 								};
 	
+		enum EMrbDirMode		{	kMrbDirAsIs 		= 0,
+									kMrbDirAppendSlash	= BIT(0),
+									kMrbDirReturnDot	= BIT(1),
+									kMrbDirExpandWdir 	= BIT(2)
+								};
+	
 	public:
 		TMrbSystem();						// default ctor
 		~TMrbSystem() {};					// default dtor
@@ -40,7 +46,7 @@ class TMrbSystem: public TObject {
 		Int_t FindFile(TObjArray & PathList,
 				const Char_t * FileName, const Char_t * SearchPath = "", Bool_t MultipleMatch = kFALSE) const;
 
-		const Char_t * GetDirName(TString & DirName, const Char_t * FilePath, Bool_t ExpandWD = kFALSE) const;
+		const Char_t * GetDirName(TString & DirName, const Char_t * FilePath, EMrbDirMode Mode = kMrbDirAsIs) const;
 		const Char_t * GetBaseName(TString & FileName, const Char_t * FilePath) const;
 		const Char_t * GetExtension(TString & Extension, const Char_t * FileName) const;
 		Bool_t CheckExtension(const Char_t * FileName, const Char_t * Extension) const;

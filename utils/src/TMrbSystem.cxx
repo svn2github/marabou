@@ -145,39 +145,63 @@ Int_t TMrbSystem::FindFile(TObjArray & PathList,
 	return(nofFiles);
 }
 
-const Char_t * TMrbSystem::GetDirName(TString & DirName, const Char_t * FilePath, Bool_t ExpandWD) const {
+const Char_t * TMrbSystem::GetDirName(TString & DirName, const Char_t * FilePath, EMrbDirMode Mode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::GetDirName
 // Purpose:        Return directory part of file path
 // Arguments:      TString & DirName     -- restulting dir name
 //                 Char_t * FilePath     -- full path spec
-//                 Bool_t ExpandWD       -- if kTRUE, return wirking dir
-//                                                    if plain file name
+//                 EMrbDirMode Mode      -- how to return directory name
 // Results:        Char_t * DirName      -- directory name (same as DirName.Data())
 // Exceptions:     
-// Description:    Returns path up to (but without) last "/".
+// Description:    Returns "dir part" of a string.
+//                 ~ and $ constructs will be expanded before execution
+//                 Additional options:
+//                   Mode = kMrbDirAppendSlash    -- append / at end of string
+//                        = kMrbDirExpandWdir     -- expand working directory
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString fp = FilePath;
 	Int_t n1, n2;
 
-	if (fp.Index("/", 0) == -1) {
+	gSystem->ExpandPathName(fp);							// replace $, ~, etc.
+
+	Bool_t isDir = this->IsDirectory(fp);					// directory?
+	Bool_t hasSlash = (fp.Index("/", 0) != -1); 			// path containing slash?
+	Bool_t hasTermSlash = (fp(fp.Length() - 1) == '/'); 	// slash at end?
+
+	if (isDir) {											// dir or possibly plain file?
+		DirName = fp;
+		if (Mode & TMrbSystem::kMrbDirExpandWdir) { 		// working dir to be expanded?
+			if (DirName.Index("./") == 0) DirName = DirName(1, DirName.Length() - 1);	// is it "./"?
+			else if (DirName(0) != '/') DirName.Prepend("/");							// or local?
+			DirName.Prepend(gSystem->WorkingDirectory());
+		}
+		if (Mode & TMrbSystem::kMrbDirAppendSlash) {		// slash to be appended?
+			if (!hasTermSlash) DirName += "/";
+		} else {
+			if (hasTermSlash) DirName = DirName(0, DirName.Length() - 1);
+		}
+		return(DirName.Data());
+	} else if (!hasSlash) { 								// not a dir
 		DirName = "";
 		return(DirName.Data());
 	}
-
+	
 	n1 = 0;
-	while (1) {
+	while (1) { 											// find last slash in path
 		if ((n2 = fp.Index("/", n1)) == -1) break;
 		n1 = n2 + 1;
 	}
-	if (n1 == 0 && ExpandWD) {
-		DirName = gSystem->WorkingDirectory();
-	} else {
-		DirName = FilePath;
-		DirName = DirName(0, n1 - 1);
+
+	DirName = fp;
+	DirName = DirName(0, (Mode & TMrbSystem::kMrbDirAppendSlash) ? n1 : n1 - 1);	// remove slash at end?
+	if (Mode & TMrbSystem::kMrbDirExpandWdir) { 									// expand working dir?
+		if (DirName.Index("./") == 0) DirName = DirName(1, 1000);					// is it "./"?
+		else if (DirName(0) != '/') DirName.Prepend("/");							// or local?
+		DirName.Prepend(gSystem->WorkingDirectory());
 	}
 	return(DirName.Data());
 }
@@ -191,20 +215,24 @@ const Char_t * TMrbSystem::GetBaseName(TString & BaseName, const Char_t * FilePa
 //                 Char_t * FilePath     -- full path spec
 // Results:        Char_t * BaseName     -- file name part (same as BaseName.Data())
 // Exceptions:     
-// Description:    Returns path behind last "/".
+// Description:    Returns "file name part" of given string.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString fp = FilePath;
 	Int_t n1, n2;
 
-	n1 = 0;
-	while (1) {
-		if ((n2 = fp.Index("/", n1)) == -1) break;
-		n1 = n2 + 1;
+	if (this->IsDirectory(FilePath)) {
+		BaseName = "";
+	} else {
+		n1 = 0;
+		while (1) {
+			if ((n2 = fp.Index("/", n1)) == -1) break;
+			n1 = n2 + 1;
+		}
+		BaseName = FilePath;
+		BaseName = BaseName(n1, BaseName.Length() - n1);
 	}
-	BaseName = FilePath;
-	BaseName = BaseName(n1, BaseName.Length() - n1);
 	return(BaseName.Data());
 }
 
