@@ -333,8 +333,9 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	UInt_t chnPattern;
 	Int_t xwait;
 	TMrbString intStr;
+	Int_t wpc[TMrbDGFData::kNofChannels];
 										
-	traceBuffer.Set(8192 * TMrbDGFData::kNofChannels);
+	traceBuffer.Set(TMrbDGFData::kUntrigTraceLength * TMrbDGFData::kNofChannels);
 	
 	nofTraces = 0;
 
@@ -382,16 +383,18 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
-			nofWords = 0;
-			Int_t chn = 0;
 			UInt_t chnp = chnPattern;
-			for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++, chn++) {
+			nofWords = 0;
+			for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+				wpc[chn] = 0;
 				if (chnp & 1) {
 					dgf->GetUntrigTrace_Start(chn);
-					nofWords += dgf->GetUntrigTrace_Stop(chn, traceBuffer, 3);
-					chnp >>= 1;
+					wpc[chn] = dgf->GetUntrigTrace_Stop(chn, traceBuffer);
+					nofWords += wpc[chn];
 				}
+				chnp >>= 1;
 			}		
+			dgf->GetUntrigTrace_Restore();
 			if (nofWords > 0) {
 				if (!dataOkFlag) {
 					traceFile = new TFile("untrigTrace.root", "RECREATE");
@@ -401,7 +404,19 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 				hTitle = "Untrig traces for module ";
 				hTitle += dgfModule->GetName();
 				h = new TH1F(dgfModule->GetName(), hTitle.Data(), nofWords, 0., nofWords);
-				for (Int_t i = 0; i < nofWords; i++) h->Fill((Axis_t) i, traceBuffer[i]);
+				TMrbString chnList = "chn ";
+				Int_t n = 0;
+				for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+					Int_t offset = chn * TMrbDGFData::kUntrigTraceLength;
+					if (wpc[chn] > 0) {
+						chnList += chn;
+						chnList += " ";
+						for (Int_t i = 0; i < wpc[chn]; i++, n++, offset++) h->Fill((Axis_t) n, traceBuffer[offset]);
+					}
+				}
+				hTitle += ": ";
+				hTitle += chnList.Data();
+				h->SetTitle(hTitle.Data());
 				h->Write();
 				hl << dgfModule->GetName() << endl;
 				nofTraces++;

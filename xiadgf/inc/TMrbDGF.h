@@ -278,6 +278,7 @@ class TMrbDGF : public TNamed {
 			Bool_t GetUntrigTrace_Init(TArrayI & Buffer, UInt_t ChannelPattern, Int_t XwaitStates = 0);
 			Bool_t GetUntrigTrace_Start(Int_t Channel);
 			Int_t GetUntrigTrace_Stop(Int_t Channel, TArrayI & Buffer, Int_t SecsToWait = 5);
+			Bool_t GetUntrigTrace_Restore();
 
 		Int_t GetDacRamp(TArrayI & Buffer);										// calibrate dac offsets
 			Bool_t GetDacRamp_Init();

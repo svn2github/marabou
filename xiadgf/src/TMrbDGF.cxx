@@ -4714,6 +4714,7 @@ Int_t TMrbDGF::GetUntrigTrace(TArrayI & Buffer, UInt_t ChannelPattern, Int_t Xwa
 			if ((n = this->GetUntrigTrace_Stop(chn, Buffer)) != -1) nofWords += n;
 		}
 	}
+	this->GetUntrigTrace_Restore();
 	return(nofWords);
 }
 
@@ -4755,7 +4756,7 @@ Bool_t TMrbDGF::GetUntrigTrace_Init(TArrayI & Buffer, UInt_t ChannelPattern, Int
 		}
 	}
 	Buffer.Reset();
-	Buffer.Set(8192 * TMrbDGFData::kNofChannels);
+	Buffer.Set(TMrbDGFData::kUntrigTraceLength * TMrbDGFData::kNofChannels);
 
 	sts = this->WriteParamMemory();
 	if (!sts) this->RestoreParams(TMrbDGF::kSaveUntrigTrace);
@@ -4796,7 +4797,7 @@ Int_t TMrbDGF::GetUntrigTrace_Stop(Int_t Channel, TArrayI & Buffer, Int_t SecsTo
 		this->WaitActive(SecsToWait);
 	}
 	this->StopRun();
-	this->RestoreParams(TMrbDGF::kSaveUntrigTrace);
+
 	if (this->GetWaitStatus() != TMrbDGF::kWaitOk) return(-1);
 
 	addr = this->GetParValue("AOUTBUFFER");
@@ -4831,6 +4832,18 @@ Int_t TMrbDGF::GetUntrigTrace_Stop(Int_t Channel, TArrayI & Buffer, Int_t SecsTo
 		gMrbLog->Flush(this->ClassName(), "GetUntrigTrace");
 	}
 	return(wc);
+}
+
+Bool_t TMrbDGF::GetUntrigTrace_Restore() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetUntrigTrace_Restore
+// Purpose:        Restore settings after untrig trace
+// Results:        
+//////////////////////////////////////////////////////////////////////////////
+
+	this->RestoreParams(TMrbDGF::kSaveUntrigTrace);
+	return(kTRUE);
 }
 
 Int_t TMrbDGF::GetDacRamp(TArrayI & Buffer) {

@@ -166,6 +166,7 @@ class TMrbDGFData : public TObject {
 		enum					{	kNofChannels		=	4			};
 		enum					{	kNofMCAPages		=	8			};
 		enum					{	kMCAPageSize		=	32 * 1024	};
+		enum					{	kUntrigTraceLength	=	8192		};
 		enum					{	kChannelPattern	=	0xF };
 
 		// module revision
