@@ -1971,16 +1971,17 @@ void FitHist::ExpandProject(Int_t what)
 //      Double_t x = 0;
       TF1 * func = NULL;
       if (what == projectf) {
-         TList *lof = fSelHist->GetListOfFunctions();
-         if (lof->GetSize() != 1) {
-            cout << "Exactly one function required" << endl;
-            return;
-         } else {
-            func = (TF1 *) lof->First();
-            if (!func) {
-               cout << "No function found" << endl;
-               return;
+         TIter next(fSelHist->GetListOfFunctions());
+         while (TObject * obj =(TObject *)next()) {
+            if (is_a_function(obj)) {
+               if (func != NULL) 
+                  WarnBox("More than 1 function defined, take first");
+                else func =(TF1 *)obj;
             }
+         }
+         if (!func) {
+            WarnBox("No function found");
+            return;
          }
       }
       TAxis *xaxis = fOrigHist->GetXaxis();
