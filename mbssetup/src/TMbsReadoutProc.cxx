@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.12 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.13 2004-11-26 09:05:27 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -153,23 +153,27 @@ Bool_t TMbsReadoutProc::SetProcName(const Char_t * ProcName) {
 				<< " (" << ia->GetHostAddress() << ")"
 				<< endl;
 
-		procType = ProcName;				// try to determine proc type
-		if ((n = procType.Index("-")) >= 0) {
-			procType = procType(0, n);
-			ptype = gMbsSetup->fLofProcs.FindByName(procType.Data(),
+		ptype = this->GetType();
+		if (ptype == NULL) {
+			procType = ProcName;				// try to determine proc type
+			if ((n = procType.Index("-")) >= 0) {
+				procType = procType(0, n);
+				ptype = gMbsSetup->fLofProcs.FindByName(procType.Data(),
 												TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
-			if (ptype == NULL) {
-				if (this->GetType() == NULL) {
-					gMrbLog->Err() << ProcName << " is of unknown type - must be defined separately" << endl;
-					gMrbLog->Flush(this->ClassName(), "SetName");
-					return(kFALSE);
-				}
-			} else {
-				this->SetType((EMbsProcType) ptype->GetIndex());
+			}
+		}
+		if (ptype == NULL) {
+			gMrbLog->Err() << ProcName << " is of unknown type - must be defined separately" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetName");
+			return(kFALSE);
+		} else {
+			if (this->SetType((EMbsProcType) ptype->GetIndex())) {
 				cout	<< this->ClassName() << "::SetName(): " << ProcName
 						<< " is of type " << ptype->GetName()
 						<< "(" << ptype->GetIndex() << ")"
 						<< endl;
+			} else {
+				return(kFALSE);
 			}
 		}
 		return(kTRUE);
