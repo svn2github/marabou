@@ -308,7 +308,6 @@ Int_t TMrbEnv::Get(const Char_t * Resource, Int_t Default) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString resValue;
-	Int_t base;
 	Int_t intVal;
 
 	fResourceName = fPrefix + Resource;
@@ -323,12 +322,7 @@ Int_t TMrbEnv::Get(const Char_t * Resource, Int_t Default) {
 		}
 	}
 	resValue.Strip(TString::kBoth);
-	base = 10;
-	if (resValue.Index("0b", 0) == 0)		base = 2;
-	else if (resValue.Index("0x", 0) == 0)	base = 16;
-	else if (resValue.Index("0", 0) == 0)	base = 8;
-	if (base != 10) resValue = resValue(2, 1000);
-	resValue.ToInteger(intVal, base);
+	resValue.ToInteger(intVal);
 	return(intVal);
 }
 
