@@ -56,7 +56,7 @@
 %C%		for (chn = 0; chn < 8; chn++) {			// up to 8 channels
 %C%			if (hitPattern == 0) break; 		// no more hits in this event
 %C%			if (hitPattern & 1) {				// channel fired?
-%C%				paramAddr = gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%				paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%				if (paramAddr) {
 %C%					*paramAddr = (Int_t) *SevtData++;	// assign energy value to param
 %C%						wc--;

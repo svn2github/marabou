@@ -200,19 +200,20 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %%EndOfCode%%
 %%SEVT_INITIALIZE_BRANCH%%
 
-void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue) {
+void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrSevt%%SEVT_NAME_UC%%::Reset
 // Purpose:        Reset subevent data
 // Arguments:      Int_t InitValue   -- initialization value
+//                 Bool_t DataOnly    -- do not reset hit buffer
 // Results:        --
 // Exceptions:     
 // Description:    Initializes subevent data with given value.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	this->GetHitBuffer()->Reset();			// reset hit buffer
+	if (!DataOnly) this->GetHitBuffer()->Reset();			// reset hit buffer
 %%BeginOfCode%%
 %S%	$paramNameLC = InitValue;	// $sevtNameLC.$paramNameLC
 %X%	for (Int_t i = 0; i < $indexRange; i++) $paramNameLC[i] = InitValue;	// $sevtNameLC.$paramNameLC
