@@ -53,7 +53,7 @@ const SMrbNamedXShort kDGFChannelNumbers[] =
 
 // geometry settings
 enum						{	kTabWidth 				= 1100					};
-enum						{	kTabHeight 				= 750					};
+enum						{	kTabHeight 				= 800					};
 enum						{	kVFrameWidth			= kTabWidth / 2 		};
 enum						{	kVFrameHeight			= kTabHeight / 2 		};
 enum						{	kLEWidth				= kAutoWidth			};

@@ -58,8 +58,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFSaveModuleSettingsPanel)
 
-DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFrame)
-														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
+DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFrame) :
+					TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSaveModuleSettingsPanel
@@ -196,11 +196,14 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
+	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
+
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(kTabWidth, kTabHeight);
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
 }
 

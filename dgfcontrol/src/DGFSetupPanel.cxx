@@ -73,10 +73,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFSetupPanel)
 
-DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) : TGCompositeFrame(	TabFrame,
-																				kTabWidth,
-																				kTabHeight,
-																				kVerticalFrame) {
+DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
+					TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetupPanel
@@ -162,10 +160,11 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) : TGCompositeFrame(	Ta
 	fSetupConnect.SetName("Connect to CAMAC");			// button list: 		connect to CAMAC
 	fSetupConnect.AddNamedX(kDGFSetupConnect);
 
-// DGF defs
 	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, dgfFrameLayout);
 	HEAP(dgfFrameLayout);
+
+// DGF defs
 	TGLayoutHints * dgfButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
 	labelGC->SetLH(dgfButtonLayout);
 	HEAP(dgfButtonLayout);
@@ -280,10 +279,12 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) : TGCompositeFrame(	Ta
 
 	firstCall = kFALSE;
 
+	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
+	HEAP(dgfFrameLayout);
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	Resize(GetDefaultSize());
-	Resize(kTabWidth, kTabHeight);
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 
 	MapSubwindows();
 	MapWindow();

@@ -43,6 +43,7 @@ using namespace std;
 #include "DGFInstrumentPanel.h"
 #include "DGFParamsPanel.h"
 #include "DGFTauDisplayPanel.h"
+#include "DGFTauFitPanel.h"
 #include "DGFUntrigTracePanel.h"
 #include "DGFTraceDisplayPanel.h"
 #include "DGFOffsetsPanel.h"
@@ -227,6 +228,9 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fMCATab = fRunControlTab->AddTab("MCA");			// id=kDGFRunControlMCA
 	fMCATabInit = kFALSE;
+
+	fTauFitTab = fRunControlTab->AddTab("TauFit");			// id=kDGFRunControlTauFit
+	fTauFitTabInit = kFALSE;
 
 	fSaveTab = fRunControlTab->AddTab("Save");			// id=kDGFRunControlSave
 	fSaveTabInit = kFALSE;
@@ -434,6 +438,15 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fMCATabInit) new DGFMcaDisplayPanel(fMCATab);
 								fMCATabInit = kTRUE;
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+
+						case kDGFRunControlTabTauFit:
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+	                   			if (!fTauFitTabInit) new DGFTauFitPanel(fTauFitTab);
+								fTauFitTabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}

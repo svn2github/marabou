@@ -63,7 +63,6 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 										kDGFMcaDisplayTimeScale,		//				time scale
 										kDGFMcaDisplayAcquire,			//		actions start accu
 										kDGFMcaDisplayAbort,			//				abort accu
-										kDGFMcaDisplaySaveHistos,		//				save current histograms
 										kDGFMcaDisplayReset, 			//				reset
 										kDGFMcaDisplaySelectAll,		// select	all
 										kDGFMcaDisplaySelectNone,		//				none
@@ -87,7 +86,6 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 		Bool_t Update(Int_t EntryId);											// update program state on X events
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
 		Bool_t AcquireHistos(); 												// start accu
-		Bool_t SaveHistos(const Char_t * FileName, Int_t ModuleId = -1, UInt_t ChannelPattern = 0xf);	// save histograms
 
 		void SetRunning(Bool_t RunFlag);										// run flip-flop
 		
@@ -111,8 +109,6 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 
 		TMrbLofNamedX fLofDGFModuleKeys[kNofClusters];
 		
-		TGFileInfo fMcaFileInfo;					//!
-
 		Bool_t fIsRunning;							// kTRUE if trace acquisition running
 		
 		TMrbLofNamedX fMcaTimeScaleButtons;

@@ -53,8 +53,8 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFSetFilesPanel)
 
-DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame)
-														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
+DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
+				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetFilesPanel
@@ -93,6 +93,10 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame)
 //	Initialize button list
 	fLofButtons.SetName("Buttons");
 	fLofButtons.AddNamedX(kDGFSetFilesButtons);
+
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 //	user defs
 	TGLayoutHints * userLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
@@ -217,13 +221,13 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame)
 	fActionFrame->AddFrame(fButtonFrame, labelGC->LH());
 	fButtonFrame->Associate(this);
 
-	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	HEAP(dgfFrameLayout);
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(kTabWidth, kTabHeight);
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
 }
 

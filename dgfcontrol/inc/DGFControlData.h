@@ -48,6 +48,7 @@ class DGFControlData : public TNamed {
 	friend class DGFUntrigTracePanel;
 	friend class DGFOffsetsPanel;
 	friend class DGFMcaDisplayPanel;
+	friend class DGFTauFitPanel;
 	friend class DGFEditModICSRPanel;
 	friend class DGFEditChanCSRAPanel;
 	friend class DGFEditCoincPatternPanel;

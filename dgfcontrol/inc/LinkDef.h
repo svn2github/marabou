@@ -9,6 +9,7 @@
 #pragma link C++ class DGFInstrumentPanel;
 #pragma link C++ class DGFParamsPanel;
 #pragma link C++ class DGFTauDisplayPanel;
+#pragma link C++ class DGFTauFitPanel;
 #pragma link C++ class DGFTraceDisplayPanel;
 #pragma link C++ class DGFUntrigTracePanel;
 #pragma link C++ class DGFOffsetsPanel;

@@ -32,17 +32,10 @@
 
 #include "SetColor.h"
 
-static Char_t * kDGFFileTypesROOT[]	=	{
-											"ROOT files",			"*.root",
-											"All files",			"*",
-											NULL,					NULL
-										};
-
 const SMrbNamedX kDGFTauButtons[] =
 			{
-				{DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, 		"Acquire histo(s)", "Start run to accumulate histograms"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, 		"Start", "Start run to accumulate histograms"	},
 				{DGFMcaDisplayPanel::kDGFMcaDisplayAbort,			"Abort",			"Abort accumulation"	},
-				{DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos,		"Save histos",		"Save histograms to file"	},
 				{DGFMcaDisplayPanel::kDGFMcaDisplayReset,			"Reset",			"Reset to default values"	},
 				{0, 															NULL,				NULL						}
 			};
@@ -58,14 +51,14 @@ const SMrbNamedXShort kDGFMcaTimeScaleButtons[] =
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
 
-Bool_t abortAccu = kFALSE;
+static Bool_t abortAccu = kFALSE;
 
 static TString btnText;
 
 ClassImp(DGFMcaDisplayPanel)
 
-DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
-														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
+DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
+				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFMcaDisplayPanel
@@ -209,9 +202,9 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
 	fHFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 // accu settings
-	TGLayoutHints * traceLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
-	gDGFControlData->SetLH(groupGC, frameGC, traceLayout);
-	HEAP(traceLayout);
+	TGLayoutHints * accuLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
+	gDGFControlData->SetLH(groupGC, frameGC, accuLayout);
+	HEAP(accuLayout);
 	fAccuFrame = new TGGroupFrame(fHFrame, "Accu Settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fAccuFrame);
 	fHFrame->AddFrame(fAccuFrame, frameGC->LH());
@@ -234,7 +227,6 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
 	fRunTimeEntry->AddToFocusList(&fFocusList);
 	fRunTimeEntry->Associate(this);
 
-//	frameGC->SetLH(teLayout);
 	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
@@ -246,7 +238,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fMcaActions, 2, groupGC, buttonGC);
+	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fMcaActions, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	fButtonFrame->Associate(this);
@@ -254,17 +246,16 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
 //	no accu running
 	fIsRunning = kFALSE;
 	
-// initialize "save" button
-	fMcaFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesROOT;
-	fMcaFileInfo.fIniDir = StrDup(gDGFControlData->fDataPath);
-
 	this->ResetValues();
+
+	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
 
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(kTabWidth, kTabHeight);
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
 }
 
@@ -298,12 +289,6 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 									new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting histogram acquisition", kMBIconExclamation);
 								} else {
 									this->AcquireHistos();
-								}
-								break;
-							case kDGFMcaDisplaySaveHistos:
-								{
-									new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fMcaFileInfo);
-									if (fMcaFileInfo.fFilename != NULL && *fMcaFileInfo.fFilename != '\0') this->SaveHistos(fMcaFileInfo.fFilename);
 								}
 								break;
 							case kDGFMcaDisplayAbort:
@@ -523,23 +508,6 @@ Bool_t DGFMcaDisplayPanel::ResetValues() {
 	return(kTRUE);
 }
 
-Bool_t DGFMcaDisplayPanel::SaveHistos(const Char_t * FileName, Int_t ModuleId, UInt_t ChannelPattern) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           DGFMcaDisplayPanel::RemoveTrace
-// Purpose:        Remove root file containing trace data
-// Arguments:      const Char_t * FileName   -- file name
-//                 Int_t ModuleId            -- module id
-//                 UInt_t ChannelPattern     -- pattern of active channels
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	return(kTRUE);
-}
-	
 void DGFMcaDisplayPanel::MoveFocus(Int_t EntryId) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

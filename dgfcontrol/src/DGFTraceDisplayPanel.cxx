@@ -50,8 +50,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFTraceDisplayPanel)
 
-DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame)
-														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
+DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
+				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFTraceDisplayPanel
@@ -231,11 +231,14 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame)
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
+	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
+
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(kTabWidth, kTabHeight);
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
 }
 

@@ -44,10 +44,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFInstrumentPanel)
 
-DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) : TGCompositeFrame(	TabFrame,
-																						kTabWidth,
-																						kTabHeight,
-																						kVerticalFrame) {
+DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
+				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel
@@ -104,6 +102,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) : TGComposit
 	fLofChannels.SetPatternMode();
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
+
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
+	gDGFControlData->SetLH(groupGC, frameGC, dgfFrameLayout);
+	HEAP(dgfFrameLayout);
 
 //	module / channel selection
 	TGLayoutHints * selectLayout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
@@ -728,13 +730,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) : TGComposit
 // initialize data fields
 	this->InitializeValues(kTRUE);
 
-	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
+	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
 	HEAP(dgfFrameLayout);
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
 	Resize(GetDefaultSize());
-	Resize(kTabWidth, kTabHeight);
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
 }
 
