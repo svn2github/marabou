@@ -14,7 +14,7 @@
 #include <iostream.h>
 #include <strstream.h>
 #include <iomanip.h>
-#include <fstream.h>
+#include <fstream>
 
 #include <pwd.h>
 #include <sys/types.h>
