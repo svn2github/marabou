@@ -288,6 +288,9 @@ void HistPresent::RestoreOptions()
    fFitOptNoDraw = env.GetValue("HistPresent.FitOptNoDraw", 0);
    fFitOptAddAll = env.GetValue("HistPresent.FitOptAddAll", 0);
    fFitOptKeepParameters = env.GetValue("HistPresent.FitOptKeepPara", 0);
+   fNofTransLevels = env.GetValue("HistPresent.NofTransLevels", 20);
+   fStartColor = env.GetValue("HistPresent.StartColor", 2);
+   fEndColor   = env.GetValue("HistPresent.EndColor", 3);
    f2DimBackgroundColor =
        env.GetValue("HistPresent.2DimBackgroundColor", 0);
    f1DimFillColor = env.GetValue("HistPresent.1DimFillColor", 46);
@@ -434,31 +437,23 @@ void HistPresent::RestoreOptions()
       fHelpBrowser = new TMrbHelpBrowser(fHelpDir->Data());
    else
       fHelpBrowser = NULL;
+   fGreyPalette = NULL;
+   fGreyPaletteInv = NULL;
+   fTransPalette = NULL;
+   fNofGreyLevels = 20;
+   SetGreyLevels();
+   fNofTransLevels = 20;
+   SetTransLevels();
 
-   fNofGreyLevels = 30;
-   fGreyPalette = new Int_t[fNofGreyLevels];
-   fGreyPaletteInv = new Int_t[fNofGreyLevels];
-   static Int_t mono = 0;
-   TColor *color;
-   if (mono == 0) {
-      mono = 1;
-      Float_t frac = 1 / (Float_t) fNofGreyLevels;
-      for (Int_t i = 0; i < fNofGreyLevels; i++) {
-         Float_t x = (Float_t) i;
-         color =
-             new TColor(331 + i, 1 - x * frac, 1 - x * frac, 1 - x * frac,
-                        "");
-         fGreyPaletteInv[i] = 331 + i;
-         color = new TColor(301 + i, x * frac, x * frac, x * frac, "");
-         fGreyPalette[i] = 301 + i;
-      }
-   }
    if (f2DimColorPalette->Contains("MONO")) {
       fNofColorLevels = fNofGreyLevels;
       fPalette = fGreyPalette;
    } else if (f2DimColorPalette->Contains("MINV")) {
       fNofColorLevels = fNofGreyLevels;
       fPalette = fGreyPaletteInv;
+   } else if (f2DimColorPalette->Contains("TRANS")) {
+      fNofColorLevels = fNofTransLevels;
+      fPalette = fTransPalette;
    } else if (f2DimColorPalette->Contains("REGB")) {
       fNofColorLevels = 1;
       fPalette = NULL;
@@ -520,6 +515,9 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.ShowErrors", fShowErrors);
    SetIntValue(env, "HistPresent.DrawAxisAtTop", fDrawAxisAtTop);
    SetIntValue(env, "HistPresent.Fill1Dim", fFill1Dim);
+   SetIntValue(env, "HistPresent.NofTransLevels", fNofTransLevels);
+   SetIntValue(env, "HistPresent.StartColor", fStartColor);
+   SetIntValue(env, "HistPresent.EndColor", fEndColor);
    SetIntValue(env, "HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
    SetIntValue(env, "HistPresent.1DimFillColor", f1DimFillColor);
    SetIntValue(env, "HistPresent.StatBoxFont", fStatFont);
@@ -1563,7 +1561,7 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
 //_______________________________________________________________________
 void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 {
-   const Int_t nopt = 24;
+   const Int_t nopt = 25;
    enum drawopt2 { e_scat,  e_box,   e_cont0, e_contz, e_cont1,
                    e_cont2, e_cont3, e_col,   e_colz,  e_lego1, 
                    e_lego2, e_lego3, e_surf1, e_surf2, e_surf3, 
@@ -1574,7 +1572,7 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
          "cont2", "cont3", "col",   "COLZ",  "lego1", 
          "lego2", "lego3", "surf1", "surf2", "surf3", 
          "surf4", "text",  "arr", 
-         "BB", "FB", "MONO", "MINV", "REGB", "LBOX"
+         "BB", "FB", "TRANS", "MONO", "MINV", "REGB", "LBOX"
    };
    const char *gDrawOpt2Text[] = {
       "Scatter pixels",
@@ -1598,8 +1596,9 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 
       "Dont show back box",
       "Dont show front box",
-      "Monochrome levels, highest=white",
-      "Monochrome levels, highest=black",
+      "Color transition",
+      "Grey levels, highest=white",
+      "Grey levels, highest=black",
       "Rainbow colors",
       "Show live statbox when dragging mouse"
    };
@@ -1618,6 +1617,8 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       flags[nopt - 3] = 1;
    else if (f2DimColorPalette->Contains("MONO"))
       flags[nopt - 4] = 1;
+   else if (f2DimColorPalette->Contains("TRANS"))
+      flags[nopt - 5] = 1;
    flags[nopt - 1] = fLiveStat2dim;
    Int_t retval;
    Int_t itemwidth = 240;
@@ -1648,7 +1649,13 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
          *fDrawOpt2Dim += "FB";
    }
 
-   if (flags[nopt - 4] != 0) {
+   if (flags[nopt - 5] != 0) {
+      *f2DimColorPalette = "TRANS";
+      fNofColorLevels = fNofTransLevels;
+      fPalette = fTransPalette;
+//      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
+      cout << "Setting TRANS" << endl;
+   } else if (flags[nopt - 4] != 0) {
       *f2DimColorPalette = "MONO";
       fNofColorLevels = fNofGreyLevels;
       fPalette = fGreyPalette;
@@ -2213,17 +2220,23 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 4;
+   Int_t nopt = 7;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
 
    Int_t vp = 0;
+   row_lab->Add(new TObjString("Nof transition levels"));
+   row_lab->Add(new TObjString("Color transition start"));
+   row_lab->Add(new TObjString("Color transition end"));
    row_lab->Add(new TObjString("1_Dim_FillColor"));
    row_lab->Add(new TObjString("2_Dim_BackgroundColor"));
    row_lab->Add(new TObjString("StatBox font"));
    row_lab->Add(new TObjString("TitleBox font"));
 
+   values[vp++] = fNofTransLevels;
+   values[vp++] = fStartColor;
+   values[vp++] = fEndColor;
    values[vp++] = f1DimFillColor;
    values[vp++] = f2DimBackgroundColor;
    values[vp++] = fStatFont;
@@ -2233,6 +2246,16 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
                        values, precission, 0, row_lab);
    if (ret >= 0) {
       vp = 0;
+      Int_t tl = (Int_t) values[vp++];
+      Int_t ts = (Int_t) values[vp++];
+      Int_t te = (Int_t) values[vp++];
+
+      if (ts != fStartColor || te != fEndColor || tl != fNofTransLevels) {
+         fStartColor = ts; 
+         fEndColor = te; 
+         fNofTransLevels = tl;
+         SetTransLevels();
+      }
       f1DimFillColor = (Int_t) values[vp++];
       if (values[vp] != f2DimBackgroundColor) {
          f2DimBackgroundColor = (Int_t) values[vp];
@@ -2261,3 +2284,60 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
    SaveOptions();
 }
 
+//___________________________________________________________________________________________
+
+void HistPresent::SetGreyLevels()
+{
+   fGreyPalette    = new Int_t[fNofGreyLevels];
+   fGreyPaletteInv = new Int_t[fNofGreyLevels];
+   static Int_t mono = 0;
+   TColor *color;
+   if (mono == 0) {
+      mono = 1;
+      Float_t frac = 1 / (Float_t) fNofGreyLevels;
+      for (Int_t i = 0; i < fNofGreyLevels; i++) {
+         Float_t x = (Float_t) i;
+         color =
+             new TColor(331 + i, 1 - x * frac, 1 - x * frac, 1 - x * frac,
+                        "");
+         fGreyPaletteInv[i] = 331 + i;
+         color = new TColor(301 + i, x * frac, x * frac, x * frac, "");
+         fGreyPalette[i] = 301 + i;
+      }
+   }
+   gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
+}
+//___________________________________________________________________________________________
+
+void HistPresent::SetTransLevels()
+{
+   if (fNofTransLevels < 2) fNofTransLevels = 2;
+   if (fTransPalette) delete [] fTransPalette;
+   fTransPalette    = new Int_t[fNofTransLevels];
+   TColor * color;
+//   fStartColor = 2;
+//   fEndColor   = 4;
+   TColor * sc = GetColorByInd(fStartColor); 
+   TColor * ec = GetColorByInd(fEndColor);
+   Float_t start_r = sc->GetRed(); 
+   Float_t step_r = (ec->GetRed() - start_r) / (Float_t)(fNofTransLevels - 1);
+   Float_t frac_r = 0;
+   Float_t start_g = sc->GetGreen(); 
+   Float_t step_g = (ec->GetGreen() - start_g) / (Float_t)(fNofTransLevels - 1);
+   Float_t frac_g = 0;
+   Float_t start_b = sc->GetBlue(); 
+   Float_t step_b = (ec->GetBlue() - start_b) / (Float_t)(fNofTransLevels - 1);
+   Float_t frac_b = 0;
+   for (Int_t i = 0; i < fNofTransLevels; i++) {
+      color = GetColorByInd(361 + i);
+      if (color) delete color;
+      color = new TColor(361 + i, start_r + frac_r, start_g + frac_g , start_b + frac_b,"");
+      color->Print();
+      fTransPalette[i] = 361 + i;
+      frac_r += step_r;
+      frac_g += step_g;
+      frac_b += step_b;
+   }
+   cout <<fNofTransLevels << " "  << fTransPalette << endl;
+   gStyle->SetPalette(fNofTransLevels, fTransPalette);
+}

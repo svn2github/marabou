@@ -135,6 +135,11 @@ protected:
    Int_t fNofColorLevels;
    Int_t * fPalette;
 
+   Int_t   fNofTransLevels;
+   Int_t * fTransPalette;
+   Int_t   fStartColor;
+   Int_t   fEndColor;
+
    Int_t   fNofGreyLevels;
    Int_t * fGreyPalette;
    Int_t * fGreyPaletteInv;
@@ -325,6 +330,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SetHistAtt();
    void SetStatAtt();
    void SetAxisAtt();
+   void SetGreyLevels();
+   void SetTransLevels();
    void SetCurlyAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetGeneralAttributes(TGWindow * win = 0, FitHist * fh = 0);
@@ -343,6 +350,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SetFontsAndColors(TGWindow * win = 0, FitHist * fh = 0);
    void SetNumericalOptions(TGWindow * win = 0, FitHist * fh = 0);
    void SetFittingOptions(TGWindow * win = 0, FitHist * fh = 0);
+
    void SetStatDefaults(TCanvas *);
 //   void CheckAutoExecFiles();
    void ClearSelect(); 

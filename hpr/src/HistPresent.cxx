@@ -2154,8 +2154,21 @@ void HistPresent::ShowFunction(const char* fname, const char* name, const char* 
    }
 //  gROOT->ls();
    if (func) {
-      new TCanvas("cccc","cccc", 400, 40, 200, 200);
-      func->Draw();   
+      if (fNwindows>0) {       // not the 1. time
+         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
+         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+      }
+      fNwindows++;
+      TCanvas * ccc = new TCanvas(name,name, fWincurx, fWincury, 300, 300);
+      fCanvasList->Add(ccc);
+      func->Draw(); 
+      cout << "Parameter values of: " << name << endl;
+      for (Int_t i = 0; i < func->GetNpar(); i++) {
+         cout << func->GetParName(i) << ": " << func->GetParameter(i) << endl;
+      }
+      cout << "-----------------------------------------------" << endl;
+ //      func->Print(); 
+  
    } else     WarnBox("Function not found");
    if (fRootFile) fRootFile->Close();
 }
