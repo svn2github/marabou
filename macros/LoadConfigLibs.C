@@ -14,5 +14,6 @@
 	cout << "[Loading MARaBOU's config libs from " << gSystem->ExpandPathName("$MARABOU/lib") << "]" << endl;
 	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
 	gSystem->Load("$MARABOU/lib/libTGMrbUtils.so");
+	gSystem->Load("$MARABOU/lib/libTMbsSetup.so");
 	gSystem->Load("$MARABOU/lib/libTMrbConfig.so");
 }
