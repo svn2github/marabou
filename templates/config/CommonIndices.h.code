@@ -60,4 +60,8 @@ enum EMrbModuleSerial {
 
 %%MODULE_SPECIAL_ENUM%%
 
+%%BeginOfCode%%
+enum	{	$eName	=	$eVal	};		// $eComment
+%%EndOfCode%%
+%%USER_DEFINED_ENUMS%%
 #endif

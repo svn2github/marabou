@@ -191,6 +191,8 @@ class TMrbConfig : public TNamed {
 									kAnaUserMessages,
 									kAnaUserDummyMethods,
 									kAnaUsingNameSpace,
+									kAnaUserDefinedGlobals,
+									kAnaUserDefinedEnums,
 									kAnaMakeUserHeaders,
 									kAnaMakeUserCode,
 									kAnaMakeUserRules,
@@ -338,6 +340,14 @@ class TMrbConfig : public TNamed {
 									kDataUInt			=	BIT(2),
 									kDataULong			=	BIT(3),
 									kDataFloat 			=	BIT(4)
+								};
+
+		enum EMrbGlobalType		{	kGlobInt			=	0,			// global types
+									kGlobFloat,
+									kGlobDouble,
+									kGlobBool,
+									kGlobString,
+									kGlobObject
 								};
 
 		enum EMrbCrateType  	{	kCrateUnused		=	0,			// crate types
@@ -658,17 +668,22 @@ class TMrbConfig : public TNamed {
 
 		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName);	// check if name is legal within MARaBOU
 
-		inline void MakeGlobal(const Char_t * Name, Int_t * IntVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Int_t *", (TObject *) IntVar)); };
-		inline void MakeGlobal(const Char_t * Name, Float_t * FloatVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Float_t *", (TObject *) FloatVar)); };
-		inline void MakeGlobal(const Char_t * Name, Double_t * DblVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Double_t *", (TObject *) DblVar)); };
-		inline void MakeGlobal(const Char_t * Name, Bool_t * BoolVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Bool_t *", (TObject *) BoolVar)); };
-		inline void MakeGlobal(const Char_t * Name, const Char_t * Str) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Char_t *", (TObject *) Str)); };
-		inline void MakeGlobal(const Char_t * Name, TString & Str) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Char_t *", (TObject *) Str.Data())); };
+		inline void MakeGlobal(const Char_t * Name, Int_t * IntVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobInt, Name, Comment, (TObject *) IntVar)); };
+		inline void MakeGlobal(const Char_t * Name, Float_t * FloatVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobFloat, Name, Comment, (TObject *) FloatVar)); };
+		inline void MakeGlobal(const Char_t * Name, Double_t * DblVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobDouble, Name, Comment, (TObject *) DblVar)); };
+		inline void MakeGlobal(const Char_t * Name, Bool_t * BoolVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobBool, Name, Comment, (TObject *) BoolVar)); };
+		inline void MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobString, Name, Comment, (TObject *) Str)); };
+		inline void MakeGlobal(const Char_t * Name, TString & Str, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobString, Name, Comment, (TObject *) Str.Data())); };
 		Bool_t GetGlobal(const Char_t * Name, Int_t & IntVar);
 		Bool_t GetGlobal(const Char_t * Name, Float_t & FloatVar);
 		Bool_t GetGlobal(const Char_t * Name, Double_t & DblVar);
 		Bool_t GetGlobal(const Char_t * Name, Bool_t & BoolVar);
 		Bool_t GetGlobal(const Char_t * Name, TString & Str);
+		Int_t GetGlobI(const Char_t * Name);
+		Float_t GetGlobF(const Char_t * Name);
+		Double_t GetGlobD(const Char_t * Name);
+		Bool_t GetGlobB(const Char_t * Name);
+		const Char_t * GetGlobStr(const Char_t * Name);
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
 

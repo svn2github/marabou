@@ -284,6 +284,8 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaUserMessages,				"HANDLE_MESSAGES"				},
 								{TMrbConfig::kAnaUserDummyMethods,			"INCLUDE_DUMMY_METHODS" 		},
 								{TMrbConfig::kAnaUsingNameSpace ,			"USING_NAMESPACE"	 			},
+								{TMrbConfig::kAnaUserDefinedGlobals,		"USER_DEFINED_GLOBALS"	 		},
+								{TMrbConfig::kAnaUserDefinedEnums,			"USER_DEFINED_ENUMS" 	 		},
 								{TMrbConfig::kAnaMakeUserHeaders,			"MAKE_USER_HEADERS" 			},
 								{TMrbConfig::kAnaMakeUserCode,				"MAKE_USER_CODE"	 			},
 								{TMrbConfig::kAnaMakeUserRules,				"MAKE_USER_RULES"	 			},
@@ -2048,6 +2050,69 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							onceOnly.Delete();
 						}
 						break;
+					case TMrbConfig::kAnaUserDefinedGlobals:
+						{
+							TMrbNamedX * nx = (TMrbNamedX *) fLofGlobals.First();
+							while (nx) {
+								TString gName = nx->GetName();
+								if (gName(0) != 'k') {
+									anaTmpl.InitializeCode();
+									anaTmpl.Substitute("$gName", gName.Data());
+									anaTmpl.Substitute("$gComment", nx->GetTitle());
+									switch(nx->GetIndex()) {
+										case TMrbConfig::kGlobInt:
+											anaTmpl.Substitute("$gSignature", "Int_t");
+											anaTmpl.Substitute("$gInit",
+												Form("%s = %d", gName.Data(), this->GetGlobI(gName.Data())));
+											break;
+										case TMrbConfig::kGlobFloat:
+											anaTmpl.Substitute("$gSignature", "Float_t");
+											anaTmpl.Substitute("$gInit",
+												Form("%s = %f", gName.Data(), this->GetGlobF(gName.Data())));
+											break;
+										case TMrbConfig::kGlobDouble:
+											anaTmpl.Substitute("$gSignature", "Double_t");
+											anaTmpl.Substitute("$gInit",
+												Form("%s = %lf", gName.Data(), this->GetGlobD(gName.Data())));
+											break;
+										case TMrbConfig::kGlobBool:
+											anaTmpl.Substitute("$gSignature", "Bool_t");
+											anaTmpl.Substitute("$gInit",
+												Form("%s = %s", gName.Data(), this->GetGlobD(gName.Data()) ? "kTRUE" : "kFALSE"));
+											break;
+										case TMrbConfig::kGlobString:
+											anaTmpl.Substitute("$gSignature", "TString");
+											anaTmpl.Substitute("$gInit",
+												Form("%s(\"%s\")", gName.Data(), this->GetGlobStr(gName.Data())));
+											break;
+									}
+									anaTmpl.WriteCode(anaStrm);
+								}
+								nx = (TMrbNamedX *) fLofGlobals.After(nx);
+							}
+						}
+						break;
+					case TMrbConfig::kAnaUserDefinedEnums:
+						{
+							TMrbNamedX * nx = (TMrbNamedX *) fLofGlobals.First();
+							while (nx) {
+								TString gName = nx->GetName();
+								if (gName(0) == 'k') {
+									if (nx->GetIndex() != TMrbConfig::kGlobInt) {
+										gMrbLog->Err() << "Not an INTEGER - " << gName.Data() << endl;
+										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+									} else {
+										anaTmpl.InitializeCode();
+										anaTmpl.Substitute("$eName", gName.Data());
+										anaTmpl.Substitute("$eVal", this->GetGlobI(gName.Data()));
+										anaTmpl.Substitute("$eComment", nx->GetTitle());
+										anaTmpl.WriteCode(anaStrm);
+									}
+								}
+								nx = (TMrbNamedX *) fLofGlobals.After(nx);
+							}
+						}
+						break;
 					case TMrbConfig::kAnaMakeClassNames:
 						found = kFALSE;
 						evt = (TMrbEvent *) fLofEvents.First();
@@ -2403,6 +2468,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							while (h) {
 								anaTmpl.InitializeCode("%UDBH%");
 								anaTmpl.Substitute("$hName", h->GetName());
+								anaTmpl.Substitute("$hTitle", h->GetTitle());
 								TMrbNamedArrayI * a = (TMrbNamedArrayI *) h->GetAssignedObject();
 								anaTmpl.Substitute("$hType", a->GetName());
 								anaTmpl.WriteCode(anaStrm);
@@ -5011,8 +5077,8 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
 // Purpose:        Get value of global var (Int_t)
-// Arguments:      Char_t * Name   -- variable name
-//                 Int & IntVar    -- where to write int value
+// Arguments:      Char_t * Name     -- variable name
+//                 Int_t & IntVar    -- where to write int value
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Gets value of a global variable 
@@ -5025,10 +5091,9 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	TString type = nx->GetTitle();
-	if (type.CompareTo("Int_t *") != 0) {
-		gMrbLog->Err() << "Illegal type - (" << type << ") " << Name
-						<< " (should be \"Int_t *\")" << endl;
+	if (nx->GetIndex() != TMrbConfig::kGlobInt) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a INTEGER" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
@@ -5036,13 +5101,40 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) {
 	return(kTRUE);
 };
 
+Int_t TMrbConfig::GetGlobI(const Char_t * Name) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetGlobI
+// Purpose:        Get value of global var (Int_t)
+// Arguments:      Char_t * Name   -- variable name
+// Results:        Int_t IntVal    -- value
+// Exceptions:
+// Description:    Gets value of a global variable 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx == NULL) {
+		gMrbLog->Err() << "No such global var - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobI");
+		return(0);
+	}
+	if (nx->GetIndex() != TMrbConfig::kGlobInt) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a INTEGER" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobI");
+		return(0);
+	}
+	return(*((Int_t *) nx->GetAssignedObject()));
+};
+
 Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
 // Purpose:        Get value of global var (Float_t)
-// Arguments:      Char_t * Name   -- variable name
-//                 Int & FloatVar  -- where to write float value
+// Arguments:      Char_t * Name       -- variable name
+//                 Float_t & FloatVar  -- where to write float value
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Gets value of a global variable 
@@ -5055,10 +5147,9 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	TString type = nx->GetTitle();
-	if (type.CompareTo("Float_t *") != 0) {
-		gMrbLog->Err() << "Illegal type - (" << type << ") " << Name
-						<< " (should be \"Float_t *\")" << endl;
+	if (nx->GetIndex() != TMrbConfig::kGlobFloat) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a FLOAT" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
@@ -5066,13 +5157,40 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) {
 	return(kTRUE);
 };
 
+Float_t TMrbConfig::GetGlobF(const Char_t * Name) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetGlobF
+// Purpose:        Get value of global var (Float_t)
+// Arguments:      Char_t * Name      -- variable name
+// Results:        Float_t FloatVal   -- value
+// Exceptions:
+// Description:    Gets value of a global variable 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx == NULL) {
+		gMrbLog->Err() << "No such global var - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobF");
+		return(0.);
+	}
+	if (nx->GetIndex() != TMrbConfig::kGlobFloat) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a FLOAT" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobF");
+		return(0.);
+	}
+	return(*((Float_t *) nx->GetAssignedObject()));
+};
+
 Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
 // Purpose:        Get value of global var (Double_t)
-// Arguments:      Char_t * Name   -- variable name
-//                 Int & DblVar    -- where to write double value
+// Arguments:      Char_t * Name        -- variable name
+//                 Double_t & DblVar    -- where to write double value
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Gets value of a global variable 
@@ -5085,15 +5203,41 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	TString type = nx->GetTitle();
-	if (type.CompareTo("Double_t *") != 0) {
-		gMrbLog->Err() << "Illegal type - (" << type << ") " << Name
-						<< " (should be \"Double_t *\")" << endl;
+	if (nx->GetIndex() != TMrbConfig::kGlobDouble) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a DOUBLE" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	DblVar = *((Int_t *) nx->GetAssignedObject());
+	DblVar = *((Double_t *) nx->GetAssignedObject());
 	return(kTRUE);
+};
+
+Double_t TMrbConfig::GetGlobD(const Char_t * Name) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetGlobD
+// Purpose:        Get value of global var (Double_t)
+// Arguments:      Char_t * Name    -- variable name
+// Results:        Double_t DblVal  -- value
+// Exceptions:
+// Description:    Gets value of a global variable 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx == NULL) {
+		gMrbLog->Err() << "No such global var - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobD");
+		return(0.);
+	}
+	if (nx->GetIndex() != TMrbConfig::kGlobDouble) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a DOUBLE" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobD");
+		return(0.);
+	}
+	return(*((Double_t *) nx->GetAssignedObject()));
 };
 
 Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) {
@@ -5101,8 +5245,8 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
 // Purpose:        Get value of global var (Bool_t)
-// Arguments:      Char_t * Name   -- variable name
-//                 Int & BoolVar   -- where to write boolean value
+// Arguments:      Char_t * Name      -- variable name
+//                 Bool_t & BoolVar   -- where to write boolean value
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Gets value of a global variable 
@@ -5115,15 +5259,41 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	TString type = nx->GetTitle();
-	if (type.CompareTo("Bool_t *") != 0) {
-		gMrbLog->Err() << "Illegal type - (" << type << ") " << Name
-						<< " (should be \"Bool_t *\")" << endl;
+	if (nx->GetIndex() != TMrbConfig::kGlobBool) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a BOOLEAN" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
 	BoolVar = *((Int_t *) nx->GetAssignedObject());
 	return(kTRUE);
+};
+
+Bool_t TMrbConfig::GetGlobB(const Char_t * Name) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetGlobB
+// Purpose:        Get value of global var (Bool_t)
+// Arguments:      Char_t * Name      -- variable name
+// Results:        Bool_t BoolVal     -- value
+// Exceptions:
+// Description:    Gets value of a global variable 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx == NULL) {
+		gMrbLog->Err() << "No such global var - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobB");
+		return(kFALSE);
+	}
+	if (nx->GetIndex() != TMrbConfig::kGlobBool) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a BOOLEAN" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobB");
+		return(kFALSE);
+	}
+	return(*((Bool_t *) nx->GetAssignedObject()));
 };
 
 Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) {
@@ -5145,15 +5315,41 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	TString type = nx->GetTitle();
-	if (type.CompareTo("Char_t *") != 0) {
-		gMrbLog->Err() << "Illegal type - (" << type << ") " << Name
-						<< " (should be \"Char_t *\")" << endl;
+	if (nx->GetIndex() != TMrbConfig::kGlobString) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a STRING" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
 	Str = (Char_t *) nx->GetAssignedObject();
 	return(kTRUE);
+};
+
+const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetGlobStr
+// Purpose:        Get value of global var (Char_t *)
+// Arguments:      Char_t * Name     -- variable name
+// Results:        Char_t * Value    -- value
+// Exceptions:
+// Description:    Gets value of a global variable 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofGlobals.FindByName(Name);
+	if (nx == NULL) {
+		gMrbLog->Err() << "No such global var - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobStr");
+		return(NULL);
+	}
+	if (nx->GetIndex() != TMrbConfig::kGlobString) {
+		gMrbLog->Err() << "Illegal data type - (" << Name
+						<< " is not a STRING" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetGlobStr");
+		return(NULL);
+	}
+	return((Char_t *) nx->GetAssignedObject());
 };
 
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) {

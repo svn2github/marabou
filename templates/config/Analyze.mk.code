@@ -30,7 +30,7 @@ LIBS		=	$(ROOTLIBS)
 GLIBS		=	$(ROOTGLIBS)
 
 TMRBLIBS	=	-L$(MARABOU)/lib \
-				-lTMrbAnalyze -lTMrbTransport -lTMrbUtils -lMutex -lN2ll
+				-lTMrbAnalyze -lTMrbTransport -lTMrbUtils -lMutex
 
 # Header files which %%ANALYZE_FILE%%.cxx depends on
 USER_HDRS	=	\

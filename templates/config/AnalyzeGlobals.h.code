@@ -26,6 +26,7 @@
 //_______________________________________________________________[GLOBAL DEFS]
 //////////////////////////////////////////////////////////////////////////////
 // Purpose:        Define pointers to event classes
+// Comment:        Each event class (trigger) may be addressed by g<EventName>
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
@@ -59,6 +60,8 @@ GLOBAL($className *,$varName,$varName = NULL);
 //_______________________________________________________________[GLOBAL DEFS]
 //////////////////////////////////////////////////////////////////////////////
 // Purpose:        Define pointers to histograms for (sub)events
+// Comment:        For each parameter of a subevent there is a histogram
+//                 named h<ParamName>
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
@@ -74,10 +77,21 @@ GLOBAL($className *,$varName,$varName = NULL);
 %UDH%//_______________________________________________________________[GLOBAL DEFS]
 %UDH%//////////////////////////////////////////////////////////////////////////////
 %UDH%// Purpose:        Define pointers to histograms booked by user
+%UDH%// Comment:        User may define additional histos here
 %UDH%//////////////////////////////////////////////////////////////////////////////
 %UDH%
 %UDHA%GLOBAL(TObjArray,$hArrayName,$hArrayName);
-%UDBH%GLOBAL($hType *,$hName,$hName = NULL);
+%UDBH%GLOBAL($hType *,$hName,$hName = NULL);	// $hTitle
 %%EndOfCode%%
 %%HISTO_DEFINE_POINTERS%%
 
+//_______________________________________________________________[GLOBAL DEFS]
+//////////////////////////////////////////////////////////////////////////////
+// Purpose:        Define other user globals
+// Comment:        Any other user variable which should be globally available
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+GLOBAL($gSignature,$gName,$gInit);		// $gComment
+%%EndOfCode%%
+%%USER_DEFINED_GLOBALS%%

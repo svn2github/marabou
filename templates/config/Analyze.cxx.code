@@ -17,7 +17,6 @@
 #define MAX_LLONG	9223372036854775807LL
 
 #include "TEnv.h"
-#include "n2ll.h"
 
 // class definitions
 #include "%%ANALYZE_FILE%%.h"
