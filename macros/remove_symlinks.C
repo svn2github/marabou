@@ -14,6 +14,12 @@ Int_t remove_symlinks(Bool_t real_remove = kFALSE)
    Long_t id, flags, modtime;
    TString rsuf(".root");
    TRegexp version("\.[0-9]$", kFALSE);
+   if (!real_remove) {
+      cout << "Warning: Current directory is only checked for symbolic links"
+           << endl;
+      cout << "To really remove them use: remove_symlinks(kTRUE);" 
+           << endl << endl;
+   }
    void * dirp=gSystem->OpenDirectory(".");
    while ( (fn = gSystem->GetDirEntry(dirp)) ) {
       lname = fn;
@@ -61,6 +67,8 @@ Int_t remove_symlinks(Bool_t real_remove = kFALSE)
                            cout << "removing: " << fn << " failed" << end;;
                         }
                      }
+                  } else {
+                     cout << "dont touch" << endl;
                   }
                } else {
                   cout << "readlink failed" << endl;
