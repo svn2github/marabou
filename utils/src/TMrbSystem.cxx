@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.8 2004-12-14 13:33:34 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -222,17 +222,13 @@ const Char_t * TMrbSystem::GetBaseName(TString & BaseName, const Char_t * FilePa
 	TString fp = FilePath;
 	Int_t n1, n2;
 
-	if (this->IsDirectory(FilePath)) {
-		BaseName = "";
-	} else {
-		n1 = 0;
-		while (1) {
-			if ((n2 = fp.Index("/", n1)) == -1) break;
-			n1 = n2 + 1;
-		}
-		BaseName = FilePath;
-		BaseName = BaseName(n1, BaseName.Length() - n1);
+	n1 = 0;
+	while (1) {
+		if ((n2 = fp.Index("/", n1)) == -1) break;
+		n1 = n2 + 1;
 	}
+	BaseName = FilePath;
+	BaseName = BaseName(n1, BaseName.Length() - n1);
 	return(BaseName.Data());
 }
 
