@@ -121,7 +121,7 @@ fit_user_function(const char *hname)\n\
       cname = mc->GetName();\n\
       cname += \"_2df\";\n\
       wtopx = TMath::Max(0,wtopx - 100);\n\
-      wtopy = TMath::Max(wh, wtopy + 100);\n\
+      wtopy = TMath::Max((Int_t)wh, wtopy + 100);\n\
  //      cout << wtopx<< " " << wtopy << " " <<  ww<< " " <<  wh << endl;\n\
    }\n\
 \n\
@@ -145,6 +145,8 @@ fit_user_function(const char *hname)\n\
 //  draw in same range as histogram with same drawing options\n\
    f2->SetRange(hist->GetXaxis()->GetXmin(), hist->GetYaxis()->GetXmin(),\n\
                 hist->GetXaxis()->GetXmax(), hist->GetYaxis()->GetXmax()); \n\
+   f2->SetNpx(hist->GetNbinsX());\n\
+   f2->SetNpy(hist->GetNbinsY());\n\
    f2->Draw(hist->GetOption()); \n\
 }\n\
 ";

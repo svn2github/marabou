@@ -587,7 +587,7 @@ void FitHist::handle_mouse()
 //         cout << " sopt " << sopt << endl;
          if (sopt.Contains("SURF", TString::kIgnoreCase) ||
              sopt.Contains("LEGO", TString::kIgnoreCase)) {
-             cout << " sopt " << sopt << endl;
+     //        cout << " sopt " << sopt << endl;
              return;
          }
 
@@ -1706,11 +1706,13 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
 //   biny     = fYaxis.FindBin(y);
    FhMarker *m = new FhMarker(x, y, 28);
    m->SetMarkerColor(6);
-   m->Draw();
+//   m->Draw();
    m->SetMarkerColor(6);
-   m->Paint();
+//   m->Paint();
 //   m->Print();
    markers->Add(m);
+	PaintMarks();
+	
 }
 //_______________________________________________________________________________________
 
@@ -1720,14 +1722,15 @@ void FitHist::ClearMarks()
    FhMarker *ti;
    TIter next(markers);
    while ( (ti = (FhMarker *) next()) ) {
-//         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
+         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
 //         FhMarker *m = new FhMarker(ti->GetValX(), ti->GetValY(), 28);
       cHist->GetListOfPrimitives()->Remove(ti);
    }
 
-   markers->Clear();
-   fSelPad->Modified(kTRUE);
-   fSelPad->Update();
+   markers->Delete();
+//   markers->Clear();
+   cHist->Modified(kTRUE);
+   cHist->Update();
 };
 //_______________________________________________________________________________________
 
