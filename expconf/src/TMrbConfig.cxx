@@ -5260,7 +5260,7 @@ Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, Int_t Value, const Ch
 	return(sts);
 }
 
-Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, Float_t Value, const Char_t * VarDefs) {
+Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, Double_t Value, const Char_t * VarDefs) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::DefineVariables
@@ -5292,7 +5292,7 @@ Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, Float_t Value, const 
 
 	switch (vType->GetIndex()) {
 		case kVarI:	proto = (TObject *) new TMrbVarI("Proto", (Int_t) (Value + .5)); break;
-		case kVarF:	proto = (TObject *) new TMrbVarF("Proto", Value); break;
+		case kVarF:	proto = (TObject *) new TMrbVarF("Proto", (Float_t) Value); break;
 		case kVarS:
 			gMrbLog->Err() << "String variables can't be initialized with " << Value << endl;
 			gMrbLog->Flush(this->ClassName(), "DefineVariables");

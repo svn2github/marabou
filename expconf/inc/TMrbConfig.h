@@ -623,7 +623,7 @@ class TMrbConfig : public TNamed {
 		
 		Bool_t DefineVariables(const Char_t * VarType, const Char_t * VarDefs); 	// define a set of variables
 		Bool_t DefineVariables(const Char_t * VarType, Int_t Value, const Char_t * VarDefs);
-		Bool_t DefineVariables(const Char_t * VarType, Float_t Value, const Char_t * VarDefs);
+		Bool_t DefineVariables(const Char_t * VarType, Double_t Value, const Char_t * VarDefs);
 		Bool_t DefineVariables(const Char_t * VarType, const Char_t * Value, const Char_t * VarDefs);
 
 		Bool_t DefineWindows(const Char_t * WdwType, const Char_t * WdwDefs);	 	// define windows
