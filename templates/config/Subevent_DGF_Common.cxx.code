@@ -52,7 +52,8 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 				if (hitPattern & 0xFFFFFFF0) {
 					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong hit pattern", SevtData, SevtWC);
 					cerr	<< setred
-							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+							<< this->ClassName() << "::FillSubevent(): [Module "
+							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
 							<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong hit pattern - 0x"
 							<< setbase(16) << hitPattern << setbase(10)
 							<< setblack << endl;
@@ -69,7 +70,8 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 							if (nofWordsPerChn <= 0 || nofWordsPerChn > kDgfMaxNofChannelWords) {
 								gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong channel wc", SevtData, SevtWC);
 								cerr	<< setred
-										<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+										<< this->ClassName() << "::FillSubevent(): [Module "
+										<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
 										<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong channel wc - 0x"
 										<< setbase(16) << nofWordsPerChn << setbase(10)
 										<< setblack << endl;
