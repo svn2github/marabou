@@ -732,7 +732,22 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
 
 	if (mbs->connection & MBS_CTYPE_FILE_MED)	return(_mbs_next_med_event(mbs));
-	else													return(_mbs_next_lmd_event(mbs));
+	else										return(_mbs_next_lmd_event(mbs));
+}
+
+int mbs_event_trigger(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_event_trigger
+// Purpose:        Return event trigger
+// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
+// Results:        int trigger              -- event trigger
+// Exceptions:     
+// Description:    Returns trigger number assigned to current event.
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	return(((s_vehe *) mbs->evt_data)->i_trigger);
 }
 
 unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
@@ -919,7 +934,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 // Name:           mbs_next_event
 // Purpose:        Setup next event
 // Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
-// Results:        unsigned int etype  -- event type
+// Results:        unsigned int etype  -- event type [subtype,type]
 // Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
 // Description:    Sets ptrs to next event struct
 //                 (expects MBS event data from file)
@@ -1030,7 +1045,7 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 // Name:           mbs_next_sheader
 // Purpose:        Setup next subevent and decode header
 // Arguments:      MBSDataIO * mbs       -- ptr as returned by mbs_open_file
-// Results:        unsigned int setype   -- subevent type
+// Results:        unsigned int setype   -- subevent type [subtype,type]
 // Exceptions:     setype = MBS_STYPE_ERROR
 // Description:    Sets ptrs to next subevent struct
 // Keywords:       
@@ -1064,6 +1079,36 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 	stype = (mbs->sevttype)->type;
 
 	return(stype);
+}
+
+unsigned int mbs_sevent_subtype(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_sevent_subtype
+// Purpose:        Return subevent subtype
+// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
+// Results:        unsigned int sesubtype   -- subevent subtype
+// Exceptions:     
+// Description:    Returns subtype bits of current subevent
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	return(((mbs->sevttype)->type >> 16) & 0xFFFF);
+}
+
+int mbs_sevent_serial(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_sevent_serial
+// Purpose:        Return subevent serial number
+// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
+// Results:        int seserial             -- subevent serial
+// Exceptions:     
+// Description:    Returns serial number of current subevent
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	return(mbs->sevt_id);
 }
 
 unsigned int mbs_next_sdata(MBSDataIO *mbs) {
