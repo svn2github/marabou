@@ -1852,7 +1852,7 @@ const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
-						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleName");
 		return(NULL);
 	}
@@ -1882,7 +1882,7 @@ const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) {
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
-						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleTitle");
 		return(NULL);
 	}
@@ -1939,7 +1939,7 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex)
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Module index out of range - " << ModuleIndex
-						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetParamName");
 		return(NULL);
 	}
@@ -2213,7 +2213,8 @@ Int_t * TMrbAnalyze::GetParamAddr(Int_t AbsParamIndex) {
 }
 
 Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * ModuleTitle,
-													Int_t ModuleIndex, Int_t AbsParamIndex, Int_t NofParams) {
+													Int_t ModuleIndex, Int_t AbsParamIndex,
+													Int_t NofParams, Int_t TimeOffset) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::AddModuleToList
@@ -2223,6 +2224,7 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 //                 Int_t ModuleIndex      -- list index
 //                 Int_t AbsParamIndex    -- absolute index of first param
 //                 Int_t NofParams        -- number of active params
+//                 Int_t TimeOffset       -- time offset
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Creates a new entry in module list.
@@ -2234,7 +2236,7 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "[" << ModuleName << "] Module index out of range - " << ModuleIndex
-						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddModuleToList");
 		return(kFALSE);
 	}
@@ -2264,7 +2266,7 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 	}
 	if (!ok) return(kFALSE);
 
-	mle = new TMrbModuleListEntry(NofParams, AbsParamIndex, NULL, NULL);
+	mle = new TMrbModuleListEntry(NofParams, AbsParamIndex, TimeOffset, NULL, NULL);
 	nx->AssignObject(mle);
 	fModuleList.AddAt(nx, ModuleIndex);
 	return(kTRUE);
@@ -2293,7 +2295,7 @@ Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, 
 
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "[" << ParamName << "] Module index out of range - " << ModuleIndex
-						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddParamToList");
 		return(kFALSE);
 	}
@@ -2342,7 +2344,7 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "::AddHistoToList(): [" << HistoAddr->GetName()
 						<< "] Module index out of range - " << ModuleIndex
-						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddHistoToList");
 		return(kFALSE);
 	}
@@ -2551,6 +2553,63 @@ const Char_t * TMrbAnalyze::GetResource(const Char_t * Resource) {
 	} else {
 		return(Resource);
 	}
+}
+
+Bool_t TMrbAnalyze::SetTimeOffset(Int_t ModuleIndex, Int_t Offset) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::SetTimeOffset
+// Purpose:        Insert time offset in table
+// Arguments:      Int_t ModuleIndex       -- module number
+//                 Int_t Offset            -- time offset
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Defines a time offset. Time offsets are needed to
+//                 build events from hit buffer data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetTimeOffset");
+		return(kFALSE);
+	}
+	TMrbNamedX * nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No module with index = " << ModuleIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "SetTimeOffset");
+		return(kFALSE);
+	}
+	((TMrbModuleListEntry *) nx->GetAssignedObject())->SetTimeOffset(Offset);
+	return(kTRUE);
+}
+
+Int_t TMrbAnalyze::GetTimeOffset(Int_t ModuleIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetTimeOffset
+// Purpose:        Get time offset from table
+// Arguments:      Int_t ModuleIndex       -- module number
+// Results:        Int_t Offset            -- time offset
+// Exceptions:     
+// Description:    Returns the time offset for given module.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetTimeOffset");
+		return(0);
+	}
+	TMrbNamedX * nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No module with index = " << ModuleIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "GetTimeOffset");
+		return(0);
+	}
+	return(((TMrbModuleListEntry *) nx->GetAssignedObject())->GetTimeOffset());
 }
 
 TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
@@ -3083,8 +3142,8 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 	if (curIndex >= this->GetNofHits()) return(kFALSE);
 
 	hit = (TUsrHit *) fHits->At(curIndex);
-	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - ((TUsrEvent *) fEvent)->GetTimeOffset(hit->GetModuleNumber()))
-						- (ushort2ll48(Hit0->GetChannelTime()) - ((TUsrEvent *) fEvent)->GetTimeOffset(Hit0->GetModuleNumber()));
+	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber()))
+						- (ushort2ll48(Hit0->GetChannelTime()) - gMrbAnalyze->GetTimeOffset(Hit0->GetModuleNumber()));
 	if (tDiff < 0) tDiff = -tDiff;
 	return(tDiff <= (long long) fWindow);
 }		
@@ -3101,80 +3160,7 @@ TUsrEvent::TUsrEvent() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fLofTimeOffsets.Set(200);
-	fLofTimeOffsets.Reset(0);
 	fLofHBXs.Delete();
 	fLofSubevents.Delete();
-}
-
-Bool_t TUsrEvent::SetTimeOffset(Int_t ModuleNumber, Int_t Offset) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::SetTimeOffset
-// Purpose:        Insert time offset in table
-// Arguments:      Int_t ModuleNumber      -- module number
-//                 Int_t Offset            -- time offset
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Defines a time offset. Time offsets are needed to
-//                 build events from hit buffer data.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t nofOffsets = fLofTimeOffsets.GetSize();
-	if (ModuleNumber <= 0 || ModuleNumber > nofOffsets) {
-		gMrbLog->Err()	<< "Module number out of range - " << ModuleNumber
-						<< " (should be in [1, " << nofOffsets << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetTimeOffset");
-		return(kFALSE);
-	}
-	fLofTimeOffsets[ModuleNumber - 1] = Offset;
-	return(kTRUE);
-}
-
-Bool_t TUsrEvent::SetTimeOffset(TArrayI & OffsArr) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::SetTimeOffset
-// Purpose:        Fill table with time offsets
-// Arguments:      TArrayI & OffsArr       -- array containing time offsets
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    Defines time offsets. Time offsets are needed to
-//                 build events from hit buffer data.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t nofOffsets = fLofTimeOffsets.GetSize();
-	if (OffsArr.GetSize() != nofOffsets) {
-		gMrbLog->Err()	<< "Wrong table size - " << OffsArr.GetSize()
-						<< " (should be equal to number of modules = " << nofOffsets << ")" << endl; 
-		gMrbLog->Flush(this->ClassName(), "SetTimeOffset");
-		return(kFALSE);
-	}
-	fLofTimeOffsets.Set(nofOffsets, OffsArr.GetArray());
-	return(kTRUE);
-}
-
-Int_t TUsrEvent::GetTimeOffset(Int_t ModuleNumber) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::GetTimeOffset
-// Purpose:        Get time offset from table
-// Arguments:      Int_t ModuleNumber      -- module number
-// Results:        Int_t Offset            -- time offset
-// Exceptions:     
-// Description:    Returns the time offset for given module.
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t nofOffsets = fLofTimeOffsets.GetSize();
-	if (ModuleNumber <= 0 || ModuleNumber > nofOffsets) {
-		gMrbLog->Err()	<< "Module number out of range - " << ModuleNumber
-						<< " (should be in [1, " << nofOffsets << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), "GetTimeOffset");
-		return(0);
-	}
-	return(fLofTimeOffsets[ModuleNumber - 1]);
 }
 

@@ -235,6 +235,7 @@ class TMrbModuleListEntry : public TObject {
 	public:
 		TMrbModuleListEntry(	Int_t NofParams = 0,						// ctor
 								Int_t IndexOfFirstParam = 0,
+								Int_t TimeOffeset = 0,
 								TMrbNamedX * FirstParam = NULL,
 								TMrbNamedX * FirstHisto = NULL) :	fNofParams(NofParams),
 																	fIndexOfFirstParam(IndexOfFirstParam),
@@ -244,6 +245,8 @@ class TMrbModuleListEntry : public TObject {
 
 		inline Int_t GetNofParams() { return(fNofParams); };
 		inline void SetNofParams(Int_t NofParams) { fNofParams = NofParams; };
+		inline Int_t GetTimeOffset() { return(fTimeOffset); };
+		inline void SetTimeOffset(Int_t TimeOffset) { fTimeOffset = TimeOffset; };
 		inline Int_t GetIndexOfFirstParam() { return(fIndexOfFirstParam); };
 		inline void SetIndexOfFirstParam(Int_t FirstParam) { fIndexOfFirstParam = FirstParam; };
 		inline TMrbNamedX * GetFirstParam() { return(fFirstParam); };
@@ -254,6 +257,7 @@ class TMrbModuleListEntry : public TObject {
 	protected:
 		Int_t fNofParams;
 		Int_t fIndexOfFirstParam;
+		Int_t fTimeOffset;
 		TMrbNamedX * fFirstParam;
 		TMrbNamedX * fFirstHisto;
 
@@ -591,12 +595,16 @@ class TMrbAnalyze : public TObject {
 		Int_t * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index
 		Int_t * GetParamAddr(Int_t AbsParamIndex);					// get param addr by absolute param index
 		Bool_t AddModuleToList(const Char_t * ModuleName, const Char_t * ModuleTitle,
-												Int_t ModuleIndex, Int_t AbsParamIndex, Int_t NofParams);
+												Int_t ModuleIndex, Int_t AbsParamIndex,
+												Int_t NofParams, Int_t TimeOffset = 0);
 		Bool_t AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 		Bool_t AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 
 		inline Int_t GetNofModules() { return(fNofModules); };		// number of modules
 		inline Int_t GetNofParams() { return(fNofParams); };		// number of params
+
+		Bool_t SetTimeOffset(Int_t ModuleNumber, Int_t Offset); 	// set time offset
+		Int_t GetTimeOffset(Int_t ModuleNumber);					// get time offset
 
 		inline void SetDumpCount(Int_t Count) { fDumpCount = Count; };
 		inline Int_t GetDumpCount() { return(fDumpCount); };
@@ -726,10 +734,6 @@ class TUsrEvent : public TObject {
 		};
 		inline TUsrHBX * GetHBX(Int_t SevtSerial) { return((TUsrHBX *) fLofHBXs.At(SevtSerial)); }; // get it from list
 
-		Bool_t SetTimeOffset(Int_t ModuleNumber, Int_t Offset); 	// set time offset
-		Bool_t SetTimeOffset(TArrayI & OffsArr);
-		Int_t GetTimeOffset(Int_t ModuleNumber);					// get time offset
-
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvent.html&"); };
 
 	protected:
@@ -756,9 +760,6 @@ class TUsrEvent : public TObject {
 		Int_t fClockSecs; 					// seconds since January 1, 1970
 		Int_t fClockNsecs;  				// nano secs of current second
 		Int_t fTimeRS;						// time (ROOT style)
-
-		TArrayI fLofTimeOffsets;			// list of time offsets, indexed by module number
-											// used together with hit buffers
 
 		TObjArray fLofHBXs; 				// list of hit buffer wrappers, indexed by hit buffer
 		TObjArray fLofSubevents;			// list of subevents
