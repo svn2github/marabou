@@ -88,7 +88,7 @@ void HistPresent::auto_exec_1()
 //         cout << "not in divided" << endl;
          return;
       } 
-      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
+//      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
       Bool_t cr = kTRUE;
 //      if (ca && ca->GetCommonRotate()) cr = kTRUE;
       HistPresent * hp = (HistPresent*)gROOT->FindObject("mypres");

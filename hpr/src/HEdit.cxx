@@ -529,7 +529,7 @@ void HTCanvas::ShowGallery()
       return;
    }
    Int_t n = fGObjectGroups->GetSize();
-   TDialogCanvas * dc = new TDialogCanvas("GObjects", "Graphics macro objects",
+   new TDialogCanvas("GObjects", "Graphics macro objects",
                             5,500, 500, 500);
    Double_t dx = 0.18, dy = 0.18, marg = 0.02;
    Double_t x = marg;

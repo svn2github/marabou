@@ -110,11 +110,11 @@ fit_slice_function(const char *hname, Double_t from, Double_t to,\n\
    }\n\
 \n\
 //  range used along  y\n\
-  from = -8; \n\
-  to   =  8; \n\
+//  from = -8; \n\
+//  to   =  8; \n\
 //  range used along  x \n\
-   binX_min = 30;\n\
-   binX_max = 70;\n\
+//   binX_min = 30;\n\
+//   binX_max = 70;\n\
 //  use only bins with at least nBin_filled bins with entries\n\
    Int_t nBin_filled = 10;\n\
 \n\
@@ -133,11 +133,12 @@ fit_slice_function(const char *hname, Double_t from, Double_t to,\n\
 \n\
 // option: \"R\" use range of function (from, to)\n\
 //         \"Q\" quiet\n\
+//         \"N\" avoid clearing of current pad \n\
 //         \"G2\" merge 2 consecutive bins along Y\n\
 //         \"G3\" merge 3 consecutive bins along Y\n\
 //         \"G4\" merge 4 consecutive bins along Y\n\
 //         \"G5\" merge 5 consecutive bins along Y\n\
-   char opt[] = \"RQ\";\n\
+   char opt[] = \"RQN\";\n\
 \n\
    hist->FitSlicesY(f1, binX_min, binX_max, nBin_filled, opt); \n\
 }\n\

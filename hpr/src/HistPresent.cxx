@@ -1908,9 +1908,9 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    TObjString * obj = (TObjString *)hlist->At(pos);
 
    TString fname = obj->String();
-	cout << "GetSelHistAt |" << fname << "|" << endl;
+//	cout << "GetSelHistAt |" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
-   if (pp <= 0) {cout << "Not file name in: " << obj->String() << endl; return NULL;};
+   if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
 
    TString hname = obj->String();
@@ -2802,9 +2802,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       wwidx = fWinwidx_2dim;
       wwidy = fWinwidy_2dim;
    }
-   cout << "FHname " << FHname << endl;
-   cout << "hist->GetName() " << hist->GetName() << endl;
-   cout << "origname " << origname << endl;
+//   cout << "FHname " << FHname << endl;
+//   cout << "hist->GetName() " << hist->GetName() << endl;
+//   cout << "origname " << origname << endl;
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname,
           fWincurx, fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();
@@ -2884,7 +2884,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    TString stitle("Stacked: ");
    
 //   TString ytitle("");
-   Int_t nbins; 
+   Int_t nbins = 0; 
    THStack * hs = new THStack("hstack","");
    fAnyFromSocket = kFALSE;
    for(Int_t i=0; i<nsel; i++) {
@@ -2956,7 +2956,6 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
    Int_t nsel = hlist->GetSize();
    Int_t nx = 1, ny =1;
    TH1* hist = 0;
-   TH1* histsel = 0;
    if (nsel == 0) {
       WarnBox("No histogram selected");
       return;
@@ -3037,7 +3036,6 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
 //         cout << " Hist not found at: " << i << endl;  
          continue;
       } 
-//      hist = (TH1*)histsel->Clone(); 
       TString fname = ((TObjString *)hlist->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();
@@ -3148,7 +3146,7 @@ void HistPresent::WarnBox(const char *message)
 void HistPresent::DinA4Page(Int_t form)
 {
 //   gROOT->SetStyle("Plain");
-   HTCanvas *c1; 
+   HTCanvas *c1 = NULL; 
    if (form == 1) {
       c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
                   350,40,1004, 759, this);

@@ -279,6 +279,21 @@ void HistPresent::EditExpression(const char* vl, const char* bp)
    if (gROOT->GetVersionInt() < 40000) hf = NULL;
    TList * var_list = 0;
    if (bp) var_list = (TList*)strtoul(vl, 0, 16);
+   if (var_list) {
+      var_list->Add(new TObjString("TMath::Sqrt("));
+      var_list->Add(new TObjString("TMath::Sin("));
+      var_list->Add(new TObjString("TMath::Cos("));
+      var_list->Add(new TObjString("TMath::ATan("));
+      var_list->Add(new TObjString("TMath::ATan2("));
+      var_list->Add(new TObjString("TMath::Log("));
+      var_list->Add(new TObjString("TMath::Log10("));
+      var_list->Add(new TObjString("TMath::Abs("));
+      var_list->Add(new TObjString("TMath::Power("));
+      var_list->Add(new TObjString("TMath::Pi()"));
+      var_list->Add(new TObjString("TMath::TwoPi()"));
+      var_list->Add(new TObjString("TMath::RadToDeg("));
+      var_list->Add(new TObjString("TMath::DegToRad("));
+   }
 //   if (var_list)var_list->Print();
    *fExpression=GetString("Edit expression",(const char *)*fExpression,
                           &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
