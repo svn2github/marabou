@@ -22,6 +22,7 @@
 #include "TProfile.h"
 #include "TPad.h"
 #include "TPaveText.h"
+#include "TPaveStats.h"
 #include "TPolyLine.h"
 #include "TPaveLabel.h"
 #include "TVirtualPad.h"
@@ -2435,6 +2436,11 @@ void FitHist::Draw1Dim()
    cHist->Update();
 //  add extra axis (channels) at top
    if (hp->fDrawAxisAtTop) {
+      TPaveStats * st = (TPaveStats *)cHist->GetPrimitive("stats");
+      if (st) {
+         st->SetY1NDC(st->GetY1NDC()-0.15);           
+         st->SetY2NDC(st->GetY2NDC()-0.15);
+      }           
       TString cmd("((FitHist*)gROOT->FindObject(\""); 
       cmd += GetName();
       cmd += "\"))->DrawTopAxis()";
