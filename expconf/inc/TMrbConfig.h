@@ -148,6 +148,7 @@ class TMrbConfig : public TNamed {
 									kAnaEventSetScaleDown,
 									kAnaEventInitializeTree,
 									kAnaEventSetReplayMode,
+									kAnaEventSetWriteTree,
 									kAnaEventInitializeBranches,
 									kAnaEventSetBranchStatus,
 									kAnaEventReplayTree,

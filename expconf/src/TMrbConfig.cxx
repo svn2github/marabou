@@ -241,6 +241,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventSetScaleDown, 		"EVT_SET_SCALEDOWN" 			},
 								{TMrbConfig::kAnaEventInitializeTree,		"EVT_INITIALIZE_TREE"			},
 								{TMrbConfig::kAnaEventSetReplayMode,		"EVT_SET_REPLAY_MODE"			},
+								{TMrbConfig::kAnaEventSetWriteTree,			"EVT_SET_WRITE_TREE"			},
 								{TMrbConfig::kAnaEventInitializeBranches,	"EVT_INITIALIZE_BRANCHES"		},
 								{TMrbConfig::kAnaEventReplayTree,			"EVT_REPLAY_TREE"				},
 								{TMrbConfig::kAnaEventFirstSubevent,		"EVT_FIRST_SEVT"				},
@@ -2626,8 +2627,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										anaTmpl.WriteCode(anaStrm);
 									}
 									first = kFALSE;
+									TString classNameUC = ucl->GetName();
+									TString classNameLC = classNameUC;
+									classNameLC(0,1).ToLower();
 									anaTmpl.InitializeCode("%C%");
-									anaTmpl.Substitute("$className", ucl->GetName());
+									anaTmpl.Substitute("$classNameLC", classNameLC);
+									anaTmpl.Substitute("$classNameUC", classNameUC);
 									anaTmpl.WriteCode(anaStrm);
 								}
 								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
@@ -2639,6 +2644,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaEventCreateTree:
 					case TMrbConfig::kAnaEventInitializeTree:
 					case TMrbConfig::kAnaEventSetReplayMode:
+					case TMrbConfig::kAnaEventSetWriteTree:
 					case TMrbConfig::kAnaEventReplayTree:
 					case TMrbConfig::kAnaEventSetScaleDown:
 						{
@@ -2658,8 +2664,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
 							while (ucl) {
 								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
+									TString classNameUC = ucl->GetName();
+									TString classNameLC = classNameUC;
+									classNameLC(0,1).ToLower();
 									anaTmpl.InitializeCode("%U%");
-									anaTmpl.Substitute("$className", ucl->GetName());
+									anaTmpl.Substitute("$classNameLC", classNameLC);
+									anaTmpl.Substitute("$classNameUC", classNameUC);
 									anaTmpl.WriteCode(anaStrm);
 								}
 								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
