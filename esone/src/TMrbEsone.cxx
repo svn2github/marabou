@@ -524,13 +524,13 @@ Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
 	return(kTRUE);
 }
 							
-UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
+UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName, Bool_t Reconnect) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::ConnectToHost
 // Purpose:        Establish connection to camac host
 // Arguments:      Char_t * HostName  -- host name
-//                 Bool_t Offline     -- hardware access to be simulated by software?
+//                 Bool_t Reconnect   -- kTRUE -> try to reconnect
 // Results:        UInt_t             -- host address, 0 if error
 // Exceptions:
 // Description:    ESONE ccopen.
@@ -545,6 +545,8 @@ UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
 	if (gMrbEsoneHosts == NULL) {				// list of active camac hosts
 		gMrbEsoneHosts = new TMrbLofNamedX("List of ESONE hosts");
 	}
+
+	if (Reconnect) fHost.Resize(0);
 
 	if (!fHost.IsNull()) {						// may connect only once
 		gMrbLog->Err() << "Already connected to host \"" << fHost << "\"" << endl;
@@ -563,7 +565,7 @@ UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
 	}
 
 	host = gMrbEsoneHosts->FindByName(HostName); 				// host already in internal host table?
-	if (host == NULL) {
+	if (Reconnect || host == NULL) {
 		if (!this->EsoneCCOPEN(HostName, hostAddr)) {			// no: try to connect via ESONE
 			gMrbLog->Err() << "Can't connect to " << HostName << endl;
 			this->PrintError("ccopen", "ConnectToHost");
@@ -572,8 +574,10 @@ UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
 			fHostAddr = 0xffffffff;
 			return(0);
 		}
-		host = new TMrbNamedX(hostAddr, HostName);  			// success: insert in internal table for further use
-		gMrbEsoneHosts->AddNamedX(host);
+		if (host == NULL) {
+			host = new TMrbNamedX(hostAddr, HostName);  	// success: insert in internal table for further use
+			gMrbEsoneHosts->AddNamedX(host);
+		}
 	}
 	fHost = host->GetName();
 	fHostAddr = host->GetIndex();

@@ -81,7 +81,7 @@ class TMrbEsone : public TObject {
 // ctci: test dataway inhibit
 		Bool_t DWIsInhibited(Int_t Crate);
 // ccopen: connect to camac host
-		UInt_t ConnectToHost(const Char_t * HostName);
+		UInt_t ConnectToHost(const Char_t * HostName, Bool_t Reconnect = kFALSE);
 // cfsa/cssa: single camac action
 		Bool_t ExecCnaf(const Char_t * Cnaf, Bool_t D16Flag = kFALSE);
 		Bool_t ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Bool_t D16Flag = kFALSE);

@@ -123,7 +123,7 @@ TMrbDGF::TMrbDGF(	const Char_t * DGFName,
 		gMrbLog->Err() << "DGF in " << Crate << ".N" << Station << " - illegal camac address" << endl;
 		gMrbLog->Flush(this->ClassName());
 		this->MakeZombie();
-	} else if (Connect && fCamac.ConnectToHost(HostName) == 0) { 		// try to connect to camac via given host
+	} else if (Connect && fCamac.ConnectToHost(HostName, kTRUE) == 0) { 	// try to (re)connect to camac via given host
 		gMrbLog->Err() << "DGF in C" << Crate << ".N" << Station << " - can't connect to host " << HostName << endl;
 		gMrbLog->Flush(this->ClassName());
 		this->MakeZombie();
@@ -897,7 +897,7 @@ Bool_t TMrbDGF::ReadParamMemory(Bool_t ReadInputParams, Bool_t ReadOutputParams)
 		}
 		
 		cData.Set(nofParams);
-		this->WriteTSAR(startAddr); 										// where to read from
+		if (!this->WriteTSAR(startAddr)) return(kFALSE); 										// where to read from
 		if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
 							<< ".A0.F0 failed - DSPAddr=0x" << setbase(16) << TMrbDGFData::kDSPInparStartAddr
@@ -1070,7 +1070,7 @@ Bool_t TMrbDGF::ReadParamMemory(UInt_t FromParam, UInt_t ToParam) {
 			
 	nofParams = ToParam - FromParam + 1;
 	startAddr = TMrbDGFData::kDSPInparStartAddr + FromParam * sizeof(Int_t);
-	this->WriteTSAR(startAddr); 										// where to read from
+	if (!this->WriteTSAR(startAddr)) return(kFALSE); 							// where to read from
 	cData.Set(nofParams);
 	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
