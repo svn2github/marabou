@@ -943,7 +943,8 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Turning PSA code on/off failed", kMBIconStop);
 		return(kFALSE);
 	} else if (offlineMode || found) {
-		gMrbLog->Out()	<< "User PSA code turned " << onoff << "]" << endl;
+		onoff = ActivateFlag ? "ON" : "OFF";
+		gMrbLog->Out()	<< "User PSA code turned " << onoff << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff", setblue);
 		return(kTRUE);
 	} else {

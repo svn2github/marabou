@@ -242,6 +242,8 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 
 	MapWindow();
 
+	SetWindowName("DGFControl - keep control over XIA DGF-4C modules");
+
 	if (gDGFControlData->IsOffline()) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Info", "Running in OFFLINE mode", kMBIconExclamation);
 		gMrbLog->Out()	<< "Running in OFFLINE mode" << endl;

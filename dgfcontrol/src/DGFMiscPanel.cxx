@@ -294,7 +294,6 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
 	selectFlag = kFALSE;
-	Bool_t verbose = gDGFControlData->IsVerbose();
 	TString setOrClear = SetFlag ? "Setting GFLT bit ..." : "Clearing GFLT bit ...";
 	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, setOrClear, 400, "blue", NULL, kTRUE);
 	pgb->SetRange(0, gDGFControlData->GetNofModules());
@@ -328,6 +327,10 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
+	} else {
+		setOrClear = SetFlag ? "SET" : "CLEARED";
+		gMrbLog->Out()	<< "GFLT bit" << setOrClear << endl;
+		gMrbLog->Flush(this->ClassName(), "SetGFLT", setblue);
 	}
 
 	return(kTRUE);
@@ -378,6 +381,10 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
+	} else {
+		gMrbLog->Out()	<< "COINCWAIT set properly" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetCoincWait", setblue);
 	}
+
 	return(kTRUE);
 }
