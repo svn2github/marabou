@@ -195,8 +195,10 @@ class TMrbConfig : public TNamed {
 									kAnaUsingNameSpace,
 									kAnaUserDefinedGlobals,
 									kAnaUserDefinedEnums,
+									kAnaMakeUserCxxFlags,
 									kAnaMakeUserHeaders,
 									kAnaMakeUserCode,
+									kAnaMakeUserLibs,
 									kAnaMakeUserRules,
 									kAnaMakeLibNew,
 									kAnaIncludeEvtSevtModGlobals,
@@ -271,15 +273,16 @@ class TMrbConfig : public TNamed {
 									kIclOptUserMethod			=	BIT(1),
 									kIclOptClassTMrbAnalyze		=	BIT(2),
 									kIclOptClassTUsrEvent		=	BIT(3),
-									kIclOptInitialize			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(4),
-									kIclOptReloadParams			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(5),
-									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(6),
-									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(7),
-									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(8),
-									kIclOptAnalyze				=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
-									kIclOptBuildEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
-									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
-									kIclOptUtilities			=	BIT(12)
+									kIclOptUserClass			=	BIT(4),
+									kIclOptInitialize			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(5),
+									kIclOptReloadParams			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(6),
+									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(7),
+									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(8),
+									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
+									kIclOptAnalyze				=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
+									kIclOptBuildEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
+									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
+									kIclOptUtilities			=	BIT(13)
 								};
 
 		enum					{	kNofCrates			=	100			};	// max number of crates
@@ -469,8 +472,10 @@ class TMrbConfig : public TNamed {
 			fCNAFNames.Delete();
 			fLofModuleTags.Delete();
 			fLofModuleIDs.Delete();
-			fLofUserClasses.Delete();
 			fLofOnceOnlyTags.Delete();
+			fLofUserIncludes.Delete();
+			fLofUserLibs.Delete();
+			fLofUserClasses.Delete();
 		};
 
 		TMrbConfig(const TMrbConfig &) {};				// default copy ctor
@@ -608,13 +613,31 @@ class TMrbConfig : public TNamed {
 		inline TObject * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
 
 																					// include user-specific code
-		Bool_t IncludeUserCode(const Char_t * Path, const Char_t * UserFile, Bool_t AutoGenFalg = kFALSE);
-		inline Bool_t IncludeUserCode(const Char_t * UserFile, Bool_t AutoGenFalg = kFALSE) { return(this->IncludeUserCode("", UserFile, AutoGenFalg)); };
-
+		Bool_t IncludeUserCode(const Char_t * IclPath, const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE);
+		inline Bool_t IncludeUserCode(const Char_t * UserFile, Bool_t AutoGenFlag = kFALSE) {
+			return(this->IncludeUserCode("", UserFile, AutoGenFlag));
+		};
 		inline Bool_t UserCodeToBeIncluded() const { return(fLofUserIncludes.Last() >= 0); };
 		inline TMrbLofNamedX * GetLofUserIncludes() { return(&fLofUserIncludes); };
 
-		void AddUserClass(const Char_t * Name); 									// add a user class
+		Bool_t IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib);
+		inline Bool_t IncludeUserLib(const Char_t * UserLib) {
+			return(this->IncludeUserLib("", UserLib));
+		}
+		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() >= 0); };
+		inline TMrbLofNamedX * GetLofUserLibs() { return(&fLofUserLibs); };
+
+		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass);
+		inline Bool_t IncludeUserClass(const Char_t * UserClass) {
+			return(this->IncludeUserClass("", UserClass));
+		}
+		inline Bool_t UserClassesToBeIncluded() const { return(fLofUserClasses.Last() >= 0); };
+		inline TMrbLofNamedX * GetLofUserClasses() { return(&fLofUserClasses); };
+
+		inline void AddUserClass(EMrbIncludeOptions Opt, const Char_t * Name, const Char_t * Path = NULL) { 							// add a user class
+			if (fLofUserClasses.FindByName(Name) == NULL) fLofUserClasses.AddNamedX((Int_t) Opt, Name, Path);
+		};
+		inline void AddUserClass(const Char_t * Name) { this->AddUserClass((EMrbIncludeOptions) 0, Name); };
 			
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
@@ -718,6 +741,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofGlobals;				//! list of global vars
 	protected:
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
+		Bool_t WriteUtilityProtos();
 		
 	protected:
 		Bool_t fVerboseMode;				// verbose flag
@@ -750,6 +774,8 @@ class TMrbConfig : public TNamed {
 		UInt_t fRcFileOptions;  			// ... in MakeRcFile()
 
 		TMrbLofNamedX fLofUserIncludes;		// list of user-specific files to be included
+		TMrbLofNamedX fLofUserLibs; 		// list of user-specific libraries to be included
+		TMrbLofNamedX fLofUserClasses; 		// list of classes added by user
 
 		Bool_t fWriteTimeStamp; 			// kTRUE if user wants a time stamp to be added to each event
 
@@ -770,7 +796,6 @@ class TMrbConfig : public TNamed {
 		TString fUserMacro; 				// macro name
 		TMrbString fUserMacroCmd;				// ... command
 				
-		TObjArray fLofUserClasses; 			// list of classes added by user
 		TObjArray fLofOnceOnlyTags; 		// list of tags already processed
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
