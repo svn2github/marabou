@@ -232,6 +232,7 @@ enum ERootCanvasCommands {
    kFH_WritePrim,
    kFH_GetPrim,
    kFH_DrawHist,
+   kFH_InsertImage,
    kFH_SetGrid,
    kFH_UseGrid,
    kFH_DrawGrid,  
@@ -273,6 +274,9 @@ HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph *
                 fHCanvas(c),fHistPresent(hpr), fFitHist(fh), fGraph(graph)
 {
    fRootCanvas = (TRootCanvas*)fHCanvas->GetCanvasImp();
+
+//   cout << "fRootCanvas: " << fRootCanvas << endl;
+//   cout << "fRootCanvas->Canvas(): " << fRootCanvas->Canvas() << endl;
    fRootsMenuBar = fRootCanvas->GetMenuBar();
    fMenuBarItemLayout = fRootCanvas->GetMenuBarItemLayout();
    fMenuBarLayout = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 0, 0, 1, 1);
@@ -548,6 +552,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
                   case kFH_DrawHist:
                         fHCanvas->DrawHist();
+                     break;
+
+                  case kFH_InsertImage:
+                        fHCanvas->InsertImage();
                      break;
                   case kFH_WritePrim:
                         fHCanvas->WritePrimitives();
@@ -1602,6 +1610,7 @@ void HandleMenus::BuildMenus()
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
 //   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
+   	fEditMenu->AddEntry("Draw image (gif, jpg) into selected pad", kFH_InsertImage);
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
    	fEditMenu->AddEntry("Extract objects as macro",  kFH_ExtractGObjects);

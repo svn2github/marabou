@@ -1,6 +1,7 @@
 #include "TROOT.h"
 #include "TEnv.h"
 #include "TColor.h"
+#include "TRootCanvas.h"
 #include "TGaxis.h"
 #include "TList.h"
 #include "TString.h"
@@ -9,6 +10,9 @@
 #include "TFrame.h"
 #include "TF1.h"
 #include "TPaveStats.h"
+#include "TArrow.h"
+#include "TLatex.h"
+#include "TCurlyLine.h"
 
 #include "TGMrbInputDialog.h"
 #include "TGMrbTableFrame.h"
@@ -21,7 +25,6 @@
 #include <fstream>
 #include <sstream>
 
-//#include "HprAutoExecMacro.cxx"
 
 //_______________________________________________________________________
 // *INDENT-OFF* 
@@ -709,6 +712,22 @@ void HistPresent::SaveOptions()
 void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
 {
 //   Int_t nopt = 6;
+
+   enum e_CurySet { 
+      kArrowAngle      ,
+      kArrowSize       ,
+      kArrowWidth      ,
+      kArrowStyle      ,
+      kArrowColor      ,
+      kArrowFill       ,
+      kArrowOption     ,
+      kCurlyWaveLength ,
+      kCurlyAmplitude  ,
+      kCurlyWidth      ,
+      kCurlyStyle      ,
+      kCurlyColor      ,
+      kIsCurly 
+   };
    TOrdCollection *row_lab = new TOrdCollection();
    Int_t vp = 0;
    row_lab->Add(new TObjString("ArrowAngle "));     
@@ -739,49 +758,101 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    svalues->Add(new TObjString(Form("%d",fCurlyStyle  )));
    svalues->Add(new TObjString(Form("%d",fCurlyColor  )));
    svalues->Add(new TObjString(Form("%d",fIsCurly     )));
-     
-   Int_t ret, itemwidth = 240;
+
+   TOrdCollection *col_lab = new TOrdCollection();
+   col_lab->Add(new TObjString("Value"));     
+   col_lab->Add(new TObjString("Set all"));     
+   
+   Int_t nrows = svalues->GetSize();
+   TArrayI flag (nrows);
+   for (Int_t i = 0; i < nrows; i++) {
+      flag[i] = 0;
+   } 
+   Int_t ret, itemwidth = 180;
    new TGMrbTableFrame(win, &ret, "Feynman diagram attributes", itemwidth,
-                       1, 0, svalues, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fArrowAngle      = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fArrowSize       = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fArrowWidth      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fArrowStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fArrowColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fArrowFill       = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fArrowOption     = ((TObjString*)(svalues->At(vp++)))->GetString().Data();
-      fCurlyWaveLength = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fCurlyAmplitude  = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fCurlyWidth      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fCurlyStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fCurlyColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      fIsCurly         = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-      SaveOptions();
-      gEnv->SetValue("HistPresent.ArrowAngle" ,fArrowAngle);
-      gEnv->SetValue("HistPresent.ArrowSize"  ,fArrowSize );
-      gEnv->SetValue("HistPresent.ArrowWidth" ,fArrowWidth);
-      gEnv->SetValue("HistPresent.ArrowStyle" ,fArrowStyle);
-      gEnv->SetValue("HistPresent.ArrowColor" ,fArrowColor);
-      gEnv->SetValue("HistPresent.ArrowFill"  ,fArrowFill );
-      gEnv->SetValue("HistPresent.ArrowOption",fArrowOption.Data());
-      gEnv->SetValue("HistPresent.CurlyWaveLength" ,fCurlyWaveLength);
-      gEnv->SetValue("HistPresent.CurlyAmplitude"  ,fCurlyAmplitude);
-      gEnv->SetValue("HistPresent.CurlyWidth" ,fCurlyWidth);
-      gEnv->SetValue("HistPresent.CurlyStyle" ,fCurlyStyle);
-      gEnv->SetValue("HistPresent.CurlyColor" ,fCurlyColor);
-      gEnv->SetValue("HistPresent.IsCurly"    ,fIsCurly);
+                       1, 0, svalues, col_lab, row_lab, &flag);
+   if (ret <  0) return;
+
+   vp = 0;
+   fArrowAngle      = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fArrowSize       = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fArrowWidth      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fArrowStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fArrowColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fArrowFill       = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fArrowOption     = ((TObjString*)(svalues->At(vp++)))->GetString().Data();
+   fCurlyWaveLength = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fCurlyAmplitude  = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fCurlyWidth      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fCurlyStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fCurlyColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   fIsCurly         = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   SaveOptions();
+   gEnv->SetValue("HistPresent.ArrowAngle" ,fArrowAngle);
+   gEnv->SetValue("HistPresent.ArrowSize"  ,fArrowSize );
+   gEnv->SetValue("HistPresent.ArrowWidth" ,fArrowWidth);
+   gEnv->SetValue("HistPresent.ArrowStyle" ,fArrowStyle);
+   gEnv->SetValue("HistPresent.ArrowColor" ,fArrowColor);
+   gEnv->SetValue("HistPresent.ArrowFill"  ,fArrowFill );
+   gEnv->SetValue("HistPresent.ArrowOption",fArrowOption.Data());
+   gEnv->SetValue("HistPresent.CurlyWaveLength" ,fCurlyWaveLength);
+   gEnv->SetValue("HistPresent.CurlyAmplitude"  ,fCurlyAmplitude);
+   gEnv->SetValue("HistPresent.CurlyWidth" ,fCurlyWidth);
+   gEnv->SetValue("HistPresent.CurlyStyle" ,fCurlyStyle);
+   gEnv->SetValue("HistPresent.CurlyColor" ,fCurlyColor);
+   gEnv->SetValue("HistPresent.IsCurly"    ,fIsCurly);
+
+   if (win && flag.GetSum() > 0) {
+      TRootCanvas * cimp = (TRootCanvas*)win;
+      TCanvas * canvas = cimp->Canvas();
+      TList * lop = 0;
+      if (canvas) lop = canvas->GetListOfPrimitives();
+      if (lop) {
+         TIter next(lop);
+         TObject * obj;
+         while ( (obj = next()) ) {
+            if (obj->InheritsFrom("TCurlyLine")) {
+               TCurlyLine * tc = (TCurlyLine*)obj;
+               if (flag[kCurlyWaveLength] != 0) tc->SetWaveLength(fCurlyWaveLength);
+               if (flag[kCurlyAmplitude] != 0)  tc->SetAmplitude(fCurlyAmplitude);
+               if (flag[kCurlyWidth] != 0)      tc->SetLineWidth(fCurlyWidth);
+               if (flag[kCurlyColor] != 0)      tc->SetLineColor(fCurlyColor);
+               if (flag[kCurlyStyle] != 0)      tc->SetLineStyle(fCurlyStyle);
+            }
+            if (obj->InheritsFrom("TArrow")) {
+               TArrow * a = (TArrow*)obj;
+               if (flag[kArrowAngle] != 0)      a->SetAngle(fArrowAngle);
+               if (flag[kArrowSize]  != 0)      a->SetArrowSize(fArrowSize);
+               if (flag[kArrowWidth] != 0)      a->SetLineWidth(fArrowWidth);
+               if (flag[kArrowStyle] != 0)      a->SetLineStyle(fArrowStyle);
+               if (flag[kArrowFill]  != 0)      a->SetFillStyle(fArrowFill);
+               if (flag[kArrowColor] != 0)      a->SetLineColor(fArrowColor);
+               if (flag[kArrowColor] != 0)      a->SetFillColor(fArrowColor);
+               if (flag[kArrowOption]!= 0)      a->SetOption(fArrowOption.Data());
+            }
+         }
+         canvas->Modified();
+         canvas->Update();
+      } 
    }
 }
 //_______________________________________________________________________
 
 void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 9;
-   TArrayD values(nopt);
+   enum e_GenSet {
+      kLineColor     ,
+      kLineStyle     ,
+      kLineWidth     ,
+      kTextSize      ,
+      kTextAlign     ,
+      kTextColor     ,
+      kTextFont      ,
+      kFillColor     ,
+      kFillStyle     ,
+   };
+
    TOrdCollection *row_lab = new TOrdCollection();
-   Int_t vp = 0;
    row_lab->Add(new TObjString("LineColor"));     
    row_lab->Add(new TObjString("LineStyle"));     
    row_lab->Add(new TObjString("LineWidth"));         
@@ -792,6 +863,10 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("FillColor"));         
    row_lab->Add(new TObjString("FillStyle"));         
 
+   Int_t nrows = row_lab->GetSize();
+   TArrayD values(nrows);
+   Int_t vp = 0;
+
    values[vp++] = fLineColor;     
    values[vp++] = fLineStyle;     
    values[vp++] = fLineWidth;
@@ -801,23 +876,66 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    values[vp++] = fTextFont ;
    values[vp++] = fFillColor;
    values[vp++] = fFillStyle;
+
+   TOrdCollection *col_lab = new TOrdCollection();
+   col_lab->Add(new TObjString("Value"));     
+   col_lab->Add(new TObjString("Set all"));     
+   
+   TArrayI flag (nrows);
+   for (Int_t i = 0; i < nrows; i++) {
+      flag[i] = 0;
+   } 
          
-   Int_t ret, itemwidth = 240, precission = 5;
+   Int_t ret, itemwidth = 180, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "General graphics attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fLineColor     = (Int_t)values[vp++];
-      fLineStyle     = (Int_t)values[vp++];
-      fLineWidth     = (Int_t)values[vp++];
-      fTextSize      =        values[vp++];
-      fTextAlign     = (Int_t)values[vp++];
-      fTextColor     = (Int_t)values[vp++];
-      fTextFont      = (Int_t)values[vp++];
-      fFillColor     = (Int_t)values[vp++];
-      fFillStyle     = (Int_t)values[vp++];
-      SaveOptions();
-      SetGeneralAtt();
+                       1, nrows, values, precission, col_lab, row_lab, &flag);
+   if (ret < 0) return;
+
+   vp = 0;
+   fLineColor     = (Int_t)values[vp++];
+   fLineStyle     = (Int_t)values[vp++];
+   fLineWidth     = (Int_t)values[vp++];
+   fTextSize      =        values[vp++];
+   fTextAlign     = (Int_t)values[vp++];
+   fTextColor     = (Int_t)values[vp++];
+   fTextFont      = (Int_t)values[vp++];
+   fFillColor     = (Int_t)values[vp++];
+   fFillStyle     = (Int_t)values[vp++];
+   SaveOptions();
+   SetGeneralAtt();
+
+   if (win && flag.GetSum() > 0) {
+      TRootCanvas * cimp = (TRootCanvas*)win;
+      TCanvas * canvas = cimp->Canvas();
+      TList * lop = 0;
+      if (canvas) lop = canvas->GetListOfPrimitives();
+      if (lop) {
+         TIter next(lop);
+         TObject * obj;
+         while ( (obj = next()) ) {
+            if (obj->InheritsFrom("TLine")) {
+               TLine * tc = (TLine*)obj;
+               if (flag[kLineWidth] != 0)      tc->SetLineWidth(fLineWidth);
+               if (flag[kLineColor] != 0)      tc->SetLineColor(fLineColor);
+               if (flag[kLineStyle] != 0)      tc->SetLineStyle(fLineStyle);
+            }
+            if (obj->InheritsFrom("TPolyLine")) {
+               TPolyLine * tc = (TPolyLine*)obj;
+               if (flag[kLineWidth] != 0)      tc->SetLineWidth(fLineWidth);
+               if (flag[kLineColor] != 0)      tc->SetLineColor(fLineColor);
+               if (flag[kLineStyle] != 0)      tc->SetLineStyle(fLineStyle);
+            }
+            if (obj->InheritsFrom("TText")) {
+               TText * a = (TText*)obj;
+               if (flag[kTextSize]  != 0)      a->SetTextSize(fTextSize);
+               if (flag[kTextColor] != 0)      a->SetTextColor(fTextColor);
+               if (flag[kTextFont]  != 0)      a->SetTextFont(fTextFont);
+               if (flag[kTextAlign] != 0)      a->SetTextAlign(fTextAlign);
+            }
+         }
+         canvas->Modified();
+         canvas->Update();
+      } 
    }
 }
 //_______________________________________________________________________

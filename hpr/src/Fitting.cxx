@@ -115,6 +115,7 @@ fit_user_function(const char *hname)\n\
    TCanvas * mc  = (TCanvas *) gPad;\n\
    Int_t wtopx = 100, wtopy = 100;\n\
    UInt_t ww = 750, wh = 750;\n\
+   Double_t theta = 0, phi = 0; \n\
    TString cname(\"canvas_2d\");\n\
    if (mc) {\n\
       mc->GetCanvasPar(wtopx, wtopy, ww, wh);\n\
@@ -122,6 +123,8 @@ fit_user_function(const char *hname)\n\
       cname += \"_2df\";\n\
       wtopx = TMath::Max(0,wtopx - 100);\n\
       wtopy = TMath::Max((Int_t)wh, wtopy + 100);\n\
+      theta = gPad->GetTheta();\n\
+      phi = gPad->GetPhi();\n\
  //      cout << wtopx<< " " << wtopy << " " <<  ww<< " " <<  wh << endl;\n\
    }\n\
 \n\
@@ -147,6 +150,10 @@ fit_user_function(const char *hname)\n\
                 hist->GetXaxis()->GetXmax(), hist->GetYaxis()->GetXmax()); \n\
    f2->SetNpx(hist->GetNbinsX());\n\
    f2->SetNpy(hist->GetNbinsY());\n\
+   if (theta != 0 || phi != 0) {\n\
+      (TPad*)cc->SetTheta(theta);\n\
+      (TPad*)cc->SetPhi(phi);\n\
+   }\n\
    f2->Draw(hist->GetOption()); \n\
 }\n\
 ";
@@ -277,10 +284,11 @@ Double_t BreitWigner  ( Double_t *x, Double_t *par) \n\
 //  \n\
   // Breit- Wigner function\n\
   Double_t mw = par[0], gw = par[1], mw2, gw2, eb2;\n\
-  mw2 = mw*mw;\n\
   gw2 = gw*gw;\n\
-  eb2 = x[0]*x[0];\n\
-  return( par[2]*gw2*mw2 / ( pow( eb2 - mw2, 2 ) + mw2 * gw2 ) );\n\
+  eb2 = (x[0] - mw) * (x[0] - mw);\n\
+  Double_t dem = eb2 + 0.25 * gw2;\n\
+  if (dem == 0) dem = 1e-10;\n\
+  return par[2] * gw2 / dem;\n\
 }\n\
  \n\
 fit_user_function(const char *hname)\n\
@@ -310,7 +318,7 @@ fit_user_function(const char *hname)\n\
 //                              400, -10, 10);\n\
 //   breitw->FillRandom(\"BreitWigner\", 10000);\n\
 //  ----------------------------------------------------------------------------   \n\
-//   f-Draw,\"same\");   // only draw function, dont do fit\n\
+//   f->Draw(\"same\");   // only draw function, dont do fit\n\
    hist->Fit(\"BreitWigner\",\"R+\",\"same\");\n\
 }\n\
 ";
@@ -1763,7 +1771,8 @@ void FitHist::ExecFitMacro()
    if (fFirstUse) {
       Bool_t ok;
       fFitMacroName =
-          GetString("Use Macro:", fFitMacroName.Data(), &ok, mycanvas);
+          GetString("Use Macro:", fFitMacroName.Data(), &ok, mycanvas,
+          0,0,0,0,0,"hprFitMacros.txt");
       if (!ok)
          return;
       fFirstUse = 0;
@@ -1800,7 +1809,8 @@ void FitHist::EditFitMacro()
 {
    static TString name(fFitMacroName.Data());
    Bool_t ok;
-   name = GetString("Name of Fit Macro", name.Data(), &ok, mycanvas);
+   name = GetString("Name of Fit Macro", name.Data(), &ok, mycanvas,
+                     0,0,0,0,0,"hprFitMacros.txt");
    if (!ok)
       return;
    if (gSystem->AccessPathName(name.Data())) {

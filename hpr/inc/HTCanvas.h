@@ -88,6 +88,7 @@ public:
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
    void    DrawHist();
+   void    InsertImage();
    void    WritePrimitives();
    void    GetPrimitives();
    Int_t   ExtractGObjects();

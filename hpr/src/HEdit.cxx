@@ -3,6 +3,8 @@
 #include "TCurlyLine.h"
 #include "TEllipse.h"
 #include "TEnv.h"
+#include "TImage.h"
+#include "TAttImage.h"
 
 #include "HistPresent.h"
 #include "support.h"
@@ -200,6 +202,48 @@ void HTCanvas::DrawHist()
          cout << "No Pad selected" << endl;
    } 
    Update();
+}
+
+//______________________________________________________________________________
+
+void HTCanvas::InsertImage()
+{
+   TPad * pad = (TPad *)gROOT->GetSelectedPad();
+   if (pad && GetListOfPrimitives()->Contains(pad)) {
+      Bool_t ok;
+      TString name = "picture.jpg";
+      name =
+         GetString("Picture name", name.Data(), &ok,
+                 (TGWindow*)fRootCanvas);
+      if (!ok) return;
+      TImage *img = TImage::Open(name.Data());
+      if (!img) {
+         cout << "Could not create an image... exit" << endl;
+         return;
+      }
+      cout <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
+           <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
+      Double_t img_width = (Double_t )img->GetWidth();
+      Double_t img_height = (Double_t )img->GetHeight();
+      cout << "Image size, X,Y: " << img_width
+                           << " " << img_height << endl;
+      Double_t aspect_ratio = img_height * this->GetXsizeReal() 
+                            / (img_width* this->GetYsizeReal());
+      pad->SetPad(pad->GetXlowNDC(),pad->GetYlowNDC(),
+                  pad->GetXlowNDC() + pad->GetWNDC(),
+                  pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
+      pad->SetTopMargin(0);
+      pad->SetBottomMargin(0);
+      pad->SetLeftMargin(0);
+      pad->SetRightMargin(0);
+      img->SetConstRatio(kTRUE);
+//      img->SetConstRatio(kFALSE);
+      img->SetImageQuality(TAttImage::kImgBest);
+      img->Draw();
+      Update();
+   } else {
+      cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
+   }
 }
 
 //______________________________________________________________________________
@@ -512,7 +556,7 @@ void HTCanvas::ShowGallery()
       b = new TButton("", cmd.Data(),x, y, x + dx, y + dy);
       Double_t xr = go->fXUpEdge - go->fXLowEdge;
       Double_t yr = go->fYUpEdge - go->fYLowEdge;
-      b->Range(-0.1 * xr, -0.1 * yr , 1.1 * xr, 1.1 * yr);
+      b->Range(-0.1 * xr, -0.1 * yr , 1.2 * xr, 1.2 * yr);
       tt = new TText(0,0, "");
       TList * lop = b->GetListOfPrimitives();
       lop->Add(tt);
