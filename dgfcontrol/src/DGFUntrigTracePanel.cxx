@@ -388,7 +388,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 			for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++, chn++) {
 				if (chnp & 1) {
 					dgf->GetUntrigTrace_Start(chn);
-					nofWords += dgf->GetUntrigTrace_Stop(chn, traceBuffer, 0);
+					nofWords += dgf->GetUntrigTrace_Stop(chn, traceBuffer, 3);
 					chnp >>= 1;
 				}
 			}		
