@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_SetPreScaler(int fd,int period)
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_int_par_t arg;
              arg.param = period;
 		ioctl(fd,SETPRESCALER,(void *) &arg );

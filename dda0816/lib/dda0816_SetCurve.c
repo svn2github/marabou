@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_SetCurve(int fd,struct dda0816_curve curve)
         {
-          extern int errno;
+/*          extern int errno;	*/
           SetCurve_par_t arg;
              arg.curve = curve;
 		ioctl(fd,SETCURVE,(void *) &arg );

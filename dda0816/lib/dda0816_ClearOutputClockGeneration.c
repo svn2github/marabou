@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_ClearOutputClockGeneration(int fd )
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_no_par_t arg;
 		ioctl(fd,CLEAROUTPUTCLOCKGENERATION,(void *) &arg );
           errno = arg.error;

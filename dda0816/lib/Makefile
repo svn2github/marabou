@@ -25,10 +25,10 @@ NBOLD		= "\033[0m"
 
 ECHO		= /bin/echo
 
-COMPILE	= $(ECHO) "--- Compiling "$(BOLD)$<$(NBOLD)"..." ; gcc
-DEPEND	= $(ECHO) "--- Checking dependencies..." ; gcc
+COMPILE	= $(ECHO) "--- Compiling "$(BOLD)$<$(NBOLD)"..." ; gcc296
+DEPEND	= $(ECHO) "--- Checking dependencies..." ; gcc296
 RLINK	= $(ECHO) "--- Linking (relocatable) "$(BOLD)$@$(NBOLD)"..." ; ld -r
-LINK	= $(ECHO) "--- Linking "$(BOLD)$@$(NBOLD)"..." ; gcc
+LINK	= $(ECHO) "--- Linking "$(BOLD)$@$(NBOLD)"..." ; gcc296
 YACC	= $(ECHO) --- Running bison on $(BOLD)$<$(NBOLD)...; bison -d -y
 LEX	= $(ECHO) --- Running flex on $(BOLD)$<$(NBOLD)...; flex 
 ARCHIVE = $(ECHO) --- Archiving $(BOLD)$<$(NBOLD)...; $(AR)

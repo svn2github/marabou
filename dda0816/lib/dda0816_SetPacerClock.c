@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_SetPacerClock(int fd,int clock)
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_int_par_t arg;
              arg.param = clock;
 		ioctl(fd,SETPACERCLOCK,(void *) &arg );

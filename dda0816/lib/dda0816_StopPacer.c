@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_StopPacer(int fd )
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_no_par_t arg;
 		ioctl(fd,STOPPACER,(void *) &arg );
           errno = arg.error;

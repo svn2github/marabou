@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_GetPacer(int fd )
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_no_par_t arg;
 		ioctl(fd,GETPACER,(void *) &arg );
           errno = arg.error;

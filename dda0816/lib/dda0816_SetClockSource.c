@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_SetClockSource(int fd,int source)
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_int_par_t arg;
              arg.param = source;
 		ioctl(fd,SETCLOCKSOURCE,(void *) &arg );

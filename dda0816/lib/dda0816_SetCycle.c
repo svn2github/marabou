@@ -8,10 +8,11 @@
 *
 */
 #include <dda0816_P.h>
+#include <errno.h>
 
         dda0816_SetCycle(int fd,int cycles)
         {
-          extern int errno;
+/*          extern int errno;	*/
           dda0816_int_par_t arg;
              arg.param = cycles;
 		ioctl(fd,SETCYCLE,(void *) &arg );
