@@ -200,9 +200,6 @@ void HTCanvas::DrawHist()
    if (!fHistPresent) return;
    TPad * selected = (TPad *)gROOT->GetSelectedPad();
    if (selected) {
-//      cout << selected << endl;
-//      GetListOfPrimitives()->ls();
- //     cout << GetListOfPrimitives()->FindObject("newpad") << endl;
       if (GetListOfPrimitives()->Contains(selected)) {
          if (fHistPresent->fSelectHist->GetSize() != 1) {
             cout << "select exactly 1 histogram" << endl;
@@ -280,11 +277,6 @@ void HTCanvas::InsertImage()
       pad->SetBottomMargin(0.02);
       pad->SetLeftMargin(0.02);
       pad->SetRightMargin(0.02);
-
-//      img->SetConstRatio(kTRUE);
-//      img->SetEditable(kTRUE);
-//      img->SetImageQuality(TAttImage::kImgBest);
-
       hprimg->Draw("xxx");
 //      hprimg->Paint();
       Update();
@@ -327,16 +319,21 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
       cout << "Define a graphical cut first" << endl;
       return -1;
    }
+   static Int_t serNr = 1;
    Bool_t ok;
-   TString name = "p1";
+   TString name = "p";
+   name += serNr;
+   serNr++;
+tryagain:
    name =
    GetString("Name of object (must be unique)", name.Data(), &ok,
         (TGWindow*)fRootCanvas);
-//   TString title = "tt";
-//   title =
-//   GetString("Title (used as comment)", title.Data(), &ok,
-//        (TGWindow*)fRootCanvas);
-
+   if (fGObjectGroups) {
+      if ( fGObjectGroups->FindObject(name) ) {
+         WarnBox("Object with this name already exists");
+         goto tryagain;
+      }
+   }     
    GroupOfGObjects * gg = new GroupOfGObjects(name.Data(), 0. ,0., NULL);
    Double_t * x = cut->GetX();
    Double_t * y = cut->GetY();
@@ -360,75 +357,85 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
    gg->fYorigin = yoff;
 //   gg->Dump();
    gg->SetEnclosingCut(cut);
-   TList * lenc = gg->GetMemberList();
    TObject * obj;
-   TIter next(GetListOfPrimitives());
-   while ( (obj = next()) ) {
-      if (obj == cut) continue;      // the enclosing TCutG itself
-      if (obj->InheritsFrom("EditMarker")) continue; 
-      TObject * clone;
-      if (markonly) clone = obj;
-      else          clone = obj->Clone();
-//      obj->Print();
+   TObjOptLink *lnk = (TObjOptLink*)GetListOfPrimitives()->FirstLink();
+//   TIter next(GetListOfPrimitives());
+   while ( lnk ) {
+      obj = lnk->GetObject();
+      if (obj == cut        // the enclosing TCutG itself
+          || obj->InheritsFrom("EditMarker")
+          || obj->InheritsFrom("GroupOfGObjects")) {
+         lnk = (TObjOptLink*)lnk->Next();
+         continue;
+      }
       if (obj->InheritsFrom("TBox")) {
-         TBox * b = (TBox*)clone;
+         TBox * b = (TBox*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
             |cut->IsInside(b->GetX1(), b->GetY2())
             |cut->IsInside(b->GetX2(), b->GetY1())
             |cut->IsInside(b->GetX2(), b->GetY2()) ) {
-            b->SetX1(b->GetX1() - xoff);
-            b->SetX2(b->GetX2() - xoff);
-            b->SetY1(b->GetY1() - yoff);
-            b->SetY2(b->GetY2() - yoff);
-            gg->AddMember(b);
-            if (markonly)lenc->Add(b);
+            if (!markonly) {
+               b = (TBox*)obj->Clone();
+               b->SetX1(b->GetX1() - xoff);
+               b->SetX2(b->GetX2() - xoff);
+               b->SetY1(b->GetY1() - yoff);
+               b->SetY2(b->GetY2() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
          }
          
       } else if (obj->InheritsFrom("TLine")){
-         TLine * b = (TLine*)clone;
+         TLine * b = (TLine*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
             |cut->IsInside(b->GetX2(), b->GetY2()) ) {
-            b->SetX1(b->GetX1() - xoff);
-            b->SetX2(b->GetX2() - xoff);
-            b->SetY1(b->GetY1() - yoff);
-            b->SetY2(b->GetY2() - yoff);
-            gg->AddMember(b);
-            if (markonly)lenc->Add(b);
+            if (!markonly) {
+               b = (TLine*)obj->Clone();
+               b->SetX1(b->GetX1() - xoff);
+               b->SetX2(b->GetX2() - xoff);
+               b->SetY1(b->GetY1() - yoff);
+               b->SetY2(b->GetY2() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
          }
 
       } else if (obj->InheritsFrom("TArrow")) {
-         TArrow * b = (TArrow*)clone;
+         TArrow * b = (TArrow*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
             |cut->IsInside(b->GetX2(), b->GetY2()) ) {
-            b->SetX1(b->GetX1() - xoff);
-            b->SetX2(b->GetX2() - xoff);
-            b->SetY1(b->GetY1() - yoff);
-            b->SetY2(b->GetY2() - yoff);
-            gg->AddMember(b);
-            if (markonly)lenc->Add(b);
+            if (!markonly) {
+               b = (TArrow*)obj->Clone();
+               b->SetX1(b->GetX1() - xoff);
+               b->SetX2(b->GetX2() - xoff);
+               b->SetY1(b->GetY1() - yoff);
+               b->SetY2(b->GetY2() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
          }
 
       } else if (obj->InheritsFrom("TCurlyLine")) {
-         TCurlyLine * b = (TCurlyLine*)clone;
+         TCurlyLine * b = (TCurlyLine*)obj;
          if (cut->IsInside(b->GetStartX(), b->GetStartY())
             |cut->IsInside(b->GetEndX(), b->GetEndY()) ) {
-            b->SetStartPoint(b->GetStartX() - xoff, b->GetStartY() - yoff);
-            b->SetEndPoint(b->GetEndX() - xoff, b->GetEndY() - yoff);
-            gg->AddMember(b);
-            if (markonly)lenc->Add(b);
+            if (!markonly) {
+               b = (TCurlyLine*)obj->Clone();
+               b->SetStartPoint(b->GetStartX() - xoff, b->GetStartY() - yoff);
+               b->SetEndPoint(b->GetEndX() - xoff, b->GetEndY() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
          }
       } else if (obj->InheritsFrom("TText")) {
-         TText * b = (TText*)clone;
-//         if (cut->IsInside(b->GetX(), b->GetY()) ) {
+         TText * b = (TText*)obj;
          if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
-            b->SetX(b->GetX() - xoff);
-            b->SetY(b->GetY() - yoff);
-            gg->AddMember(b);
-            if (markonly)lenc->Add(b);
+            if (!markonly) {
+               b = (TText*)obj->Clone();
+               b->SetX(b->GetX() - xoff);
+               b->SetY(b->GetY() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
          }
 
       } else if (obj->InheritsFrom("TEllipse")) {
-         TEllipse * b = (TEllipse*)clone;
+         TEllipse * b = (TEllipse*)obj;
          Bool_t inside = kFALSE;
          if (cut->IsInside(b->GetX1(), b->GetY1()))inside = kTRUE;
         
@@ -447,33 +454,40 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
             }
          }      
          if (inside) {
-            b->SetX1(b->GetX1() - xoff);
-            b->SetY1(b->GetY1() - yoff);
-            gg->AddMember(b);
-            if (markonly)lenc->Add(b);
+            if (!markonly) {
+               b = (TEllipse*)obj->Clone();
+               b->SetX1(b->GetX1() - xoff);
+               b->SetY1(b->GetY1() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
          }
 
-      } else if (obj->InheritsFrom("TPolyLine")) {
-         TPolyLine * b = (TPolyLine *)clone;
+      } else if (obj->InheritsFrom("TGraph")) {
+         TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
          if (!x) {
-            cout << "TPolyLine with 0 points" << endl;
+            cout << "TGraph with 0 points" << endl;
             continue;
          }
          Double_t * y = b->GetY();
 //         either first or last point
          if (cut->IsInside(x[0], y[0]) 
             |cut->IsInside(x[b->GetN()-1], y[b->GetN()-1])) {
-         	for (Int_t i = 0; i < b->GetN(); i++) {
-            	x[i] -= xoff;
-            	y[i] -= yoff;
+            if (!markonly) {
+               b = (TGraph*)obj->Clone();
+               x = b->GetX();
+               y = b->GetY();
+         	   for (Int_t i = 0; i < b->GetN(); i++) {
+            	   x[i] -= xoff;
+               	y[i] -= yoff;
+               }
          	}
+            gg->AddMember(b,  lnk->GetOption());
          } 
-         gg->AddMember(b);
-         if (markonly)lenc->Add(b);
       } else {
          cout << obj->ClassName() << " not yet implemented" << endl;
       }
+      lnk = (TObjOptLink*)lnk->Next();
    }   
    if (cut) delete cut;  
    cout <<  gg->GetNMembers()<< " objects in list " << endl;
@@ -484,6 +498,8 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
          ShowGallery();
       } else {
          gg->Draw();
+         Modified();
+         Update();
       }
    }
    return gg->GetNMembers();
@@ -503,7 +519,7 @@ void HTCanvas::InsertGObjects(const char * objname)
    row_lab->Add(new TObjString("Scale factor NDC"));
    row_lab->Add(new TObjString("Scale factor User"));
    row_lab->Add(new TObjString("Angle[deg]"));
-   row_lab->Add(new TObjString("Align (22 cent)"));
+   row_lab->Add(new TObjString("Align (11 lowleft, 22 cent)"));
    row_lab->Add(new TObjString("X value"));
    row_lab->Add(new TObjString("Y value"));
    row_lab->Add(new TObjString("Draw enclosing cut"));
@@ -511,7 +527,7 @@ void HTCanvas::InsertGObjects(const char * objname)
    static Double_t scaleNDC = 1;
    static Double_t scaleU = 1;
    static Double_t angle = 0;
-   static Int_t align = 22;
+   static Int_t align = 11;
    Double_t x0 = 0;
    Double_t y0 = 0;
    static Int_t draw_cut = 1;
@@ -536,7 +552,7 @@ void HTCanvas::InsertGObjects(const char * objname)
    else
       values->Add(new TObjString("CheckButton_Up"));
 
-   Int_t ret,  itemwidth=120, nrows = values->GetSize(); 
+   Int_t ret,  itemwidth=160, nrows = values->GetSize(); 
 tryagain:
    new TGMrbTableFrame((TGWindow*)fRootCanvas, &ret, "", 
                         itemwidth, 1, nrows, values,
@@ -599,33 +615,6 @@ tryagain:
       x0 = fMouseX;
       y0 = fMouseY;
    }
-/*
-   if (fInsertMacrosAsGroup) {
-      TString pad_name(gg->GetName());
-      pad_name += "_pad";
-      Double_t dx = gg->fXUpEdge - gg->fXLowEdge;
-      Double_t dy = gg->fYUpEdge - gg->fYLowEdge;
-      this->cd();
-      Double_t x1, x2, y1, y2;
-      GetRange(x1, y1,x2, y2);
-      Double_t dxc = x2 - x1;
-      Double_t dyc = y2 - y1;
-
-      cout <<"dx, dy "  << dx << " " << dy << endl;
-      cout <<"dxc, dyc "  << dxc << " " << dyc << endl;
-      TPad * pad = new TPad(pad_name, gg->GetTitle(), 
-                            fMouseX / dxc, fMouseY / dyc, 
-                           (fMouseX + dx) / dxc, (fMouseY + dy) / dyc);
-      pad->Range(0, 0, dx, dy);
-      pad->Draw();
-      pad->cd();
-   //   gg->AddMembersToList(this->GetListOfPrimitives(),fMouseX, fMouseY); 
-//      SetAllCurlySizes(gg->GetMemberList(), dyc/dy, dyc/dy, kFALSE);
-//      SetAllArrowSizes(gg->GetMemberList(), dyc/dy, kFALSE);
- //     SetAllTextSizes(gg->GetMemberList(), dyc/dy, kFALSE);
-      gg->AddMembersToList(pad, 0., 0., dyc/dy); 
-   } else {
-*/
    this->cd();
    gg->AddMembersToList(this, x0, y0, scaleNDC, scaleU, angle, align, draw_cut); 
    this->Modified(); 
@@ -695,7 +684,7 @@ void HTCanvas::ShowGallery()
       return;
    }
    Int_t n = fGObjectGroups->GetSize();
-   new TDialogCanvas("GObjects", "Graphics macro objects",
+   TDialogCanvas *dialog = new TDialogCanvas("GObjects", "Graphics macro objects",
                             5,500, 500, 500);
    Double_t dx = 0.18, dy = 0.18, marg = 0.02;
    Double_t x = marg;
@@ -728,19 +717,22 @@ void HTCanvas::ShowGallery()
          xoff = (go->fXorigin - go->fXLowEdge) / xr;
          yoff = (go->fYorigin - go->fYLowEdge) / yr;
       }
+//      cout << "xr,yr, xoff, yoff " <<xr << " "  <<yr << " "  
+//                                   <<xoff << " "  << yoff<< " " << endl; 
       b->Range(-(xoff+0.1)*xr, -(yoff+0.1)*yr, (xoff+0.1)*xr, (yoff +0.1)*yr);
-      tt = new TText(0,0, "");
+      b->Draw();
+//      b->cd();
+//      tt = new TText(0,0, "");
       TList * lop = b->GetListOfPrimitives();
-      lop->Add(tt);
-      go->AddMembersToList(b, 0, 0, 5);
-//      SetAllCurlySizes(lop, 5, 5, kFALSE);
-//      SetAllArrowSizes(lop, 5, kFALSE);
-//      SetAllTextSizes(lop, 5, kFALSE);
+//      lop->Add(tt);
+      go->AddMembersToList(b, 0, 0, 4, 1, 0, 22);
       tt = new TText();
       tt->SetText(-.4 * xr, -.5 *yr, oname.Data());
       tt->SetTextSize(0.15);
-      lop->Add(tt);
-      b->Draw();
+      lop->Add(tt, "");
+//      tt->Draw();
+      b->Update();
+      dialog->cd();
       y = y + dy + marg;
       if (y > 1 - dy - marg) {
          x = x + dx + marg;
@@ -752,13 +744,13 @@ void HTCanvas::ShowGallery()
 
 void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
 {
-//   cout << "ShiftObjects " << list << " " << xoff << " " << yoff << endl;
+ //  cout << "ShiftObjects " << list << " " << xoff << " " << yoff << endl;
 //  if (list) list->Print();
    TObject * obj;
    TIter next(list);
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("EditMarker")) continue; 
-//      obj->Print();
+ //     obj->Print();
       if (obj->InheritsFrom("TBox")) {
          TBox * b = (TBox*)obj;
          b->SetX1(b->GetX1() + xoff);
@@ -767,14 +759,14 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
          b->SetY2(b->GetY2() + yoff);
          
       } else if (obj->InheritsFrom("TLine")){
-      TLine * b = (TLine*)obj;
+         TLine * b = (TLine*)obj;
          b->SetX1(b->GetX1() + xoff);
          b->SetX2(b->GetX2() + xoff);
          b->SetY1(b->GetY1() + yoff);
          b->SetY2(b->GetY2() + yoff);
 
       } else if (obj->InheritsFrom("TArrow")) {
-      TArrow * b = (TArrow*)obj;
+         TArrow * b = (TArrow*)obj;
          b->SetX1(b->GetX1() + xoff);
          b->SetX2(b->GetX2() + xoff);
          b->SetY1(b->GetY1() + yoff);
@@ -798,11 +790,11 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
          b->SetX1(b->GetX1() + xoff);
          b->SetY1(b->GetY1() + yoff);
 
-      } else if (obj->InheritsFrom("TPolyLine")) {
-         TPolyLine * b = (TPolyLine *)obj;
+      } else if (obj->InheritsFrom("TGraph")) {
+         TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
          if (!x) {
-            cout << "TPolyLine with 0 points" << endl;
+            cout << "TGraph with 0 points" << endl;
             continue;
          }
          Double_t * y = b->GetY();
@@ -882,11 +874,11 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
 //         b->SetX2(PutOnGridX(b->GetX2()));
 //         b->SetY2(PutOnGridY(b->GetY2()));
 
-      } else if (obj->InheritsFrom("TPolyLine")) {
-         TPolyLine * b = (TPolyLine *)obj;
+      } else if (obj->InheritsFrom("TGraph")) {
+         TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
          if (!x) {
-            cout << "TPolyLine with 0 points" << endl;
+            cout << "TGraph with 0 points" << endl;
             continue;
          }
          Double_t * y = b->GetY();
@@ -987,11 +979,11 @@ void HTCanvas::DeleteObjects()
              delete obj;
          }
 
-      } else if (obj->InheritsFrom("TPolyLine")) {
-         TPolyLine * b = (TPolyLine *)obj;
+      } else if (obj->InheritsFrom("TGraph")) {
+         TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
          if (!x) {
-            cout << "TPolyLine with 0 points" << endl;
+            cout << "TGraph with 0 points" << endl;
             delete obj;
             continue;
          }
@@ -1030,17 +1022,21 @@ const Char_t helpText[] =
    row_lab->Add(new TObjString("X Position"));
    row_lab->Add(new TObjString("Y Position"));
    row_lab->Add(new TObjString("Line spacing"));
+   row_lab->Add(new TObjString("Text size"));
    row_lab->Add(new TObjString("Text alignment (see Help)"));
-   static Double_t x0 = 20;
-   static Double_t y0 = 250;
+   static Double_t x0 = 0;
+   static Double_t y0 = 0;
    static Double_t dy = 10;
    static Int_t align = 11; // lower left
+   static Double_t textsize = 0.02;
+   if (fHistPresent) textsize = fHistPresent->fTextSize;
    TMrbString temp;
    static TString fname = "latex.txt";
    values->Add(new TObjString(fname.Data()));
    values->Add(new TObjString(Form("%lf", x0)));
    values->Add(new TObjString(Form("%lf", y0)));
    values->Add(new TObjString(Form("%lf", dy)));
+   values->Add(new TObjString(Form("%lf", textsize)));
    values->Add(new TObjString(Form("%d",  align)));
 
    Int_t ret,  itemwidth=120, nrows = values->GetSize(); 
@@ -1069,10 +1065,27 @@ tryagain:
       goto tryagain;      
    }
    temp = ((TObjString*)values->At(4))->GetString();
+   if (!temp.ToDouble(textsize)) {
+      cout << "Illegal double: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(5))->GetString();
    if (!temp.ToInteger(align)) {
       cout << "Illegal integer: " << temp << endl;
       goto tryagain;      
    }
+   if (x0 == 0 && y0 == 0) {
+   	cout << "Mark position with left mouse" << endl;
+   	fGetMouse = kTRUE;
+	   while (fGetMouse == kTRUE) {
+   	   gSystem->ProcessEvents();
+   	   gSystem->Sleep(10);
+	   }
+	   cout << fMouseX << " " << fMouseY << endl;
+      x0 = fMouseX;
+      y0 = fMouseY;
+   }
+
    ifstream infile(fname);
  
    TString line;
@@ -1156,6 +1169,7 @@ tryagain:
 //      cout << "Final:     " << cmd << endl;
       latex = new TLatex(xt, yt, cmd.Data());
       latex->SetTextAlign(align);
+      latex->SetTextSize(textsize);
       latex->Draw();
       yt -= dy;
 //      outfile << cmd << endl;

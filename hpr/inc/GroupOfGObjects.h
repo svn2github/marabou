@@ -36,7 +36,7 @@ public:
    Double_t GetYorigin(){return fYorigin;}
    TList * GetMemberList() {return & fMembers;};
    void    SetEnclosingCut(TCutG *cut);
-   void    AddMember(TObject * obj);
+   void    AddMember(TObject * obj, Option_t *option);
    void    RemoveMember(TObject * obj) {fMembers.Remove(obj);};
    Bool_t  BindMember(TObject * obj);
    Bool_t  FreeMember(TObject * obj);
@@ -46,13 +46,13 @@ public:
                             Double_t angle = 0, Int_t align = 11, Int_t draw_cut=0);
    void Transform(Double_t x, Double_t y, Double_t xoff,Double_t yoff,
                     Double_t scale, Double_t angle,Int_t  align, Double_t* xt, Double_t* yt);  
-   void Print();
+   void Print();                                                // *MENU*
    void Paint(Option_t* opt) {if (fIsVisible) TGraph::Paint(opt);};
-   void    SetVisible(Bool_t vis) {fIsVisible = vis;};
+   void    SetVisible(Bool_t vis) {fIsVisible = vis;};          // *MENU*
    Bool_t  GetVisible() {return fIsVisible;};
    void BindObjects() {BindReleaseObjects(kTRUE);};            // *MENU*
    void ReleaseObjects() {BindReleaseObjects(kFALSE);};        // *MENU*
-   void DeleteObjects();                                      // *MENU*
+   void DeleteObjects();                                       // *MENU*
    void BindReleaseObjects(Bool_t bind) ; 
         
 ClassDef(GroupOfGObjects,2)

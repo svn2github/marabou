@@ -73,16 +73,18 @@ void GroupOfGObjects::Print()
    cout << ClassName() << " --- " << GetName() << " --- " <<  GetName() << endl;
    TIter next(&fMembers);
    TObject * obj;
-   while ( (obj = next()) ) obj->Print();
+   while ( (obj = next()) ) {
+     cout << obj->ClassName() << endl;
+     obj->Print();
+   }
    cout << "-------------------------------------------------------- "<< endl;
 };
 //________________________________________________________________
 
-void GroupOfGObjects::AddMember(TObject * obj) 
+void GroupOfGObjects::AddMember(TObject * obj, Option_t *option) 
 {  
-   fMembers.Add(obj); 
+   fMembers.Add(obj, option); 
    obj->SetBit(kIsBound);
-//   fEnclosingCut->GetLofGObjects()->Add(obj);
 };
 //________________________________________________________________
 
@@ -106,22 +108,30 @@ Bool_t GroupOfGObjects::FreeMember(TObject * obj)
 
 void GroupOfGObjects::BindReleaseObjects(Bool_t bind)
 {
-   TIter next(&fMembers);
+   TObjOptLink *lnk = (TObjOptLink*)fMembers.FirstLink();
    TObject * obj;
-   while ( (obj = next()) ) { 
+   while ( lnk ) {
+      obj = lnk->GetObject();
       if (bind) obj->SetBit(GroupOfGObjects::kIsBound);
       else      obj->ResetBit(GroupOfGObjects::kIsBound);
+      lnk = (TObjOptLink*)lnk->Next();
    }
 };
 //________________________________________________________________
 
 void GroupOfGObjects::DeleteObjects()
 {
+//   TObjOptLink *lnk = (TObjOptLink*)fMembers.FirstLink();
+//   TObject * obj;
+//   while ( lnk ) {
+//      obj = lnk->GetObject();
+//     if (obj) delete obj;
+//     lnk = (TObjOptLink*)lnk->Next();
+//   }
    TIter next(&fMembers);
    TObject * obj;
    while ( (obj = next()) ) {
-      
-      delete obj;
+     delete obj;
    }
    delete this;
 };
@@ -145,7 +155,7 @@ void GroupOfGObjects::SetEnclosingCut(TCutG *cut)
 }
 //________________________________________________________________
 
-Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff, Double_t yoff,
+Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yoff_c,
                                         Double_t scaleNDC, Double_t scaleG, 
                                         Double_t angle, Int_t align, Int_t draw_cut)
 {
@@ -156,15 +166,26 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff, Double_t yoff
 //  applying a scale factor (scaleG), a tranlation and rotation
 //
 ////////////////////////////////////////////////////////////////////
-   TIter next(&fMembers);
+//   pad->cd();
+   
+//   cout << "pad, gPad " << pad << " " << gPad << endl;
+//   pad->Dump();
+
    TObject * obj;
    TObject * clone;
-   TList * list = pad->GetListOfPrimitives();
    Double_t xt, yt;
+//  calculate offset acc to alignment
+   Double_t xoff = xoff_c;
+   Double_t yoff = yoff_c;
+   Double_t dx2 = 0.5 * (fXUpEdge - fXLowEdge); 
+   Double_t dy2 = 0.5 * (fYUpEdge - fYLowEdge); 
+   if      (align/10 == 1) xoff += scaleG * dx2;
+   else if (align/10 == 3) xoff -= scaleG * dx2;
+   if      (align%10 == 1) yoff += scaleG * dy2;
+   else if (align%10 == 3) yoff -= scaleG * dy2;
+
    TList * list_in_cut = 0;
 //   cout << "AddMembersToList: " << xoff << " " << yoff << " " << angle  << " "<< align << endl;
-//   pad->cd();
-//   Inspect();
    if (draw_cut != 0 && this->GetN()){
       clone = this->Clone();
       GroupOfGObjects * cut = (GroupOfGObjects*)clone;
@@ -179,22 +200,15 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff, Double_t yoff
       }
       cut->SetLineWidth(1);
       cut->SetLineStyle(2);
-      list->Add(cut);
-//     cout << " AddMembersToList: cut " << cut << endl << flush;
-//      cut->Draw();
+      cut->Draw();
    }
-   while ( (obj = next()) ) {
+   TObjOptLink *lnk = (TObjOptLink*)fMembers.FirstLink();
+   while ( lnk ) {
+      obj = lnk->GetObject();
       clone = obj->Clone();
-      obj->SetBit(kIsBound);
-//      cout << clone->ClassName() << endl; 
-      list->Add(clone);
+      clone->SetBit(kIsBound);
+
       if (list_in_cut)list_in_cut->Add(clone);
-//      if (clone->InheritsFrom("TPave")) {
-//         TPave * b = (TPave*)clone;
-//         b->SetX1NDC(XtoNDC(pad, b->GetX1()) + XLtoNDC(pad, xoff));
-//         b->SetX2NDC(XtoNDC(pad, b->GetX2()) + XLtoNDC(pad, xoff));
-//         b->SetY1NDC(YtoNDC(pad, b->GetY1()) + YLtoNDC(pad, yoff));
-//         b->SetY2NDC(YtoNDC(pad, b->GetY2()) + YLtoNDC(pad, yoff));
 
       if (clone->InheritsFrom("TArrow")) {
          TArrow * b = (TArrow*)clone;
@@ -205,8 +219,6 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff, Double_t yoff
          b->SetX2(xt);
          b->SetY2(yt);
          b->SetArrowSize(b->GetArrowSize() * scaleNDC);
-
-//         cout << "SetArrowSize: " << b->GetArrowSize() * scaleNDC << endl;
 
       } else if (clone->InheritsFrom("TCurlyArc")) {
          TCurlyArc* b = (TCurlyArc*)clone;
@@ -252,8 +264,8 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff, Double_t yoff
          b->SetX1(xt);
          b->SetY1(yt);
 
-      } else if (clone->InheritsFrom("TPolyLine")) {
-         TPolyLine * b = (TPolyLine *)clone;
+      } else if (clone->InheritsFrom("TGraph")) {
+         TGraph * b = (TGraph *)clone;
          Double_t * x = b->GetX();
          Double_t * y = b->GetY();
          for (Int_t i = 0; i < b->GetN(); i++) {
@@ -281,8 +293,18 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff, Double_t yoff
 
       } else {
          cout << clone->ClassName() << " not yet implemented" << endl;
+         clone = 0;
       }
-   }     
+      if (clone) {
+//         cout << "pad, gPad " << pad << " " << gPad << endl;
+         pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
+//         cout << "addmemb: " << endl;
+//         clone->Print();
+      }
+      lnk = (TObjOptLink*)lnk->Next();
+   }   
+ //  pad->Inspect(); 
+ //  pad->Modified(); 
    return 1;
 };
 //____________________________________________________________________________
@@ -299,8 +321,6 @@ void  GroupOfGObjects::Transform(Double_t x, Double_t y, Double_t xoff, Double_t
       *xt = xx * TMath::Cos(ar) - yy * TMath::Sin(ar);
       *yt = xx * TMath::Sin(ar) + yy * TMath::Cos(ar);
    }
-//   xx += xoff;
-//  yy += yoff;
    *xt += xoff;
    *yt += yoff;
 }
