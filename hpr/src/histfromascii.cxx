@@ -218,6 +218,21 @@ tryagain:
          }
       }
       if (its_2dimhist) {
+         temp = ((TObjString*)values->At(5))->GetString();
+         if (!temp.ToInteger(nbiny)) {
+            cout << "Illegal integer: " << temp << endl;
+            goto tryagain;      
+         }
+         temp = ((TObjString*)values->At(6))->GetString();
+         if (!temp.ToDouble(ylow)) {
+            cout << "Illegal double: " << temp << endl;
+            goto tryagain;      
+         }
+         temp = ((TObjString*)values->At(7))->GetString();
+         if (!temp.ToDouble(yup)) {
+            cout << "Illegal double: " << temp << endl;
+            goto tryagain;      
+         }
          TH2F * hist2 = new TH2F(hname, htitle, nbinx, xlow, xup, 
                                                nbiny, ylow, yup);
          hist = hist2;

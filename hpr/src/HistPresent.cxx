@@ -3732,17 +3732,19 @@ void HistPresent::DinA4Page(Int_t form)
    if (form == 1) {
       c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
                   350,40,1004, 759, this);
-      c1->Range(0, 0, 210. * TMath::Sqrt(2.), 210);
+//      c1->Range(0, 0, 210. * TMath::Sqrt(2.), 210);
+      c1->Range(0, 0, 260, 180);
    } else if (form == 0) {
       c1= new HTCanvas("dina4page", "A DIN a4 page portrait",
-                  750,40,  712, 1050, this);
-      c1->Range(0, 0, 210, 210. * TMath::Sqrt(2.));
+                  750,40,  690, 1052, this);
+//      c1->Range(0, 0, 210, 210. * TMath::Sqrt(2.));
+      c1->Range(0, 0, 180, 260);
    }
    GetCanvasList()->Add(c1);
-   c1->SetRightMargin(0);
-   c1->SetLeftMargin(0);
-   c1->SetBottomMargin(0);
-   c1->SetTopMargin(0);
+//   c1->SetRightMargin(0);
+//   c1->SetLeftMargin(0);
+//   c1->SetBottomMargin(0);
+//   c1->SetTopMargin(0);
    c1->SetGrid(10, 10);
    c1->Modified(kTRUE);
    c1->Update();

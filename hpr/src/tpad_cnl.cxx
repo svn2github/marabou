@@ -86,8 +86,8 @@ void TPad::CreateNewLine(Int_t event, Int_t px, Int_t py, Int_t mode)
          Double_t rd      = gEnv->GetValue("HistPresent.CurlyAmplitude", 0.025);
          Double_t wl      = gEnv->GetValue("HistPresent.CurlyWaveLength",0.01);
          Int_t    acol    = gEnv->GetValue("HistPresent.CurlyColor", 1);
-         Int_t    awid  = gEnv->GetValue("HistPresent.CurlyWidth", 1);
-         Int_t    asty  = gEnv->GetValue("HistPresent.CurlyStyle", 1);
+         Int_t    awid    = gEnv->GetValue("HistPresent.CurlyWidth", 1);
+         Int_t    asty    = gEnv->GetValue("HistPresent.CurlyStyle", 1);
          Int_t    iscurly = gEnv->GetValue("HistPresent.IsCurly",0);
          if (mode == kCurlyLine) {
             cline = new TCurlyLine(x0,y0,x1,y1, wl, rd);
