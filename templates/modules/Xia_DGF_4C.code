@@ -107,6 +107,7 @@
 %R<=2.0%			dgfmod = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA);
 %R<=2.0%			dgfmod &= ~0x1L;
 %R<=2.0%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA, dgfmod);
+%B%			DGF_READ_WCR($moduleNameLC);
 %B%			if (root_env_getval_b("TMrbDGF.ReloadParamsOnDaqInit", 0) == 1) dgf_reload_params($moduleNameLC, "$moduleNameLC", "$settingsPath/$moduleNameLC.par");
 %B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODNUM, kMrbModule$moduleNameUC);
 %B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MAXEVENTS, root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents));
