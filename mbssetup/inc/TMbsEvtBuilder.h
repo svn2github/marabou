@@ -8,7 +8,7 @@
 // Class:          TMbsEvtBuilder       -- event builder
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsEvtBuilder.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMbsEvtBuilder.h,v 1.4 2004-11-25 12:00:17 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.22 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.23 2004-11-25 12:00:17 rudi Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -995,7 +995,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryBase"), 0);
 						if (memBase == 0) {
 							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
-							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
+							else if (ctrl == kControllerCC32) {
+								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	memBase = kRemMemoryBaseCC32RIO3;
+								else																memBase = kRemMemoryBaseCC32RIO2;
+							}
 						} 
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
@@ -1060,7 +1063,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
 							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
-							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
+							else if (ctrl == kControllerCC32) {
+								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	memBase = kRemMemoryBaseCC32RIO3;
+								else																memBase = kRemMemoryBaseCC32RIO2;
+							}
 						} 
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
@@ -1124,7 +1130,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
 							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
-							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
+							else if (ctrl == kControllerCC32) {
+								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	memBase = kRemMemoryBaseCC32RIO3;
+								else																memBase = kRemMemoryBaseCC32RIO2;
+							}
 						} 
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {

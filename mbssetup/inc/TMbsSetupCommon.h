@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.5 2004-11-25 12:00:17 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -26,7 +26,9 @@ enum EMbsProcType			{ 	kProcUndefined			=	0,				// processor types
 								kProcCVC				=	1,
 								kProcE6 				=	2,
 								kProcE7 				=	3,
-								kProcPPC				=	8
+								kProcPPC				=	8,
+								kProcRIO2				=	8,
+								kProcRIO3				=	10
 							};
 
 enum EMbsControllerType		{ 	kControllerUndefined	=	0,				// crate controllers
@@ -38,6 +40,8 @@ enum EMbsControllerType		{ 	kControllerUndefined	=	0,				// crate controllers
 								kControllerCVI			=	6,
 								kControllerCAV			=	7,
 								kControllerPPC			=	kProcPPC,
+								kControllerRIO2			=	kProcRIO2,
+								kControllerRIO3			=	kProcRIO3,
 								kControllerCC32 		=   11
 							};
 
@@ -93,7 +97,8 @@ enum EMbsSetupTags			{	kSetHostName				=	1,
 							};
 
 enum						{	kRemMemoryBaseCBV		= 0xd0380000	};
-enum						{	kRemMemoryBaseCC32		= 0xee550000	};
+enum						{	kRemMemoryBaseCC32RIO2	= 0xee550000	};
+enum						{	kRemMemoryBaseCC32RIO3	= 0x7d550000	};
 enum						{	kRemMemoryLengthCBV 	= 0x00200000	};
 enum						{	kRemMemoryLengthCC32	= 0x00008000	};
 
@@ -108,6 +113,8 @@ const SMrbNamedXShort kMbsLofProcs[] =				// list of legal processors
 							{
 								{kProcCVC,			"CVC"			},
 								{kProcPPC,			"PPC"			},
+								{kProcRIO2,			"RIO2"			},
+								{kProcRIO3,			"RIO3"			},
 								{0, 				NULL			}
 							};
 
@@ -116,6 +123,8 @@ const SMrbNamedXShort kMbsLofControllers[] =		// list of legal crate controllers
 								{kControllerCVC,	"CVC"			},
 								{kControllerCBV,	"CBV"			},
 								{kControllerPPC,	"PPC"			},
+								{kControllerRIO2,	"RIO2"			},
+								{kControllerRIO3,	"RIO3"			},
 								{kControllerCC32,	"CC32"			},
 								{0, 				NULL			}
 							};
