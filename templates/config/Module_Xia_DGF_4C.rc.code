@@ -2,6 +2,7 @@
 %NUM%$resource.Module.$modNo.ClusterSerial:	$clusterSerial
 %NUM%$resource.Module.$modNo.ClusterColor:	$clusterColor
 %NUM%$resource.Module.$modNo.ClusterSegments:	$clusterSegments
+%NUM%$resource.Module.$modNo.ClusterHexNum:	$clusterHexNum
 %NUM%$resource.Module.$modNo.TraceLength:	$traceLength
 %NUM%$resource.Module.$modNo.RunTask:		$runTask
 %NUM%$resource.Module.$modNo.MaxEvents:		$maxEvents
@@ -13,6 +14,7 @@
 %NAM%$resource.Module.$moduleNameUC.ClusterSerial:	$clusterSerial
 %NAM%$resource.Module.$moduleNameUC.ClusterColor:	$clusterColor
 %NAM%$resource.Module.$moduleNameUC.ClusterSegments:	$clusterSegments
+%NAM%$resource.Module.$moduleNameUC.ClusterHexNum:	$clusterHexNum
 %NAM%$resource.Module.$moduleNameUC.TraceLength:	$traceLength
 %NAM%$resource.Module.$moduleNameUC.RunTask:		$runTask
 %NAM%$resource.Module.$moduleNameUC.MaxEvents:		$maxEvents
