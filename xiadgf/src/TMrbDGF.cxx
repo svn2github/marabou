@@ -1362,9 +1362,12 @@ Bool_t TMrbDGF::SetParValue(const Char_t * ParamName, Int_t Value, Bool_t Update
 
 	pOffset = param->GetIndex();						// offset has to be in the data region
 	if (pOffset > TMrbDGFData::kNofDSPInputParams) {
-		gMrbLog->Err() << "Param \"" << ParamName << "\" is in the OUTPUT section - can't be set" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetParValue");
-		return(kFALSE);
+		TString pName = param->GetName();
+		if (pName.CompareTo("SYNCHDONE") != 0) {
+			gMrbLog->Err() << "Param \"" << ParamName << "\" is in the OUTPUT section - can't be set" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetParValue");
+			return(kFALSE);
+		}
 	}
 
 	fParams[pOffset] = (UShort_t) (Value & 0xffff);		// set value in memory
