@@ -1529,10 +1529,7 @@ last event < first event", this);
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsStatus(){
    if(!fMbsControl) fMbsControl = new TMbsControl(masters[fCbMaster->GetSelected()-1],
-//                                                  fTbMaster->GetString(),
-//                                                  mbsversions[fCbMbsVersion->GetSelected()-1],
-                                                  mbsversions[0],
-//                                                  fTbMbsVers->GetString(),
+                                                  fMbsVersion->Data(),
                                                   fTbDir->GetString());
    cout << sepline << endl; 
    TDatime date;
@@ -1593,9 +1590,7 @@ Bool_t FhMainFrame::Configure(){
       fC_Status = M_CONFIGURING;
 
       if(!fMbsControl) fMbsControl = new TMbsControl( masters[fCbMaster->GetSelected()-1],
-//                                                     fTbMaster->GetString(),
-                                                     mbsversions[0],
-//                                                     fTbMbsVers->GetString(),
+                                                     fMbsVersion->Data(),
                                                      fTbDir->GetString());
       cout << setblue<< "c_ana: Configure, check for running Mbs processes on Lynx"<< setblack << endl;
       Int_t nb=fMbsControl->GetNofMbsProcs();
@@ -1795,9 +1790,7 @@ Bool_t FhMainFrame::ClearMbs(){
    }
    if(!CheckHostsUp())return kFALSE;
    if(!fMbsControl) fMbsControl = new TMbsControl( masters[fCbMaster->GetSelected()-1],
-//                                                  fTbMaster->GetString(),
-                                                  mbsversions[0],
-//                                                  fTbMbsVers->GetString(),
+                                                 fMbsVersion->Data(),
                                                   fTbDir->GetString());
    fM_Status = M_ABSENT;
    fStartStopButton->SetState(kButtonDisabled);
@@ -2801,7 +2794,6 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "COMMENT: "     <<  fTbComment->GetString()  << endl;
    wstream << "MASTER:  "     <<  masters[fCbMaster->GetSelected()-1] << endl;
    wstream << "READOUT:  "    <<  slaves[fCbReadout->GetSelected()-1] << endl;
-//   wstream << "MBSVERS:  "    <<  mbsversions[fCbMbsVersion->GetSelected()-1] << endl;
    wstream << "DIR: "         <<  fTbDir->GetString()      << endl;
    if(fCbTrigger->GetSelected() == 1)*fTrigger = "VME";
    else                              *fTrigger = "CAMAC";
