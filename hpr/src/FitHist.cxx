@@ -1424,16 +1424,16 @@ Int_t FitHist::GetMarks(TH1 * hist)
       TAxis *xaxis = hist->GetXaxis();
       Int_t first = xaxis->GetFirst();
       Int_t last = xaxis->GetLast();
-      xmin = xaxis->GetBinLowEdge(first);
-      xmax = xaxis->GetBinUpEdge(last);
+      xmin = xaxis->GetBinLowEdge(first) + 0.5 * xaxis->GetBinWidth(first);
+      xmax = xaxis->GetBinUpEdge(last)   - 0.5 * xaxis->GetBinWidth(last);
 //      nxbins = hist->GetNbinsX();
 //      xbinwidth=(xmax-xmin)/nxbins;
       if (is2dim(hist)) {
          TAxis *yaxis = hist->GetYaxis();
          first = yaxis->GetFirst();
          last = yaxis->GetLast();
-         ymin = yaxis->GetBinLowEdge(first);
-         ymax = yaxis->GetBinUpEdge(last);
+         ymin = yaxis->GetBinLowEdge(first) + 0.5 * yaxis->GetBinWidth(first);
+         ymax = yaxis->GetBinUpEdge(last)   - 0.5 * yaxis->GetBinWidth(last);
 //         nybins = hist->GetNbinsY();
 //         ybinwidth=(ymax-ymin)/nybins;
       }
@@ -1709,9 +1709,10 @@ void FitHist::GetLimits()
    TIter next(markers);
 //   markers->Sort();
    while ( (p = (FhMarker *) next()) ) {
-      inp = XBinNumber(fSelHist, p->GetX());
+      inp = fSelHist->GetXaxis()->FindBin(p->GetX());
+//      inp = XBinNumber(fSelHist, p->GetX());
       if (inp > 0) {
-//         cout <<  "xbin " << inp << endl;
+ //        cout << "p->GetX() " << p->GetX()<<  " xbin " << inp << endl;
          if (fBinX_1 <= 0) {
             fBinX_1 = inp;
             fX_1 = p->GetX();
@@ -1725,7 +1726,10 @@ void FitHist::GetLimits()
             fX_2 = p->GetX();
          }
       }
-      inp = YBinNumber(fSelHist, p->GetY());
+      if (is2dim(fSelHist)) inp = fSelHist->GetYaxis()->FindBin(p->GetY());
+      else                  inp = 1;
+
+//      inp = YBinNumber(fSelHist, p->GetY());
 //      inp = (Int_t)fYbins->At(i);
       if (inp > 0) {
 //         cout << "ybin " << inp << endl;
@@ -2103,6 +2107,10 @@ void FitHist::ExpandProject(Int_t what)
       fBinly = YBinNumber(fOrigHist, fExply + 0.5 * ybw);
       fBinuy = YBinNumber(fOrigHist, fExpuy - 0.5 * ybw);
       Int_t NbinY = fBinuy - fBinly + 1;
+//      cout << "fExplx, ux, ly, uy " 
+//       <<fExplx << " "  << fExpux<< " "  << fExply<< " "  << fExpuy<< endl;
+//      cout << "fBinlx, ux, ly, uy " 
+//       <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
       Int_t nperbinX = 1, nperbinY = 1;
       if (what == projectx || what == projectboth) {
          TString pname = "Px";
@@ -2210,6 +2218,7 @@ void FitHist::ExpandProject(Int_t what)
       if (what == statonly) {
          return;
       }
+      ClearMarks();
       fSelPad->cd();
       if (what == projectboth) {
          Double_t bothratio = hp->fProjectBothRatio;
@@ -2337,7 +2346,7 @@ void FitHist::ExpandProject(Int_t what)
    else
       Draw1Dim();
 
-   ClearMarks();
+//   ClearMarks();
    cHist->Update();
 }
 
