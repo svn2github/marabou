@@ -169,8 +169,17 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
 %UD1C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2C%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%UDS%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $args);
+%UDSC%	if (($hName == NULL) && ($condition)) $hName = new $hType("$hName", "$hTitle", $args);
 %%EndOfCode%%
 %%HISTO_BOOK_USER_DEFINED%%
+
+%%BeginOfCode%%
+%B%// book subevent histograms individually
+%S%	g$evt->Get$sevt()->BookHistograms();
+%SC%	if ($condition) g$evt->Get$sevt()->BookHistograms();
+%%EndOfCode%%
+%%HISTO_BOOK_SEVT_INDIV%%
 
 %%BeginOfCode%%
 %B%// fill histograms arrays

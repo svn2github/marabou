@@ -40,6 +40,11 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		inline UInt_t GetSubeventPattern() const { return(fSubeventPattern); };
 		inline Bool_t ThereIsSubevent(UInt_t SubeventBit) const { return((fSubeventPattern & SubeventBit) != 0); };
 
+%%BeginOfCode%%
+		inline TUsrSevt$sevtNameUC * Get$sevtNameUC() { return &$sevtNameLC; };
+%%EndOfCode%%
+%%SEVT_GET_ADDR%%
+
 //%%EVT_USER_METHODS%%			user-specific methods may be included here
 		
 	protected:

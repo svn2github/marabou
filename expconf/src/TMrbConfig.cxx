@@ -262,6 +262,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtClassDef,				"SEVT_CLASS_DEFINITION" 		},
 								{TMrbConfig::kAnaSevtClassMethods,			"SEVT_CLASS_METHODS"			},
 								{TMrbConfig::kAnaSevtClassInstance, 		"SEVT_CLASS_INSTANCE"			},
+								{TMrbConfig::kAnaSevtGetAddr, 				"SEVT_GET_ADDR" 				},
 								{TMrbConfig::kAnaSevtUserMethods,			"SEVT_USER_METHODS"				},
 								{TMrbConfig::kAnaSevtUserData,				"SEVT_USER_DATA"				},
 								{TMrbConfig::kAnaSevtFriends,				"SEVT_FRIENDS"					},
@@ -283,6 +284,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaHistoDefinePointers,		"HISTO_DEFINE_POINTERS" 		},
 								{TMrbConfig::kAnaHistoInitializeArrays, 	"HISTO_INIT_ARRAYS" 			},
 								{TMrbConfig::kAnaHistoBookUserDefined,	 	"HISTO_BOOK_USER_DEFINED"		},
+								{TMrbConfig::kAnaHistoBookSevtIndiv,	 	"HISTO_BOOK_SEVT_INDIV" 		},
 								{TMrbConfig::kAnaHistoFillArrays,	 		"HISTO_FILL_ARRAYS" 			},
 								{TMrbConfig::kAnaVarDefinePointers, 		"VAR_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaVarClassInstance,			"VAR_CLASS_INSTANCE"			},
@@ -630,6 +632,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
+		fLofSevtHistosToBeBooked.Delete();						// init list of histogram booking conds
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
@@ -2857,8 +2860,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.InitializeCode("%UDBH%");
 								anaTmpl.Substitute("$hName", h->GetName());
 								anaTmpl.Substitute("$hTitle", h->GetTitle());
-								TMrbNamedArrayD * a = (TMrbNamedArrayD *) h->GetAssignedObject();
-								anaTmpl.Substitute("$hType", a->GetName());
+								anaTmpl.Substitute("$hType", (fLofHistoTypes.FindByIndex(h->GetIndex()))->GetName());
 								anaTmpl.WriteCode(anaStrm);
 								h = (TMrbNamedX *) fLofUserHistograms.After(h);
 							}
@@ -2900,28 +2902,70 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.WriteCode(anaStrm);
 							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
 							while (h) {
+								Bool_t hasArgStr = (h->GetAssignedObject())->InheritsFrom("TObjString");
 								TMrbNamedX * cnd = (TMrbNamedX *) fLofHistoConditions.FindObject(h->GetName());
-								if (cnd == NULL) {
-									anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+								if (hasArgStr) {
+									if (cnd == NULL) {
+										anaTmpl.InitializeCode("%UDS%");
+									} else {
+										anaTmpl.InitializeCode("%UDSC%");
+										anaTmpl.Substitute("$condition", cnd->GetTitle());
+									}
 								} else {
-									anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1C%" : "%UD2C%");
-									anaTmpl.Substitute("$condition", cnd->GetTitle());
+									if (cnd == NULL) {
+										anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+									} else {
+										anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1C%" : "%UD2C%");
+										anaTmpl.Substitute("$condition", cnd->GetTitle());
+									}
 								}
 								anaTmpl.Substitute("$hName", h->GetName());
 								anaTmpl.Substitute("$hTitle", h->GetTitle());
-								TMrbNamedArrayD * a = (TMrbNamedArrayD *) h->GetAssignedObject();
-								anaTmpl.Substitute("$hType", a->GetName());
-								Double_t * ap = a->GetArray();
-								anaTmpl.Substitute("$binSizeX", (Int_t) *ap++);
-								anaTmpl.Substitute("$lowerX", *ap++);
-								anaTmpl.Substitute("$upperX", *ap++);
-								if (h->GetIndex() & TMrbConfig::kHistoTH2) {
-									anaTmpl.Substitute("$binSizeY", (Int_t) *ap++);
-									anaTmpl.Substitute("$lowerY", *ap++);
-									anaTmpl.Substitute("$upperY", *ap++);
+								if (hasArgStr) {
+									TString argStr = ((TObjString *) h->GetAssignedObject())->GetString();
+									anaTmpl.Substitute("$hType", (fLofHistoTypes.FindByIndex(h->GetIndex()))->GetName());
+									anaTmpl.Substitute("$args", argStr);
+								} else {
+									TMrbNamedArrayD * a = (TMrbNamedArrayD *) h->GetAssignedObject();
+									anaTmpl.Substitute("$hType", a->GetName());
+									Double_t * ap = a->GetArray();
+									anaTmpl.Substitute("$binSizeX", (Int_t) *ap++);
+									anaTmpl.Substitute("$lowerX", *ap++);
+									anaTmpl.Substitute("$upperX", *ap++);
+									if (h->GetIndex() & TMrbConfig::kHistoTH2) {
+										anaTmpl.Substitute("$binSizeY", (Int_t) *ap++);
+										anaTmpl.Substitute("$lowerY", *ap++);
+										anaTmpl.Substitute("$upperY", *ap++);
+									}
 								}
 								anaTmpl.WriteCode(anaStrm);
 								h = (TMrbNamedX *) fLofUserHistograms.After(h);
+							}
+						}
+						break;
+
+					case TMrbConfig::kAnaHistoBookSevtIndiv:
+						if (fLofSevtHistosToBeBooked.First()) {
+							TMrbNamedX * nx = (TMrbNamedX *) fLofSevtHistosToBeBooked.First();
+							while (nx) {
+								TString evtName = nx->GetName();
+								evtName(0,1).ToUpper();
+								TString sevtName = nx->GetTitle();
+								sevtName(0,1).ToUpper();
+								TString cnd = ((TObjString *) nx->GetAssignedObject())->GetString();
+								cnd = cnd.Strip(TString::kBoth);
+								if (cnd.Length() == 0)	{
+									anaTmpl.InitializeCode("%S%");
+									anaTmpl.Substitute("$evt", evtName.Data());
+									anaTmpl.Substitute("$sevt", sevtName.Data());
+								} else {
+									anaTmpl.InitializeCode("%SC%");
+									anaTmpl.Substitute("$evt", evtName.Data());
+									anaTmpl.Substitute("$sevt", sevtName.Data());
+									anaTmpl.Substitute("$condition", cnd.Data());
+								}
+								anaTmpl.WriteCode(anaStrm);
+								nx = (TMrbNamedX *) fLofSevtHistosToBeBooked.After(nx);
 							}
 						}
 						break;
@@ -5700,7 +5744,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 
 	TMrbNamedArrayD * a = new TMrbNamedArrayD(histoType->GetName(), histoType->GetTitle(), 3, argList.GetArray());
 	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, HistoTitle, a));
-	if (Condition != NULL) fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
+	if (Condition != NULL && *Condition != '\0') fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
 	return(kTRUE);
 }
 
@@ -5793,7 +5837,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoN
 
 	TMrbNamedArrayD * a = new TMrbNamedArrayD(histoType->GetName(), histoType->GetTitle(), 6, argList.GetArray());
 	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, HistoTitle, a));
-	if (Condition != NULL) fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
+	if (Condition != NULL && *Condition != '\0') fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
 	return(kTRUE);
 }
 
@@ -5815,6 +5859,7 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 //                 Int_t Ybin              -- bins in Y
 //                 Double_t Ylow           -- lower edge Y
 //                 Double_t Yup            -- upper edge Y
+//                 Char_t * Condition      -- booking condition
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Books user-defined histograms.
@@ -5830,6 +5875,124 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 
 	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
 	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Xbin, Xlow, Xup, Ybin, Ylow, Yup, Condition));
+}
+
+Bool_t TMrbConfig::BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+																const Char_t * Args,
+																const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistogram
+// Purpose:        Define a histogram to be booked
+// Arguments:      Char_t * HistoType      -- histo type (TH1X, TH2X)
+//                 Char_t * HistoName      -- name
+//                 Char_t * HistoTitle     -- title
+//                 Char_t * Args           -- arglist
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books user-defined histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString hType;
+
+	if (fLofUserHistograms.FindObject(HistoName)) {
+		gMrbLog->Err() << "Histogram already booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	hType = HistoType;
+	hType.ToUpper();
+	TMrbNamedX * histoType = fLofHistoTypes.FindByName(hType.Data());
+	if (histoType == NULL) {
+		gMrbLog->Err() << "[" << HistoName << "] Illegal histogram type - " << HistoType << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	TMrbString argStr = Args;
+	TObjArray args;
+	Int_t nargs = argStr.Split(args, ",");
+	if ((histoType->GetIndex() & TMrbConfig::kHistoTH1) && (nargs != 3)) {
+		gMrbLog->Err() << "[" << HistoName << "] Illegal number of args (" << nargs << ") - not a TH1" << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	} else if ((histoType->GetIndex() & TMrbConfig::kHistoTH2) && (nargs != 6)) {
+		gMrbLog->Err() << "[" << HistoName << "] Illegal number of args (" << nargs << ") - not a TH2" << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	TObjString * a = new TObjString(argStr.Data());
+	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, HistoTitle, a));
+	if (Condition != NULL && *Condition != '\0') fLofHistoConditions.Add(new TMrbNamedX(histoType->GetIndex(), HistoName, Condition));
+	return(kTRUE);
+}
+
+Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+																const Char_t * Args,
+																const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistogram
+// Purpose:        Define a histogram to be booked
+// Arguments:      Char_t *  ArrayName     -- name of histo array
+//                 Char_t * HistoType      -- histo type (TH1X, TH2X)
+//                 Char_t * HistoName      -- name
+//                 Char_t * HistoTitle     -- title
+//                 Char_t * Args           -- arglist
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books user-defined histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+
+	if (fLofUserHistograms.FindObject(HistoName)) {
+		gMrbLog->Err() << "Histogram already booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
+	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Args, Condition));
+}
+
+Bool_t TMrbConfig::BookHistograms(const Char_t * Event, const Char_t * Subevent, const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistograms
+// Purpose:        Book subevent histos individually
+// Arguments:      Char_t * Event          -- event name
+//                 Char_t * Subevent       -- subevent name
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    User may book subevent histos individually here.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbEvent * evt = (TMrbEvent *) fLofEvents.FindObject(Event);
+	if (evt == NULL) {
+		gMrbLog->Err() << "No such event - " << Event << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistograms");
+		return(kFALSE);
+	}
+
+	TMrbSubevent * sevt = (TMrbSubevent *) evt->GetLofSubevents()->FindByName(Subevent);
+	if (sevt == NULL) {
+		gMrbLog->Err() << "[event " << evt->GetName() << "] No such subevent - " << Subevent << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistograms");
+		return(kFALSE);
+	}
+
+	const Char_t * cnd;
+	if (Condition == NULL || *Condition == '\0') cnd = ""; else cnd = Condition;
+	fLofSevtHistosToBeBooked.Add(new TMrbNamedX(0, evt->GetName(), sevt->GetName(), new TObjString(cnd)));
+	return(kTRUE);
 }
 
 TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName) {

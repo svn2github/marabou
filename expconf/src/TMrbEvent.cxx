@@ -502,17 +502,19 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					&&  (this->GetTriggerStatus() != TMrbConfig::kTriggerPattern)) {
 						sevt = (TMrbSubevent *) fLofSubevents.First();
 						while (sevt) {
-							sevtNameLC = sevt->GetName();
-							sevtNameUC = sevtNameLC;
-							sevtNameUC(0,1).ToUpper();
-							if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%P%");
-							else								anaTmpl.InitializeCode("%N%");
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							anaTmpl.WriteCode(ana);
+							if (sevt->HistosToBeAllocated()) {
+								sevtNameLC = sevt->GetName();
+								sevtNameUC = sevtNameLC;
+								sevtNameUC(0,1).ToUpper();
+								if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%P%");
+								else								anaTmpl.InitializeCode("%N%");
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+								anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+								anaTmpl.WriteCode(ana);
+							}
 							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 						}
 					}
@@ -652,17 +654,19 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					if ((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptHistograms) != 0) {
 						sevt = (TMrbSubevent *) fLofSubevents.First();
 						while (sevt) {
-							sevtNameLC = sevt->GetName();
-							sevtNameUC = sevtNameLC;
-							sevtNameUC(0,1).ToUpper();
-							if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%P%");
-							else								anaTmpl.InitializeCode("%N%");
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							anaTmpl.WriteCode(ana);
+							if (sevt->HistosToBeAllocated()) {
+								sevtNameLC = sevt->GetName();
+								sevtNameUC = sevtNameLC;
+								sevtNameUC(0,1).ToUpper();
+								if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%P%");
+								else								anaTmpl.InitializeCode("%N%");
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+								anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+								anaTmpl.WriteCode(ana);
+							}
 							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 						}
 					}
@@ -672,6 +676,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 				case TMrbConfig::kAnaEventAddBranches:
 				case TMrbConfig::kAnaEventInitializeBranches:
 				case TMrbConfig::kAnaSevtClassInstance:
+				case TMrbConfig::kAnaSevtGetAddr:
 				case TMrbConfig::kAnaSevtSetName:
 					sevt = (TMrbSubevent *) fLofSubevents.First();
 					while (sevt) {

@@ -988,7 +988,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					}
 					break;
 				case TMrbConfig::kAnaSevtBookHistograms:
-					if (this->HistosToBeAllocated()) {
+					{
 						stdHistosOK = kFALSE;
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
@@ -1109,19 +1109,10 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(AnaStrm);
 						}
-					} else {
-						anaTmpl.InitializeCode("%BN%");
-						anaTmpl.Substitute("$evtNameLC", evtNameLC);
-						anaTmpl.Substitute("$evtNameUC", evtNameUC);
-						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-						anaTmpl.WriteCode(AnaStrm);
-						anaTmpl.InitializeCode("%E%");
-						anaTmpl.WriteCode(AnaStrm);
 					}
 					break;
 				case TMrbConfig::kAnaSevtFillHistograms:
-					if (this->HistosToBeAllocated()) {
+					{
 						stdHistosOK = kFALSE;
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
@@ -1215,15 +1206,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(AnaStrm);
 						}
-					} else {
-						anaTmpl.InitializeCode("%BN%");
-						anaTmpl.Substitute("$evtNameLC", evtNameLC);
-						anaTmpl.Substitute("$evtNameUC", evtNameUC);
-						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-						anaTmpl.WriteCode(AnaStrm);
-						anaTmpl.InitializeCode("%E%");
-						anaTmpl.WriteCode(AnaStrm);
 					}
 					break;
 				case TMrbConfig::kAnaSevtResetData:
@@ -1354,7 +1336,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyze
 			}
 			break;
 		case TMrbConfig::kAnaHistoDefinePointers:
-			if (this->HistosToBeAllocated() && (this->GetAnalyzeOptions(Event) & TMrbConfig::kAnaOptHistograms)) {
+			if (this->GetAnalyzeOptions(Event) & TMrbConfig::kAnaOptHistograms) {
 				stdHistosOK = kFALSE;
 				evt = (TMrbEvent *) fLofEvents.First();
 				while (evt) {
