@@ -1,9 +1,8 @@
 /*_________________________________________________________________[CODE FILE]
 //////////////////////////////////////////////////////////////////////////////
-// @(#)Name:       Silena_4418T.code
-// @(#)Purpose:    Camac code for module Silena 4418/T
-// Description:    Contains pieces of camac code to operate a TDC of type
-//                 Silena 4418/T
+// @(#)Name:       Xia_DGF_4C.code
+// @(#)Purpose:    Camac code for module XIA DGF-4C
+// Description:    Contains pieces of camac code to operate a DGF module
 // @(#)Author:     R. Lutter
 // @(#)Revision:   SCCS:  %W%
 // @(#)Date:       %G%
@@ -98,6 +97,7 @@
 %B%			for (dgfchn = 0; dgfchn < DGF_NOF_CHANNELS; dgfchn++) {
 %B% 				dgf_set_par_value($moduleNameLC, dgfchn, kMrbDgfParTraceLength0, root_env_getval_i("$moduleNameUC.TraceLength", $traceLength));
 %B% 			}
+%B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParSynchDone, 1);	/* abort pending run */
 %B%			dgf_update($moduleNameLC, "$moduleNameLC");			/* re-program dacs & fpgas */
 %B%			if (root_env_getval_b("$moduleNameUC.ActivateUserPSACode", $activatePSA) == 1) {
 %B%				dgf_activate_psa($moduleNameLC, "$moduleNameLC", 1);		/* activate user psa code */
@@ -394,7 +394,7 @@ void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int fl
 		dgf_set_par_value(dgf, -1, kMrbDgfParModCSRB, csrBit);
 		for (i = 0; i < 4; i++) {
 			csrBit = dgf_get_par_value(dgf, i, kMrbDgfParChanCSRB0);
-			csrBit |= 1;
+			csrBit |= 3;
 			dgf_set_par_value(dgf, i, kMrbDgfParChanCSRB0, csrBit);
 		}
 	} else {
@@ -403,7 +403,7 @@ void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int fl
 		dgf_set_par_value(dgf, -1, kMrbDgfParModCSRB, csrBit);
 		for (i = 0; i < 4; i++) {
 			csrBit = dgf_get_par_value(dgf, i, kMrbDgfParChanCSRB0);
-			csrBit &= ~1;
+			csrBit &= ~3;
 			dgf_set_par_value(dgf, i, kMrbDgfParChanCSRB0, csrBit);
 		}
 	}
