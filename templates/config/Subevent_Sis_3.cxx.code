@@ -211,6 +211,7 @@ void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	this->GetHitBuffer()->Reset();		// reset hit buffer
 %%BeginOfCode%%
 %S%	$paramNameLC.ClearData();	// $sevtNameLC.$paramNameLC
 %X%	for (Int_t i = 0l; i < $indexRange; i++) $paramNameLC[i].ClearData();	// $sevtNameLC.$paramNameLC
