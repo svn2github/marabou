@@ -628,7 +628,7 @@ Bool_t TMbsReadoutProc::SetVSBAddr(UInt_t Addr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "VSBAddr"), Addr, 16);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "VSBAddr"), (Int_t) Addr, 16);
 	return(kTRUE);
 }
 
@@ -661,7 +661,7 @@ Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "PipeBase"), Addr, 16);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "PipeBase"), (Int_t) Addr, 16);
 	return(kTRUE);
 }
 

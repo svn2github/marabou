@@ -347,7 +347,7 @@ Bool_t TMbsEvtBuilder::SetVSBAddr(UInt_t Addr) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	gMbsSetup->Set("EvtBuilder.VSBAddr", Addr, 16);
+	gMbsSetup->Set("EvtBuilder.VSBAddr", (Int_t) Addr, 16);
 	return(kTRUE);
 }
 
