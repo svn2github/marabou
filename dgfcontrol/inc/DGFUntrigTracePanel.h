@@ -55,6 +55,7 @@ class DGFUntrigTracePanel : public TGCompositeFrame {
 		enum EDGFUntrigTraceActionId 	{
 													kDGFUntrigTraceXwait,
 													kDGFUntrigTraceStart,
+													kDGFUntrigTraceAbort,
 													kDGFUntrigTraceSelectAll,
 													kDGFUntrigTraceSelectNone,
 													kDGFUntrigTraceSelectColumn

@@ -20,6 +20,7 @@
 #pragma link C++ class DGFRestoreModuleSettingsPanel;
 #pragma link C++ class DGFSaveModuleSettingsPanel;
 #pragma link C++ class DGFCopyModuleSettingsPanel;
+#pragma link C++ class DGFMiscPanel;
 #pragma link C++ class DGFModule;
 #pragma link C++ class DGFControlData;
 #pragma link C++ class DGFControlInfo;

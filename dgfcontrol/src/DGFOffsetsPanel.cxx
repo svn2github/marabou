@@ -41,12 +41,15 @@ using namespace std;
 const SMrbNamedX kDGFOffsetsActions[] =
 			{
 				{DGFOffsetsPanel::kDGFOffsetsStart,		"Ramp DAC",	"Start DAC ramp and calc offsets (control task 3)"	},
+				{DGFOffsetsPanel::kDGFOffsetsAbort,		"Abort ramp",	"Abort DAC ramping"	},
 				{0, 									NULL,			NULL								}
 			};
 
 extern DGFControlData * gDGFControlData;
 
 extern TMrbLogger * gMrbLog;
+
+static TMrbLofDGFs lofDgfs;
 
 ClassImp(DGFOffsetsPanel)
 
@@ -207,7 +210,7 @@ DGFOffsetsPanel::DGFOffsetsPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fOffsetValue);
 	fOffsetFrame->AddFrame(fOffsetValue, frameGC->LH());
 	fOffsetValue->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fOffsetValue->GetEntry()->SetText("0");
+	fOffsetValue->GetEntry()->SetText("400");
 	fOffsetValue->SetRange(0,65504);
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
@@ -248,6 +251,9 @@ Bool_t DGFOffsetsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 						switch (Param1) {
 							case kDGFOffsetsStart:
 								this->StartRamp();
+								break;
+							case kDGFOffsetsAbort:
+								lofDgfs.Abort();
 								break;
 							case kDGFOffsetsSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
@@ -315,73 +321,98 @@ Bool_t DGFOffsetsPanel::StartRamp() {
 	intStr = entry->GetText();
 	intStr.ToInteger(offset);
 	
-	selectFlag = kFALSE;
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
 	nofRamps = 0;
+	lofDgfs.Clear();
+	selectFlag = kFALSE;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			if (!offlineMode) {
 				dgf = dgfModule->GetAddr();
-				rampBuffer.Reset();
-				nofWords = dgf->GetDacRamp(rampBuffer);
-				if (nofWords > 0) {
-					if (!selectFlag) {
-						rampFile = new TFile("dacRamp.root", "RECREATE");
-						hl.open("dacRamp.histlist", ios::out);
-					}
-					selectFlag = kTRUE;
-					hTitle = "DAC ramps for module ";
-					hTitle += dgfModule->GetName();
-					h = new TH1F(dgfModule->GetName(), hTitle.Data(), 8192, 0., 8192.);
-					for (Int_t i = 0; i < nofWords; i++) h->Fill((Axis_t) i, rampBuffer[i]);
-					h->Write();
-					hl << dgfModule->GetName() << endl;
-					Int_t start = 0;
-					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-						Int_t ok = this->CalibrateDac(&rampBuffer[start], 2048, offset, dacValue);
-						if (ok >= 0) {
-							gMrbLog->Out()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-											<< " (chn " << chn << "): dac(" << offset << ") = " << dacValue
-											<< endl;
-							gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
-							dgf->SetParValue(chn, "TRACKDAC", dacValue, kTRUE);
-						} else {
-							gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-											<< ": Can't calibrate DAC for channel " << chn
-											<< endl;
-							gMrbLog->Flush(this->ClassName(), "CalibrateDac");
-						}
-						start += 2048;
-					}
-					nofRamps++;
-					gMrbLog->Out()	<< "StartRamp(): [" << dgfModule->GetName() << "] "
-									<< nofWords << " ramp data written" << endl;
-					gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
-				}
+				dgf->GetDacRamp_Init();
+				dgf->GetDacRamp_Start();
+				lofDgfs.AddModule(dgf, kTRUE);
+				selectFlag = kTRUE;
 			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}				
-	if (selectFlag) {
-		rampFile->Close();
-		hl.close();
-	}
-	if (offlineMode || selectFlag) {
-		gMrbLog->Out()	<< "StartRamp(): " << nofRamps
-						<< " DAC ramps written to file \"dacRamp.root\"" << endl;
-		gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
-		return(kTRUE);
-	} else {
+
+	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
 	}
+
+	if (!offlineMode) {
+		lofDgfs.ResetAbort();
+		lofDgfs.WaitActive(10);
+	}
+
+	dgf = (TMrbDGF *) lofDgfs.First();
+	selectFlag = kFALSE;
+	while (dgf) {
+		if (!offlineMode) {
+			rampBuffer.Reset();
+			nofWords = dgf->GetDacRamp_Stop(rampBuffer);
+			if (nofWords > 0) {
+				if (!selectFlag) {
+					rampFile = new TFile("dacRamp.root", "RECREATE");
+					hl.open("dacRamp.histlist", ios::out);
+				}
+				selectFlag = kTRUE;
+				hTitle = "DAC ramps for module ";
+				hTitle += dgf->GetName();
+				h = new TH1F(dgf->GetName(), hTitle.Data(), 8192, 0., 8192.);
+				for (Int_t i = 0; i < nofWords; i++) h->Fill((Axis_t) i, rampBuffer[i]);
+				h->Write();
+				hl << dgf->GetName() << endl;
+				Int_t start = 0;
+				for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+					Int_t ok = this->CalibrateDac(dgf->GetName(), chn, &rampBuffer[start], 2048, offset, dacValue);
+					if (ok >= 0) {
+						gMrbLog->Out()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+										<< " (chn " << chn << "): dac(" << offset << ") = " << dacValue
+										<< endl;
+						gMrbLog->Flush(this->ClassName(), "StartRamp", setblue);
+						dgf->SetParValue(chn, "TRACKDAC", dacValue, kTRUE);
+					} else {
+						gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+										<< ": Can't calibrate DAC for channel " << chn
+										<< endl;
+						gMrbLog->Flush(this->ClassName(), "StartRamp");
+					}
+					start += 2048;
+				}
+				nofRamps++;
+				gMrbLog->Out()	<< "[" << dgf->GetName() << "] "
+								<< nofWords << " ramp data written" << endl;
+				gMrbLog->Flush(this->ClassName(), "StartRamp", setblue);
+				
+			}		
+		}
+		dgf = (TMrbDGF *) lofDgfs.After(dgf);
+	}
+
+	if (nofRamps > 0) {
+		rampFile->Close();
+		hl.close();
+	}
+	if (offlineMode || (nofRamps > 0)) {
+		gMrbLog->Out()	<< nofRamps << " DAC ramps written to file \"dacRamp.root\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartRamp", setblue);
+		return(kTRUE);
+	} else {
+		gMrbLog->Err()	<< "Couldn't get any traces" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartRamp");
+		return(kTRUE);
+	}
 }
 
-Int_t DGFOffsetsPanel::CalibrateDac(Int_t Trace[], Int_t TraceLength, Int_t TraceOffset, Int_t & DacValue) {
+Int_t DGFOffsetsPanel::CalibrateDac(const Char_t * DgfName, Int_t Channel, Int_t Trace[], Int_t TraceLength, Int_t TraceOffset, Int_t & DacValue) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFOffsetsPanel::StartRamp
@@ -438,9 +469,11 @@ Int_t DGFOffsetsPanel::CalibrateDac(Int_t Trace[], Int_t TraceLength, Int_t Trac
 
   /* find start of ramp */
 //  for (i = 0; i < TraceLength - 1; i++) {
-  for (i = 10; i < TraceLength - 21; i++) {
+  for (i = 250; i < TraceLength - 250; i++) {
     if(Trace[i] != Trace[i + 1]) {
-      r_start = i + 1;
+      if (abs((Trace[i] + Trace[i+2])/2 - Trace[i+1]) > 100) continue;
+      if (Trace[i] == 0 && Trace[i+2] == 0) continue;
+	  r_start = i + 1;
       break;
     }
   }
@@ -448,12 +481,15 @@ Int_t DGFOffsetsPanel::CalibrateDac(Int_t Trace[], Int_t TraceLength, Int_t Trac
   if (r_start == -1) {
 	gMrbLog->Err()	<< "r_start == -1" << endl;
 	gMrbLog->Flush(this->ClassName(), "CalibrateDac");
+	return(-1);
   }
 
   /* find end of ramp */
 //  for (i = TraceLength - 1; i > 0; i--) {
-  for (i = TraceLength - 21; i > 10; i--) {
+  for (i = TraceLength - 250; i > 250; i--) {
     if(Trace[i] != Trace[i - 1]) {
+      if (abs((Trace[i] + Trace[i-2])/2 - Trace[i-1]) > 100) continue;
+      if (Trace[i] == 0 && Trace[i-2] == 0) continue;
       r_end = i;
       break;
     }
@@ -462,7 +498,19 @@ Int_t DGFOffsetsPanel::CalibrateDac(Int_t Trace[], Int_t TraceLength, Int_t Trac
   if (r_end == -1) {
 	gMrbLog->Err()	<< "r_end == -1" << endl;
 	gMrbLog->Flush(this->ClassName(), "CalibrateDac");
+	return(-1);
   }
+
+  /* increase r_start and decrease r_end samples to avoid problems with 'strange' values */
+  r_start += 20;
+  r_end -= 20;
+static Bool_t once = kFALSE;
+static ofstream f;
+if (!once) {
+	f.open("xxx.dat", ios::out);
+	once = kTRUE;
+}
+f << DgfName << " chn=" << Channel << " start=" << r_start << " end=" << r_end << endl;
 
   for (Int_t j = 0; j < 3; j++) {    /* make some loops; after each loop points with a large diviations are excluded */
     

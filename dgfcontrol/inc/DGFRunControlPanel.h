@@ -31,6 +31,20 @@
 #include "TGMrbMessageViewer.h"
 #include "TGMrbLofKeyBindings.h"
 
+#include "DGFSetupPanel.h"
+#include "DGFSetFilesPanel.h"
+#include "DGFInstrumentPanel.h"
+#include "DGFParamsPanel.h"
+#include "DGFTauDisplayPanel.h"
+#include "DGFTauFitPanel.h"
+#include "DGFUntrigTracePanel.h"
+#include "DGFTraceDisplayPanel.h"
+#include "DGFOffsetsPanel.h"
+#include "DGFMcaDisplayPanel.h"
+#include "DGFRestoreModuleSettingsPanel.h"
+#include "DGFSaveModuleSettingsPanel.h"
+#include "DGFCopyModuleSettingsPanel.h"
+#include "DGFMiscPanel.h"
 #include "DGFControlCommon.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -71,8 +85,10 @@ class DGFRunControlPanel : public TGMainFrame {
 									kDGFRunControlTabMCA,
 									kDGFRunControlTabTauFit1,
 									kDGFRunControlTabTauFit2,
+									kDGFRunControlTabMisc,
 									kDGFRunControlTabSave,
 									kDGFRunControlTabRestore,
+									kDGFRunControlTabCopy,
 									kDGFRunControlTabFiles
 								};
 
@@ -113,22 +129,26 @@ class DGFRunControlPanel : public TGMainFrame {
 		TGCompositeFrame * fMCATab;
 		TGCompositeFrame * fTauFit1Tab;
 		TGCompositeFrame * fTauFit2Tab;
+		TGCompositeFrame * fMiscTab;
 		TGCompositeFrame * fSaveTab;
 		TGCompositeFrame * fRestoreTab;
+		TGCompositeFrame * fCopyTab;
 		TGCompositeFrame * fFilesTab;
 
-		Bool_t fSystemTabInit;
-		Bool_t fModulesTabInit;
-		Bool_t fParamsTabInit;
-		Bool_t fTracesTabInit;
-		Bool_t fUntrigTracesTabInit;
-		Bool_t fOffsetsTabInit;
-		Bool_t fMCATabInit;
-		Bool_t fTauFit1TabInit;
-		Bool_t fTauFit2TabInit;
-		Bool_t fSaveTabInit;
-		Bool_t fRestoreTabInit;
-		Bool_t fFilesTabInit;
+		DGFSetupPanel * fSetupPanel;
+		DGFInstrumentPanel * fInstrumentPanel;
+		DGFParamsPanel * fParamsPanel;
+		DGFTraceDisplayPanel * fTraceDisplayPanel;
+		DGFUntrigTracePanel * fUntrigTracePanel;
+		DGFOffsetsPanel * fOffsetsPanel;
+		DGFMcaDisplayPanel * fMcaDisplayPanel;
+		DGFTauDisplayPanel * fTauDisplayPanel;
+		DGFTauFitPanel * fTauFitPanel;
+		DGFMiscPanel * fMiscPanel;
+		DGFSaveModuleSettingsPanel * fSaveModuleSettingsPanel;
+		DGFRestoreModuleSettingsPanel * fRestoreModuleSettingsPanel;
+		DGFCopyModuleSettingsPanel * fCopyModuleSettingsPanel;
+		DGFSetFilesPanel * fSetFilesPanel;
 
 		TMrbLofMacros * fLofMacros; 				// list of macros
 

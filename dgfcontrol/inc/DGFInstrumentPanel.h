@@ -78,7 +78,6 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrMCABaselineDCEntry,		//		DC
 									kDGFInstrMCABaselineBinsEntry,		//		combine bins
 									kDGFInstrButtonApplyChanges,		//		apply changes & calc corrections
-									kDGFInstrButtonCopy,				//		copy
 									kDGFInstrButtonShow,				//		show params
 								};
 
@@ -89,16 +88,16 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 			fHeap.Delete();
 		};
 
+		Bool_t InitializeValues(Bool_t ReadFromDSP = kFALSE);					// initialize entry fields with dgf values
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
-		Bool_t InitializeValues(Bool_t ReadFromDSP = kFALSE);					// initialize entry fields with dgf values
 		Bool_t WriteDSP(DGFModule * Module, Int_t ChannelId);					// update DSP
 		Bool_t ReadDSP(DGFModule * Module, Int_t ChannelId);					// read DSP
-		Bool_t CopyModuleSettings();											// copy settings
 		Bool_t ShowModuleSettings();											// show settings
 		Bool_t UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t ChannelId);		// update entry value
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
+		Bool_t SetGFLT(Bool_t OnFlag = kTRUE);									// set/clear gflt
 
 	protected:
 		TList fHeap;								//! list of objects created on heap

@@ -38,18 +38,6 @@ using namespace std;
 #include "TMrbSystem.h"
 
 #include "DGFRunControlPanel.h"
-#include "DGFSetupPanel.h"
-#include "DGFSetFilesPanel.h"
-#include "DGFInstrumentPanel.h"
-#include "DGFParamsPanel.h"
-#include "DGFTauDisplayPanel.h"
-#include "DGFTauFitPanel.h"
-#include "DGFUntrigTracePanel.h"
-#include "DGFTraceDisplayPanel.h"
-#include "DGFOffsetsPanel.h"
-#include "DGFMcaDisplayPanel.h"
-#include "DGFRestoreModuleSettingsPanel.h"
-#include "DGFSaveModuleSettingsPanel.h"
 #include "DGFControlData.h"
 #include "DGFControlCommon.h"
 
@@ -208,41 +196,35 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	this->AddFrame(fRunControlTab, tabLayout);
 
 // add tabs
-	fSystemTab = fRunControlTab->AddTab("System");		// id=kDGFRunControlSystem
-	fSystemTabInit = kFALSE;
+	fSetupPanel = NULL;
+	fInstrumentPanel = NULL;
+	fParamsPanel = NULL;
+	fTraceDisplayPanel = NULL;
+	fUntrigTracePanel = NULL;
+	fOffsetsPanel = NULL;
+	fMcaDisplayPanel = NULL;
+	fTauDisplayPanel = NULL;
+	fTauFitPanel = NULL;
+	fMiscPanel = NULL;
+	fSaveModuleSettingsPanel = NULL;
+	fRestoreModuleSettingsPanel = NULL;
+	fCopyModuleSettingsPanel = NULL;
+	fSetFilesPanel = NULL;
 
-	fModulesTab = fRunControlTab->AddTab("Modules");	// id=kDGFRunControlModules
-	fModulesTabInit = kFALSE;
-
-	fParamsTab = fRunControlTab->AddTab("Params");		// id=kDGFRunControlParams
-	fParamsTabInit = kFALSE;
-
-	fTracesTab = fRunControlTab->AddTab("Traces");		// id=kDGFRunControlTraces
-	fTracesTabInit = kFALSE;
-
-	fUntrigTracesTab = fRunControlTab->AddTab("Untrig Traces");		// id=kDGFRunControlUntrigTraces
-	fUntrigTracesTabInit = kFALSE;
-
-	fOffsetsTab = fRunControlTab->AddTab("Offsets");	// id=kDGFRunControlOffsets
-	fOffsetsTabInit = kFALSE;
-
-	fMCATab = fRunControlTab->AddTab("MCA");			// id=kDGFRunControlMCA
-	fMCATabInit = kFALSE;
-
-	fTauFit1Tab = fRunControlTab->AddTab("TauFit1");	// id=kDGFRunControlTauFit1
-	fTauFit1TabInit = kFALSE;
-
-	fTauFit2Tab = fRunControlTab->AddTab("TauFit2");	// id=kDGFRunControlTauFit2
-	fTauFit2TabInit = kFALSE;
-
-	fSaveTab = fRunControlTab->AddTab("Save");			// id=kDGFRunControlSave
-	fSaveTabInit = kFALSE;
-
-	fRestoreTab = fRunControlTab->AddTab("Restore");	// id=kDGFRunControlRestore
-	fRestoreTabInit = kFALSE;
-
-	fFilesTab = fRunControlTab->AddTab("Files");		// id=kDGFRunControlFiles
-	fFilesTabInit = kFALSE;
+	fSystemTab = fRunControlTab->AddTab("System");
+	fModulesTab = fRunControlTab->AddTab("Modules");
+	fParamsTab = fRunControlTab->AddTab("Params");
+	fTracesTab = fRunControlTab->AddTab("Traces");
+	fUntrigTracesTab = fRunControlTab->AddTab("Untrig Traces");
+	fOffsetsTab = fRunControlTab->AddTab("Offsets");
+	fMCATab = fRunControlTab->AddTab("MCA");
+	fTauFit1Tab = fRunControlTab->AddTab("TauFit1");
+	fTauFit2Tab = fRunControlTab->AddTab("TauFit2");
+	fMiscTab = fRunControlTab->AddTab("Misc");
+	fSaveTab = fRunControlTab->AddTab("Save");
+	fRestoreTab = fRunControlTab->AddTab("Restore");
+	fCopyTab = fRunControlTab->AddTab("Copy");
+	fFilesTab = fRunControlTab->AddTab("Files");
 
 	fRunControlTab->SetTab(kDGFRunControlTabSystem);
 	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kDGFRunControlTabSystem, 0);
@@ -389,49 +371,43 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					switch (Param1) {
 
 						case kDGFRunControlTabSystem:
-                    		if (!fSystemTabInit) new DGFSetupPanel(fSystemTab);
-							fSystemTabInit = kTRUE;
+                    		if (fSetupPanel == NULL) fSetupPanel = new DGFSetupPanel(fSystemTab);
 							break;
 						case kDGFRunControlTabFiles:
-                    		if (!fFilesTabInit) new DGFSetFilesPanel(fFilesTab);
-							fFilesTabInit = kTRUE;
+                    		if (fSetFilesPanel == NULL) fSetFilesPanel = new DGFSetFilesPanel(fFilesTab);
 							break;
 						case kDGFRunControlTabParams:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-                    			if (!fParamsTabInit) new DGFParamsPanel(fParamsTab);
-								fParamsTabInit = kTRUE;
+                    			if (fParamsPanel == NULL) fParamsPanel = new DGFParamsPanel(fParamsTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlTabModules:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-                    			if (!fModulesTabInit) new DGFInstrumentPanel(fModulesTab);
-								fModulesTabInit = kTRUE;
+                    			if (fInstrumentPanel == NULL) fInstrumentPanel = new DGFInstrumentPanel(fModulesTab);
+								else fInstrumentPanel->InitializeValues(kFALSE);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlTabTrace:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fTracesTabInit) new DGFTraceDisplayPanel(fTracesTab);
-								fTracesTabInit = kTRUE;
+	                   			if (fTraceDisplayPanel == NULL) fTraceDisplayPanel = new DGFTraceDisplayPanel(fTracesTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlTabUntrigTrace:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fUntrigTracesTabInit) new DGFUntrigTracePanel(fUntrigTracesTab);
-								fUntrigTracesTabInit = kTRUE;
+	                   			if (fUntrigTracePanel == NULL) fUntrigTracePanel = new DGFUntrigTracePanel(fUntrigTracesTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlTabOffsets:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fOffsetsTabInit) new DGFOffsetsPanel(fOffsetsTab);
-								fOffsetsTabInit = kTRUE;
+	                   			if (fOffsetsPanel == NULL) fOffsetsPanel = new DGFOffsetsPanel(fOffsetsTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -439,8 +415,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFRunControlTabMCA:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fMCATabInit) new DGFMcaDisplayPanel(fMCATab);
-								fMCATabInit = kTRUE;
+	                   			if (fMcaDisplayPanel == NULL) fMcaDisplayPanel = new DGFMcaDisplayPanel(fMCATab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -448,8 +423,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFRunControlTabTauFit1:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fTauFit1TabInit) new DGFTauDisplayPanel(fTauFit1Tab);
-								fTauFit1TabInit = kTRUE;
+	                   			if (fTauDisplayPanel == NULL) fTauDisplayPanel = new DGFTauDisplayPanel(fTauFit1Tab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -457,8 +431,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFRunControlTabTauFit2:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fTauFit2TabInit) new DGFTauFitPanel(fTauFit2Tab);
-								fTauFit2TabInit = kTRUE;
+	                   			if (fTauFitPanel == NULL) fTauFitPanel = new DGFTauFitPanel(fTauFit2Tab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -466,16 +439,28 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFRunControlTabSave:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fSaveTabInit) new DGFSaveModuleSettingsPanel(fSaveTab);
-								fSaveTabInit = kTRUE;
+	                   			if (fSaveModuleSettingsPanel == NULL) fSaveModuleSettingsPanel = new DGFSaveModuleSettingsPanel(fSaveTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlTabRestore:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fRestoreTabInit) new DGFRestoreModuleSettingsPanel(fRestoreTab);
-								fRestoreTabInit = kTRUE;
+	                   			if (fRestoreModuleSettingsPanel == NULL) fRestoreModuleSettingsPanel = new DGFRestoreModuleSettingsPanel(fRestoreTab);
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+						case kDGFRunControlTabCopy:
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+	                   			if (fCopyModuleSettingsPanel == NULL) fCopyModuleSettingsPanel = new DGFCopyModuleSettingsPanel(fCopyTab);
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+						case kDGFRunControlTabMisc:
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+	                   			if (fMiscPanel == NULL) fMiscPanel = new DGFMiscPanel(fMiscTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}

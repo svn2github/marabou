@@ -53,6 +53,7 @@ class DGFOffsetsPanel : public TGCompositeFrame {
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFOffsetsActionId 	{	kDGFOffsetsStart,
+										kDGFOffsetsAbort,
 										kDGFOffsetsSelectAll,
 										kDGFOffsetsSelectNone,
 										kDGFOffsetsSelectColumn
@@ -68,7 +69,7 @@ class DGFOffsetsPanel : public TGCompositeFrame {
 		Bool_t StartRamp();
 
 	protected:
-		Int_t CalibrateDac(Int_t Data[], Int_t NofWords, Int_t Offset, Int_t & DacValue);
+		Int_t CalibrateDac(const Char_t * DgfName, Int_t Channel, Int_t Data[], Int_t NofWords, Int_t Offset, Int_t & DacValue);
 	
 	protected:
 		TList fHeap;								//! list of objects created on heap

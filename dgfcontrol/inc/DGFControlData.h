@@ -55,6 +55,7 @@ class DGFControlData : public TNamed {
 	friend class DGFCopyModuleSettingsPanel;
 	friend class DGFRestoreModuleSettingsPanel;
 	friend class DGFSaveModuleSettingsPanel;
+	friend class DGFMiscPanel;
 	friend class DGFModule;
 
 	public:

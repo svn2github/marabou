@@ -19,13 +19,17 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
+#include "TGMsgBox.h"
+
+#include "TMrbLogger.h"
 
 #include "DGFCopyModuleSettingsPanel.h"
+
+#include "SetColor.h"
 
 const SMrbNamedX kDGFCopyModuleSettingsButtons[] =
 		{
 			{DGFCopyModuleSettingsPanel::kDGFCopyModuleSettingsButtonCopy,		"Copy to DSP",		"Copy selected items to DSP"	},
-			{DGFCopyModuleSettingsPanel::kDGFCopyModuleSettingsButtonClose, 	"Close",			"Close window"			},
 			{0, 																NULL,				NULL					}
 		};
 
@@ -48,26 +52,18 @@ const SMrbNamedXShort kDGFCopyModuleSettingsBits[] =
 
 extern DGFControlData * gDGFControlData;
 
+extern TMrbLogger * gMrbLog;
+
 ClassImp(DGFCopyModuleSettingsPanel)
 
-DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window, 
-												DGFControlInfo * InfoFrom, DGFControlInfo * InfoTo,
-												DGFControlData * Data,
-												UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFrame) :
+						TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFCopyModuleSettingsPanel
 // Purpose:        Copy module settings
 // Arguments:      TGWindow Window                -- connection to ROOT graphics
-//                 TGWindow * MainFrame           -- main frame
-//                 DGFControlInfo * InfoFrom      -- where to pass resulting bit masks
-//                 DGFControlInfo * InfoTo        -- ...
-//                 DGFControlData * Data          -- dgf database
-//                 UInt_t Width                   -- window width in pixels
-//                 UInt_t Height                  -- window height in pixels
-//                 UInt_t Options                 -- options
-// Results:        DGFControlInfo * Info
+// Results:
 // Exceptions:     
 // Description:    
 // Keywords:       
@@ -126,9 +122,6 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window,
 	fLofChannels.AddNamedX(kDGFChannelNumbers);
 	fLofChannels.SetPatternMode();
 
-	fInfoFrom = InfoFrom;
-	fInfoTo = InfoTo;
-
 	lofSpecialButtons = new TObjArray();
 	HEAP(lofSpecialButtons);
 	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
@@ -185,8 +178,8 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window,
 	fSelectModule = new TGMrbLabelCombo(fSelectFrame,  "Module",
 										&fLofSrcModuleKeys,
 										DGFCopyModuleSettingsPanel::kDGFCopySelectModule, 2,
-										DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kLEHeight,
-										DGFCopyModuleSettingsPanel::kEntryWidth,
+										kTabWidth, kLEHeight,
+										kEntryWidth,
 										frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
@@ -203,15 +196,15 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window,
 	rbuttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, 1, 
-										DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kLEHeight,
+										kTabWidth, kLEHeight,
 										frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(kDGFChannel0, kButtonDown);
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
 
 	gDGFControlData->SetLH(groupGC, frameGC, hFrameLayout);
-	fVFrame = new TGVerticalFrame(this, 		DGFCopyModuleSettingsPanel::kFrameWidth,
-												DGFCopyModuleSettingsPanel::kFrameHeight,
+	fVFrame = new TGVerticalFrame(this, 		kTabWidth,
+												kTabHeight,
 												kChildFrame, frameGC->BG());
 	HEAP(fVFrame);
 	this->AddFrame(fVFrame, frameGC->LH());
@@ -239,7 +232,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window,
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 								gDGFControlData->CopyKeyList(&fLofDestModuleKeys[cl], cl, 1, kTRUE), 1, 
-								DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kLEHeight,
+								kTabWidth, kLEHeight,
 								frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -247,21 +240,21 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window,
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
 
-	fGroupFrame = new TGHorizontalFrame(fModules, DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kFrameHeight,
+	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
-							DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
-							DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, frameGC->LH()->GetPadLeft(),
@@ -277,19 +270,15 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window,
 	this->AddFrame(fButtonFrame, groupGC->LH());
 	fButtonFrame->Associate(this);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: Copy Module Settings");
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
+
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
-	gClient->WaitFor(this);
 }
 
 Bool_t DGFCopyModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -316,20 +305,7 @@ Bool_t DGFCopyModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, L
 					if (Param1 < kDGFCopyModuleSelectColumn) {
 						switch (Param1) {
 							case kDGFCopyModuleSettingsButtonCopy:
-								fInfoFrom->fModules[0] = fModuleFrom;
-								fInfoFrom->fChannels = fSelectChannel->GetActive();
-								fInfoFrom->fExecute = kTRUE;
-								fInfoFrom->fAccessDSP = kFALSE;
-								fInfoTo->fActionBits = fCopyBits->GetActive();
-								fInfoTo->fChannels = fChannels->GetActive();
-								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) fInfoTo->fModules[cl] = fCluster[cl]->GetActive();
-								fInfoTo->fExecute = kTRUE;
-								fInfoTo->fAccessDSP = kTRUE;
-								this->CloseWindow();
-								break;
-							case kDGFCopyModuleSettingsButtonClose:
-								fInfoTo->fExecute = kFALSE;
-								this->CloseWindow();
+								this->CopyModuleSettings();
 								break;
 							case kDGFCopyModuleSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
@@ -353,19 +329,184 @@ Bool_t DGFCopyModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, L
 					}
 					break;
 						
+				case kCM_RADIOBUTTON:
+					fChannelFrom = Param1;
+					break;
+
 				case kCM_COMBOBOX:
 					fModuleFrom = Param2;
 					break;
 			}
 			break;
 			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }
+
+Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCoincModuleSettingsPanel::CopyToDSP
+// Purpose:        Copy params to DSP
+// Arguments:         
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Copies params from one dgf to another.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	DGFModule * dgfModule;
+	DGFModule * thisModule;
+	TMrbDGF * dgf;
+	TMrbDGF * thisDgf;
+	Int_t thisChannel;
+
+	Int_t chnId;
+	Int_t nofModules, cl;
+	Bool_t selectOk;
+	Bool_t isCopied;
+			
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+
+	gDGFControlData->SetSelectedModuleIndex(fModuleFrom);
+	thisModule = gDGFControlData->GetSelectedModule();
+	thisDgf = thisModule->GetAddr();
+		
+	thisChannel = gDGFControlData->ChannelIndex2Number(fChannelFrom);
+	if (thisChannel < 0) {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Illegal channel number", kMBIconStop);
+		return(kFALSE);
+	}
+		
+	selectOk = kFALSE;
+	dgfModule = gDGFControlData->FirstModule();
+	isCopied = kFALSE;
+	nofModules = 0;
+	while (dgfModule) {
+		cl = nofModules / kNofModulesPerCluster;
+		nofModules = nofModules - cl * kNofModulesPerCluster;
+		if ((fCluster[cl]->GetActive() & (0x1 << nofModules)) != 0) {
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				if (dgf != thisDgf) {
+					if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitCoinc) {
+						if (gDGFControlData->IsDebug()) {
+							cout	<< thisDgf->GetName()
+									<< " CoinPattern=" << thisDgf->GetGain(thisChannel)
+									<< "-> " << dgf->GetName() << endl;
+						}
+						dgf->SetCoincPattern(thisDgf->GetCoincPattern());
+						isCopied = kTRUE;
+					}
+				}
+				chnId = kDGFChannel0;
+				for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) {
+					if ((dgf != thisDgf) || (i != thisChannel)) {
+						if ((fChannels->GetActive() & chnId) != 0) {
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitGain) {
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") Gain=" << thisDgf->GetGain(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetGain(i, thisDgf->GetGain(thisChannel));
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitOffset) {
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") Offset=" << thisDgf->GetOffset(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetOffset(i, thisDgf->GetOffset(thisChannel));
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitTrace) {
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") TraceLength=" << thisDgf->GetTraceLength(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetTraceLength(i, thisDgf->GetTraceLength(thisChannel));
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") Delay=" << thisDgf->GetDelay(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetDelay(i, thisDgf->GetDelay(thisChannel));
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitFilter) {
+								dgf->ResetPGTime(i);
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") PreakTime=" << thisDgf->GetPeakTime(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetPeakTime(i, thisDgf->GetPeakTime(thisChannel));
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") GapTime=" << thisDgf->GetGapTime(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetGapTime(i, thisDgf->GetGapTime(thisChannel));
+								dgf->ResetFastPGTime(i);
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") FastPeakTime=" << thisDgf->GetFastPeakTime(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetFastPeakTime(i, thisDgf->GetFastPeakTime(thisChannel));
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") FastGapTime=" << thisDgf->GetFastGapTime(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetFastGapTime(i, thisDgf->GetFastGapTime(thisChannel));
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") Threshold=" << thisDgf->GetThreshold(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetThreshold(i, thisDgf->GetThreshold(thisChannel));
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitCSR) {
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") CSRA=0x" << setbase(16) << thisDgf->GetChanCSRA(thisChannel)
+											<< setbase(10) << "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetChanCSRA(i, thisDgf->GetChanCSRA(thisChannel), TMrbDGF::kBitSet);
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitTau) {
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") Tau=" << thisDgf->GetTau(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetTau(i, thisDgf->GetTau(thisChannel));
+								isCopied = kTRUE;
+							}
+						}
+					}
+					chnId <<= 1;
+				}
+				dgf->WriteParamMemory(kTRUE);
+			}
+		}
+		nofModules++;
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+	}
+
+	if (isCopied) {
+		gMrbLog->Out()	<< "DGF settings successfully copied" << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyModuleSettings", setblue);
+		return(kTRUE);
+	} else {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module or channel", kMBIconStop);
+		return(kFALSE);
+	}
+}
+

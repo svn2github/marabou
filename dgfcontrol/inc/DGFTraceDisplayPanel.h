@@ -56,6 +56,7 @@ class DGFTraceDisplayPanel : public TGCompositeFrame {
 														kDGFTraceDisplayXwait,
 														kDGFTraceDisplayNormal,
 														kDGFTraceDisplayAutoTrig,
+														kDGFTraceDisplayAbort,
 														kDGFTraceDisplaySelectAll,
 														kDGFTraceDisplaySelectNone,
 														kDGFTraceDisplaySelectColumn

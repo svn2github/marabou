@@ -41,12 +41,15 @@ using namespace std;
 const SMrbNamedX kDGFTraceDisplayActions[] =
 			{
 				{DGFTraceDisplayPanel::kDGFTraceDisplayNormal,		"Normal trace",		"Take trace, leave trigger bits unchanged"		},
-				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"AutoTrig trace",	"Take trace, enable trigger for each channel"		},
+				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"AutoTrig trace",	"Take trace, enable trigger for each channel"	},
+				{DGFTraceDisplayPanel::kDGFTraceDisplayAbort,		"Abort",			"Abort trace taking"		},
 				{0, 												NULL,				NULL						}
 			};
 
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
+
+static TMrbLofDGFs lofDgfs;
 
 ClassImp(DGFTraceDisplayPanel)
 
@@ -271,6 +274,9 @@ Bool_t DGFTraceDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 							case kDGFTraceDisplayAutoTrig:
 								this->StartTrace(kTRUE);
 								break;
+							case kDGFTraceDisplayAbort:
+								lofDgfs.Abort();
+								break;
 							case kDGFTraceDisplaySelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -420,7 +426,6 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 	selectFlag = kFALSE;
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
-	TMrbLofDGFs lofDgfs;
 	lofDgfs.Clear();
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
@@ -444,7 +449,10 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 		return(kFALSE);
 	}
 
-	if (!offlineMode) lofDgfs.WaitActive(5);
+	if (!offlineMode) {
+		lofDgfs.ResetAbort();
+		lofDgfs.WaitActive(5);
+	}
 
 	dataOkFlag = kFALSE;
 	dgf = (TMrbDGF *) lofDgfs.First();

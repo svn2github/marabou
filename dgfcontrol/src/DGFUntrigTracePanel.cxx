@@ -42,7 +42,8 @@ using namespace std;
 const SMrbNamedX kDGFUntrigTraceActions[] =
 			{
 				{DGFUntrigTracePanel::kDGFUntrigTraceStart,		"Untrig trace",	"Take untriggered trace (control task 4)"	},
-				{0, 											NULL,					NULL					}
+				{DGFUntrigTracePanel::kDGFUntrigTraceAbort,		"Abort",	"Abort trace taking"	},
+				{0, 											NULL,					NULL		}
 			};
 
 enum	{	kNofTraceBuffers	=	1000	};
@@ -51,6 +52,7 @@ extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
 
 static TArrayI * lofTraceBuffers[kNofTraceBuffers];
+static TMrbLofDGFs lofDgfs;
 
 ClassImp(DGFUntrigTracePanel)
 
@@ -257,6 +259,9 @@ Bool_t DGFUntrigTracePanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t P
 							case kDGFUntrigTraceStart:
 								this->StartTrace();
 								break;
+							case kDGFUntrigTraceAbort:
+								lofDgfs.Abort();
+								break;
 							case kDGFUntrigTraceSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -333,7 +338,6 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	dgfModule = gDGFControlData->FirstModule();
 	selectFlag = kFALSE;
 	nofModules = 0;
-	TMrbLofDGFs lofDgfs;
 	lofDgfs.Clear();
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
@@ -368,6 +372,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 
 	UInt_t chnp = chnPattern;
 	nofWords = 0;
+	lofDgfs.ResetAbort();
 	if (!verbose) cout << "[Taking untrig traces for chn " << ends << flush;
 	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (chnp & 1) {
