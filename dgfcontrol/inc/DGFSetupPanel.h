@@ -61,6 +61,7 @@ class DGFSetupPanel : public TGTransientFrame {
 									kDGFSetupReloadDGFs,						// reload code
 									kDGFSetupAbortBusySync,						// abort busy-sync loop
 									kDGFSetupRestartEsone,						// restart esone server
+									kDGFSetupUserPSAOnOff, 						// turn user PSA on/off
 									kDGFSetupAbortEsone, 						// abort restart procedure
 									kDGFSetupClose,								// do nothing
 
@@ -77,7 +78,7 @@ class DGFSetupPanel : public TGTransientFrame {
 								};
 				
 		// geometry settings
-		enum					{	kFrameWidth 			= 900					};
+		enum					{	kFrameWidth 			= 1000					};
 		enum					{	kFrameHeight 			= 700					};
 
 		enum					{	kLEWidth				= kAutoWidth			};
@@ -101,6 +102,7 @@ class DGFSetupPanel : public TGTransientFrame {
 		Bool_t ReloadDGFs();						// reload dgf code
 		Bool_t AbortDGFs(); 						// abort busy-sync loop
 		Bool_t RestartEsone();						// restart esone server
+		Bool_t TurnUserPSAOnOff(Bool_t ActivateFlag);	// turn user psa on/off
 		
 	protected:
 		TList fHeap;								//! list of objects created on heap
