@@ -98,6 +98,7 @@ public:
    void    RemoveEditGrid();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
    void    DrawHist();
+   void    DrawGraph();
    void    InsertImage();
    void    WritePrimitives();
    void    GetPrimitives();

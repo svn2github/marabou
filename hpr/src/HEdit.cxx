@@ -240,6 +240,35 @@ void HTCanvas::DrawHist()
 
 //______________________________________________________________________________
 
+void HTCanvas::DrawGraph()
+{
+   if (!fHistPresent) return;
+   TPad * selected = (TPad *)gROOT->GetSelectedPad();
+   if (selected) {
+      if (GetListOfPrimitives()->Contains(selected)) {
+         if (fHistPresent->fSelectGraph->GetSize() != 1) {
+            cout << "select exactly 1 graph" << endl;
+            return;
+         } else {
+            TGraph* graph = fHistPresent->GetSelGraphAt(0);
+            if (graph) {
+               graph->Print();
+               selected->cd();
+               graph->Draw(fHistPresent->fDrawOptGraph);
+               selected->Modified();
+            }
+         }
+      } else {
+         cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
+      } 
+   } else {
+         cout << "No Pad selected" << endl;
+   } 
+   Update();
+}
+
+//______________________________________________________________________________
+
 void HTCanvas::InsertImage()
 {
    TPad * pad = (TPad *)gROOT->GetSelectedPad();

@@ -998,14 +998,13 @@ Should we create a new file with corrected names?", maincanvas)) {
             anything_to_delete++; 
          }
       }
-   // s
       if (lofG.GetSize() > 0) {
          TIter next(&lofG);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
             cmd = fname;
-            cmd = cmd + "\",\"" + title.Data() + "\")";
+            cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             sel = cmd;
             cmd.Prepend("mypres->ShowGraph(\"");
             sel.Prepend("mypres->SelectGraph(\"");
@@ -1612,12 +1611,13 @@ void HistPresent::ShowContour(const char* fname, const char* name, const char* b
 //________________________________________________________________________________________
 // Show user contour
   
-void HistPresent::ShowGraph(const char* fname, const char* name, const char* bp)
+void HistPresent::ShowGraph(const char* fname, const char* dir, const char* name, const char* bp)
 {
    TGraphErrors * graph;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
-      fRootFile=new TFile(fname);
+      fRootFile = new TFile(fname);
+      if (strlen(dir) > 0) fRootFile->cd(dir);
       graph = (TGraphErrors*)fRootFile->Get(name);
 //      func->SetDirectory(gROOT);
 //      fRootFile->Close();
@@ -1892,7 +1892,7 @@ void HistPresent::RebinHist()
    ShowHist(hnew);
 }
 //________________________________________________________________________________________
-// Rebin histograms 
+// 
   
 TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory) 
 {
@@ -1907,11 +1907,12 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
       WarnBox("Requested non existing entry");
       return NULL;
    } 
- //  Bool_t ok;
+
    TObjString * obj = (TObjString *)hlist->At(pos);
+//  Bool_t ok;
 
    TString fname = obj->String();
-//	cout << "GetSelHistAt |" << fname << "|" << endl;
+	cout << "GetSelHistAt |" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
    if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
@@ -1980,6 +1981,71 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
       else      cout << "Histogram: " << hname << " not found" << endl;
       if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
    }
+   gDirectory=gROOT;
+//  gROOT->ls();
+   TString newname(hname.Data());
+   newname += "_",
+   newname += pos;
+   if (hist) hist->SetName(newname.Data());
+   return hist;
+}
+//________________________________________________________________________________________
+// 
+  
+TGraph* HistPresent::GetSelGraphAt(Int_t pos) 
+{
+   TList * hlist = fSelectGraph;
+   if (hlist->IsEmpty()) {
+      WarnBox("Please select a graph first");
+      return NULL;
+   }
+   if (hlist->GetSize() < pos) {
+      WarnBox("Requested non existing entry");
+      return NULL;
+   } 
+ //  Bool_t ok;
+   TObjString * obj = (TObjString *)hlist->At(pos);
+
+   TString fname = obj->String();
+	cout << "GetSelGraphAt |" << fname << "|" << endl;
+   Int_t pp = fname.Index(" ");
+   if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
+   fname.Resize(pp);
+
+   TString hname = obj->String();
+   hname.Remove(0,pp+1);
+   TString dname = hname.Data();
+   pp = hname.Index(" ");
+   if (pp <= 0) {cout << "No graph name in: " << obj->String()<< endl; return NULL;};
+   hname.Resize(pp);
+   dname.Remove(0,pp+1);
+//   cout << fname << "|" << hname << "|" << dname << "|" << endl;
+
+   hname = hname.Strip(TString::kBoth);
+   pp = hname.Index(";");
+   if (pp >0) hname.Resize(pp);
+   dname = dname.Strip(TString::kBoth);
+   TGraph* hist;
+   hist = (TGraph*)gROOT->GetList()->FindObject(hname);
+/*
+	if (!hist) {
+	   TString newname(fname.Data());
+		pp = newname.Index(".");
+		if (pp>0) newname.Resize(pp);
+		newname += "_";
+		newname += hname.Data();
+	   hist = (TGraph*)gROOT->GetList()->FindObject(newname);
+      cout << "Use graph in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
+	}
+*/
+//   if (hist) hist->Print();
+   if (hist && (fname == "Memory")) return hist;
+   if (fRootFile) fRootFile->Close();
+   fRootFile=new TFile((const char *)fname);
+   if (dname.Length() > 0) fRootFile->cd(dname);
+   hist = (TGraph*)gDirectory->Get(hname);
+   if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
+   
    gDirectory=gROOT;
 //  gROOT->ls();
    TString newname(hname.Data());
@@ -2081,11 +2147,11 @@ void HistPresent::SelectContour(const char* fname, const char* hname, const char
 //________________________________________________________________________________________
 // Select
   
-void HistPresent::SelectGraph(const char* fname, const char* hname, const char* bp)
+void HistPresent::SelectGraph(const char* fname, const char* dir, const char* hname, const char* bp)
 {
 //   cout << fname << " " << hname << endl;
    TString sel = fname;
-   sel = sel + " " + hname;
+   sel = sel + " " + hname + " " + dir;
    if (bp) {
       TButton * b;
       b = (TButton *)strtoul(bp, 0, 16);

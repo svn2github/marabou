@@ -404,7 +404,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void GetHistSelMask(const char* bp =0);               // 
    void SelectCut(const char* , const char*, const char* bp =0); 
    void SelectContour(const char* , const char*, const char* bp =0); 
-   void SelectGraph(const char* , const char*, const char* bp =0); 
+   void SelectGraph(const char*  , const char* dir, const char*, const char* bp =0); 
    void SelectLeaf(const char*, const char* bp =0); 
    void EditLeafCut(const char* vl =0, const char* bp = 0); 
    void ToggleLeafCut(const char* bp = 0); 
@@ -420,7 +420,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void LoadFunction(const char* , const char*, const char* bp =0); 
    void ShowCanvas(const char* , const char*, const char* bp =0); 
    void ShowContour(const char* , const char*, const char* bp =0); 
-   void ShowGraph(const char* , const char*, const char* bp =0); 
+   void ShowGraph(const char*, const char* , const char*, const char* bp =0); 
    void ComposeList(const char* bp =0); 
    void ShowList(const char* , const char*, const char* bp =0); 
    void PrintCut(const char* , const char*, const char* bp =0); 
@@ -457,6 +457,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    TList* GetFunctionList(){return fAllFunctions;};
    TList* GetCutList(){return fAllCuts;};
    TH1* GetSelHistAt(Int_t pos = 0, TList * hl = 0, Bool_t try_memory = kFALSE);
+   TGraph* GetSelGraphAt(Int_t pos = 0);
    void TurnButtonGreen(TVirtualPad **);
    TList* GetSelections(){return fSelectHist;};
 

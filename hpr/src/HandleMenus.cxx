@@ -245,6 +245,7 @@ enum ERootCanvasCommands {
    kFH_WritePrim,
    kFH_GetPrim,
    kFH_DrawHist,
+   kFH_DrawGraph,
    kFH_InsertImage,
    kFH_InsertLatex,
    kFH_SetGrid,
@@ -598,6 +599,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
                   case kFH_DrawHist:
                         fHCanvas->DrawHist();
+                     break;
+                  case kFH_DrawGraph:
+                        fHCanvas->DrawGraph();
                      break;
 
                   case kFH_InsertLatex:
@@ -1718,6 +1722,7 @@ void HandleMenus::BuildMenus()
 
    	fEditMenu->AddEntry("Draw image (gif, jpg) into selected pad", kFH_InsertImage);
    	fEditMenu->AddEntry("Draw selected histogram into selected pad",  kFH_DrawHist);
+   	fEditMenu->AddEntry("Draw selected graph into selected pad",  kFH_DrawGraph);
    	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatex);
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
