@@ -494,8 +494,7 @@ trying to attach?",
    fMenuMbs->AddEntry("Mbs buffer size", M_BUFSIZE);
    fMenuMbs->AddEntry("Mbs buffers / stream", M_BUFSTREAM);
    fMenuMbs->AddSeparator();
-   fMenuMbs->AddEntry("Readout function name", M_READOUTFUNCTION);
-   fMenuMbs->AddEntry("Readout makefile name", M_MAKEFILE);
+   fMenuMbs->AddEntry("Name of readout code", M_CODENAME);
    fMenuMbs->AddEntry("Compile readout function", M_COMPILE);
 
 
@@ -1759,15 +1758,14 @@ Bool_t FhMainFrame::MbsCompile(){
       fStatus->ChangeBackground(cyan);
       gClient->NeedRedraw(fStatus);
       gSystem->ProcessEvents();
-      if(fReadoutFunction->Length() > 0){
+      if(fCodeName->Length() > 0){
          TMbsReadoutProc * rp = fSetup->ReadoutProc(0);
          if(rp){
-            rp->SetSourceCode(fReadoutFunction->Data());
-            rp->SetCommonIndexFile(fCommonIndexFile->Data());
-            rp->LinkSourceCode();
-            rp->CompileSourceCode("deve");
+            rp->SetCodeName(fCodeName->Data());
+			rp->CopyMakefile();
+            rp->CompileReadout("deve");
          } else {WarnBox("No ReadoutProc defined", this); return kFALSE;}
-      } else {WarnBox("No source code name defined", this); return kFALSE;}
+      } else {WarnBox("No Makefile found to compile readout function", this); return kFALSE;}
    } else {WarnBox("No setup done", this); return kFALSE;}
 //   if(fSetup){delete fSetup; cout << "delete fSetup\n"; fSetup = 0;}
 //   if(fSetup) fSetup->Close();
@@ -2272,13 +2270,9 @@ Note: Unit is 100 ns for historical reasons";
                       else        fGateLength = bs;
                       }  
                       break;
-                  case M_READOUTFUNCTION:
-                      *fReadoutFunction=GetString("Name of Readout function",
-                                                    fReadoutFunction->Data());
-                      break;
-                  case M_MAKEFILE:
-                     *fMakefile=GetString("Name of Readout function",
-                                                   fMakefile->Data());
+                  case M_CODENAME:
+                     *fCodeName=GetString("Name of readout code",
+                                                   fCodeName->Data());
                      break;
                  case M_COMPILE:
                      MbsCompile();
@@ -2935,9 +2929,7 @@ Bool_t FhMainFrame::GetDefaults(){
    fMbsVersion   = new TString("deve");
    fDir          = new TString("dualppc");
    fTrigger      = new TString("VME");
-   fReadoutFunction = new TString("");
-   fMakefile        = new TString("");
-   fCommonIndexFile   = new TString("");
+   fCodeName        = new TString("");
    fFromTime        = new TString(":000");
    fToTime          = new TString(":000");
    fResetList          = new TString("*");
@@ -2948,19 +2940,29 @@ Bool_t FhMainFrame::GetDefaults(){
    fMessageIntervall = 1000;       // 1 second 
    fAverage          = 60;         // 60 seconds
    void* dirp=gSystem->OpenDirectory(".");
-   TRegexp endwithc("Readout.c$");
    TRegexp endwithmk("Readout.mk$");
-   TRegexp commidx("CommonIndices.h$");
+   TRegexp endwithc("Readout.c$");
+   TRegexp endwithh("Readout.h$");
    const char * fname;
    while ( (fname=gSystem->GetDirEntry(dirp)) ) {
       TString sname(fname);
-      if(sname.Index(endwithc) >= 0) *fReadoutFunction = sname;
-      if(sname.Index(endwithmk) >= 0)*fMakefile = sname;
-      if(sname.Index(commidx) >= 0)*fCommonIndexFile = sname;
-   }
-   if(fReadoutFunction->Length() > 0 && fMakefile->Length() > 0 ){
-      endwithc = ".c$";
-      (*fReadoutFunction)(endwithc) = "";
+      if (sname.Index(endwithc) >= 0) {
+		*fCodeName = sname;
+		endwithc = ".c";
+		(*fCodeName)(endwithc) = "";
+      } else if (sname.Index(endwithh) >= 0) {
+		*fCodeName = sname;
+		endwithh = ".h";
+		(*fCodeName)(endwithh) = "";
+      } else if (sname.Index(endwithmk) >= 0) {
+ 		*fCodeName = sname;
+		endwithmk = ".mk";
+		(*fCodeName)(endwithmk) = "";
+     }
+      if (fCodeName->Length() > 0) {
+		cout << "@@ " << fCodeName->Data() << endl;
+		break;
+      }
    }
    fGateLength        = 500;
    fBufSize           = 0x4000;

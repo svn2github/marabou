@@ -11,7 +11,7 @@ enum CAnalyzeCommandIdentifiers {
    M_MBSSTATUS, M_BUFSIZE, M_BUFSTREAM, M_NOEVENT,
    M_HELPC, M_HELPM, M_HELPBR, M_HELPNAME,
    M_COMMENT, M_RESETALL, M_RESETSEL, M_STARTEVENT, M_STOPEVENT, M_FROMTIME
-   , M_TOTIME, M_GATEL, M_MBSSETUP, M_READOUTFUNCTION, M_MAKEFILE, M_COMPILE
+   , M_TOTIME, M_GATEL, M_MBSSETUP, M_CODENAME, M_COMPILE
    , M_MAXFILESIZE, M_MBSLOGLEVEL, M_SELECTTIME, M_SELECTNUMBER 
    ,M_RUNNR, M_INPUT, M_DIR, M_MAPF, M_MAPS, M_HISTF, M_ROOTF, M_PARF
    ,M_QUIT, M_AVERAGE, M_SAVESETUP, M_AUTOSETUP, M_WHICHHIST, M_RESETLIST
@@ -70,7 +70,7 @@ private:
            *fHistList, *fRootFile, *fHistFile, *fDefFile, *fInputSource, 
            *fRunNr, *fOldRunNr, *fComment, *fPar, 
            *fMbsVersion, *fDir, *fMaster, *fReadout,
-           *fTrigger, *fReadoutFunction, *fMakefile, *fCommonIndexFile, *fFromTime, *fToTime,
+           *fTrigger, *fCodeName, *fFromTime, *fToTime,
            *fResetList, *fOurPidFile, *fHelpFile;
 
    TString *fSaveMap;

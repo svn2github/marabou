@@ -18,14 +18,14 @@
 # Set SYSMODE=y only if you want to build MARaBOU from sources
 # To use MARaBOU after successful installation set SYSMODE=n
 
-SYSMODE=
+SYSMODE=y
 
 # Set environment vars needed by MARaBOU:
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=
-MARABOU=
+ROOTSYS=/usr/cern/Linux_rh7.2/root_new
+MARABOU=`pwd`
 
 #____________________________[end editable section]___________________________
 

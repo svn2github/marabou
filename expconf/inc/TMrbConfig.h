@@ -62,7 +62,8 @@ class packNames : public TObject {
 class TMrbConfig : public TNamed {
 
 	public:
-		enum EMrbReadoutTag 	{	kRdoFile			=	1,			// readout tags
+		enum EMrbReadoutTag 	{	kRdoPath			=	1,			// readout tags
+									kRdoFile,
 									kRdoNameLC,
 									kRdoNameUC,
 									kRdoCreationDate,
@@ -476,6 +477,9 @@ class TMrbConfig : public TNamed {
 		Bool_t CallUserMacro(const Char_t * MacroName = "");				// call user macro
 		Bool_t ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord);
 				
+		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE);	// compile readout code
+		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE);						// compile analysis code
+
 		void Print(ostream & OutStrm, const Char_t * Prefix = "");			// show data
 		inline virtual void Print() { Print(cout, ""); };
 

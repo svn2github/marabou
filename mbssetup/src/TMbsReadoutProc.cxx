@@ -735,75 +735,41 @@ Int_t TMbsReadoutProc::GetSevtSize(Int_t Trigger) {
 	}
 }
 
-Bool_t TMbsReadoutProc::SetSourceCode(const Char_t * Source) {
+Bool_t TMbsReadoutProc::SetCodeName(const Char_t * CodeName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::SetSourceCode
-// Purpose:        Define name of source code files
-// Arguments:      Char_t * Source     -- name of file containing readout code
+// Name:           TMbsReadoutProc::SetCodeName
+// Purpose:        Define name of makefile
+// Arguments:      Char_t * CodeName     -- name of code files
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets resource "TMbsSetup.ReadoutNNN.SourceCode".
+// Description:    Sets resource "TMbsSetup.ReadoutNNN.CodeName".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "SourceCode"), Source);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "CodeName"), CodeName);
 	return(kTRUE);
 }
 
-Bool_t TMbsReadoutProc::SetCommonIndexFile(const Char_t * IdxFile) {
+const Char_t * TMbsReadoutProc::GetCodeName() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::SetCommonIndexFile
-// Purpose:        Define name of common index files
-// Arguments:      Char_t * Source     -- name of file containing common indices
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Sets resource "TMbsSetup.ReadoutNNN.CommonIndexFile".
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TString r;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "CommonIndexFile"), IdxFile);
-	return(kTRUE);
-}
-
-const Char_t * TMbsReadoutProc::GetSourceCode() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::GetSourceCode
-// Purpose:        Return name of source code file
+// Name:           TMbsReadoutProc::GetCodeName
+// Purpose:        Return name of code file
 // Arguments:      --
-// Results:        Char_t * Source       -- file name
+// Results:        Char_t * CodeName       -- file name
 // Exceptions:
-// Description:    Gets resource "TMbsSetup.ReadoutNNN.SourceCode".
+// Description:    Gets resource "TMbsSetup.ReadoutNNN.CodeName".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString r;
-	gMbsSetup->Get(fSource, gMbsSetup->Resource(r, "Readout", fId + 1, "SourceCode"));
-	return(fSource.Data());
+	gMbsSetup->Get(fCode, gMbsSetup->Resource(r, "Readout", fId + 1, "CodeName"));
+	return(fCode.Data());
 }
 
-const Char_t * TMbsReadoutProc::GetCommonIndexFile() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::GetCommonIndexFile
-// Purpose:        Return name of common index file
-// Arguments:      --
-// Results:        Char_t * IdxFile       -- file name
-// Exceptions:
-// Description:    Gets resource "TMbsSetup.ReadoutNNN.CommonIndexFile".
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TString r;
-	gMbsSetup->Get(fCommonIndexFile, gMbsSetup->Resource(r, "Readout", fId + 1, "CommonIndexFile"));
-	return(fCommonIndexFile.Data());
-}
-
-Bool_t TMbsReadoutProc::LinkSourceCode(const Char_t * SrcDir) {
+Bool_t TMbsReadoutProc::CopyMakefile(const Char_t * SrcDir) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::LinkSourceCode
@@ -811,17 +777,16 @@ Bool_t TMbsReadoutProc::LinkSourceCode(const Char_t * SrcDir) {
 // Arguments:      Char_t * SrcDir       -- dir where readout code resides
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Creates hardware links to readout sources.
+// Description:    Copies Makefile from source dir to readout destination.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString srcFile;
+	TString mkFile;
 	TString srcDir;
 	TString srcPath;
 	TString rdoPath;
 	TString destPath;
 	TString fname;
-	TString idxFile;
 	Bool_t isOK;
 
 	TMrbNamedX * setupMode;
@@ -835,17 +800,17 @@ Bool_t TMbsReadoutProc::LinkSourceCode(const Char_t * SrcDir) {
 	srcDir = SrcDir;
 	if (srcDir.IsNull()) srcDir = gSystem->WorkingDirectory();
 
-	srcFile = this->GetSourceCode();
-	if (srcFile.Length() == 0) {
+	mkFile = this->GetCodeName();
+	if (mkFile.Length() == 0) {
 		gMrbLog->Err() << "Source file not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
 	}
 
 	destPath = gMbsSetup->GetHomeDir();
 	if (destPath.Length() == 0) {
 		gMrbLog->Err() << "Remote home directory not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
 	} else {
 		destPath += "/";
@@ -854,7 +819,7 @@ Bool_t TMbsReadoutProc::LinkSourceCode(const Char_t * SrcDir) {
 	rdoPath = gMbsSetup->GetPath();
 	if (rdoPath.Length() == 0) {
 		gMrbLog->Err() << "Setup path not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
 	} else {
 		destPath += rdoPath;
@@ -865,7 +830,7 @@ Bool_t TMbsReadoutProc::LinkSourceCode(const Char_t * SrcDir) {
 		rdoPath = this->GetPath();
 		if (rdoPath.Length() == 0) {
 			gMrbLog->Err() << "Readout path not defined" << endl;
-			gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
+			gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 			isOK = kFALSE;
 		} else {
 			destPath += rdoPath;
@@ -878,81 +843,30 @@ Bool_t TMbsReadoutProc::LinkSourceCode(const Char_t * SrcDir) {
 	srcPath = srcDir;
 	srcPath += "/";
 
-	fname = srcFile + ".c";
+	fname = mkFile + ".mk";
 	if (gSystem->Which(srcDir.Data(), fname.Data()) == NULL) {
 		gMrbLog->Err() << "No such file - " << fname << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
 	}
 
 	gSystem->Unlink(destPath + fname);
 	if (gSystem->Link(srcPath + fname, destPath + fname) == 0) {
-		gMrbLog->Out() << srcPath + fname << " -> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode", setblue);
-	} else {
-		gMrbLog->Err() << "Link failed - " << srcPath + fname << " -> " << destPath << " (hard link)" << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
-		isOK = kFALSE;
-	}
-
-	fname = srcFile + ".h";
-	if (gSystem->Which(srcDir.Data(), fname.Data()) == NULL) {
-		gMrbLog->Err() << "No such file - " << fname << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
-		isOK = kFALSE;
-	}
-
-	gSystem->Unlink(destPath + fname);
-	if (gSystem->Link(srcPath + fname, destPath + fname) == 0) {
-		gMrbLog->Out() << srcPath + fname << " -> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode", setblue);
-	} else {
-		gMrbLog->Err() << "Link failed - " << srcPath + fname << " -> " << destPath << " (hard link)" << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
-		isOK = kFALSE;
-	}
-
-	fname = srcFile + ".mk";
-	if (gSystem->Which(srcDir.Data(), fname.Data()) == NULL) {
-		gMrbLog->Err() << "No such file - " << fname << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
-		isOK = kFALSE;
-	}
-
-	gSystem->Unlink(destPath + fname);
-	if (gSystem->Link(srcPath + fname, destPath + fname) == 0) {
-		gMrbLog->Out() << srcPath + fname << " --> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode", setblue);
+		gMrbLog->Out() << "Linking " << srcPath + fname << " --> " << destPath << endl;
+		gMrbLog->Flush(this->ClassName(), "CopyMakefile", setblue);
 	} else {
 		gMrbLog->Err() << "Hard link failed - " << srcPath + fname << " -> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
 	}
 
-	idxFile = this->GetCommonIndexFile();
-	fname = idxFile;
-	if (gSystem->Which(srcDir.Data(), fname.Data()) == NULL) {
-		gMrbLog->Err() << "No such file - " << fname << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
-		isOK = kFALSE;
-	}
-
-	gSystem->Unlink(destPath + fname);
-	if (gSystem->Link(srcPath + fname, destPath + fname) == 0) {
-		gMrbLog->Out() << srcPath + fname << " --> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode", setblue);
-	} else {
-		gMrbLog->Err() << "Hard link failed - " << srcPath + fname << " -> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "LinkSourceCode");
-		isOK = kFALSE;
-	}
 	return(isOK);
 }
 
-Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
+Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::CompileSourceCode
+// Name:           TMbsReadoutProc::CompileReadout
 // Purpose:        Compile source code on remote host
 // Arguments:      Char_t * Version   -- MBS version (prod, deve ...)
 // Results:        kTRUE/kFALSE
@@ -962,7 +876,7 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString homeDir;
-	TString srcFile;
+	TString codeName;
 	TString srcPath;
 	TString path;
 	TString cFile;
@@ -989,17 +903,17 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 	setupMode = gMbsSetup->GetMode();
 	smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
 
-	srcFile = this->GetSourceCode();
-	if (srcFile.Length() == 0) {
-		gMrbLog->Err() << "Source file not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+	codeName = this->GetCodeName();
+	if (codeName.Length() == 0) {
+		gMrbLog->Err() << "Name of source code not defined" << endl;
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	}
 
 	homeDir = gMbsSetup->GetHomeDir();
 	if (homeDir.Length() == 0) {
 		gMrbLog->Err() << "Remote home directory not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	} else {
 		homeDir += "/";
@@ -1009,7 +923,7 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 	path = gMbsSetup->GetPath();
 	if (path.Length() == 0) {
 		gMrbLog->Err() << "Setup path not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	} else {
 		srcPath += path;
@@ -1020,7 +934,7 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 		path = this->GetPath();
 		if (path.Length() == 0) {
 			gMrbLog->Err() << "Readout path not defined" << endl;
-			gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+			gMrbLog->Flush(this->ClassName(), "CompileReadout");
 			isOK = kFALSE;
 		} else {
 			srcPath += path;
@@ -1030,17 +944,10 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 
 	if (!isOK) return(kFALSE);
 
-	cFile = srcFile + ".c";
-	if (gSystem->Which(srcPath.Data(), cFile.Data()) == NULL) {
-		gMrbLog->Err() << "No such file - " << cFile << " (searched on " << srcPath << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
-		isOK = kFALSE;
-	}
-
-	mkFile = srcFile + ".mk";
+	mkFile = codeName + ".mk";
 	if (gSystem->Which(srcPath.Data(), mkFile.Data()) == NULL) {
 		gMrbLog->Err() << "No such file - " << mkFile << " (searched on " << srcPath << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	}
 
@@ -1049,17 +956,17 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 	proc = this->GetName();
 	if (proc.Length() == 0) {
 		gMrbLog->Err() << "Readout proc not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		return(kFALSE);
 	}
 
-	compileIt = srcFile + ".sh";
+	compileIt = codeName + ".sh";
 	path = srcPath + compileIt;
 
 	sh.open(path.Data(), ios::out);
 	if (!sh.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << compileIt << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		return(kFALSE);
 	}
 
@@ -1073,10 +980,10 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 	sh.close();
 
 	errFile = srcPath;
-	errFile += srcFile + ".err";
+	errFile += codeName + ".err";
 	gSystem->Unlink(errFile.Data());
 
-	cout	<< this->ClassName() << "::CompileSourceCode(): Compiling " << cFile
+	cout	<< this->ClassName() << "::CompileReadout(): Compiling " << cFile
 			<< " on host " << proc << " (MBS version = " << Version << ") ..."
 			<< endl << endl;
 	cmd = new ostrstream();
@@ -1092,7 +999,7 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 	diag.open(errFile, ios::in);
 	if (!diag.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << gSystem->BaseName(errFile.Data()) << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
 	} else {
 		for (;;) {
@@ -1128,13 +1035,13 @@ Bool_t TMbsReadoutProc::CompileSourceCode(const Char_t * Version) {
 
 		if (nofErrors == 0 && nofWarnings == 0) {
 			gMrbLog->Out() << "Readout task compiled & linked - ok" << endl;
-			gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+			gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		} else if (nofErrors > 0) {
 			gMrbLog->Err()	<< "Readout task compiled & linked - some error(s) & warning(s)" << endl;
-			gMrbLog->Flush(this->ClassName(), "CompileSourceCode");
+			gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		} else {
 			gMrbLog->Out()	<< "Readout task compiled & linked - see warning(s)" << endl;
-			gMrbLog->Flush(this->ClassName(), "CompileSourceCode", setblue);
+			gMrbLog->Flush(this->ClassName(), "CompileReadout", setblue);
 		}
 	}
 

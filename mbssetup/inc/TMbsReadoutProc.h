@@ -74,12 +74,10 @@ class TMbsReadoutProc : public TObject {
 
 		inline TMbsTriggerModule * TriggerModule() { return(fTriggerModule); };	// trigger module
 
-		Bool_t SetSourceCode(const Char_t * Source); 					// define name of .c/.mk source
-		const Char_t * GetSourceCode();								// ... return source code name
-		Bool_t SetCommonIndexFile(const Char_t * IdxFile); 			// define name of common index file
-		const Char_t * GetCommonIndexFile();						// ... return index file name
-		Bool_t LinkSourceCode(const Char_t * SrcDir = "");			// link source code to readout dir
-		Bool_t CompileSourceCode(const Char_t * Version = "deve"); 	// compile readout source
+		Bool_t SetCodeName(const Char_t * Source); 					// define name code files
+		const Char_t * GetCodeName();								// ... return code file name
+		Bool_t CopyMakefile(const Char_t * SrcDir = "");			// copy makefile to readout dir
+		Bool_t CompileReadout(const Char_t * Version = "deve"); 	// compile readout source
 
 		void RemoveSetup(); 				// remove entries from setup data base
 		void Reset();	 					// reset to default
@@ -94,8 +92,7 @@ class TMbsReadoutProc : public TObject {
 		TString fName;						// temp storage: name
 		TString fAddr;						// ... addr
 		TString fPath;						// ... path
-		TString fSource;					// ... name of source code file
-		TString fCommonIndexFile;			// ... name of common index file
+		TString fCode;						// ... name of code file
 
 	ClassDef(TMbsReadoutProc, 1)		// [MBS Setup] Readout processor
 };

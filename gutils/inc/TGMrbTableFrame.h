@@ -110,7 +110,7 @@ class TGMrbTableFrame : public TGTransientFrame {
       Bool_t fCancelOk;
       const Char_t * fHelpText;
 
-	ClassDef(TGMrbTableFrame, 0)	// {GraphUtils] A rows x cols table
+	ClassDef(TGMrbTableFrame, 0)	// [GraphUtils] A rows x cols table
 };
 
 //______________________________________________________[C++ CLASS DEFINITION]
