@@ -106,6 +106,7 @@ Bool_t TMrbSen_2010::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 	mnemoUC.ToUpper();
 
 	switch (TagIndex) {
+		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());

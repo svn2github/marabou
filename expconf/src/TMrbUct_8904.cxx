@@ -117,6 +117,7 @@ Bool_t TMrbUct_8904::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 	}
 
 	switch (TagIndex) {
+		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 		case TMrbConfig::kModuleClearModule:
 		case TMrbConfig::kModuleStartAcquisition:

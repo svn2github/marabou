@@ -210,6 +210,15 @@ Bool_t TMrbSilena_4418T::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMod
 	if (this->HasZeroSuppression()) statusReg |= TMrbSilena_4418T::kZeroCompressionStatus;
 		
 	switch (TagIndex) {
+		case TMrbConfig::kModuleInitCommonCode:
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());

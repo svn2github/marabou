@@ -504,6 +504,15 @@ Bool_t TMrbKinetics_3655::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMo
 	mnemoUC.ToUpper();
 
 	switch (TagIndex) {
+		case TMrbConfig::kModuleInitCommonCode:
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode("%C%");
 			fCodeTemplates.Substitute("$moduleName", this->GetName());

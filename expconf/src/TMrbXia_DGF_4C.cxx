@@ -167,6 +167,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleDefs:
+		case TMrbConfig::kModuleInitCommonCode:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());

@@ -132,6 +132,7 @@ Bool_t TMrbAcromag_IP341::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbMo
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleDefs:
+		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());

@@ -177,6 +177,7 @@ Bool_t TMrbCaen_V556::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleDefs:
+		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());

@@ -141,6 +141,8 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoDefinePointers, 		"DEFINE_POINTERS"			},
 								{TMrbConfig::kRdoDeviceTables,	 		"DEVICE_TABLES" 			},
 								{TMrbConfig::kRdoInitPointers,			"INIT_POINTERS" 			},
+								{TMrbConfig::kRdoInitEnvironment,		"INIT_ENVIRONMENT"			},
+								{TMrbConfig::kRdoInitCommonCode,		"INIT_COMMON_CODE"			},
 								{TMrbConfig::kRdoInitModules,			"INIT_MODULES"				},
 								{TMrbConfig::kRdoOnStartAcquisition,	"ON_START_ACQUISITION"		},
 								{TMrbConfig::kRdoOnStopAcquisition, 	"ON_STOP_ACQUISITION"		},
@@ -165,6 +167,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 const SMrbNamedXShort kMrbLofModuleTags[] =
 							{
 								{TMrbConfig::kModuleDefs,					"MODULE_DEFS"				},
+								{TMrbConfig::kModuleInitCommonCode, 		"INIT_COMMON_CODE"			},
 								{TMrbConfig::kModuleInitModule, 			"INIT_MODULE"				},
 								{TMrbConfig::kModuleInitChannel,			"INIT_CHANNEL"				},
 								{TMrbConfig::kModuleReadChannel,			"READ_CHANNEL"				},
@@ -1590,14 +1593,33 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							crate = this->FindCrate(crate);
 						}
 						break;
-					case TMrbConfig::kRdoInitModules:
-						rdoTmpl.InitializeCode("%B%");
+					case TMrbConfig::kRdoInitEnvironment:
+						rdoTmpl.InitializeCode();
 						expName = this->GetName();
 						expName(0,1).ToUpper();
 						expName.Prepend("/.");
 						expName.Prepend(gSystem->WorkingDirectory());
 						expName += "Config.rc";
 						rdoTmpl.Substitute("$envFile", expName.Data());
+						cout << "@@ " << expName.Data() << endl;
+						rdoTmpl.WriteCode(rdoStrm);
+						break;
+					case TMrbConfig::kRdoInitCommonCode:
+						{
+							module = (TMrbModule *) fLofModules.First();
+							TList onceOnly;
+							while (module) {
+								if (onceOnly.FindObject(module->ClassName()) == NULL) {
+									module->MakeReadoutCode(rdoStrm, kModuleInitCommonCode);
+								}
+								onceOnly.Add(new TNamed(module->ClassName(), ""));
+								module = (TMrbModule *) fLofModules.After(module);
+							}   
+							onceOnly.Delete();
+						}
+						break;
+					case TMrbConfig::kRdoInitModules:
+						rdoTmpl.InitializeCode("%B%");
 						rdoTmpl.WriteCode(rdoStrm);
 						crate = this->FindCrate();
 						while (crate >= 0) {

@@ -84,6 +84,8 @@ class TMrbConfig : public TNamed {
 									kRdoDefinePointers,
 									kRdoDeviceTables,
 									kRdoInitPointers,
+									kRdoInitEnvironment,
+									kRdoInitCommonCode,
 									kRdoInitModules,
 									kRdoOnStartAcquisition,
 									kRdoOnStopAcquisition,
@@ -322,6 +324,7 @@ class TMrbConfig : public TNamed {
 		enum					{	kCfgOptSevtDefault	=	0	};										// default config options
 
 		enum EMrbModuleTag	 	{	kModuleDefs			=	1,	// special readout tags
+									kModuleInitCommonCode,
 									kModuleInitModule,
 									kModuleInitChannel,
 									kModuleReadChannel,

@@ -132,6 +132,7 @@ Bool_t TMrbLeCroy_1176::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModu
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleDefs:
+		case TMrbConfig::kModuleInitCommonCode:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());

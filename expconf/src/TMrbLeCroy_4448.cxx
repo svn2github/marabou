@@ -112,6 +112,15 @@ Bool_t TMrbLeCroy_4448::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModu
 	mnemoUC.ToUpper();
 
 	switch (TagIndex) {
+		case TMrbConfig::kModuleInitCommonCode:
+			fCodeTemplates.InitializeCode();
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
+			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
 		case TMrbConfig::kModuleInitModule:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());

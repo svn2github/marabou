@@ -183,6 +183,7 @@ Bool_t TMrbGanelec_Q1612F::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbM
 
 	switch (TagIndex) {
 		case TMrbConfig::kModuleDefs:
+		case TMrbConfig::kModuleInitCommonCode:
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());

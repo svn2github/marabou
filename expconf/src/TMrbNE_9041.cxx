@@ -110,6 +110,7 @@ Bool_t TMrbNE_9041::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTa
 	mnemoUC.ToUpper();
 
 	switch (TagIndex) {
+		case TMrbConfig::kModuleInitCommonCode:
 		case TMrbConfig::kModuleInitModule:
 		case TMrbConfig::kModuleClearModule:
 		case TMrbConfig::kModuleFinishReadout:
