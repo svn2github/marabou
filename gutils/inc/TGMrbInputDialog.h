@@ -12,7 +12,7 @@ extern const char *GetString(const char *prompt, const char *defval,
                              const char *ynprompt=0,Bool_t * yn=0,
                              const char *helptext=0,
                              const char *ynprompt1=0,Bool_t * yn1=0,
-                             const char * FileName=0);
+                             const char * FileName=0, TList * complist=0);
 extern Int_t GetInteger(const char *prompt, Int_t defval, 
                         Bool_t * Ok=0, TGWindow *win=0, 
                         const char *ynprompt=0, Bool_t * yn=0,
@@ -41,13 +41,14 @@ private:
    Int_t            *fReturn;      // address to store cancel = -1 / ok =0 
    TGListBox        *fListBox;
    TString          fFileName;
+   TList            *fCompList;
 public:
    TGMrbInputDialog(const char *Prompt, const char *DefVal,Int_t * Return,
                     char *retstr, const TGWindow *Win = 0, 
                     const char *YNPrompt = 0, Bool_t * YesNo = 0 ,
                     const char *HelpText = 0,
                     const char *YNPrompt1 = 0, Bool_t * YesNo1 = 0,
-                    const char * FileName = 0);
+                    const char * FileName = 0, TList * complist=0);
    virtual ~TGMrbInputDialog(){
 // Cleanup dialog.
       fWidgets->Delete();

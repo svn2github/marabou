@@ -9,6 +9,8 @@ namespace std {} using namespace std;
 #include <TApplication.h>
 #include <TVirtualX.h>
 #include "TRootHelpDialog.h"
+#include <TList.h>
+#include <TObjString.h>
 
 #include <TGClient.h>
 #include <TGFrame.h>
@@ -22,9 +24,9 @@ namespace std {} using namespace std;
 #include <TGComboBox.h>
 #include <TGTab.h>
 #include <TGSlider.h>
-#include <TList.h>
 #include "TGMrbInputDialog.h"
 #include "TGMrbHelpWindow.h"
+#include "SetColor.h"
 
 
 ///////////////////////////////////////////////////////////////////////////
@@ -50,6 +52,8 @@ namespace std {} using namespace std;
 // Bool_t * YesNo1:      truth value of second Checkbutton               //
 // const char *FileName: a file containing lines from which a selection  //
 //                       may be made, a TGListBox is used in this case   //
+// TList * Complist:     list containing TObjStrings used for            //
+//                       command completion                              //
 //                                                                       //
 // This class is normally accessed via the following utility functions:  //
 //                                                                       //
@@ -71,6 +75,74 @@ namespace std {} using namespace std;
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+//________________________________________________________________________________________
+
+Ssiz_t IndexOfLast(TString &str, char &c) 
+{
+   // return index of detached char c in str searching backwards
+   if (str.Index(c) < 0) return -1;    // no occurence
+   Int_t len = str.Length();
+   const char *sp = str.Data();
+   cout << sp << endl;
+   Int_t ind = len - 1;
+   while (ind > 0) {
+      if (sp[ind] == c && sp[ind -1] != c) return ind;
+      ind--;
+      if (sp[ind+1] == c)ind--;
+   }
+   return -1;
+} 
+//________________________________________________________________________________________
+
+Int_t Matches(TList * list, const char * s, Int_t * matchlength)
+{
+   Int_t pos = -1;
+   Bool_t unique = kTRUE;
+   TObjString * obs;
+   Int_t lmax = 1000000;
+   for (Int_t i = 0; i < list->GetSize(); i++) {
+      obs = (TObjString *)list->At(i);
+      TString var = obs->GetString();
+      if (var.Index(s, 0) == 0) {
+         cout << "Input: " << s << " matches: " << var << endl;
+         if (pos >=0) unique = kFALSE;
+         pos = i;
+         if (var.Length() < lmax) lmax = var.Length(); 
+         *matchlength = var.Length();
+      }
+   }
+   if (unique) {
+      return pos;
+   } else {
+      cout << setred << "Not unique, find  longest match: lmax = " << lmax << setblack << endl;
+      Int_t lm = 0;
+      for (Int_t l = 0; l < lmax; l++) {
+         Bool_t fm = kTRUE;
+         char cm ={' '};
+         for (Int_t i = 0; i < list->GetSize(); i++) {
+            obs = (TObjString *)list->At(i);
+            TString var = obs->GetString();
+            if (var.Index(s, 0) != 0) continue;
+            if (fm) {
+               cm = var[l];
+               fm = kFALSE;
+            } else {
+               if (var[l] != cm) {
+                  *matchlength = lm;
+                  cout << "pso, lm: " << pos << " " << lm << endl;
+                  return pos;
+               } 
+            }
+         }
+         lm++;    
+      }
+   }
+   *matchlength = lmax;
+   return pos;
+}
+;
+//________________________________________________________________________________________
+
 
 ClassImp(TGMrbInputDialog)
 
@@ -79,7 +151,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
                          const char *YNPrompt, Bool_t * YesNo,
                          const char *HelpText,
                          const char *YNPrompt1, Bool_t * YesNo1,
-                         const char * FileName):
+                         const char * FileName, TList * Complist):
 							    TGTransientFrame(gClient->GetRoot(), Win, 10, 10)
 {
    // Create  input dialog.
@@ -92,7 +164,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    const TGWindow * main = gClient->GetRoot();
    if(Win != 0)fMyWindow = Win;
    else        fMyWindow = main;
- 
+   fCompList = Complist;
    // create Prompt label and textentry widget
    TGLabel *label = new TGLabel(this, Prompt);
    fWidgets->AddFirst(label);
@@ -130,6 +202,10 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
             line.ReadLine(selections);
             if (selections.eof()) break;
             fListBox->AddEntry(line.Data(), id);
+            if (id == 00 && (Int_t)fTE->GetBuffer()->GetTextLength() == 0) {
+               fTE->GetBuffer()->AddText(0, line.Data());
+               gClient->NeedRedraw(fTE);
+            }
             id++;
          }
          selections.close();
@@ -300,10 +376,10 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 //                cout << "LISTBOX: " << parm1 << " " << parm2 << endl;
                 if (parm1 != 99) break;
                 TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(parm2);
-
-                const TString * text = (TString*)tge->GetText();
-                fTE->GetBuffer()->RemoveText(0, (Int_t)fTE->GetBuffer()->GetTextLength());
-                fTE->GetBuffer()->AddText(0, text->Data());
+                TString text = tge->GetText()->GetString();
+ //               fTE->GetBuffer()->RemoveText(0, (Int_t)fTE->GetBuffer()->GetTextLength());
+ //               fTE->GetBuffer()->AddText(0, text.Data());
+                fTE->SetText(text.Data());
                 gClient->NeedRedraw(fTE);
                 break;
                 }
@@ -314,6 +390,25 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 
        case kC_TEXTENTRY:
          switch (GET_SUBMSG(msg)) {
+             case kTE_TAB:
+//               cout << "Tab " << endl;
+                if (fCompList) {
+                   TString temp = fTE->GetBuffer()->GetString();
+                   char colon = ':';
+                   Int_t indcol = IndexOfLast(temp, colon);
+                   TString var = temp(indcol+1, temp.Length() - indcol - 1);
+//                   cout << "var: " << var << endl;
+                   Int_t matchlength;
+                   Int_t pos = Matches(fCompList, var.Data(), &matchlength);
+                   if (pos >= 0) {
+                      TObjString * obs = (TObjString *)fCompList->At(pos);
+                      TString result = (obs->GetString()).Data();
+                      if (matchlength != result.Length())result = result(0,matchlength);
+                      temp.Replace(indcol + 1, temp.Length() - indcol - 1, result.Data());
+                      fTE->SetText(temp.Data());
+                   }
+                }
+                break;
              case kTE_ENTER:
                 // here copy the string from text buffer to return variable
                 strcpy(fRetStr, fTE->GetBuffer()->GetString());
@@ -360,12 +455,12 @@ void TGMrbInputDialog::SaveList()
 //   cout << "Selected: " << sel << endl;
    outfile << sel << endl;
    if (ne > 0) {
-      const TString * temp;
       for (Int_t i =0; i < ne; i++) {
-         TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(i);
-         temp = (TString*)tge->GetText();
-//         cout << "Ent: " << temp->Data() << endl;
-         if (*temp != sel) outfile <<temp->Data() << endl;
+         TGLBEntry * tle = fListBox->GetEntry(i);
+         TGTextLBEntry * tge = (TGTextLBEntry *)tle;
+         TString text = tge->GetText()->GetString();
+//         cout << "Ent: " << text.Data() << endl;
+         if (text != sel) outfile <<text.Data() << endl;
       }
    }
    outfile.close();
@@ -376,14 +471,14 @@ void TGMrbInputDialog::SaveList()
 const char *GetString(const char *Prompt, const char *DefVal, Bool_t * Ok,
                       TGWindow *Win,  const char *YNPrompt, Bool_t * YesNo,
                       const char *HelpText, 
-                      const char *YNPrompt1, Bool_t * YesNo1, const char *FileName)
+                      const char *YNPrompt1, Bool_t * YesNo1, const char *FileName, TList * Complist)
 {
    // Prompt for string. The typed in string is returned.
 
    static char answer[128];
    Int_t ret;
    new TGMrbInputDialog(Prompt, DefVal, &ret, answer,Win, YNPrompt, YesNo, 
-       HelpText, YNPrompt1, YesNo1, FileName);
+       HelpText, YNPrompt1, YesNo1, FileName, Complist);
    if(Ok){
       if(ret == 0) *Ok = kTRUE;
       else         *Ok = kFALSE;
