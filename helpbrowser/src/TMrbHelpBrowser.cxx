@@ -606,10 +606,10 @@ Int_t TMrbHelpBrowser::AddTagAtEOL(TString & s){
 };
 //________________________________________________________________________________
 
-Int_t TMrbHelpBrowser::LineCount(TString & str, Int_t * longest_line){
+Int_t TMrbHelpBrowser::LineCount(TString & str,
+                      Int_t * longest_line, Int_t * nof_heads){
 //  find Number of lines and length of longest line
-   Int_t nol = 0;
-   Int_t ll = 0;
+   Int_t nol = 0,  ll = 0, noh = 0;
    Bool_t start = kTRUE;
    TString line;
 //   TRegexp tag("<.*>");       // matches things like <Iimg bbb>
@@ -625,9 +625,11 @@ Int_t TMrbHelpBrowser::LineCount(TString & str, Int_t * longest_line){
         else if(!intag) len ++;
      }
      if(len > ll) ll = len;
+     if (line.Index("<H" , 2, 0, TString::kIgnoreCase) >= 0)noh ++;
      nol++;
    }
    *longest_line = ll;
+   *nof_heads = noh;
    return nol;
 };
 //________________________________________________________________________________
@@ -652,13 +654,23 @@ void TMrbHelpBrowser::PreScan(TString & text, Bool_t keep_references){
    Int_t tag_start;
 //  first go: remove blanks and EOL in tags <xxx>
    while(1){
+//      cout << "PreScan, text(start,10)" << text(start, 10) << endl;
       tag_start = NextTag(text, tag, start);
       if(tag_start < 0)break;
 //      cout << "PreScan, tag" << tag << endl;
       text.Remove(tag_start, tag.Length());
       Squeeze_White_Space(tag);
       Squeeze_EOL(tag);
-//      cout << "PreScan, squeezed: " << tag << endl;
+//    remove style stuff
+      if (tag.Index("<style"  , 6, 0,  TString::kIgnoreCase) >= 0 ||
+          tag.Index("<title"  , 6, 0,  TString::kIgnoreCase) >= 0)  {
+         tag_start = NextTag(text, tag, start);
+//        cout << "Prescan: " << tag.Data() << endl;
+//        cout << "<style: start, tag_start, len  " << start << " " <<  tag_start << " " << tag.Length() << endl;
+//         cout << "Remove: " << text(start,  tag_start - start + tag.Length()) << endl;
+         text.Remove(start, tag_start - start + tag.Length());
+         tag_start = start;
+      }     
 //     if tag is known put it back
       if(tag.Index("<aNAME"  , 6, 0,  TString::kIgnoreCase) >= 0 ||
          tag.Index("<aname"  , 6, 0,  TString::kIgnoreCase) >= 0 ||
@@ -845,13 +857,13 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 
    Int_t nl = 0;
    Int_t longest_line = 0;
+   Int_t nof_heads = 0;
    Int_t line_length = 65;
    Int_t extralines = 1 ;
 
 // find number of lines
 
-   nl = LineCount(text, &longest_line);
-//   cout << "longest_line " << longest_line<< endl;
+   nl = LineCount(text, &longest_line, &nof_heads);
 //   max window size (in pixel);
    fWwX = 720;
    fWwY = 720;
@@ -860,6 +872,8 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
    Int_t wwy = (extralines + nl)*(fTextSize + 2) + 4;
 //   optimized for char height 18 x 11
 //   Int_t wwx_max = (Int_t)((Float_t) fWwX * (Float_t)char_width / 11.);
+//   cout << "nl: " << nl << " longest_line " << longest_line 
+//        << " wwy " << wwy << endl;
 
    Int_t wwx_max;
    if (longest_line > line_length) wwx_max = line_length * char_width;
@@ -883,7 +897,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
       ca = new TCanvas(hname, canvas_title, -fX0, fY0, wwx_max, fWwY + 60);
 
       if(longest_line <= line_length) wwx = ca->GetWw() - 16;
-      cout << "wwx  " << wwx << " wwx_max  " << wwx_max <<  endl;
+//      cout << "wwx  " << wwx << " wwx_max  " << wwx_max <<  endl;
       ca->SetCanvasSize(wwx, wwy);
    }
    fCanvasList->Add(ca);
@@ -899,14 +913,14 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 //   cout << tw << " " << th << " " << clength << endl;
    delete tt;
 
-   Float_t lspace = 1 / (Float_t)(nl+extralines);   // line spacing 
+   Float_t lspace = 1 / (Float_t)(nl + nof_heads + extralines);   // line spacing 
 //   Float_t wh = (Float_t)gPad->XtoPixel(gPad->GetX2());
 //   cout << "wh " << gPad->XtoPixel(gPad->GetX2())<<  endl;
 //   Float_t clength = char_width / (Float_t)(wh);     // in NDC
 
    Float_t x0 = 2 * clength;      // left margin
-   Float_t yt = 1 - lspace;       // top margin, starting y
-
+   Float_t yt0 = 1 - lspace;       // top margin, starting y
+   Float_t yt  = yt0;
    Float_t xt = x0;               // starting  x 
 
    TString tag;
@@ -925,8 +939,8 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 //  loop on lines
 
    while((NextLine(text, line, first_line)) >=0){
-       first_line= kFALSE;
-//       cout << "line: " << line<< endl;
+      first_line= kFALSE;
+//      cout << "yt " << yt  << " line: " << line<< endl;
       xt = x0;
       Int_t pointer = 0;
       Int_t  search_from = 0;
@@ -941,7 +955,13 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
             tt = new TText(xt, yt, restofline.Data()); 
 //            tt->SetText(xt, yt, restofline.Data()); 
 //            tt = latex.DrawLatex(xt, yt, restofline.Data()); 
-            if(heading){tt->SetTextFont(63);  tt->SetTextColor(46);}
+            if(heading){
+               tt->SetTextFont(63);  tt->SetTextColor(46);
+               if (yt < yt0) {
+                  yt -= lspace;
+                  tt->SetY(yt);
+               }
+            }
             if(italic) {tt->SetTextFont(113); tt->SetTextColor(46);}
             if(bold)   {tt->SetTextFont(103); tt->SetTextColor(46);}
             tt->Draw();

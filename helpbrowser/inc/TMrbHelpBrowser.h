@@ -94,7 +94,7 @@ Int_t NextHeading(TString & text, TString & heading, Int_t search_from);
 Int_t AddTagAtEOL(TString & s);
 
 
-Int_t LineCount(TString & str, Int_t * longest_line);
+Int_t LineCount(TString & str, Int_t * longest_line, Int_t * nof_heads);
 
 void MoveOrigin();
 
