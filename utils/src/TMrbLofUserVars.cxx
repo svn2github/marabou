@@ -19,6 +19,7 @@ using namespace std;
 #include <fstream>
 
 #include "TROOT.h"
+#include "TRegexp.h"
 #include "TMrbLofUserVars.h"
 #include "TMrbLogger.h"
 #include "TMrbString.h"
@@ -223,15 +224,16 @@ TObject * TMrbLofUserVars::Find(const Char_t * VarName, UInt_t VarType) {
 	return(NULL);
 }
 
-void TMrbLofUserVars::Print(Option_t * Option) {
+void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Print
 // Purpose:        Print a list of variables/windows to cout
-// Arguments:      Char_t * Option     -- option string: V(ariables), W(indows), or D(efault)
+// Arguments:      ostream & OutStrm    -- output stream
+//                 Char_t * Option      -- option string: V(ariables), W(indows), or D(efault)
 // Results:        
 // Exceptions:
-// Description:    Outputs contents of the whole list to cout.
+// Description:    Outputs contents of the whole list to OutStrm (default cout).
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -255,8 +257,8 @@ void TMrbLofUserVars::Print(Option_t * Option) {
 		varp = this->First(vOpt2);
 		while (varp) {
 			if (!found) {
-				cout	<< endl << GetName() << "::VARIABLES:" << endl;
-				cout	<< "   " << setiosflags(ios::left)
+				OutStrm	<< endl << GetName() << "::VARIABLES:" << endl;
+				OutStrm	<< "   " << setiosflags(ios::left)
 						<< setw(20) << "NAME"
 						<< setw(18) << "TYPE"
 						<< setw(17) << "VALUE"
@@ -275,8 +277,8 @@ void TMrbLofUserVars::Print(Option_t * Option) {
 		varp = this->First(vOpt2);
 		while (varp) {
 			if (!found) {
-				cout	<< endl << GetName() << "::WINDOWS:" << endl;
-				cout	<< "   " << setiosflags(ios::left)
+				OutStrm	<< endl << GetName() << "::WINDOWS:" << endl;
+				OutStrm	<< "   " << setiosflags(ios::left)
 						<< setw(20) << "NAME"
 						<< setw(17) << "TYPE"
 						<< setw(18) << "LIMITS"
@@ -290,7 +292,7 @@ void TMrbLofUserVars::Print(Option_t * Option) {
 		}
 	}
 
-	cout << endl;
+	OutStrm << endl;
 }
 
 Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
@@ -345,245 +347,251 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 		return(kFALSE);
 	}
 
-	vstream.open(varFile.Data(), ios::in);
-	if (!vstream.good()) {
-		gMrbLog->Err() << gSystem->GetError() << " - " << varFile << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-		return(kFALSE);
-	}
-
-	line = 0;
-	for (;;) {
-		vline.ReadLine(vstream, kFALSE);
-		if (vstream.eof()) {
-			vstream.close();
-			return(kTRUE);
-		}
-		line++;
-
-		vline = vline.Strip();
-		if (vline.Length() <= 0) continue;
-		if (vline[0] == '#') continue;
-
-		n = vline.Index(":");
-		if (n < 0) {
-			gMrbLog->Err()	<< "Illegal format - colon missing" << endl
-							<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+	TRegexp rx(".C$");
+	if (varFile.Index(rx, 0) >= 0) {
+		gROOT->Macro(varFile.Data());
+	} else {
+		vstream.open(varFile.Data(), ios::in);
+		if (!vstream.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << varFile << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-			continue;
+			return(kFALSE);
 		}
 
-		varName = vline(0, n);
-		varName = varName.Strip();
-		vline1 = vline(n + 1, 1000);
-		vline1.ReplaceWhiteSpace();
-		vline1 = vline1.Strip(TString::kBoth);
-		vline2 = vline1;
-		vline2.ReplaceAll(" ", "@");	// prepare input to handle strings with white spaces
+		line = 0;
+		for (;;) {
+			vline.ReadLine(vstream, kFALSE);
+			if (vstream.eof()) {
+				vstream.close();
+				return(kTRUE);
+			}
+			line++;
 
-		isIndexed = kFALSE;
-		n = varName.Index("[");
-		if (n == 0) {
-			gMrbLog->Err()	<< "Illegal format - spurious []" << endl
-							<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-			gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-			continue;
-		} else if (n > 0) {
-			varIndex = varName(n + 1, 1000);
-			varName = varName(0, n);
-			varName = varName.Strip();
-			n = varIndex.Index("]");
+			vline = vline.Strip();
+			if (vline.Length() <= 0) continue;
+			if (vline[0] == '#') continue;
+
+			n = vline.Index(":");
 			if (n < 0) {
-				gMrbLog->Err()	<< "Illegal format - \"]\" missing" << endl
+				gMrbLog->Err()	<< "Illegal format - colon missing" << endl
 								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadFromFile");
 				continue;
 			}
-			isIndexed = kTRUE;
-			varIndex = varIndex(0, n);
-			varIndex = varIndex.Strip();
-			varIndex += " 1";
-			istringstream s(varIndex.Data());
-			one = 0;
-			s >> vIdx >> one;
-			if (one != 1) {
-				gMrbLog->Err()	<< "Illegal format - illegal array index" << endl
+
+			varName = vline(0, n);
+			varName = varName.Strip();
+			vline1 = vline(n + 1, 1000);
+			vline1.ReplaceWhiteSpace();
+			vline1 = vline1.Strip(TString::kBoth);
+			vline2 = vline1;
+			vline2.ReplaceAll(" ", "@");	// prepare input to handle strings with white spaces
+
+			isIndexed = kFALSE;
+			n = varName.Index("[");
+			if (n == 0) {
+				gMrbLog->Err()	<< "Illegal format - spurious []" << endl
+								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+				gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+				continue;
+			} else if (n > 0) {
+				varIndex = varName(n + 1, 1000);
+				varName = varName(0, n);
+				varName = varName.Strip();
+				n = varIndex.Index("]");
+				if (n < 0) {
+					gMrbLog->Err()	<< "Illegal format - \"]\" missing" << endl
+									<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+					continue;
+				}
+				isIndexed = kTRUE;
+				varIndex = varIndex(0, n);
+				varIndex = varIndex.Strip();
+				varIndex += " 1";
+				istringstream s(varIndex.Data());
+				one = 0;
+				s >> vIdx >> one;
+				if (one != 1) {
+					gMrbLog->Err()	<< "Illegal format - illegal array index" << endl
+									<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+					continue;
+				}
+			}
+
+			varp = this->Find(varName.Data());
+			if (varp == NULL) {
+				gMrbLog->Err()	<< "No such variable/window - " << varName << endl
 								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadFromFile");
 				continue;
 			}
-		}
 
-		varp = this->Find(varName.Data());
-		if (varp == NULL) {
-			gMrbLog->Err()	<< "No such variable/window - " << varName << endl
-							<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-			gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-			continue;
-		}
+			varType = varp->GetUniqueID() & kVarOrWindow;
+			isArray = (varp->GetUniqueID() & kVarIsArray) != 0;
 
-		varType = varp->GetUniqueID() & kVarOrWindow;
-		isArray = (varp->GetUniqueID() & kVarIsArray) != 0;
-
-		if (isIndexed & !isArray) {
-			gMrbLog->Err()	<< "Not an array of vars - " << varName << endl
-							<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-			gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-			continue;
-		} else if (isArray & !isIndexed) {
-			gMrbLog->Err()	<< "Index missing - " << varName << endl
-							<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-			gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-			continue;
-		}
-
-		if (isArray) {
-			n = ((TMrbVariable *) varp)->GetSize();
-			if (n <= vIdx) {
-				gMrbLog->Err()	<< "Index out of range - " << varName
-								<< "[" << n << "]" << endl
+			if (isIndexed & !isArray) {
+				gMrbLog->Err()	<< "Not an array of vars - " << varName << endl
+								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+				gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+				continue;
+			} else if (isArray & !isIndexed) {
+				gMrbLog->Err()	<< "Index missing - " << varName << endl
 								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadFromFile");
 				continue;
 			}
-		}
+
+			if (isArray) {
+				n = ((TMrbVariable *) varp)->GetSize();
+				if (n <= vIdx) {
+					gMrbLog->Err()	<< "Index out of range - " << varName
+									<< "[" << n << "]" << endl
+									<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+					continue;
+				}
+			}
  
-		vline1 += " 1"; 				// append a known value to the string - so we may detect format errors
-		vline2 += " 1";
+			vline1 += " 1"; 				// append a known value to the string - so we may detect format errors
+			vline2 += " 1";
 
-		vtype = 0;
-		istringstream s(vline1.Data());
-		one = 0;
-		s >> ilow >> iup >> one;
-		if (one == 1) {
-			vtype = kWindowI;
-		} else {
-			one = 0;
+			vtype = 0;
 			istringstream s(vline1.Data());
-			s >> flow >> fup >> one;
+			one = 0;
+			s >> ilow >> iup >> one;
 			if (one == 1) {
-				vtype = kWindowF;
+				vtype = kWindowI;
 			} else {
 				one = 0;
 				istringstream s(vline1.Data());
-				s >> ilow >> one;
+				s >> flow >> fup >> one;
 				if (one == 1) {
-					vtype = kVarI;
+					vtype = kWindowF;
 				} else {
 					one = 0;
 					istringstream s(vline1.Data());
-					s >> flow >> one;
+					s >> ilow >> one;
 					if (one == 1) {
-						vtype = kVarF;
+						vtype = kVarI;
 					} else {
 						one = 0;
-						istringstream s(vline2.Data());
-						s >> str >> one;
+						istringstream s(vline1.Data());
+						s >> flow >> one;
 						if (one == 1) {
-							boolStr = str;
-							boolStr.ToLower();
-							TString trueStr = "true yes y";
-							TString falseStr = "false no n";
-							if (trueStr.Index(boolStr.Data(), 0) != -1) {
-								boolVal = kTRUE;
-								vtype = kVarB;
-							} else if (falseStr.Index(boolStr.Data(), 0) != -1) {
-								boolVal = kFALSE;
-								vtype = kVarB;
-							} else {
-								vtype = kVarS;
-							}
+							vtype = kVarF;
 						} else {
-							gMrbLog->Err()	<< "Illegal format" << endl
+							one = 0;
+							istringstream s(vline2.Data());
+							s >> str >> one;
+							if (one == 1) {
+								boolStr = str;
+								boolStr.ToLower();
+								TString trueStr = "true yes y";
+								TString falseStr = "false no n";
+								if (trueStr.Index(boolStr.Data(), 0) != -1) {
+									boolVal = kTRUE;
+									vtype = kVarB;
+								} else if (falseStr.Index(boolStr.Data(), 0) != -1) {
+									boolVal = kFALSE;
+									vtype = kVarB;
+								} else {
+									vtype = kVarS;
+								}
+							} else {
+								gMrbLog->Err()	<< "Illegal format" << endl
+												<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+								gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+								continue;
+							}
+						}
+					}
+				}
+			}	
+
+			Bool_t ok = kFALSE;
+			if (varType != vtype) {
+				if (varType == kVarB && vtype == kVarI) {
+					if (ilow == 1) {
+						vtype = kVarB;
+						boolVal = kTRUE;
+						ok = kTRUE;
+					} else if (ilow == 0) {
+						vtype = kVarB;
+						boolVal = kFALSE;
+						ok = kTRUE;
+					}
+				} else if (varType == kVarS && vtype == kVarB) {
+					ok = kTRUE;
+					vtype = kVarS;
+				}
+				if (!ok) {
+					gMrbLog->Err() << "Conflicting types - " << varName << ": ";
+					switch (varType) {
+						case kVarI:		gMrbLog->Err()	<< "VarI("; break;
+						case kVarF:		gMrbLog->Err()	<< "VarF("; break;
+						case kVarS:		gMrbLog->Err()	<< "VarS("; break;
+						case kVarB:		gMrbLog->Err()	<< "VarB("; break;
+						case kWindowI:	gMrbLog->Err()	<< "WindowI("; break;
+						case kWindowF:	gMrbLog->Err()	<< "WindowF("; break;
+						default:		gMrbLog->Err()	<< "Unknown("; break;
+					}
+					gMrbLog->Err()	<< varType << ") <> Input:";
+					switch (vtype) {
+						case kVarI:		gMrbLog->Err()	<< "VarI("; break;
+						case kVarF:		gMrbLog->Err()	<< "VarF("; break;
+						case kVarS:		gMrbLog->Err()	<< "VarS("; break;
+						case kVarB:		gMrbLog->Err()	<< "VarB("; break;
+						case kWindowI:	gMrbLog->Err()	<< "WindowI("; break;
+						case kWindowF:	gMrbLog->Err()	<< "WindowF("; break;
+						default:		gMrbLog->Err()	<< "Unknown("; break;
+					}
+					gMrbLog->Err()	<< vtype << ")" << endl
+									<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+					continue;
+				}
+			}	
+
+			if (isArray) {
+				switch (vtype) {
+					case kVarI:	((TMrbVarArrayI *) varp)->Set(vIdx, ilow); break;
+					case kVarF:	((TMrbVarArrayF *) varp)->Set(vIdx, flow); break;
+				}
+			} else {
+				switch (vtype) {
+					case kVarI:	((TMrbVarI *) varp)->Set(ilow); break;
+					case kVarF:	((TMrbVarF *) varp)->Set(flow); break;
+					case kVarB:	((TMrbVarB *) varp)->Set(boolVal); break;
+					case kVarS:	str.ReplaceAll("@", " "); ((TMrbVarS *) varp)->Set(str.Data()); break;
+
+					case kWindowI:
+						if (ilow > iup) {
+							gMrbLog->Err()	<< "Wrong limits - " << varName
+											<< "[" << ilow << "," << iup << "]" << endl
 											<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
 							gMrbLog->Flush(this->ClassName(), "ReadFromFile");
 							continue;
 						}
-					}
-				}
-			}
-		}
+						((TMrbWindowI *) varp)->Set(ilow, iup);
+						break;
 
-		Bool_t ok = kFALSE;
-		if (varType != vtype) {
-			if (varType == kVarB && vtype == kVarI) {
-				if (ilow == 1) {
-					vtype = kVarB;
-					boolVal = kTRUE;
-					ok = kTRUE;
-				} else if (ilow == 0) {
-					vtype = kVarB;
-					boolVal = kFALSE;
-					ok = kTRUE;
+					case kWindowF:
+						if (flow > fup) {
+							gMrbLog->Err()	<< "Wrong limits - " << varName
+									<< "[" << flow << "," << fup << "]" << endl
+									<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
+							gMrbLog->Flush(this->ClassName(), "ReadFromFile");
+							continue;
+						}
+						((TMrbWindowF *) varp)->Set(flow, fup);
+						break;
 				}
-			} else if (varType == kVarS && vtype == kVarB) {
-				ok = kTRUE;
-				vtype = kVarS;
-			}
-			if (!ok) {
-				gMrbLog->Err() << "Conflicting types - " << varName << ": ";
-				switch (varType) {
-					case kVarI:		gMrbLog->Err()	<< "VarI("; break;
-					case kVarF:		gMrbLog->Err()	<< "VarF("; break;
-					case kVarS:		gMrbLog->Err()	<< "VarS("; break;
-					case kVarB:		gMrbLog->Err()	<< "VarB("; break;
-					case kWindowI:	gMrbLog->Err()	<< "WindowI("; break;
-					case kWindowF:	gMrbLog->Err()	<< "WindowF("; break;
-					default:		gMrbLog->Err()	<< "Unknown("; break;
-				}
-				gMrbLog->Err()	<< varType << ") <> Input:";
-				switch (vtype) {
-					case kVarI:		gMrbLog->Err()	<< "VarI("; break;
-					case kVarF:		gMrbLog->Err()	<< "VarF("; break;
-					case kVarS:		gMrbLog->Err()	<< "VarS("; break;
-					case kVarB:		gMrbLog->Err()	<< "VarB("; break;
-					case kWindowI:	gMrbLog->Err()	<< "WindowI("; break;
-					case kWindowF:	gMrbLog->Err()	<< "WindowF("; break;
-					default:		gMrbLog->Err()	<< "Unknown("; break;
-				}
-				gMrbLog->Err()	<< vtype << ")" << endl
-								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-				gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-				continue;
-			}
-		}
-
-		if (isArray) {
-			switch (vtype) {
-				case kVarI:	((TMrbVarArrayI *) varp)->Set(vIdx, ilow); break;
-				case kVarF:	((TMrbVarArrayF *) varp)->Set(vIdx, flow); break;
-			}
-		} else {
-			switch (vtype) {
-				case kVarI:	((TMrbVarI *) varp)->Set(ilow); break;
-				case kVarF:	((TMrbVarF *) varp)->Set(flow); break;
-				case kVarB:	((TMrbVarB *) varp)->Set(boolVal); break;
-				case kVarS:	str.ReplaceAll("@", " "); ((TMrbVarS *) varp)->Set(str.Data()); break;
-
-				case kWindowI:
-					if (ilow > iup) {
-						gMrbLog->Err()	<< "Wrong limits - " << varName
-										<< "[" << ilow << "," << iup << "]" << endl
-										<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-						gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-						continue;
-					}
-					((TMrbWindowI *) varp)->Set(ilow, iup);
-					break;
-
-				case kWindowF:
-					if (flow > fup) {
-						gMrbLog->Err()	<< "Wrong limits - " << varName
-								<< "[" << flow << "," << fup << "]" << endl
-								<< setw(24) << varFile << "(" << line << ") >>" << vline << "<<" << endl;
-						gMrbLog->Flush(this->ClassName(), "ReadFromFile");
-						continue;
-					}
-					((TMrbWindowF *) varp)->Set(flow, fup);
-					break;
 			}
 		}
 	}
+	return(kTRUE);
 }
 
 void TMrbLofUserVars::SetGlobalAddress() {

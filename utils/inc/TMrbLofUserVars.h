@@ -56,7 +56,9 @@ class TMrbLofUserVars: public TNamed {
 		};
 		Bool_t Initialize(Char_t * Option = "Default");		// set all vars/windows to initial values
 		Bool_t ReadFromFile(const Char_t * FileName);		// read definitions and settings from file
-		virtual void Print(Option_t * Option = "Default");	// output settings to cout
+
+		virtual void Print(ostream & OutStrm, Option_t * Option = "Default");	// output settings to cout
+		inline void Print(Option_t * Option = "Default") { Print(cout, Option); };
 
 		TObject * Find(const Char_t * VarName, UInt_t VarType = kVarOrWindow);	// find variable
 		TObject * First(UInt_t  VarType = kVarOrWindow);							// get first entry
