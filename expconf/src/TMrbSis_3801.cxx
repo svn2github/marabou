@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -32,11 +32,11 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(TMrbSis_3801)
 
-TMrbSis_3801::TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr) :
+TMrbSis_3801::TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr, Int_t FifoDepth) :
 									TMrbVMEScaler(ModuleName, "Sis_3801", BaseAddr,
 																TMrbSis_3801::kAddrMod,
 																TMrbSis_3801::kSegSize,
-																1, 32, 1 << 24) {
+																1, 32 * FifoDepth, 1 << 24) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSis_3801
@@ -75,6 +75,7 @@ TMrbSis_3801::TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr) :
 				fModuleType.Set(mTypeBits, mType.Data());
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;
+				fFifoDepth = FifoDepth; 		// fifo depth per channel
 
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,18 +46,24 @@ class TMrbSis_3801 : public TMrbVMEScaler {
 	public:
 
 		TMrbSis_3801() {};  												// default ctor
-		TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr); 			// define a new scaler
+		TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr, Int_t FifoDepth = 1); 	// define a new scaler
 		~TMrbSis_3801() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("Sis_3801"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("Sis_3801"); }; 	// module mnemonic
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSis_3801.html&"); };
+		inline Int_t GetFifoDepth() const { return(fFifoDepth); };
+
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSis_3801.html&"); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers
+
+	protected:
+		Int_t fFifoDepth;			// fifo depth per channel
 
 	ClassDef(TMrbSis_3801, 1)		// [Config] SIS 3801, 32 x 24 bit VME scaler
 };
