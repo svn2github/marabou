@@ -79,7 +79,7 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-%SH%					sisSts = SIS_3801_READ_STATUS($moduleName);
+%SH%					sisSts = SIS_3801_READ_STATUS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
 %SH%					if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) {
 %SH%						rdoinp = SIS_3801_A_READ_FIFO($moduleName);
 %SH%						RDO_BLT_32(32);
@@ -87,7 +87,7 @@
 %SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
 %SH%						evt.out32 += 32;
 %SH%					}
-%MH%					rdoinp = SIS_3801_A_READ_FIFO($moduleName);
+%MH%					rdoinp = SIS_3801_A_READ_FIFO($moduleName); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for (sisHit = 0; sisHit < $fifoDepth; sisHit++) {
 %MH%						sisSts = SIS_3801_READ_STATUS($moduleName);
 %MH%						if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
@@ -98,6 +98,7 @@
 %MH%						memset(evt.out32, 0, sisHit * sizeof(unsigned long));
 %MH%						evt.out32 += sisHit;
 %MH%					}
+%CAR%					SIS_3801_CLEAR_FIFO($moduleName);	/* clear counter & fifo */
 %%EndOfCode%%
 %%READ_MODULE%%
 
