@@ -586,6 +586,7 @@ void HistPresent::TurnButtonGreen(TVirtualPad ** pad)
 //   cout << " Green" << setbase(16) << gPad << endl;
    *pad=gPad;
 }
+//________________________________________________________________________________________
 
 void HistPresent::ShowContents(const char *fname, const char* bp)
 {
@@ -606,6 +607,11 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    TString hint;
    TString sel;
    Int_t maxkey = 0;
+   if (fMaxListEntries > 500) {
+      cout << "Warning: Max number of entries in list of histograms set to: 500" 
+           << endl;
+      fMaxListEntries = 500;
+   }
 //   TurnButtonGreen(&activeFile);
 
    if (bp) {
@@ -640,23 +646,29 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    if (fRootFile) fRootFile->Close();
 
    if (strstr(fname,".root")) {
-      TFile * rfile =0;
-      rfile = new TFile(fname);
-      st = (TMrbStatistics*)rfile->Get("TMrbStatistics");
-      if (!st) {
-         st=new TMrbStatistics(fname);
-         nstat = st->Fill(rfile);
-      } else nstat = st->GetListOfEntries()->GetSize();
-      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TTree"),        maxkey);
-      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
-      maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
-      maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
-      maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
-      maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
-      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
-      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowI"), maxkey);
-      maxkey = TMath:: Max(GetObjects(lofW2, rfile, "TMrbWindow2D"),maxkey);
-      rfile->Close();
+      if (fShowListsOnly > 0) {  
+         st = NULL;
+         nstat = 0;
+          cout << "Skip hists in file, show hist lists only" << endl;
+      } else {
+      	TFile * rfile =0;
+      	rfile = new TFile(fname);
+      	st = (TMrbStatistics*)rfile->Get("TMrbStatistics");
+      	if (!st) {
+         	st=new TMrbStatistics(fname);
+         	nstat = st->Fill(rfile);
+      	} else nstat = st->GetListOfEntries()->GetSize();
+      	maxkey = TMath:: Max(GetObjects(lofT, rfile, "TTree"),        maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowI"), maxkey);
+      	maxkey = TMath:: Max(GetObjects(lofW2, rfile, "TMrbWindow2D"),maxkey);
+      	rfile->Close();
+      }
    } else if (strstr(fname,"Socket")) {
       if (!fComSocket) {
          if (!fConnectedOnce) {
@@ -2450,7 +2462,8 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile((const char *)fname);
       hist = (TH1*)fRootFile->Get(hn);
-      hist->SetDirectory(gROOT);
+      if (hist) hist->SetDirectory(gROOT);
+      else      cout << "Histogram: " << hn << " not found" << endl;
       if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};
    }
    gDirectory=gROOT;
@@ -2458,7 +2471,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
    TString newname(hn);
    newname += "_",
    newname += pos;
-   hist->SetName(newname.Data());
+   if (hist) hist->SetName(newname.Data());
    return hist;
 }
 //________________________________________________________________________________________
@@ -3325,7 +3338,10 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
       TPad * p = (TPad *)gPad;
       if (firstpad == NULL) firstpad = p;
       hist = GetSelHistAt(i, hlist); 
-      if (!hist) return;    
+      if (!hist) {
+//         cout << " Hist not found at: " << i << endl;  
+         continue;
+      }  
       TString fname = ((TObjString *)hlist->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();

@@ -838,7 +838,7 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
       e_auto_x, e_auto_y
    };
    const char *opt[] = {
-      "With sockets: show lists only",
+      "Show histlists only",
       "Show PS file after creation",
       "Enable calibration",
       "Auto Display calibrated hist",
