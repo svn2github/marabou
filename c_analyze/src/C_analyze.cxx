@@ -1145,7 +1145,7 @@ void FhMainFrame::StopMessage(){
       wstream << "RunNr Start    Stop      Events  Comment" << endl;
       wstream.close();
    } 
-   wstream.open(logfile, ios::nocreate | ios:: app);
+   wstream.open(logfile, ios:: app);
    if (!wstream.good()) {
 		cerr	<< "C_analyze: "
 				<< gSystem->GetError() << " - " << logfile
