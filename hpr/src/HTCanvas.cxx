@@ -632,7 +632,7 @@ void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    fSelected        = 0;
    fSelectedPad     = 0;
    fPadSave         = 0;
-   fEditorBar       = 0;
+//   fEditorBar       = 0;
    fEvent           = -1;
    fEventX          = -1;
    fEventY          = -1;

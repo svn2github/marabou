@@ -1331,8 +1331,15 @@ void FitHist::ClearUserContours()
    TH2 * h2 = (TH2*)fSelHist;
    h2->SetContour(20);
    if (hp) gStyle->SetPalette(hp->fNofColorLevels, hp->fPalette);
-   TObject * nai = fSelHist->GetListOfFunctions()->FindObject("Pixel");
-   if (nai)  fSelHist->GetListOfFunctions()->Remove(nai);
+   TObject * nai;
+   while (nai = fSelHist->GetListOfFunctions()->FindObject("Pixel")){
+      cout << " Removing user contour" << endl;
+      fSelHist->GetListOfFunctions()->Remove(nai);
+   }
+   while (nai = fSelHist->GetListOfFunctions()->FindObject("palette")){
+      cout << " Removing palette" << endl;
+      fSelHist->GetListOfFunctions()->Remove(nai);
+   }
    fUserContourLevels = 0;
    SaveDefaults();
    cHist->Modified(kTRUE);
@@ -2932,6 +2939,8 @@ void FitHist::Draw2Dim()
    DrawCut();
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {
+
+      lof->ls();
 //      TF1 *p;
       TObject *p;
       TIter next(lof);
@@ -2972,6 +2981,7 @@ void FitHist::Draw2Dim()
       cHist->GetFrame()->SetFillColor(hp->f2DimBackgroundColor);
    }
    DrawDate();
+   
    cHist->Update();
 }
 
