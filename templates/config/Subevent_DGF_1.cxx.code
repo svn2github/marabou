@@ -40,20 +40,32 @@
 %C%	while (SevtWC) {									// subevent may contain several dgf buffers
 %C%		bufHdr = (DgfEventBufferHeader *) dataPtr;		// points to start of buffer
 %C%		bufWC = bufHdr->nofWords;						// buffer length
-%C% 	runTask = bufHdr->formatDescr;					// check buffer format
+%C% 	Int_t moduleNumber = bufHdr->moduleNumber;		 // module number
+%C% 	TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+%C% 	if (mle == NULL) {
+%C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+%C% 		cerr	<< setred
+%C% 				<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C% 				<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong module number - "
+%C% 				<< moduleNumber
+%C% 				<< setblack << endl;
+%C% 		return(kTRUE);
+%C% 	}
+%C% 	UInt_t runTask = bufHdr->formatDescr;				// check buffer format
 %C% 	UInt_t listMode = runTask & 0x300;					// list mode descriptor
 %C% 	if (listMode != 0x100 && listMode != 0x200) {		// normal or fast list mode
 %C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong format descr", SevtData, SevtWC);
 %C% 		cerr	<< setred
-%C% 				<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C% 				<< this->ClassName() << "::FillSubevent(): [Module "
+%C% 				<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
 %C% 				<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong format descriptor - 0x"
 %C% 				<< setbase(16) << runTask << setbase(10)
 %C% 				<< setblack << endl;
 %C% 		return(kTRUE);
 %C% 	}  				 // unable to decode data
 %C% 	runTask &= 0x3; 							// 0x100, 0x101, 0x200, 0x201 --> variable channel size
-%C%		if (runTask == 2) nofWordsPerChn = 4;			// 0x102, 0x202 --> 4 words per chn	
-%C%		else if (runTask == 3) nofWordsPerChn = 2;		// 0x103, 0x203 --> 2 words per chn
+%C% 	if (runTask == 2) nofWordsPerChn = 4;		// 0x102, 0x202 --> 4 words per chn	
+%C% 	else if (runTask == 3) nofWordsPerChn = 2;	// 0x103, 0x203 --> 2 words per chn
 %C%		wc = bufWC;
 %C%		if (bufWC <= 0) {
 %C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong bufWC", SevtData, SevtWC);
@@ -64,7 +76,6 @@
 %C%			return(kTRUE);
 %C%		}					// reject neg buffer wcs
 %C%		if (wc >= (sizeof(DgfEventBufferHeader) + sizeof(DgfEventHeader)) / sizeof(Short_t)) {	// ignore header fragments
-%C%			moduleNumber = bufHdr->moduleNumber;		// module number
 %C%			dataPtr += sizeof(DgfEventBufferHeader);	// points to start of 1st event
 %C%			wc -= sizeof(DgfEventBufferHeader) / sizeof(Short_t);
 %C%			while (wc) {								// dgf buffer may contain several events

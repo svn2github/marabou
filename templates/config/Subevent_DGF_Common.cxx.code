@@ -30,12 +30,24 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 	while (SevtWC) {									 // subevent may contain several dgf buffers
 		DgfEventBufferHeader * bufHdr = (DgfEventBufferHeader *) dataPtr; 	 // points to start of buffer
 		Int_t bufWC = bufHdr->nofWords; 					// buffer length
+		Int_t moduleNumber = bufHdr->moduleNumber;		 // module number
+		TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
+		if (mle == NULL) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong module number - "
+					<< moduleNumber
+					<< setblack << endl;
+			return(kTRUE);
+		}
 		UInt_t runTask = bufHdr->formatDescr;				// check buffer format
 		UInt_t listMode = runTask & 0x300;					// list mode descriptor
 		if (listMode != 0x100 && listMode != 0x200) {		// normal or fast list mode
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong format descr", SevtData, SevtWC);
 			cerr	<< setred
-					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< this->ClassName() << "::FillSubevent(): [Module "
+					<< gMrbAnalyze->GetModuleName(moduleNumber) << " (" << moduleNumber << ")] At SevtWC = "
 					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong format descriptor - 0x"
 					<< setbase(16) << runTask << setbase(10)
 					<< setblack << endl;
@@ -54,17 +66,6 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 			return(kTRUE);
 		}  				 // reject neg buffer wcs
 		if (wc >= (sizeof(DgfEventBufferHeader) + sizeof(DgfEventHeader)) / sizeof(Short_t)) {  // ignore header fragments
-			Int_t moduleNumber = bufHdr->moduleNumber;		 // module number
-			TMrbModuleListEntry * mle = gMrbAnalyze->GetModuleListEntry(moduleNumber);
-			if (mle == NULL) {
-				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
-				cerr	<< setred
-						<< this->ClassName() << "::FillSubevent(): At SevtWC = "
-						<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong module number - "
-						<< moduleNumber
-						<< setblack << endl;
-				return(kTRUE);
-			}
 			dataPtr += sizeof(DgfEventBufferHeader);	 // points to start of 1st event
 			wc -= sizeof(DgfEventBufferHeader) / sizeof(Short_t);
 			Int_t eventsProcessed = 0;						// events processed for this module so far
