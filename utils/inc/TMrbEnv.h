@@ -50,9 +50,10 @@ class TMrbEnv : public TObject {
 		void Save(Bool_t Verbose = kTRUE);										// save contents 
 		void SetPrefix(const Char_t * Prefix);									// define resource prefix
 
-		Bool_t Set(const Char_t * Resource, const Char_t * Value); 				// set ascii value
-		Bool_t Set(const Char_t * Resource, Int_t Value, Int_t Base = 10);		// set integer value
-		Bool_t Set(const Char_t * Resource, Double_t Value, Int_t Precision = 4);	// set float value
+		Bool_t Set(const Char_t * Resource, const Char_t * StrVal); 			// set ascii value
+		Bool_t Set(const Char_t * Resource, Int_t IntVal, Int_t Base = 10);		// set integer value
+		Bool_t Set(const Char_t * Resource, Double_t DblVal, Int_t Precision = 4);	// set float value
+		Bool_t Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base = 10);	// set ascii(int)
 
 																				// get resource value
 		Int_t Get(const Char_t * Resource, Int_t Default);						// ... integer

@@ -180,7 +180,7 @@ void TMrbEnv::Save(Bool_t Verbose) {
 		pfs = fPrefix;
 		this->SetPrefix("");
 		if (!fIsSystemEnv) this->Set("TMrbEnv.Info.Modified", dt.AsString());
-		fCurEnv->SaveLevel(kEnvLocal);	// write to file
+		fCurEnv->Save();	// write to file
 		if (Verbose) {
 			gMrbLog->Out()	<< "Resource data saved to file " << fCurFile << endl;
 			gMrbLog->Flush(this->ClassName(), "Save", setblue);
@@ -242,13 +242,13 @@ const Char_t * TMrbEnv::Resource(TString & R, const Char_t * Field1, Int_t Index
 	return(R.Data());
 }
 
-Bool_t TMrbEnv::Set(const Char_t * Resource, const Char_t * Value) {
+Bool_t TMrbEnv::Set(const Char_t * Resource, const Char_t * StrVal) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::Set
 // Purpose:        Assign an ascii value
 // Arguments:      Char_t * Resource    -- resource name
-//                 Char_t * Value       -- value to be set
+//                 Char_t * StrVal      -- value to be set
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets a given resource.
@@ -261,19 +261,19 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, const Char_t * Value) {
 
 	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
 
-	resString = fResourceName + "=" + Value;
+	resString = fResourceName + "=" + StrVal;
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }
 
-Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t Value, Int_t Base) {
+Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t IntVal, Int_t Base) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::Set
 // Purpose:        Assign an integer value
 // Arguments:      Char_t * Resource         -- resource name
-//                 Int_t Value               -- value to be set
+//                 Int_t IntVal              -- value to be set
 //                 Int_t Base                -- base to be used
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -287,20 +287,20 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t Value, Int_t Base) {
 
 	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
 
-	resValue.FromInteger(Value, 0, ' ', Base, kTRUE);
+	resValue.FromInteger(IntVal, 0, ' ', Base, kTRUE);
 	resString = fResourceName + "=" + resValue.Data();
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }
 
-Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t Value, Int_t Precision) {
+Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t DblVal, Int_t Precision) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::Set
 // Purpose:        Assign an integer value
 // Arguments:      Char_t * Resource         -- resource name
-//                 Double_t Value            -- value to be set
+//                 Double_t DblVal           -- value to be set
 //                 Int_t Precision           -- precision
 // Results:        kTRUE/kFALSE
 // Exceptions:
@@ -308,20 +308,46 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t Value, Int_t Precision) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString resString, resValue;
+	TMrbString resValue;
 
 	fResourceName = fPrefix + Resource;
 
 	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
 
-	resValue.FromDouble(Value, 0, ' ', Precision);
-	resString = fResourceName + "=" + resValue.Data();
+	resValue.FromDouble(DblVal, 0, ' ', Precision);
+	TString resString = fResourceName + "=" + resValue.Data();
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
 	return(kTRUE);
 }
 
-Int_t TMrbEnv::Get(const Char_t * Resource, Int_t Default) {
+Bool_t TMrbEnv::Set(const Char_t * Resource, TMrbNamedX * NamedVal, Int_t Base) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Set
+// Purpose:        Assign a pair of name + integer value
+// Arguments:      Char_t * Resource         -- resource name
+//                 TMrbNamedX * NamedVal     -- value to be set
+//                 Int_t Base                -- numerical base
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets a given resource.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fResourceName = fPrefix + Resource;
+
+	TMrbString resValue = NamedVal->GetName();
+	resValue += "(";
+	resValue.AppendInteger(NamedVal->GetIndex(), 0, ' ', Base, kTRUE, kTRUE);
+	resValue += ")";
+	TString resString = fResourceName + "=" + resValue.Data();
+	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
+	fIsModified = kTRUE;
+	return(kTRUE);
+}
+
+	Int_t TMrbEnv::Get(const Char_t * Resource, Int_t Default) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::Get
