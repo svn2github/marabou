@@ -24,12 +24,12 @@ SYSMODE=y
 # ROOTSYS        where the ROOT system resides
 # MARABOU        where your MARaBOU installation resides
 
-ROOTSYS=/usr/cern/Linux_rh7.2/root_new
+#ROOTSYS=/usr/cern/Linux_rh7.2/root_new
 MARABOU=`pwd`
 
 #____________________________[end editable section]___________________________
 
-BLK='\033[30m'
+BLK='\033[39m'
 RED='\033[31m'
 GRN='\033[32m'
 BLU='\033[34m'
@@ -67,6 +67,11 @@ fi
 
 if [ $SYSMODE = "y" ]
 then
+	# if empty dirs do not exist, create them
+	test -d bin || mkdir bin
+	test -d lib || mkdir lib
+	test -d obj || mkdir obj
+
 	DIR1="analyze bin build c_analyze cint config expconf gutils helpbrowser hpr icons include lib macrobrowser macros obj templates tools utils"
 	DIR2="camcli esone mbsio mbssetup transport"
 	ERR=n
