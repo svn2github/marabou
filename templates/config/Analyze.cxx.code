@@ -127,7 +127,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %HB%			err |= !g$evtNameUC->AllocHitBuffers();
 %E% 		}
 %E% 		if (err) {
-%E% 			gMrbLog->Err()	<< "Something went wrong while creating event $evtNameLC" << endl;
+%E% 			gMrbLog->Err()	<< "Something went wrong while creating event \"$evtNameLC\"" << endl;
 %E% 			gMrbLog->Flush(this->ClassName(), "Initialize");
 %E% 		}
 %E%	}
@@ -136,11 +136,11 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 
 %%BeginOfCode%%
 %B%// instantiate user-defined event classes
-%C%	if (g$className == NULL) {		// event $className
-%C%		g$className = new $className();
-%C% 		Bool_t err = g$className->IsZombie();
+%C%	if (g$classNameUC == NULL) {		// event $className
+%C%		g$classNameUC = new $classNameUC();
+%C% 		Bool_t err = g$classNameUC->IsZombie();
 %C% 		if (err) {
-%C% 			gMrbLog->Err()	<< "Something went wrong while creating user-defined event $className" << endl;
+%C% 			gMrbLog->Err()	<< "Something went wrong while creating user-defined event \"$classNameLC\"" << endl;
 %C% 			gMrbLog->Flush(this->ClassName(), "Initialize");
 %C% 		}
 %C%	}
@@ -275,9 +275,24 @@ Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 // create ROOT trees for each event
 %%BeginOfCode%%
 %E% 	g$evtNameUC->CreateTree();
-%U% 	g$className->CreateTree();
+%U% 	g$classNameUC->CreateTree();
 %%EndOfCode%%
 %%EVT_CREATE_TREE%%
+
+// control output of tree data individually for each event
+%%BeginOfCode%%
+%E% 	g$evtNameUC->WriteTree(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.WriteTree"), kTRUE));
+%E% 	if (!g$evtNameUC->TreeToBeWritten()) {
+%E% 		gMrbLog->Err()	<< "Output of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
+%E% 		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
+%E% 	}
+%U% 	g$classNameUC->WriteTree(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$classNameUC.WriteTree"), kTRUE));
+%U% 	if (!g$classNameUC->TreeToBeWritten()) {
+%U% 		gMrbLog->Err()	<< "Output of tree data TURNED OFF for event \"$classNameLC\"" << endl;
+%U% 		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
+%U% 	}
+%%EndOfCode%%
+%%EVT_SET_WRITE_TREE%%
 
 // create trees for start/stop info
 	gStartEvent->CreateTree();
@@ -319,7 +334,7 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 // set fake mode for all trees
 %%BeginOfCode%%
 %E% 		g$evtNameUC->SetFakeMode();
-%U% 		g$className->SetFakeMode();
+%U% 		g$classNameUC->SetFakeMode();
 %%EndOfCode%%
 %%EVT_SET_FAKE_MODE%%
 		if (verboseMode) {
@@ -343,7 +358,7 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 // initialize ROOT trees
 %%BeginOfCode%%
 %E% 		g$evtNameUC->InitializeTree(fRootFileIn);
-%U% 		g$className->InitializeTree(fRootFileIn);
+%U% 		g$classNameUC->InitializeTree(fRootFileIn);
 %%EndOfCode%%
 %%EVT_INITIALIZE_TREE%%
 
@@ -358,7 +373,15 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 		fReplayMode = kTRUE;
 %%BeginOfCode%%
 %E% 		g$evtNameUC->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.ReplayMode"), kTRUE));
-%U% 		g$className->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$className.ReplayMode"), kTRUE));
+%E% 		if (!g$evtNameUC->IsReplayMode()) {
+%E% 			gMrbLog->Err()	<< "Replay of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
+%E% 			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+%E% 		}
+%U% 		g$classNameUC->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$classNameUC.ReplayMode"), kTRUE));
+%U% 		if (!g$classNameUC->IsReplayMode()) {
+%U% 			gMrbLog->Err()	<< "Replay of tree data TURNED OFF for event \"$classNameLC\"" << endl;
+%U% 			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+%U% 		}
 %%EndOfCode%%
 %%EVT_SET_REPLAY_MODE%%
 	}
@@ -396,8 +419,8 @@ Bool_t TMrbAnalyze::ReplayEvents(TMrbIOSpec * IOSpec) {
 %E% if (g$evtNameUC->IsReplayMode()) {
 %E% 	if (!g$evtNameUC->ReplayTreeData(IOSpec)) sts = kFALSE;
 %E% }
-%U% if (g$className->IsReplayMode()) {
-%U% 	if (!g$className->ReplayTreeData(IOSpec)) sts = kFALSE;
+%U% if (g$classNameUC->IsReplayMode()) {
+%U% 	if (!g$classNameUC->ReplayTreeData(IOSpec)) sts = kFALSE;
 %U% }
 %%EndOfCode%%
 %%EVT_REPLAY_TREE%%
@@ -422,7 +445,7 @@ void TMrbAnalyze::SetScaleDown(Int_t ScaleDown) {
 // set scale down individually for each event
 %%BeginOfCode%%
 %E% 	g$evtNameUC->SetScaleDown(ScaleDown);
-%U% 	g$className->SetScaleDown(ScaleDown);
+%U% 	g$classNameUC->SetScaleDown(ScaleDown);
 %%EndOfCode%%
 %%EVT_SET_SCALEDOWN%%
 }

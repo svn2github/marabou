@@ -476,7 +476,7 @@ Bool_t TUsrEvt$evtNameUC::Analyze() {
 
 	this->FillHistograms(); 		// fill histograms
 
-	if (gMrbAnalyze->TreeToBeWritten()) fTreeOut->Fill(); 	// write raw data to file
+	if (this->TreeToBeWritten()) fTreeOut->Fill(); 	// write raw data to file
 
 	return(kTRUE);
 }
