@@ -22,6 +22,7 @@ ROOTGLIBS	=	$(shell root-config %%MAKE_LIBNEW%% --glibs)
 # Linux with egcs
 CXX 		=	g++
 CXXFLAGS	=	-g -c -O -fPIC $(INCLUDE) -I./
+%%MAKE_USER_CXXFLAGS%%
 
 LD			=	g++
 LFLAGS		=	-g
@@ -41,6 +42,9 @@ USER_HDRS	=	\
 # User code to be compiled separately
 %%MAKE_USER_CODE%%
 
+# User libs to be loaded
+%%MAKE_USER_LIBS%%
+
 # User classes to be documented via THtml
 DOCS		=	\
 %%MAKE_CLASS_NAMES%%
@@ -56,6 +60,7 @@ all:		$(PROGRAMS)
 M_analyze:	$(OBJPATH)/M_analyze.o lib$(AFILE).so
 			$(LD) $(LFLAGS) -o M_analyze $(OBJPATH)/M_analyze.o \
 					-L. -l$(AFILE) \
+					$(USER_LIBS) \
 					$(TMRBLIBS) \
 					$(GLIBS) -lpthread
 
@@ -66,7 +71,7 @@ $(AFILE).o: $(USER_HDRS) $(AFILE).cxx
 			$(CXX) $(CXXFLAGS) $(AFILE).cxx
 
 $(AFILE)Dict.cxx: $(USER_HDRS) $(AFILE).cxx
-			rootcint -f $(AFILE)Dict.cxx -c $(INCLUDE) $(AFILE).h $(AFILE)LinkDef.h
+			rootcint -f $(AFILE)Dict.cxx -c $(INCLUDE) $(USER_HDRS) $(AFILE)LinkDef.h
 
 $(AFILE)Dict.o:	$(AFILE)Dict.cxx
 			$(CXX) $(CXXFLAGS) $(AFILE)Dict.cxx

@@ -28,12 +28,6 @@
 
 #include <pthread.h>  // pthread header file
 
-// implement class defs
-%%BeginOfCode%%
-ClassImp($className)
-%%EndOfCode%%
-%%IMPLEMENT_CLASSES%%
-
 // global objects
 #include "%%ANALYZE_FILE%%Globals.h"
 
@@ -50,6 +44,12 @@ ClassImp($className)
 %NS%using namespace $nameSpace;
 %%EndOfCode%%
 %%USING_NAMESPACE%%
+
+// implement class defs
+%%BeginOfCode%%
+ClassImp($className)
+%%EndOfCode%%
+%%IMPLEMENT_CLASSES%%
 
 extern pthread_mutex_t global_data_mutex;		// global pthread mutex to protect TMapped data
 
