@@ -158,7 +158,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%INITIALIZE_EVT_SEVT_MODS%%
 
 %%BeginOfCode%%
-// user-specific method to initialize objects and/or variables
+// initialize user code (objects, variables ...) - 1st call *BEFORE* booking histograms
 	this->$initialize(IOSpec, kTRUE);
 %%EndOfCode%%
 %%INCLUDE_USER_INITIALIZE_BEFORE_HB%%
@@ -181,7 +181,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%HISTO_FILL_ARRAYS%%
 
 %%BeginOfCode%%
-// user-specific method to initialize objects and/or variables
+// initialize user code (objects, variables ...)
 	this->$initialize(IOSpec, kFALSE);
 %%EndOfCode%%
 %%INCLUDE_USER_INITIALIZE_AFTER_HB%%
