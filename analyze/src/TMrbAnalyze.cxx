@@ -2146,7 +2146,7 @@ void TMrbAnalyze::ResetModuleHits(Int_t StartIndex, Int_t StopIndex) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t allModules = (StartIndex == 0 && StopIndex == 0);
-	for (Int_t i = 0; i < fModuleList.GetEntries(); i++) {
+	for (Int_t i = 0; i < fModuleList.GetEntriesFast(); i++) {
 		TMrbNamedX * nx = (TMrbNamedX *) fModuleList[i];
 		if (nx) {
 			if (allModules || (nx->GetIndex() >= StartIndex && nx->GetIndex() <= StopIndex)) {
