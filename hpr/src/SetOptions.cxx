@@ -248,6 +248,7 @@ void HistPresent::RestoreOptions()
    fShowFitBox = env.GetValue("HistPresent.ShowFitBox", 1);
    fShowFittedCurves = env.GetValue("HistPresent.ShowFittedCurves", 1);
    fShowPSFile = env.GetValue("HistPresent.AutoShowPSFile", 1);
+   fShowListsOnly= env.GetValue("HistPresent.ShowListsOnly", 0);
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
    fRememberLastSet = env.GetValue("HistPresent.RememberLastSet", 1);
    fRememberZoom = env.GetValue("HistPresent.RememberZoom", 0);
@@ -380,6 +381,7 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.ShowFitBox", fShowFitBox);
    SetIntValue(env, "HistPresent.ShowFittedCurves", fShowFittedCurves);
    SetIntValue(env, "HistPresent.AutoShowPSFile", fShowPSFile);
+   SetIntValue(env, "HistPresent.ShowListsOnly", fShowListsOnly);
    SetIntValue(env, "HistPresent.RememberTreeHists", fRememberTreeHists);
    SetIntValue(env, "HistPresent.RememberLastSet", fRememberLastSet);
    SetIntValue(env, "HistPresent.RememberZoom", fRememberZoom);
@@ -821,12 +823,14 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 13;
-   enum e_opt { e_psfile, e_enablecal, e_displaycal, e_fitted, e_treehists, e_savelast,
+   Int_t nopt = 14;
+   enum e_opt { e_listsonly, e_psfile, e_enablecal, e_displaycal, 
+      e_fitted, e_treehists, e_savelast,
       e_savezoom, e_useattr, e_allasfirst, e_useregexp, e_auto_1, e_auto_2,
       e_auto_x, e_auto_y
    };
    const char *opt[] = {
+      "With sockets: show lists only",
       "Show PS file after creation",
       "Enable calibration",
       "Auto Display calibrated hist",
@@ -845,6 +849,13 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 // *INDENT-OFF* 
    const char helptext[] = 
 "
+With sockets, show lists only
+-----------------------------
+If very many histograms are used this option allows
+to display user defined lists of histograms only.
+This avoids fetching the statistics of all histograms
+when tables are assembled.
+
 Show PS file after creation
 ---------------------------
 Automatically invoke ghostview when a PostScript file is
@@ -937,6 +948,8 @@ Auto exec project Y
          flags[i] = 1;
       else if (i == e_displaycal && fDisplayCalibrated)
          flags[i] = 1;
+      else if (i == e_listsonly && fShowListsOnly)
+         flags[i] = 1;
       else if (i == e_psfile && fShowPSFile)
          flags[i] = 1;
       else if (i == e_fitted && fShowFittedCurves)
@@ -978,6 +991,7 @@ Auto exec project Y
    fDisplayCalibrated = 0;
    fShowFittedCurves = 0;
    fShowPSFile = 0;
+   fShowListsOnly = 0;
    fRememberTreeHists = 0;
    fRememberLastSet = 0;
    fRememberZoom = 0;
@@ -996,6 +1010,8 @@ Auto exec project Y
              fDisplayCalibrated= 1;
          else if (i == e_psfile)
             fShowPSFile = 1;
+         else if (i == e_listsonly)
+            fShowListsOnly = 1;
          else if (i == e_fitted)
             fShowFittedCurves = 1;
          else if (i == e_treehists)
@@ -1020,7 +1036,7 @@ Auto exec project Y
             fAutoProj_Y = 1;
       }
    }
-//   cout << "fUseAttributeMacro " << fUseAttributeMacro << endl;
+//   cout << "fShowListsOnly " << fShowListsOnly << endl;
 //   CheckAutoExecFiles();
 }
 

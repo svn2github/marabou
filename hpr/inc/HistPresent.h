@@ -96,6 +96,7 @@ protected:
    Int_t fShowStatBox;
    Int_t fUseTimeOfDisplay;
    Int_t fUseRegexp;
+   Int_t fShowListsOnly;
    Int_t fShowTitle;
    Int_t fShowFitBox;
    Int_t fLikelyHood;

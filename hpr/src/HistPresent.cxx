@@ -638,6 +638,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    if (fCmdLine->GetSize() > 0) fCmdLine->Sort();
 
    if (fRootFile) fRootFile->Close();
+
    if (strstr(fname,".root")) {
       TFile * rfile =0;
       rfile = new TFile(fname);
@@ -674,19 +675,37 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             return;
          } else {  
 //           Wait till we get the start message
-            TMessage * message;
-            fComSocket->Recv(message);
-            if (message) delete message;
+            TMessage * mess;
+            fComSocket->Recv(mess);
+            if ( mess->What() == kMESS_STRING ) {
+            	char str[30];
+            	mess->ReadString(str, 25);
+            	TString  smess = str; smess = smess.Strip(TString::kBoth);
+            	if (smess(0,6) != "accept") {               
+               	cerr << "Connection not accepted, message: " 
+			      	<< setred << smess << setblack << endl;
+               	fComSocket->Close();
+               	fComSocket = 0;   
+               	if (mess) delete mess;
+               	return;
+            	}
+            }
          }
-      } 
-      st = getstat(fComSocket);
-      if (!st) {
-         cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
-         fComSocket->Close("force");
-         fComSocket = NULL;
-         return;
+      }
+      if (fShowListsOnly <= 0) {  
+      	st = getstat(fComSocket);
+      	if (!st) {
+         	cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
+         	fComSocket->Close("force");
+         	fComSocket = NULL;
+         	return;
+      	} else {
+         	nstat = st->GetListOfEntries()->GetSize();
+      	}
       } else {
-         nstat = st->GetListOfEntries()->GetSize();
+         st = NULL;
+         nstat = 0;
+          cout << " Skip getstat(fComSocket)" << endl;
       }
    } else if (strstr(fname,"Memory")) {
       st=new TMrbStatistics();
@@ -1169,6 +1188,8 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
    TH1 *hist=0;
    TMapFile *mfile = 0;
    TString cmd; TString tit; TString sel;
+   if (strstr(fname, "Socket")) 
+      cout << "Warning: Validity of entries in list are not checked" << endl;
    while (  1) {
       TString line;
       line.ReadLine(wstream, kFALSE);
@@ -1208,6 +1229,8 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
          hist    = (TH1 *) mfile->Get(line.Data(), hist);
 
       } else if (strstr(fname, "Socket")) {
+//         cout << "Warning: Validity of entries in list are not checked" << endl;
+/*
          if(!fComSocket){
             cout << setred << "No connection open"  << setblack << endl;
             return;
@@ -1222,20 +1245,27 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
    			gDirectory=gROOT;
             return;
       	}
+*/
       }
 //      if (!hist) {
 //        cout << "Warning: " << line.Data() << " from " 
 //              << fname.Data()<< " not found" << endl;
 //         continue;
 //      }
-      if (is2dim(hist)) line.Prepend("2d ");
-      else                line.Prepend("1d ");
-      line +=  " " ;
-      line +=  (Int_t)hist->GetEntries();
-      if (is2dim(hist)) tit += " 2d hist Ent: ";
-      else                tit += " 1d hist Ent: ";
-      tit +=  " " ;
-      tit +=  (Int_t)hist->GetEntries();
+      if (hist) { 
+         if (is2dim(hist))   line.Prepend("2d ");
+         else                line.Prepend("1d ");
+         line +=  " " ;
+         line +=  (Int_t)hist->GetEntries();
+         if (is2dim(hist)) tit += " 2d hist Ent: ";
+         else                tit += " 1d hist Ent: ";
+         tit +=  " " ;
+         tit +=  (Int_t)hist->GetEntries();
+      } else {
+         line.Prepend("?d ");
+         line +=  " ??" ;
+         tit += " ?d hist Ent: ??";
+      }
 //      if (fShowTitle) {
 //        if (strlen(hist->GetTitle()) > 0)
 //        tit = tit + " Title: " + hist->GetTitle();
