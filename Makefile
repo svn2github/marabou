@@ -8,8 +8,8 @@
 
 include config/Makefile.config
 
-EXTRA_CFLAGS   += -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -I$(ROOTSYS)/include 
+EXTRA_CFLAGS   += -g -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -I$(ROOTSYS)/include 
 ##### include machine dependent macros #####
 
 include config/Makefile.$(ARCH)
@@ -24,8 +24,8 @@ MODULES       = build utils gutils \
 				expconf analyze \
                 macrobrowser helpbrowser hpr c_analyze \
 				camcli esone mbssetup mbsio transport \
-				xiadgf dgfcontrol\
-				polar snake
+				xiadgf dgfcontrol \
+				polar
 
 ##### ROOT libraries #####
 

@@ -492,7 +492,8 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
             TRegexp re((const char *)*fFileSelMask, !fUseRegexp);
             if (sname.Index(re) <0) continue;
          }
-         Long_t  id, size, flags, modtime;
+         Long_t  id, flags, modtime;
+         Long64_t size;
          gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
 //         cout << fname << " " << modtime << endl;
          TString cmd = "mypres->Show";

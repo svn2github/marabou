@@ -265,9 +265,10 @@ Bool_t TMbsSetup::SetHomeDir(const Char_t * HomeDir) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Long_t dmy;
+	Long64_t dmy64;
 	Long_t flags;
 
-	if (gSystem->GetPathInfo(HomeDir, &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
+	if (gSystem->GetPathInfo(HomeDir, &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 		gMrbLog->Err() << "No such directory - " << HomeDir << endl;
 		gMrbLog->Flush(this->ClassName(), "SetHomeDir");
 		return(kFALSE);
@@ -307,6 +308,7 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Long_t dmy;
+	Long64_t dmy64;
 	Long_t flags;
 	TString pathName;
 	TString remoteHome;
@@ -332,7 +334,7 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 		pathName += Path; 			// append current path
 	}
 
-	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
+	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 		if (Create) {
 			if (gSystem->MakeDirectory(pathName.Data()) == 0) {
 				gMrbLog->Out() << "Creating directory " << pathName << endl;
@@ -1431,6 +1433,7 @@ Bool_t TMbsSetup::CheckSetup() {
 	TString templatePath;
 	TString fileList;
 	Long_t dmy;
+	Long64_t dmy64;
 	Long_t flags;
 
 	Int_t cvt;
@@ -1617,7 +1620,7 @@ Bool_t TMbsSetup::CheckSetup() {
 			templatePath += "/multiproc";
 		}
 		gSystem->ExpandPathName(templatePath);
-		if (gSystem->GetPathInfo(templatePath.Data(), &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
+		if (gSystem->GetPathInfo(templatePath.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 			gMrbLog->Err() << "No such directory - " << templatePath << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckSetup");
 			nofErrors++;
@@ -1631,14 +1634,14 @@ Bool_t TMbsSetup::CheckSetup() {
 			fileList += this->ReadoutProc(0)->GetController()->GetName();
 		}
 		fileList += "/FILES";
-		if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy, &flags, &dmy) != 0 || flags != 0) {
+		if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || flags != 0) {
 			gMrbLog->Err() << "No such file - " << fileList << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckSetup");
 			nofErrors++;
 		}
 		if (setupMode->GetIndex() == kModeMultiProc) {
 			templatePath += "/readout";
-			if (gSystem->GetPathInfo(templatePath.Data(), &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
+			if (gSystem->GetPathInfo(templatePath.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 				gMrbLog->Err() << "No such directory - " << templatePath << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 				nofErrors++;
@@ -1649,7 +1652,7 @@ Bool_t TMbsSetup::CheckSetup() {
 			fileList += "/";
 			fileList += this->ReadoutProc(0)->GetController()->GetName();
 			fileList += "/FILES";
-			if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy, &flags, &dmy) != 0 || flags != 0) {
+			if (gSystem->GetPathInfo(fileList.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || flags != 0) {
 				gMrbLog->Err() << "No such file - " << fileList << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 				nofErrors++;

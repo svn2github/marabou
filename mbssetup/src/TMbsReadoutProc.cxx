@@ -319,6 +319,7 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Long_t dmy;
+	Long64_t dmy64;
 	Long_t flags;
 	TString pathName;
 	TString remoteHome;
@@ -358,7 +359,7 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 	pathName += "/";
 	pathName += Path; 			// append subdir
 	
-	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
+	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 		if (Create) {
 			if (gSystem->MakeDirectory(pathName.Data()) == 0) {
 				cout	<< this->ClassName() << "::SetPath(): Creating directory " << pathName

@@ -157,7 +157,8 @@ Int_t TMrbHelpBrowser::AddHtml(const char * InputFile){
 //   add a single file or html files contained in dir depending on 
 //   if InputFile is a file or directory
 
-   Long_t id, size, flags, modtime;
+   Long_t id, flags, modtime;
+   Long64_t size;
    Int_t nfiles = 0;
    gSystem->GetPathInfo(InputFile,&id, &size, &flags, &modtime);
    if((flags & 2) == 0)nfiles = AddHtmlFile(InputFile);  
@@ -324,7 +325,8 @@ Int_t TMrbHelpBrowser::AddGifToRoot(const char * Input){
    TRegexp endwithgif("\\.gif$");
    TRegexp endwithroot("\\.root$");
 
-   Long_t id, size, flags, modtime;
+   Long_t id, flags, modtime;
+   Long64_t size;
    gSystem->GetPathInfo(Input,&id, &size, &flags, &modtime);
    if(flags && 2 == 0){                            // real file 
       sname = Input;

@@ -15,7 +15,8 @@ ClassImp(TNamedBytes)
 //_________________________________________________________________________
 TNamedBytes::TNamedBytes(const Char_t * fname):
    TNamed(gSystem->BaseName(fname), " ") {
-   Long_t id, size, flags, modtime;
+   Long_t id, flags, modtime;
+   Long64_t size;
    gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
    if(size <= 0){
 //      cout << "File: " << fname << " does not exist of empty" << endl;

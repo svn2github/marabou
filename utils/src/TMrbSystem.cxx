@@ -322,7 +322,7 @@ Bool_t TMrbSystem::CheckType(const Char_t * Path, EMrbFileType Type) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	Long_t id;
-	Long_t size;
+	Long64_t size;
 	Long_t flags;
 	Long_t modtime;
 	TString path;

@@ -3208,7 +3208,6 @@ void FhMainFrame::Runloop(){
    static Int_t Old_Status=M_ABSENT; 
    static Bool_t saving_hists=kFALSE;
    Long_t id, flags, modtime;
-//   Long_t size;
    Long64_t size;
 
    static TH1 * hrate     = 0;
