@@ -1145,7 +1145,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
 								param = (TMrbModuleChannel *) fLofParams.First();
 								paramNameLC = param->GetName();
-								paramNameLC = param->GetName();
 								paramNameUC = paramNameLC;
 								paramNameUC(0,1).ToUpper();
 								anaTmpl.Substitute("$firstParam", paramNameUC);
