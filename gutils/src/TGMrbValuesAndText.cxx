@@ -64,104 +64,6 @@ namespace std {} using namespace std;
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-//________________________________________________________________________________________
-/*
-Ssiz_t IndexOfLastSpecial(TString &str) 
-{
-   // return index  of not (letter, number or _ ) in str searching backwards
-   // Skip ::
-   TRegexp spc("[^a-zA-Z0-9_]", kFALSE);
-   if (str.Index(spc) < 0) return -1;    // no occurence
-   Int_t len = str.Length();
-   Int_t ind = len - 1;
-   Int_t indspc;
-   TString onec;
-   const char *sp = str.Data();
-   char c = {':'};
-   while (ind >= 0) {
-//      cout << ind << " " << str.Index(spc, ind) << endl;
-      onec = str(ind, 1);
-      indspc = onec.Index(spc);
-      if (indspc == 0) {
-         if (sp[ind] != c) return ind;
-         if (sp[ind] == c && (sp[ind -1] != c || ind == 0)) {
-            if (ind == 0) cout << setred 
-                         << "Warning: Expression begins with ':' "
-                         << setblack << endl;
-            return ind;
-         }
-         ind--;
-      }
-      ind--;
-   }
-   return -1;
-} 
-//________________________________________________________________________________________
-
-Ssiz_t IndexOfLast(TString &str, char &c) 
-{
-   // return index of detached char c in str searching backwards
-   if (str.Index(c) < 0) return -1;    // no occurence
-   Int_t len = str.Length();
-   const char *sp = str.Data();
-   cout << sp << endl;
-   Int_t ind = len - 1;
-   while (ind > 0) {
-      if (sp[ind] == c && sp[ind -1] != c) return ind;
-      ind--;
-      if (sp[ind+1] == c)ind--;
-   }
-   return -1;
-} 
-//________________________________________________________________________________________
-
-Int_t Matches(TList * list, const char * s, Int_t * matchlength)
-{
-   Int_t pos = -1;
-   Bool_t unique = kTRUE;
-   TObjString * obs;
-   Int_t lmax = 1000000;
-   for (Int_t i = 0; i < list->GetSize(); i++) {
-      obs = (TObjString *)list->At(i);
-      TString var = obs->GetString();
-      if (var.Index(s, 0) == 0) {
-         cout << "Input: " << s << " matches: " << var << endl;
-         if (pos >=0) unique = kFALSE;
-         pos = i;
-         if (var.Length() < lmax) lmax = var.Length(); 
-         *matchlength = var.Length();
-      }
-   }
-   if (unique) {
-      return pos;
-   } else {
-      cout << setred << "Not unique, find  longest match: lmax = " << lmax << setblack << endl;
-      Int_t lm = 0;
-      for (Int_t l = 0; l < lmax; l++) {
-         Bool_t fm = kTRUE;
-         char cm ={' '};
-         for (Int_t i = 0; i < list->GetSize(); i++) {
-            obs = (TObjString *)list->At(i);
-            TString var = obs->GetString();
-            if (var.Index(s, 0) != 0) continue;
-            if (fm) {
-               cm = var[l];
-               fm = kFALSE;
-            } else {
-               if (var[l] != cm) {
-                  *matchlength = lm;
-//                  cout << "pso, lm: " << pos << " " << lm << endl;
-                  return pos;
-               } 
-            }
-         }
-         lm++;    
-      }
-   }
-   *matchlength = lmax;
-   return pos;
-}
-*/
 extern Ssiz_t IndexOfLastSpecial(TString &str);
 extern Ssiz_t IndexOfLast(TString &str, char &c);
 extern Int_t Matches(TList * list, const char * s, Int_t * matchlength);
@@ -254,6 +156,15 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
             fWidgets->Add(cbutton);
             fEntries->Add(cbutton);
+            hframe->AddFrame(cbutton, lo1);
+         } else if (s.BeginsWith("RadioButton")) {
+            cbutton = new TGRadioButton(hframe, new TGHotString(""), i);
+            if (s.EndsWith("Down")) cbutton->SetState(kButtonDown);
+            else                    cbutton->SetState(kButtonUp);
+            cbutton->Resize(cbutton->GetDefaultWidth(), cbutton->GetDefaultHeight());
+            fWidgets->Add(cbutton);
+            fEntries->Add(cbutton);
+            cbutton->Associate(this);
             hframe->AddFrame(cbutton, lo1);
          } else if (s.BeginsWith("ColorSelect_")) {
             TString scol(s.Data());
@@ -554,6 +465,22 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       gClient->NeedRedraw(fAlignButton);
                       break;
                  }
+             case kCM_RADIOBUTTON:
+                {   
+                   TIter nextent(fEntries);
+                   TObject * obj;
+                   Int_t i = 0;
+                   while ( (obj = nextent()) ) {
+                      if (obj->InheritsFrom("TGRadioButton"))  { 
+                         if (i == parm1) 
+                           ((TGRadioButton*)obj)->SetState(kButtonDown);
+                         else 
+                           ((TGRadioButton*)obj)->SetState(kButtonUp);
+                      }
+                      i++;
+                   }
+                   break;
+                }
              case kCM_COMBOBOX:
                 {
                   break;
@@ -591,8 +518,8 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
        case kC_TEXTENTRY:
          switch (GET_SUBMSG(msg)) {
              case kTE_TAB:
-//               cout << "Tab " << endl;
-                if (parm1 != kIdText) break;
+ //              cout << "Tab " << parm1 << " " << fCompList<< endl;
+//                if (parm1 != kIdText) break;
                 if (fCompList) {
                    TString temp = fTE->GetBuffer()->GetString();
 //                   cout << "temp: " << temp << endl;
@@ -711,6 +638,13 @@ void TGMrbValuesAndText::StoreValues(){
              objs->SetString("CheckButton_Down"); 
           else
              objs->SetString("CheckButton_Up");
+
+       } else if (obj->InheritsFrom("TGRadioButton")) {
+          cbutton = (TGCheckButton*)obj;
+          if (cbutton->GetState() == kButtonDown)
+             objs->SetString("RadioButton_Down"); 
+          else
+             objs->SetString("RadioButton_Up");
 
        } else { 
           tentry = (TGTextEntry*)obj;
