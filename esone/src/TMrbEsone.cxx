@@ -278,7 +278,6 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 
 	Int_t i;
 	FILE * pCmd;
-	ostringstream * rCmd;
 	Char_t line[100];
 	TString pLine;
 	Bool_t found;
@@ -299,24 +298,31 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 					<< HostName << "\"." << endl;
 	gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 
-	rCmd = new ostringstream();
-	*rCmd	<< "rsh " << HostName
-			<< " -l " << gSystem->Getenv("USER")
-			<< " \"/mbs/" << mbsVersion
-			<< "/script/remote_exe.sc /mbs/" << mbsVersion
-			<< " " << setupPath << " m_remote reset -l >>/dev/null\""
-			<< ends;
+	TString rCmd = "rsh ";
+	rCmd += HostName;
+	rCmd += " -l ";
+	rCmd += gSystem->Getenv("USER");
+	rCmd += " \"/mbs/";
+	rCmd += mbsVersion;
+	rCmd += "/script/remote_exe.sc /mbs/";
+	rCmd += mbsVersion;
+	rCmd += " ";
+	rCmd += setupPath;
+	rCmd += " m_remote reset -l";
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< "Exec >> " << rCmd->str().c_str() << " <<" << endl;
+		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	} else {
+		rCmd += " >>/dev/null";
 	}
-	gSystem->Exec(rCmd->str().c_str());
-//	rCmd->rdbuf()->freeze(0);
-	delete rCmd;
+	rCmd += "\"";
+	gSystem->Exec(rCmd.Data());
 
-	rCmd = new ostringstream();
-	*rCmd	<< "rsh " << HostName << " -l " << gSystem->Getenv("USER") << " \"ps ax | fgrep m_\""
-			<< ends;
+	rCmd = "rsh ";
+	rCmd += HostName;
+	rCmd += " -l ";
+	rCmd += gSystem->Getenv("USER");
+	rCmd += " \"ps ax | fgrep m_\"";
 
 	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
@@ -329,7 +335,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		sleep(1);
 		cout << setmagenta << "." << setblack << ends << flush;
 		found = kFALSE;
-		pCmd = gSystem->OpenPipe(rCmd->str().c_str(), "r");
+		pCmd = gSystem->OpenPipe(rCmd.Data(), "r");
 		while (fgets(line, 100, pCmd) != NULL) {
 			pLine = line;
 			if (pLine.Index("m_") == -1) break;
@@ -341,9 +347,6 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 			break;
 		}
 	}
-
-//	rCmd->rdbuf()->freeze(0);
-	delete rCmd;
 
 	if (found) {
 		gMrbLog->Err() << "Can't RESET server on host \"" << HostName << "\"" << endl;
@@ -357,40 +360,53 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 			<< fController.GetName() << ") on host \"" << HostName << "\"." << endl;
 	gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 
-	rCmd = new ostringstream();
-	*rCmd	<< "rsh " << HostName
-			<< " -l " << gSystem->Getenv("USER")
-			<< " \"cp " << setupPath << "/.tcshrc . >>/dev/null\""
-			<< ends;
+	rCmd = "rsh ";
+	rCmd += HostName;
+	rCmd += " -l ";
+	rCmd += gSystem->Getenv("USER");
+	rCmd += " \"cp ";
+	rCmd += setupPath;
+	rCmd += "/.tcshrc .";
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< endl << "Exec >> " << rCmd->str().c_str() << " <<" << endl;
+		gMrbLog->Out()	<< endl << "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	} else {
+		rCmd += " >>/dev/null";
 	}
-	gSystem->Exec(rCmd->str().c_str());
-//	rCmd->rdbuf()->freeze(0);
-	delete rCmd;
+	rCmd += "\"";
+	gSystem->Exec(rCmd.Data());
 
 	prmOrDsp = startPrompter ? "m_prompt" : "m_dispatch";
 
-	rCmd = new ostringstream();
-	*rCmd	<< "rsh " << HostName
-			<< " -l " << gSystem->Getenv("USER")
-			<< " \"/mbs/" << mbsVersion
-			<< "/script/remote_exe.sc /mbs/" << mbsVersion
-			<< " . " << prmOrDsp << " @" << setupPath << "/"
-			<< fController.GetName() << "/startup >>/dev/null\""
-			<< ends;
+	rCmd = "rsh ";
+	rCmd += HostName;
+	rCmd += " -l ";
+	rCmd += gSystem->Getenv("USER");
+	rCmd += " \"/mbs/";
+	rCmd += mbsVersion;
+	rCmd += "/script/remote_exe.sc /mbs/";
+	rCmd += mbsVersion;
+	rCmd += " . ";
+	rCmd += prmOrDsp;
+	rCmd += " @";
+	rCmd += setupPath;
+	rCmd += "/";
+	rCmd += fController.GetName();
+	rCmd += "/startup";
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< "Exec >> " << rCmd->str().c_str() << " <<" << endl;
+		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	} else {
+		rCmd += " >>/dev/null";
 	}
-	gSystem->Exec(rCmd->str().c_str());
-//	rCmd->rdbuf()->freeze(0);
-	delete rCmd;
+	rCmd += "\"";
+	gSystem->Exec(rCmd.Data());
 
-	rCmd = new ostringstream();
-	*rCmd	<< "rsh " << HostName << " -l " << gSystem->Getenv("USER") << " \"ps ax | fgrep m_\""
-			<< ends;
+	rCmd = "rsh ";
+	rCmd += HostName;
+	rCmd += " -l ";
+	rCmd += gSystem->Getenv("USER");
+	rCmd += " \"ps ax | fgrep m_\"";
 
 	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
@@ -403,7 +419,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		sleep(1);
 		cout << setmagenta << "." << setblack << ends << flush;
 		found = kFALSE;
-		pCmd = gSystem->OpenPipe(rCmd->str().c_str(), "r");
+		pCmd = gSystem->OpenPipe(rCmd.Data(), "r");
 		while (fgets(line, 100, pCmd) != NULL) {
 			pLine = line;
 			if (pLine.Index("m_esone") != -1) {
@@ -417,9 +433,6 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 			break;
 		}
 	}
-
-//	rCmd->rdbuf()->freeze(0);
-	delete rCmd;
 
 	if (found) {
 		gMrbLog->Out()	<< "ESONE server (type " << fServerType.GetName()
