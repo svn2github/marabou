@@ -4889,15 +4889,15 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 				userClass = userClass.Strip(TString::kBoth);
 				if (UserDefinedEvent) {
 					if (classOk) {
-						gMrbLog->Err()	<< "[" << userFile << "] More than one class def - can't be used as event class" << endl;
+						gMrbLog->Err()	<< "[" << userFile << "] More than one class def - class \"" << userClass << "\" not used as event class" << endl;
 						gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
-						return(kFALSE);
+						continue;
 					}
 					if (uevtName.CompareTo(userClass.Data()) != 0) {
 						gMrbLog->Err()	<< "[" << userFile << "] Class name \"" << userClass
-										<< "\" different from file name - can't be used as event class" << endl;
+										<< "\" different from file name - not used as event class" << endl;
 						gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
-						return(kFALSE);
+						continue;
 					}
 				}
 				if (verboseMode) {
