@@ -18,7 +18,7 @@ TIDYLIBO        := $(TIDYLIBS:.c=.o)
 
 TIDYLIBDEP      := $(TIDYLIBO:.o=.d)
 
-TIDYLIBLIB      := $(LPATH)/libEsoneClient.$(SOEXT)
+TIDYLIBLIB      := $(LPATH)/libTidy.$(SOEXT)
 
 CFLAGS	+=	-D_NO_PROTOS_
 # used in the main Makefile

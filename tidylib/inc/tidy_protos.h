@@ -2,7 +2,7 @@
 #define __TIDY_PROTOS_H__
 
 #include <Rtypes.h>
-#include "../../tidy/inc/tidyenum.h"
+#include "tidyenum.h"
 
 //_________________________________________________________[C DEFINITION FILE]
 //////////////////////////////////////////////////////////////////////////////
@@ -10,7 +10,7 @@
 // Purpose:        C interface to tidy calls
 // Description:    C prototypes for tidy
 // Author:         R. Lutter
-// Revision:       $Id: tidy_protos.h,v 1.1 2004-11-16 15:13:19 rudi Exp $       
+// Revision:       $Id: tidy_protos.h,v 1.2 2004-11-16 15:24:27 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
