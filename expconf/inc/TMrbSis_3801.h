@@ -5,10 +5,10 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/inc/TMrbSis_3801.h
 // Purpose:        Define experimental configuration for MARaBOU
-// Class:          TMrbSis_3801        -- 16 chn 24 bit VME scaler
+// Class:          TMrbSis_3801        -- 32 chn 24 bit VME scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3801.h,v 1.9 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSis_3801.h,v 1.10 2004-11-05 12:25:26 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

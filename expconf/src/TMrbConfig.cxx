@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.80 2004-10-13 07:59:29 rudi Exp $       $Id: TMrbConfig.cxx,v 1.80 2004-10-13 07:59:29 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.81 2004-11-05 12:25:26 marabou Exp $       $Id: TMrbConfig.cxx,v 1.81 2004-11-05 12:25:26 marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -411,6 +411,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleMpiHD_IOReg,			"MpiHD_IOReg"					},
 								{TMrbConfig::kModuleSis_3600,				"Sis_3600"						},
 								{TMrbConfig::kModuleSis_3801,				"Sis_3801"						},
+								{TMrbConfig::kModuleSis_3820,				"Sis_3820"						},
 								{TMrbConfig::kModuleLeCroy_1176,			"LeCroy_1176"					},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}

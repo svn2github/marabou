@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.10 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.11 2004-11-05 12:25:26 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -143,18 +143,37 @@ UInt_t TMrbModule::GetPatternOfChannelsUsed() const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-	TMrbModuleChannel * chn;
-	UInt_t pofChannelsUsed, bit;
-
-	pofChannelsUsed = 0;
-	bit = 1;
-	for (i = 0; i < fNofChannels; i++) {
-		chn = (TMrbModuleChannel *) fChannelSpec[i];
+	UInt_t pofChannelsUsed = 0;
+	UInt_t bit = 1;
+	for (Int_t i = 0; i < fNofChannels; i++) {
+		TMrbModuleChannel * chn = (TMrbModuleChannel *) fChannelSpec[i];
 		if (chn->IsUsed()) pofChannelsUsed |= bit;
 		bit <<= 1;
 	}
 	return(pofChannelsUsed);
+}
+
+Bool_t TMrbModule::CheckIfPatternIsContiguous() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModule::CheckIfPatternIsContiguous
+// Purpose:        Check if channels have been assigned contiguously
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if active channels are contiguous starting with ch0.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t bit = 1;
+	Int_t isUsed = kTRUE;
+	for (Int_t i = 0; i < fNofChannels; i++) {
+		TMrbModuleChannel * chn = (TMrbModuleChannel *) fChannelSpec[i];
+		if (chn->IsUsed() && !isUsed) return(kFALSE);
+		isUsed = chn->IsUsed();
+		bit <<= 1;
+	}
+	return(kTRUE);
 }
 
 Bool_t TMrbModule::SetBlockReadout(Bool_t Flag) {

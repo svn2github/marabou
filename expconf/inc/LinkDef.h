@@ -66,5 +66,6 @@
 #pragma link C++ class TMrbMpiHD_IOReg;
 #pragma link C++ class TMrbSis_3600;
 #pragma link C++ class TMrbSis_3801;
+#pragma link C++ class TMrbSis_3820;
 #pragma link C++ class TMrbModuleRaw;
 #endif
