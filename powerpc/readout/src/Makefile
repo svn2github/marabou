@@ -24,7 +24,7 @@ SRCS		=	\
 				cc32_init.c \
 				cc32.c
 
-ULIB 		=	../lib/lib_utils.a
+ULIB 		=	../lib/libutils.a
 INC 		=	$(MBSROOT)/inc
 GD_INCL		=	/mbssys/include
 
@@ -53,6 +53,9 @@ uxtst:  	if$(LEGALOS) uxtst.o $(ULIB)
 
 cc32: 	  	if$(LEGALOS) cc32.o $(ULIB)
 			$(CC) $(CFLAGS) -o cc32 cc32.c $(ULIB) $(LIBS)
+			
+mpiorl: 	if$(LEGALOS) mpiorl.o $(ULIB)
+			$(CC) $(CFLAGS) -o mpiorl mpiorl.c $(ULIB) $(LIBS)
 			
 dgfdown:	dgfdown.o $(ULIB)
 			$(CC) $(CFLAGS) -o dgfdown dgfdown.c $(ULIB) $(LIBS)

@@ -109,7 +109,7 @@ int main(int argc, char * argv[]) {
 
  	n = root_env_read(cfgFile);			/* read ROOT's environment file */
 	if (n <= 0) {
-		fprintf(stderr, "%sdgf_read_dsp: Cannot open file %s%s\n", setred, cfgFile, setblack);
+		fprintf(stderr, "%sdgfdown: Cannot open file %s%s\n", setred, cfgFile, setblack);
 		exit(1);
 	}
 
@@ -118,37 +118,70 @@ int main(int argc, char * argv[]) {
  	cc32_init(baseAddr, nofCrates);				/* vme addr mapping  */
 
 	strcpy(loadOptions, root_env_getval_s("DownloadOptions", "SFD"));
-	for (i = 0; i < 10; i++) loadOptions[i] = tolower(loadOptions[i]);
+	for (i = 0; i < 10; i++) loadOptions[i] = toupper(loadOptions[i]);
 
 	strcpy(loadPath, root_env_getval_s("LoadPath", ""));
 	strcat(loadPath, "/");
 
-	strcpy(fileSpec, loadPath);
-	strcat(fileSpec, root_env_getval_s("SystemFPGACode", ""));
-	sysSize = dgf_read_fpga(fileSpec, "System", sys);
+	if (strchr(loadOptions, 'S') != NULL) {
+		strcpy(fileSpec, loadPath);
+		strcat(fileSpec, root_env_getval_s("SystemFPGACode", ""));
+		sysSize = dgf_read_fpga(fileSpec, "System", sys);
+		if (sysSize <= 0) {
+			fprintf(stderr, "%sdgfdown: Error reading file %s [System]%s\n", setred, fileSpec, setblack);
+			exit(1);
+		}
+	}
 
-	strcpy(fileSpec, loadPath);
-	strcat(fileSpec, root_env_getval_s("FippiFPGACode.RevD", ""));
-	fippiDsize = dgf_read_fpga(fileSpec, "Fippi(D)", fippiRevD);
+	if (strchr(loadOptions, 'F') != NULL) {
+		strcpy(fileSpec, loadPath);
+		strcat(fileSpec, root_env_getval_s("FippiFPGACode.RevD", ""));
+		fippiDsize = dgf_read_fpga(fileSpec, "Fippi(D)", fippiRevD);
+		if (fippiDsize <= 0) {
+			fprintf(stderr, "%sdgfdown: Error reading file %s [Fippi(D)]%s\n", setred, fileSpec, setblack);
+		}
+	
+		strcpy(fileSpec, loadPath);
+		strcat(fileSpec, root_env_getval_s("FippiFPGACode.RevE", ""));
+		fippiEsize = dgf_read_fpga(fileSpec, "Fippi(E)", fippiRevE);
+		if (fippiEsize <= 0) {
+			fprintf(stderr, "%sdgfdown: Error reading file %s [Fippi(E)]%s\n", setred, fileSpec, setblack);
+		}
+	}
 
-	strcpy(fileSpec, loadPath);
-	strcat(fileSpec, root_env_getval_s("FippiFPGACode.RevE", ""));
-	fippiEsize = dgf_read_fpga(fileSpec, "Fippi(E)", fippiRevE);
-
-	strcpy(fileSpec, loadPath);
-	strcat(fileSpec, root_env_getval_s("DspCode", ""));
-	dspSize = dgf_read_dsp(fileSpec, dsp);
+	if (strchr(loadOptions, 'D') != NULL) {
+		strcpy(fileSpec, loadPath);
+		strcat(fileSpec, root_env_getval_s("DspCode", ""));
+		dspSize = dgf_read_dsp(fileSpec, dsp);
+	}
 
 	for (crate = 1; crate <= nofCrates; crate++) {
-		if (strchr(loadOptions, 's') != NULL) dgf_download_fpga(crate, -1, "System", sys, sysSize);
-		if (strchr(loadOptions, 'f') != NULL) {
+		if (strchr(loadOptions, 'S') != NULL) {
+			if (dgf_download_fpga(crate, -1, "System", sys, sysSize) == 0) exit(1);
+		}
+		if (strchr(loadOptions, 'F') != NULL) {
 			smaskD = dgf_get_revision(crate, FIPPI_REVD);
 			smaskE = dgf_get_revision(crate, FIPPI_REVE);
-			if (smaskD) dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize);
-			if (smaskE) dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize);
+			if (smaskD) {
+				if (fippiDsize <= 0) {
+					fprintf(stderr, "%sdgfdown: No data [Fippi(D)]%s\n", setred, setblack);
+					exit(1);
+				}
+				if (dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize) == 0) exit(1);
+			}
+			if (smaskE) {
+				if (fippiEsize <= 0) {
+					fprintf(stderr, "%sdgfdown: No data [Fippi(E)]%s\n", setred, setblack);
+					exit(1);
+				}
+				if (dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize) == 0) exit(1);
+			}
 		}
-		dgf_set_switchbus(crate);
-		if (strchr(loadOptions, 'd') != NULL) dgf_download_dsp(crate, dsp, dspSize);
+		if (strchr(loadOptions, 'D') != NULL) {
+			dgf_set_switchbus(crate);
+			if (dgf_download_dsp(crate, dsp, dspSize) == 0) exit(1);
+		}
 	}
+	printf("\n%sdgfdown: Download ok - no errors%s\n\n", setblue, setblack);
 	exit(0);
 }

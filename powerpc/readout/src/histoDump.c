@@ -131,69 +131,122 @@ int main(int argc, char * argv[]) {
 // Purpose:        Test parameters of a DGF-4C module
 // Arguments:      int crate             -- crate number
 //                 int station           -- station number
-//                 int channel           -- channel number
+//                 int chnPattern        -- channel pattern
 // Results:        
 // Exceptions:     
 // Description:      
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
-	int i ,j, k;
+	int i, idx;
 	int crate;
 	int station;
-	int channel;
+	unsigned int chnPattern;
 	unsigned int addr;
-	int nofWords, chn, cTask, wc;
+	int nofWords, nofChannels, chn, page, cTask, wc;
+	char fileName[128], handshake[128];
+	char mode, quiet;
+	int ascii, beQuiet;
 	FILE * f;
-	unsigned int data[8192], d;
+	unsigned int data[8192], data32[8192], d;
 
 	volatile unsigned long * dgf;
 
-	if (argc < 4) {
+	if (argc < 6) {
 		fprintf(stderr, "%shistoDump: Illegal number of arguments - %d%s\n", setred, argc - 1, setblack);
-		fprintf(stderr, "\n           Usage: histoDump <crate> <station> <channel>\n\n");
+		fprintf(stderr, "\n           Usage: histoDump <crate> <station> <chnPattern> <file> <mode> <quiet>\n\n");
 		exit(1);
 	}
 
-	crate = atoi(argv[1]);
-	station = atoi(argv[2]);
-	channel = atoi(argv[3]);
+	crate = strtol(argv[1], NULL, 0));
+	station = strtol(argv[2], NULL, 0));
+	chnPattern = strtol(argv[3], NULL, 0);
 
- 	cc32_init((unsigned long *) 0xee550000L, 3);				/* vme addr mapping for crates 1 ... 3 */
+	strcpy(fileName, argv[4]);
+	f = fopen(fileName, "w");
+	if (f == NULL) {
+		fprintf(stderr, "%s?histoDump: Can't open file - %s%s\n", setred, fileName, setblack);
+		exit(1);
+	}
 
-	printf("----------------------------------------------------------------------\n");
-	printf("histoDump.C: DGF-4C in C%d.N%d\n", crate, station);
-	printf("----------------------------------------------------------------------\n");
+	mode = *argv[5];
+	switch (mode) {
+		case 'a':
+		case 'A':	ascii = 1; break;
+		case 'b':
+		case 'B':	ascii = 0; break;
+		default:	fprintf(stderr, "%s?histoDump: Illegal file mode - %s%s\n", setred, argv[5], setblack);
+					exit(1);
+	}
 
+	quiet = *argv[5];
+	beQuiet = 0;
+	switch (quiet) {
+		case 'q':
+		case 'Q':	beQuiet = 1; break;
+	}
+
+ 	cc32_init((unsigned long *) 0xee550000L, crate);
 	dgf = CC32_SET_BASE(C(crate), N(station));
 
 	addr = dgf_get_par_value(dgf, -1, DGF_OFFS_AOUTBUFFER);
 	wc = dgf_get_par_value(dgf, -1, DGF_OFFS_LOUTBUFFER);
 
-	k = 0;
+	strcpy(handshake) = ".";			/* handshake with file .<filename>.ok */
+	strcat(handshake, filename);
+	strcat(handshale, ".ok");
+	unlink(handshake);					/* remove hs file */
+		
+	idx = 0;
 	nofWords = 0;
-	f = fopen("histo.dat", "w");
-	dgf_set_par_value(dgf, -1, DGF_OFFS_HOSTIO, channel);
-	for (j = 0; j < 8; j++) {
-		dgf_set_par_value(dgf, -1, DGF_OFFS_RUNTASK, DGF_RUN_CONTROL);
-		cTask = (j == 0) ? DGF_CTRL_READ_HISTO_FIRST : DGF_CTRL_READ_HISTO_NEXT;
-		dgf_set_par_value(dgf, -1, DGF_OFFS_CONTROLTASK, cTask);
-		dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA);
-		dgf_wait_active(dgf);
-		DGF_WRITE_TSAR(dgf, addr);
-		for (i = 0; i < wc; i++) data[i] = DGF_READ_DSP_FAST(dgf);
-		nofWords += wc / 2;
-		for (i = 0; i < wc; i++) {
-			if (i & 1) {
-				d |= data[i];
-				fprintf(f, "%6d%10d\n", k, d);
-				k++;
-			} else {
-				d = data[i] << 8;
+	nofChannels = 0;
+	for (chn = 0; chn < 4; chn++) {
+		if (chnPattern & (1 << chn)) {
+			nofChannels++;
+			dgf_set_par_value(dgf, -1, DGF_OFFS_HOSTIO, chn);
+			for (page = 0; page < 8; j++) {
+				dgf_set_par_value(dgf, -1, DGF_OFFS_RUNTASK, DGF_RUN_CONTROL);
+				cTask = (page == 0) ? DGF_CTRL_READ_HISTO_FIRST : DGF_CTRL_READ_HISTO_NEXT;
+				dgf_set_par_value(dgf, -1, DGF_OFFS_CONTROLTASK, cTask);
+				dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA);
+				dgf_wait_active(dgf);
+				DGF_WRITE_TSAR(dgf, addr);
+				for (i = 0; i < wc; i++) data[i] = DGF_READ_DSP_FAST(dgf);
+				nofWords += wc / 2;
+				for (i = 0; i < wc; i++) {
+					if (i & 1) {
+						d |= data[i];
+						data32[idx] = d;
+						idx++;
+					} else {
+						d = data[i] << 8;
+					}
+				}
 			}
 		}
 	}
+
+	if (beQuiet == 0) {
+		printf("histoDump: DGF-4C in C%d.N%d --> %s (%d channels, %d words, mode %c)\n",
+								crate, station, fileName, nofChannels, nofWords, mode);
+	}
+	
+	if (ascii == 0) {
+		fwrite(data32, sizeof(unsigned int), idx, f);
+	} else {
+		for (i = 0; i < nofWords; i++) fprintf(f, "%6d%10d\n", i, data32[i]);
+	}
 	fclose(f);
+	
+	f = fopen(handshake, "w");					/* write handshake file */
+	fprintf("HistoDump.Crate: %d\n", crate);
+	fprintf("HistoDump.Station: %d\n", station);
+	fprintf("HistoDump.ChnPattern: %#x\n", chnPattern);
+	fprintf("HistoDump.File: %s\n", filename);
+	fprintf("HistoDump.Mode: %s\n", (ascii == 0) ? "binary" : "ascii");
+	fprintf("HistoDump.NofDataWords: %d\n", nofWords);
+	fclose();
+	
 	exit(0);
 }
 

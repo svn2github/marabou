@@ -244,10 +244,7 @@ int dgf_download_fpga(int crate, unsigned int smask, char * type, unsigned short
 	if (smask == 0xFFFFFFFF) {
 		sprintf(resource, "StationMask.Crate%d", crate); 		/* read station mask from environment */
 		smask = root_env_getval_x(resource, 0);
-		if (smask == 0) {
-			fprintf(stderr, "%sdgf_download_fpga: [%s] No station bits given for crate C%d%s\n", setred, type, crate, setblack);
-			return(0);
-		}
+		if (smask == 0) return(1);
 	}
 	CC32_WRITE_R2B(bcm, F(16), A(0), smask); 							/* set broadcast mask */
 
@@ -319,10 +316,7 @@ int dgf_download_dsp(int crate, unsigned short data[], int size) {
 
 	sprintf(resource, "StationMask.Crate%d", crate); 							/* get station mask from environment */
 	smask = root_env_getval_x(resource, 0);
-	if (smask == 0) {
-		fprintf(stderr, "%sdgf_download_dsp: No station bits given for crate C%d%s\n", setred, crate, setblack);
-		return(0);
-	}
+	if (smask == 0) return(1);
 
 	CC32_WRITE_R2B(bcm, F(16), A(0), smask); 								/* set broadcast mask */
 
@@ -467,10 +461,7 @@ unsigned int dgf_get_revision(int crate, int rev) {
 
 	sprintf(resource, "StationMask.Crate%d", crate); 		/* read station mask from environment */
 	mbits = root_env_getval_x(resource, 0);
-	if (mbits == 0) {
-		fprintf(stderr, "%sdgf_get_revision: No station bits given for crate C%d%s\n", setred, crate, setblack);
-		return(0);
-	}
+	if (mbits == 0) return(0);
 
 	station = 1;										/* check fgpa status */
 	smask = 0;
