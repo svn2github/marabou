@@ -626,7 +626,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    while ( (fn=gSystem->GetDirEntry(dirp)) ) {
       hint = fn;
       if (hint.Index(rsuf) > 0) {
-         if (contains_filenames(fn) > 0) continue;
+		if (contains_filenames(fn) > 0) continue;
          hint(rsuf) = "";
          cmd = "mypres->ShowList(\"";
          cmd = cmd + fname + "\",\"" + hint + "\")";
