@@ -396,6 +396,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void auto_exec_2();
    void WarnBox(const char *);
    void CleanWindowLists(TH1* hist);
+   void DinA4Page(Int_t form);
 
 ClassDef(HistPresent,0)      // A histogram presenter
 };

@@ -65,12 +65,15 @@ public:
    void ClearFitHist(){fFitHist = 0;};
    void ClearHistPresent(){fHistPresent = 0;};
    void SetLog(Int_t state);
-   Double_t GetGridX(){return fGridX;};
-   Double_t GetGridY(){return fGridY;};
-   void    SetGridX(Double_t x){fGridX = x;};
-   void    SetGridY(Double_t y){fGridY = y;};
-   void    SetUseGrid(Bool_t use){fUseGrid = use;};
-   Bool_t  GetUseGrid(){return fUseGrid;};
+   Double_t GetGridX() {return fGridX;};
+   Double_t GetGridY() {return fGridY;};
+   void    SetGrid(Double_t x, Double_t y);
+   void    SetGridX(Double_t x) {fGridX = x;};
+   void    SetGridY(Double_t y) {fGridY = y;};
+   void    SetUseGrid(Bool_t use = kTRUE) {fUseGrid = use;};
+   Bool_t  GetUseGrid() {return fUseGrid;};
+   void    DrawGrid();
+   void    RemoveGrid();
 
    ClassDef(HTCanvas,0)  //Graphics canvas
 };

@@ -218,8 +218,12 @@ enum ERootCanvasCommands {
    kFH_CASCADE2_7,
    kFH_CASCADE2_8,
    kFH_CASCADE2_U,
+   kFH_Portrait,
+   kFH_Landscape,
    kFH_SetGrid,
    kFH_UseGrid,
+   kFH_DrawGrid,  
+   kFH_RemoveGrid,
    kOptionPad,
    kOptionTitle,
    kOptionHist,
@@ -455,6 +459,8 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
    					  if (ret >= 0) {
                        fHCanvas->SetGridX(values[0]);
                        fHCanvas->SetGridY(values[1]);
+                       fHCanvas->SetUseGrid(kTRUE);
+                       fHCanvas->DrawGrid();
                     }
                     }
                     break;
@@ -466,6 +472,23 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                         fEditMenu->CheckEntry(kFH_UseGrid);
                         fHCanvas->SetUseGrid(kTRUE);
                      }
+                     break;
+
+                  case kFH_DrawGrid:  
+                        fHCanvas->DrawGrid();
+                     break;
+
+                  case kFH_RemoveGrid:
+                        fHCanvas->RemoveGrid();
+                     break;
+
+                  case    kFH_Portrait:
+                     if(fHistPresent)
+                        fHistPresent->DinA4Page(0);                    
+                     break;
+                  case    kFH_Landscape:
+                     if(fHistPresent)
+                        fHistPresent->DinA4Page(1);                       
                      break;
 
                   // Handle View menu items...
@@ -1005,14 +1028,18 @@ void HandleMenus::BuildMenus()
    cout << "fFitHist: " << fFitHist<< endl;
 */
    TMrbHelpBrowser * hbrowser = NULL;
+   Bool_t fh_menus = kFALSE;
+   Bool_t edit_menus = kFALSE;
    Bool_t autops = kFALSE;
    if(fHistPresent){
       autops = fHistPresent->GetShowPSFile();
       hbrowser=fHistPresent->GetHelpBrowser();
+      if (!strcmp(fHCanvas->GetName(), "dina4page")) edit_menus = kTRUE;
    }
-   Bool_t fh_menus = kFALSE;
-   if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) 
+   if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) { 
      fh_menus = kTRUE;
+     edit_menus = kTRUE;
+   }
    TGPopupMenu * pm; 
    const TList * l;
    TGMenuEntry * e;
@@ -1171,6 +1198,8 @@ void HandleMenus::BuildMenus()
 //   fFileMenu->AddEntry("&Print...",           kFilePrint);
    fFileMenu->AddSeparator();
    fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
+   fFileMenu->AddEntry("Open DinA4 canvas (portrait)",    kFH_Portrait);
+   fFileMenu->AddEntry("Open DinA4 canvas (landscape)",   kFH_Landscape);
    fFileMenu->AddSeparator();
    fFileMenu->AddEntry("Terminate program",          kFileQuit);
 
@@ -1245,7 +1274,7 @@ void HandleMenus::BuildMenus()
       	fViewMenu->AddEntry("ClearMarks",   kFHClearMarks);
       	fViewMenu->AddEntry("PrintMarks",   kFHPrintMarks);
       	fViewMenu->AddEntry("Set2Marks",    kFHSet2Marks);
-      	fViewMenu->AddEntry("Color marked area",    kFHColorMarked);
+      	fViewMenu->AddEntry("Highlight marked area",    kFHColorMarked);
 	//      fViewMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
       	fViewMenu->AddSeparator();
         
@@ -1386,23 +1415,6 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
       fFitMenu->AddSeparator();
 
-      fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-   	fEditMenu->AddEntry("&Graphics Editor",        kEditEditor);
-   	fEditMenu->AddEntry("Clear &Pad",              kEditClearPad);
-   	fEditMenu->AddEntry("&Clear Canvas",           kEditClearCanvas);
-
-      fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
-   	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
-      if (fHCanvas->GetUseGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
-      else                      fEditMenu->UnCheckEntry(kFH_UseGrid);
-      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
-      fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Show Colors",  			  kViewColors);
-   	fEditMenu->AddEntry("Show Fonts",				  kViewFonts);
-   	fEditMenu->AddEntry("Show Markers", 			  kViewMarkers);
-      fEditMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
-      fEditMenu->AddEntry("Show Line Attr",          kViewLineStyles);
   
       if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
       
@@ -1420,8 +1432,29 @@ void HandleMenus::BuildMenus()
       fCascadeMenu1->Associate((TGWindow*)this);
       fCascadeMenu2->Associate((TGWindow*)this);
       fFitMenu->Associate((TGWindow*)this);
-      fEditMenu->Associate((TGWindow*)this);
 //      fCascadeMenu1->Associate(this);
+   }
+   if(edit_menus){
+      fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
+   	fEditMenu->AddEntry("&Graphics Editor",        kEditEditor);
+   	fEditMenu->AddEntry("Clear &Pad",              kEditClearPad);
+   	fEditMenu->AddEntry("&Clear Canvas",           kEditClearCanvas);
+
+      fEditMenu->AddSeparator();
+   	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
+   	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
+      if (fHCanvas->GetUseGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
+      else                      fEditMenu->UnCheckEntry(kFH_UseGrid);
+//      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
+   	fEditMenu->AddEntry("Draw Edit Grid",           kFH_DrawGrid  );
+   	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
+      fEditMenu->AddSeparator();
+   	fEditMenu->AddEntry("Show Colors",  			  kViewColors);
+   	fEditMenu->AddEntry("Show Fonts",				  kViewFonts);
+   	fEditMenu->AddEntry("Show Markers", 			  kViewMarkers);
+      fEditMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+      fEditMenu->AddEntry("Show Line Attr",          kViewLineStyles);
+      fEditMenu->Associate((TGWindow*)this);
    }
    if (fViewMenu) fViewMenu->Associate((TGWindow*)this);
 // this main frame will process the menu commands
@@ -1435,7 +1468,9 @@ void HandleMenus::BuildMenus()
    if(fh_menus){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
       fRootsMenuBar->AddPopup("Fit / Calibrate", fFitMenu,   fMenuBarItemLayout, pmi);
-      fRootsMenuBar->AddPopup("Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
+   }
+   if(edit_menus){
+         fRootsMenuBar->AddPopup("Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
    }
    if(hbrowser) {
       fHelpMenu     = new TGPopupMenu(fRootCanvas->GetParent());

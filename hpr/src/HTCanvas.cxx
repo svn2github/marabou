@@ -27,6 +27,7 @@
 #include "HTimer.h"
 #include "SetColor.h"
 #include "TMrbHelpBrowser.h" 
+#include "EditMarker.h"
 
 //class TContextMenu;
 //class TControlBar;
@@ -757,3 +758,47 @@ void HTCanvas::SetLog(Int_t state)
 
 }
 //______________________________________________________________________________
+
+void HTCanvas::SetGrid(Double_t x, Double_t y)
+{
+   fGridX = x; 
+   fGridY = y;
+   SetUseGrid(kTRUE);
+   DrawGrid();
+}
+//______________________________________________________________________________
+
+void HTCanvas::DrawGrid()
+{
+   if (fGridX <= 0 || fGridY <= 0) return;
+   Double_t xl, yl, xh, yh;
+   GetRange(xl, yl, xh, yh);
+
+   Double_t x = xl;
+   Double_t y;
+   EditMarker * em;
+   while (x <= xh) {
+      y = yl;   
+      while (y <= yh) {
+         em = new EditMarker(x, y, 1);
+         em->Draw();
+         y += fGridY;
+      }
+      x += fGridX;
+   }
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::RemoveGrid()
+{
+   TIter next(GetListOfPrimitives());
+   TObject * obj;
+   while ( (obj = next()) ) {
+      if (obj->GetUniqueID() == 0xaffec0c0) delete obj;
+   }
+   Update();
+}
+
+
+

@@ -591,7 +591,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
 {
 //   cout << "###ShowContents enter: fCmdLine " << fCmdLine << endl;
    static Int_t ycanvas=5;
-   TMrbStatistics * st = 0;
+   TMrbStatistics * st = NULL;
    TList lofF;
    TList lofW1;
    TList lofW2;
@@ -645,43 +645,43 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    if (fRootFile) fRootFile->Close();
 
    if (strstr(fname,".root")) {
+      TFile * rfile = NULL;
+      rfile = new TFile(fname);
+      if ( (fixnames(&rfile, kTRUE) )) {
+         if (QuestionBox("File contains objects with illegal names\n\
+(see transcript output)\n\
+Should we create a new file with corrected names?", maincanvas)) { 
+            fixnames(&rfile, kFALSE);
+//               rfile->ls();
+            TString mess("A new file: ");
+            mess += rfile->GetName();
+            mess += "\nhas been created\n Please redisplay filelist";
+            InfoBox(mess.Data(), maincanvas); 
+            rfile->Close();
+            return;
+         }
+      }   
       if (fShowListsOnly > 0) {  
          st = NULL;
          nstat = 0;
-          cout << "Skip hists in file, show hist lists only" << endl;
+         cout << "Skip hists in file, show hist lists only" << endl;
       } else {
-      	TFile * rfile = 0;
-      	rfile = new TFile(fname);
-         if ( (fixnames(&rfile, kTRUE) )) {
-            if (QuestionBox("File contains objects with illegal names\n\
-(see transcript output)\n\
-Should we create a new file with corrected names?", maincanvas)) { 
-               fixnames(&rfile, kFALSE);
-//               rfile->ls();
-               TString mess("A new file: ");
-               mess += rfile->GetName();
-               mess += "\nhas been created\n Please redisplay filelist";
-               InfoBox(mess.Data(), maincanvas); 
-               rfile->Close();
-               return;
-            }
-         }   
       	st = (TMrbStatistics*)rfile->Get("TMrbStatistics");
       	if (!st) {
          	st=new TMrbStatistics(fname);
          	nstat = st->Fill(rfile);
       	} else nstat = st->GetListOfEntries()->GetSize();
-      	maxkey = TMath:: Max(GetObjects(lofT, rfile, "TTree"),        maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowI"), maxkey);
-      	maxkey = TMath:: Max(GetObjects(lofW2, rfile, "TMrbWindow2D"),maxkey);
-      	rfile->Close();
       }
+      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TTree"),        maxkey);
+      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
+      maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowI"), maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW2, rfile, "TMrbWindow2D"),maxkey);
+      rfile->Close();
    } else if (strstr(fname,"Socket")) {
       if (!fComSocket) {
          if (!fConnectedOnce) {
@@ -3536,4 +3536,23 @@ void HistPresent::WarnBox(const char *message)
    new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
                 "Warning", message, kMBIconExclamation, kMBDismiss,
                 &retval);
+}
+//____________________________________________________________________________
+
+void HistPresent::DinA4Page(Int_t form)
+{
+   HTCanvas *c1; 
+   if (form == 1) {
+      c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
+                  400,40,1004, 759, this);
+      c1->Range(0, 0, 210. * TMath::Sqrt(2.), 210);
+   } else if (form == 0) {
+      c1= new HTCanvas("dina4page", "A DIN a4 page portrait",
+                  800,40,  712, 1050, this);
+      c1->Range(0, 0, 210, 210. * TMath::Sqrt(2.));
+   }
+   c1->SetGrid(10, 10);
+   c1->Modified(kTRUE);
+   c1->Update();
+   c1->SetEditable(kTRUE);
 }
