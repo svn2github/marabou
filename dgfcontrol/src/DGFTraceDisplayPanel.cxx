@@ -40,8 +40,7 @@ using namespace std;
 
 const SMrbNamedX kDGFTraceDisplayActions[] =
 			{
-				{DGFTraceDisplayPanel::kDGFTraceDisplayNormal,		"Normal trace",		"Take trace, leave trigger bits unchanged"		},
-				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"AutoTrig trace",	"Take trace, enable trigger for each channel"	},
+				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"Start trace",	"Take trace, enable trigger for each channel"	},
 				{DGFTraceDisplayPanel::kDGFTraceDisplayAbort,		"Abort",			"Abort trace taking"		},
 				{0, 												NULL,				NULL						}
 			};

@@ -338,6 +338,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	dgfModule = gDGFControlData->FirstModule();
 	selectFlag = kFALSE;
 	nofModules = 0;
+	Int_t nentries = 0;
 	lofDgfs.Clear();
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
@@ -351,19 +352,20 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 					fn += ".param.dat";
 					dgf->PrintParamsToFile(fn.Data());
 				}
-				traceBuffer = lofTraceBuffers[nofModules];
+				traceBuffer = lofTraceBuffers[nentries];
 				if (traceBuffer == NULL) {
 					traceBuffer = new TArrayI();
-					lofTraceBuffers[nofModules] = traceBuffer;
+					lofTraceBuffers[nentries] = traceBuffer;
 				}
 				traceBuffer->Set(TMrbDGFData::kUntrigTraceLength * TMrbDGFData::kNofChannels);
 				traceBuffer->Reset();
 				dgf->GetUntrigTrace_Init(*traceBuffer, chnPattern, xwait);
 				lofDgfs.AddModule(dgf, kTRUE);
+				nentries++;
 			}
 		}
-		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
+		dgfModule = gDGFControlData->NextModule(dgfModule);
 	}				
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);

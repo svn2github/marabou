@@ -72,7 +72,8 @@ class DGFCopyModuleSettingsPanel : public TGCompositeFrame {
 													kDGFCopyBitSwitchBus	= BIT(8),
 													kDGFCopyBitCoinc		= BIT(9),
 													kDGFCopyBitMCA			= BIT(10),
-													kDGFCopyBitTau			= BIT(11)
+													kDGFCopyBitThresh		= BIT(11),
+													kDGFCopyBitTau			= BIT(12)
 												};
 
 	public:
@@ -87,7 +88,6 @@ class DGFCopyModuleSettingsPanel : public TGCompositeFrame {
 		TList fHeap;								//! list of objects created on heap
 
 		Int_t fModuleFrom;							// where to copy from
-		Int_t fChannelFrom;
 		
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectModule; 			//		module

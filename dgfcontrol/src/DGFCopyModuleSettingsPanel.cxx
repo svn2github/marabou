@@ -46,6 +46,7 @@ const SMrbNamedXShort kDGFCopyModuleSettingsBits[] =
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitCSR,			"CSR"			},
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitCoinc,			"Coinc" 		},
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitMCA,			"MCA"			},
+								{DGFCopyModuleSettingsPanel::kDGFCopyBitThresh,			"Threshold"		},
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitTau,			"Tau"			},
 								{0, 													NULL			}
 							};
@@ -329,10 +330,6 @@ Bool_t DGFCopyModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, L
 					}
 					break;
 						
-				case kCM_RADIOBUTTON:
-					fChannelFrom = Param1;
-					break;
-
 				case kCM_COMBOBOX:
 					fModuleFrom = Param2;
 					break;
@@ -372,7 +369,7 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 	thisModule = gDGFControlData->GetSelectedModule();
 	thisDgf = thisModule->GetAddr();
 		
-	thisChannel = gDGFControlData->ChannelIndex2Number(fChannelFrom);
+	thisChannel = gDGFControlData->ChannelIndex2Number(fSelectChannel->GetActive());
 	if (thisChannel < 0) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Illegal channel number", kMBIconStop);
 		return(kFALSE);
@@ -384,8 +381,8 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 	nofModules = 0;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
-		nofModules = nofModules - cl * kNofModulesPerCluster;
-		if ((fCluster[cl]->GetActive() & (0x1 << nofModules)) != 0) {
+		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			if (!offlineMode) {
 				dgf = dgfModule->GetAddr();
 				if (dgf != thisDgf) {
@@ -478,6 +475,15 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 											<< setbase(10) << "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
 								}
 								dgf->SetChanCSRA(i, thisDgf->GetChanCSRA(thisChannel), TMrbDGF::kBitSet);
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitThresh) {
+								if (gDGFControlData->IsDebug()) {
+									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
+											") Tau=" << thisDgf->GetThreshold(thisChannel)
+											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
+								}
+								dgf->SetThreshold(i, thisDgf->GetThreshold(thisChannel));
 								isCopied = kTRUE;
 							}
 							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitTau) {
