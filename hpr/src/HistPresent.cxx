@@ -2301,13 +2301,14 @@ void HistPresent::OperateHist(Int_t op)
       WarnBox("No selection");
       return;
    }
-   if (nselect < 2 && op == 1) {
-      WarnBox("Less than 2 selections for Add, to scale choose *");     
-      return;
-   }
+//   if (nselect < 2 && op == 1) {
+//      WarnBox("Less than 2 selections for Add, to scale choose *");     
+//      return;
+//   }
    if (nselect > 2 && op != 1) {
-      WarnBox("More than 2 selection, take first 2");
-      nselect = 2;     
+      WarnBox("More than 2 selections, canceled");
+//      nselect = 2;     
+      return;     
    }
    if (nselect == 1 && op == 3) {
      cout << "OperateHist: Scale errors linearly" << endl;
@@ -2320,7 +2321,8 @@ void HistPresent::OperateHist(Int_t op)
    TString name2;
    TH1* hresult =  (TH1*)hist1->Clone();
    TH1* hist2;
-   if (nselect == 2 || op == 1) {
+//   if (nselect == 2 || op == 1) {
+   if (nselect == 2) {
       for(Int_t i = 1; i < nselect; i++) {
          hist2 = GetSelHistAt(i);
          if (!hist2) {WarnBox("Histogram not found");return;};
@@ -2350,17 +2352,38 @@ void HistPresent::OperateHist(Int_t op)
       }  
    } else {
       Float_t fac = fOpfac;
-      Int_t nbin;
+      Int_t nbinsx;
       switch (op) {
          case 2:                       // subtract
             fac = - fOpfac;
 //            break;
          case 1:                       // add
             nameop="_biased";
-            nbin = hresult->GetNbinsX();
-            for(Int_t bin = 1; bin <= nbin; bin ++) {
-               Stat_t cont = hresult->GetBinContent(bin);
-               hresult->SetBinContent(bin, cont + fac);
+             nbinsx = hresult->GetNbinsX();
+            if (hresult->GetDimension() == 1) {
+               for(Int_t binx = 1; binx <= nbinsx; binx ++) {
+                 Stat_t cont = hresult->GetBinContent(binx);
+                  hresult->SetBinContent(binx, cont + fac);
+               }
+            } else if (hresult->GetDimension() == 2) {
+               Int_t nbinsy = hresult->GetNbinsY();
+               for(Int_t binx = 1; binx <= nbinsx; binx ++) {
+                  for(Int_t biny = 1; biny <= nbinsy; biny ++) {
+                    Stat_t cont = hresult->GetBinContent(binx, biny);
+                     hresult->SetBinContent(binx, biny, cont + fac);
+                  }
+               }
+            } else {
+               Int_t nbinsy = hresult->GetNbinsY();
+               Int_t nbinsz = hresult->GetNbinsZ();
+               for(Int_t binx = 1; binx <= nbinsx; binx ++) {
+                  for(Int_t biny = 1; biny <= nbinsy; biny ++) {
+                     for(Int_t binz = 1; binz <= nbinsz; binz ++) {
+                        Stat_t cont = hresult->GetBinContent(binx, biny, binz);
+                        hresult->SetBinContent(binx, biny, binz, cont + fac);
+                     }
+                  }
+               }
             }
             cout<< " + " << fac;
             break;
@@ -2369,10 +2392,11 @@ void HistPresent::OperateHist(Int_t op)
             else                fac = 1.;
 //            break;
          case 3:                        // multiply
+            hresult->Sumw2();
             hresult->Scale(fac);
-            for( Int_t i=1; i <= hresult->GetNbinsX(); i++) {
-               hresult->SetBinError(i, fOpfac * hist1->GetBinError(i));
-            }
+//            for( Int_t i=1; i <= hresult->GetNbinsX(); i++) {
+//               hresult->SetBinError(i, fOpfac * hist1->GetBinError(i));
+//            }
             nameop="_scaled";
             cout<< " * " << fac;
             break;
@@ -3201,7 +3225,10 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
          cout << setred << "Cant get hist, connection lost?" << setblack << endl;
          fComSocket->Close("force");
          fComSocket = NULL;
+      } else {
+         hist->SetUniqueID(0);
       }
+
    } else if (strstr(fname,".map")) {
 //     look if this hist is in a list of histograms of possibly automatically
 //     updated hists
@@ -3232,6 +3259,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       TMapFile *mfile;
       mfile = TMapFile::Create(fname);
       hist  = (TH1 *) mfile->Get(shname.Data());
+      hist->SetUniqueID(0);
       if (inlist) {
          shname.Prepend("mf_");
          hist->SetName(shname.Data());
