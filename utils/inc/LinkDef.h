@@ -26,7 +26,6 @@
 #pragma link C++ class TMrbStatistics;
 #pragma link C++ class TMrbStatEntry;
 #pragma link C++ class TMrbStatCheck;
-#pragma link C++ class TableOfLabels;
 #pragma link C++ class TMrbString;
 #pragma link C++ class TMrbSystem;
 #pragma link C++ class TMrbHistory;
