@@ -824,7 +824,7 @@ void * msg_handler(void * dummy) {
    mon->Add(ss);
    mon->Print();
 
-   TSocket *s0 = 0, *s1 = 0;
+   TSocket *s0 = 0, *s1 = 0, *s_reject = 0;
    TMessage *mess =0;
    Int_t maxwait = 1000;
 //     TSocket  *sock = ss->Accept();
@@ -841,17 +841,21 @@ void * msg_handler(void * dummy) {
 
          if (!s0) {
             s0 = ((TServerSocket *)sock)->Accept();
-            s0->Send("go 0");
+            s0->Send("accept");
             mon->Add(s0);
             cout << "Added socket s0" << endl;
          } else if (!s1) {
             s1 = ((TServerSocket *)sock)->Accept();
-            s1->Send("go 1");
+            s1->Send("accept");
             mon->Add(s1);
             cout << "Added socket s1" << endl;
-         } else
+         } else {
             cout << "only accept two client connections" << endl;
-
+            s_reject = ((TServerSocket *)sock)->Accept();
+            s_reject->Send("reject");
+            s_reject->Close();
+            s_reject = NULL;
+         }
 //         if (s0 && s1) {
  //           mon->Remove(ss);
 //            ss->Close();
