@@ -30,11 +30,11 @@ enum FhTableCommandIdentifiers {
 //______________________________________________________________________
 
 //class TableOfLabels : public TGTransientFrame {
-class TableOfLabels{
-
+class TableOfLabels : public TGMainFrame 
+{
 private:
    TList *fWidgets;
-   TGTransientFrame       *fMainFrame;  // transient frame, main dialog window
+//   TGMainFrame            *fMainFrame;  // transient frame, main dialog window
    TGCompositeFrame       *fRowFrame;
    TGCompositeFrame       *fLabelFrame;
    TList                  *fEntries;
@@ -52,9 +52,10 @@ public:
                  Int_t ncols, Int_t nrows,
                  TOrdCollection *entries,
                  TOrdCollection *col_lab,
-                 TOrdCollection *row_lab);
+                 TOrdCollection *row_lab, Int_t xpos = -1, Int_t ypos = -1);
    virtual ~TableOfLabels();
-   TList  *GetListOfLabels() const {return fEntries;};
+   virtual void CloseWindow();
+   TList  *GetListOfLabels(){return fEntries;};
    void SetLabelText(Int_t col, Int_t row, const Char_t * text){
      ((TGLabel*)fEntries->At(fNcols*row + col))->SetText(new TGString(text));};
    void SetLabelColor(Int_t col, Int_t row, ULong_t color){
@@ -62,9 +63,9 @@ public:
       la->ChangeBackground(color);
       la->SetText(new TGString(la->GetText()->GetString()));
   };
-
+//  TGMainFrame * GetFrame(){return fMainFrame;};
 //   virtual void CloseWindow();
-   virtual void ProcessMessage (Long_t msg, Long_t parm1, Long_t);
+   virtual Bool_t ProcessMessage (Long_t msg, Long_t parm1, Long_t);
 
 ClassDef(TableOfLabels,0)		// [Utils] A table of labels
 
