@@ -1587,6 +1587,8 @@ void HandleMenus::BuildMenus()
    }
    fRootCanvas->MapSubwindows();
 //   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
+//   fRootCanvas->ShowEditor(kFALSE);
+//   fRootCanvas->ShowToolBar(kFALSE);
    fRootCanvas->MapWindow();
    fRootCanvas->ForceUpdate();
    return;

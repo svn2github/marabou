@@ -220,6 +220,11 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
       fYmin = hist->GetYaxis()->GetXmin();
       fYmax = hist->GetYaxis()->GetXmax();
    }
+   TObject * obj = fSelHist->GetListOfFunctions()->FindObject("palette");
+   if (obj) {
+      cout << " Removing obj TPaletteAxis" << endl;
+      fSelHist->GetListOfFunctions()->Remove(obj);
+   }
    DisplayHist(hist, win_topx, win_topy, win_widx, win_widy);
    fLogx = cHist->GetLogx();
    fLogy = cHist->GetLogy();
@@ -3026,6 +3031,7 @@ void FitHist::Draw2Dim()
              TMrbNamedArrayI * nai = dynamic_cast<TMrbNamedArrayI*>(p);
              TString name(nai->GetName());
              if (name.BeginsWith("Pixel")) {
+                cout << "SetUserPalette" << endl;
                 SetUserPalette(1001, nai);
              }  
          }

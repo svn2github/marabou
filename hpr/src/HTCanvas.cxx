@@ -68,8 +68,15 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //  wh is the canvas size in pixels along Y
 //   if(!gHTGuiFactory) gHTGuiFactory = new HTRootGuiFactory();
 
+   if (gThreadXAR) {
+      void *arr[8];
+      arr[1] = this;   arr[2] = (void*)name;   arr[3] = (void*)title;
+      arr[4] = &wtopx; arr[5] = &wtopy; arr[6] = &ww; arr[7] = &wh;
+      if ((*gThreadXAR)("CANV", 8, arr, NULL)) return;
+   }
+
    Init();
-   fSelected     = 0;
+//   fSelected     = 0;
    fMenuBar = kTRUE;
    if (wtopx < 0) {
       wtopx    = -wtopx;
@@ -80,7 +87,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fCanvasID = -1;
 //   fShowEditor = kFALSE;
 //   fShowToolBar = kFALSE;
-   HTCanvas *old = (HTCanvas*)gROOT->FindObject(name);
+   HTCanvas *old = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
    if (old && old->IsOnHeap()) delete old;
    if (strlen(name) == 0 || gROOT->IsBatch()) {   //We are in Batch mode
       fWindowTopX   = fWindowTopY = 0;
@@ -93,8 +100,11 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    } else {                   //normal mode with a screen window
       Float_t cx = gStyle->GetScreenFactor();
       fCanvasImp = gGuiFactory->CreateCanvasImp(this, name, Int_t(cx*wtopx), Int_t(cx*wtopy), UInt_t(cx*ww), UInt_t(cx*wh));
+//      if (fMenuBar) cout << "HTCanvas: ctor fMenuBar TRUE" << endl;
+//      else          cout << "HTCanvas: ctor fMenuBar FALSE" << endl;
+
       fCanvasImp->ShowMenuBar(fMenuBar);
-      fCanvasImp->Show();
+//      fCanvasImp->Show();
       fBatch = kFALSE;
    }
    SetName(name);
@@ -108,9 +118,16 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    Build();
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);         
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
-   fHandleMenus->BuildMenus(); 
-   ToggleEventStatus();
-   ToggleEventStatus();
+  fHandleMenus->BuildMenus(); 
+//   ToggleEventStatus();
+//   ToggleEventStatus();
+//   fCanvasImp->ShowEditor(kFALSE);
+//   fCanvasImp->ShowToolBar(kFALSE);
+//   fCanvasImp->ShowMenuBar(fMenuBar);
+
+   // Popup canvas
+   fCanvasImp->Show();
+
 //   if(fHistPresent && fFitHist)fHistPresent->GetCanvasList()->Add(this);
 //   cout << "ctor HTCanvas: " << this << " " << name << endl;
 };
@@ -585,8 +602,99 @@ void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
    gPad = savepad;
 }
-//______________________________________________________________________________
+//_____________________________________________________________________________
+void HTCanvas::Build()
+{
+   // Build a canvas. Called by all constructors.
 
+   // Get window identifier
+   if (fCanvasID == -1 && fCanvasImp)
+      fCanvasID = fCanvasImp->InitWindow();
+   if (fCanvasID == -1) return;
+
+   if (fCw < fCh) fXsizeReal = fYsizeReal*Float_t(fCw)/Float_t(fCh);
+   else           fYsizeReal = fXsizeReal*Float_t(fCh)/Float_t(fCw);
+
+   if (!IsBatch()) {    //normal mode with a screen window
+      // Set default physical canvas attributes
+      gVirtualX->SelectWindow(fCanvasID);
+      gVirtualX->SetFillColor(1);         //Set color index for fill area
+      gVirtualX->SetLineColor(1);         //Set color index for lines
+      gVirtualX->SetMarkerColor(1);       //Set color index for markers
+      gVirtualX->SetTextColor(1);         //Set color index for text
+
+      // Clear workstation
+      gVirtualX->ClearWindow();
+
+      // Set Double Buffer on by default
+      SetDoubleBuffer(1);
+
+      // Get effective window parameters (with borders and menubar)
+      fCanvasImp->GetWindowGeometry(fWindowTopX, fWindowTopY,
+                                    fWindowWidth, fWindowHeight);
+
+      // Get effective canvas parameters without borders
+      Int_t dum1, dum2;
+      gVirtualX->GetGeometry(fCanvasID, dum1, dum2, fCw, fCh);
+
+      fContextMenu = new TContextMenu("ContextMenu");
+   }
+   gROOT->GetListOfCanvases()->Add(this);
+
+   // Set Pad parameters
+   gPad            = this;
+   fCanvas         = this;
+   fMother         = (TPad*)gPad;
+   if (!fPrimitives) {
+      fPrimitives     = new TList;
+      SetFillColor(gStyle->GetCanvasColor());
+      SetFillStyle(1001);
+      SetGrid(gStyle->GetPadGridX(),gStyle->GetPadGridY());
+      SetTicks(gStyle->GetPadTickX(),gStyle->GetPadTickY());
+      SetLogx(gStyle->GetOptLogx());
+      SetLogy(gStyle->GetOptLogy());
+      SetLogz(gStyle->GetOptLogz());
+      SetBottomMargin(gStyle->GetPadBottomMargin());
+      SetTopMargin(gStyle->GetPadTopMargin());
+      SetLeftMargin(gStyle->GetPadLeftMargin());
+      SetRightMargin(gStyle->GetPadRightMargin());
+      SetBorderSize(gStyle->GetCanvasBorderSize());
+      SetBorderMode(gStyle->GetCanvasBorderMode());
+      fBorderMode=gStyle->GetCanvasBorderMode(); // do not call SetBorderMode (function redefined in TCanvas)
+      SetPad(0, 0, 1, 1);
+      Range(0, 0, 1, 1);   //pad range is set by default to [0,1] in x and y
+      gVirtualX->SelectPixmap(fPixmapID);    //pixmap must be selected
+      PaintBorder(GetFillColor(), kTRUE);    //paint background
+   }
+
+   // transient canvases have typically no menubar and should not get
+   // by default the event status bar (if set by default)
+
+
+   if (fShowEventStatus && fMenuBar && fCanvasImp)
+      fCanvasImp->ShowStatusBar(fShowEventStatus);
+   // ... and toolbar + editor
+   if (fShowToolBar && fMenuBar && fCanvasImp)
+      fCanvasImp->ShowToolBar(fShowToolBar);
+   if (fShowEditor && fMenuBar && fCanvasImp)
+      fCanvasImp->ShowEditor(fShowEditor);
+/*
+      if (fMenuBar) cout << "HTCanvas: ctor fMenuBar TRUE" << endl;
+      else          cout << "HTCanvas: ctor fMenuBar FALSE" << endl;
+      if (fMenuBar) cout << "HTCanvas: ctor fMenuBar TRUE" << endl;
+      else          cout << "HTCanvas: ctor fMenuBar FALSE" << endl;
+      if (fShowToolBar) cout << "HTCanvas: ctor fShowToolBar TRUE" << endl;
+      else          cout << "HTCanvas: ctor fShowToolBar FALSE" << endl;
+      if (fShowEditor) cout << "HTCanvas: ctor fShowEditor TRUE" << endl;
+      else          cout << "HTCanvas: ctor fShowEditor FALSE" << endl;
+*/
+#if defined(WIN32) && !defined(GDK_WIN32)
+   if (!strcmp(gVirtualX->GetName(), "Win32"))
+      gVirtualX->UpdateWindow(1);
+#endif
+}
+//______________________________________________________________________________
+/*
  void HTCanvas::Build()
 {
    // Build a canvas. Called by all constructors.
@@ -697,7 +805,7 @@ void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    gVirtualX->UpdateWindow(1);
 #endif
 }
-
+*/
 //______________________________________________________________________________
 void HTCanvas::RunAutoExec()
 {
