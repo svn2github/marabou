@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.83 2004-11-29 13:32:36 rudi Exp $       $Id: TMrbConfig.cxx,v 1.83 2004-11-29 13:32:36 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.84 2004-11-29 13:39:56 rudi Exp $       $Id: TMrbConfig.cxx,v 1.84 2004-11-29 13:39:56 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4203,16 +4203,22 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 			Long_t dmy, modTime;
 			Long64_t dmy64;
 			TString suffix = "+g";
-			gSystem->GetPathInfo(aclic.Data(), &dmy, &dmy64, &dmy, &aclicTime);
-			for (Int_t i = 0; i < nofLibs; i++) {
-				TString fName = ((TObjString *) lofLibs[i])->GetString();
-				gSystem->GetPathInfo(fName.Data(), &dmy, &dmy64, &dmy, &modTime);
-				if (modTime > aclicTime) {
-					suffix = "++g";
-					break;
+			TString timeStamp = aclic;
+			timeStamp.Prepend(".");
+			if (gSystem->GetPathInfo(timeStamp.Data(), &dmy, &dmy64, &dmy, &aclicTime) == 0) {
+				for (Int_t i = 0; i < nofLibs; i++) {
+					TString fName = ((TObjString *) lofLibs[i])->GetString();
+					gSystem->GetPathInfo(fName.Data(), &dmy, &dmy64, &dmy, &modTime);
+					if (modTime > aclicTime) {
+						suffix = "++g";
+						break;
+					}
 				}
+			} else {
+				suffix = "++g";
 			}
 			aclic += suffix;
+			gSystem->Exec("touch " + timeStamp);
 			if (gMrbConfig->IsVerbose()) {
 				gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fileSpec
 								<< "\" (option \"" << suffix << "\")"<< endl;
