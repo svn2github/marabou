@@ -20,6 +20,7 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 	this->GetHitBuffer()->Reset();			// clear hit buffer
 
 	recNo++;						// count this record	
+	if (forcedDump & SevtWC > 0) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
 	Int_t wordsProcessed = 0; 			// words processed so far
 	UShort_t * dataPtr = (UShort_t *) SevtData;
 	Int_t eventsProcessed = 0;

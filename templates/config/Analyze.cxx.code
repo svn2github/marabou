@@ -65,7 +65,7 @@ extern TUsrDeadTime * gDeadTime;				// dead-time data
 extern TMrbLofUserVars * gMrbLofUserVars;		// list of user vars/wdws
 
 static Bool_t verboseMode;						// verbosity flag;
-static Bool_t dumpIt = kFALSE;					// kTRUE - dump records
+static Bool_t forcedDump = kFALSE;				// kTRUE -> dump records
 static Int_t recNo = 0;
 
 Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
@@ -82,6 +82,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 //////////////////////////////////////////////////////////////////////////////
 
 	verboseMode = (Bool_t) gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
+	forcedDump = (Bool_t) gEnv->GetValue("TMrbAnalyze.ForcedDump", kFALSE);
 
 %%BeginOfCode%%
 // add user's environment defs from file $rcFile
