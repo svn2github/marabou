@@ -6075,8 +6075,8 @@ void TMrbConfig::MakeDefined(const Char_t * Name, Int_t Value) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString dName = Name;
-	if (!dName.BeginsWith("_")) dName.Prepend("_");
-	if (!dName.EndsWith("_")) dName += "_";
+	if (!dName.BeginsWith("__")) dName.Prepend("__");
+	if (!dName.EndsWith("__")) dName += "__";
 	fLofDefines.AddNamedX(new TMrbNamedX(Value, dName.Data(), "Int_t"));
 }
 
