@@ -3253,8 +3253,8 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
       WarnBox("No histogram selected");
       return;
 
-   } else if (nsel > 25) {
-      WarnBox("Maximum 25 histograms allowed");
+   } else if (nsel > 32) {
+      WarnBox("Maximum 32 histograms allowed");
       return;
    } 
 
@@ -3279,6 +3279,9 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
    if (nsel >= 16) {nx = 4, ny = 5;};
    if (nsel == 21) {nx = 7, ny = 3;};
    if (nsel >  21) {nx = 5, ny = 5;};
+
+   if (nsel > 25) {nx = 6, ny = 5;};
+   if (nsel == 32) {nx = 8, ny = 4;};
 
  	TMrbString wwhx = "HistPresent.WindowXWidth_";
 	wwhx += nx;
