@@ -719,6 +719,9 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	char *calloc();
 	void _mbs_output_error();
 
+	unsigned char eHdr[sizeof(s_evhe)];
+	int ehs;
+
 	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
 
 	bh = mbs->bufpt;
@@ -790,6 +793,8 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 		return(etype);
 	}
 
+	memcpy(eHdr, mbs->evt_data, sizeof(s_evhe)); 	/* save header ###unswapped### */
+
 	s = (mbs->evttype)->convert;
 	(*s)(mbs);
 
@@ -854,7 +859,11 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_EVENT].out);
 	}
 
-	if (med_out) fwrite(mbs->evt_data, 1, mbs->evtsiz, med_out);
+	if (med_out) {
+		ehs = sizeof(s_vehe);
+		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
+		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
+	}
 
 	return((mbs->evttype)->type);
 }
