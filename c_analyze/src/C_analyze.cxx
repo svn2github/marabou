@@ -391,7 +391,7 @@ FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h,
       Int_t retval = kMBYes;
       new TGMsgBox(gClient->GetRoot(),this,
          "Question", 
-         "M_analyze already running, 
+         "M_analyze already running, \n\
 trying to attach?",
 //         "Do you want to attach MBS",
          kMBIconQuestion, kMBYes | kMBNo, &retval);
@@ -1512,14 +1512,14 @@ Bool_t FhMainFrame::CheckParams()
    }
    if(fSelectTime){
       if(!fFromTime->Contains(":") || !fToTime->Contains(":")){
-         WarnBox("Selection by time active,
+         WarnBox("Selection by time active,\n\
 values must contain at least one colon (:)", this);
          ok = kFALSE;
       }
    }
    if(fSelectNumber){
       if(fStartEvent > fStopEvent){
-         WarnBox("Selection by event number active,
+         WarnBox("Selection by event number active,\n\
 last event < first event", this);
          ok = kFALSE;
       }
@@ -1644,9 +1644,9 @@ Bool_t FhMainFrame::Configure(){
          cout << setred << "c_ana: There are still MBS processes running" << setblack<< endl;
         if(nb > 1000) {
            cout << setred << "c_ana: We are not owner of them" << setblack<< endl;
-           WarnBox("There are still MBS processes running, 
+           WarnBox("There are still MBS processes running, \n\
 We are not owner of them",this);
-        } else WarnBox("There are still MBS processes running, 
+        } else WarnBox("There are still MBS processes running, \n\
 Try Clear MBS",this);
           fC_Status = M_ABSENT;
           fM_Status = M_DIRTY;
@@ -1691,7 +1691,7 @@ Try Clear MBS",this);
            }        
          } else {
 //            cout << setred << "c_ana: Something went wrong when starting" << setblack<< endl;
-            WarnBox("Something went wrong when starting MBS,         
+            WarnBox("Something went wrong when starting MBS,         \n\
 Please watch terminal output", this);
             fC_Status = M_ABSENT;
             fM_Status = M_DIRTY;
@@ -1805,15 +1805,15 @@ Bool_t FhMainFrame::ClearMbs(){
    Int_t nb=fMbsControl->GetNofMbsProcs();
    if(nb < 0){
 //      cout << setred << "c_ana: Could not reach Lynx processors, Please check hostnames etc" << setblack<< endl;
-       WarnBox("Could not reach Lynx processors
+       WarnBox("Could not reach Lynx processors\n\
 Please check hostnames etc",this);
        fM_Status = M_DIRTY;
        delete fMbsControl; fMbsControl = 0;
        return kFALSE;
    } else if(nb > 1000){
 //      cout << setred << "c_ana: We are not owner of all MBS processes" << setblack<< endl;
-      WarnBox("We are not owner of all MBS processes 
-Please watch terminal output for owner,
+      WarnBox("We are not owner of all MBS processes \n\
+Please watch terminal output for owner,\n\
 Lynx processors might need reboot", this);
        fM_Status = M_DIRTY;
        return kFALSE;
@@ -1823,8 +1823,8 @@ Lynx processors might need reboot", this);
        << "c_ana: Checking if there are still MBS processes alive"<< setblack << endl; 
        if(fMbsControl->GetNofMbsProcs() > 0){
 //      cout << setred << "c_ana: There are still MBS processes running" << setblack<< endl;
-          WarnBox("There are still MBS processes running,
-You can try Clear MBS again,
+          WarnBox("There are still MBS processes running,\n\
+You can try Clear MBS again,\n\
 but Lynx processors might need reboot", this); 
           fM_Status = M_DIRTY;
           return kFALSE;
@@ -2039,7 +2039,7 @@ retrysocket:
       return kFALSE;
    } else { 
 //      cout << setred << "c_ana: Something is wrong with files, please check input parameters" << setblack<< endl;
-      WarnBox("Something is wrong with files,
+      WarnBox("Something is wrong with files,\n\
 Please check input parameters",this);
       fC_Status = M_ABSENT;
       return kFALSE;
@@ -2094,7 +2094,7 @@ Bool_t FhMainFrame::StopDAQ(){
          }
       }
    }
-   WarnBox("M_analyze didnt stop correctly,
+   WarnBox("M_analyze didnt stop correctly,\n\
 proceed on your own risk",this);
    if(*fInputSource == "TcpIp"){
       fM_Status = M_CONFIGURED;
@@ -2213,11 +2213,11 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                       } else {
                          TString DownscaleCmd = "M_client downscale ";
                           const char help_DOWNSCALE[] =
-"To save time it can be useful to fill
-selected histograms only for a (random)
-subset of events. This feature must be 
-implemented in the Analysis code.
-The value is available from 
+"To save time it can be useful to fill\n\
+selected histograms only for a (random)\n\
+subset of events. This feature must be \n\
+implemented in the Analysis code.\n\
+The value is available from \n\
 gMrbAnalyze->GetScaleDown()";                       
                          Int_t bs = GetInteger("Hist Fill Downscale factor",
                          fDownscale, &ok, this, (const char *)0,
@@ -2259,7 +2259,7 @@ gMrbAnalyze->GetScaleDown()";
                   case M_NOEVENT:
                       {
                       const char help_NOEVENT[] =
-"This selects the maximum time (seconds) with 
+"This selects the maximum time (seconds) with \n\
 no event arriving until a warning is issued";
                       Int_t bs = GetInteger("Max time No event allowed",
                       (Int_t)fMax_time_no_event, &ok, this, (const char *)0,
@@ -2288,8 +2288,8 @@ no event arriving until a warning is issued";
                   case M_GATEL:
                       {
                       const char help_GATEL[] = 
-"Readout starts only after this time to allow
-for conversion times of hardware.
+"Readout starts only after this time to allow\n\
+for conversion times of hardware.\n\
 Note: Unit is 100 ns for historical reasons";
                       Int_t bs = GetInteger("Gate length [100 ns]",
                                  fGateLength , &ok, this, (const char *)0,
@@ -2417,15 +2417,15 @@ Note: Unit is 100 ns for historical reasons";
                    case M_MADEBUG:
                       {
                        const char help_MADEBUG[] =
-"Run M_analyze in debugger (gdb)
-0:  no debugger
-1:  just run with gdb, no interaction with gdb possible, 
-    produce backtrace incase of error, 
-    communication with C_analyze as normal.
-
-2:  put breakpoint at main(), i.e. at start of program,
-    here more breakpoints may be set, 
-    normal dialog with gdb possible.
+"Run M_analyze in debugger (gdb)\n\
+0:  no debugger\n\
+1:  just run with gdb, no interaction with gdb possible, \n\
+    produce backtrace incase of error, \n\
+    communication with C_analyze as normal.\n\
+\n\
+2:  put breakpoint at main(), i.e. at start of program,\n\
+    here more breakpoints may be set, \n\
+    normal dialog with gdb possible.\n\
     However no communication with C_analyze possible.";
     
                      Int_t bs = GetInteger("M_analyze debug mode", 
@@ -2547,7 +2547,7 @@ Note: Unit is 100 ns for historical reasons";
                            fPauseButton->SetText(new TGHotString("Pause"));
                         } else {
                            if(fC_Status == M_PAUSING){
-                              WarnBox("Obviously no event arrived since pause
+                              WarnBox("Obviously no event arrived since pause\n\
 force Resume", this);
                               
                               fM_Status=M_RUNNING;

@@ -51,7 +51,7 @@ void FitHist::MarksToWindow(){
          CheckList(fAllWindows);
          TMrbWindow * wdw_old = (TMrbWindow *)fAllWindows->FindObject(fWdwname.Data());
          if(wdw_old) {
-            if (QuestionBox("Window with this name
+            if (QuestionBox("Window with this name\n\
 already exists, delete it? ", mycanvas)) {
                fAllWindows->Remove(wdw_old);
                fActiveWindows->Remove(wdw_old);
@@ -307,7 +307,7 @@ void FitHist::InitCut(){
    if(!ok)  return; 
    TMrbWindow * wdw_old = (TMrbWindow *)fAllCuts->FindObject(fWdwname.Data());
    if(wdw_old) {
-      if (QuestionBox("Window with this name
+      if (QuestionBox("Window with this name\n\
 already exists, delete it? ", mycanvas)) {
          fAllCuts->Remove(wdw_old);
          fActiveCuts->Remove(wdw_old);

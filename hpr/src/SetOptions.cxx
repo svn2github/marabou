@@ -888,94 +888,94 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
    };
 // *INDENT-OFF* 
    const char helptext[] = 
-"
-With sockets, show lists only
------------------------------
-If very many histograms are used this option allows
-to display user defined lists of histograms only.
-This avoids fetching the statistics of all histograms
-when tables are assembled.
-
-Show PS file after creation
----------------------------
-Automatically invoke ghostview when a PostScript file is
-generated.
-____________________________________________________________
-Enable calibration
-------------------
-The X - scale of of a 1-dim histogram may be recalibrated
-providing (more than 1) x-y-points. If this option is active
-the user is asked after a fit to a peak if the mean value 
-should be added to the list of calibration points.
-_____________________________________________________________
-Auto Display calibrated hist
-----------------------------
-Display automatically a calibrated histogram if calibration
-data are storteed in defaulsts file
-_____________________________________________________________
-
-Draw a fitted curve into the histogram.
-_____________________________________________________________
-Display fitted curves
----------------------
-Draw a fitted curve into the histogram.
-______________________________________________________________
-Remember hist limits if showing trees
--------------------------------------
-When displaying trees (ntuples) limits for histograms 
-(number of channels, lower, upper edge), these values
-may be remembered for each tree entry between sessions.
-______________________________________________________________
-Remember Expand settings (Marks) 
------------------------------------
-Using marks expanded parts of hists may be shown. This
-option allows to pass these to later sessions.
-______________________________________________________________
-Remember Zoomings (by left mouse)
----------------------------------
-Pressing the left mouse button in the scale of a histogram
-dragging to the required limit allows to zoom in the picture.
-This option allows to pass these limits to later sessions.
-______________________________________________________________
-Use Attribute Macro 
--------------------
-Each time a histogram is display a macro (FH_setdefaults.C)
-may be executed. This option can be switched on or off.
-______________________________________________________________
-Use Regular expression syntax
-------------------------------
-Normally wild card syntax (e.g. ls *.root to list all
-files ending with .root) is used in file/histo selection
-masks. One may switch to the more powerful Regular expression.
-For details consult a book on Unix.
-______________________________________________________________ 
-Auto exec macro 1-dim:
----------------------
-A macro (default name auto_exec_1.C) is executed when the left
-mouse button is pressed in a pad containing a 1-dim histogram. 
-The default behaviour is as follows:
-   In a pad with several hists: display this hist enlarged 
-   On a histogram contour:      print info for this channel
-   In the statistics box:       print full statistics
-   On a function:               print its parameters.
-_______________________________________________________________
-Auto exec macro 2-dim:
----------------------
-A macro (default name auto_exec_2.C) is executed when the left
-mouse button is pressed in a pad containing a 2-dim histogram. 
-The default behaviour is as follows:
-   In a pad with several hists: display this hist enlarged 
-
-   When the mouse is moved:     
-   Open a new window and display a histogram containing the
-   projection on the x-axis taking only the channels with the
-   y-values pointed to by the mouse.
-   This feature can be switched by the options:
-
-Auto exec project X 
-and
-Auto exec project Y 
-
+"\n\
+With sockets, show lists only\n\
+-----------------------------\n\
+If very many histograms are used this option allows\n\
+to display user defined lists of histograms only.\n\
+This avoids fetching the statistics of all histograms\n\
+when tables are assembled.\n\
+\n\
+Show PS file after creation\n\
+---------------------------\n\
+Automatically invoke ghostview when a PostScript file is\n\
+generated.\n\
+____________________________________________________________\n\
+Enable calibration\n\
+------------------\n\
+The X - scale of of a 1-dim histogram may be recalibrated\n\
+providing (more than 1) x-y-points. If this option is active\n\
+the user is asked after a fit to a peak if the mean value \n\
+should be added to the list of calibration points.\n\
+_____________________________________________________________\n\
+Auto Display calibrated hist\n\
+----------------------------\n\
+Display automatically a calibrated histogram if calibration\n\
+data are storteed in defaulsts file\n\
+_____________________________________________________________\n\
+\n\
+Draw a fitted curve into the histogram.\n\
+_____________________________________________________________\n\
+Display fitted curves\n\
+---------------------\n\
+Draw a fitted curve into the histogram.\n\
+______________________________________________________________\n\
+Remember hist limits if showing trees\n\
+-------------------------------------\n\
+When displaying trees (ntuples) limits for histograms \n\
+(number of channels, lower, upper edge), these values\n\
+may be remembered for each tree entry between sessions.\n\
+______________________________________________________________\n\
+Remember Expand settings (Marks) \n\
+-----------------------------------\n\
+Using marks expanded parts of hists may be shown. This\n\
+option allows to pass these to later sessions.\n\
+______________________________________________________________\n\
+Remember Zoomings (by left mouse)\n\
+---------------------------------\n\
+Pressing the left mouse button in the scale of a histogram\n\
+dragging to the required limit allows to zoom in the picture.\n\
+This option allows to pass these limits to later sessions.\n\
+______________________________________________________________\n\
+Use Attribute Macro \n\
+-------------------\n\
+Each time a histogram is display a macro (FH_setdefaults.C)\n\
+may be executed. This option can be switched on or off.\n\
+______________________________________________________________\n\
+Use Regular expression syntax\n\
+------------------------------\n\
+Normally wild card syntax (e.g. ls *.root to list all\n\
+files ending with .root) is used in file/histo selection\n\
+masks. One may switch to the more powerful Regular expression.\n\
+For details consult a book on Unix.\n\
+______________________________________________________________ \n\
+Auto exec macro 1-dim:\n\
+---------------------\n\
+A macro (default name auto_exec_1.C) is executed when the left\n\
+mouse button is pressed in a pad containing a 1-dim histogram. \n\
+The default behaviour is as follows:\n\
+   In a pad with several hists: display this hist enlarged \n\
+   On a histogram contour:      print info for this channel\n\
+   In the statistics box:       print full statistics\n\
+   On a function:               print its parameters.\n\
+_______________________________________________________________\n\
+Auto exec macro 2-dim:\n\
+---------------------\n\
+A macro (default name auto_exec_2.C) is executed when the left\n\
+mouse button is pressed in a pad containing a 2-dim histogram. \n\
+The default behaviour is as follows:\n\
+   In a pad with several hists: display this hist enlarged \n\
+\n\
+   When the mouse is moved:     \n\
+   Open a new window and display a histogram containing the\n\
+   projection on the x-axis taking only the channels with the\n\
+   y-values pointed to by the mouse.\n\
+   This feature can be switched by the options:\n\
+\n\
+Auto exec project X \n\
+and\n\
+Auto exec project Y \n\
+\n\
 ";
 // *INDENT-ON* 
 

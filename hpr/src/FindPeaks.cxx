@@ -66,7 +66,7 @@ Int_t FitHist::FindPeaks(){
                wid=bin-start;
                h_width->Fill(wid);
 //               if(wid > 12)cout << " bin " << bin << " width " << wid << endl;
-               start += 0.5 * Mwidth;
+               start += (Int_t)(0.5 * Mwidth);
                if(start > 0){
                   Float_t x = fSelHist->GetBinCenter(start);
 
@@ -166,7 +166,7 @@ Bool_t FitHist::Calibrate(Int_t flag){
 //       1 generate a new histogram wit new binning
 
    if(fSetRange){
-       WarnBox("Calibration already applied,
+       WarnBox("Calibration already applied,\n\
 use Clear calibration and redisplay");
        return kFALSE;
    }

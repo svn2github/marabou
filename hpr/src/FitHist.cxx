@@ -1252,7 +1252,7 @@ void FitHist::UseSelectedContour()
       WarnBox("No contour selected");
       return;
    } else if (hp->fSelectContour->GetSize() > 1) {
-      WarnBox("More then one selected
+      WarnBox("More then one selected\n\
 Take first");
    }
    TObjString * objs = (TObjString *)hp->fSelectContour->At(0);
@@ -1398,9 +1398,9 @@ void FitHist::WriteHistasASCII()
 
 // *INDENT-OFF* 
   const char helpText[] =
-"As default only the channel contents is written
-to the file. To write also the channel number the
-option \"Output also Channel Number\" should be
+"As default only the channel contents is written\n\
+to the file. To write also the channel number the\n\
+option \"Output also Channel Number\" should be\n\
 activated.";
 // *INDENT-ON* 
 

@@ -80,223 +80,223 @@ enum dowhat { expand, projectx, projecty, statonly, projectf,
 //____________________________________________________________________________________ 
 /* *INDENT-OFF* */
 const char ExpGauss[]=
-"//Double_t ExpGauss();
-fit_user_function(const char *hname)
-//
-// example with fit function given as formula
-//
-// This is a template macro to fit a user defined function
-// As an example an exponential + a gauss function is provided
-// The function is defined  as a formula
-{
-//   gROOT->Reset();
-   TH1* hist = (TH1*)gROOT->FindObject(hname);
-   if(!hist){
-     cout << \"histogram not found\" << endl;
-     return 0;
-   }
-   Float_t from =  0; 
-   Float_t to   = 10;
-   TF1* f = new TF1(\"exp_gaus\",\"[0] + [1]*exp([2]*x) + gaus(3)\",from,to);
-   f->SetParameters(50, 200, -1, 200, 4, 1);
-   f->SetParName(0,\"lin_const \");
-   f->SetParName(1,\"exp_const \");
-   f->SetParName(2,\"exp_slope \");
-   f->SetParName(3,\"gaus_const\");
-   f->SetParName(4,\"gaus_mean \");
-   f->SetParName(5,\"gaus_sigma\");
-   hist->Fit(\"exp_gaus\",\"R+\",\"same\");
-}
+"//Double_t ExpGauss();\n\
+fit_user_function(const char *hname)\n\
+//\n\
+// example with fit function given as formula\n\
+//\n\
+// This is a template macro to fit a user defined function\n\
+// As an example an exponential + a gauss function is provided\n\
+// The function is defined  as a formula\n\
+{\n\
+//   gROOT->Reset();\n\
+   TH1* hist = (TH1*)gROOT->FindObject(hname);\n\
+   if(!hist){\n\
+     cout << \"histogram not found\" << endl;\n\
+     return 0;\n\
+   }\n\
+   Float_t from =  0; \n\
+   Float_t to   = 10;\n\
+   TF1* f = new TF1(\"exp_gaus\",\"[0] + [1]*exp([2]*x) + gaus(3)\",from,to);\n\
+   f->SetParameters(50, 200, -1, 200, 4, 1);\n\
+   f->SetParName(0,\"lin_const \");\n\
+   f->SetParName(1,\"exp_const \");\n\
+   f->SetParName(2,\"exp_slope \");\n\
+   f->SetParName(3,\"gaus_const\");\n\
+   f->SetParName(4,\"gaus_mean \");\n\
+   f->SetParName(5,\"gaus_sigma\");\n\
+   hist->Fit(\"exp_gaus\",\"R+\",\"same\");\n\
+}\n\
 ";
 //____________________________________________________________________________________
 
 const char TwoGauss[]=
-"Double_t TwoGauss     ( Double_t *x, Double_t *par) 
-{
-  // two gaussians with common center
-  Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);
-  Double_t BinW = 0.5;
-  Double_t mean = par[2];
-//  force widths /= 0
-   if (par[6] == 0)par[6]=1;
-   if (par[4] == 0)par[4]=1;
-   Double_t xij = x[0] - par[2];   
-   Double_t arg0 = xij/(sqrt2*par[4]);
-   Double_t arg1 = xij/(sqrt2*par[6]);
-   Double_t fitval = par[0] + x[0]*par[1]
-           + par[3] * exp(-arg0*arg0)/(sqrt2pi*par[4])
-           + par[5] * exp(-arg1*arg1)/(sqrt2pi*par[6]);
-  return BinW * fitval;
-}
-
-fit_user_function(const char *hname)
-// This is a template macro to fit a user defined function
-// As an example an exponential + a gauss function is provided
-// The function is defined  as a formula
-{
-//   gROOT->Reset();
-   TH1* hist = (TH1*)gROOT->FindObject(hname);
-   if(!hist){
-     cout << \"histogram not found\" << endl;
-     return 0;
-   }
-   Double_t par[7];
-   Double_t from =  0; 
-   Double_t to   = 50;
-   TF1* f = new TF1(\"two_gaus\",TwoGauss,from,to, 7);
-   f->SetParameters(0, 0, 20, 10000, 2, 10000, 4);
-   f->SetParName(0,\"lin_const  \");
-   f->SetParName(1,\"lin_slope  \");
-   f->SetParName(2,\"gaus_mean  \");
-   f->SetParName(3,\"gaus0_const\");
-   f->SetParName(4,\"gaus0_sigma\");
-   f->SetParName(5,\"gaus1_const\");
-   f->SetParName(6,\"gaus1_sigma\");
-   f->SetLineColor(4);
-   f->SetLineWidth(3);
-   hist->Fit(\"two_gaus\",\"R+\",\"same\");
-
-   f->GetParameters(&par[0]);
-//  draw first gauss
-   TF1* f1 = new TF1(\"gaus1\",TwoGauss,from,to, 7);
-   f1->SetParameters(0, 0, par[2], par[3], par[4], 0, par[6]);
-   f1->SetLineColor(2);
-   f1->SetLineWidth(2);
-   f1->Draw(\"same\");
-
-//  draw second gauss
-   TF1* f2 = new TF1(\"gaus2\",TwoGauss,from,to, 7);
-   f2->SetParameters(0, 0, par[2], 0, par[4], par[5], par[6]);
-   f2->SetLineColor(6);
-   f2->SetLineWidth(2);
-   f2->Draw(\"same\");
-}
+"Double_t TwoGauss     ( Double_t *x, Double_t *par) \n\
+{\n\
+  // two gaussians with common center\n\
+  Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);\n\
+  Double_t BinW = 0.5;\n\
+  Double_t mean = par[2];\n\
+//  force widths /= 0\n\
+   if (par[6] == 0)par[6]=1;\n\
+   if (par[4] == 0)par[4]=1;\n\
+   Double_t xij = x[0] - par[2];   \n\
+   Double_t arg0 = xij/(sqrt2*par[4]);\n\
+   Double_t arg1 = xij/(sqrt2*par[6]);\n\
+   Double_t fitval = par[0] + x[0]*par[1]\n\
+           + par[3] * exp(-arg0*arg0)/(sqrt2pi*par[4])\n\
+           + par[5] * exp(-arg1*arg1)/(sqrt2pi*par[6]);\n\
+  return BinW * fitval;\n\
+}\n\
+\n\
+fit_user_function(const char *hname)\n\
+// This is a template macro to fit a user defined function\n\
+// As an example an exponential + a gauss function is provided\n\
+// The function is defined  as a formula\n\
+{\n\
+//   gROOT->Reset();\n\
+   TH1* hist = (TH1*)gROOT->FindObject(hname);\n\
+   if(!hist){\n\
+     cout << \"histogram not found\" << endl;\n\
+     return 0;\n\
+   }\n\
+   Double_t par[7];\n\
+   Double_t from =  0; \n\
+   Double_t to   = 50;\n\
+   TF1* f = new TF1(\"two_gaus\",TwoGauss,from,to, 7);\n\
+   f->SetParameters(0, 0, 20, 10000, 2, 10000, 4);\n\
+   f->SetParName(0,\"lin_const  \");\n\
+   f->SetParName(1,\"lin_slope  \");\n\
+   f->SetParName(2,\"gaus_mean  \");\n\
+   f->SetParName(3,\"gaus0_const\");\n\
+   f->SetParName(4,\"gaus0_sigma\");\n\
+   f->SetParName(5,\"gaus1_const\");\n\
+   f->SetParName(6,\"gaus1_sigma\");\n\
+   f->SetLineColor(4);\n\
+   f->SetLineWidth(3);\n\
+   hist->Fit(\"two_gaus\",\"R+\",\"same\");\n\
+\n\
+   f->GetParameters(&par[0]);\n\
+//  draw first gauss\n\
+   TF1* f1 = new TF1(\"gaus1\",TwoGauss,from,to, 7);\n\
+   f1->SetParameters(0, 0, par[2], par[3], par[4], 0, par[6]);\n\
+   f1->SetLineColor(2);\n\
+   f1->SetLineWidth(2);\n\
+   f1->Draw(\"same\");\n\
+\n\
+//  draw second gauss\n\
+   TF1* f2 = new TF1(\"gaus2\",TwoGauss,from,to, 7);\n\
+   f2->SetParameters(0, 0, par[2], 0, par[4], par[5], par[6]);\n\
+   f2->SetLineColor(6);\n\
+   f2->SetLineWidth(2);\n\
+   f2->Draw(\"same\");\n\
+}\n\
 ";
 //____________________________________________________________________________________
 
 const char BreitWigner[]=
-"Double_t BreitWigner  ( Double_t *x, Double_t *par) 
-{
-//
-// example with fit function defined as function 
-//  
-  // Breit- Wigner function
-  Double_t mw = par[0], gw = par[1], mw2, gw2, eb2;
-  mw2 = mw*mw;
-  gw2 = gw*gw;
-  eb2 = x[0]*x[0];
-  return( par[2]*gw2*mw2 / ( pow( eb2 - mw2, 2 ) + mw2 * gw2 ) );
-}
- 
-fit_user_function(const char *hname)
-// This is a template macro to fit a user defined function
-// As an example a Breit Wigner is provided
-// The function is defined  as a call
-{
-//   gROOT->Reset();
-   TH1* hist = (TH1*)gROOT->FindObject(hname);
-   if(!hist){
-     cout << \"histogram not found\" << endl;
-     return 0;
-   }
-   Float_t from = -4; 
-   Float_t to   = 4;
-   TF1* f = new TF1(\"BreitWigner\",BreitWigner,from,to, 3);
-   f->SetParameters(0, 1, 1000);
-   f->SetParName(0,\"mean \");
-   f->SetParName(1,\"width \");
-   f->SetParName(2,\"cont \");
-   hist->Fit(\"BreitWigner\",\"R+\",\"same\");
-}
+"Double_t BreitWigner  ( Double_t *x, Double_t *par) \n\
+{\n\
+//\n\
+// example with fit function defined as function \n\
+//  \n\
+  // Breit- Wigner function\n\
+  Double_t mw = par[0], gw = par[1], mw2, gw2, eb2;\n\
+  mw2 = mw*mw;\n\
+  gw2 = gw*gw;\n\
+  eb2 = x[0]*x[0];\n\
+  return( par[2]*gw2*mw2 / ( pow( eb2 - mw2, 2 ) + mw2 * gw2 ) );\n\
+}\n\
+ \n\
+fit_user_function(const char *hname)\n\
+// This is a template macro to fit a user defined function\n\
+// As an example a Breit Wigner is provided\n\
+// The function is defined  as a call\n\
+{\n\
+//   gROOT->Reset();\n\
+   TH1* hist = (TH1*)gROOT->FindObject(hname);\n\
+   if(!hist){\n\
+     cout << \"histogram not found\" << endl;\n\
+     return 0;\n\
+   }\n\
+   Float_t from = -4; \n\
+   Float_t to   = 4;\n\
+   TF1* f = new TF1(\"BreitWigner\",BreitWigner,from,to, 3);\n\
+   f->SetParameters(0, 1, 1000);\n\
+   f->SetParName(0,\"mean \");\n\
+   f->SetParName(1,\"width \");\n\
+   f->SetParName(2,\"cont \");\n\
+   hist->Fit(\"BreitWigner\",\"R+\",\"same\");\n\
+}\n\
 ";
 //____________________________________________________________________________________
 
 const char Landau[]=
-"Double_t Landau_f ( Double_t *x, Double_t *par) 
-{
-    Double_t BinW = 9;
-//   linear background + 3 landau functions
-//   tail may be on high or low energy side
-//
-   double x0 = 2 * par[3] - x[0];     // low energy tail
-   double x1 = 2 * par[6] - x[0];     // low energy tail
-   double x2 = 2 * par[9] - x[0];     // low energy tail
-//   double x0 = x[0];             // high  energy tail
-//   double x1 = x[0];             // high  energy tail
-//   double x2 = x[0];             // high  energy tail
-   if(par[4] == 0)  par[4] = 1;
-   if(par[7] == 0)  par[7] = 1;
-   if(par[10] == 0) par[10]= 1;
-   double val =  par[0] + x[0] * par[1]
-   + par[2] / par[4]  * TMath::Landau(x0, par[3], par[4])
-   + par[5] / par[7] * TMath::Landau(x1, par[6], par[7])
-   + par[8] / par[10]* TMath::Landau(x2, par[9], par[10]);
-   return BinW * val;
-}
-
-fit_user_function(const char *hname){
-
-//   gROOT->Reset();
-//  ------- comment out this piece if only a sample histogram should be produced ---
-   TH1* hist = (TH1*)gROOT->FindObject(hname);
-   if(!hist){
-     cout << \"histogram not found\" << endl;
-     return 0;
-   }
-//                                                                             ^   
-//  ----------------------------------------------------------------------------   
-   Double_t from = 1600; 
-   Double_t to   = 2150;
-   Int_t npar    = 11;
-   TF1 * f    = new TF1(\"landf\",Landau_f, from, to, npar);
-
-   Double_t backconst = 120;
-   Double_t backslope = - 0.05;
-
-   Double_t cont0  = 2800;
-   Double_t mean0  = 1750;
-   Double_t width0 = 5;
-   Double_t cont1  = 650;
-   Double_t mean1  = 2010;
-   Double_t width1 = 5;
-   Double_t cont2  = 200;
-   Double_t mean2  = 2055;
-   Double_t width2 = 5;
-  
-   f->SetParameters(backconst, backslope,
-                    cont0, mean0, width0, 
-                    cont1, mean1, width1); 
-   f->SetParameter(8,  cont2);        // SetParameters allows only 9 arguments
-   f->SetParameter(9,  mean2);
-   f->SetParameter(10, width2);
-   f->Draw(\"same\");                        //  draw function with start parameters
-   f->SetLineColor(2);    
-   f->SetLineWidth(3);
-
-   f->SetParName(0,\"const\");
-   f->SetParName(1,\"slope\");
-   f->SetParName(2,\"cont_0 \");
-   f->SetParName(3,\"mean_0 \");
-   f->SetParName(4,\"width_0\");
-   f->SetParName(5,\"cont_1 \");
-   f->SetParName(6,\"mean_1 \");
-   f->SetParName(7,\"width_1\");
-   f->SetParName(8,\"cont_2 \");
-   f->SetParName(9,\"mean_2 \");
-   f->SetParName(10,\"width_2\");
-
-//   hist->Fit(\"landf\",\"R+\",\"same\");   // the real fit
-
-//  ------- activate  this peace if only a sample histogram should be produced --- 
-
-//   TFile * fout = new TFile(\"h_land_6.root\", \"RECREATE\");
-//   TH1F * hland = new TH1F(\"hland\",\"Landau functions\", 100, 1600, 2200);
-//   hland->FillRandom(\"landf\", 100000);
-//   fout->Write(); fout->Close();  
-                                                                            
-//  -------------------------------------------------------------------------------   
-
-}
+"Double_t Landau_f ( Double_t *x, Double_t *par) \n\
+{\n\
+    Double_t BinW = 9;\n\
+//   linear background + 3 landau functions\n\
+//   tail may be on high or low energy side\n\
+//\n\
+   double x0 = 2 * par[3] - x[0];     // low energy tail\n\
+   double x1 = 2 * par[6] - x[0];     // low energy tail\n\
+   double x2 = 2 * par[9] - x[0];     // low energy tail\n\
+//   double x0 = x[0];             // high  energy tail\n\
+//   double x1 = x[0];             // high  energy tail\n\
+//   double x2 = x[0];             // high  energy tail\n\
+   if(par[4] == 0)  par[4] = 1;\n\
+   if(par[7] == 0)  par[7] = 1;\n\
+   if(par[10] == 0) par[10]= 1;\n\
+   double val =  par[0] + x[0] * par[1]\n\
+   + par[2] / par[4]  * TMath::Landau(x0, par[3], par[4])\n\
+   + par[5] / par[7] * TMath::Landau(x1, par[6], par[7])\n\
+   + par[8] / par[10]* TMath::Landau(x2, par[9], par[10]);\n\
+   return BinW * val;\n\
+}\n\
+\n\
+fit_user_function(const char *hname){\n\
+\n\
+//   gROOT->Reset();\n\
+//  ------- comment out this piece if only a sample histogram should be produced ---\n\
+   TH1* hist = (TH1*)gROOT->FindObject(hname);\n\
+   if(!hist){\n\
+     cout << \"histogram not found\" << endl;\n\
+     return 0;\n\
+   }\n\
+//                                                                             ^   \n\
+//  ----------------------------------------------------------------------------   \n\
+   Double_t from = 1600; \n\
+   Double_t to   = 2150;\n\
+   Int_t npar    = 11;\n\
+   TF1 * f    = new TF1(\"landf\",Landau_f, from, to, npar);\n\
+\n\
+   Double_t backconst = 120;\n\
+   Double_t backslope = - 0.05;\n\
+\n\
+   Double_t cont0  = 2800;\n\
+   Double_t mean0  = 1750;\n\
+   Double_t width0 = 5;\n\
+   Double_t cont1  = 650;\n\
+   Double_t mean1  = 2010;\n\
+   Double_t width1 = 5;\n\
+   Double_t cont2  = 200;\n\
+   Double_t mean2  = 2055;\n\
+   Double_t width2 = 5;\n\
+  \n\
+   f->SetParameters(backconst, backslope,\n\
+                    cont0, mean0, width0, \n\
+                    cont1, mean1, width1); \n\
+   f->SetParameter(8,  cont2);        // SetParameters allows only 9 arguments\n\
+   f->SetParameter(9,  mean2);\n\
+   f->SetParameter(10, width2);\n\
+   f->Draw(\"same\");                        //  draw function with start parameters\n\
+   f->SetLineColor(2);    \n\
+   f->SetLineWidth(3);\n\
+\n\
+   f->SetParName(0,\"const\");\n\
+   f->SetParName(1,\"slope\");\n\
+   f->SetParName(2,\"cont_0 \");\n\
+   f->SetParName(3,\"mean_0 \");\n\
+   f->SetParName(4,\"width_0\");\n\
+   f->SetParName(5,\"cont_1 \");\n\
+   f->SetParName(6,\"mean_1 \");\n\
+   f->SetParName(7,\"width_1\");\n\
+   f->SetParName(8,\"cont_2 \");\n\
+   f->SetParName(9,\"mean_2 \");\n\
+   f->SetParName(10,\"width_2\");\n\
+\n\
+//   hist->Fit(\"landf\",\"R+\",\"same\");   // the real fit\n\
+\n\
+//  ------- activate  this peace if only a sample histogram should be produced --- \n\
+\n\
+//   TFile * fout = new TFile(\"h_land_6.root\", \"RECREATE\");\n\
+//   TH1F * hland = new TH1F(\"hland\",\"Landau functions\", 100, 1600, 2200);\n\
+//   hland->FillRandom(\"landf\", 100000);\n\
+//   fout->Write(); fout->Close();  \n\
+                                                                            \n\
+//  -------------------------------------------------------------------------------   \n\
+\n\
+}\n\
 ";
 //____________________________________________________________________________________
 /* *INDENT-ON* */

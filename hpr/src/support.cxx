@@ -889,19 +889,19 @@ void Canvas2LP(TCanvas * ca, const Char_t * opt, TGWindow * win,
                Bool_t autops)
 {
    const char helpText_PS[] =
-"Write picture to PostScript file, With \"white bg\"
-the background is forced to be white. This is
-recommended to save toner of printers. Use
-command with \"as it is\" to preserve background
-colors. If option \"Reduce size\" is activated
+"Write picture to PostScript file, With \"white bg\"\n\
+the background is forced to be white. This is\n\
+recommended to save toner of printers. Use\n\
+command with \"as it is\" to preserve background\n\
+colors. If option \"Reduce size\" is activated\n\
 the picture size is halfed";
 
    const char helpText_LP[] =
-"Send picture directly to Printer, With \"white bg\"
-the background is forced to be white. This is
-recommended to save toner of printers. Use
-command with \"as it is\" to preserve background
-colors. If option \"Reduce size\" is activated
+"Send picture directly to Printer, With \"white bg\"\n\
+the background is forced to be white. This is\n\
+recommended to save toner of printers. Use\n\
+command with \"as it is\" to preserve background\n\
+colors. If option \"Reduce size\" is activated\n\
 the picture size is halfed";
 
    if (!ca) return;

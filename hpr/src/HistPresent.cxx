@@ -66,124 +66,124 @@ extern TH1 * gHpHist;
 //_____________________________________________________________________________________
 
 const char AttrTemplate[]=
-"FH_setdefaults(const char *cname, const char* hname) 
-{
-
-// This is a template attributes file
-
-// this macro is called when FitHist draws / expands a histogram
-// please read the documentation (http://root.cern.ch) for all methods
-// defined for histograms and canvases and styles
-
-// Methods of HistPresent itself may be used via the pointer mypres.
-// This can be used to get a histograms from any file  and overlay it
-// See line with GetHist()
-
-//  gROOT->Reset();
-// find pointer to HistPresent object
-  class HistPresent;
-  HistPresent * mypres = (HistPresent*)gROOT->FindObject(\"mypres\");
-  if (!mypres) { 
-     cout << \"histogram presenter object not found\" << endl;
-     return 0;
-  }
-  TCanvas* canvas = (TCanvas*)gROOT->FindObject(cname);
-  TH1* hist = 0;
-  if (gROOT->GetVersionInt() >= 22306) 
-     TH1* hist = mypres->GetCurrentHist();   // assure backward comp
-  else    hist = (TH1*)gROOT->FindObject(hname);
-
-  if (!hist || !canvas) {
-     cout << \"hist or canvas not found\" << endl;
-     return 0;
-  }
-
-//   cout << \" Setting defaults for histogram\" <<  endl;    // tell what we are doing
-//   cout << \" Name:  \" << hist->GetName() <<  endl;
-   TString title = hist->GetTitle();
-   TString name = hist->GetName();
-
-//  global attributes
-
-   gStyle->SetOptStat(1001111);    // draw a statistics box
-                                   // Integral,(overf, underf,) mean, rms, entries, name 
-//   gStyle->SetTitleYSize(0.08);
-//   gStyle->SetStatH(0.3);
-//   gStyle->SetStatW(0.3);
-//   gStyle->SetPadLeftMargin(0.07);
-//   gStyle->SetPadRightMargin(0.02);
-//   gStyle->SetPadTopMargin(0.08);
-//   gStyle->SetPadBottomMargin(0.05);
-
-//   canvas specific attributes
-
-//    gPad->GetFrame()->SetFillStyle(1001);       // colored background 
-//    gPad->GetFrame()->SetFillColor(38);         // sea blue
-//    gPad->GetFrame()->SetFillStyle(0);   // empty background
-//    gPad->SetFillStyle(0);
-
-//   histogram specific attributes
-//   if it should apply for 1 or 2 dim put inside if (  )
-
-//   hist->SetLabelSize(0.06, \"Y\");
-//   hist->SetLabelSize(0.06, \"X\");
-//   hist->SetNdivisions(505, \"Y\");
-//   hist->SetNdivisions(505, \"X\");
-//   hist->SetDrawOption(\"hist\");
-//   hist->SetFillStyle(1001);
-//   hist->SetFillColor(42);
-
-//   Example how to use regular expressions 
-
-//   TRegexp end_with_w=\"w$\";
-//   if (name.Index(end_with_w) >= 0) 
-//     cout <<  \"Hist name ends with w\"<< endl;
-//   TRegexp start_with_e=\"^e\";
-//   if (name.Index(start_with_e) >= 0) 
-//      cout <<  \"Hist name starts with e\" << endl;
-
-    gROOT->ForceStyle();            // overwrite attributes store with hists
-
-   if (hist->InheritsFrom(\"TH3\"))  // for 3 dim hists
-   {
-//      if (title == \"mprer\")hist->SetMaximum(200);
-//      hist->SetMinimum(1000);
-      hist->SetDrawOption(\"box\");
-//      hist->SetFillStyle(1001);
-//      hist->SetFillColor(46);
-      canvas->Modified(kTRUE);
-//      canvas->SetLogz();                   // log scale 
-   } else if (hist->InheritsFrom(\"TH2\"))  // for 2 dim hists
-   {
-//      if (title == \"mprer\")hist->SetMaximum(200);
-//      hist->SetMinimum(1000);
-      hist->SetDrawOption(\"box\");
-      hist->SetFillStyle(1001);
-      hist->SetFillColor(46);
-      canvas->Modified(kTRUE);
-//      canvas->SetLogz();                   // log scale 
-   } else {                          // options for 1 dim 
-
-//     overlay another histogram if name matches hsimple_hpx
-
-//      if (name == \"hsimple_hpx\") {
-//     get histogam named hpx1 from file hsimple.root
-//         TH1 * hs = mypres->GetHist(\"hsimple.root\",\"hpx1\");
-//         if (hs) {
-//            draw and set line color to blue
-//            hs->Draw(\"same\");
-//            hs->SetLineColor(4);
-//         }
-//      }
-//      hist->GetXaxis()->SetRange(50,2050); // draw only bins 50-2050 
-      hist->SetDrawOption(\"hist\");
-//      hist->SetFillStyle(0);               // hollow
-//      hist->SetLineColor(6);
-      hist->SetFillStyle(1001);      // solid
-      hist->SetFillColor(45);
-//      hist->SetMaximum(1000);
-   }
-}
+"FH_setdefaults(const char *cname, const char* hname) \n\
+{\n\
+\n\
+// This is a template attributes file\n\
+\n\
+// this macro is called when FitHist draws / expands a histogram\n\
+// please read the documentation (http://root.cern.ch) for all methods\n\
+// defined for histograms and canvases and styles\n\
+\n\
+// Methods of HistPresent itself may be used via the pointer mypres.\n\
+// This can be used to get a histograms from any file  and overlay it\n\
+// See line with GetHist()\n\
+\n\
+//  gROOT->Reset();\n\
+// find pointer to HistPresent object\n\
+  class HistPresent;\n\
+  HistPresent * mypres = (HistPresent*)gROOT->FindObject(\"mypres\");\n\
+  if (!mypres) { \n\
+     cout << \"histogram presenter object not found\" << endl;\n\
+     return 0;\n\
+  }\n\
+  TCanvas* canvas = (TCanvas*)gROOT->FindObject(cname);\n\
+  TH1* hist = 0;\n\
+  if (gROOT->GetVersionInt() >= 22306) \n\
+     TH1* hist = mypres->GetCurrentHist();   // assure backward comp\n\
+  else    hist = (TH1*)gROOT->FindObject(hname);\n\
+\n\
+  if (!hist || !canvas) {\n\
+     cout << \"hist or canvas not found\" << endl;\n\
+     return 0;\n\
+  }\n\
+\n\
+//   cout << \" Setting defaults for histogram\" <<  endl;    // tell what we are doing\n\
+//   cout << \" Name:  \" << hist->GetName() <<  endl;\n\
+   TString title = hist->GetTitle();\n\
+   TString name = hist->GetName();\n\
+\n\
+//  global attributes\n\
+\n\
+   gStyle->SetOptStat(1001111);    // draw a statistics box\n\
+                                   // Integral,(overf, underf,) mean, rms, entries, name \n\
+//   gStyle->SetTitleYSize(0.08);\n\
+//   gStyle->SetStatH(0.3);\n\
+//   gStyle->SetStatW(0.3);\n\
+//   gStyle->SetPadLeftMargin(0.07);\n\
+//   gStyle->SetPadRightMargin(0.02);\n\
+//   gStyle->SetPadTopMargin(0.08);\n\
+//   gStyle->SetPadBottomMargin(0.05);\n\
+\n\
+//   canvas specific attributes\n\
+\n\
+//    gPad->GetFrame()->SetFillStyle(1001);       // colored background \n\
+//    gPad->GetFrame()->SetFillColor(38);         // sea blue\n\
+//    gPad->GetFrame()->SetFillStyle(0);   // empty background\n\
+//    gPad->SetFillStyle(0);\n\
+\n\
+//   histogram specific attributes\n\
+//   if it should apply for 1 or 2 dim put inside if (  )\n\
+\n\
+//   hist->SetLabelSize(0.06, \"Y\");\n\
+//   hist->SetLabelSize(0.06, \"X\");\n\
+//   hist->SetNdivisions(505, \"Y\");\n\
+//   hist->SetNdivisions(505, \"X\");\n\
+//   hist->SetDrawOption(\"hist\");\n\
+//   hist->SetFillStyle(1001);\n\
+//   hist->SetFillColor(42);\n\
+\n\
+//   Example how to use regular expressions \n\
+\n\
+//   TRegexp end_with_w=\"w$\";\n\
+//   if (name.Index(end_with_w) >= 0) \n\
+//     cout <<  \"Hist name ends with w\"<< endl;\n\
+//   TRegexp start_with_e=\"^e\";\n\
+//   if (name.Index(start_with_e) >= 0) \n\
+//      cout <<  \"Hist name starts with e\" << endl;\n\
+\n\
+    gROOT->ForceStyle();            // overwrite attributes store with hists\n\
+\n\
+   if (hist->InheritsFrom(\"TH3\"))  // for 3 dim hists\n\
+   {\n\
+//      if (title == \"mprer\")hist->SetMaximum(200);\n\
+//      hist->SetMinimum(1000);\n\
+      hist->SetDrawOption(\"box\");\n\
+//      hist->SetFillStyle(1001);\n\
+//      hist->SetFillColor(46);\n\
+      canvas->Modified(kTRUE);\n\
+//      canvas->SetLogz();                   // log scale \n\
+   } else if (hist->InheritsFrom(\"TH2\"))  // for 2 dim hists\n\
+   {\n\
+//      if (title == \"mprer\")hist->SetMaximum(200);\n\
+//      hist->SetMinimum(1000);\n\
+      hist->SetDrawOption(\"box\");\n\
+      hist->SetFillStyle(1001);\n\
+      hist->SetFillColor(46);\n\
+      canvas->Modified(kTRUE);\n\
+//      canvas->SetLogz();                   // log scale \n\
+   } else {                          // options for 1 dim \n\
+\n\
+//     overlay another histogram if name matches hsimple_hpx\n\
+\n\
+//      if (name == \"hsimple_hpx\") {\n\
+//     get histogam named hpx1 from file hsimple.root\n\
+//         TH1 * hs = mypres->GetHist(\"hsimple.root\",\"hpx1\");\n\
+//         if (hs) {\n\
+//            draw and set line color to blue\n\
+//            hs->Draw(\"same\");\n\
+//            hs->SetLineColor(4);\n\
+//         }\n\
+//      }\n\
+//      hist->GetXaxis()->SetRange(50,2050); // draw only bins 50-2050 \n\
+      hist->SetDrawOption(\"hist\");\n\
+//      hist->SetFillStyle(0);               // hollow\n\
+//      hist->SetLineColor(6);\n\
+      hist->SetFillStyle(1001);      // solid\n\
+      hist->SetFillColor(45);\n\
+//      hist->SetMaximum(1000);\n\
+   }\n\
+}\n\
 ";
 //_____________________________________________________________________________________
 
