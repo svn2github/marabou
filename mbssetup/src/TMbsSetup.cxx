@@ -856,7 +856,6 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						stpTmpl.InitializeCode();
 						*str << "0x" << setbase(16) << this->EvtBuilder()->GetBufferSize() << ends;
 						stpTmpl.Substitute("$bufSize", str->str().c_str());
-//						str->rdbuf()->freeze(0);
 						delete str;
 						stpTmpl.Substitute("$nofBufs", (Int_t) this->EvtBuilder()->GetNofBuffers());
 						stpTmpl.Substitute("$nofStreams", (Int_t) this->EvtBuilder()->GetNofStreams());
@@ -1071,12 +1070,16 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kSetVsbAddr:
 					{
 						if (smode == kModeMultiProc) {
+							if (!gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
+								gMrbLog->Err() << "TMbsSetup.ConfigVSB has to be set in a MULTIPROC environment" << endl;
+								gMrbLog->Flush(this->ClassName(), "ExpandFile");
+								return(kFALSE);
+							}
 							stpTmpl.InitializeCode("%B%");
 							str = new ostringstream();
 							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
 							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
-//							str->rdbuf()->freeze(0);
 							delete str;
 							stpTmpl.WriteCode(stp);
 							for (i = 0; i < nofReadouts; i++) {
@@ -1085,19 +1088,17 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								str = new ostringstream();
 								*str << "0x" << setbase(16) << this->ReadoutProc(i)->GetVSBAddr() << ends;
 								stpTmpl.Substitute("$vsbAddr", str->str().c_str());
-//								str->rdbuf()->freeze(0);
 								delete str;
 								stpTmpl.WriteCode(stp);
 							}
-						} else {
-							stpTmpl.InitializeCode();
-							str = new ostringstream();
-							stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
-							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
-							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
-//							str->rdbuf()->freeze(0);
-							delete str;
-							stpTmpl.WriteCode(stp);
+						} else if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
+								stpTmpl.InitializeCode();
+								str = new ostringstream();
+								stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
+								*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
+								stpTmpl.Substitute("$vsbAddr", str->str().c_str());
+								delete str;
+								stpTmpl.WriteCode(stp);
 						}
 					}
 					break;
@@ -1136,7 +1137,6 @@ const Char_t * TMbsSetup::EncodeArray(TArrayI & Data, Int_t NofEntries, Int_t Ba
 	}
 	*s << ")" << ends;
 	fArrayString = s->str().c_str();
-//	s->rdbuf()->freeze(0);
 	delete s;
 	return(fArrayString.Data());
 }
@@ -1172,7 +1172,6 @@ const Char_t * TMbsSetup::EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries,
 	}
 	*s << ")" << ends;
 	fArrayString = s->str().c_str();
-//	s->rdbuf()->freeze(0);
 	delete s;
 	return(fArrayString.Data());
 }
@@ -1556,7 +1555,6 @@ Bool_t TMbsSetup::SetMode(const Char_t * Mode) {
 	mode = new ostringstream();
 	*mode << setupMode->GetName() << "(" << setupMode->GetIndex() << ")";
 	gMbsSetup->Set("Mode", mode->str().c_str());
-//	mode->rdbuf()->freeze(0);
 	delete mode;
 	return(kTRUE);
 }
@@ -1589,7 +1587,6 @@ Bool_t TMbsSetup::SetMode(EMbsSetupMode Mode) {
 	mode = new ostringstream();
 	*mode << setupMode->GetName() << "(" << setupMode->GetIndex() << ")";
 	gMbsSetup->Set("Mode", mode->str().c_str());
-//	mode->rdbuf()->freeze(0);
 	delete mode;
 	return(kTRUE);
 }
