@@ -10,6 +10,24 @@
 #include "TGMrbInputDialog.h"
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
+//______________________________________________________________________________
+
+Double_t MinElement(Int_t n, Double_t * x){
+   Double_t min = x[0];
+   for (Int_t i = 1; i < n; i++) {
+      if (x[i] < min) min = x[i];
+   }
+   return min;
+}
+//______________________________________________________________________________
+
+Double_t MaxElement(Int_t n, Double_t * x){
+   Double_t max = x[0];
+   for (Int_t i = 1; i < n; i++) {
+      if (x[i] > max) max = x[i];
+   }
+   return max;
+}
 //_______________________________________________________________________________________
 
 void SetAllArrowSizes(TList *list, Double_t size,  Bool_t abs) 
@@ -197,10 +215,14 @@ Int_t HTCanvas::ExtractGObjects()
    GroupOfGObjects * gg = new GroupOfGObjects(name.Data(), title.Data(), 0. ,0.);
    Double_t * x = cut->GetX();
    Double_t * y = cut->GetY();
-   gg->fXLowEdge = TMath::MinElement(cut->GetN(), x);
-   gg->fXUpEdge  = TMath::MaxElement(cut->GetN(), x);
-   gg->fYLowEdge = TMath::MinElement(cut->GetN(), y);
-   gg->fYUpEdge  = TMath::MaxElement(cut->GetN(), y);
+   gg->fXLowEdge = MinElement(cut->GetN(), x);
+   gg->fXUpEdge  = MaxElement(cut->GetN(), x);
+   gg->fYLowEdge = MinElement(cut->GetN(), y);
+   gg->fYUpEdge  = MaxElement(cut->GetN(), y);
+//   gg->fXLowEdge = TMath::MinElement(cut->GetN(), x);
+//   gg->fXUpEdge  = TMath::MaxElement(cut->GetN(), x);
+//   gg->fYLowEdge = TMath::MinElement(cut->GetN(), y);
+//   gg->fYUpEdge  = TMath::MaxElement(cut->GetN(), y);
    Float_t xoff =  gg->fXLowEdge;
    Float_t yoff =  gg->fYLowEdge;
    TObject * obj;
@@ -365,7 +387,7 @@ void HTCanvas::WriteGObjects()
    if (OpenWorkFile(fRootCanvas)) {
       TIter next(fGObjectGroups);
       GroupOfGObjects * obj;
-      while (obj = (GroupOfGObjects *)next()){
+      while ( (obj = (GroupOfGObjects *)next()) ){
          obj->Write(obj->GetName(), TObject::kSingleKey );
       }
       CloseWorkFile();
