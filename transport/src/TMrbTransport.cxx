@@ -310,10 +310,16 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 			}
 		}
 	}
-	gMrbLog->Err()	<< this->ClassName() << "::ReadEvents(): " << NofEventsProcessed
-				<< " event(s), " << NofErrors
-				<< " error(s)" << endl;
-	gMrbLog->Flush(this->ClassName(), "ReadEvents");
+	if (NofErrors > 0) {
+		gMrbLog->Err()	<< this->ClassName() << "::ReadEvents(): " << NofEventsProcessed
+						<< " event(s), " << NofErrors
+						<< " error(s)" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvents");
+	} else {
+		gMrbLog->Out()	<< this->ClassName() << "::ReadEvents(): " << NofEventsProcessed
+						<< " event(s), " << " no errors" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvents", setblue);
+	}
 	return(EventType);
 }
 
