@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -101,7 +101,7 @@ TMrbSilena_4418T::TMrbSilena_4418T(const Char_t * ModuleName, const Char_t * Mod
 	}
 }
 
-Bool_t TMrbSilena_4418T::CheckSubeventType(TObject * Subevent) {
+Bool_t TMrbSilena_4418T::CheckSubeventType(TObject * Subevent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSilena_4418T::CheckSubeventType

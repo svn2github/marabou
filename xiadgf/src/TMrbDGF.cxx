@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <time.h>
@@ -1035,7 +1035,7 @@ Bool_t TMrbDGF::ReadParamMemory(const Char_t * ParamName) {
 	}
 }
 
-Bool_t TMrbDGF::ReadParamMemory(UInt_t FromParam, UInt_t ToParam) {
+Bool_t TMrbDGF::ReadParamMemory(Int_t FromParam, Int_t ToParam) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::ReadParamMemory

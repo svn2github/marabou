@@ -22,7 +22,7 @@
 #include "HistPresent.h"
 #include "TMrbStatistics.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 const Int_t kSelected = BIT(16), kCommand  = BIT(17), kSelection  = BIT(18);

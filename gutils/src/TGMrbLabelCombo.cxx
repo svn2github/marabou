@@ -83,7 +83,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 			fHeap.AddFirst((TObject *) fEnd);
 			fEnd->ChangeBackground(UpDownBtnGC->BG());
 			fEnd->SetToolTipText("->End", 500);
-			bSize += fEnd->GetDefaultWidth();
+			bSize = fEnd->GetDefaultWidth();
 			this->AddFrame(fEnd, btnLayout);
 			fEnd->Associate(this);
 		}

@@ -58,12 +58,12 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		Bool_t AddEntries(TMrbLofNamedX * Entries); 								// add entries to the box
 		
-		inline TGComboBox * GetComboBox() { return(fCombo); };
+		inline TGComboBox * GetComboBox() const { return(fCombo); };
 
-		inline TGPictureButton * GetUpButton() { return(fUp); };
-		inline TGPictureButton * GetDownButton() { return(fDown); };
-		inline TGPictureButton * GetBeginButton() { return(fBegin); };
-		inline TGPictureButton * GetEndButton() { return(fEnd); };
+		inline TGPictureButton * GetUpButton() const { return(fUp); };
+		inline TGPictureButton * GetDownButton() const { return(fDown); };
+		inline TGPictureButton * GetBeginButton() const { return(fBegin); };
+		inline TGPictureButton * GetEndButton() const { return(fEnd); };
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 
@@ -71,10 +71,10 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		inline void Associate(const TGWindow * Window) { fClientWindow = (TGWindow *) Window; fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
-		inline const Char_t * GetText() { return(fText.Data()); };					// return text field data
+		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelCombo.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelCombo.html&"); };
 
 	protected:
 		TGComboBox * fCombo;			//!

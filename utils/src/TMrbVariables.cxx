@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -85,7 +85,7 @@ void TMrbVariable::Initialize() {
 	}
 }
 
-void TMrbVariable::Print(Option_t * Option) {
+void TMrbVariable::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVariable::Print
@@ -154,7 +154,7 @@ TMrbVarI::TMrbVarI(const Char_t * Name, Int_t Value) {
 	this->SetInitialType(hasInit | kVarI);
 };
 
-void TMrbVarI::Print(Option_t * Option) {
+void TMrbVarI::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVarI::Print
@@ -214,7 +214,7 @@ TMrbVarF::TMrbVarF(const Char_t * Name, Double_t Value) {
 	this->SetInitialType(hasInit | kVarF);
 };
 
-void TMrbVarF::Print(Option_t * Option) {
+void TMrbVarF::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVarF::Print
@@ -273,7 +273,7 @@ TMrbVarS::TMrbVarS(const Char_t * Name, const Char_t * Value) {
 	this->SetInitialType(hasInit | kVarS);
 };
 
-void TMrbVarS::Print(Option_t * Option) {
+void TMrbVarS::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVarS::Print
@@ -324,7 +324,7 @@ TMrbVarB::TMrbVarB(const Char_t * Name, Bool_t Value) {
 	this->SetInitialType(kVarB | kHasInitValues);
 };
 
-void TMrbVarB::Print(Option_t * Option) {
+void TMrbVarB::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVarB::Print
@@ -382,7 +382,7 @@ TMrbVarArrayI::TMrbVarArrayI(const Char_t * Name, Int_t Size, Int_t Value) {
 	this->SetInitialType(hasInit | kVarI | kVarIsArray);
 };
 
-void TMrbVarArrayI::Print(Option_t * Option) {
+void TMrbVarArrayI::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVarArrayI::Print
@@ -454,7 +454,7 @@ TMrbVarArrayF::TMrbVarArrayF(const Char_t * Name, Int_t Size, Double_t Value) {
 	this->SetInitialType(hasInit | kVarF | kVarIsArray);
 };
 
-void TMrbVarArrayF::Print(Option_t * Option) {
+void TMrbVarArrayF::Print(Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVarArrayF::Print

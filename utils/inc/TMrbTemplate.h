@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -56,7 +56,7 @@ class TMrbTemplate : public TObject {
 	public:
 		TMrbTemplate(); 							// default ctor
 		~TMrbTemplate() {						 	// dtor: delete heap objects
-			Close();
+			this->Close();
 			fCodeBuffer.Delete();
 			fExpansionBuffer.Delete();
 			fLofCodeSegments.Delete();
@@ -77,22 +77,22 @@ class TMrbTemplate : public TObject {
 		Bool_t Substitute(const Char_t * ArgName, Double_t ArgValue);
 
 		Bool_t WriteCode(ostream & Out);									// write code buffer to output stream
-		inline Bool_t HasCode() { return(fCodeBuffer.First() != NULL); };	// kTRUE if code exists
-		inline Bool_t IsExpanded() { return(fExpansionBuffer.First() != NULL); };	// kTRUE if expansion exists
+		inline Bool_t HasCode() const { return(fCodeBuffer.First() != NULL); };	// kTRUE if code exists
+		inline Bool_t IsExpanded() const { return(fExpansionBuffer.First() != NULL); };	// kTRUE if expansion exists
 
 		Bool_t ReadCodeFromFile(const Char_t * TemplateFile, TMrbLofNamedX * LofTagWords);	// read template code from file and store it in a TList
 		Bool_t FindCode(Int_t TagIndex);			// find code in memory by its tag id and copy it to code buffer
 
-		Bool_t PrintCode();							// output code to stdout
+		Bool_t PrintCode() const;							// output code to stdout
 
-		inline EMrbTagWordStatus Status() { return(fTagStatus); };			// tag word status
-		inline Bool_t IsError() { return((fTagStatus & (kTagError | kTagNotFound)) != 0); };
-		inline Bool_t IsEof() { return((fTagStatus & kEOF) != 0); };
-		inline Bool_t IsOk() { return((fTagStatus & (kNoTag | kTagOK)) != 0); };
+		inline EMrbTagWordStatus Status() const { return(fTagStatus); };			// tag word status
+		inline Bool_t IsError() const { return((fTagStatus & (kTagError | kTagNotFound)) != 0); };
+		inline Bool_t IsEof() const { return((fTagStatus & kEOF) != 0); };
+		inline Bool_t IsOk() const { return((fTagStatus & (kNoTag | kTagOK)) != 0); };
 
-		inline Bool_t HasOtherTags() { return(fHasOtherTags); };
+		inline Bool_t HasOtherTags() const { return(fHasOtherTags); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTemplate.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTemplate.html&"); };
 
 	protected:
 		Bool_t TestIfBeginOrEndOfCode();		// test if %%BeginOfCode%%/%%EndOfCode%%

@@ -213,7 +213,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 	TMrbIOSpec::EMrbHistoMode histoMode, lasthMode;
 	TMrbIOSpec::EMrbOutputMode outputMode, lastoMode;
 
-	Bool_t errCnt, lerrCnt;
+	Int_t errCnt, lerrCnt;
 	Int_t lineCnt;
 	Int_t nofEntries;
 	Bool_t lineHdr;
@@ -906,7 +906,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 	return(kTRUE);
 }
 
-Int_t TMrbAnalyze::GetSizeOfMappedObjects(TMapFile * MapFile) {
+Int_t TMrbAnalyze::GetSizeOfMappedObjects(TMapFile * MapFile) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetSizeOfMappedObjects
@@ -1142,7 +1142,7 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 	return(count);
 }
 
-const UShort_t * TUsrEvent::NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) {
+const UShort_t * TUsrEvent::NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::NextSubevent
@@ -1171,7 +1171,7 @@ const UShort_t * TUsrEvent::NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWo
 	}
 }
 
-UInt_t TUsrEvent::NextSubeventHeader(const MBSDataIO * BaseAddr) {
+UInt_t TUsrEvent::NextSubeventHeader(const MBSDataIO * BaseAddr) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::NextSubeventHeader
@@ -1189,7 +1189,7 @@ UInt_t TUsrEvent::NextSubeventHeader(const MBSDataIO * BaseAddr) {
 	else															return(BaseAddr->sevt_otype);
 }
 
-const UShort_t * TUsrEvent::NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) {
+const UShort_t * TUsrEvent::NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::NextSubeventData
@@ -1216,7 +1216,7 @@ const UShort_t * TUsrEvent::NextSubeventData(const MBSDataIO * BaseAddr, Int_t N
 	}
 }
 
-Int_t TUsrEvent::CalcTimeDiff(TUsrEvent * BaseEvent) {
+Int_t TUsrEvent::CalcTimeDiff(TUsrEvent * BaseEvent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::CalcTimeDiff
@@ -1488,7 +1488,7 @@ Bool_t TUsrEvtStop::InitializeTree(TFile * RootFile) {
 	return(kTRUE);
 }
 
-void TMrbAnalyze::PrintStartStop() {
+void TMrbAnalyze::PrintStartStop() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::PrintStartStop
@@ -1782,7 +1782,7 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 	return(kFALSE);
 }
 
-void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) {
+void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbIOSpec::ConvertToTimeStamp
@@ -1810,7 +1810,7 @@ void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) {
 //	ts.rdbuf()->freeze(0);
 }	
 
-void TMrbIOSpec::Print(ostream & out) {
+void TMrbIOSpec::Print(ostream & out) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbIOSpec::Print
@@ -1885,7 +1885,7 @@ void TMrbAnalyze::InitializeLists(Int_t NofModules, Int_t NofParams) {
 	for (Int_t i = 0; i < NofParams; i++) fCalibrationList.AddAt(NULL, i);
 }
 
-const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
+const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetModuleName
@@ -1915,7 +1915,7 @@ const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
 	return(nx->GetName());
 }
 
-const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) {
+const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetModuleTitle
@@ -1945,7 +1945,7 @@ const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) {
 	return(nx->GetTitle());
 }
 
-Int_t TMrbAnalyze::GetModuleIndex(const Char_t * ModuleName) {
+Int_t TMrbAnalyze::GetModuleIndex(const Char_t * ModuleName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetModuleIndex
@@ -1969,7 +1969,7 @@ Int_t TMrbAnalyze::GetModuleIndex(const Char_t * ModuleName) {
 	}
 }
 
-const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex) {
+const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamName
@@ -2022,7 +2022,7 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex)
 	return(nx->GetName());
 }
 
-const Char_t * TMrbAnalyze::GetParamName(Int_t AbsParamIndex) {
+const Char_t * TMrbAnalyze::GetParamName(Int_t AbsParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamName
@@ -2052,7 +2052,7 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t AbsParamIndex) {
 	return(nx->GetName());
 }
 
-Int_t TMrbAnalyze::GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag) {
+Int_t TMrbAnalyze::GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamIndex
@@ -2084,7 +2084,7 @@ Int_t TMrbAnalyze::GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag) {
 	return(nx->GetIndex() - mle->GetIndexOfFirstParam());
 }
 
-Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) {
+Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamIndex
@@ -2112,7 +2112,7 @@ Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(px);
 }
 
-TMrbHistoListEntry * TMrbAnalyze::GetHistoListEntry(const Char_t * HistoName) {
+TMrbHistoListEntry * TMrbAnalyze::GetHistoListEntry(const Char_t * HistoName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoListEntry
@@ -2132,7 +2132,7 @@ TMrbHistoListEntry * TMrbAnalyze::GetHistoListEntry(const Char_t * HistoName) {
 	else		return(NULL);
 }
 
-TH1 * TMrbAnalyze::GetHistoAddr(const Char_t * HistoName) {
+TH1 * TMrbAnalyze::GetHistoAddr(const Char_t * HistoName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoAddr
@@ -2158,7 +2158,7 @@ TH1 * TMrbAnalyze::GetHistoAddr(const Char_t * HistoName) {
 	return(hle->GetAddress());
 }
 
-TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) {
+TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoAddr
@@ -2178,7 +2178,7 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) {
 	return(((TMrbHistoListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
+TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoAddr
@@ -2206,7 +2206,7 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(((TMrbHistoListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t ModuleIndex, Int_t RelParamIndex) {
+TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoFromList
@@ -2233,7 +2233,7 @@ TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t ModuleIndex, In
 	return((TH1F *) HistoList[px]);
 }
 
-TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex) {
+TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoFromList
@@ -2250,7 +2250,7 @@ TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex) 
 	return((TH1F *) HistoList[AbsParamIndex]);
 }
 
-TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) {
+TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetCalibration
@@ -2276,7 +2276,7 @@ TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) {
 	return(cle->GetAddress());
 }
 
-TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) {
+TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetCalibration
@@ -2296,7 +2296,7 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) {
 	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) {
+TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetCalibration
@@ -2322,7 +2322,7 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double
 	return(cal);
 }
 
-TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) {
+TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetCalibration
@@ -2347,7 +2347,7 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t
 	return(cal);
 }
 
-TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) {
+TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetCalibration
@@ -2441,7 +2441,7 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 	return(nofCalibs);
 }
 
-TObject * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) {
+TObject * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamAddr
@@ -2467,7 +2467,7 @@ TObject * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) {
 	return(ple->GetAddress());
 }
 
-TObject * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
+TObject * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamAddr
@@ -2496,7 +2496,7 @@ TObject * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(((TMrbParamListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-TObject * TMrbAnalyze::GetParamAddr(Int_t AbsParamIndex) {
+TObject * TMrbAnalyze::GetParamAddr(Int_t AbsParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamAddr
@@ -2695,7 +2695,7 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 
 	TMrbNamedX * nmx;
 	TMrbNamedX * npx;
-	TMrbNamedX * nhx;
+	TMrbNamedX * ncx;
 	TMrbModuleListEntry * mle;
 	TMrbParamListEntry * ple;
 	TMrbCalibrationListEntry * cle;
@@ -2716,8 +2716,8 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 	}
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
-	nhx = (TMrbNamedX *) fCalibrationList[px + RelParamIndex];
-	if (nhx != NULL) return(kFALSE);
+	ncx = (TMrbNamedX *) fCalibrationList[px + RelParamIndex];
+	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] No param assigned to index " << RelParamIndex
@@ -2726,10 +2726,10 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	nhx = new TMrbNamedX(px, CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
+	ncx = new TMrbNamedX(npx->GetIndex(), CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
 	cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
-	nhx->AssignObject(cle);
-	fCalibrationList.AddAt(nhx, px + RelParamIndex);
+	ncx->AssignObject(cle);
+	fCalibrationList.AddAt(ncx, npx->GetIndex());
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }
@@ -2749,15 +2749,14 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 
 	TMrbNamedX * nmx;
 	TMrbNamedX * npx;
-	TMrbNamedX * nhx;
+	TMrbNamedX * ncx;
 	TMrbModuleListEntry * mle;
 	TMrbParamListEntry * ple;
 	TMrbCalibrationListEntry * cle;
 	Int_t px;
 
-	px = mle->GetIndexOfFirstParam();
-	nhx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
-	if (nhx != NULL) return(kFALSE);
+	ncx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
+	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[AbsParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] No param assigned to index "
@@ -2766,10 +2765,10 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	nhx = new TMrbNamedX(px, CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
-	cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
-	nhx->AssignObject(cle);
-	fCalibrationList.AddAt(nhx, AbsParamIndex);
+	ncx = new TMrbNamedX(npx->GetIndex(), CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
+	cle = new TMrbCalibrationListEntry(ple->GetModule(), npx, CalibrationAddr);
+	ncx->AssignObject(cle);
+	fCalibrationList.AddAt(ncx, AbsParamIndex);
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }
@@ -2797,7 +2796,7 @@ TF1 * TMrbAnalyze::AddCalibrationToList(	const Char_t * Name, const Char_t * For
 	if (this->AddCalibrationToList(cal, ModuleIndex, RelParamIndex)) return(cal); else return(NULL);
 }
 
-void TMrbAnalyze::PrintLists(ostream & Out) {
+void TMrbAnalyze::PrintLists(ostream & Out) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::PrintLists
@@ -2865,7 +2864,7 @@ void TMrbAnalyze::PrintLists(ostream & Out) {
 	}
 }
 
-void TMrbAnalyze::PrintLists(const Char_t * FileName) {
+void TMrbAnalyze::PrintLists(const Char_t * FileName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::PrintLists
@@ -3028,7 +3027,7 @@ Bool_t TMrbAnalyze::SetTimeOffset(Int_t ModuleIndex, Int_t Offset) {
 	return(kTRUE);
 }
 
-Int_t TMrbAnalyze::GetTimeOffset(Int_t ModuleIndex) {
+Int_t TMrbAnalyze::GetTimeOffset(Int_t ModuleIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetTimeOffset
@@ -3138,7 +3137,7 @@ Int_t TUsrHit::Compare(const TObject * Hit) const {
 	else			return(t1 > t2 ? 1 : -1);
 }
 
-Int_t TUsrHit::Compare(long long ChannelTime) {
+Int_t TUsrHit::Compare(long long ChannelTime) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Compare
@@ -3156,7 +3155,7 @@ Int_t TUsrHit::Compare(long long ChannelTime) {
 	else					return(t > ChannelTime ? 1 : -1);
 }
 
-void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
+void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Print
@@ -3210,7 +3209,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 	}
 }
 	
-const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
+const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::ChannelTime2Ascii
@@ -3393,7 +3392,7 @@ Bool_t TUsrHitBuffer::RemoveHit(Int_t Index) {
 	return(kTRUE);
 }
 
-Bool_t TUsrHitBuffer::IsHighWater(Bool_t Verbose) {
+Bool_t TUsrHitBuffer::IsHighWater(Bool_t Verbose) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::IsHighWater
@@ -3416,7 +3415,7 @@ Bool_t TUsrHitBuffer::IsHighWater(Bool_t Verbose) {
 	return(kFALSE);
 }
 
-void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) {
+void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::Print
@@ -3567,7 +3566,6 @@ TUsrHit * TUsrHBX::FindNextEvent() {
 	Int_t evtNo;
 
 	Int_t nofHits = this->GetNofHits();
-//   cout << "fCurIndex " <<fCurIndex << " nofHits " <<nofHits << endl;
 	if (nofHits && fCurIndex < nofHits) {
 		if (fResetDone) evtNo = -1;
 		else			evtNo = ((TUsrHit *) fHits->At(fCurIndex))->GetEventNumber();
@@ -3584,7 +3582,7 @@ TUsrHit * TUsrHBX::FindNextEvent() {
 	return(NULL);
 }
 
-Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
+Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHBX::HitInWindow

@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -299,7 +299,7 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, const Char_t * Value) {
 	}
 }
 
-Int_t TMrbModuleRegister::Get(Int_t Channel) {
+Int_t TMrbModuleRegister::Get(Int_t Channel) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModuleRegister::Get
@@ -334,7 +334,7 @@ Int_t TMrbModuleRegister::Get(Int_t Channel) {
 	}
 }
 
-void TMrbModuleRegister::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbModuleRegister::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModuleRegister::Print

@@ -15,7 +15,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -51,21 +51,21 @@ class TMrbSubevent_Silena_2 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent
 											TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };				// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kTRUE); };				// can store multiple modules
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) {
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {
 			return( Module->CheckID(TMrbConfig::kModuleSilena4418V)
 					|| Module->CheckID(TMrbConfig::kModuleSilena4418T)
 					|| Module->CheckID(TMrbConfig::kModuleXia_DGF_4C));
 		};
 		
-		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
-		inline const Char_t * GetCommonCodeFile() { return("Subevent_Silena_Common"); };
-		inline Bool_t NeedsHitBuffer() { return(kTRUE); };						// allocate hit buffer
-		inline Bool_t NeedsBranchMode() { return(kTRUE); }; 					// needs branch mode
+		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Silena_Common"); };
+		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };						// allocate hit buffer
+		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Silena_2.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Silena_2.html&"); };
 
 	ClassDef(TMrbSubevent_Silena_2, 1) 	// [Config] Subevent type [10,32]: format for Silena 4418 ADCs with zero suppression
 };

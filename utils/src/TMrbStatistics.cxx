@@ -173,7 +173,7 @@ Int_t TMrbStatistics::Fill(TMapFile * mfile){
 }
 //____________________________________________________________________________
 
-void TMrbStatistics::Print(ostream & output){
+void TMrbStatistics::Print(ostream & output) const{
 //
    TString sep("------------------------------------------------------------------");
    output << sep.Data() << endl;
@@ -234,19 +234,19 @@ void TMrbStatEntry::Set(const Stat_t ent, const Stat_t sofw){
     fSumofw  = sofw;
     fNofUpdates ++;
 };
-Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw, Stat_t *mx, Stat_t *sx){
+Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw, Stat_t *mx, Stat_t *sx) const {
     *ent  = fEntries;
     *sofw = fSumofw ;
     *mx   = fMean  ;
     *sx   = fSigma ;
     return fNofUpdates;
 };
-Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw){
+Int_t TMrbStatEntry::Get(Stat_t *ent, Stat_t *sofw) const {
     *ent  = fEntries;
     *sofw = fSumofw ;
     return fNofUpdates;
 };
-void TMrbStatEntry::Print(ostream & output){
+void TMrbStatEntry::Print(ostream & output) const {
      if(fDim == 1)
      output << setw(25)<<setiosflags(ios::left)<< GetName() 
           << resetiosflags(ios::left)

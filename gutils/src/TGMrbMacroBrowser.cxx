@@ -1226,7 +1226,7 @@ Bool_t TGMrbMacroFrame::ResetMacroArgs() {
 	return(kTRUE);
 }
 
-Bool_t TGMrbMacroFrame::ExecMacro() {
+Bool_t TGMrbMacroFrame::ExecMacro() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroFrame::ExecMacro
@@ -2516,7 +2516,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 	return(kTRUE);
 }
 
-const Char_t * TGMrbMacroArg::GetResource(TString & Resource, const Char_t * ResourceName) {
+const Char_t * TGMrbMacroArg::GetResource(TString & Resource, const Char_t * ResourceName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbMacroArg::GetResource

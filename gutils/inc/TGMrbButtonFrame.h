@@ -45,9 +45,9 @@ class TGMrbSpecialButton: public TMrbNamedX {
 
 		~TGMrbSpecialButton() {};			// dtor
 
-		inline UInt_t GetPattern() { return(fPattern); };
+		inline UInt_t GetPattern() const { return(fPattern); };
 		inline void SetPattern(UInt_t Pattern) { fPattern = Pattern; };
-		inline const Char_t * GetPicture() { return(fPicture.Length() > 0 ? fPicture.Data() : NULL); };
+		inline const Char_t * GetPicture() const { return(fPicture.Length() > 0 ? fPicture.Data() : NULL); };
 		inline void SetPicture(const Char_t * Picture) { fPicture = Picture; };
 		
 	protected:
@@ -91,16 +91,16 @@ class TGMrbButtonFrame: public TGMrbObject {
 		TGMrbButtonFrame(const TGMrbButtonFrame & f) {};	// default copy ctor
 
 		void SetState(UInt_t Pattern, EButtonState State = kButtonDown);	// set button state
-		UInt_t GetActive(); 												// return button state
+		UInt_t GetActive() const; 												// return button state
 
 		void FlipState(UInt_t Pattern);					// flip state
 		void UpdateState(UInt_t Pattern);				// update state
 		void ClearAll();								// clear all buttons
 
 		void SetButtonWidth(Int_t Width, Int_t ButtonIndex = 0);	// set button width
-		Int_t GetButtonWidth(Int_t ButtonIndex = 0);	// get button width
+		Int_t GetButtonWidth(Int_t ButtonIndex = 0) const;	// get button width
 		void JustifyButton(ETextJustification Justify, Int_t ButtonIndex = 0);	// justify button text
-		TGButton * GetButton(Int_t ButtonIndex);		// get button by index
+		TGButton * GetButton(Int_t ButtonIndex) const;		// get button by index
 		void AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs);	// add a button
 
 		void ChangeButtonBackground(ULong_t Color, Int_t Index = 0); 	// set background color
@@ -109,7 +109,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 
 		void Associate(const TGWindow * Window);		// redirect button events
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbButtonFrame.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbButtonFrame.html&"); };
 
 	protected:
 		void PlaceButtons();						// place buttons in a subframe CxL

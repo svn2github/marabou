@@ -36,26 +36,32 @@ class TMrbLofData: public TNamed {
 		Bool_t Reset(Bool_t ClearFlag = kFALSE);	// reset index (& clear data)
 		Bool_t Fill(Int_t Index = -1, const Char_t Data = 0);	// fill entry
 				
-		Char_t * At(Int_t Index);		// return pointer to data item at given index
+		Char_t * At(Int_t Index) const;		// return pointer to data item at given index
 		Char_t * Next(Bool_t ClearFlag = kFALSE);		// return pointer to next item
+
+		void Clear(const Option_t * Option) { TObject::Clear(Option); };
 		Bool_t Clear(Int_t Index = -1); 	// clear data at given index
 		Bool_t Clear(Char_t * Address); 	// clear data given by addr
-		Char_t * FindEmpty(Char_t * After = NULL);		// find next empty slot
-		Char_t * FindNonEmpty(Char_t * After = NULL);	// find next active slot
-				
-		Int_t GetIndex(Char_t * Addr);				// calculate entry index from address
-		
-		virtual Bool_t IsEmpty(Char_t * Addr);		// check if slot is empty
-		virtual Bool_t IsEmpty(Int_t Index);
 
-		void Print(ostream & Out, Char_t * Addr = NULL, Bool_t NonEmpty = kFALSE);			// print data
-		void Print(ostream & Out, Int_t Index, Bool_t NonEmpty = kFALSE);
-		inline void Print(Char_t * Addr = NULL, Bool_t NonEmpty = kFALSE) { Print(cout, Addr, NonEmpty); };
-		inline void Print(Int_t Index, Bool_t NonEmpty = kFALSE) { Print(cout, Index, NonEmpty); };
-		
-		inline Int_t GetNofEntries() { return(fNofEntries); };	// get number of entries
-		inline Int_t GetEntrySize() { return(fEntrySize); };	// get entry size
+		Char_t * FindEmpty(Char_t * After = NULL) const;		// find next empty slot
+		Char_t * FindNonEmpty(Char_t * After = NULL) const; 	// find next active slot
 				
+		Int_t GetIndex(Char_t * Addr) const;					// calculate entry index from address
+		
+		virtual Bool_t IsEmpty(Char_t * Addr) const;			// check if slot is empty
+		virtual Bool_t IsEmpty(Int_t Index) const;
+
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & Out, Char_t * Addr = NULL, Bool_t NonEmpty = kFALSE) const;			// print data
+		void Print(ostream & Out, Int_t Index, Bool_t NonEmpty = kFALSE) const;
+		inline void Print(Char_t * Addr = NULL, Bool_t NonEmpty = kFALSE) const { Print(cout, Addr, NonEmpty); };
+		inline void Print(Int_t Index, Bool_t NonEmpty = kFALSE) const { Print(cout, Index, NonEmpty); };
+		
+		inline Int_t GetNofEntries() const { return(fNofEntries); };	// get number of entries
+		inline Int_t GetEntrySize() const { return(fEntrySize); };	// get entry size
+				
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofData.html&"); };
+
 	protected:
 			
 		Int_t fNofEntries;				// number of entries

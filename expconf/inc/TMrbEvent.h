@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -57,13 +57,13 @@ class TMrbEvent : public TNamed {
 		Bool_t HasSubevent(const Char_t * Assignment);		// add subevent(s)
 		Bool_t ShareSubevents(TMrbEvent * Event);			// share subevent(s) with another event
 
-		inline TObject * FindSubevent(const Char_t * SevtName) {					// find a subevent
+		inline TObject * FindSubevent(const Char_t * SevtName) const {					// find a subevent
 			return (fLofSubevents.FindObject(SevtName));
 		};
-		TObject * FindSubeventByCrate(Int_t Crate, TObject * After = NULL);	// find a subevent with specified crate
+		TObject * FindSubeventByCrate(Int_t Crate, TObject * After = NULL) const;	// find a subevent with specified crate
 
-		inline Int_t GetTrigger() { return(fTrigger); };							// return trigger number
-		inline TMrbConfig::EMrbTriggerStatus GetTriggerStatus() { return(fTriggerStatus); };	// return trigger status
+		inline Int_t GetTrigger() const { return(fTrigger); };							// return trigger number
+		inline TMrbConfig::EMrbTriggerStatus GetTriggerStatus() const { return(fTriggerStatus); };	// return trigger status
 
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL); // generate readout code
@@ -79,44 +79,45 @@ class TMrbEvent : public TNamed {
 		Bool_t SetAnalyzeOptions(Option_t * Options = "Subevents:Histograms");	// set options for MakeAnalyzeCode()
 		Bool_t SetConfigOptions(Option_t * Options = "");						// set options for MakeConfigCode()
 
-		UInt_t GetReadoutOptions(); 												// return MakeReadoutCode() options
-		UInt_t GetAnalyzeOptions(); 												// return MakeAnalyzeCode() options
-		UInt_t GetConfigOptions();													// return MakeConfigCode() options
+		UInt_t GetReadoutOptions() const; 												// return MakeReadoutCode() options
+		UInt_t GetAnalyzeOptions() const; 												// return MakeAnalyzeCode() options
+		UInt_t GetConfigOptions() const;													// return MakeConfigCode() options
 
-		inline const Char_t * GetPrefix() { return(fPrefix.Data()); };
+		inline const Char_t * GetPrefix() const { return(fPrefix.Data()); };
 		void AllocPrivateHistograms(const Char_t * Prefix) {
 			fPrefix = Prefix;
 			fPrefix.ToLower();
 			fPrivateHistograms = !fPrefix.IsNull();
 		};
 		inline void AllocPrivateHistograms(Bool_t Flag) { fPrivateHistograms = fPrefix.IsNull() ? kFALSE : Flag; };
-		inline Bool_t HasPrivateHistograms() { return(fPrivateHistograms); };
+		inline Bool_t HasPrivateHistograms() const { return(fPrivateHistograms); };
 
 		inline void SetSizeOfHitBuffer(Int_t NofEntries, Int_t HighWater = 0) {
 			fSizeOfHitBuffer = NofEntries;
 			fHBHighWaterLimit = HighWater;
 		}
-		inline Int_t GetSizeOfHitBuffer() { return(fSizeOfHitBuffer); };
-		inline Int_t GetHBHighWaterLimit() { return(fHBHighWaterLimit); };;
+		inline Int_t GetSizeOfHitBuffer() const { return(fSizeOfHitBuffer); };
+		inline Int_t GetHBHighWaterLimit() const { return(fHBHighWaterLimit); };;
 
-		virtual inline Bool_t HasPrivateCode() { return(kFALSE); }; 				// normal code generation
-		virtual inline const Char_t * GetPrivateCodeFile() { return(NULL); };
-		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
+		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 				// normal code generation
+		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
+		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		
-		inline Int_t GetNofSubevents() { return(fNofSubevents); };					// number of subevents
+		inline Int_t GetNofSubevents() const { return(fNofSubevents); };					// number of subevents
 		inline TMrbLofNamedX * GetLofSubevents() { return(&fLofSubevents); };		// list of subevents
-		const Char_t * GetLofSubeventsAsString(TString & LofSubevents);
+		const Char_t * GetLofSubeventsAsString(TString & LofSubevents) const;
 
-		inline Int_t GetType() { return(fEventType); };
-		inline Int_t GetSubtype() { return(fEventSubtype); };
+		inline Int_t GetType() const { return(fEventType); };
+		inline Int_t GetSubtype() const { return(fEventSubtype); };
 
 		inline void SetAutoSave(Int_t AutoSave = TMrbConfig::kAutoSave) { fAutoSave = AutoSave; }; 	// auto save mechanism
-		inline Int_t GetAutoSave() { return(fAutoSave); };
+		inline Int_t GetAutoSave() const { return(fAutoSave); };
 			
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");	// show data
-		inline virtual void Print() { Print(cout, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
+		inline virtual void Print() const { Print(cout, ""); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEvent.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEvent.html&"); };
 
 	protected:
 		UInt_t fEventType;

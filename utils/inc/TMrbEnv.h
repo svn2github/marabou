@@ -78,18 +78,19 @@ class TMrbEnv : public TObject {
 		Int_t Remove(const TRegexp & Regexp);
 		Int_t Purge(Bool_t Verbose = kFALSE);									// remove undef resources
 
-		inline void Print() { fCurEnv->Print(); };								// print current settings
-		inline void PrintDefaults() { if (this->HasDefaults()) fDefaultsEnv->Print(); };	// print default settings												// print default settings
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		inline void Print() const { fCurEnv->Print(); };								// print current settings
+		inline void PrintDefaults() const { if (this->HasDefaults()) fDefaultsEnv->Print(); };	// print default settings												// print default settings
 		void PrintInfo();														// print file info
 
 		const Char_t * Resource(TString & R,	const Char_t * F1, Int_t X1 = -1,	// init resource name
 												const Char_t * F2 = "", Int_t X2 = -1,
-												const Char_t * F3 = "");
+												const Char_t * F3 = "") const;
 
-		inline Bool_t HasDefaults() { return(fDefaultsEnv != NULL); };			// default file open?
-		inline Bool_t IsModified() { return(fIsModified); };					// modified?
+		inline Bool_t HasDefaults() const { return(fDefaultsEnv != NULL); };			// default file open?
+		inline Bool_t IsModified() const { return(fIsModified); };					// modified?
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEnv.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEnv.html&"); };
 
 	protected:
 		TString fCurFile;				// path to current resource file

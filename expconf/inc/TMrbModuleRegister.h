@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -56,7 +56,7 @@ class TMrbModuleRegister : public TObject {
 
 		~TMrbModuleRegister() {};									// default dtor
 	
-		Int_t Get(Int_t Channel = -1);		 						// get (common) value
+		Int_t Get(Int_t Channel = -1) const;		 						// get (common) value
 		Bool_t Set(Int_t Value);									// set common value
 		Bool_t Set(Int_t Channel, Int_t Value); 					// set channel value explicitly
 
@@ -65,30 +65,31 @@ class TMrbModuleRegister : public TObject {
 
 		Bool_t SetFromResource(Int_t Value);						// set (common) value from resource database
 
-		inline TMrbModule * Parent() { return(fParent); };		 	// return addr of parent module
+		inline TMrbModule * Parent() const { return(fParent); };		 	// return addr of parent module
 		inline Int_t GetIndex() { return(fRegDef->GetIndex()); };	// register index
-		inline const Char_t * GetName() { return(fRegDef->GetName()); };	// register name
+		inline const Char_t * GetName() const { return(fRegDef->GetName()); };	// register name
 		inline void Reset() { IsCommon() ? Set(fInitValue) : Set(-1, fInitValue); };	// reset to initial values
 
-		inline Int_t GetNofChannels() { return(fNofChannels); };	// nyumber of channels
+		inline Int_t GetNofChannels() const { return(fNofChannels); };	// nyumber of channels
 
-		inline Bool_t IsCommon() { return(fNofChannels == 0); };	// register is common for all channels
-		inline Bool_t IsPerChannel() { return(fNofChannels > 0); };	// register has values per channel
+		inline Bool_t IsCommon() const { return(fNofChannels == 0); };	// register is common for all channels
+		inline Bool_t IsPerChannel() const { return(fNofChannels > 0); };	// register has values per channel
 
-		inline EMrbRegisterAccess GetAccessMode() { return(fAccessMode); }; // access mode: rd/wr, rdonly, wronly
-		inline Bool_t IsReadOnly() { return(fAccessMode == kMrbRegAccessReadOnly); };
-		inline Bool_t IsWriteOnly() { return(fAccessMode == kMrbRegAccessWriteOnly); };
+		inline EMrbRegisterAccess GetAccessMode() const { return(fAccessMode); }; // access mode: rd/wr, rdonly, wronly
+		inline Bool_t IsReadOnly() const { return(fAccessMode == kMrbRegAccessReadOnly); };
+		inline Bool_t IsWriteOnly() const { return(fAccessMode == kMrbRegAccessWriteOnly); };
 		
 		inline void SetPatternMode(Bool_t Flag = kTRUE) { if (fLofBitNames) fPatternMode = Flag; };	// has bitwise value
-		inline Bool_t IsPatternMode() { return(fPatternMode); };
+		inline Bool_t IsPatternMode() const { return(fPatternMode); };
 		inline void SetLofBitNames(TMrbLofNamedX * BitNames) { fLofBitNames = BitNames; }; 	// list of bit names
-		inline Bool_t HasBitNames() { return(fLofBitNames != NULL); };		// test if bit names given
+		inline Bool_t HasBitNames() const { return(fLofBitNames != NULL); };		// test if bit names given
 		inline TMrbLofNamedX * BitNames() { return(fLofBitNames); };		// list of bit names
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleRegister.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleRegister.html&"); };
 
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");
-		inline virtual void Print() { Print(cout, ""); };						// print settings
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;
+		inline virtual void Print() const { Print(cout, ""); };						// print settings
 
 		void PrintBitNames();						// output bit names if present
 

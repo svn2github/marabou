@@ -42,33 +42,33 @@ class TMbsEvtBuilder : public TObject {
 
 		~TMbsEvtBuilder() {};			// default dtor
 
-		Bool_t SetName(const Char_t * ProcName);		// proc name/addr
-		const Char_t * GetName();
-		const Char_t * GetAddr();
+		Bool_t SetProcName(const Char_t * ProcName);		// proc name/addr
+		const Char_t * GetProcName();
+		const Char_t * GetProcAddr();
 
 		Bool_t SetType(const Char_t * ProcType);		// processor type
 		Bool_t SetType(EMbsProcType ProcType);
-		TMrbNamedX * GetType();
+		TMrbNamedX * GetType() const;
 
 		Bool_t SetCrate(Int_t Crate);			// crate number
-		Int_t GetCrate();
+		Int_t GetCrate() const;
 
 											// buffers
 		void SetBuffers(Int_t BufferSize,	Int_t NofBuffers = kNofBuffersPerStream, Int_t NofStreams = kNofStreams);
-		Int_t GetBufferSize();
-		Int_t GetNofBuffers();
-		Int_t GetNofStreams();
+		Int_t GetBufferSize() const;
+		Int_t GetNofBuffers() const;
+		Int_t GetNofStreams() const;
 
 		Bool_t SetFlushTime(Int_t Seconds);		// flushtime
-		Int_t GetFlushTime();
+		Int_t GetFlushTime() const;
 
 		Bool_t SetVSBAddr(UInt_t Addr);			// vsb addr
-		UInt_t GetVSBAddr();
+		UInt_t GetVSBAddr() const;
 
 		void RemoveSetup(); 			// remove entries from setup data base
 		void Reset();	 				// reset to default
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMbsEvtBuilder.html&"); };
+		inline void Help() const{ gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMbsEvtBuilder.html&"); };
 
 	protected:
 		TString fName;					// temp storage: name

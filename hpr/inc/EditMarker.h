@@ -3,7 +3,7 @@
 //#ifndef __CINT__
 #include "TMarker.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 //#endif
 class EditMarker : public TMarker {

@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -22,7 +22,7 @@ using namespace std;
 
 ClassImp(TMrbVMEScaler)
 
-void TMrbVMEScaler::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbVMEScaler::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVMEScaler::Print

@@ -2,7 +2,7 @@
 #define HPR_FHMARKER
 #include "TMarker.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 class FhMarker : public TMarker {

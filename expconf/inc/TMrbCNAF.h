@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -58,14 +58,14 @@ class TMrbCNAF : public TNamed {
 		~TMrbCNAF() {}; 				// default dtor
 
 		Bool_t Ascii2Int(const Char_t * Cnaf); 	// decode B.C.N.A.F from ascii to int values
-		UInt_t Int2Camac() { return(0); }; 		// encode int values to hardware format
-		const Char_t * Int2Ascii(Bool_t StripBorC = kTRUE);	// convert to ascii
+		UInt_t Int2Camac() const { return(0); }; 		// encode int values to hardware format
+		const Char_t * Int2Ascii(TString & CnafAscii, Bool_t StripBorC = kTRUE) const;	// convert to ascii
 
 		Bool_t Set(const Char_t * Cnaf, Int_t Value);		// set value by name
 		Bool_t Set(EMrbCNAF Cnaf, Int_t Value); 			// set value by enum
 
-		Int_t Get(const Char_t * Cnaf);						// get value by name
-		Int_t Get(EMrbCNAF Cnaf);							// get value by enum
+		Int_t Get(const Char_t * Cnaf) const;						// get value by name
+		Int_t Get(EMrbCNAF Cnaf) const;							// get value by enum
 
 		inline Bool_t SetBit(UInt_t MayBeSet, UInt_t MustBeSet) {  // define legal cnaf components
 			fMayBeSet = MayBeSet;
@@ -73,9 +73,9 @@ class TMrbCNAF : public TNamed {
 			return(kTRUE);
 		};
 
-		inline UInt_t IsSet() { return(fIsSet); };
+		inline UInt_t IsSet() const { return(fIsSet); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCNAF.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCNAF.html&"); };
 
 	protected:
 		TString fAscii; 			// ascii representation

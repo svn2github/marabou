@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -90,7 +90,7 @@ void TMrbScaler::SetFunctionName(const Char_t * FctName, TMrbConfig::EMrbScalerF
 	fLofFunctionNames.AddAt(str, Fct);
 }
 
-const Char_t * TMrbScaler::GetFunctionName(TMrbConfig::EMrbScalerFunction Fct) {
+const Char_t * TMrbScaler::GetFunctionName(TMrbConfig::EMrbScalerFunction Fct) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbScaler::GetFunctionName

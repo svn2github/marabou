@@ -3,7 +3,7 @@
 #include "TObject.h"
 #include "TString.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 class CmdListEntry : public TObject {
 public:

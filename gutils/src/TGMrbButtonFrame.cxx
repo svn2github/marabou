@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <iostream>
 #include <iomanip>
@@ -333,7 +333,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 	}
 }
 
-UInt_t TGMrbButtonFrame::GetActive() {
+UInt_t TGMrbButtonFrame::GetActive() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbButtonFrame::GetActive
@@ -453,7 +453,7 @@ void TGMrbButtonFrame::AddButton(TGButton * Button, TMrbNamedX * ButtonSpecs) {
 	fButtons.AddNamedX(ButtonSpecs);
 }
 
-TGButton * TGMrbButtonFrame::GetButton(Int_t ButtonIndex) {
+TGButton * TGMrbButtonFrame::GetButton(Int_t ButtonIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbButtonFrame::GetButton
@@ -504,7 +504,7 @@ void TGMrbButtonFrame::SetButtonWidth(Int_t Width, Int_t ButtonIndex) {
 	}
 }
 
-Int_t TGMrbButtonFrame::GetButtonWidth(Int_t ButtonIndex) {
+Int_t TGMrbButtonFrame::GetButtonWidth(Int_t ButtonIndex)  const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbButtonFrame::SetButtonWidth

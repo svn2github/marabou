@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -145,7 +145,7 @@ Bool_t TMrbLofData::Fill(Int_t Index, const Char_t Data) {
 	}
 }
 
-Char_t * TMrbLofData::At(Int_t Index) {
+Char_t * TMrbLofData::At(Int_t Index) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::At
@@ -196,7 +196,7 @@ Char_t * TMrbLofData::Next(Bool_t ClearFlag) {
 	}
 }
 
-Char_t * TMrbLofData::FindEmpty(Char_t * After) {
+Char_t * TMrbLofData::FindEmpty(Char_t * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::FindEmpty
@@ -229,7 +229,7 @@ Char_t * TMrbLofData::FindEmpty(Char_t * After) {
 	return(NULL);
 }
 	
-Char_t * TMrbLofData::FindNonEmpty(Char_t * After) {
+Char_t * TMrbLofData::FindNonEmpty(Char_t * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::FindNonEmpty
@@ -262,7 +262,7 @@ Char_t * TMrbLofData::FindNonEmpty(Char_t * After) {
 	return(NULL);
 }
 	
-Bool_t TMrbLofData::IsEmpty(Char_t * Addr) {
+Bool_t TMrbLofData::IsEmpty(Char_t * Addr) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::IsEmpty
@@ -280,7 +280,7 @@ Bool_t TMrbLofData::IsEmpty(Char_t * Addr) {
 	return(*((Int_t *) Addr) == 0);
 }
 
-Bool_t TMrbLofData::IsEmpty(Int_t Index) {
+Bool_t TMrbLofData::IsEmpty(Int_t Index) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::IsEmpty
@@ -299,7 +299,7 @@ Bool_t TMrbLofData::IsEmpty(Int_t Index) {
 	return(*((Int_t *) addr) == 0);
 }
 
-void TMrbLofData::Print(ostream & Out, Char_t * Addr, Bool_t NonEmpty) {
+void TMrbLofData::Print(ostream & Out, Char_t * Addr, Bool_t NonEmpty) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::Print
@@ -326,7 +326,7 @@ void TMrbLofData::Print(ostream & Out, Char_t * Addr, Bool_t NonEmpty) {
 	this->Print(Out, idx, NonEmpty);	
 }
 
-void TMrbLofData::Print(ostream & Out, Int_t Index, Bool_t NonEmpty) {
+void TMrbLofData::Print(ostream & Out, Int_t Index, Bool_t NonEmpty) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::Print
@@ -380,7 +380,7 @@ void TMrbLofData::Print(ostream & Out, Int_t Index, Bool_t NonEmpty) {
 	}	
 }
 
-Int_t TMrbLofData::GetIndex(Char_t * Addr) {
+Int_t TMrbLofData::GetIndex(Char_t * Addr) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofData::GetIndex

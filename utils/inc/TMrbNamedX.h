@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -83,11 +83,11 @@ class TMrbNamedX: public TNamed {
 		~TMrbNamedX() {};				// default dtor
 
 																				// return short name + long name (+ index)
-		const Char_t * GetFullName(TMrbString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE);
+		const Char_t * GetFullName(TMrbString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE) const;
 
-		inline Int_t GetIndex() { return(fIndex); };							// return index
+		inline Int_t GetIndex() const { return(fIndex); };							// return index
 		inline void AssignObject(TObject * Obj) { fObject = Obj; }; 			// assign an object to this index
-		inline TObject * GetAssignedObject() { return(fObject); };				// return addr of assigned object
+		inline TObject * GetAssignedObject() const { return(fObject); };				// return addr of assigned object
 
 		inline void Set(Int_t Index, const Char_t * ShortName, const Char_t * LongName = NULL) { // set values
 			fHasTitle = (LongName != NULL);
@@ -99,13 +99,14 @@ class TMrbNamedX: public TNamed {
 			this->Set(NamedX->GetIndex(), NamedX->GetName(), NamedX->GetTitle());
 		};
 
-		inline Bool_t HasTitle() { return(fHasTitle); }; 				// title (long name) given?
+		inline Bool_t HasTitle() const { return(fHasTitle); }; 				// title (long name) given?
 
-		void Print(ostream & Out, Int_t Base = 10, Bool_t CrFlag = kTRUE); 	// print data
-		inline void Print(Int_t Base) { Print(cout, Base, kTRUE); };
-		inline void Print() { Print(cout, 10, kTRUE); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & Out, Int_t Base = 10, Bool_t CrFlag = kTRUE) const; 	// print data
+		inline void Print(Int_t Base) const { Print(cout, Base, kTRUE); };
+		inline void Print() const { Print(cout, 10, kTRUE); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNamedX.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNamedX.html&"); };
 
 	protected:
 		Bool_t fHasTitle;

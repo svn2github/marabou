@@ -19,8 +19,8 @@
 //-------------------------------------------------------------------------------------------------------------------------
 // TMbsSetup.HomeDir                         n/a         TMbsSetup         GetHomeDir, SetHomeDir
 // TMbsSetup.Path                            n/a         TMbsSetup         GetPath, SetPath
-// TMbsSetup.EvtBuilder.Name                 n/a         TMbsEvtBuilder    GetName, SetName
-// TMbsSetup.EvtBuilder.Address              n/a         TMbsEvtBuilder    GetAddr, SetAddr
+// TMbsSetup.EvtBuilder.Name                 n/a         TMbsEvtBuilder    GetProcName, SetProcName
+// TMbsSetup.EvtBuilder.Address              n/a         TMbsEvtBuilder    GetProcAddr, SetProcAddr
 // TMbsSetup.EvtBuilder.Type                 n/a         TMbsEvtBuilder    GetType, SetType
 // TMbsSetup.EvtBuilder.Crate                0           TMbsEvtBuilder    GetCrate, SetCrate
 // TMbsSetup.EvtBuilder.NofStreams           8           TMbsEvtBuilder    GetNofStreams, SetBuffers
@@ -31,8 +31,8 @@
 // TMbsSetup.MaxReadouts                     1           TMbsSetup         n/a
 // TMbsSetup.NofReadouts                     0           TMbsSetup         GetNofReadouts, SetNofReadouts
 // TMbsSetup.Mode                            n/a         TMbsSetup         GetMode, SetMode
-// TMbsSetup.Readout1.Name                   n/a         TMbsReadoutProc   GetName, SetName
-// TMbsSetup.Readout1.Address                n/a         TMbsReadoutProc   GetAddr, SetAddr
+// TMbsSetup.Readout1.Name                   n/a         TMbsReadoutProc   GetProcName, SetProcName
+// TMbsSetup.Readout1.Address                n/a         TMbsReadoutProc   GetProcAddr, SetProcAddr
 // TMbsSetup.Readout1.Type                   n/a         TMbsReadoutProc   GetType, SetType
 // TMbsSetup.Readout1.Path                   vme1        TMbsReadoutProc   GetPath, SetPath
 // TMbsSetup.Readout1.Crate                  0           TMbsReadoutProc   GetCrate, SetCrate
@@ -49,7 +49,7 @@
 // ************************************************************************************************************************
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -716,9 +716,9 @@ Bool_t TMbsSetup::CreateNodeList(TString & NodeListFile) {
 	setupMode = this->GetMode();
 	smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
 
-	nodeList << this->EvtBuilder()->GetName() << endl;
+	nodeList << this->EvtBuilder()->GetProcName() << endl;
 	if (smode == kModeMultiProc) {
-		for (i = 0; i < nofReadouts; i++) nodeList << this->ReadoutProc(i)->GetName() << endl;
+		for (i = 0; i < nofReadouts; i++) nodeList << this->ReadoutProc(i)->GetProcName() << endl;
 	}
 	nodeList.close();
 	return(kTRUE);
@@ -809,7 +809,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 			switch (tagIdx = setupTag->GetIndex()) {
 				case kSetHostName:
 					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$hostName", this->EvtBuilder()->GetName());
+					stpTmpl.Substitute("$hostName", this->EvtBuilder()->GetProcName());
 					stpTmpl.WriteCode(stp);
 					break;
 
@@ -817,7 +817,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					for (i = 0; i < nofReadouts; i++) {
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoNo", (Int_t) i);
-						stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetName());
+						stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -879,7 +879,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						path += "/";
 						path += this->ReadoutProc(i)->GetPath();
 						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$rdoProc", this->ReadoutProc(i)->GetName());
+						stpTmpl.Substitute("$rdoProc", this->ReadoutProc(i)->GetProcName());
 						stpTmpl.Substitute("$rdoPath", path);
 						stpTmpl.WriteCode(stp);
 					}
@@ -888,20 +888,20 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kStartEvtBuilder:
 				case kStopEvtBuilder:
 					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$evbProc", this->EvtBuilder()->GetName());
+					stpTmpl.Substitute("$evbProc", this->EvtBuilder()->GetProcName());
 					stpTmpl.Substitute("$evbPath", mbsPath);
 					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetDispRdo1:
 					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$rdoProc", this->ReadoutProc(0)->GetName());
+					stpTmpl.Substitute("$rdoProc", this->ReadoutProc(0)->GetProcName());
 					stpTmpl.WriteCode(stp);
 					break;
 
 				case kSetDispEvb:
 					stpTmpl.InitializeCode();
-					stpTmpl.Substitute("$evbProc", this->EvtBuilder()->GetName());
+					stpTmpl.Substitute("$evbProc", this->EvtBuilder()->GetProcName());
 					stpTmpl.WriteCode(stp);
 					break;
 
@@ -1052,18 +1052,18 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 				case kPrintBanner:
 					if (smode == kModeMultiProc) {
 						stpTmpl.InitializeCode("%B%");
-						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetName());
+						stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 						stpTmpl.WriteCode(stp);
 						for (i = 0; i < nofReadouts; i++) {
 							stpTmpl.InitializeCode("%L%");
-							stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetName());
+							stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
 							stpTmpl.WriteCode(stp);
 						}
 						stpTmpl.InitializeCode("%E%");
 						stpTmpl.WriteCode(stp);
 					} else {
 						stpTmpl.InitializeCode();
-						stpTmpl.Substitute("$procName", this->EvtBuilder()->GetName());
+						stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
 						stpTmpl.WriteCode(stp);
 					}
 					break;
@@ -1073,7 +1073,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						if (smode == kModeMultiProc) {
 							stpTmpl.InitializeCode("%B%");
 							str = new ostringstream();
-							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetName());
+							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetProcName());
 							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
 							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
 //							str->rdbuf()->freeze(0);
@@ -1081,7 +1081,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							stpTmpl.WriteCode(stp);
 							for (i = 0; i < nofReadouts; i++) {
 								stpTmpl.InitializeCode("%L%");
-								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetName());
+								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetProcName());
 								str = new ostringstream();
 								*str << "0x" << setbase(16) << this->ReadoutProc(i)->GetVSBAddr() << ends;
 								stpTmpl.Substitute("$vsbAddr", str->str().c_str());
@@ -1092,7 +1092,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						} else {
 							stpTmpl.InitializeCode();
 							str = new ostringstream();
-							stpTmpl.Substitute("$procName", this->EvtBuilder()->GetName());
+							stpTmpl.Substitute("$procName", this->EvtBuilder()->GetProcName());
 							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
 							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
 //							str->rdbuf()->freeze(0);
@@ -1259,12 +1259,12 @@ Bool_t TMbsSetup::CheckSetup() {
 // TMbsSetup.EvtBuilder.Name:
 // TMbsSetup.EvtBuilder.Address:
 // TMbsSetup.EvtBuilder.Type:
-	resString = this->EvtBuilder()->GetName();
+	resString = this->EvtBuilder()->GetProcName();
 	if (resString.Length() == 0) {
 		gMrbLog->Err() << fResourceName << " is not set" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckSetup");
 		nofErrors++;
-	} else if (!this->EvtBuilder()->SetName(resString.Data())) nofErrors++;
+	} else if (!this->EvtBuilder()->SetProcName(resString.Data())) nofErrors++;
 
 // TMbsSetup.EvtBuilder.Crate:
 
@@ -1287,12 +1287,12 @@ Bool_t TMbsSetup::CheckSetup() {
 //			TMbsSetup.ReadoutNNN.Name:
 //			TMbsSetup.ReadoutNNN.Address:
 //			TMbsSetup.ReadoutNNN.Type:
-			resString = this->ReadoutProc(n)->GetName();
+			resString = this->ReadoutProc(n)->GetProcName();
 			if (resString.Length() == 0) {
 				gMrbLog->Err() << fResourceName << " is not set" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 				nofErrors++;
-			} else if (!this->ReadoutProc(n)->SetName(resString.Data())) nofErrors++;
+			} else if (!this->ReadoutProc(n)->SetProcName(resString.Data())) nofErrors++;
 
 // TMbsSetup.ReadoutNNN.Crate:
 
@@ -1355,8 +1355,8 @@ Bool_t TMbsSetup::CheckSetup() {
 	}
 
 	if (nofErrors == 0) {
-		evtBuilder = this->EvtBuilder()->GetName();
-		readoutProc = this->ReadoutProc(0)->GetName();
+		evtBuilder = this->EvtBuilder()->GetProcName();
+		readoutProc = this->ReadoutProc(0)->GetProcName();
 		if (nofReadouts == 1 && evtBuilder.CompareTo(readoutProc.Data()) == 0) {
 			this->SetMode(kModeSingleProc);
 		} else {

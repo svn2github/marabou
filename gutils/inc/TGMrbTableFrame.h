@@ -71,8 +71,8 @@ class TGMrbTableFrame : public TGTransientFrame {
 										};
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
-      void StoreValues();
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableFrame.html&"); };
+		void StoreValues();
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableFrame.html&"); };
 
 	private:
 		TList *fWidgets;					// list of widgets on heap
@@ -139,7 +139,7 @@ class TGMrbTableOfInts {
 
 		TGMrbTableOfInts(const TGMrbTableOfInts &) {};				// default copy ctor
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableOfInts.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableOfInts.html&"); };
 
 	ClassDef(TGMrbTableOfInts,0)
 };
@@ -170,7 +170,7 @@ class TGMrbTableOfDoubles {
 
 		TGMrbTableOfDoubles(const TGMrbTableOfDoubles &) {};				// default copy ctor
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableOfDoubles.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableOfDoubles.html&"); };
 
 	ClassDef(TGMrbTableOfDoubles,0)
 };

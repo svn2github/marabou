@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -48,10 +48,11 @@ class TMrbVMEScaler : public TMrbVMEModule, public TMrbScaler {
 									TMrbScaler() {	fHistosToBeAllocated = kFALSE; };
 		~TMrbVMEScaler() {};											// default dtor
 
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");	// show data
-		inline virtual void Print() { Print(cout, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
+		inline virtual void Print() const { Print(cout, ""); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEScaler.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEScaler.html&"); };
 
 	ClassDef(TMrbVMEScaler, 1)		// [Config] A base class for VME scalers
 };	

@@ -21,7 +21,7 @@
 //#include "TMrbVarWdwCommon.h"
 #include "FhPeak.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 class TMrbWindow2D;

@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -79,10 +79,10 @@ void TMbsEvtBuilder::Reset() {
 	gMbsSetup->CopyDefaults("EvtBuilder", kFALSE, kTRUE);	// force copy
 }
 
-Bool_t TMbsEvtBuilder::SetName(const Char_t * ProcName) {
+Bool_t TMbsEvtBuilder::SetProcName(const Char_t * ProcName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsEvtBuilder::SetName
+// Name:           TMbsEvtBuilder::SetProcName
 // Purpose:        Set event builder name
 // Arguments:      Char_t * ProcName    -- name
 // Results:        kTRUE/kFALSE
@@ -153,10 +153,10 @@ Bool_t TMbsEvtBuilder::SetName(const Char_t * ProcName) {
 	}
 }
 
-const Char_t * TMbsEvtBuilder::GetName() {
+const Char_t * TMbsEvtBuilder::GetProcName() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsEvtBuilder::GetName
+// Name:           TMbsEvtBuilder::GetProcName
 // Purpose:        Get event builder name
 // Arguments:      --
 // Results:        Char_t * ProcName    -- name
@@ -169,10 +169,10 @@ const Char_t * TMbsEvtBuilder::GetName() {
 	return(fName.Data());
 }
 
-const Char_t * TMbsEvtBuilder::GetAddr() {
+const Char_t * TMbsEvtBuilder::GetProcAddr() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsEvtBuilder::GetAddr
+// Name:           TMbsEvtBuilder::GetProcAddr
 // Purpose:        Get event builder address
 // Arguments:      --
 // Results:        Char_t * ProcAddr    -- addr
@@ -251,7 +251,7 @@ Bool_t TMbsEvtBuilder::SetType(EMbsProcType ProcType) {
 	return(kTRUE);
 }
 
-TMrbNamedX * TMbsEvtBuilder::GetType() {
+TMrbNamedX * TMbsEvtBuilder::GetType() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetType
@@ -289,7 +289,7 @@ Bool_t TMbsEvtBuilder::SetCrate(Int_t Crate) {
 	return(kTRUE);
 }
 
-Int_t TMbsEvtBuilder::GetCrate() {
+Int_t TMbsEvtBuilder::GetCrate() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetCrate
@@ -320,7 +320,7 @@ Bool_t TMbsEvtBuilder::SetFlushTime(Int_t Seconds) {
 	return(kTRUE);
 }
 
-Int_t TMbsEvtBuilder::GetFlushTime() {
+Int_t TMbsEvtBuilder::GetFlushTime() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetFlushTime
@@ -351,7 +351,7 @@ Bool_t TMbsEvtBuilder::SetVSBAddr(UInt_t Addr) {
 	return(kTRUE);
 }
 
-UInt_t TMbsEvtBuilder::GetVSBAddr() {
+UInt_t TMbsEvtBuilder::GetVSBAddr() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetVSBAddr
@@ -387,7 +387,7 @@ void TMbsEvtBuilder::SetBuffers(Int_t BufferSize, Int_t NofBuffers, Int_t NofStr
 	gMbsSetup->Set("EvtBuilder.NofStreams", NofStreams);
 }
 
-Int_t TMbsEvtBuilder::GetBufferSize() {
+Int_t TMbsEvtBuilder::GetBufferSize() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetBufferSize
@@ -402,7 +402,7 @@ Int_t TMbsEvtBuilder::GetBufferSize() {
 	return(gMbsSetup->Get("EvtBuilder.BufferSize", 0));
 }
 
-Int_t TMbsEvtBuilder::GetNofBuffers() {
+Int_t TMbsEvtBuilder::GetNofBuffers() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetNofBuffers
@@ -417,7 +417,7 @@ Int_t TMbsEvtBuilder::GetNofBuffers() {
 	return(gMbsSetup->Get("EvtBuilder.NofBuffers", 0));
 }
 
-Int_t TMbsEvtBuilder::GetNofStreams() {
+Int_t TMbsEvtBuilder::GetNofStreams() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsEvtBuilder::GetNofStreams

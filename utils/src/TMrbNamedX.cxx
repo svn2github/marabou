@@ -15,7 +15,7 @@
 
 ClassImp(TMrbNamedX)
 
-const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t IndexFlag) {
+const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t IndexFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbNamedX::GetFullName
@@ -48,7 +48,7 @@ const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t
 	return(FullName.Data());
 }
 
-void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag){
+void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbNamedX::Print

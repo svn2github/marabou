@@ -45,7 +45,9 @@ class TMrbDGFHistogramBuffer : public TNamed, public TArrayI {
 
 		inline void SetModule(TObject * Module) { fModule = Module; };		// connect to dgf module
 		
-		void Print();														// output statistics
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm);
+		void Print() { this->Print(cout); };								// output statistics
 
 		Bool_t FillHistogram(Int_t Channel, Bool_t DrawIt = kTRUE);			// fill & draw histogram
 		Int_t GetContents(Int_t Channel);									// get channel contents

@@ -52,7 +52,7 @@ class TGMrbRadioButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonList.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonList.html&"); };
 
 	ClassDef(TGMrbRadioButtonList, 1)		// [GraphUtils] A list of radio buttons
 };
@@ -82,7 +82,7 @@ class TGMrbRadioButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
 
 	ClassDef(TGMrbRadioButtonGroup, 1)		// [GraphUtils] A group of radio buttons
 };

@@ -52,7 +52,7 @@ class TGMrbTextButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, MsgParm1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTextButtonList.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTextButtonList.html&"); };
 
 	ClassDef(TGMrbTextButtonList, 1)		// [GraphUtils] A list of text buttons
 };
@@ -82,7 +82,7 @@ class TGMrbTextButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTextButtonGroup.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTextButtonGroup.html&"); };
 
 	ClassDef(TGMrbTextButtonGroup, 1)		// [GraphUtils] A group of text buttons
 };

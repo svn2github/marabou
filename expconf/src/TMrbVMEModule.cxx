@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -66,7 +66,7 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 	}
 }
 
-void TMrbVMEModule::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbVMEModule::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbVMEModule::Print

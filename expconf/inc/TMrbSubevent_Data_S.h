@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,11 +46,11 @@ class TMrbSubevent_Data_S : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 	// generate part of code for this subevent
 										TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };		// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kFALSE); };		// has no meaning in this context
-		inline Int_t GetNofWords() { return(fNofWords); };				// number of data words
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };		// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kFALSE); };		// has no meaning in this context
+		inline Int_t GetNofWords() const { return(fNofWords); };				// number of data words
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Data_S.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Data_S.html&"); };
 
 	public:
 		Int_t fNofWords;			// number of data words

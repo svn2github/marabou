@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -144,7 +144,7 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 	}
 }
 
-TObject * TMrbEvent::FindSubeventByCrate(Int_t Crate, TObject * After) {
+TObject * TMrbEvent::FindSubeventByCrate(Int_t Crate, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::FindSubeventByCrate
@@ -853,7 +853,7 @@ Bool_t TMrbEvent::SetConfigOptions(const Char_t * Options) {
 	return(kTRUE);
 }
 
-UInt_t TMrbEvent::GetReadoutOptions() {
+UInt_t TMrbEvent::GetReadoutOptions() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::GetReadoutOptions
@@ -871,7 +871,7 @@ UInt_t TMrbEvent::GetReadoutOptions() {
 	return(fReadoutOptions);
 }
 
-UInt_t TMrbEvent::GetAnalyzeOptions() {
+UInt_t TMrbEvent::GetAnalyzeOptions() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::GetAnalyzeOptions
@@ -889,7 +889,7 @@ UInt_t TMrbEvent::GetAnalyzeOptions() {
 	return(fAnalyzeOptions);
 }
 
-UInt_t TMrbEvent::GetConfigOptions() {
+UInt_t TMrbEvent::GetConfigOptions() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::GetConfigOptions
@@ -906,7 +906,7 @@ UInt_t TMrbEvent::GetConfigOptions() {
 	if (fConfigOptions == TMrbConfig::kNoOptionSpecified) return(gMrbConfig->GetConfigOptions());
 	return(fConfigOptions);
 }
-void TMrbEvent::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbEvent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::Print
@@ -940,7 +940,7 @@ void TMrbEvent::Print(ostream & OutStrm, const Char_t * Prefix) {
 	}
 }
 
-const Char_t * TMrbEvent::GetLofSubeventsAsString(TString & LofSubevents) {
+const Char_t * TMrbEvent::GetLofSubeventsAsString(TString & LofSubevents) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEvent::GetLofSubeventsAsString

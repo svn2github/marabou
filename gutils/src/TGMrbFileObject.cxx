@@ -16,7 +16,7 @@
 //End_Html
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <iostream>
 #include <iomanip>
@@ -224,7 +224,7 @@ void TGMrbFileObjectCombo::SetFileEntry(const Char_t * FileName) {
 	fEntry->SetText(ux.GetRelPath(fileName, fFileInfo.fIniDir));
 }
 
-const Char_t * TGMrbFileObjectCombo::GetFileEntry(TString & FileName, Bool_t FullPath) {
+const Char_t * TGMrbFileObjectCombo::GetFileEntry(TString & FileName, Bool_t FullPath) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectCombo::GetFileEntry
@@ -245,7 +245,7 @@ const Char_t * TGMrbFileObjectCombo::GetFileEntry(TString & FileName, Bool_t Ful
 	return(FileName.Data());
 }
 
-const Char_t * TGMrbFileObjectCombo::GetSelection(TString & SelItem, Bool_t FullPath) {
+const Char_t * TGMrbFileObjectCombo::GetSelection(TString & SelItem, Bool_t FullPath) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbFileObjectCombo::GetSelection

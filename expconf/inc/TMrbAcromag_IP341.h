@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -49,13 +49,14 @@ class TMrbAcromag_IP341 : public TMrbVMEModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("acro_ip341"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("acro_ip341"); }; 	// module mnemonic
 
-		virtual inline Int_t GetNofSubDevices() { return(4); };				// houses up to 4 ip modules
-		inline Bool_t HasRandomReadout() { return(kFALSE); };				// has to be read out as a whole
+		virtual inline Int_t GetNofSubDevices() const { return(4); };				// houses up to 4 ip modules
+		inline Bool_t HasRandomReadout() const { return(kFALSE); };				// has to be read out as a whole
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAcromag_IP341.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAcromag_IP341.html&"); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

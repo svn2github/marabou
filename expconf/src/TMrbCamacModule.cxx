@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -99,7 +99,7 @@ TMrbCamacModule::TMrbCamacModule(const Char_t * ModuleName, const Char_t * Modul
 	}
 }
 
-void TMrbCamacModule::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbCamacModule::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCamacModule::Print
@@ -116,13 +116,14 @@ void TMrbCamacModule::Print(ostream & OutStrm, const Char_t * Prefix) {
 	TMrbCamacChannel * chn;
 	Bool_t found;
 	Bool_t arrayFlag;
+	TString cnafAscii;
 
 	OutStrm << Prefix << endl;
 	OutStrm << Prefix << "Module Definition:" << endl;
 	OutStrm << Prefix << "   Name          : " << GetName() << endl;
 	OutStrm << Prefix << "   Type          : " << GetTitle() << endl;
 	OutStrm << Prefix << "   Range         : " << fRange << endl;
-	OutStrm << Prefix << "   Location      : " << fCNAF.Int2Ascii() << endl;
+	OutStrm << Prefix << "   Location      : " << fCNAF.Int2Ascii(cnafAscii) << endl;
 	OutStrm << Prefix << "   Channels      : " << this->GetNofChannelsUsed() << " out of " << this->GetNofChannels() << endl;
 	found = kFALSE;
 	nch = 0;

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -52,15 +52,18 @@ class TMrbLogMessage: public TObject {
 		
 		~TMrbLogMessage() {};
 		
-		inline UInt_t GetDatime() { return(fDatime.Get()); };
-		inline EMrbMsgType GetType() { return(fType); };
-		inline const Char_t * GetColor() { return(fColor.Data()); };
-		inline const Char_t * GetClassName() { return(fClassName.Data()); };
-		inline const Char_t * GetMethod() { return(fMethod.Data()); };
-		inline const Char_t * GetText() { return(fText.Data()); };
-		const Char_t * Get(TString & FmtMsg, const Char_t * ProgName, Bool_t WithDate = kFALSE, Bool_t WithColors = kTRUE);
+		inline UInt_t GetDatime() const { return(fDatime.Get()); };
+		inline EMrbMsgType GetType() const { return(fType); };
+		inline const Char_t * GetColor() const { return(fColor.Data()); };
+		inline const Char_t * GetClassName() const { return(fClassName.Data()); };
+		inline const Char_t * GetMethod() const { return(fMethod.Data()); };
+		inline const Char_t * GetText() const { return(fText.Data()); };
+		const Char_t * Get(TString & FmtMsg,
+									const Char_t * ProgName,
+									Bool_t WithDate = kFALSE,
+									Bool_t WithColors = kTRUE) const;
 				
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogMessage.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogMessage.html&"); };
 
 	protected:
 		TDatime fDatime;
@@ -103,31 +106,32 @@ class TMrbLogger: public TNamed {
 		Bool_t Close();
 				
 		void SetProgName(const Char_t * ProgName);
-		inline const Char_t * GetProgName() { return(fProgName.Data()); };
+		inline const Char_t * GetProgName() const { return(fProgName.Data()); };
 		
-		Int_t GetNofEntries(UInt_t Type = TMrbLogMessage::kMrbMsgAny); 	// number of entries
-		inline Int_t GetEntries(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgAny)); };
-		inline Int_t GetMessages(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgMessage)); };
-		inline Int_t GetErrors(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgError)); };
-		inline Int_t GetWarnings(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgWarning)); };
+		Int_t GetNofEntries(UInt_t Type = TMrbLogMessage::kMrbMsgAny) const; 	// number of entries
+		inline Int_t GetEntries(TObjArray & MsgArr, Int_t Start = 0) const { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgAny)); };
+		inline Int_t GetMessages(TObjArray & MsgArr, Int_t Start = 0) const { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgMessage)); };
+		inline Int_t GetErrors(TObjArray & MsgArr, Int_t Start = 0) const { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgError)); };
+		inline Int_t GetWarnings(TObjArray & MsgArr, Int_t Start = 0) const { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgWarning)); };
 		
-		inline Int_t GetEntriesSinceLastCall(TObjArray & MsgArr) { return(GetEntries(MsgArr, fIndexOfLastPrinted)); };
-		inline Int_t GetMessagesSinceLastCall(TObjArray & MsgArr) { return(GetMessages(MsgArr, fIndexOfLastPrinted)); };
-		inline Int_t GetErrorsSinceLastCall(TObjArray & MsgArr) { return(GetErrors(MsgArr, fIndexOfLastPrinted)); };
-		inline Int_t GetWarningsSinceLastCall(TObjArray & MsgArr) { return(GetWarnings(MsgArr, fIndexOfLastPrinted)); };
+		inline Int_t GetEntriesSinceLastCall(TObjArray & MsgArr) const { return(GetEntries(MsgArr, fIndexOfLastPrinted)); };
+		inline Int_t GetMessagesSinceLastCall(TObjArray & MsgArr) const { return(GetMessages(MsgArr, fIndexOfLastPrinted)); };
+		inline Int_t GetErrorsSinceLastCall(TObjArray & MsgArr) const { return(GetErrors(MsgArr, fIndexOfLastPrinted)); };
+		inline Int_t GetWarningsSinceLastCall(TObjArray & MsgArr) const { return(GetWarnings(MsgArr, fIndexOfLastPrinted)); };
 		
-		Int_t GetEntriesByType(TObjArray & MsgArr, Int_t Start = 0, UInt_t Type = TMrbLogMessage::kMrbMsgAny);
+		Int_t GetEntriesByType(TObjArray & MsgArr, Int_t Start = 0, UInt_t Type = TMrbLogMessage::kMrbMsgAny) const;
 	
-		TMrbLogMessage * GetLast(const Char_t * Option = "*");
-		TMrbLogMessage * GetLast(UInt_t Type);
+		TMrbLogMessage * GetLast(const Char_t * Option = "*") const;
+		TMrbLogMessage * GetLast(UInt_t Type) const;
 		
 		inline UInt_t Enable(UInt_t Bits) { fEnabled |= Bits; return(fEnabled); };
 		inline UInt_t Disable(UInt_t Bits) { fEnabled &= ~Bits; return(fEnabled); };
 		
 		inline void SetGUI(TObject * GUI) { fGUI = GUI; };
 		
-		void Print(Int_t Tail = 0, const Char_t * Option = "*");
-		void Print(Int_t Tail, UInt_t Type);
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(Int_t Tail = 0, const Char_t * Option = "*") const;
+		void Print(Int_t Tail, UInt_t Type) const;
 		
 		void PrintSinceLastCall(const Char_t * Option = "Error");
 		void PrintSinceLastCall(UInt_t Type);
@@ -137,7 +141,7 @@ class TMrbLogger: public TNamed {
 			fIndexOfLastPrinted = 0;
 		};
 		
-		inline Int_t GetIndexOfLastPrinted() { return(fIndexOfLastPrinted); };
+		inline Int_t GetIndexOfLastPrinted() const { return(fIndexOfLastPrinted); };
 				
 		const Char_t * Prefix(const Char_t * Identifier = "*", const Char_t * ProgName = NULL); 	// line prefix
 		
@@ -145,7 +149,7 @@ class TMrbLogger: public TNamed {
 		inline ostringstream & Err() { return(*fErr); };
 		inline ofstream & Log() { return(*fLog); };
 				
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogger.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogger.html&"); };
 
 	protected:
 

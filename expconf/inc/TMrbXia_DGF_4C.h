@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -45,57 +45,58 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
 		Bool_t MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension);	// generate part of analyzing code
 
 		Bool_t MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName);
 		
-		virtual inline const Char_t * GetMnemonic() { return("dgf"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("dgf"); }; 	// module mnemonic
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent);		// check if subevent type is [10,2x]
+		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,2x]
 
 		Bool_t ReadNameTable(); 							 		// read parameter names from file
-		inline TMrbNamedX * FindParam(const Char_t * ParamName) { return((TMrbNamedX *) fParamNames.FindByName(ParamName)); };
-		inline TMrbNamedX * FindParam(Int_t Offset) { return((TMrbNamedX *) fParamNames.FindByIndex(Offset)); };
+		inline TMrbNamedX * FindParam(const Char_t * ParamName) const { return((TMrbNamedX *) fParamNames.FindByName(ParamName)); };
+		inline TMrbNamedX * FindParam(Int_t Offset) const { return((TMrbNamedX *) fParamNames.FindByIndex(Offset)); };
 		TMrbNamedX * FindParam(Int_t Channel, const Char_t * ParamName);
 
-		inline TMrbNamedX * FirstParam() { return((TMrbNamedX *) fParamNames.First()); };
-		inline TMrbNamedX * NextParam(TMrbNamedX * Param) { return((TMrbNamedX *) fParamNames.After(Param)); };
-		inline Int_t GetNofParams() { return(fNofParams); };
+		inline TMrbNamedX * FirstParam() const { return((TMrbNamedX *) fParamNames.First()); };
+		inline TMrbNamedX * NextParam(TMrbNamedX * Param) const { return((TMrbNamedX *) fParamNames.After(Param)); };
+		inline Int_t GetNofParams() const { return(fNofParams); };
 
-		virtual inline Bool_t HasRandomReadout() { return(kFALSE); };	// block mode only
+		virtual inline Bool_t HasRandomReadout() const { return(kFALSE); };	// block mode only
 
 		inline void SetMaxEvents(Int_t MaxEvents) { fMaxEvents = MaxEvents; };
-		inline Int_t GetMaxEvents() { return(fMaxEvents); };
+		inline Int_t GetMaxEvents() const { return(fMaxEvents); };
 		inline void SetTraceLength(Int_t TraceLength = 40) { fTraceLength = TraceLength; };
-		inline Int_t GetTraceLength() { return(fTraceLength); };
+		inline Int_t GetTraceLength() const { return(fTraceLength); };
 		inline void SetRunTask(Int_t RunTask = 0x100) { fRunTask = RunTask; };
-		inline Int_t GetRunTask() { return(fRunTask); };
+		inline Int_t GetRunTask() const { return(fRunTask); };
 		inline void SetSynchWait(Int_t SynchWait = 1) { fSynchWait = SynchWait; };
-		inline Int_t GetSynchWait() { return(fSynchWait); };
+		inline Int_t GetSynchWait() const { return(fSynchWait); };
 		inline void SetInSynch(Int_t InSynch = 0) { fInSynch = InSynch; };
-		inline Int_t GetInSynch() { return(fInSynch); };
+		inline Int_t GetInSynch() const { return(fInSynch); };
 		inline void SetSwitchBusTerm(Bool_t IndivFlag = kTRUE, Bool_t TermFlag = kTRUE) {
 							fSwitchBusIndiv = IndivFlag;
 							fSwitchBusTerm = TermFlag; 
 		};
 		inline Bool_t SwitchBusToBeTerminated() { return(fSwitchBusTerm); };
 		inline void ActivateUserPSACode(Bool_t ActiveFlag = kTRUE) { fActivateUserPSA = ActiveFlag; };
-		inline Bool_t UserPSAIsActive() { return(fActivateUserPSA); };
+		inline Bool_t UserPSAIsActive() const { return(fActivateUserPSA); };
 
 		inline void SetClusterID(Int_t Serial, const Char_t * Color, const Char_t * Segments) { // cluster ids
 			fClusterID.Set(Serial, Color, Segments);
 		};
-		inline Int_t GetClusterSerial() { return(fClusterID.GetIndex()); }; 		// use TMrbNamedX object:
-		inline const Char_t * GetClusterColor() { return(fClusterID.GetName()); };	// index <- serial, name <- color
-		inline const Char_t * GetClusterSegments() { return(fClusterID.GetTitle()); };	// title <- segment info
+		inline Int_t GetClusterSerial() const { return(fClusterID.GetIndex()); }; 		// use TMrbNamedX object:
+		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
+		inline const Char_t * GetClusterSegments() const { return(fClusterID.GetTitle()); };	// title <- segment info
 
-		inline Int_t GetRelease() { return(fRelease); };								// return xia release
-		inline Bool_t DSPLoadedFromBinary() { return(fDSPLoadedFromBinary); };			// return dsp format
+		inline Int_t GetRelease() const { return(fRelease); };								// return xia release
+		inline Bool_t DSPLoadedFromBinary() const { return(fDSPLoadedFromBinary); };			// return dsp format
 		
-		virtual inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
+		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbXia_DGF_4C.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbXia_DGF_4C.html&"); };
 
 	protected:
 		void DefineRegisters(); 			// define camac registers

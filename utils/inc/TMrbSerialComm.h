@@ -65,16 +65,17 @@ class TMrbSerialComm : public TNamed {
 		inline void SetPrefix(const Char_t * Prefix) { fPrefix = Prefix; };
 		inline void SetPostfix(const Char_t * Postfix, Bool_t CrFlag = kTRUE) { fPostfix = Postfix; if (CrFlag) fPostfix += "\r"; };
 
-		inline const Char_t * GetPort() { return(this->GetTitle()); };
+		inline const Char_t * GetPort() const { return(this->GetTitle()); };
 
-		inline Bool_t IsOpen() { return(fFd != -1); };
+		inline Bool_t IsOpen() const { return(fFd != -1); };
 
-		virtual void Print();			// print settings
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		virtual void Print() const;			// print settings
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSerialComm.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSerialComm.html&"); };
 
 	protected:
-		const Char_t * MakePrintable(TString & PrintString, const Char_t * String);
+		const Char_t * MakePrintable(TString & PrintString, const Char_t * String) const;
 
 	protected:
 		Int_t fFd;						// i/o channel id from open(2)

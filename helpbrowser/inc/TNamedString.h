@@ -3,7 +3,7 @@
 #include "TString.h"
 #include <iostream>
 
-using namespace std;
+namespace std {} using namespace std;
 
 class TNamedString : public TNamed {
 
@@ -23,8 +23,9 @@ public:
    void SetText(Text_t * text){fString = text;}
    const Text_t * GetText(){return fString.Data();}
    Int_t Length(){return fString.Length();}
+   void Print(Option_t * Option) const { TObject::Print(Option); };
 //_________________________________________________________________________
-   void Print() const{
+   void Print() const {
       cout << fString.Data() << endl;
    }
 private:   

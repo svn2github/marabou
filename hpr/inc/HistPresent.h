@@ -19,7 +19,7 @@
 #include "FitHist.h"
 #include "TMrbHelpBrowser.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};

@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -212,7 +212,7 @@ Bool_t TMrbKinetics_3655::SetFrequency(const Char_t * Frequency) {
 	return(kTRUE);
 }
 
-TMrbNamedX * TMrbKinetics_3655::GetFrequency() {
+TMrbNamedX * TMrbKinetics_3655::GetFrequency() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbKinetics_3655::GetFrequency
@@ -262,10 +262,10 @@ void TMrbKinetics_3655::SetRecycleMode(Bool_t RecycleFlag) {
 	}
 }
 
-Bool_t TMrbKinetics_3655::IsRecycleMode() {
+Bool_t TMrbKinetics_3655::IsRecycleMode() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbKinetics_3655::GetFrequency
+// Name:           TMrbKinetics_3655::IsRecycleMode
 // Purpose:        Return recycle bit
 // Arguments:      --
 // Results:        kTRUE/KFALSE
@@ -332,7 +332,7 @@ Int_t TMrbKinetics_3655::SetIntervals(Int_t Inv1, Int_t Inv2, Int_t Inv3, Int_t 
 	return(fNofIntervals);
 }
 
-Int_t TMrbKinetics_3655::GetInterval(Int_t InvNo) {
+Int_t TMrbKinetics_3655::GetInterval(Int_t InvNo) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbKinetics_3655::GetInterval
@@ -455,7 +455,7 @@ Bool_t TMrbKinetics_3655::SetLamMask(Bool_t Lam1, Bool_t Lam2, Bool_t Lam3, Bool
 	return(kTRUE);
 }
 
-UInt_t TMrbKinetics_3655::GetLamMask() {
+UInt_t TMrbKinetics_3655::GetLamMask() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbKinetics_3655::GetLamMask

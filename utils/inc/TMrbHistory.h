@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <iostream>
 #include "TObjArray.h"
@@ -35,15 +35,16 @@ class TMrbHistory: public TObjArray {
 		~TMrbHistory() {};					// default dtor
 
 		TObjString * AddEntry(TObject * Obj, const Char_t * Command); 	// add entry
-		const Char_t * GetEntry(Int_t Index);					// get history entry
+		const Char_t * GetEntry(Int_t Index) const;					// get history entry
 		Bool_t RemoveEntry(Int_t Index);							// remove entry
-		Bool_t Exec(Int_t Index); 							// execute command at entry(i)
-		Bool_t Restore(Bool_t ReverseOrder = kTRUE); 			// exec all history entries
+		Bool_t Exec(Int_t Index) const; 									// execute command at entry(i)
+		Bool_t Restore(Bool_t ReverseOrder = kTRUE) const; 				// exec all history entries
 						
-		void Print(ostream & Out);
-		inline void Print() { Print(cout); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & Out) const;
+		inline void Print() const { Print(cout); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbHistory.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbHistory.html&"); };
 
 	protected:
 

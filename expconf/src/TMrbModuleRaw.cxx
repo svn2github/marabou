@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -45,7 +45,7 @@ TMrbModuleRaw::TMrbModuleRaw(const Char_t * ModuleName, const Char_t * ModuleID,
 //                 Char_t * ModuleID        -- module id
 //                 Int_t NofChannels        -- number of channels
 //                 Int_t Range              -- range
-//                 Option_t DataType        -- data type
+//                 Option_t * DataType      -- data type
 // Results:        --
 // Exceptions:
 // Description:    
@@ -78,7 +78,7 @@ TMrbModuleRaw::TMrbModuleRaw(const Char_t * ModuleName, const Char_t * ModuleID,
 				gMrbLog->Flush(this->ClassName());
 				this->MakeZombie();
 			} else {
-				fNofShortsPerChannel = (DataType == TMrbConfig::kDataUInt) ? 2 : 1;
+				fNofShortsPerChannel = (fDataType->GetIndex() == TMrbConfig::kDataUInt) ? 2 : 1;
 				fCrate = 0;
 
 				for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params

@@ -540,7 +540,7 @@ TObjString * TMrbTemplate::TestIfInCodeSegment(TObjString * Code, Bool_t & InSeg
 	return(Code);
 }
 
-Bool_t TMrbTemplate::PrintCode() {
+Bool_t TMrbTemplate::PrintCode() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTemplate::PrintCode

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -49,12 +49,14 @@ class TMrbAdcd_9701 : public TMrbCamacModule {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
 
-		virtual inline const Char_t * GetMnemonic() { return("adcd"); }; 	// module mnemonic
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline Int_t GetNofSubDevices() { return(2); };				// houses 2 identical adcs
-		virtual inline Bool_t HasRandomReadout() { return(kFALSE); };		// must be read as a whole
+		virtual inline const Char_t * GetMnemonic() const { return("adcd"); }; 	// module mnemonic
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAdcd_9701.html&"); };
+		virtual inline Int_t GetNofSubDevices() const { return(2); };				// houses 2 identical adcs
+		virtual inline Bool_t HasRandomReadout() const { return(kFALSE); };		// must be read as a whole
+
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAdcd_9701.html&"); };
 
 	protected:
 		void DefineRegisters(); 				// define camac regs

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -50,19 +50,22 @@ class TMrbVMEModule : public TMrbModule {
 
 		~TMrbVMEModule() {};									// default dtor
 
-		inline UInt_t GetBaseAddr() { return(fBaseAddr); };				// get base addr
-		inline Int_t GetSegmentSize() { return(fSegmentSize); };		// segment size
-		inline Int_t GetAddrModifier() { return(fAddrModifier); };		// addr modifier
+		inline UInt_t GetBaseAddr() const { return(fBaseAddr); };				// get base addr
+		inline Int_t GetSegmentSize() const { return(fSegmentSize); };		// segment size
+		inline Int_t GetAddrModifier() const { return(fAddrModifier); };		// addr modifier
 
-		inline const Char_t * GetPosition() { return(fPosition.Data()); }; 	// crate & addr
+		inline const Char_t * GetPosition() const { return(fPosition.Data()); }; 	// crate & addr
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate readout code
 												TMrbTemplate & Template, const Char_t * Prefix = NULL);
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Subevent, Int_t Value = 0) { return(kFALSE); }; 
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEModule.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEModule.html&"); };
 
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");		// show data
-		virtual inline void Print() { Print(cout, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;		// show data
+		virtual inline void Print() const { Print(cout, ""); };
 
 	protected:
 		UInt_t fBaseAddr;					// base address

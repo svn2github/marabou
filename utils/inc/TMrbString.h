@@ -122,10 +122,10 @@ class TMrbString : public TString {
 		inline TMrbString & operator+=(const Int_t n) { return(AppendInteger(n)); };
 		inline TMrbString & operator+=(const Double_t d) { return(AppendDouble(d)); };
 
-		inline TMrbString & operator=(const Char_t * s) { return((TMrbString &) Replace(0, Length(), s, strlen(s))); };
-		inline TMrbString & operator=(const TMrbString & s) { return((TMrbString &) Replace(0, Length(), s.Data(), s.Length())); };
-		inline TMrbString & operator+=(const Char_t * s) { return((TMrbString &) Append(s, strlen(s))); };
-		inline TMrbString & operator+=(const TString & s) { return((TMrbString &) Append(s.Data(), s.Length())); };
+		inline TMrbString & operator=(const Char_t * s) { return((TMrbString &) this->Replace(0, Length(), s, strlen(s))); };
+		inline TMrbString & operator=(const TMrbString & s) { return((TMrbString &) this->Replace(0, Length(), s.Data(), s.Length())); };
+		inline TMrbString & operator+=(const Char_t * s) { return((TMrbString &) this->Append(s, strlen(s))); };
+		inline TMrbString & operator+=(const TString & s) { return((TMrbString &) this->Append(s.Data(), s.Length())); };
 
 		inline TMrbString & operator=(const TSubString & s) { TString tmp = s; *this = tmp; return(*this); };
 
@@ -136,8 +136,8 @@ class TMrbString : public TString {
 		inline const Char_t * Fill(Int_t n, const Char_t * Pattern = " ", Int_t Pos = 0) { if (n > 0) { for (; n--;) Insert(Pos, Pattern); } return(fData); };
 
  	protected:
-		Int_t CheckInteger(TString & Prefix, Int_t Base, Int_t & BaseId, Bool_t & IsSigned);	// check if string valid integer
-		Int_t CheckDouble(TString & Prefix, Bool_t & IsSigned); 								// check if string valid double
+		Int_t CheckInteger(TString & Prefix, Int_t Base, Int_t & BaseId, Bool_t & IsSigned) const;	// check if string valid integer
+		Int_t CheckDouble(TString & Prefix, Bool_t & IsSigned) const; 								// check if string valid double
 
 	protected:
 		Int_t fPrecision;

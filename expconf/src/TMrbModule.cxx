@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -105,7 +105,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 	}
 }
 
-Int_t TMrbModule::GetNofChannelsUsed() {
+Int_t TMrbModule::GetNofChannelsUsed() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::GetNofChannelsUsed
@@ -129,7 +129,7 @@ Int_t TMrbModule::GetNofChannelsUsed() {
 	return(nofChannelsUsed);
 }
 
-UInt_t TMrbModule::GetPatternOfChannelsUsed() {
+UInt_t TMrbModule::GetPatternOfChannelsUsed() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::GetPatternOfChannelsUsed
@@ -232,7 +232,7 @@ void TMrbModule::SetType(UInt_t ModuleType, Bool_t OrFlag) {
 	fModuleType.Set(ModuleType, mType.Data());
 }
 
-TObject * TMrbModule::GetChannel(Int_t Channel) {
+TObject * TMrbModule::GetChannel(Int_t Channel) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::GetChannel
@@ -400,7 +400,7 @@ Bool_t TMrbModule::Set(Int_t RegIndex, const Char_t * Value, Int_t Channel) {
 	}
 }
 
-Int_t TMrbModule::Get(const Char_t * RegName, Int_t Channel) {
+Int_t TMrbModule::Get(const Char_t * RegName, Int_t Channel) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::Get
@@ -436,7 +436,7 @@ Int_t TMrbModule::Get(const Char_t * RegName, Int_t Channel) {
 	}
 }
 
-Int_t TMrbModule::Get(Int_t RegIndex, Int_t Channel) {
+Int_t TMrbModule::Get(Int_t RegIndex, Int_t Channel) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::Get
@@ -656,7 +656,7 @@ void TMrbModule::DeleteRegisters() {
 	fLofRegisters.Delete();
 }
 
-void TMrbModule::PrintRegister(ostream & OutStrm, const Char_t * RegName, const Char_t * Prefix) {
+void TMrbModule::PrintRegister(ostream & OutStrm, const Char_t * RegName, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModule::PrintRegister()

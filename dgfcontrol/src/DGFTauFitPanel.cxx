@@ -515,7 +515,6 @@ Bool_t DGFTauFitPanel::TauFit() {
 									if (taufitFile == NULL) taufitFile = new TFile("tau.root", "RECREATE");
 									histoBuffer.FillHistogram(chn);
 									TH1F * h = histoBuffer.Histogram(chn);
-									cout << "@@ " << dgf->GetName() << " " << h->GetName() << endl;
 									TMrbString hName = h->GetName();
 									hName += ".tau";
 									hName += tau;

@@ -1,4 +1,4 @@
-using namespace std;
+namespace std {} using namespace std;
 
 #include <iostream>
 #include "TableOfLabels.h"

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -105,23 +105,24 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("caen_v785"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("caen_v785"); }; 	// module mnemonic
 
 		inline void SetFFMode(Bool_t FFFlag = kTRUE) { fFFMode = FFFlag; };
-		inline Bool_t IsFFMode() { return(fFFMode); };
+		inline Bool_t IsFFMode() const { return(fFFMode); };
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent);		// check if subevent type is [10,4x]
+		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,4x]
 
-		inline Bool_t HasRandomReadout() { return(kFALSE); };
+		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 
 		inline void SetFineThresh(Bool_t FineFlag = kTRUE) { fFineThresh = FineFlag; }; // lower thresh in steps of 2 bits
-		inline Bool_t HasFineThresh() { return(fFineThresh); };
+		inline Bool_t HasFineThresh() const { return(fFineThresh); };
 
-		virtual inline Bool_t HasPrivateCode() { return(kTRUE); }; 			// use private code files
-		virtual inline const Char_t * GetPrivateCodeFile() { return("Module_Caen_V7X5"); };
+		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
+		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_V7X5"); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V785.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V785.html&"); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

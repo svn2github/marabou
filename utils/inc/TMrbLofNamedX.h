@@ -47,13 +47,13 @@ class TMrbLofNamedX: public TObjArray {
 		~TMrbLofNamedX() { this->Delete(); };										// dtor: delete heap objects
 
 		inline void SetName(const Char_t * Name) { fName = Name; };
-		inline const Char_t * GetName() { return(fName); };
+		inline const Char_t * GetName() const { return(fName); };
 		inline void SetTitle(const Char_t * Title) { fTitle = Title; };
-		inline const Char_t * GetTitle() { return(fTitle); };
+		inline const Char_t * GetTitle() const { return(fTitle); };
 		inline void SetObject(const Char_t * Name, const Char_t * Title) { fName = Name; fTitle = Name; };
 
 		inline void SetPatternMode() { fPatternMode = kTRUE; };
-		inline Bool_t IsPatternMode() { return(fPatternMode); };
+		inline Bool_t IsPatternMode() const { return(fPatternMode); };
 
 		void AddNamedX(const SMrbNamedX * NamedX);							// add one or more indices
 		void AddNamedX(const SMrbNamedXShort * NamedX);					 	// ... (short names only)
@@ -63,17 +63,17 @@ class TMrbLofNamedX: public TObjArray {
 		void AddNamedX(const Char_t * NameString, const Char_t * Delim = ":", Bool_t PatternMode = kFALSE);
 
 																					// find an index by its name
-		TMrbNamedX * FindByName(const Char_t * ShortName, UInt_t FindMode = TMrbLofNamedX::kFindExact);
-		TMrbNamedX * FindByIndex(Int_t Index, Int_t Mask = 0xFFFFFFFF); 			// find an index
+		TMrbNamedX * FindByName(const Char_t * ShortName, UInt_t FindMode = TMrbLofNamedX::kFindExact) const;
+		TMrbNamedX * FindByIndex(Int_t Index, Int_t Mask = 0xFFFFFFFF) const; 			// find an index
 		
 		UInt_t FindPattern(const Char_t * IndexString,								// find a compound index
 							UInt_t FindMode = TMrbLofNamedX::kFindExact,
-							const Char_t * Delim = ":");
+							const Char_t * Delim = ":") const;
 
 		Bool_t FindByDialog(TString & Result, 									// dialog mode
 							const TString & ShortName,
 							UInt_t FindMode = TMrbLofNamedX::kFindExact,
-							const Char_t * Delim = "");
+							const Char_t * Delim = "") const;
 
 		UInt_t CheckPattern(const Char_t * ClassName, const Char_t * Method, const Char_t * IndexString,	// check index string
 							const SMrbNamedX * NamedX = NULL,
@@ -86,19 +86,20 @@ class TMrbLofNamedX: public TObjArray {
 			return(this->CheckPattern(ClassName, Method, IndexString, NULL, Mode));
 		};
 
-		const Char_t * Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Delim = ":");
+		const Char_t * Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Delim = ":") const;
 
-		UInt_t GetMask();											// return mask of all bits in list
+		UInt_t GetMask() const;											// return mask of all bits in list
 
-		void Print(ostream & Out, const Char_t * Prefix = "", UInt_t Mask = 0xffffffff);	// show list of indices
-		inline void Print() { Print(cout, "", 0xffffffff); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & Out, const Char_t * Prefix = "", UInt_t Mask = 0xffffffff) const;	// show list of indices
+		inline void Print() const { Print(cout, "", 0xffffffff); };
 
 		void PrintNames(ostream & Out = cout, 						// print names in one line
 						const Char_t * Prefix = "",
 						UInt_t Mask = 0xffffffff,
-						Bool_t CrFlag = kTRUE);
+						Bool_t CrFlag = kTRUE) const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofNamedX.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofNamedX.html&"); };
 
 	protected:
 		Bool_t fPatternMode;

@@ -55,21 +55,21 @@ class TGMrbFileObjectCombo: public TGCompositeFrame, public TGMrbObject {
 
 		~TGMrbFileObjectCombo() {};				// default dtor
 
-		inline TGTextEntry * GetEntry() { return(fEntry); };
-		inline TGComboBox * GetComboBox() { return(fCombo); };
+		inline TGTextEntry * GetEntry() const { return(fEntry); };
+		inline TGComboBox * GetComboBox() const { return(fCombo); };
 
 		void SetFileEntry(const Char_t * File);
-		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE);	// get selected file
-		const Char_t * GetSelection(TString & SelItem, Bool_t FullPath = kTRUE);	// get selected file/object
+		const Char_t * GetFileEntry(TString & FileName, Bool_t FullPath = kTRUE) const;	// get selected file
+		const Char_t * GetSelection(TString & SelItem, Bool_t FullPath = kTRUE) const;	// get selected file/object
 
 		inline void Associate(const TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
-		inline const Char_t * GetText() { return(fText.Data()); };					// return text field data
+		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 		
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFileObjectCombo.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFileObjectCombo.html&"); };
 
 	protected:
 		TGVerticalFrame * fEC;				//!

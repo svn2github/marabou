@@ -61,10 +61,10 @@ class TMrbEsoneCnaf : public TObject {
 		Bool_t SetData(Int_t Data, EMrbEsoneCnafType Type = kCnafTypeUndefined);
 		inline void ClearStatus() { fStatus = 0; };
 		Bool_t ClearData(EMrbEsoneCnafType Type = kCnafTypeUndefined);
-		inline void SetX() { fStatus |= kEsoneX; };
-		inline void SetQ() { fStatus |= kEsoneQ; };
-		inline void SetXQ() { fStatus |= (kEsoneQ|kEsoneX); };
-		inline void SetError() { fStatus |= kEsoneError; };
+		inline void SetX() { fStatus |= (UInt_t) kEsoneX; };
+		inline void SetQ() { fStatus |= (UInt_t) kEsoneQ; };
+		inline void SetXQ() { fStatus |= ((UInt_t) (kEsoneQ|kEsoneX)); };
+		inline void SetError() { fStatus |= (UInt_t) kEsoneError; };
 
 		inline Int_t GetC() { return(fCrate); };									// get cnaf
 		inline Int_t GetN() { return(fStation); };

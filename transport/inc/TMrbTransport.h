@@ -14,7 +14,7 @@
 // Revision:                  
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <stdio.h>
 #include <iostream>

@@ -52,7 +52,7 @@ class TGMrbPictureButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbPictureButtonList.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbPictureButtonList.html&"); };
 
 	ClassDef(TGMrbPictureButtonList, 1) 	// [GraphUtils] A list of picture buttons
 };
@@ -82,7 +82,7 @@ class TGMrbPictureButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
 
 	ClassDef(TGMrbPictureButtonGroup, 1) 	// [GraphUtils] A group of picture buttons
 };

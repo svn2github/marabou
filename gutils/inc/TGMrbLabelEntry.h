@@ -52,7 +52,7 @@ class TGMrbTextEntry: public TGTextEntry {
 		inline void SendSignal() {				// ReturnPressed() or TextChanged() depending on ReturnPressed flag
 			if (fSendReturnPressed) TGTextEntry::ReturnPressed(); else TGTextEntry::TextChanged();
 		};
-		virtual void TextChanged() {};	// no operation, action handled by SendSignal()
+		virtual void TextChanged(const Char_t * Text) {};	// no operation, action handled by SendSignal()
 		
 		virtual Bool_t HandleButton(Event_t * Event);
 
@@ -108,19 +108,19 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 												fType = EntryType; fWidth = Width, fBase = Base; };
 		inline void SetIncrement(Double_t Increment) { fIncrement = Increment; };
 		Bool_t SetRange(Double_t LowerLimit, Double_t UpperLimit);
-		Bool_t WithinRange();
-		Bool_t CheckRange(Double_t Value);
-		Bool_t RangeToBeChecked();
+		Bool_t WithinRange() const;
+		Bool_t CheckRange(Double_t Value) const;
+		Bool_t RangeToBeChecked() const;
 
 		inline void AddToFocusList(TGMrbFocusList * FocusList) { fFocusList = FocusList; fFocusList->Add(fEntry); };
-		inline TGMrbFocusList * GetFocusList() { return(fFocusList); };
+		inline TGMrbFocusList * GetFocusList() const { return(fFocusList); };
 
-		inline TGMrbTextEntry * GetEntry() { return(fEntry); };
-		inline TGPictureButton * GetUpButton() { return(fUp); };
-		inline TGPictureButton * GetDownButton() { return(fDown); };
-		inline TGPictureButton * GetBeginButton() { return(fBegin); };
-		inline TGPictureButton * GetEndButton() { return(fEnd); };
-		inline TGTextButton * GetActionButton() { return(fAction); };
+		inline TGMrbTextEntry * GetEntry() const { return(fEntry); };
+		inline TGPictureButton * GetUpButton() const { return(fUp); };
+		inline TGPictureButton * GetDownButton() const { return(fDown); };
+		inline TGPictureButton * GetBeginButton() const { return(fBegin); };
+		inline TGPictureButton * GetEndButton() const { return(fEnd); };
+		inline TGTextButton * GetActionButton() const { return(fAction); };
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
@@ -129,7 +129,7 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		inline void Associate(const TGWindow * Window) { fEntry->Associate(Window); };	// where to go if text field data change
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelEntry.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelEntry.html&"); };
 
 	protected:
 		TGMrbTextEntry * fEntry;		//! entry widget

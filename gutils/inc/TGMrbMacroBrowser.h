@@ -16,7 +16,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -113,11 +113,11 @@ class TGMrbMacroArg : public TObject {
 		};
 		virtual ~TGMrbMacroArg() { delete fFileInfo; };						// default dtor
 
-		const Char_t * GetResource(TString & Resource, const Char_t * ResourceName);
-		inline Int_t GetNumber() { return(fNumber); };
+		const Char_t * GetResource(TString & Resource, const Char_t * ResourceName) const;
+		inline Int_t GetNumber() const { return(fNumber); };
 		inline void SetNumber(Int_t Number) { fNumber = Number; };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroArg.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroArg.html&"); };
 
 	protected:
 		Int_t fNumber;					// arg number
@@ -189,11 +189,11 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		virtual void CloseWindow() { delete this; };
 
 		Bool_t ResetMacroArgs();						// reset arguments
-		Bool_t ExecMacro(); 							// exec macro
+		Bool_t ExecMacro() const; 						// exec macro
 		Bool_t ModifyMacroHeader(); 					// modify header
 		Bool_t ModifyMacroSource(); 					// modify source
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroFrame.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroFrame.html&"); };
 
 	protected:
 		TList fHeap;
@@ -273,7 +273,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroEdit.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroEdit.html&"); };
 
 	protected:
 		Bool_t UpdateArg(Int_t ArgNo = -1);					// update GUI for a given argument
@@ -365,7 +365,7 @@ class TGMrbMacroList : public TGVerticalFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroList.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroList.html&"); };
 
 	protected:
 		TList fHeap;
@@ -404,14 +404,14 @@ class TGMrbMacroBrowserMain : public TGMainFrame {
 
 		TGMrbMacroBrowserMain(const TGMrbMacroBrowserMain & f) : TGMainFrame(f) {};	// default copy ctor
 
-		inline TMrbLofMacros * GetLofMacros() { return(fLofMacros); };
+		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		
 		virtual inline void CloseWindow();
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserVertical.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserVertical.html&"); };
 
 	protected:
 		void PopupMessageViewer();
@@ -453,11 +453,11 @@ class TGMrbMacroBrowserVertical : public TGVerticalFrame {
 
 		TGMrbMacroBrowserVertical(const TGMrbMacroBrowserVertical & f) : TGVerticalFrame(f) {};	// default copy ctor
 
-		inline TMrbLofMacros * GetLofMacros() { return(fLofMacros); };
+		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserVertical.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserVertical.html&"); };
 
 	protected:
 		TList fHeap;
@@ -484,11 +484,11 @@ class TGMrbMacroBrowserGroup : public TGGroupFrame {
 
 		TGMrbMacroBrowserGroup(const TGMrbMacroBrowserGroup & f) : TGGroupFrame(f) {};	// default copy ctor
 
-		inline TMrbLofMacros * GetLofMacros() { return(fLofMacros); };
+		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserGroup.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserGroup.html&"); };
 
 	protected:
 		TList fHeap;
@@ -520,11 +520,11 @@ class TGMrbMacroBrowserPopup : public TGPopupMenu {
 
 		TGMrbMacroBrowserPopup(const TGMrbMacroBrowserPopup & f) : TGPopupMenu(f) {};	// default copy ctor
 
-		inline TMrbLofMacros * GetLofMacros() { return(fLofMacros); };
+		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserPopup.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserPopup.html&"); };
 
 	protected:
 		TList fHeap;
@@ -551,11 +551,11 @@ class TGMrbMacroBrowserTransient : public TGTransientFrame {
 
 		virtual ~TGMrbMacroBrowserTransient() {fHeap.Delete(); };
 
-		inline TMrbLofMacros * GetLofMacros() { return(fLofMacros); };
+		inline TMrbLofMacros * GetLofMacros() const { return(fLofMacros); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserTransient.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserTransient.html&"); };
 
 	protected:
 		TList fHeap;

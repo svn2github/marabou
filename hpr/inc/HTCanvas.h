@@ -17,7 +17,7 @@
 #include "TCanvas.h"
 #include "HTCanvasImp.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 class FitHist;

@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -558,7 +558,7 @@ void TMrbString::ProcessEscapeSequence(Char_t CharId, TString & Replacement) {
 	Replacement.Resize(0);		// nullify
 }
 
-Int_t TMrbString::CheckInteger(TString & Prefix, Int_t Base, Int_t & BaseId, Bool_t & IsSigned) {
+Int_t TMrbString::CheckInteger(TString & Prefix, Int_t Base, Int_t & BaseId, Bool_t & IsSigned) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::CheckInteger
@@ -640,7 +640,7 @@ Int_t TMrbString::CheckInteger(TString & Prefix, Int_t Base, Int_t & BaseId, Boo
 	}
 }
 
-Int_t TMrbString::CheckDouble(TString & Prefix, Bool_t & IsSigned) {
+Int_t TMrbString::CheckDouble(TString & Prefix, Bool_t & IsSigned) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::CheckDouble

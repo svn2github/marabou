@@ -190,9 +190,9 @@ class TMrbDGFData : public TObject {
 		Int_t ReadFPGACodeAscii(const Char_t * FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);
 		Int_t ReadFPGACode(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);	// read FPGA data depending on file ext
 		Int_t ReadFPGACode(const Char_t * FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);
-		Bool_t FPGACodeRead(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown);
-		Bool_t FPGACodeRead(const Char_t * FPGAType, Int_t Rev = kRevUnknown);
-		inline Int_t GetFPGACodeSize(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown) {
+		Bool_t FPGACodeRead(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown) const;
+		Bool_t FPGACodeRead(const Char_t * FPGAType, Int_t Rev = kRevUnknown) const;
+		inline Int_t GetFPGACodeSize(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown) const {
 			return (FPGAType == kSystemFPGA ? fSystemFPGASize : fFippiFPGASize[Rev]);
 		};
 		inline UShort_t * GetFPGACodeAddr(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown) {
@@ -203,33 +203,35 @@ class TMrbDGFData : public TObject {
 		Int_t ReadDSPCodeBinary(const Char_t * CodeFile = "", Bool_t Forced = kFALSE); 	// read DSP data (binary) from file
 		Int_t ReadDSPCodeAscii(const Char_t * CodeFile = "", Bool_t Forced = kFALSE);	// read DSP data (ascii) from file
 		Int_t ReadDSPCode(const Char_t * CodeFile = "", Bool_t Forced = kFALSE);		// read DSP data depending on file ext
-		inline Bool_t DSPCodeRead() { return((fStatusD & kDSPCodeRead) != 0); };
-		inline Int_t GetDSPCodeSize() { return(fDSPSize); };
+		inline Bool_t DSPCodeRead() const { return((fStatusD & kDSPCodeRead) != 0); };
+		inline Int_t GetDSPCodeSize() const { return(fDSPSize); };
 		UShort_t * GetDSPCodeAddr() { return((UShort_t *) fDSPCode.GetArray()); };
 		
 		
 		// parameter section
 		Int_t ReadNameTable(const Char_t * ParamFile = "", Bool_t Forced = kFALSE);		// read parameter names from file
-		inline TMrbNamedX * FindParam(const Char_t * ParamName) { return((TMrbNamedX *) fParamNames.FindByName(ParamName)); };
-		inline TMrbNamedX * FindParam(Int_t Offset) { return((TMrbNamedX *) fParamNames.FindByIndex(Offset)); };
+		inline TMrbNamedX * FindParam(const Char_t * ParamName) const { return((TMrbNamedX *) fParamNames.FindByName(ParamName)); };
+		inline TMrbNamedX * FindParam(Int_t Offset) const { return((TMrbNamedX *) fParamNames.FindByIndex(Offset)); };
 		TMrbNamedX * FindParam(Int_t Channel, const Char_t * ParamName);
 
-		inline TMrbNamedX * FirstParam() { return((TMrbNamedX *) fParamNames.First()); };
-		inline TMrbNamedX * NextParam(TMrbNamedX * Param) { return((TMrbNamedX *) fParamNames.After(Param)); };
-		inline Bool_t ParamNamesRead() { return((fStatusD & kParamNamesRead) != 0); };
-		inline Int_t GetNofParams() { return(fNofParams); };
+		inline TMrbNamedX * FirstParam() const { return((TMrbNamedX *) fParamNames.First()); };
+		inline TMrbNamedX * NextParam(TMrbNamedX * Param) const { return((TMrbNamedX *) fParamNames.After(Param)); };
+		inline Bool_t ParamNamesRead() const { return((fStatusD & kParamNamesRead) != 0); };
+		inline Int_t GetNofParams() const { return(fNofParams); };
 		inline TMrbLofNamedX * GetLofParamNames() { return(&fParamNames); };
 		
-		inline Int_t GetXiaRelease() { return(fXiaRelease); };					// return xia release
-		void PrintXiaRelease();
+		inline Int_t GetXiaRelease() const { return(fXiaRelease); };					// return xia release
+		void PrintXiaRelease() const;
 		
-		virtual void Print();												// show status
+		void Print(Option_t * Option) const { TObject::Print(Option); };												// show status
+		void Print() const;												// show status
+
 		inline void SetLocal(Bool_t LocalFlag) { fLocalData = LocalFlag; };	// local data base?
 
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag;};	// verbose mode on/off
-		inline Bool_t IsVerbose() { return(fVerboseMode); };
+		inline Bool_t IsVerbose() const { return(fVerboseMode); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbDGFData.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbDGFData.html&"); };
 
 	public:																// public lists of bits & bytes
 		TMrbLofNamedX fLofDGFStatusDBits;								// soft status (data)

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -43,7 +43,7 @@ class TMrbEvent_10_1 : public TMrbEvent {
 		TMrbEvent_10_1(Int_t TrigNumber, const Char_t * EvtName = "", const Char_t * EvtTitle = "");	// explicit ctor
 		~TMrbEvent_10_1() {};	 			// remove current subevent from list
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEvent_10_1.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEvent_10_1.html&"); };
 
 	ClassDef(TMrbEvent_10_1, 1) 	// [Config] Event type [10,1]: standard MBS event
 };

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -50,10 +50,11 @@ class TMrbSilena_7420 : public TMrbCamacModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagINdex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("smdw"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("smdw"); }; 	// module mnemonic
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSilena_7420.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSilena_7420.html&"); };
 
 	protected:
 		void DefineRegisters(); 						// define camac regs

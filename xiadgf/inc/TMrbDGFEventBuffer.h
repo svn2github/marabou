@@ -68,6 +68,7 @@ class TMrbDGFEventBuffer : public TNamed, public TArrayI {
 
 		~TMrbDGFEventBuffer() {}; 										// default dtor
 
+		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, Int_t EventNumber = -1, const Char_t * ModuleInfo = NULL);
 		inline void Print(Int_t EventNumber = -1) { this->Print(cout, EventNumber); };
 		Bool_t PrintToFile(const Char_t * FileName, const Char_t * ModuleInfo);

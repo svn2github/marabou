@@ -14,7 +14,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -50,19 +50,19 @@ class TMrbSubevent_Caen_2 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent
 											TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };				// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kTRUE); };				// can store multiple modules
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) {						// needs modules of type CAEN
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type CAEN
 			return(Module->CheckID(TMrbConfig::kModuleCaenV775) || Module->CheckID(TMrbConfig::kModuleCaenV785));
 		};
 				
-		inline Bool_t NeedsHitBuffer() { return(kTRUE); };  					// allocate hit buffer
-		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
-		inline Bool_t NeedsBranchMode() { return(kTRUE); }; 					// needs branch mode
-		inline const Char_t * GetCommonCodeFile() { return("Subevent_Caen_Common"); };
+		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
+		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
+		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Caen_Common"); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Caen_2.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Caen_2.html&"); };
 
 	ClassDef(TMrbSubevent_Caen_2, 1) 	// [Config] Subevent type [10,42]: a format dedicated to CAEN modules
 };

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -45,10 +45,11 @@ class TMrbLeCroy_4448 : public TMrbCamacModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("lecroy_4448"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("lecroy_4448"); }; 	// module mnemonic
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_4448.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_4448.html&"); };
 
 	ClassDef(TMrbLeCroy_4448, 1)		// [Config] LeCroy 4448, 32 chn CAMAC coinc unit
 };

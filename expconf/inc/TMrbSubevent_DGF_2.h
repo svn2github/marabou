@@ -14,7 +14,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -52,10 +52,10 @@ class TMrbSubevent_DGF_2 : public TMrbSubevent {
 
 		Bool_t MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName);
 		
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };				// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kTRUE); };				// can store multiple modules
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) {						// needs modules of type XIA DGF-4C
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type XIA DGF-4C
 			return(Module->CheckID(TMrbConfig::kModuleXia_DGF_4C));
 		};
 				
@@ -63,16 +63,16 @@ class TMrbSubevent_DGF_2 : public TMrbSubevent {
 			fClusterNumber = Number;
 			fClusterID.Set(Serial, Color);
 		};
-		inline Int_t GetClusterNumber() { return(fClusterNumber); };
-		inline Int_t GetClusterSerial() { return(fClusterID.GetIndex()); }; 		// use TMrbNamedX object:
-		inline const Char_t * GetClusterColor() { return(fClusterID.GetName()); };	// index <- serial, name <- color
+		inline Int_t GetClusterNumber() const { return(fClusterNumber); };
+		inline Int_t GetClusterSerial() const { return(fClusterID.GetIndex()); }; 		// use TMrbNamedX object:
+		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
 
-		inline Bool_t NeedsHitBuffer() { return(kTRUE); };  					// allocate hit buffer
-		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
-		inline Bool_t NeedsBranchMode() { return(kTRUE); }; 					// needs branch mode
-		inline const Char_t * GetCommonCodeFile() { return("Subevent_DGF_2_Common"); };
+		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
+		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
+		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_DGF_2_Common"); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_DGF_2.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_DGF_2.html&"); };
 
 	protected:
 		Int_t fClusterNumber;			// cluster number

@@ -51,13 +51,13 @@ class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 
 		~TGMrbFileEntry() {};				// default dtor
 
-		inline TGTextEntry * GetEntry() { return(fEntry); };
+		inline TGTextEntry * GetEntry() const { return(fEntry); };
 
 		void FileButtonEnable(Bool_t Flag = kTRUE);			// enable/disable file button
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFileEntry.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFileEntry.html&"); };
 
 	protected:
 		TGTextEntry * fEntry;				//!

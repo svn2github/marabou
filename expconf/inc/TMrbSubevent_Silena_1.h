@@ -15,7 +15,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -51,16 +51,16 @@ class TMrbSubevent_Silena_1 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate part of code for this subevent
 											TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };				// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kTRUE); };				// can store multiple modules
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) {						// needs modules of type XIA DGF-4C
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type XIA DGF-4C
 			return(Module->CheckID(TMrbConfig::kModuleSilena4418V) || Module->CheckID(TMrbConfig::kModuleSilena4418T));
 		};
 		
-		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
+		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Silena_1.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Silena_1.html&"); };
 
 	ClassDef(TMrbSubevent_Silena_1, 1) 	// [Config] Subevent type [10,31]: format for Silena 4418 ADCs with zero suppression
 };

@@ -43,15 +43,15 @@ class TMrbVariable: public TNamed {
 		TMrbVariable(); 			// default ctor
 		~TMrbVariable();			// dtor
 
-		inline UInt_t GetType() { return(GetUniqueID() & kVarOrWindow); };
-		inline UInt_t GetStatus() { return(GetUniqueID() & kStatus); };
-		inline Bool_t IsArray() { return((GetUniqueID() & kVarIsArray) != 0); };
-		inline Bool_t HasInitValues() { return((GetUniqueID() & kHasInitValues) != 0); };
-		inline Bool_t IsRangeChecked() { return((GetUniqueID() & kIsRangeChecked) != 0); };
-		inline Int_t GetSize() { return(fSize); };
+		inline UInt_t GetType() const { return(GetUniqueID() & kVarOrWindow); };
+		inline UInt_t GetStatus() const { return(GetUniqueID() & kStatus); };
+		inline Bool_t IsArray() const { return((GetUniqueID() & kVarIsArray) != 0); };
+		inline Bool_t HasInitValues() const { return((GetUniqueID() & kHasInitValues) != 0); };
+		inline Bool_t IsRangeChecked() const { return((GetUniqueID() & kIsRangeChecked) != 0); };
+		inline Int_t GetSize() const { return(fSize); };
 
 		void Initialize();								// initialize values
-		virtual void Print(Option_t * Option = "");		// *MENU*
+		virtual void Print(Option_t * Option = "") const;
 
 		void SetRange(Bool_t Flag = kTRUE) {
 			UInt_t varType = GetUniqueID();
@@ -85,8 +85,8 @@ class TMrbVarI: public TMrbVariable {
 		TMrbVarI(const Char_t * Name, Int_t Value = 0);			// ctor
 		~TMrbVarI() {}; 										// dtor
 
-		inline Int_t Clip(Int_t Value) {						// clip value to range boundaries
-			if (IsRangeChecked()) {
+		inline Int_t Clip(Int_t Value) const {						// clip value to range boundaries
+			if (this->IsRangeChecked()) {
 				if (Value < fLowerRange) return(fLowerRange);
 				else if (Value > fUpperRange) return(fUpperRange);
 				else return(Value);
@@ -98,14 +98,14 @@ class TMrbVarI: public TMrbVariable {
 		inline void Set(Int_t Value) { fValue = Clip(Value); }; 		// set new value
 		inline void SetInit(Int_t Value) { fInitValue = Clip(Value); };	// set init value
 
-		inline Int_t Get() { return(fValue); };
+		inline Int_t Get() const { return(fValue); };
 
-		inline Bool_t IsEQ(Int_t X) { return(fValue == X); };	// compare vlues
-		inline Bool_t IsNE(Int_t X) { return(fValue != X); };
-		inline Bool_t IsLT(Int_t X) { return(fValue < X); };
-		inline Bool_t IsLE(Int_t X) { return(fValue <= X); };
-		inline Bool_t IsGT(Int_t X) { return(fValue > X); };
-		inline Bool_t IsGE(Int_t X) { return(fValue >= X); };
+		inline Bool_t IsEQ(Int_t X) const { return(fValue == X); };	// compare vlues
+		inline Bool_t IsNE(Int_t X) const { return(fValue != X); };
+		inline Bool_t IsLT(Int_t X) const { return(fValue < X); };
+		inline Bool_t IsLE(Int_t X) const { return(fValue <= X); };
+		inline Bool_t IsGT(Int_t X) const { return(fValue > X); };
+		inline Bool_t IsGE(Int_t X) const { return(fValue >= X); };
 
 		inline void Initialize() { fValue = Clip(fInitValue); };	// reset to initial value
 
@@ -115,9 +115,9 @@ class TMrbVarI: public TMrbVariable {
 			fUpperRange = Xupper;
 		};
 
-		virtual void Print(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarI.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarI.html&"); };
 
  	protected:
 		Int_t fValue;						// current value
@@ -144,8 +144,8 @@ class TMrbVarF: public TMrbVariable {
 
 		~TMrbVarF() {}; 											// dtor
 
-		inline Double_t Clip(Double_t Value) {			// clip value to range boundaries
-			if (IsRangeChecked()) {
+		inline Double_t Clip(Double_t Value) const {			// clip value to range boundaries
+			if (this->IsRangeChecked()) {
 				if (Value < fLowerRange) return(fLowerRange);
 				else if (Value > fUpperRange) return(fUpperRange);
 				else return(Value);
@@ -156,14 +156,14 @@ class TMrbVarF: public TMrbVariable {
 
 		inline void Set(Double_t Value) { fValue = Clip(Value); };					// set new value
 
-		inline Double_t Get() { return(fValue); };
+		inline Double_t Get() const { return(fValue); };
 
-		inline Bool_t IsEQ(Double_t X) { return(fValue == X); };	// compare vlues
-		inline Bool_t IsNE(Double_t X) { return(fValue != X); };
-		inline Bool_t IsLT(Double_t X) { return(fValue < X); };
-		inline Bool_t IsLE(Double_t X) { return(fValue <= X); };
-		inline Bool_t IsGT(Double_t X) { return(fValue > X); };
-		inline Bool_t IsGE(Double_t X) { return(fValue >= X); };
+		inline Bool_t IsEQ(Double_t X) const { return(fValue == X); };	// compare vlues
+		inline Bool_t IsNE(Double_t X) const { return(fValue != X); };
+		inline Bool_t IsLT(Double_t X) const { return(fValue < X); };
+		inline Bool_t IsLE(Double_t X) const { return(fValue <= X); };
+		inline Bool_t IsGT(Double_t X) const { return(fValue > X); };
+		inline Bool_t IsGE(Double_t X) const { return(fValue >= X); };
 
 		inline void Initialize() { fValue = Clip(fInitValue); };	// reset to initial value
 
@@ -173,9 +173,9 @@ class TMrbVarF: public TMrbVariable {
 			fUpperRange = Xupper;
 		};
 
-		virtual void Print(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarF.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarF.html&"); };
 
  	protected:
 		Double_t fValue;							// current value
@@ -204,20 +204,20 @@ class TMrbVarS: public TMrbVariable {
 
 		inline void Set(const Char_t * Value) { fValue = Value; };	// set new value
 
-		inline const Char_t * Get() { return(fValue.Data()); };
+		inline const Char_t * Get() const { return(fValue.Data()); };
 
-		inline Bool_t IsEQ(Char_t * X) { return(fValue.CompareTo(X) == 0); };	// compare values
-		inline Bool_t IsNE(Char_t * X) { return(fValue.CompareTo(X) != 0); };
-		inline Bool_t IsLT(Char_t * X) { return(fValue.CompareTo(X) < 0); };
-		inline Bool_t IsLE(Char_t * X) { return(fValue.CompareTo(X) <= 0); };
-		inline Bool_t IsGT(Char_t * X) { return(fValue.CompareTo(X) > 0); };
-		inline Bool_t IsGE(Char_t * X) { return(fValue.CompareTo(X) >= 0); };
+		inline Bool_t IsEQ(Char_t * X) const { return(fValue.CompareTo(X) == 0); };	// compare values
+		inline Bool_t IsNE(Char_t * X) const { return(fValue.CompareTo(X) != 0); };
+		inline Bool_t IsLT(Char_t * X) const { return(fValue.CompareTo(X) < 0); };
+		inline Bool_t IsLE(Char_t * X) const { return(fValue.CompareTo(X) <= 0); };
+		inline Bool_t IsGT(Char_t * X) const { return(fValue.CompareTo(X) > 0); };
+		inline Bool_t IsGE(Char_t * X) const { return(fValue.CompareTo(X) >= 0); };
 
 		inline void Initialize() { fValue = fInitValue; };		// reset to initial value
 
-		virtual void Print(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarS.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarS.html&"); };
 
  	protected:
 		TString fValue;						// current value
@@ -244,15 +244,15 @@ class TMrbVarB: public TMrbVariable {
 
 		inline void Set(Bool_t Value) { fValue = Value; };	// set new value
 
-		inline Bool_t Get() { return(fValue); };
+		inline Bool_t Get() const { return(fValue); };
 
-		inline Bool_t IsTrue() { return(fValue); };
+		inline Bool_t IsTrue() const { return(fValue); };
 
 		inline void Initialize() { fValue = fInitValue; };		// reset to initial value
 
-		virtual void Print(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarB.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarB.html&"); };
 
  	protected:
 		Bool_t fValue;						// current value
@@ -277,8 +277,8 @@ class TMrbVarArrayI: public TMrbVariable {
  
 		~TMrbVarArrayI() {};												// dtor
 
-		inline Int_t Clip(Int_t Value) {				// clip value to range boundaries
-			if (IsRangeChecked()) {
+		inline Int_t Clip(Int_t Value) const {				// clip value to range boundaries
+			if (this->IsRangeChecked()) {
 				if (Value < fLowerRange) return(fLowerRange);
 				else if (Value > fUpperRange) return(fUpperRange);
 				else return(Value);
@@ -290,14 +290,14 @@ class TMrbVarArrayI: public TMrbVariable {
 		inline void Set(UInt_t Index, Int_t Value) { fValue[Index] = Clip(Value); };	// set new value
 		inline void SetInit(UInt_t Index, Int_t Value) { fInitValue[Index] = Clip(Value); };	// set init val
 
-		inline Int_t Get(UInt_t Index) { return(fValue[Index]); };
+		inline Int_t Get(UInt_t Index) const { return(fValue[Index]); };
 
-		inline Bool_t IsEQ(UInt_t Index, Int_t X) { return(fValue[Index] == X); };	// compare values
-		inline Bool_t IsNE(UInt_t Index, Int_t X) { return(fValue[Index] != X); };
-		inline Bool_t IsLT(UInt_t Index, Int_t X) { return(fValue[Index] < X); };
-		inline Bool_t IsLE(UInt_t Index, Int_t X) { return(fValue[Index] <= X); };
-		inline Bool_t IsGT(UInt_t Index, Int_t X) { return(fValue[Index] > X); };
-		inline Bool_t IsGE(UInt_t Index, Int_t X) { return(fValue[Index] >= X); };
+		inline Bool_t IsEQ(UInt_t Index, Int_t X) const { return(fValue[Index] == X); };	// compare values
+		inline Bool_t IsNE(UInt_t Index, Int_t X) const { return(fValue[Index] != X); };
+		inline Bool_t IsLT(UInt_t Index, Int_t X) const { return(fValue[Index] < X); };
+		inline Bool_t IsLE(UInt_t Index, Int_t X) const { return(fValue[Index] <= X); };
+		inline Bool_t IsGT(UInt_t Index, Int_t X) const { return(fValue[Index] > X); };
+		inline Bool_t IsGE(UInt_t Index, Int_t X) const { return(fValue[Index] >= X); };
 
 		void SetRange(Int_t Xlower, Int_t Xupper) {		// define range
 			SetUniqueID(GetUniqueID() | kIsRangeChecked);
@@ -307,9 +307,9 @@ class TMrbVarArrayI: public TMrbVariable {
 
 		void Initialize() { for (Int_t i = 0; i < fSize; i++) fValue[i] = fInitValue[i]; };
 
-		virtual void Print(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarArrayI.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarArrayI.html&"); };
 
  	protected:
 		TArrayI fValue;						// current values
@@ -336,8 +336,8 @@ class TMrbVarArrayF: public TMrbVariable {
  
 		~TMrbVarArrayF() {};									// dtor
 
-		inline Double_t Clip(Double_t Value) {				// clip value to range boundaries
-			if (IsRangeChecked()) {
+		inline Double_t Clip(Double_t Value) const {				// clip value to range boundaries
+			if (this->IsRangeChecked()) {
 				if (Value < fLowerRange) return(fLowerRange);
 				else if (Value > fUpperRange) return(fUpperRange);
 				else return(Value);
@@ -349,14 +349,14 @@ class TMrbVarArrayF: public TMrbVariable {
 		inline void Set(UInt_t Index, Double_t Value) { fValue[Index] = Clip(Value); };	// set new value
 		inline void SetInit(UInt_t Index, Double_t Value) { fInitValue[Index] = Clip(Value); };	// set init val
 
-		inline Double_t Get(UInt_t Index) { return(fValue[Index]); };
+		inline Double_t Get(UInt_t Index) const { return(fValue[Index]); };
 
-		inline Bool_t IsEQ(UInt_t Index, Double_t X) { return(fValue[Index] == X); };	// compare vlues
-		inline Bool_t IsNE(UInt_t Index, Double_t X) { return(fValue[Index] != X); };
-		inline Bool_t IsLT(UInt_t Index, Double_t X) { return(fValue[Index] < X); };
-		inline Bool_t IsLE(UInt_t Index, Double_t X) { return(fValue[Index] <= X); };
-		inline Bool_t IsGT(UInt_t Index, Double_t X) { return(fValue[Index] > X); };
-		inline Bool_t IsGE(UInt_t Index, Double_t X) { return(fValue[Index] >= X); };
+		inline Bool_t IsEQ(UInt_t Index, Double_t X) const { return(fValue[Index] == X); };	// compare vlues
+		inline Bool_t IsNE(UInt_t Index, Double_t X) const { return(fValue[Index] != X); };
+		inline Bool_t IsLT(UInt_t Index, Double_t X) const { return(fValue[Index] < X); };
+		inline Bool_t IsLE(UInt_t Index, Double_t X) const { return(fValue[Index] <= X); };
+		inline Bool_t IsGT(UInt_t Index, Double_t X) const { return(fValue[Index] > X); };
+		inline Bool_t IsGE(UInt_t Index, Double_t X) const { return(fValue[Index] >= X); };
 
 		void SetRange(Double_t Xlower, Double_t Xupper) {		// define range
 			SetUniqueID(GetUniqueID() | kIsRangeChecked);
@@ -366,9 +366,9 @@ class TMrbVarArrayF: public TMrbVariable {
 
 		void Initialize() { for (Int_t i = 0; i < fSize; i++) fValue[i] = fInitValue[i]; };
 
-		virtual void Print(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarArrayF.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarArrayF.html&"); };
 
  	protected:
 		TArrayD fValue;							// current values

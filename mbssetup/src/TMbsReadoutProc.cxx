@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -100,10 +100,10 @@ void TMbsReadoutProc::Reset() {
 	}
 }
 
-Bool_t TMbsReadoutProc::SetName(const Char_t * ProcName) {
+Bool_t TMbsReadoutProc::SetProcName(const Char_t * ProcName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::SetName
+// Name:           TMbsReadoutProc::SetProcName
 // Purpose:        Set readout name
 // Arguments:      Char_t * ProcName    -- readout name
 // Results:        kTRUE/kFALSE
@@ -176,11 +176,11 @@ Bool_t TMbsReadoutProc::SetName(const Char_t * ProcName) {
 	}
 }
 
-const Char_t * TMbsReadoutProc::GetName() {
+const Char_t * TMbsReadoutProc::GetProcName() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::GetName
-// Purpose:        Get readout name
+// Name:           TMbsReadoutProc::GetProcName
+// Purpose:        Get name of readout processor
 // Arguments:      --
 // Results:        Char_t * ProcName    -- readout name
 // Exceptions:
@@ -193,15 +193,15 @@ const Char_t * TMbsReadoutProc::GetName() {
 	return(fName.Data());
 }
 
-const Char_t * TMbsReadoutProc::GetAddr() {
+const Char_t * TMbsReadoutProc::GetProcAddr() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMbsReadoutProc::GetAddr
+// Name:           TMbsReadoutProc::GetProcAddr
 // Purpose:        Get readout addr
 // Arguments:      --
 // Results:        Char_t * ProcAddr    -- readout addr
 // Exceptions:
-// Description:    Reads resource "TMbsSetup.ReadoutNNN.Name".
+// Description:    Reads resource "TMbsSetup.ReadoutNNN.Address".
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -282,7 +282,7 @@ Bool_t TMbsReadoutProc::SetType(EMbsProcType ProcType) {
 	return(kTRUE);
 }
 
-TMrbNamedX * TMbsReadoutProc::GetType() {
+TMrbNamedX * TMbsReadoutProc::GetType() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetType
@@ -413,7 +413,7 @@ Bool_t TMbsReadoutProc::SetCrate(Int_t Crate) {
 	return(kTRUE);
 }
 
-Int_t TMbsReadoutProc::GetCrate() {
+Int_t TMbsReadoutProc::GetCrate() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetCrate
@@ -475,7 +475,7 @@ Bool_t TMbsReadoutProc::SetCratesToBeRead(Int_t C1, Int_t C2, Int_t C3, Int_t C4
 	return(gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "CratesToBeRead"), cstr.Data()));
 }
 
-Int_t TMbsReadoutProc::GetCratesToBeRead(TArrayI & LofCrates) {
+Int_t TMbsReadoutProc::GetCratesToBeRead(TArrayI & LofCrates) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetCratesToBeRead
@@ -592,7 +592,7 @@ Bool_t TMbsReadoutProc::SetController(EMbsControllerType ContrlType) {
 	return(kTRUE);
 }
 
-TMrbNamedX * TMbsReadoutProc::GetController() {
+TMrbNamedX * TMbsReadoutProc::GetController() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetController
@@ -632,7 +632,7 @@ Bool_t TMbsReadoutProc::SetVSBAddr(UInt_t Addr) {
 	return(kTRUE);
 }
 
-UInt_t TMbsReadoutProc::GetVSBAddr() {
+UInt_t TMbsReadoutProc::GetVSBAddr() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetVSBAddr
@@ -665,7 +665,7 @@ Bool_t TMbsReadoutProc::SetPipeBase(UInt_t Addr) {
 	return(kTRUE);
 }
 
-UInt_t TMbsReadoutProc::GetPipeBase() {
+UInt_t TMbsReadoutProc::GetPipeBase() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetPipeBase
@@ -710,7 +710,7 @@ Bool_t TMbsReadoutProc::SetSevtSize(Int_t Trigger, Int_t SevtSize) {
 	return(kTRUE);
 }
 
-Int_t TMbsReadoutProc::GetSevtSize(Int_t Trigger) {
+Int_t TMbsReadoutProc::GetSevtSize(Int_t Trigger) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::GetSevtSize
@@ -950,7 +950,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 
 	if (!isOK) return(kFALSE);
 
-	proc = this->GetName();
+	proc = this->GetProcName();
 	if (proc.Length() == 0) {
 		gMrbLog->Err() << "Readout proc not defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");

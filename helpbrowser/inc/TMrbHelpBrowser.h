@@ -8,7 +8,7 @@
 #include "TGMenu.h"
 #include <iostream>
 
-using namespace std;
+namespace std {} using namespace std;
 
 class TMrbHelpBrowser : public TNamed {
 private:
@@ -50,6 +50,7 @@ Int_t AddGifToRoot(const char * Input);
 
 void AddGifFile(const char * GifFile);
 void AddCanvas(const char * RootFile);
+void Clear(Option_t * Option) { TObject::Clear(Option); };
 void Clear();
 
 TFile * SetRootFile(const char * RootFile){
@@ -65,7 +66,8 @@ Bool_t ToRootFile(const char * Input, const char * RootFile,
 
 TFile * GetRootFile(){return fRootFile;}
 
-void Print(TString * option = 0);
+void Print(Option_t * Option) const { TObject::Print(Option); };
+void Print(TString * Option = NULL) const;
 
 void DrawText(const char * hname, Int_t xoff = 0, Int_t yoff = 0);
 void DrawText(const Int_t  ind, Int_t xoff = 0, Int_t yoff = 0);

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,10 +46,10 @@ class TMrbSubevent_10_1 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 	// generate part of code for this subevent
 										TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };		// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kFALSE); };		// one module per subevent only
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };		// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kFALSE); };		// one module per subevent only
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_1.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_1.html&"); };
 
 	ClassDef(TMrbSubevent_10_1, 1)		// [Config] Subevent type [10,1]: data with channel id
 };

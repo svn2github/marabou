@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -145,7 +145,7 @@ Bool_t TMrbSubevent::AddParam(TObject * Param) {
 	return(kTRUE);
 }
 
-TObject * TMrbSubevent::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After) {
+TObject * TMrbSubevent::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::FindModuleByID
@@ -173,7 +173,7 @@ TObject * TMrbSubevent::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObjec
 	return(NULL);
 }
 
-TObject * TMrbSubevent::FindModuleByType(UInt_t ModuleType, TObject * After) {
+TObject * TMrbSubevent::FindModuleByType(UInt_t ModuleType, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::FindModuleByType
@@ -201,7 +201,7 @@ TObject * TMrbSubevent::FindModuleByType(UInt_t ModuleType, TObject * After) {
 	return(NULL);
 }
 
-TObject * TMrbSubevent::FindModuleBySerial(Int_t ModuleSerial) {
+TObject * TMrbSubevent::FindModuleBySerial(Int_t ModuleSerial) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::FindModuleBySerial
@@ -1556,7 +1556,7 @@ Bool_t TMrbSubevent::MakeConfigCode(ofstream & CfgStrm,	TMrbConfig::EMrbConfigTa
 	return(kTRUE);
 }
 
-void TMrbSubevent::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbSubevent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::Print
@@ -1653,7 +1653,7 @@ Bool_t TMrbSubevent::Set(const Char_t * ParamName, Int_t RegIndex, Int_t Value) 
 	return(param->Set(RegIndex, Value));
 }
 
-Int_t TMrbSubevent::Get(const Char_t * ParamName, const Char_t * RegName) {
+Int_t TMrbSubevent::Get(const Char_t * ParamName, const Char_t * RegName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::Get
@@ -1677,7 +1677,7 @@ Int_t TMrbSubevent::Get(const Char_t * ParamName, const Char_t * RegName) {
 	return(param->Get(RegName));
 }
 
-Int_t TMrbSubevent::Get(const Char_t * ParamName, Int_t RegIndex) {
+Int_t TMrbSubevent::Get(const Char_t * ParamName, Int_t RegIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::Get
@@ -1764,7 +1764,7 @@ Bool_t TMrbSubevent::SetConfigOptions(Option_t * Options) {
 	return(kTRUE);
 }
 
-UInt_t TMrbSubevent::GetReadoutOptions(TMrbEvent * Parent) {
+UInt_t TMrbSubevent::GetReadoutOptions(TMrbEvent * Parent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::GetReadoutOptions
@@ -1782,7 +1782,7 @@ UInt_t TMrbSubevent::GetReadoutOptions(TMrbEvent * Parent) {
 	return(fReadoutOptions);
 }
 
-UInt_t TMrbSubevent::GetAnalyzeOptions(TMrbEvent * Parent) {
+UInt_t TMrbSubevent::GetAnalyzeOptions(TMrbEvent * Parent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::GetAnalyzeOptions
@@ -1801,7 +1801,7 @@ UInt_t TMrbSubevent::GetAnalyzeOptions(TMrbEvent * Parent) {
 	else				return(fAnalyzeOptions);
 }
 
-UInt_t TMrbSubevent::GetConfigOptions(TMrbEvent * Parent) {
+UInt_t TMrbSubevent::GetConfigOptions(TMrbEvent * Parent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::GetConfigOptions
@@ -1819,7 +1819,7 @@ UInt_t TMrbSubevent::GetConfigOptions(TMrbEvent * Parent) {
 	return(fConfigOptions);
 }
 
-const Char_t * TMrbSubevent::GetLofModulesAsString(TString & LofModules) {
+const Char_t * TMrbSubevent::GetLofModulesAsString(TString & LofModules) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::GetLofModulesAsString
@@ -1845,7 +1845,7 @@ const Char_t * TMrbSubevent::GetLofModulesAsString(TString & LofModules) {
 	return(LofModules.Data());
 }
 
-const Char_t * TMrbSubevent::GetLofParamsAsString(TString & LofParams) {
+const Char_t * TMrbSubevent::GetLofParamsAsString(TString & LofParams) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent::GetLofParamsAsString

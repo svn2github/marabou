@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -45,10 +45,10 @@ class packNames : public TObject {
 	public:
 		packNames(const Char_t * f, const Char_t * t, const Char_t * x, const Char_t * c) { F = f; T = t; X = x; C = c; };
 		~packNames() {};
-		inline TString & GetF() { return(F); };
-		inline TString & GetT() { return(T); };
-		inline TString & GetX() { return(X); };
-		inline TString & GetC() { return(C); };
+		inline const TString & GetF() const { return(F); };
+		inline const TString & GetT() const { return(T); };
+		inline const TString & GetX() const { return(X); };
+		inline const TString & GetC() const { return(C); };
 	protected:
 		TString F; TString T; TString X; TString C;
 };
@@ -491,97 +491,98 @@ class TMrbConfig : public TNamed {
 		Bool_t MakeRcFile(const Char_t * CodeFile = "", const Char_t * ResourceName = "", Option_t * Options = "byName");
 
 		Bool_t CallUserMacro(const Char_t * MacroName = "", Bool_t AclicFlag = kTRUE);				// call user macro
-		Bool_t ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord);
+		Bool_t ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) const;
 				
-		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE);	// compile readout code
-		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE);						// compile analysis code
+		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE) const;	// compile readout code
+		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE) const;						// compile analysis code
 
 		inline void SetSevtSize(Int_t Size) { fSevtSize = Size; }; 	// set max size of subevent (for all events/triggers)
 		Bool_t UpdateMbsSetup();									// update .mbssetup database if online mode
 
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");			// show data
-		inline virtual void Print() { Print(cout, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;			// show data
+		inline virtual void Print() const { Print(cout, ""); };
 
-		Int_t GetNofErrors();							// number of errors
-		Int_t PrintErrors(); 							// print error summary
+		Int_t GetNofErrors() const;							// number of errors
+		Int_t PrintErrors() const; 							// print error summary
 		
 		inline void AddEvent(TObject * Evt) {				 				// add a new event
 			fLofEvents.Add(Evt);
 			fNofEvents++;
 		};
 
-		inline TObject * FindEvent(const Char_t * EvtName) {				// find an event
+		inline TObject * FindEvent(const Char_t * EvtName) const {				// find an event
 			return (fLofEvents.FindObject(EvtName));
 		};
 
-		TObject * FindEvent(Int_t Trigger);									// find event by its trigger
+		TObject * FindEvent(Int_t Trigger) const;									// find event by its trigger
 
 		inline void AddSubevent(TObject * Sevt) {							// add a new subevent
 			fLofSubevents.Add(Sevt);
 			fNofSubevents++;
 		};
 
-		inline TObject * NextSubevent(TObject * After = NULL) {					// get next subevent from list
+		inline TObject * NextSubevent(TObject * After = NULL) const {					// get next subevent from list
 			return((After == NULL) ? fLofSubevents.First() : fLofSubevents.After(After));
 		};
 
-		inline TObject * FindSubevent(const Char_t * SevtName) {			// find a subevent
+		inline TObject * FindSubevent(const Char_t * SevtName) const {			// find a subevent
 			return (fLofSubevents.FindObject(SevtName));
 		};
 
-		TObject * FindSubevent(TClass * Class, TObject * After = NULL);		// find a subevent by class type
+		TObject * FindSubevent(TClass * Class, TObject * After = NULL) const;		// find a subevent by class type
 
-		TObject * FindSubevent(Int_t SevtSerial);							// find subevent by its serial number
+		TObject * FindSubevent(Int_t SevtSerial) const;							// find subevent by its serial number
 
-		inline Int_t AssignSevtSerial() { return(fNofSubevents + 1); }; 	// get unique serial number for a subevent
+		inline Int_t AssignSevtSerial() const { return(fNofSubevents + 1); }; 	// get unique serial number for a subevent
 			
 		inline void AddModule(TObject * Module) { 							// add a new module
 			fLofModules.Add(Module);
 			fNofModules++;
 		};
 
-		inline TObject * NextModule(TObject * After = NULL) {						// get next module from list
+		inline TObject * NextModule(TObject * After = NULL) const {						// get next module from list
 			return((After == NULL) ? fLofModules.First() : fLofModules.After(After));
 		};
 
-		inline TObject * FindModule(const Char_t * ModuleName) {			// find module by its name
+		inline TObject * FindModule(const Char_t * ModuleName) const {			// find module by its name
 			return (fLofModules.FindObject(ModuleName));
 		};
 
-		TObject * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After = NULL); 		// find (next) module by its id
-		TObject * FindModuleByType(UInt_t ModuleType, TObject * After = NULL); 	// find (next) module by its type
-		TObject * FindModuleByCrate(Int_t Crate, TObject * After = NULL);		// find (next) module by crate number
-		TObject * FindModuleBySerial(Int_t ModuleSerial);						// find module by its unique serial
+		TObject * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After = NULL) const; 		// find (next) module by its id
+		TObject * FindModuleByType(UInt_t ModuleType, TObject * After = NULL) const; 	// find (next) module by its type
+		TObject * FindModuleByCrate(Int_t Crate, TObject * After = NULL) const;		// find (next) module by crate number
+		TObject * FindModuleBySerial(Int_t ModuleSerial) const;						// find module by its unique serial
 
-		inline Int_t AssignModuleSerial() { return(fNofModules + 1); }; 		// set unique serial number for a module
+		inline Int_t AssignModuleSerial() const { return(fNofModules + 1); }; 		// set unique serial number for a module
 			
-		Bool_t CheckModuleAddress(TObject * Module);							// check if module address or position legal
+		Bool_t CheckModuleAddress(TObject * Module) const;							// check if module address or position legal
 
-		inline Bool_t HasCamacModules() { return(FindModuleByType(TMrbConfig::kModuleCamac) != NULL); };	// camac?
-		inline Bool_t HasVMEModules() { return(FindModuleByType(TMrbConfig::kModuleVME) != NULL); };		// vme?
+		inline Bool_t HasCamacModules() const { return(FindModuleByType(TMrbConfig::kModuleCamac) != NULL); };	// camac?
+		inline Bool_t HasVMEModules() const { return(FindModuleByType(TMrbConfig::kModuleVME) != NULL); };		// vme?
 
 		inline void  AddScaler(TObject * Scaler) {			 					// add a new scaler
 			fLofScalers.Add(Scaler);
 			fNofScalers++;
 		};
 
-		TObject * FindParam(const Char_t * ParamName);							// find a param 
+		TObject * FindParam(const Char_t * ParamName) const;							// find a param 
 
-		Bool_t HistogramExists(const Char_t * HistoName);						// check if histo exists
+		Bool_t HistogramExists(const Char_t * HistoName) const;						// check if histo exists
 
-		inline TObject * FindScaler(const Char_t * ScalerName) {				// find a scaler
+		inline TObject * FindScaler(const Char_t * ScalerName) const {				// find a scaler
 			return (fLofScalers.FindObject(ScalerName));
 		};
-		TObject * FindScalerByCrate(Int_t Crate, TObject * After = NULL);		// find (next) scaler in a given crate
+		TObject * FindScalerByCrate(Int_t Crate, TObject * After = NULL) const;		// find (next) scaler in a given crate
 
 		void GetAuthor();						// author's name
 
-		inline UInt_t GetReadoutOptions() { return(fReadoutOptions); }; // return MakeReadoutCode() options
-		inline UInt_t GetAnalyzeOptions() { return(fAnalyzeOptions); }; // return MakeAnalyzeCode() options
-		inline UInt_t GetConfigOptions() { return(fConfigOptions); };	// return MakeConfigCode() options
-		inline UInt_t GetRcFileOptions() { return(fRcFileOptions); };	// return MakeRcFile() options
+		inline UInt_t GetReadoutOptions() const { return(fReadoutOptions); }; // return MakeReadoutCode() options
+		inline UInt_t GetAnalyzeOptions() const { return(fAnalyzeOptions); }; // return MakeAnalyzeCode() options
+		inline UInt_t GetConfigOptions() const { return(fConfigOptions); };	// return MakeConfigCode() options
+		inline UInt_t GetRcFileOptions() const { return(fRcFileOptions); };	// return MakeRcFile() options
 
-		inline Bool_t IsVerbose() { return(fVerboseMode); }; 			// verbose mode?
+		inline Bool_t IsVerbose() const { return(fVerboseMode); }; 			// verbose mode?
 		
 		Bool_t DefineVariables(const Char_t * VarType, const Char_t * VarDefs); 	// define a set of variables
 		Bool_t DefineVariables(const Char_t * VarType, Int_t Value, const Char_t * VarDefs);
@@ -592,29 +593,29 @@ class TMrbConfig : public TNamed {
 		Bool_t DefineWindows(const Char_t * WdwType, Int_t Xlower, Int_t Xupper, const Char_t * WdwDefs);
 		Bool_t DefineWindows(const Char_t * WdwType, Float_t Xlower, Float_t Xupper, const Char_t * WdwDefs);
 
-		inline Bool_t LongParamNamesToBeUsed() { return(fLongParamNames); };	// long names to guarantee uniqueness?
+		inline Bool_t LongParamNamesToBeUsed() const { return(fLongParamNames); };	// long names to guarantee uniqueness?
 		inline void UseLongParamNames(Bool_t Flag = kTRUE) { fLongParamNames = Flag; };
 
 		inline void WriteTimeStamp() { fWriteTimeStamp = kTRUE; };	// write a time stamp
-		inline Bool_t TimeStampToBeWritten() { return(fWriteTimeStamp); };
+		inline Bool_t TimeStampToBeWritten() const { return(fWriteTimeStamp); };
 
 		Bool_t WriteDeadTime(const Char_t * Scaler, Int_t Interval = 1000);				// write a dead time events
-		inline Bool_t DeadTimeToBeWritten() { return(fDeadTimeInterval > 0); }; 	// check if dead time enabled
-		inline Int_t GetDeadTimeInterval() { return(fDeadTimeInterval); };			// get interval
-		inline TObject * GetDeadTimeScaler() { return(fDeadTimeScaler); };			// get scaler def
+		inline Bool_t DeadTimeToBeWritten() const { return(fDeadTimeInterval > 0); }; 	// check if dead time enabled
+		inline Int_t GetDeadTimeInterval() const { return(fDeadTimeInterval); };			// get interval
+		inline TObject * GetDeadTimeScaler() const { return(fDeadTimeScaler); };			// get scaler def
 
 																					// include user-specific code
 		Bool_t IncludeUserCode(const Char_t * Path, const Char_t * UserFile, Bool_t AutoGenFalg = kFALSE);
 		inline Bool_t IncludeUserCode(const Char_t * UserFile, Bool_t AutoGenFalg = kFALSE) { return(this->IncludeUserCode("", UserFile, AutoGenFalg)); };
 
-		inline Bool_t UserCodeToBeIncluded() { return(fLofUserIncludes.Last() >= 0); };
+		inline Bool_t UserCodeToBeIncluded() const { return(fLofUserIncludes.Last() >= 0); };
 		inline TMrbLofNamedX * GetLofUserIncludes() { return(&fLofUserIncludes); };
 
 		void AddUserClass(const Char_t * Name); 									// add a user class
 			
-		inline TMrbLogger * GetMessageLogger() { return(fMessageLogger); };
+		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
-		void Version();																// output welcome tex
+		void Version() const;																// output welcome tex
 
 		TMrbConfig * ReadFromFile(const Char_t * ConfigFile = "", Option_t * Options = ""); // read config from root file
 		Bool_t WriteToFile(const Char_t * ConfigFile = "", Option_t * Options = "");		// write config objects to root file
@@ -628,22 +629,22 @@ class TMrbConfig : public TNamed {
 		};
 
 		inline void SetCrateType(Int_t Crate, EMrbCrateType CrateType) { fCrateTable[Crate] = CrateType; };
-		inline EMrbCrateType GetCrateType(Int_t Crate) { return((EMrbCrateType) fCrateTable[Crate]); };
-		Int_t FindCrate(Int_t After = -1);												// find next crate
-		Int_t GetNofCrates(EMrbCrateType CrateType = kCrateAny);															// return number of crates
-		UInt_t GetCratePattern(EMrbCrateType CrateType = kCrateAny);														// return crate numbers as bit pattern
+		inline EMrbCrateType GetCrateType(Int_t Crate) const { return((EMrbCrateType) fCrateTable[Crate]); };
+		Int_t FindCrate(Int_t After = -1) const;												// find next crate
+		Int_t GetNofCrates(EMrbCrateType CrateType = kCrateAny) const;															// return number of crates
+		UInt_t GetCratePattern(EMrbCrateType CrateType = kCrateAny) const;														// return crate numbers as bit pattern
 		
 		Bool_t SetControllerType(Int_t Crate, const Char_t * Type);
 		Bool_t SetControllerType(const Char_t * Crate, const Char_t * Type);
 		inline void SetControllerType(Int_t Crate, EMrbControllerType Type) { fControllerTable[Crate] = Type; };
-		inline EMrbControllerType GetControllerType(Int_t Crate) { return((EMrbControllerType) fControllerTable[Crate]); };
+		inline EMrbControllerType GetControllerType(Int_t Crate) const { return((EMrbControllerType) fControllerTable[Crate]); };
 																	// handle trigger patterns
 		Bool_t HandleMultipleTriggers(Int_t T1 = 0, Int_t T2 = 0, Int_t T3 = 0, Int_t T4 = 0, Int_t T5 = 0);
-		TMrbConfig::EMrbTriggerStatus GetTriggerStatus(Int_t Trigger); 		// get trigger status
+		TMrbConfig::EMrbTriggerStatus GetTriggerStatus(Int_t Trigger) const; 		// get trigger status
 		void UpdateTriggerTable(Int_t Trigger = 0);		// update trigger table: valid patterns, overlapping, etc.
 
 		void AddToTagList(const Char_t * CodeFile, Int_t TagIndex); 		// add file:tag to be processed once
-		Bool_t TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex);	// check if tag has already been processed
+		Bool_t TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) const;	// check if tag has already been processed
 
 		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
@@ -655,22 +656,22 @@ class TMrbConfig : public TNamed {
 
 
 		TMrbNamedX * AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName);
-		TMrbNamedX * FindHistoArray(const Char_t * HistoName, TMrbNamedX * After = NULL);	// find array histo is to be assigned to
+		TMrbNamedX * FindHistoArray(const Char_t * HistoName, TMrbNamedX * After = NULL) const;	// find array histo is to be assigned to
 
-		inline Int_t GetNofModules() { return(fNofModules); };
-		Int_t GetNofModules(const Char_t * Pattern);
+		inline Int_t GetNofModules() const { return(fNofModules); };
+		Int_t GetNofModules(const Char_t * Pattern) const;
 		
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };		// get address of ...
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
-		inline TObjArray * GetLofScalers() { return(&fLofScalers); };
+		inline TObjArray * GetLofScalers(){ return(&fLofScalers); };
 		inline TMrbLofNamedX * GetLofModuleIDs() { return(&fLofModuleIDs); };
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
 		inline TMrbLofNamedX * GetLofHistoTypes() { return(&fLofHistoTypes); };
 		inline TMrbLofNamedX * GetLofGlobals() { return(&fLofGlobals); };
 
-		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName);	// check if name is legal within MARaBOU
+		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) const;	// check if name is legal within MARaBOU
 
 		inline void MakeGlobal(const Char_t * Name, Int_t * IntVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobInt, Name, Comment, (TObject *) IntVar)); };
 		inline void MakeGlobal(const Char_t * Name, Float_t * FloatVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobFloat, Name, Comment, (TObject *) FloatVar)); };
@@ -684,18 +685,18 @@ class TMrbConfig : public TNamed {
 		void MakeGlobal(const Char_t * Name, Bool_t BoolVal, const Char_t * Comment = "");
 		void MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_t * Comment = "");
 
-		Bool_t GetGlobal(const Char_t * Name, Int_t & IntVar);
-		Bool_t GetGlobal(const Char_t * Name, Float_t & FloatVar);
-		Bool_t GetGlobal(const Char_t * Name, Double_t & DblVar);
-		Bool_t GetGlobal(const Char_t * Name, Bool_t & BoolVar);
-		Bool_t GetGlobal(const Char_t * Name, TString & Str);
-		Int_t GetGlobI(const Char_t * Name);
-		Float_t GetGlobF(const Char_t * Name);
-		Double_t GetGlobD(const Char_t * Name);
-		Bool_t GetGlobB(const Char_t * Name);
-		const Char_t * GetGlobStr(const Char_t * Name);
+		Bool_t GetGlobal(const Char_t * Name, Int_t & IntVar) const;
+		Bool_t GetGlobal(const Char_t * Name, Float_t & FloatVar) const;
+		Bool_t GetGlobal(const Char_t * Name, Double_t & DblVar) const;
+		Bool_t GetGlobal(const Char_t * Name, Bool_t & BoolVar) const;
+		Bool_t GetGlobal(const Char_t * Name, TString & Str) const;
+		Int_t GetGlobI(const Char_t * Name) const;
+		Float_t GetGlobF(const Char_t * Name) const;
+		Double_t GetGlobD(const Char_t * Name) const;
+		Bool_t GetGlobB(const Char_t * Name) const;
+		const Char_t * GetGlobStr(const Char_t * Name) const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
 
 	public: 									// public lists of key words:
 		TMrbLofNamedX fLofDataTypes;			//! ... data types

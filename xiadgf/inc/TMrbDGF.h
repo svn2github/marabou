@@ -128,7 +128,7 @@ class TMrbDGF : public TNamed {
 		Bool_t ReadParamMemory(Bool_t ReadInputParams = kTRUE, Bool_t ReadOutputParams = kFALSE);	// read params from DSP
 		Bool_t ReadParamMemory(Int_t Channel);							// read params for a single channel
 		Bool_t ReadParamMemory(const Char_t * ParamName);				// read params for a group of channels
-		Bool_t ReadParamMemory(UInt_t FromParam, UInt_t ToParam);		// read part of the param memory
+		Bool_t ReadParamMemory(Int_t FromParam, Int_t ToParam);		// read part of the param memory
 
 		Bool_t WriteParamMemory(Bool_t Reprogram = kTRUE);				// write params back to DSP (data section only)
 		Bool_t WriteParamMemory(Int_t Channel); 						// write params for a single channel
@@ -348,6 +348,7 @@ class TMrbDGF : public TNamed {
 		inline Bool_t IsOffline() { return((fStatusM & TMrbDGF::kOffline) != 0); };
 		inline Bool_t HasLocalDataBase() { return((fStatusM & TMrbDGF::kLocalData) != 0); };
 
+		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm);												// print status
 		virtual inline void Print() { Print(cout); };
 		

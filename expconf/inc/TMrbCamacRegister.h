@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -57,19 +57,16 @@ class TMrbCamacRegister : public TMrbModuleRegister {
 
 		~TMrbCamacRegister() {};									// default dtor
 	
-		inline Bool_t HasCnafs() { return(fHasCnafs != 0); };		// test if cnafs present
-		inline Bool_t HasGetCnaf() { return((fHasCnafs & TMrbCamacRegister::kRegGetCnaf) != 0); };
-		inline Bool_t HasClearCnaf() { return((fHasCnafs & TMrbCamacRegister::kRegClearCnaf) != 0); };
-		inline Bool_t HasSetCnaf() { return((fHasCnafs & TMrbCamacRegister::kRegSetCnaf) != 0); };
+		inline Bool_t HasCnafs() const { return(fHasCnafs != 0); };		// test if cnafs present
+		inline Bool_t HasGetCnaf() const { return((fHasCnafs & TMrbCamacRegister::kRegGetCnaf) != 0); };
+		inline Bool_t HasClearCnaf() const { return((fHasCnafs & TMrbCamacRegister::kRegClearCnaf) != 0); };
+		inline Bool_t HasSetCnaf() const { return((fHasCnafs & TMrbCamacRegister::kRegSetCnaf) != 0); };
 
 		inline TMrbCNAF * CnafSet() { return(&fCnafSet); };
 		inline TMrbCNAF * CnafClear() { return(&fCnafClear); };
 		inline TMrbCNAF * CnafGet() { return(&fCnafGet); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacRegister.html&"); };
-
-//		void Print(ostream & OutStrm, const Char_t * Prefix = "");
-//		inline virtual void Print() { Print(cout, ""); };						// print settings
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacRegister.html&"); };
 
 	protected:
 		UInt_t fHasCnafs;							// any cnafs given?

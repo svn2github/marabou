@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -47,10 +47,11 @@ class TMrbCamacScaler : public TMrbCamacModule, public TMrbScaler {
 								TMrbScaler() {	fHistosToBeAllocated = kFALSE; };
 		~TMrbCamacScaler() {};											// default dtor
 
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");	// show data
-		inline virtual void Print() { Print(cout, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
+		inline virtual void Print() const { Print(cout, ""); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacScaler.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacScaler.html&"); };
 
 	ClassDef(TMrbCamacScaler, 1)		// [Config] Base class describing a CAMAC scaler
 };	

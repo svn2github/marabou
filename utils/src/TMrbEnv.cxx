@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <unistd.h>
 #include <cstdlib>
@@ -209,7 +209,7 @@ void TMrbEnv::SetPrefix(const Char_t * Prefix) {
 	}
 }
 
-const Char_t * TMrbEnv::Resource(TString & R, const Char_t * Field1, Int_t Index1, const Char_t * Field2, Int_t Index2, const Char_t * Field3) {
+const Char_t * TMrbEnv::Resource(TString & R, const Char_t * Field1, Int_t Index1, const Char_t * Field2, Int_t Index2, const Char_t * Field3) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEnv::Resource

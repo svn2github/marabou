@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,7 +46,7 @@ class TMrbSubevent_10_11 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex,  	// generate part of code for this subevent
 														TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_11.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_11.html&"); };
 
 	ClassDef(TMrbSubevent_10_11, 1) 	// [Config] Subevent type [10,11]: data without channel id, zero-padded
 };

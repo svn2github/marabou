@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -132,12 +132,12 @@ Bool_t TMrbLofUserVars::Initialize(Char_t * Option) {
 	return(kTRUE);
 }
 
-void TMrbLofUserVars::Draw() {
+void TMrbLofUserVars::Draw(const Char_t * Option) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Draw
 // Purpose:        Draw all windows in this list
-// Arguments:      
+// Arguments:      Char_t * Option (--ignored--)
 // Results:        
 // Exceptions:     
 // Description:    Calls mehtod "Draw" for any window in the list.
@@ -153,7 +153,7 @@ void TMrbLofUserVars::Draw() {
 	}
 }
 
-TObject * TMrbLofUserVars::First(UInt_t VarType) {
+TObject * TMrbLofUserVars::First(UInt_t VarType) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::First
@@ -175,7 +175,7 @@ TObject * TMrbLofUserVars::First(UInt_t VarType) {
 	return(NULL);
 }
 
-TObject * TMrbLofUserVars::After(TObject * VarPtr, UInt_t VarType) {
+TObject * TMrbLofUserVars::After(TObject * VarPtr, UInt_t VarType) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::After
@@ -198,7 +198,7 @@ TObject * TMrbLofUserVars::After(TObject * VarPtr, UInt_t VarType) {
 	return(NULL);
 }
 
-TObject * TMrbLofUserVars::Find(const Char_t * VarName, UInt_t VarType) {
+TObject * TMrbLofUserVars::Find(const Char_t * VarName, UInt_t VarType) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Find
@@ -224,7 +224,7 @@ TObject * TMrbLofUserVars::Find(const Char_t * VarName, UInt_t VarType) {
 	return(NULL);
 }
 
-void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) {
+void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofUserVars::Print

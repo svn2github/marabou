@@ -111,10 +111,10 @@ class TMrbEsone : public TObject {
 		
 // camac data
 		inline void ClearStatus() { fStatus = 0; };
-		inline void SetX() { fStatus |= kEsoneX; };
-		inline void SetQ() { fStatus |= kEsoneQ; };
-		inline void SetXQ() { fStatus |= (kEsoneQ|kEsoneX); };
-		inline void SetError() { fStatus |= kEsoneError; };
+		inline void SetX() { fStatus |= (UInt_t) kEsoneX; };
+		inline void SetQ() { fStatus |= (UInt_t) kEsoneQ; };
+		inline void SetXQ() { fStatus |= (UInt_t) (kEsoneQ|kEsoneX); };
+		inline void SetError() { fStatus |= (UInt_t) kEsoneError; };
 
 		inline Bool_t GetX() { return(IS_X(fStatus)); };
 		inline Bool_t GetQ() { return(IS_Q(fStatus)); };
@@ -139,6 +139,7 @@ class TMrbEsone : public TObject {
 		Bool_t ReadDoubleWord(Int_t Crate, Bool_t ReadDW = kTRUE);	// enable/disable 32 bit read (CC32 only)
 		
 // misc
+		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(TMrbEsoneCnaf & Cnaf);									// print single cnaf
 		void Print(TObjArray & CnafList, Int_t From = 0, Int_t To = -1);	// print cnaf from list
 		void PrintError(const Char_t * EsoneCall, const Char_t * Method);	// print error

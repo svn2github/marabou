@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -50,13 +50,13 @@ class TMrbSubeventRaw : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 	// generate part of code for this subevent
 										TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline Bool_t HasFixedLengthFormat() { return(kFALSE); };		// variable length data
-		inline Bool_t AllowsMultipleModules() { return(kFALSE); };		// one module per subevent only
-		inline Bool_t SerialToBeCreated() { return(fSerialToBeCreated); }	// create unique serial internally?
+		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };		// variable length data
+		inline Bool_t AllowsMultipleModules() const { return(kFALSE); };		// one module per subevent only
+		inline Bool_t SerialToBeCreated() const { return(fSerialToBeCreated); }	// create unique serial internally?
 
-		virtual inline Bool_t IsRaw() { return(kTRUE); };				// indicates raw (userr-defined) mode
+		virtual inline Bool_t IsRaw() const { return(kTRUE); };				// indicates raw (userr-defined) mode
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubeventRaw.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubeventRaw.html&"); };
 
 	protected:
 		Bool_t fSerialToBeCreated;

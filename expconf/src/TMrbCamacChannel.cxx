@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -41,17 +41,19 @@ TMrbCamacChannel::TMrbCamacChannel(TMrbCamacModule * Module, Int_t Channel, TMrb
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	TString cnafAscii;
+
 	if (!this->IsZombie()) {
 		fCNAF = ModuleCNAF; 							// copy B.C.N of parent
 		fCNAF.SetBit(TMrbCNAF::kCnafBranch | TMrbCNAF::kCnafCrate | TMrbCNAF::kCnafStation | TMrbCNAF::kCnafAddr,
 																TMrbCNAF::kCnafStation | TMrbCNAF::kCnafAddr);
 		fCNAF.Set(TMrbCNAF::kCnafAddr, Channel);		// add subaddr Axx
 
-		SetName(fCNAF.Int2Ascii());
+		SetName(fCNAF.Int2Ascii(cnafAscii));
 	}
 }
 
-void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix) {
+void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCamacChannel::Show
@@ -66,12 +68,13 @@ void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFla
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	TString cnafAscii;
 	const Char_t * parent;
 	const Char_t * cnaf;
 
-	cnaf = fCNAF.Int2Ascii();
+	cnaf = fCNAF.Int2Ascii(cnafAscii);
 
-	if (IsUsed()) {
+	if (this->IsUsed()) {
 		if (SevtFlag) parent = this->UsedBy()->GetName(); else parent = Parent()->GetName();
 
 		OutStrm << Prefix << setw(23) << " ";

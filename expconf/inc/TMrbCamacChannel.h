@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,14 +46,15 @@ class TMrbCamacChannel : public TMrbModuleChannel {
 
 		~TMrbCamacChannel() {};					// default dtor
 
-		inline const Char_t * GetPosition() { 	// get B.C.N data
-			return(fCNAF.Int2Ascii(kTRUE));
+		inline const Char_t * GetPosition() const { 	// get B.C.N data
+			TString ca; return(fCNAF.Int2Ascii(ca, kTRUE));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacChannel.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacChannel.html&"); };
 
-		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "");	 	// show registers
-		inline virtual void Print() { Print(cout, kFALSE, kFALSE, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") const;	 	// show registers
+		inline virtual void Print() const { Print(cout, kFALSE, kFALSE, ""); };
 
 	protected:
 		TMrbCNAF fCNAF;							// channel position

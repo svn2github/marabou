@@ -2,7 +2,7 @@
 #define HPR_FHTOASCII
 //class FitHist;
 
-using namespace std;
+namespace std {} using namespace std;
 
 class  FhToASCII : public TGTransientFrame {
 

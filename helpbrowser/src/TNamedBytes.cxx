@@ -5,7 +5,7 @@
 
 #include "TNamedBytes.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 ClassImp(TNamedBytes)
 //_________________________________________________________________________

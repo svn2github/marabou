@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -164,7 +164,7 @@ Bool_t TMrbCNAF::Ascii2Int(const Char_t * BorCNAF) {
 	return(ok);
 }
 
-const Char_t * TMrbCNAF::Int2Ascii(Bool_t StripBorC) {
+const Char_t * TMrbCNAF::Int2Ascii(TString & CnafAscii, Bool_t StripBorC) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCNAF::Int2Ascii
@@ -178,7 +178,7 @@ const Char_t * TMrbCNAF::Int2Ascii(Bool_t StripBorC) {
 
 	Char_t * dot;
 
-	fAscii.Remove(0);
+	CnafAscii.Remove(0);
 	dot = "";
 	ostringstream * str = new ostringstream();
 
@@ -211,11 +211,10 @@ const Char_t * TMrbCNAF::Int2Ascii(Bool_t StripBorC) {
 	}
 
 	*str << ends;
-	fAscii = str->str().c_str();
-//	str->rdbuf()->freeze(0);
+	CnafAscii = str->str().c_str();
 	delete str;
 
-	return(fAscii.Data());
+	return(CnafAscii.Data());
 }
 
 Bool_t TMrbCNAF::Set(const Char_t * Scnaf, Int_t Value) {
@@ -302,7 +301,7 @@ Bool_t TMrbCNAF::Set(TMrbCNAF::EMrbCNAF Ecnaf, Int_t value) {
 	return(kFALSE);
 }
 
-Int_t TMrbCNAF::Get(const Char_t * Scnaf) {
+Int_t TMrbCNAF::Get(const Char_t * Scnaf) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCNAF::Get
@@ -325,7 +324,7 @@ Int_t TMrbCNAF::Get(const Char_t * Scnaf) {
 	}
 }
 
-Int_t TMrbCNAF::Get(TMrbCNAF::EMrbCNAF Ecnaf) {
+Int_t TMrbCNAF::Get(TMrbCNAF::EMrbCNAF Ecnaf) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCNAF::Get

@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -868,7 +868,7 @@ TMrbNamedX * TMrbDGFData::FindParam(Int_t Channel, const Char_t * ParamName) {
 	return(this->FindParam(paramName.Data()));
 }
 
-Bool_t TMrbDGFData::FPGACodeRead(EMrbFPGAType FPGAType, Int_t Rev) {
+Bool_t TMrbDGFData::FPGACodeRead(EMrbFPGAType FPGAType, Int_t Rev) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::FGPACodeRead
@@ -892,7 +892,7 @@ Bool_t TMrbDGFData::FPGACodeRead(EMrbFPGAType FPGAType, Int_t Rev) {
 	return((fStatusD & bit) != 0);
 }
 
-Bool_t TMrbDGFData::FPGACodeRead(const Char_t * FPGAType, Int_t Rev) {
+Bool_t TMrbDGFData::FPGACodeRead(const Char_t * FPGAType, Int_t Rev) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::FGPACodeRead
@@ -916,7 +916,7 @@ Bool_t TMrbDGFData::FPGACodeRead(const Char_t * FPGAType, Int_t Rev) {
 	return(this->FPGACodeRead((EMrbFPGAType) sysfip->GetIndex(), Rev));
 }
 
-void TMrbDGFData::Print() {
+void TMrbDGFData::Print() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGFData::Print
@@ -1015,7 +1015,7 @@ Bool_t TMrbDGFData::CheckXiaRelease() {
 	}
 }
 
-void TMrbDGFData::PrintXiaRelease() {
+void TMrbDGFData::PrintXiaRelease() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGFData::PrintXiaRelease

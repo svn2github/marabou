@@ -70,7 +70,8 @@ TMrbLogMessage::TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
 	fText = Text;
 };
 		
-const Char_t * TMrbLogMessage::Get(TString & FmtMsg, const Char_t * ProgName, Bool_t WithDate, Bool_t WithColors) {
+const Char_t * TMrbLogMessage::Get(TString & FmtMsg,
+						const Char_t * ProgName, Bool_t WithDate, Bool_t WithColors) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogMessage::Get
@@ -277,7 +278,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	return(kTRUE);
 }
 
-Int_t TMrbLogger::GetNofEntries(UInt_t Type) {
+Int_t TMrbLogger::GetNofEntries(UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::GetNofEntries
@@ -298,7 +299,7 @@ Int_t TMrbLogger::GetNofEntries(UInt_t Type) {
 	return(nofEntries);
 }
 
-Int_t TMrbLogger::GetEntriesByType(TObjArray & MsgArr, Int_t Start, UInt_t Type) {
+Int_t TMrbLogger::GetEntriesByType(TObjArray & MsgArr, Int_t Start, UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::GetEntriesByType
@@ -327,7 +328,7 @@ Int_t TMrbLogger::GetEntriesByType(TObjArray & MsgArr, Int_t Start, UInt_t Type)
 	return(nofEntries);
 }
 
-TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Option) {
+TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::GetLast
@@ -354,7 +355,7 @@ TMrbLogMessage * TMrbLogger::GetLast(const Char_t * Option) {
 	}
 }
 
-TMrbLogMessage * TMrbLogger::GetLast(UInt_t Type) {
+TMrbLogMessage * TMrbLogger::GetLast(UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::GetLast
@@ -374,7 +375,7 @@ TMrbLogMessage * TMrbLogger::GetLast(UInt_t Type) {
 	if (msg->GetType() & Type) return(msg); else return(NULL);
 }
 
-void TMrbLogger::Print(Int_t Tail, const Char_t * Option) {
+void TMrbLogger::Print(Int_t Tail, const Char_t * Option) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::Print
@@ -400,7 +401,7 @@ void TMrbLogger::Print(Int_t Tail, const Char_t * Option) {
 	}
 }
 
-void TMrbLogger::Print(Int_t Tail, UInt_t Type) {
+void TMrbLogger::Print(Int_t Tail, UInt_t Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLogger::Print

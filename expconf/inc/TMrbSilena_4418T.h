@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -64,15 +64,16 @@ class TMrbSilena_4418T : public TMrbCamacModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
 		inline void SetZeroSuppression(Bool_t Flag = kTRUE) { fZeroSuppression = Flag; };	// zero compression on/off
-		inline Bool_t HasZeroSuppression() { return(fZeroSuppression); };
+		inline Bool_t HasZeroSuppression() const { return(fZeroSuppression); };
 		
-		virtual inline const Char_t * GetMnemonic() { return("sil_4418t"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("sil_4418t"); }; 	// module mnemonic
 
-		virtual Bool_t CheckSubeventType(TObject * Subevent);		// check if subevent type is [10,3x]
+		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,3x]
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSilena_4418T.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSilena_4418T.html&"); };
 
 	protected:
 		void DefineRegisters(); 							// define camac registers

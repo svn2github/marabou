@@ -66,7 +66,7 @@ class TGMrbMessageViewer: public TGTransientFrame {
 		
 		inline void SetWithDate(Bool_t WithDate) { fWithDate = WithDate; };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMessageViewer.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMessageViewer.html&"); };
 
 	protected:
 		TList fHeap;

@@ -91,25 +91,25 @@ class TMrbIOSpec : public TObject {
 			fInputFile = InputFile;
 			fInputMode = InputMode;
 		};
-		const Char_t * GetInputFile() { return(fInputFile.Data()); };
+		inline const Char_t * GetInputFile() const { return(fInputFile.Data()); };
 
 		void SetOutputFile(const Char_t * OutputFile, EMrbOutputMode OutputMode = TMrbIOSpec::kOutputNone) {
 			fOutputFile = OutputFile;
 			fOutputMode = OutputMode;
 		};
-		const Char_t * GetOutputFile() { return(fOutputFile.Data()); };
+		inline const Char_t * GetOutputFile() const { return(fOutputFile.Data()); };
 
 		void SetHistoFile(const Char_t * HistoFile, EMrbHistoMode HistoMode = TMrbIOSpec::kHistoNone) {
 			fHistoFile = HistoFile;
 			fHistoMode = HistoMode;
 		};
-		const Char_t * GetHistoFile() { return(fHistoFile.Data()); };
+		inline const Char_t * GetHistoFile() const { return(fHistoFile.Data()); };
 
 		void SetParamFile(const Char_t * ParamFile, EMrbParamMode ParamMode = TMrbIOSpec::kParamNone) {
 			fParamFile = ParamFile;
 			fParamMode = ParamMode;
 		};
-		const Char_t * GetParamFile() { return(fParamFile.Data()); };
+		inline const Char_t * GetParamFile() const { return(fParamFile.Data()); };
 
 		Bool_t SetStartStop(TString &, TString &);
 		Bool_t SetStartStop(Bool_t TstampFlag, Int_t Start, Int_t Stop) {
@@ -119,23 +119,24 @@ class TMrbIOSpec : public TObject {
 			return(kTRUE);
 		};
 
-		inline Int_t GetStartEvent() { return(fStartEvent); };
-		inline Int_t GetStopEvent() { return(fStopEvent); };
+		inline Int_t GetStartEvent() const { return(fStartEvent); };
+		inline Int_t GetStopEvent() const { return(fStopEvent); };
 
 		Bool_t CheckStartStop(TString &, Int_t &, Bool_t &);
-		void ConvertToTimeStamp(TString &, Int_t);
+		void ConvertToTimeStamp(TString &, Int_t) const;
 
-		inline Bool_t IsTimeStampMode() { return(fTimeStampFlag); };
-		inline EMrbInputMode GetInputMode() { return(fInputMode); };
+		inline Bool_t IsTimeStampMode() const { return(fTimeStampFlag); };
+		inline EMrbInputMode GetInputMode() const { return(fInputMode); };
 		inline void SetInputMode(TMrbIOSpec::EMrbInputMode Mode) { fInputMode = Mode; };
-		inline EMrbOutputMode GetOutputMode() { return(fOutputMode); };
+		inline EMrbOutputMode GetOutputMode() const { return(fOutputMode); };
 		inline void SetOutputMode(TMrbIOSpec::EMrbOutputMode Mode) { fOutputMode = Mode; };
-		inline EMrbParamMode GetParamMode() { return(fParamMode); };
+		inline EMrbParamMode GetParamMode() const { return(fParamMode); };
 		inline void SetParamMode(TMrbIOSpec::EMrbParamMode Mode) { fParamMode = Mode; };
-		inline EMrbHistoMode GetHistoMode() { return(fHistoMode); };
+		inline EMrbHistoMode GetHistoMode() const { return(fHistoMode); };
 		inline void SetHistoMode(TMrbIOSpec::EMrbHistoMode Mode) { fHistoMode = Mode; };
 
-		void Print(ostream & out = cout);				// output current settings
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & out = cout) const;				// output current settings
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbIOSpec.html&"); };
 
@@ -177,11 +178,11 @@ class TMrbCalibrationListEntry : public TObject {
 															fAddress(Address) {};
 		virtual ~TMrbCalibrationListEntry() {};  											// dtor
 
-		inline TMrbNamedX * GetModule() { return(fModule); };
+		inline TMrbNamedX * GetModule() const { return(fModule); };
 		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
-		inline TMrbNamedX * GetParam() { return(fParam); };
+		inline TMrbNamedX * GetParam() const { return(fParam); };
 		inline void SetParam(TMrbNamedX * Param) { fParam = Param; };
-		inline TF1 * GetAddress() { return(fAddress); };
+		inline TF1 * GetAddress() const { return(fAddress); };
 		inline void SetAddress(TF1 * Address) { fAddress = Address; };
 
 	protected:
@@ -212,18 +213,18 @@ class TMrbParamListEntry : public TObject {
 															fSingleAddress(SingleAddress) {};
 		virtual ~TMrbParamListEntry() {};  											// dtor
 
-		inline TMrbNamedX * GetModule() { return(fModule); };
+		inline TMrbNamedX * GetModule() const { return(fModule); };
 		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
-		inline TObject * GetAddress() { return(fAddress); };
+		inline TObject * GetAddress() const { return(fAddress); };
 		inline void SetAddress(TObject * Address) { fAddress = Address; };
-		inline TH1 * GetHistoAddress(Bool_t SingleFlag = kFALSE) {
+		inline TH1 * GetHistoAddress(Bool_t SingleFlag = kFALSE) const {
 			return(SingleFlag ? fSingleAddress : fHistoAddress);
 		};
 		inline void SetHistoAddress(TH1 * Address, Bool_t SingleFlag = kFALSE) {
 			if (SingleFlag) fSingleAddress = Address;
 			else			fHistoAddress = Address;
 		};
-		inline TF1 * GetCalibrationAddress() { return(fCalibrationAddress); };
+		inline TF1 * GetCalibrationAddress() const { return(fCalibrationAddress); };
 		inline void SetCalibrationAddress(TF1 * Address) { fCalibrationAddress = Address; };
 
 	protected:
@@ -254,11 +255,11 @@ class TMrbHistoListEntry : public TObject {
 													fAddress(Address) {};
 		virtual ~TMrbHistoListEntry() {};  											// dtor
 
-		inline TMrbNamedX * GetModule() { return(fModule); };
+		inline TMrbNamedX * GetModule() const { return(fModule); };
 		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
-		inline TMrbNamedX * GetParam() { return(fParam); };
+		inline TMrbNamedX * GetParam() const { return(fParam); };
 		inline void SetParam(TMrbNamedX * Param) { fParam = Param; };
-		inline TH1 * GetAddress() { return(fAddress); };
+		inline TH1 * GetAddress() const { return(fAddress); };
 		inline void SetAddress(TH1 * Address) { fAddress = Address; };
 
 	protected:
@@ -292,15 +293,15 @@ class TMrbModuleListEntry : public TObject {
 																	fFirstSingle(FirstSingle) {}; 
 		virtual ~TMrbModuleListEntry() {}; 									// dtor
 
-		inline Int_t GetNofParams() { return(fNofParams); };
+		inline Int_t GetNofParams() const { return(fNofParams); };
 		inline void SetNofParams(Int_t NofParams) { fNofParams = NofParams; };
-		inline Int_t GetTimeOffset() { return(fTimeOffset); };
+		inline Int_t GetTimeOffset() const { return(fTimeOffset); };
 		inline void SetTimeOffset(Int_t TimeOffset) { fTimeOffset = TimeOffset; };
-		inline Int_t GetIndexOfFirstParam() { return(fIndexOfFirstParam); };
+		inline Int_t GetIndexOfFirstParam() const { return(fIndexOfFirstParam); };
 		inline void SetIndexOfFirstParam(Int_t FirstParam) { fIndexOfFirstParam = FirstParam; };
-		inline TMrbNamedX * GetFirstParam() { return(fFirstParam); };
+		inline TMrbNamedX * GetFirstParam() const { return(fFirstParam); };
 		inline void SetFirstParam(TMrbNamedX * FirstParam) { fFirstParam = FirstParam; };
-		inline TMrbNamedX * GetFirstHisto(Bool_t SingleFlag = kFALSE) {
+		inline TMrbNamedX * GetFirstHisto(Bool_t SingleFlag = kFALSE) const {
 			return(SingleFlag ? fFirstSingle : fFirstHisto);
 		};
 		inline void SetFirstHisto(TMrbNamedX * FirstHisto, Bool_t SingleFlag = kFALSE) {
@@ -359,21 +360,22 @@ public:
 		~TUsrHit() {};														// default dtor
 		
 		virtual Int_t Compare(const TObject * Hit) const; 				// hits have to be sortable in time
-		Int_t Compare(long long ChannelTime);
+		Int_t Compare(long long ChannelTime) const;
 		
-		void Print(ostream & Out, Bool_t PrintNames = kFALSE);		// print hit data
-		inline void Print(Bool_t PrintNames = kFALSE) { Print(cout, PrintNames); };
+		void Print(Option_t * Option) const { TObject::Print(Option); };
+		void Print(ostream & Out, Bool_t PrintNames = kFALSE) const;		// print hit data
+		inline void Print(Bool_t PrintNames = kFALSE) const { Print(cout, PrintNames); };
 		
-		inline Int_t GetBufferNumber() { return(fBufferNumber); };		// get data members
-		inline Int_t GetEventNumber() { return(fEventNumber); };
-		inline Int_t GetModuleNumber() { return(fModuleNumber); };
-		inline Int_t GetChannel() { return(fChannel); };
+		inline Int_t GetBufferNumber() const { return(fBufferNumber); };		// get data members
+		inline Int_t GetEventNumber() const { return(fEventNumber); };
+		inline Int_t GetModuleNumber() const { return(fModuleNumber); };
+		inline Int_t GetChannel() const { return(fChannel); };
 
-		inline long long GetChannelTime() { return(fChannelTime); };		// get event time
-		const Char_t * ChannelTime2Ascii(TString & TimeString);
+		inline long long GetChannelTime() const { return(fChannelTime); };		// get event time
+		const Char_t * ChannelTime2Ascii(TString & TimeString) const;
 
 		inline UShort_t * GetDataAddr() { return(fData); };
-		inline UShort_t GetData(Int_t Index) { return(fData[Index]); };
+		inline UShort_t GetData(Int_t Index) const { return(fData[Index]); };
 		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
 				
 		inline void SetBufferNumber(Int_t BufferNumber) { fBufferNumber = BufferNumber; };		// set data members
@@ -446,9 +448,7 @@ class TUsrHitBuffer : public TObject {
       };										// default dtor
 
 		inline void SetName(const Char_t * BufferName) { };
-		inline const Char_t * GetName() { return "xxxx"; };
-//		inline void SetName(const Char_t * BufferName) { fBufName = BufferName; };
-//		inline const Char_t * GetName() { return(fBufName.Data()); };
+		inline const Char_t * GetName() const { return "xxxx"; };
 
 		Int_t AllocClonesArray(Int_t NofEntries, Int_t HighWater);	// allocate TClonesArray to store hits
 
@@ -464,19 +464,20 @@ class TUsrHitBuffer : public TObject {
 		Bool_t RemoveHit(TUsrHit * Hit);					// remove hit
 		Bool_t RemoveHit(Int_t Index);
 
-		inline Int_t GetNofEntries() { return(fNofEntries); };
-		inline Int_t GetNofHits() { return(fNofHits); };
+		inline Int_t GetNofEntries() const { return(fNofEntries); };
+		inline Int_t GetNofHits() const { return(fNofHits); };
 		
 		inline void SetHighWater(Int_t HighWater) { fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater; };
-		inline Int_t GetHighWater() { return(fHighWater); };
-		Bool_t IsHighWater(Bool_t Verbose = kFALSE);
+		inline Int_t GetHighWater() const { return(fHighWater); };
+		Bool_t IsHighWater(Bool_t Verbose = kFALSE) const;
 				
 		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };		// sort entries by time
 
 		inline TClonesArray * GetCA() { return(fHits); };
 
-		void Print(ostream & Out, Int_t Begin = 0, Int_t End = -1);						// print data
-		inline void Print(Int_t Begin = 0, Int_t End = -1) { Print(cout, Begin, End); };
+		void Print(Option_t * Option) const { TObject::Print(Option); };
+		void Print(ostream & Out, Int_t Begin = 0, Int_t End = -1) const;						// print data
+		inline void Print(Int_t Begin = 0, Int_t End = -1) const { Print(cout, Begin, End); };
 		
 	protected:
 //		TString fBufName;						// buffer name
@@ -504,32 +505,32 @@ class TUsrHBX : public TObject {
 		TUsrHBX(TObject * Event, TUsrHitBuffer * HitBuffer, Int_t Window = 0);		// ctor
 		~TUsrHBX() {};										// default dtor
 
-		inline const Char_t * GetName() { return(fHitBuffer->GetName()); };
+		inline const Char_t * GetName() const { return(fHitBuffer->GetName()); };
 
-		inline Int_t GetNofEntries() { return(fHitBuffer->GetNofEntries()); };
-		inline Int_t GetNofHits() { return(fHitBuffer->GetNofHits()); };
+		inline Int_t GetNofEntries() const { return(fHitBuffer->GetNofEntries()); };
+		inline Int_t GetNofHits() const { return(fHitBuffer->GetNofHits()); };
 		
 		inline void SetWindow(Int_t Window) { fWindow = Window; };
-		inline Int_t GetWindow() { return(fWindow); };
+		inline Int_t GetWindow() const { return(fWindow); };
 
 		inline void SetIndex(Int_t Index) { fCurIndex = Index; };
-		inline Int_t GetIndex() { return(fCurIndex); };
+		inline Int_t GetIndex() const { return(fCurIndex); };
 		inline void ResetIndex() { fCurIndex = 0; fResetDone = kTRUE; };
 
-		TUsrHit * FindHit(TUsrHit & HitProfile);								// search for a given hit
-		TUsrHit * At(Int_t Index) { return ((TUsrHit *) fHits->At(Index)); }; 	// return hit at given index
+		TUsrHit * FindHit(TUsrHit & HitProfile) ;								// search for a given hit
+		TUsrHit * At(Int_t Index) const { return ((TUsrHit *) fHits->At(Index)); }; 	// return hit at given index
 		
 		TUsrHit * FindEvent(Int_t EventNumber); 							// find an event
 		TUsrHit * FindNextEvent();											// find first hit of next event
 
-		inline Bool_t AtEnd() { return(fCurIndex >= this->GetNofHits()); }; // kTRUE if at end of buffer
+		inline Bool_t AtEnd() const { return(fCurIndex >= this->GetNofHits()); }; // kTRUE if at end of buffer
 
-		Bool_t HitInWindow(TUsrHit * Hit0); 								// check if hit in time window
+		Bool_t HitInWindow(TUsrHit * Hit0) const; 								// check if hit in time window
 
 		TUsrHit * NextHit();												// get next hit
 		TUsrHit * CurHit(); 												// get current hit
 
-		inline TUsrHitBuffer * GetHitBuffer() { return(fHitBuffer); };
+		inline TUsrHitBuffer * GetHitBuffer() const { return(fHitBuffer); };
 
 		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };		// sort entries by time
 		
@@ -601,32 +602,32 @@ class TMrbAnalyze : public TObject {
 
 		Bool_t CloseRootTree(TMrbIOSpec * IOSpec = NULL); 		// close output file
 
-		inline Int_t GetScaleDown() { return(fScaleDown); };	// get current scale down
+		inline Int_t GetScaleDown() const { return(fScaleDown); };	// get current scale down
 		inline void SetRunId(Int_t RunId) { fRunId = RunId; };	// define run id
-		inline Int_t GetRunId() { return(fRunId); };				// get current run id
+		inline Int_t GetRunId() const { return(fRunId); };				// get current run id
 		inline void SetBranchSize(Int_t BranchSize = TMrbAnalyze::kBranchBufferSize) { fBranchSize = BranchSize; };	// set buffer size for branches
 		inline void SetSplitLevel(Bool_t SplitLevel = TMrbAnalyze::kBranchSplitLevel) { fSplitLevel = SplitLevel; };	// define split level
-		inline Int_t GetBranchSize() { return(fBranchSize); }; 	// get current buffer size
-		inline Int_t GetSplitLevel() { return(fSplitLevel); };		//get split mode
+		inline Int_t GetBranchSize() const { return(fBranchSize); }; 	// get current buffer size
+		inline Int_t GetSplitLevel() const { return(fSplitLevel); };		//get split mode
 		inline void SetRunStatus(EMrbRunStatus RunStatus) { fRunStatus = RunStatus; };	// set status flag
-		inline EMrbRunStatus GetRunStatus() { return(fRunStatus); };	// get current status
+		inline EMrbRunStatus GetRunStatus() const { return(fRunStatus); };	// get current status
 		inline Int_t IsToBeUpdated() { 				// test and reset update flag
 			Bool_t u = fUpdateFlag;
 			fUpdateFlag = 0;
 			return(u);
 		};
 		inline void SetUpdateFlag() { fUpdateFlag++; };		// set update flag
-		inline Int_t GetEventsProcessed() { return(fEventsProcessed); };	// get current event count
+		inline Int_t GetEventsProcessed() const { return(fEventsProcessed); };	// get current event count
 		inline void SetReplayMode(Bool_t Flag = kTRUE) { fReplayMode = Flag; }; // set replay mode
-		inline Bool_t IsReplayMode() { return(fReplayMode); }; 			// get current replay mode
+		inline Bool_t IsReplayMode() const { return(fReplayMode); }; 			// get current replay mode
 		inline void IncrEventCount() { fEventsProcessed++; };				// increment event count
 		inline void ResetEventCount() { 									// reset event count
 			fEventsProcessed = 0;
 			fEventsProcPrev = 0;
 		};
-		inline Bool_t IsModScaleDown() { return((fEventsProcessed % fScaleDown) == 0); };
+		inline Bool_t IsModScaleDown() const { return((fEventsProcessed % fScaleDown) == 0); };
 
-		inline Bool_t TreeToBeWritten() { return(fWriteRootTree); };		// root data to be written?
+		inline Bool_t TreeToBeWritten() const { return(fWriteRootTree); };		// root data to be written?
 
 		void MarkHistogramsWithTime();								// write a time stamp to all histograms
 
@@ -653,26 +654,26 @@ class TMrbAnalyze : public TObject {
 			fMapFile = MapFile;
 			fMapFileSize = Size;
 		};
-		Int_t GetSizeOfMappedObjects(TMapFile * MapFile);			// check size of objects in map file
+		Int_t GetSizeOfMappedObjects(TMapFile * MapFile) const;			// check size of objects in map file
 
 																	// bookkeeping: manage lists of modules, params, and histos
 		void InitializeLists(Int_t NofModules, Int_t NofParams);	// init lists
-		const Char_t * GetModuleName(Int_t ModuleIndex);			// get module name by index
-		const Char_t * GetModuleTitle(Int_t ModuleIndex);			// get module title by index
-		Int_t GetModuleIndex(const Char_t * ModuleName);			// get module index by name
-		const Char_t * GetParamName(Int_t ModuleIndex, Int_t RelParamIndex);	// get param name by relative index
-		const Char_t * GetParamName(Int_t AbsParamIndex);			// get param name by absolute index
-		Int_t GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag = kTRUE);	// get param index by name (rel or abs)
-		Int_t GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex);			// get absolute param index
-		TH1 * GetHistoAddr(const Char_t * HistoName);				// get histogram addr by name
-		TH1 * GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get histogram addr by relative param index
-		TH1 * GetHistoAddr(Int_t AbsParamIndex);					// get histogram addr by absolute param index
-		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t ModuleNumber, Int_t RelParamIndex);	// take histo from list
-		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex);	// take histo from list
-		TMrbHistoListEntry * GetHistoListEntry(const Char_t * HistoName);	// get entry in histo list by name
-		TObject * GetParamAddr(const Char_t * ParamName); 			// get param addr by name
-		TObject * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index
-		TObject * GetParamAddr(Int_t AbsParamIndex);					// get param addr by absolute param index
+		const Char_t * GetModuleName(Int_t ModuleIndex) const;			// get module name by index
+		const Char_t * GetModuleTitle(Int_t ModuleIndex) const;			// get module title by index
+		Int_t GetModuleIndex(const Char_t * ModuleName) const;			// get module index by name
+		const Char_t * GetParamName(Int_t ModuleIndex, Int_t RelParamIndex) const;	// get param name by relative index
+		const Char_t * GetParamName(Int_t AbsParamIndex) const;			// get param name by absolute index
+		Int_t GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag = kTRUE) const;	// get param index by name (rel or abs)
+		Int_t GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) const;			// get absolute param index
+		TH1 * GetHistoAddr(const Char_t * HistoName) const;				// get histogram addr by name
+		TH1 * GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) const; // get histogram addr by relative param index
+		TH1 * GetHistoAddr(Int_t AbsParamIndex) const;					// get histogram addr by absolute param index
+		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t ModuleNumber, Int_t RelParamIndex) const;	// take histo from list
+		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex) const;	// take histo from list
+		TMrbHistoListEntry * GetHistoListEntry(const Char_t * HistoName) const;	// get entry in histo list by name
+		TObject * GetParamAddr(const Char_t * ParamName) const; 			// get param addr by name
+		TObject * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) const; // get param addr by relative param index
+		TObject * GetParamAddr(Int_t AbsParamIndex) const;					// get param addr by absolute param index
 		Bool_t AddModuleToList(const Char_t * ModuleName, const Char_t * ModuleTitle,
 												Int_t ModuleIndex, Int_t AbsParamIndex,
 												Int_t NofParams, Int_t TimeOffset = 0);
@@ -683,20 +684,20 @@ class TMrbAnalyze : public TObject {
 		Bool_t AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
 		Bool_t AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIndex);
 		TF1 * AddCalibrationToList(const Char_t * Name, const Char_t * Formula, Double_t Xmin, Double_t Xmax, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
-		TF1 * GetCalibration(const Char_t * CalibrationName); 				// get calibration by name
-		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex);		// get calibration by module + param
-		TF1 * GetCalibration(Int_t AbsParamIndex);							// get calibration by absolute param index
-		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset);
-		TF1 * GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset);
+		TF1 * GetCalibration(const Char_t * CalibrationName) const; 				// get calibration by name
+		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const;		// get calibration by module + param
+		TF1 * GetCalibration(Int_t AbsParamIndex) const;							// get calibration by absolute param index
+		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) const;
+		TF1 * GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) const;
 
-		inline Int_t GetNofModules() { return(fNofModules); };		// number of modules
-		inline Int_t GetNofParams() { return(fNofParams); };		// number of params
+		inline Int_t GetNofModules() const { return(fNofModules); };		// number of modules
+		inline Int_t GetNofParams() const { return(fNofParams); };		// number of params
 
 		Bool_t SetTimeOffset(Int_t ModuleNumber, Int_t Offset); 	// set time offset
-		Int_t GetTimeOffset(Int_t ModuleNumber);					// get time offset
+		Int_t GetTimeOffset(Int_t ModuleNumber) const;					// get time offset
 
 		inline void SetDumpCount(Int_t Count) { fDumpCount = Count; };
-		inline Int_t GetDumpCount() { return(fDumpCount); };
+		inline Int_t GetDumpCount() const { return(fDumpCount); };
 		Bool_t DumpData(const Char_t * Prefix, Int_t Index, const Char_t * CallingClass, const Char_t * CallingMethod,
 															const Char_t * Msg, const UShort_t * DataPtr, Int_t DataWC);
 		
@@ -704,25 +705,25 @@ class TMrbAnalyze : public TObject {
 		const Char_t * GetResource(const Char_t * Resource);		// make up full resource name
 				
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag; };
-		inline Bool_t IsVerbose() { return(fVerboseMode); };
+		inline Bool_t IsVerbose() const { return(fVerboseMode); };
 
 		inline void SetFakeMode(Bool_t FakeMode = kTRUE) { fFakeMode = FakeMode; }; 	// fake mode
-		inline Bool_t IsFakeMode() { return(fFakeMode); };
+		inline Bool_t IsFakeMode() const { return(fFakeMode); };
 
-		inline TMrbNamedX * FindModule(const Char_t * ModuleName) { return(fModuleList.FindByName(ModuleName)); };
-		inline TMrbNamedX * FindParam(const Char_t * ParamName) { return(fParamList.FindByName(ParamName)); };
-		inline TMrbNamedX * FindHisto(const Char_t * HistoName, Bool_t SingleFlag = kFALSE) {
+		inline TMrbNamedX * FindModule(const Char_t * ModuleName) const { return(fModuleList.FindByName(ModuleName)); };
+		inline TMrbNamedX * FindParam(const Char_t * ParamName) const { return(fParamList.FindByName(ParamName)); };
+		inline TMrbNamedX * FindHisto(const Char_t * HistoName, Bool_t SingleFlag = kFALSE) const {
 			return(SingleFlag ? fSingleList.FindByName(HistoName) : fHistoList.FindByName(HistoName));
 		};
 		
-		void PrintLists(ostream & out = cout);				// print modules, params, histos ...
-		void PrintLists(const Char_t * FileName);
+		void PrintLists(ostream & out = cout) const;				// print modules, params, histos ...
+		void PrintLists(const Char_t * FileName) const;
 
-		void PrintStartStop();		// output start/stop time stamps
+		void PrintStartStop() const;		// output start/stop time stamps
 
-		inline TMrbLogger * GetMessageLogger() { return(fMessageLogger); };
+		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAnalyze.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAnalyze.html&"); };
 
 	protected:
 		Bool_t fVerboseMode;		// kTRUE if verbose mode
@@ -784,34 +785,34 @@ class TUsrEvent : public TObject {
 		TUsrEvent(); 								// default ctor
 		~TUsrEvent() { fLofSubevents.Delete(); fLofHBXs.Delete(); };	// dtor
 
-		const UShort_t * NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE);	// get next subevent
-		UInt_t NextSubeventHeader(const MBSDataIO * BaseAddr);
-		const UShort_t * NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE);
+		const UShort_t * NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE) const;	// get next subevent
+		UInt_t NextSubeventHeader(const MBSDataIO * BaseAddr) const;
+		const UShort_t * NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE) const;
 
 		inline void SetScaleDown(Int_t ScaleDown) { fScaleDown = ScaleDown; }; // set individual scale down
-		inline Int_t GetScaleDown() { return(fScaleDown); };	// get current scale down
+		inline Int_t GetScaleDown() const { return(fScaleDown); };	// get current scale down
 
-		inline Int_t GetClockSecs() { return(fClockSecs); };	// return event time (secs since 1-Jan-70)
-		inline Int_t GetClockNsecs() { return(fClockNsecs); };	// return event time (nanosecs of current second)
-		inline Int_t GetTimeStamp() { return(GetUniqueID()); };	// return time stamp (100 microsecs since start)
-		inline Int_t GetTimeRS() { return(fTimeRS); };			// get time (ROOT style)
-		Int_t CalcTimeDiff(TUsrEvent * Event);					// calc time diff with respect to event
+		inline Int_t GetClockSecs() const { return(fClockSecs); };	// return event time (secs since 1-Jan-70)
+		inline Int_t GetClockNsecs() const { return(fClockNsecs); };	// return event time (nanosecs of current second)
+		inline Int_t GetTimeStamp() const { return(GetUniqueID()); };	// return time stamp (100 microsecs since start)
+		inline Int_t GetTimeRS() const { return(fTimeRS); };			// get time (ROOT style)
+		Int_t CalcTimeDiff(TUsrEvent * Event) const;					// calc time diff with respect to event
 
-		inline TTree * GetTreeIn() { return(fTreeIn); }; 	// return tree addr (input)
-		inline TTree * GetTreeOut() { return(fTreeOut); }; 	// ... (output)
+		inline TTree * GetTreeIn() const { return(fTreeIn); }; 	// return tree addr (input)
+		inline TTree * GetTreeOut() const { return(fTreeOut); }; 	// ... (output)
 
 		inline void SetReplayMode(const Bool_t ReplayMode = kTRUE) {
 			fReplayMode = (fTreeIn == NULL) ? kFALSE : ReplayMode;
 		};
-		inline Bool_t IsReplayMode() { return(fReplayMode); };
+		inline Bool_t IsReplayMode() const { return(fReplayMode); };
 
 		inline void SetFakeMode(const Bool_t FakeMode = kTRUE) {
 			fReplayMode = fFakeMode = FakeMode;
 		};
-		inline Bool_t IsFakeMode() { return(fFakeMode); };
+		inline Bool_t IsFakeMode() const { return(fFakeMode); };
 
-		inline Int_t GetNofEvents() { return(fNofEvents); };
-		inline Bool_t IsModScaleDown() { return((fNofEvents % fScaleDown) == 0); };
+		inline Int_t GetNofEvents() const { return(fNofEvents); };
+		inline Bool_t IsModScaleDown() const { return((fNofEvents % fScaleDown) == 0); };
 
 																					// list of subevents
 		inline void AddSubevent(TObject * Subevent, Int_t SevtSerial = -1) {		// add subevent to list
@@ -820,7 +821,7 @@ class TUsrEvent : public TObject {
 		};
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObject * GetSubevent(Int_t SevtSerial) { return(fLofSubevents.At(SevtSerial)); };	// get it from list
-		inline Int_t GetNofSubevents() { return(fLofSubevents.GetSize()); };
+		inline Int_t GetNofSubevents() const { return(fLofSubevents.GetSize()); };
 
 																	// list of hit buffers
 		inline void AddHBX(TUsrHBX * HBX, Int_t SevtSerial = -1) {	// add hit buffer wrapper to list
@@ -829,7 +830,7 @@ class TUsrEvent : public TObject {
 		};
 		inline TUsrHBX * GetHBX(Int_t SevtSerial) { return((TUsrHBX *) fLofHBXs.At(SevtSerial)); }; // get it from list
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvent.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvent.html&"); };
 
 	protected:
 		Int_t CalcTimeRS(); 				// convert time to ROOT style
@@ -877,12 +878,13 @@ class TUsrEvtStart : public TUsrEvent {
 		~TUsrEvtStart() {};				// default dtor
 
 		Bool_t ExtractTimeStamp(const s_vehe *, const MBSDataIO *);
+		void Print(Option_t * Option) const { TObject::Print(Option); };
 		void Print();
 		Bool_t CreateTree();
 		Bool_t InitializeTree(TFile * RootFile);
-		inline Int_t GetTime() { return(fClockSecs); };
+		inline Int_t GetTime() const { return(fClockSecs); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStart.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStart.html&"); };
 
 	ClassDef(TUsrEvtStart, 1)		// [Analyze] Event type "START ACQUISITION"
 };
@@ -902,12 +904,13 @@ class TUsrEvtStop : public TUsrEvent {
 		~TUsrEvtStop() {};				// default dtor
 
 		Bool_t ExtractTimeStamp(const s_vehe *, const MBSDataIO *);
+		void Print(Option_t * Option) const { TObject::Print(Option); };
 		void Print();
 		Bool_t CreateTree();
 		Bool_t InitializeTree(TFile * RootFile);
-		inline Int_t GetTime() { return(fClockSecs); };
+		inline Int_t GetTime() const { return(fClockSecs); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStop.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStop.html&"); };
 
 	ClassDef(TUsrEvtStop, 1)		// [Analyze] Event type "STOP ACQUISITION"
 };
@@ -934,24 +937,25 @@ class TUsrDeadTime : public TObject {
 		~TUsrDeadTime() {}; 						// default dtor
 
 		void Set(Int_t TimeStamp, Int_t TotalEvents, Int_t AccuEvents, Int_t ScalerContents);
-		inline Float_t Get() { return(fDeadTime); };			// get dead time in %
+		inline Float_t Get() const { return(fDeadTime); };			// get dead time in %
 
-		inline Int_t GetTimeStamp() { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
-		inline Int_t GetTotalEvents() { return(fTotalEvents); }; 	// get event number
+		inline Int_t GetTimeStamp() const { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
+		inline Int_t GetTotalEvents() const { return(fTotalEvents); }; 	// get event number
 
-		virtual void Print();
+		void Print(Option_t * Option) const { TObject::Print(Option); };
+		void Print();
 
 		inline void SetReplayMode(const Bool_t ReplayMode = kTRUE) {
 			fReplayMode = (fTreeIn == NULL) ? kFALSE : ReplayMode;
 		};
-		inline Bool_t IsReplayMode() { return(fReplayMode); };
+		inline Bool_t IsReplayMode() const { return(fReplayMode); };
 
 		Bool_t CreateTree();										// create tree to hold dead-time data
 		Bool_t InitializeTree(TFile * RootFile);					// initialize dead-time tree for replay
-		inline TTree * GetTreeIn() { return(fTreeIn); };
-		inline TTree * GetTreeOut() { return(fTreeOut); };
+		inline TTree * GetTreeIn() const { return(fTreeIn); };
+		inline TTree * GetTreeOut() const { return(fTreeOut); };
 	
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrDeadTime.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrDeadTime.html&"); };
 
 	protected:
 		Int_t fTimeStamp;					// time stamp (since start)

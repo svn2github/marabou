@@ -6,7 +6,7 @@
 #include "TArrayI.h"
 #include "TArrayD.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 //////////////////////////////////////////////////////////////////////////////
@@ -30,6 +30,7 @@ class  FhContour : public TNamed {
       }
       TArrayI * GetColorArray() { return &fColors; }
       TArrayD * GetLevelArray() { return &fLevels; }
+      void Print(Option_t * Option) const { TObject::Print(Option); }
       void Print();
       Int_t Edit(TGWindow * canvas = NULL);
 //      void Draw(){};

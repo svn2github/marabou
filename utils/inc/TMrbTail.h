@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,6 +46,8 @@ class TMrbTail: public TMrbLogger {
 		inline void Stop() { fTimer->TurnOff(); fStopIt = kTRUE; };
 
 		virtual Bool_t HandleTimer(TTimer * Timer);
+
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTail.html&"); };
 
 	protected:
 		TString fTailFile;

@@ -14,7 +14,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <sys/stat.h>
 #include <unistd.h>

@@ -1,7 +1,7 @@
 #ifndef __TMrbStatistics_h__
 #define __TMrbStatistics_h__
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <iostream>
 #include <iomanip>
@@ -27,15 +27,16 @@ public:
    void Set(const Stat_t ent, const Stat_t sofw, const Stat_t mx,
             const Stat_t sx);                  // set statistics values for 1-dim
    void Set(const Stat_t ent, const Stat_t sofw); // set statistics values for 2-dim
-   Int_t Get(Stat_t *ent, Stat_t *sofw, Stat_t *mx, Stat_t *sx);
-   Int_t Get(Stat_t *ent, Stat_t *sofw);
-   inline Stat_t GetEntries(){return fEntries;}
-   inline Stat_t GetSumofw(){return fSumofw;}
-   inline Stat_t GetMean(){return fMean;}
-   inline Stat_t GetSigma(){return fSigma;}   
-   TH1* GetHist(){return fHist;}
-   Int_t GetDimension(){return fDim;};        // Get histogram dimension  
-   virtual void Print(ostream & ostr = cout);                      // print out one line
+   Int_t Get(Stat_t *ent, Stat_t *sofw, Stat_t *mx, Stat_t *sx) const;
+   Int_t Get(Stat_t *ent, Stat_t *sofw) const;
+   inline Stat_t GetEntries() const {return fEntries;}
+   inline Stat_t GetSumofw() const {return fSumofw;}
+   inline Stat_t GetMean() const {return fMean;}
+   inline Stat_t GetSigma() const {return fSigma;}   
+   TH1* GetHist() const {return fHist;}
+   Int_t GetDimension() const {return fDim;};        // Get histogram dimension  
+   void Print(Option_t * Option) const { TObject::Print(Option); }
+   void Print(ostream & ostr) const;                      // print out one line
 
 protected:
    TH1 * fHist;            //! pointer to histogram, dont stream out hists
@@ -83,7 +84,8 @@ public:
    Int_t Fill(TFile *);       // fill stats for hists in root file
    Int_t Fill(TMapFile *);    // fill stats for hists in map file
    TList * GetListOfEntries(){return fStatEntries;};
-   virtual void Print(ostream & ostr = cout);
+   void Print(Option_t * Option) const { TObject::Print(Option); }
+   void Print(ostream & ostr = cout) const;
 
 protected:
    TList  *fStatEntries;

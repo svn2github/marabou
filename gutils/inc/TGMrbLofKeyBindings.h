@@ -66,7 +66,7 @@ class TGMrbLofKeyBindings : public TMrbLofNamedX {
 		Bool_t BindKey(const Char_t * Key, EGMrbKeyAction Action = TGMrbLofKeyBindings::kGMrbKeyActionAllDone);
 		Bool_t HandleKey(Event_t * Event);
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLofKeyBindings.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLofKeyBindings.html&"); };
 
 	protected:
 		const TGWindow * fParent;

@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -52,7 +52,7 @@ TObjString * TMrbHistory::AddEntry(TObject * Obj, const Char_t * Command) {
 	return(objStr);
 }
 
-const Char_t * TMrbHistory::GetEntry(Int_t Index) {
+const Char_t * TMrbHistory::GetEntry(Int_t Index) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbHistory::GetEntry
@@ -97,7 +97,7 @@ Bool_t TMrbHistory::RemoveEntry(Int_t Index) {
 	return(kTRUE);
 }
 
-Bool_t TMrbHistory::Exec(Int_t Index) {
+Bool_t TMrbHistory::Exec(Int_t Index) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbHistory::Exec
@@ -121,7 +121,7 @@ Bool_t TMrbHistory::Exec(Int_t Index) {
 	return(kTRUE);
 }
 
-Bool_t TMrbHistory::Restore(Bool_t ReverseOrder) {
+Bool_t TMrbHistory::Restore(Bool_t ReverseOrder) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbHistory::Restore
@@ -151,7 +151,7 @@ Bool_t TMrbHistory::Restore(Bool_t ReverseOrder) {
 	return(kTRUE);
 }
 
-void TMrbHistory::Print(ostream & Out) {
+void TMrbHistory::Print(ostream & Out) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbHistory::Print

@@ -42,7 +42,7 @@ public:
                     char *retstr, const TGWindow *Win = 0, 
                     const char *YNPrompt = 0, Bool_t * YesNo = 0 ,
                     const char *HelpText = 0,
-                    const char *YNPrompt = 0, Bool_t * YesNo = 0);
+                    const char *YNPrompt1 = 0, Bool_t * YesNo1 = 0);
    virtual ~TGMrbInputDialog(){
 // Cleanup dialog.
       fWidgets->Delete();

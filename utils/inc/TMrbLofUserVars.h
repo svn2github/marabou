@@ -57,23 +57,23 @@ class TMrbLofUserVars: public TNamed {
 		Bool_t Initialize(Char_t * Option = "Default");		// set all vars/windows to initial values
 		Bool_t ReadFromFile(const Char_t * FileName);		// read definitions and settings from file
 
-		virtual void Print(ostream & OutStrm, Option_t * Option = "Default");	// output settings to cout
-		inline void Print(Option_t * Option = "Default") { Print(cout, Option); };
+		virtual void Print(ostream & OutStrm, Option_t * Option = "Default") const;	// output settings to cout
+		virtual void Print(Option_t * Option = "Default") const { this->Print(cout, Option); };
 
-		TObject * Find(const Char_t * VarName, UInt_t VarType = kVarOrWindow);	// find variable
-		TObject * First(UInt_t  VarType = kVarOrWindow);							// get first entry
-		TObject * After(TObject * VarPtr, UInt_t VarType = kVarOrWindow); 		// get next entry
+		TObject * Find(const Char_t * VarName, UInt_t VarType = kVarOrWindow) const;	// find variable
+		TObject * First(UInt_t  VarType = kVarOrWindow) const;							// get first entry
+		TObject * After(TObject * VarPtr, UInt_t VarType = kVarOrWindow) const; 		// get next entry
 
-		inline UInt_t GetEntries() { return(fLofVars.GetLast() + 1); };		// get number of entries
-		inline TObject * Get(UInt_t Index) { return(fLofVars[Index]); };	// get object at position index
-		inline UInt_t IndexOf(TObject * VarObj) { return(fLofVars.IndexOf(VarObj)); };	// get index
+		inline UInt_t GetEntries() const { return(fLofVars.GetLast() + 1); };		// get number of entries
+		inline TObject * Get(UInt_t Index) const { return(fLofVars[Index]); };	// get object at position index
+		inline UInt_t IndexOf(TObject * VarObj) const { return(fLofVars.IndexOf(VarObj)); };	// get index
 		inline void Replace(TObject * OldVar, TObject * NewVar) { fLofVars.AddAt(NewVar, IndexOf(OldVar)); };
 
-		void Draw();										// draw windows
+		void Draw(Option_t * Option);					// draw windows
 
 		void SetGlobalAddress();						// set global address gMrbLofUserVars
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofUserVars.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofUserVars.html&"); };
 
 	protected:
 		Int_t fNofVars;					// total number of vars/windows

@@ -6,7 +6,7 @@
 #include "TList.h"
 #include "FhPeak.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 const Int_t kMAXPEAK = 3;
@@ -33,17 +33,18 @@ public:
       }
       return fNpeaks;
    };
-   Float_t GetLowEdge()    {return fLowEdge;};
-   Float_t GetUpperEdge()  {return fUpperEdge;};
+   Float_t GetLowEdge() const {return fLowEdge;};
+   Float_t GetUpperEdge() const {return fUpperEdge;};
    void SetLowEdge(Float_t x)    {fLowEdge = x;};
    void SetUpperEdge(Float_t x)  {fUpperEdge = x;};
 
-   Bool_t IsEqual(TObject *obj) 
-                 {return GetLowEdge() == ((FhRegion*)obj)->GetLowEdge();};
+   Bool_t IsEqual(const TObject *obj) const {
+      return GetLowEdge() == ((FhRegion*)obj)->GetLowEdge();
+   };
 
    Bool_t IsSortable() const {return kTRUE;};
 
-   Int_t Compare(TObject *obj) { 
+   Int_t Compare(const TObject *obj) const { 
       if       (GetLowEdge() == ((FhRegion*)obj)->GetLowEdge()) return  0;
       else if  (GetLowEdge() < (( FhRegion*)obj)->GetLowEdge()) return -1;
       else                                                      return +1;

@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -53,14 +53,11 @@ class TMrbVMERegister : public TMrbModuleRegister {
 
 		~TMrbVMERegister() {};									// default dtor
 	
-		inline UInt_t AddrSet() { return(fAddrSet); };
-		inline UInt_t AddrClear() { return(fAddrClear); };
-		inline UInt_t AddrGet() { return(fAddrGet); };
+		inline UInt_t AddrSet() const { return(fAddrSet); };
+		inline UInt_t AddrClear() const { return(fAddrClear); };
+		inline UInt_t AddrGet() const { return(fAddrGet); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMERegister.html&"); };
-
-//		void Print(ostream & OutStrm, Char_t * Prefix = "");
-//		inline virtual void Print() { Print(cout, ""); };						// print settings
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMERegister.html&"); };
 
 	protected:
 		UInt_t fAddrSet;					// register offset (set bits)

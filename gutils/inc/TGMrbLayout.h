@@ -39,24 +39,24 @@ class TGMrbLayout : public TObject {
 
 		~TGMrbLayout() {};						// dtor
 
-		inline GContext_t GC() { return(fGC); };
+		inline GContext_t GC() const { return(fGC); };
 
 		Bool_t SetFont(const Char_t * Font);
 		inline void SetFont(FontStruct_t Font) { fFont = Font; };
-		inline FontStruct_t Font() { return(fFont); };
+		inline FontStruct_t Font() const { return(fFont); };
 
 		Bool_t SetFG(const Char_t * Foreground);
 		inline void SetFG(ULong_t Foreground) { fForeground = Foreground; };
-		inline ULong_t FG() { return(fForeground); };
+		inline ULong_t FG() const { return(fForeground); };
 
 		Bool_t SetBG(const Char_t * Background);
 		inline void SetBG(ULong_t Background) { fBackground = Background; };
-		inline ULong_t BG() { return(fBackground); };
+		inline ULong_t BG() const { return(fBackground); };
 
 		inline void SetLH(TGLayoutHints * Hints) { fLayoutHints = Hints; };
-		inline TGLayoutHints * LH() { return(fLayoutHints); };
+		inline TGLayoutHints * LH() const { return(fLayoutHints); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLayout.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLayout.html&"); };
 
 	protected:
 		GContext_t CreateGC(FontStruct_t Font, ULong_t Foreground, ULong_t Background);

@@ -36,7 +36,7 @@ class TGMrbFocusList : public TList {
 		void FocusForward(TGTextEntry * Entry = NULL);
 		void FocusBackward(TGTextEntry * Entry = NULL);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFocusList.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFocusList.html&"); };
 
 	ClassDef(TGMrbFocusList, 0) 	// [GraphUtils] Keep track of the input focus
 };

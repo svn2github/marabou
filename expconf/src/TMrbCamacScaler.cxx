@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -23,7 +23,7 @@ using namespace std;
 
 ClassImp(TMrbCamacScaler)
 
-void TMrbCamacScaler::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbCamacScaler::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCamacScaler::Print

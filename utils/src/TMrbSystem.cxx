@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -43,8 +43,8 @@ TMrbSystem::TMrbSystem() {
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 }
 
-Int_t TMrbSystem::FindFile(TObjArray & PathList, const Char_t * FileName, const Char_t * SearchPath,
-																							Bool_t MultipleMatch) {
+Int_t TMrbSystem::FindFile(TObjArray & PathList,
+						const Char_t * FileName, const Char_t * SearchPath, Bool_t MultipleMatch) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::FindFile
@@ -145,7 +145,7 @@ Int_t TMrbSystem::FindFile(TObjArray & PathList, const Char_t * FileName, const 
 	return(nofFiles);
 }
 
-const Char_t * TMrbSystem::GetDirName(TString & DirName, const Char_t * FilePath, Bool_t ExpandWD) {
+const Char_t * TMrbSystem::GetDirName(TString & DirName, const Char_t * FilePath, Bool_t ExpandWD) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::GetDirName
@@ -182,7 +182,7 @@ const Char_t * TMrbSystem::GetDirName(TString & DirName, const Char_t * FilePath
 	return(DirName.Data());
 }
 
-const Char_t * TMrbSystem::GetBaseName(TString & BaseName, const Char_t * FilePath) {
+const Char_t * TMrbSystem::GetBaseName(TString & BaseName, const Char_t * FilePath) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::GetBaseName
@@ -208,7 +208,7 @@ const Char_t * TMrbSystem::GetBaseName(TString & BaseName, const Char_t * FilePa
 	return(BaseName.Data());
 }
 
-const Char_t * TMrbSystem::GetExtension(TString & Extension, const Char_t * FileName) {
+const Char_t * TMrbSystem::GetExtension(TString & Extension, const Char_t * FileName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::GetExtension
@@ -240,7 +240,7 @@ const Char_t * TMrbSystem::GetExtension(TString & Extension, const Char_t * File
 	return(Extension.Data());
 }
 
-Bool_t TMrbSystem::CheckExtension(const Char_t * FileName, const Char_t * Extension) {
+Bool_t TMrbSystem::CheckExtension(const Char_t * FileName, const Char_t * Extension) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::CheckExtension
@@ -259,7 +259,7 @@ Bool_t TMrbSystem::CheckExtension(const Char_t * FileName, const Char_t * Extens
 	return(ext.CompareTo(Extension) == 0);
 }
 
-const Char_t * TMrbSystem::GetRelPath(TString & Path, const Char_t * BaseDir) {
+const Char_t * TMrbSystem::GetRelPath(TString & Path, const Char_t * BaseDir) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::GetRelPath
@@ -280,7 +280,7 @@ const Char_t * TMrbSystem::GetRelPath(TString & Path, const Char_t * BaseDir) {
 	else								return(Path.Data() + baseDir.Length());
 }
 
-Bool_t TMrbSystem::CheckType(const Char_t * Path, EMrbFileType Type) {
+Bool_t TMrbSystem::CheckType(const Char_t * Path, EMrbFileType Type) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::CheckType
@@ -307,7 +307,7 @@ Bool_t TMrbSystem::CheckType(const Char_t * Path, EMrbFileType Type) {
 	return((flags & Type) != 0);
 }
 
-Bool_t TMrbSystem::CheckAccess(const Char_t * Path, EAccessMode Mode) {
+Bool_t TMrbSystem::CheckAccess(const Char_t * Path, EAccessMode Mode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::CheckAccess

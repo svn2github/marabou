@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -319,7 +319,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbModul
 	return(kTRUE);
 }
 
-Bool_t TMrbXia_DGF_4C::CheckSubeventType(TObject * Subevent) {
+Bool_t TMrbXia_DGF_4C::CheckSubeventType(TObject * Subevent) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C::CheckSubeventType

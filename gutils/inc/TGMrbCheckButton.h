@@ -53,7 +53,7 @@ class TGMrbCheckButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbCheckButtonList.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbCheckButtonList.html&"); };
 
 	ClassDef(TGMrbCheckButtonList, 1)		// [GraphUtils] A list of check buttons
 };
@@ -84,7 +84,7 @@ class TGMrbCheckButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
 
 	ClassDef(TGMrbCheckButtonGroup, 1)		// [GraphUtils] A group of check buttons
 };

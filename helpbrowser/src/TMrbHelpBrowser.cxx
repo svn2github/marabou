@@ -411,7 +411,7 @@ Bool_t TMrbHelpBrowser::ToRootFile(const char * InputDir, const char * RootFile,
 }
 //________________________________________________________________________________
 
-void TMrbHelpBrowser::Print(TString * option){
+void TMrbHelpBrowser::Print(TString * option) const {
 //
 //  print a list of currently known help entries
    Int_t ind = 0;

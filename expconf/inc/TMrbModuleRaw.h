@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -46,11 +46,12 @@ class TMrbModuleRaw : public TMrbModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		inline Bool_t ConvertToInt() { return(kFALSE); };						// data type remains unchanged
-		virtual inline Bool_t IsRaw() { return(kTRUE); };						// indicates raw (user-defined) mode
+		inline Bool_t ConvertToInt() const { return(kFALSE); };						// data type remains unchanged
+		virtual inline Bool_t IsRaw() const { return(kTRUE); };						// indicates raw (user-defined) mode
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleRaw.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleRaw.html&"); };
 
 	protected:
 		virtual void DefineRegisters() {}; 				// define registers

@@ -1727,7 +1727,7 @@ Bool_t FhMainFrame::MbsSetup(){
    const char * sproc = slaves[fCbReadout->GetSelected()-1];
    cout << "mproc " << mproc << " sproc " << sproc;
 
-  	fSetup->EvtBuilder()->SetName(mproc); // Char_t *, name des master ppcs
+  	fSetup->EvtBuilder()->SetProcName(mproc); // Char_t *, name des master ppcs
    TString remoteHome = fSetup->RemoteHomeDir();
    if(remoteHome.IsNull()){
       WarnBox("No .rhosts on Lynx home directory", this);
@@ -1735,7 +1735,7 @@ Bool_t FhMainFrame::MbsSetup(){
    } else { cout << "remoteHome " << remoteHome.Data() << endl;}
 	fSetup->SetNofReadouts(1);				      // momentan nur 1 readout proc
 	fSetup->SetPath(fTbDir->GetString());                 // Char_t *, relativer pfad zum homeDir am ppc
-	   fSetup->ReadoutProc(0)->SetName(sproc);		// dasselbe fuer den readout
+	   fSetup->ReadoutProc(0)->SetProcName(sproc);		// dasselbe fuer den readout
    if(!strcmp(mproc, sproc)){
      fSetup->SetMode(kModeSingleProc);
    } else {

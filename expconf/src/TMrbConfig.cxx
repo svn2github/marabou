@@ -594,7 +594,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 	}
 }
 
-TMrbConfig::EMrbTriggerStatus TMrbConfig::GetTriggerStatus(Int_t Trigger) {
+TMrbConfig::EMrbTriggerStatus TMrbConfig::GetTriggerStatus(Int_t Trigger) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetTriggerStatus
@@ -736,7 +736,7 @@ Bool_t TMrbConfig::HandleMultipleTriggers(Int_t T1, Int_t T2, Int_t T3, Int_t T4
 	}
 }
 
-TObject * TMrbConfig::FindEvent(Int_t Trigger) {
+TObject * TMrbConfig::FindEvent(Int_t Trigger) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindEvent
@@ -758,7 +758,7 @@ TObject * TMrbConfig::FindEvent(Int_t Trigger) {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindSubevent(Int_t SevtSerial) {
+TObject * TMrbConfig::FindSubevent(Int_t SevtSerial) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindSubevent
@@ -780,7 +780,7 @@ TObject * TMrbConfig::FindSubevent(Int_t SevtSerial) {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindSubevent(TClass * Class, TObject * After) {
+TObject * TMrbConfig::FindSubevent(TClass * Class, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindSubevent
@@ -803,7 +803,7 @@ TObject * TMrbConfig::FindSubevent(TClass * Class, TObject * After) {
 	return(NULL);
 }
 
-Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) {
+Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::CheckModuleAddress
@@ -865,7 +865,7 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) {
 	return(kTRUE);
 }
 
-TObject * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After) {
+TObject * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleByID
@@ -893,7 +893,7 @@ TObject * TMrbConfig::FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject 
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindModuleByType(UInt_t ModuleType, TObject * After) {
+TObject * TMrbConfig::FindModuleByType(UInt_t ModuleType, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleByType
@@ -921,7 +921,7 @@ TObject * TMrbConfig::FindModuleByType(UInt_t ModuleType, TObject * After) {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindModuleByCrate(Int_t Crate, TObject * After) {
+TObject * TMrbConfig::FindModuleByCrate(Int_t Crate, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleByCrate
@@ -949,7 +949,7 @@ TObject * TMrbConfig::FindModuleByCrate(Int_t Crate, TObject * After) {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) {
+TObject * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindModuleBySerial
@@ -972,7 +972,7 @@ TObject * TMrbConfig::FindModuleBySerial(Int_t ModuleSerial) {
 	return(NULL);
 }
 
-TObject * TMrbConfig::FindScalerByCrate(Int_t Crate, TObject * After) {
+TObject * TMrbConfig::FindScalerByCrate(Int_t Crate, TObject * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindScalerByCrate
@@ -1000,7 +1000,7 @@ TObject * TMrbConfig::FindScalerByCrate(Int_t Crate, TObject * After) {
 	return(NULL);
 }
 
-Int_t TMrbConfig::FindCrate(Int_t After) {
+Int_t TMrbConfig::FindCrate(Int_t After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindCrate
@@ -1021,7 +1021,7 @@ Int_t TMrbConfig::FindCrate(Int_t After) {
 	return(-1);
 }
 
-Int_t TMrbConfig::GetNofCrates(EMrbCrateType CrateType) {
+Int_t TMrbConfig::GetNofCrates(EMrbCrateType CrateType) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetNofCrates
@@ -1044,7 +1044,7 @@ Int_t TMrbConfig::GetNofCrates(EMrbCrateType CrateType) {
 	return(nofCrates);
 }
 
-UInt_t TMrbConfig::GetCratePattern(EMrbCrateType CrateType) {
+UInt_t TMrbConfig::GetCratePattern(EMrbCrateType CrateType) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetCratePattern
@@ -1127,7 +1127,7 @@ Bool_t TMrbConfig::SetControllerType(Int_t Crate, const Char_t * Type) {
 	}
 }
 
-TObject * TMrbConfig::FindParam(const Char_t * ParamName) {
+TObject * TMrbConfig::FindParam(const Char_t * ParamName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::Findparam
@@ -1150,7 +1150,7 @@ TObject * TMrbConfig::FindParam(const Char_t * ParamName) {
 	return(NULL);
 }
 
-Bool_t TMrbConfig::HistogramExists(const Char_t * HistoName) {
+Bool_t TMrbConfig::HistogramExists(const Char_t * HistoName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::HistogramExists
@@ -3732,7 +3732,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 	return(fUserMacroToBeCalled);
 }
 	
-Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) {
+Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::ExecUserMacro
@@ -4084,7 +4084,7 @@ void TMrbConfig::AddToTagList(const Char_t * CodeFile, Int_t TagIndex) {
 	fLofOnceOnlyTags.Add(new TObjString(tag.Data()));
 }
 
-Bool_t TMrbConfig::TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) {
+Bool_t TMrbConfig::TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::TagTobeProcessed
@@ -4105,7 +4105,7 @@ Bool_t TMrbConfig::TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) {
 	return(fLofOnceOnlyTags.FindObject(tag.Data()) == NULL);
 }
 
-void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) {
+void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::Print
@@ -4144,7 +4144,7 @@ void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) {
 	}
 }
 
-Int_t TMrbConfig::PrintErrors() {
+Int_t TMrbConfig::PrintErrors() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::PrintErrors
@@ -4167,7 +4167,7 @@ Int_t TMrbConfig::PrintErrors() {
 	return(nofErrors);
 }
 
-Int_t TMrbConfig::GetNofErrors() {
+Int_t TMrbConfig::GetNofErrors() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetNofErrors
@@ -4182,7 +4182,7 @@ Int_t TMrbConfig::GetNofErrors() {
 	return(gMrbLog->GetNofEntries((UInt_t) TMrbLogMessage::kMrbMsgError));
 }
 
-void TMrbConfig::Version() {
+void TMrbConfig::Version() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::Version
@@ -4751,7 +4751,7 @@ TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t 
 	return(hArray);
 }
 
-TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName, TMrbNamedX * After) {
+TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName, TMrbNamedX * After) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::FindHistoArray
@@ -4973,7 +4973,7 @@ void TMrbConfig::GetAuthor() {
 	}
 }
 
-Bool_t TMrbConfig::NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) {
+Bool_t TMrbConfig::NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::NameNotLegal
@@ -5005,7 +5005,7 @@ Bool_t TMrbConfig::NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) 
 	return(kFALSE);
 }
 
-Bool_t TMrbConfig::CompileAnalyzeCode(Bool_t CleanFlag) {
+Bool_t TMrbConfig::CompileAnalyzeCode(Bool_t CleanFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::CompileAnalyzeCode
@@ -5028,7 +5028,7 @@ Bool_t TMrbConfig::CompileAnalyzeCode(Bool_t CleanFlag) {
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag) {
+Bool_t TMrbConfig::CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::CompileReadoutCode
@@ -5183,7 +5183,7 @@ void TMrbConfig::MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_
 	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobString, Name, Comment, (TObject *) v));
 }
 
-Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) {
+Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
@@ -5212,7 +5212,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) {
 	return(kTRUE);
 };
 
-Int_t TMrbConfig::GetGlobI(const Char_t * Name) {
+Int_t TMrbConfig::GetGlobI(const Char_t * Name) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobI
@@ -5239,7 +5239,7 @@ Int_t TMrbConfig::GetGlobI(const Char_t * Name) {
 	return(*((Int_t *) nx->GetAssignedObject()));
 };
 
-Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) {
+Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
@@ -5268,7 +5268,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) {
 	return(kTRUE);
 };
 
-Float_t TMrbConfig::GetGlobF(const Char_t * Name) {
+Float_t TMrbConfig::GetGlobF(const Char_t * Name) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobF
@@ -5295,7 +5295,7 @@ Float_t TMrbConfig::GetGlobF(const Char_t * Name) {
 	return(*((Float_t *) nx->GetAssignedObject()));
 };
 
-Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) {
+Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
@@ -5324,7 +5324,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) {
 	return(kTRUE);
 };
 
-Double_t TMrbConfig::GetGlobD(const Char_t * Name) {
+Double_t TMrbConfig::GetGlobD(const Char_t * Name) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobD
@@ -5351,7 +5351,7 @@ Double_t TMrbConfig::GetGlobD(const Char_t * Name) {
 	return(*((Double_t *) nx->GetAssignedObject()));
 };
 
-Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) {
+Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
@@ -5380,7 +5380,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) {
 	return(kTRUE);
 };
 
-Bool_t TMrbConfig::GetGlobB(const Char_t * Name) {
+Bool_t TMrbConfig::GetGlobB(const Char_t * Name) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobB
@@ -5407,7 +5407,7 @@ Bool_t TMrbConfig::GetGlobB(const Char_t * Name) {
 	return(*((Bool_t *) nx->GetAssignedObject()));
 };
 
-Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) {
+Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobal
@@ -5437,7 +5437,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) {
 	return(kTRUE);
 };
 
-const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) {
+const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetGlobStr
@@ -5465,7 +5465,7 @@ const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) {
 	return(str->Data());
 };
 
-Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) {
+Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::GetNofModules

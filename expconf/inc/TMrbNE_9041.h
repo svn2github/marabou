@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -45,13 +45,14 @@ class TMrbNE_9041 : public TMrbCamacModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("ne_9041"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("ne_9041"); }; 	// module mnemonic
 
 		inline void SetWaitForQ(Bool_t Flag = kTRUE) { fWaitForQ = Flag; }; 	// q-wait or loop?
-		inline Bool_t WaitForQ() { return(fWaitForQ); };
+		inline Bool_t WaitForQ() const { return(fWaitForQ); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNE_9041.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNE_9041.html&"); };
 
 	protected:
 		Bool_t fWaitForQ;

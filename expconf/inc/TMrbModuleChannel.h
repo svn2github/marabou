@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -68,35 +68,36 @@ class TMrbModuleChannel : public TNamed {
 
 		Bool_t Set(const Char_t * RegName, Int_t Value);				// set register by name
 		Bool_t Set(Int_t RegIndex, Int_t Value);						// ... by index
-		Int_t Get(const Char_t * RegName);								// get register by name
-		Int_t Get(Int_t RegIndex);										// ... by index
+		Int_t Get(const Char_t * RegName) const;						// get register by name
+		Int_t Get(Int_t RegIndex) const;								// ... by index
 
 		Bool_t Set(const Char_t * RegName, const Char_t * Value);		// set register mnemonically
 		Bool_t Set(Int_t RegIndex, const Char_t * Value);				// ... by index
 
-		inline Bool_t HasRegisters() { return(fRegSpec.GetEntriesFast() > 0); };	// check if regs present
+		inline Bool_t HasRegisters() const { return(fRegSpec.GetEntriesFast() > 0); };	// check if regs present
 
-		inline Int_t GetAddr() { return(fAddr); };						// return channel address
+		inline Int_t GetAddr() const { return(fAddr); };						// return channel address
 
-		inline TMrbSubevent * UsedBy() { return(fUsedBy); }; 			// return address of subevent
-		inline TMrbModule * Parent() { return(fParent); };  			// return address of parent module
+		inline TMrbSubevent * UsedBy() const { return(fUsedBy); }; 			// return address of subevent
+		inline TMrbModule * Parent() const { return(fParent); };  			// return address of parent module
 
-		inline TMrbModuleChannel * ArrayHead() { return(fArrayHead); };	// return array addr
-		inline Int_t GetIndexRange() { return(fIndexRange); };  		// get number of subsequent channels
+		inline TMrbModuleChannel * ArrayHead() const { return(fArrayHead); };	// return array addr
+		inline Int_t GetIndexRange() const { return(fIndexRange); };  		// get number of subsequent channels
 		inline void SetIndexRange(Int_t Range) { fIndexRange = Range; };			// define number of subsequent channels
-		inline TMrbConfig::EMrbChannelStatus GetStatus() { return(fStatus); }; 		// get channel status
+		inline TMrbConfig::EMrbChannelStatus GetStatus() const { return(fStatus); }; 		// get channel status
 		inline void SetStatus(TMrbConfig::EMrbChannelStatus Status) { fStatus = Status; };	// set status bits
-		Int_t GetIndex();												// get index with respect to array head
+		Int_t GetIndex() const;												// get index with respect to array head
 
-		inline Bool_t IsUsed() { return(fIsUsed); };					// param in use?
+		inline Bool_t IsUsed() const { return(fIsUsed); };					// param in use?
 
-		inline EMrbHistoMode GetHistoMode() { return(fHistoMode); };	// histogram to be allocated?
+		inline EMrbHistoMode GetHistoMode() const { return(fHistoMode); };	// histogram to be allocated?
 		inline void SetHistoMode(EMrbHistoMode HistoMode) { fHistoMode = HistoMode; };
 
-		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") {};	 // show registers
-		inline virtual void Print() { Print(cout, kFALSE, kFALSE, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") const {};	 // show registers
+		inline virtual void Print() const { Print(cout, kFALSE, kFALSE, ""); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleChannel.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleChannel.html&"); };
 
 	protected:
 		TMrbModule * fParent;					// parent module

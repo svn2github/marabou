@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -122,12 +122,12 @@ Bool_t TMrbDGFHistogramBuffer::IsActive(Int_t Channel) {
 	return(fIsActive[Channel]);
 }
 
-void TMrbDGFHistogramBuffer::Print() {
+void TMrbDGFHistogramBuffer::Print(ostream & OutStrm) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGFHistogramBuffer::Print
 // Purpose:        Output buffer statistics
-// Arguments:      --
+// Arguments:      ostream & Outstrm   -- output stream (defaults to cout)
 // Results:        --
 // Exceptions:
 // Description:    Buffer printout
@@ -140,7 +140,7 @@ void TMrbDGFHistogramBuffer::Print() {
 		gMrbLog->Err() << "Buffer is empty" << endl;
 		gMrbLog->Flush(this->ClassName(), "Print");
 	} else {
-		cout	<< "===========================================================================================" << endl
+		OutStrm	<< "===========================================================================================" << endl
 				<< " DGF-4C Histogram buffer" << endl
 				<< "..........................................................................................." << endl
 				<< " Number of active channels   : " << fNofChannels << endl
@@ -148,9 +148,9 @@ void TMrbDGFHistogramBuffer::Print() {
 				<< "             ... per channel : " << fSizePerChannel << endl
 				<< "..........................................................................................." << endl;
 		for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-			if (fIsActive[chn]) cout	<< " Counts in channel # " << chn << "       : " << this->GetContents(chn) << endl;
+			if (fIsActive[chn]) OutStrm	<< " Counts in channel # " << chn << "       : " << this->GetContents(chn) << endl;
 		}
-		cout	<< "-------------------------------------------------------------------------------------------" << endl;
+		OutStrm	<< "-------------------------------------------------------------------------------------------" << endl;
 	}
 }
 

@@ -81,14 +81,14 @@ enum 					{	kEsoneWaitForServer		=	15		 	};
 #define A(x)    x
 #define F(x)    x
 
-#define IS_F_READ(s)    (((unsigned int)(s) & 0x18) == 0)
-#define IS_F_WRITE(s)   (((unsigned int)(s) & 0x18) == 0x10)
-#define IS_F_CNTL(s)    ((!IS_F_READ((s))) && (!IS_F_WRITE((s))))
-#define IS_F_RSTATUS(s) ((IS_F_CNTL((s))) && ((s == 8) || (s == 27)))
-#define IS_F_VALID(s)   (((unsigned int)(s) & 0xe0) == 0)
+#define IS_F_READ(s)    ((Bool_t) (((UInt_t)(s) & 0x18) == 0))
+#define IS_F_WRITE(s)   ((Bool_t) (((UInt_t)(s) & 0x18) == 0x10))
+#define IS_F_CNTL(s)    ((Bool_t) ((!IS_F_READ((s))) && (!IS_F_WRITE((s)))))
+#define IS_F_RSTATUS(s) ((Bool_t) ((IS_F_CNTL((s))) && ((s == 8) || (s == 27))))
+#define IS_F_VALID(s)   ((Bool_t) (((UInt_t)(s) & 0xe0) == 0))
 
-#define IS_ERROR(s)		(((unsigned int)(s) & kEsoneError) == 0)
-#define IS_X(s)			(((unsigned int)(s) & kEsoneX) != 0)
-#define IS_Q(s)			(((unsigned int)(s) & kEsoneQ) != 0)
+#define IS_ERROR(s)		((Bool_t) (((UInt_t)(s) & (UInt_t) kEsoneError) == 0))
+#define IS_X(s)			((Bool_t) (((UInt_t)(s) & (UInt_t) kEsoneX) != 0))
+#define IS_Q(s)			((Bool_t) (((UInt_t)(s) & (UInt_t) kEsoneQ) != 0))
 
 #endif

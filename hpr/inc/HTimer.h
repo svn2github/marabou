@@ -5,7 +5,7 @@
 //_____________________________________________________________________________________
 
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 class HTimer : public TTimer {

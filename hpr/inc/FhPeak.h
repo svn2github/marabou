@@ -6,7 +6,7 @@
 #include "TList.h"
 //#include "FhRegion.h"
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 class FhRegion;
@@ -46,12 +46,14 @@ public:
    void SetTailContent(Float_t val)     {fTailContent=val;};
    void SetUsed(Bool_t  used)           {fUsed = used;};
 
-   Bool_t IsEqual(TObject *obj) 
-                 {return GetMean() == ((FhPeak*)obj)->GetMean();};
+   Bool_t IsEqual(const TObject *obj) const {
+      return GetMean() == ((FhPeak*)obj)->GetMean();
+   };
 
    Bool_t IsSortable() const {return kTRUE;};
 
-   Int_t Compare(const TObject *obj)const;
+   Int_t Compare(const TObject *obj) const;
+   void Print(Option_t * Option) const { TObject::Print(Option); }
    void Print();
    void PrintHeadLine();
 ClassDef(FhPeak,1)

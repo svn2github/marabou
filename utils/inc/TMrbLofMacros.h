@@ -58,26 +58,26 @@ class TMrbLofMacros: public TMrbLofNamedX {
 		~TMrbLofMacros() { this->Delete(); };							// dtor: delete heap objects
 
 		inline void SetPath(const Char_t * Path) { fPath = Path; gSystem->ExpandPathName(fPath); };	// define search path
-		inline const Char_t * GetPath() { return(fPath); };
+		inline const Char_t * GetPath() const { return(fPath); };
 
 		Bool_t AddMacro(const Char_t * MacroName); 						// add macro
-		Bool_t AskForArgs(const Char_t * MacroName) {return kTRUE;};					// interactively ask for macro args
+		Bool_t AskForArgs(const Char_t * MacroName) const {return kTRUE;};					// interactively ask for macro args
 
-		inline TMrbNamedX * FirstMacro() { return((TMrbNamedX *) First()); };		// loop thru list of macros
-		inline TMrbNamedX * NextMacro(TMrbNamedX * Last) { return((TMrbNamedX *) After(Last)); };
+		inline TMrbNamedX * FirstMacro() const { return((TMrbNamedX *) First()); };		// loop thru list of macros
+		inline TMrbNamedX * NextMacro(TMrbNamedX * Last) const { return((TMrbNamedX *) After(Last)); };
 
 		inline TMrbLofNamedX * GetLofEnvNames() { return(&fLofEnvNames); }; 		// list of legal environment names
-		Bool_t CheckEnvName(const Char_t * EnvName, Bool_t IsArgEnv = kTRUE);		// check env name
+		Bool_t CheckEnvName(const Char_t * EnvName, Bool_t IsArgEnv = kTRUE) const;		// check env name
 
 		inline TObjArray * GetLofFilePatterns() { return(&fLofFilePatterns); };
 
-		void PrintMacro(const Char_t * MacroName = "");					// print macro
+		void PrintMacro(const Char_t * MacroName = "") const ;					// print macro
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofMacros.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofMacros.html&"); };
 
 	protected:
 		TMrbNamedX * ProcessMacro(const Char_t * MacroPath, const Char_t * MdefPath = NULL, Bool_t TestFormat = kTRUE);
-		Bool_t CheckMacro(TMrbNamedX * Macro);
+		Bool_t CheckMacro(TMrbNamedX * Macro) const;
 
 	protected:
 		TString fPath;

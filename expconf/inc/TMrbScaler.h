@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -42,21 +42,21 @@ class TMrbScaler {
 		virtual ~TMrbScaler() {};		// default dtor
 
 		void Preset(Int_t Preset);													// preset scaler
-		inline Int_t GetPresetValue() { return(fPresetValue); };
+		inline Int_t GetPresetValue() const { return(fPresetValue); };
 
 		inline void SetMode(UInt_t ScalerMode) { fScalerMode |= ScalerMode; };		// scaler mode
-		inline UInt_t GetMode() { return(fScalerMode); };
+		inline UInt_t GetMode() const { return(fScalerMode); };
 
 		inline void SetDTScaler() { fScalerMode |= TMrbConfig::kScalerDeadTime; }; 	// to be used as dead time scaler
-		inline Bool_t IsDTScaler() { return((fScalerMode & TMrbConfig::kScalerDeadTime) != 0); };
+		inline Bool_t IsDTScaler() const { return((fScalerMode & TMrbConfig::kScalerDeadTime) != 0); };
 
 		void SetExternalGate(Bool_t XGateFlag = kTRUE); 	// enable/disable external gate
-		inline Bool_t HasExternalGate() { return((fScalerMode & TMrbConfig::kScalerExternalGate) != 0); };
+		inline Bool_t HasExternalGate() const { return((fScalerMode & TMrbConfig::kScalerExternalGate) != 0); };
 
 		void SetFunctionName(const Char_t * FctName, TMrbConfig::EMrbScalerFunction Fct);	// define function name
-		const Char_t * GetFunctionName(TMrbConfig::EMrbScalerFunction Fct);
+		const Char_t * GetFunctionName(TMrbConfig::EMrbScalerFunction Fct) const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbScaler.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbScaler.html&"); };
 
 	protected:
 		UInt_t fScalerMode; 			// scaler mode

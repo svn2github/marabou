@@ -48,37 +48,37 @@ class TMrbWindow: public TLine, public TAttText {
 
 		inline void SetParent(TObject * Parent) { fParent = Parent; };
 
-		inline UInt_t GetType() { return(GetUniqueID() & kVarOrWindow); };
-		inline UInt_t GetStatus() { return(GetUniqueID() & kStatus); };
+		inline UInt_t GetType() const { return(GetUniqueID() & kVarOrWindow); };
+		inline UInt_t GetStatus() const { return(GetUniqueID() & kStatus); };
 
 		void Initialize();								// initialize values
-		virtual void Print(Option_t * Option = "") const;		// *MENU*
+		virtual void Print(Option_t * Option = "") const;
 		void SetRange(Bool_t Flag = kTRUE) {
-			UInt_t wdwType = GetUniqueID();
+			UInt_t wdwType = this->GetUniqueID();
 			if (Flag) wdwType |= kIsRangeChecked; else wdwType &= ~kIsRangeChecked;
-			SetUniqueID(wdwType);
+			this->SetUniqueID(wdwType);
 		};
 
-		inline Bool_t HasInitValues() { return((GetUniqueID() & kHasInitValues) != 0); };
-		inline Bool_t IsRangeChecked() { return((GetUniqueID() & kIsRangeChecked) != 0); };
+		inline Bool_t HasInitValues() const { return((GetUniqueID() & kHasInitValues) != 0); };
+		inline Bool_t IsRangeChecked() const { return((GetUniqueID() & kIsRangeChecked) != 0); };
 
 		Bool_t AddToHist(TObject * Histogram);	// add window to histogram
 
 // we have to imitate a TNamed object here ...
-		virtual void SetName(const Char_t * WdwName);     // *MENU*
+		virtual void SetName(const Char_t * WdwName);
 		virtual const Text_t * GetName() const { return(fName.Data()); };
-		virtual Bool_t   IsSortable() const { return kTRUE; }
-		virtual Int_t    Compare(TObject * Object) {
+		virtual Bool_t IsSortable() const { return kTRUE; }
+		virtual Int_t Compare(const TObject * Object) const {
 			if (this == Object) return(0);
 			return(fName.CompareTo(Object->GetName()));
 		};
-		virtual ULong_t  Hash() { return fName.Hash(); }
+		virtual ULong_t Hash() const { return fName.Hash(); }
 
 // some methods to visualize a window
 		virtual void Draw(Option_t * Option = "");
 		virtual void Paint(Option_t * Option = "");
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindow.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindow.html&"); };
 
 	protected:
 		void SetInitialType(UInt_t WdwType);
@@ -106,8 +106,8 @@ class TMrbWindowI: public TMrbWindow {
 
 		~TMrbWindowI() {};														// dtor
 
-		inline Int_t Clip(Int_t Value) {						// clip value to range boundaries
-			if (IsRangeChecked()) {
+		inline Int_t Clip(Int_t Value) const {						// clip value to range boundaries
+			if (this->IsRangeChecked()) {
 				if (Value < fLowerRange) return(fLowerRange);
 				else if (Value > fUpperRange) return(fUpperRange);
 				else return(Value);
@@ -120,31 +120,31 @@ class TMrbWindowI: public TMrbWindow {
 
 		void Set(Int_t Xlow, Int_t Xup);  // *MENU* *ARGS={Xlow=>fX1,Xup=>fX2}
 
-		inline Bool_t IsInside(Int_t X) { return(X >= (Int_t) (fX1) && X <= (Int_t) (fX2)); }; // test limits
+		inline Bool_t IsInside(Int_t X) const { return(X >= (Int_t) (fX1) && X <= (Int_t) (fX2)); }; // test limits
 
-		Int_t GetLowerLimit() { return((Int_t) (fX1)); };				// return current lower limit
-		Int_t GetUpperLimit() { return((Int_t) (fX2)); };				// return current upper limit
+		Int_t GetLowerLimit() const { return((Int_t) (fX1)); };				// return current lower limit
+		Int_t GetUpperLimit() const { return((Int_t) (fX2)); };				// return current upper limit
 
 		void Initialize() {								// reset to initial limits
-			fX1 = (Double_t) Clip(fLowerInit);
-			fX2 = (Double_t) Clip(fUpperInit);
+			fX1 = (Double_t) this->Clip(fLowerInit);
+			fX2 = (Double_t) this->Clip(fUpperInit);
 			if (gPad) {
-				Paint();
+				this->Paint();
 				gPad->Modified();
 			}
 		};
 
 		void SetRange(Int_t Xlower, Int_t Xupper) {		// define range
-			SetUniqueID(GetUniqueID() | kIsRangeChecked);
+			this->SetUniqueID(this->GetUniqueID() | kIsRangeChecked);
 			fLowerRange = Xlower;
 			fUpperRange = Xupper;
 		};
 
 		virtual void PaintLine(Double_t, Double_t, Double_t, Double_t);
 
-		virtual void Print(Option_t * Option = "") const;	// *MENU*
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindowI.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindowI.html&"); };
 
 	protected:
 		Int_t fXlower;							// current limits
@@ -174,8 +174,8 @@ class TMrbWindowF: public TMrbWindow {
 
 		~TMrbWindowF() {};									    						// dtor
 
-		inline Double_t Clip(Double_t Value) {						// clip value to range boundaries
-			if (IsRangeChecked()) {
+		inline Double_t Clip(Double_t Value) const {						// clip value to range boundaries
+			if (this->IsRangeChecked()) {
 				if (Value < fLowerRange) return(fLowerRange);
 				else if (Value > fUpperRange) return(fUpperRange);
 				else return(Value);
@@ -186,32 +186,32 @@ class TMrbWindowF: public TMrbWindow {
 		void SetUpperLimit(Double_t Xup);		// *MENU* *ARGS={Xup=>fX2}
 		void Set(Double_t Xlow, Double_t Xup);	// *MENU* *ARGS={Xlow=>fX1,Xup=>fX2}
 
-		Double_t GetLowerLimit() { return(fX1); };		// return current lower limit
+		Double_t GetLowerLimit() const { return(fX1); };		// return current lower limit
 
-		Double_t GetUpperLimit() { return(fX2); };		// return current upper limit
+		Double_t GetUpperLimit() const { return(fX2); };		// return current upper limit
 
-		inline Bool_t IsInside(Double_t X) { return(X >= fX1 && X <= fX2); }; // test limits
+		inline Bool_t IsInside(Double_t X) const { return(X >= fX1 && X <= fX2); }; // test limits
 
 		void Initialize() {								// reset to initial limits
-			fX1 = Clip(fLowerInit);
-			fX2 = Clip(fUpperInit);
+			fX1 = this->Clip(fLowerInit);
+			fX2 = this->Clip(fUpperInit);
 			if (gPad) {
-				Paint();
+				this->Paint();
 				gPad->Modified();
 			}
 		};
 
 		void SetRange(Double_t Xlower, Double_t Xupper) {		// define range
-			SetUniqueID(GetUniqueID() | kIsRangeChecked);
+			this->SetUniqueID(this->GetUniqueID() | kIsRangeChecked);
 			fLowerRange = Xlower;
 			fUpperRange = Xupper;
 		};
 
 		virtual void PaintLine(Double_t, Double_t, Double_t, Double_t);
 
-		virtual void Print(Option_t * Option = "") const;			// *MENU*
+		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindowF.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindowF.html&"); };
 
  	protected:
 		Double_t fXlower;							// current limits
@@ -251,14 +251,14 @@ class TMrbWindow2D : public TCutG, public TAttText {
 		inline void SetParent(TObject * Parent) { fParent = Parent; };
 
 		virtual void Draw(Option_t * Option = "");
-		Double_t GetXtext() { return(fXtext); }
-		Double_t GetYtext() { return(fYtext); }
+		Double_t GetXtext() const { return(fXtext); }
+		Double_t GetYtext() const { return(fYtext); }
 		void SetXtext(Double_t Xt){ fXtext = Xt; }
 		void SetYtext(Double_t Yt){ fYtext = Yt; }
 
 		Bool_t AddToHist(TObject * Histogram);			// add window to histogram
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindow2D.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindow2D.html&"); };
 
 	protected:
 		void SetInitialType(UInt_t WdwType);

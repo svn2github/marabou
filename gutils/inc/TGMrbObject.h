@@ -37,7 +37,7 @@ class TGMrbObject {
 
 		TGMrbLayout * SetupGC(TGMrbLayout * GC, UInt_t FrameOptions);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbObject.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbObject.html&"); };
 
 	protected:
 		TList fHeap;							// store heap objects here

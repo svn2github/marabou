@@ -19,7 +19,7 @@
 //*KEND.
 #endif
 
-using namespace std;
+namespace std {} using namespace std;
 
 
 class HTCanvas;

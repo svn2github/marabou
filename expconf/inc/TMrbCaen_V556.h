@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -67,15 +67,16 @@ class TMrbCaen_V556 : public TMrbVMEModule {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("caen_v556"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("caen_v556"); }; 	// module mnemonic
 
 		inline void SetFFMode(Bool_t FFFlag = kTRUE) { fFFMode = FFFlag; };
-		inline Bool_t IsFFMode() { return(fFFMode); };
+		inline Bool_t IsFFMode() const { return(fFFMode); };
 
-		inline Bool_t HasRandomReadout() { return(kFALSE); };
+		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V556.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V556.html&"); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

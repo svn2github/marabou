@@ -18,7 +18,7 @@
 //End_Html
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include "TEnv.h"
 #include "TROOT.h"

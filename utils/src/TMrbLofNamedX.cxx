@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -236,7 +236,7 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 	}
 }
 
-void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) {
+void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::Print
@@ -327,7 +327,7 @@ void TMrbLofNamedX::Print(ostream & Out, const Char_t * Prefix, UInt_t Mask) {
 	}
 }
 
-void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask, Bool_t CrFlag) {
+void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask, Bool_t CrFlag) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::PrintNames
@@ -365,7 +365,7 @@ void TMrbLofNamedX::PrintNames(ostream & Out, const Char_t * Prefix, UInt_t Mask
 	}
 }
 
-TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode) {
+TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::FindByName
@@ -429,7 +429,7 @@ TMrbNamedX * TMrbLofNamedX::FindByName(const Char_t * ShortName, UInt_t FindMode
 	}
 }
 
-TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) {
+TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::FindByIndex
@@ -452,7 +452,7 @@ TMrbNamedX * TMrbLofNamedX::FindByIndex(Int_t Index, Int_t Mask) {
 	return(NULL);
 }
 
-UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, const Char_t * Separator) {
+UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, const Char_t * Separator) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::FindPattern
@@ -523,7 +523,8 @@ UInt_t TMrbLofNamedX::FindPattern(const Char_t * IndexString, UInt_t FindMode, c
 	}
 }
 
-Bool_t TMrbLofNamedX::FindByDialog(TString & Result, const TString & ShortName, const UInt_t FindMode, const Char_t * Separator) {
+Bool_t TMrbLofNamedX::FindByDialog(TString & Result,
+						const TString & ShortName, const UInt_t FindMode, const Char_t * Separator) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::FindMultipleKey
@@ -580,7 +581,8 @@ Bool_t TMrbLofNamedX::FindByDialog(TString & Result, const TString & ShortName, 
 	return(kTRUE);
 }
 
-const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Separator) {
+const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString,
+										UInt_t Pattern, const Char_t * Separator) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::Pattern2String
@@ -608,7 +610,7 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString, UInt_t Patte
 		return("");
 	}
 
-	if (Pattern & TMrbLofNamedX::kPatternBit) {
+	if (Pattern & (UInt_t) TMrbLofNamedX::kPatternBit) {
 		indexBits = ~Pattern;
 		cmpl = kTRUE;
 	} else {
@@ -630,7 +632,8 @@ const Char_t * TMrbLofNamedX::Pattern2String(TString & IndexString, UInt_t Patte
 	return(IndexString.Data());
 }
 
-UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Method, const Char_t * IndexString, const SMrbNamedX * NamedX, UInt_t Mode) {
+UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Method,
+							const Char_t * IndexString, const SMrbNamedX * NamedX, UInt_t Mode) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::CheckPattern
@@ -649,7 +652,7 @@ UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Meth
 	UInt_t opt;
 
 	if (NamedX != NULL) this->AddNamedX(NamedX);
-	SetPatternMode();
+	this->SetPatternMode();
 	opt = this->FindPattern(IndexString, Mode);
 	if (opt == TMrbLofNamedX::kIllIndexBit) {
 		gMrbLog->Err() << "Illegal index string - " << IndexString << endl;
@@ -669,7 +672,7 @@ UInt_t TMrbLofNamedX::CheckPattern(const Char_t * ClassName, const Char_t * Meth
 	return(opt);
 }
 
-UInt_t TMrbLofNamedX::GetMask() {
+UInt_t TMrbLofNamedX::GetMask() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::GetMask

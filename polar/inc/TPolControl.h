@@ -88,6 +88,7 @@ class TPolControl : public TObject {
 		inline TMrbSerialComm * SerIO() { return(fSerIO); };		// serial i/o port
 		inline Bool_t IsOnline() { return(fSerIO != NULL); };		// online/offline mode
 
+		void Draw(const Option_t * Option) { TObject::Draw(Option); };
 		inline void Draw() { if (fHisto) fHisto->Draw(); };
 
 		TNtuple * Monitor(const Char_t * FileName,					// monitor data to root file
@@ -105,13 +106,14 @@ class TPolControl : public TObject {
 		inline Bool_t IsReading() { return((fMonitorData != NULL) && !fWriteFlag); };
 		inline Bool_t MonitorIsOn() { return(fMonitorData != NULL); };
 
-		inline const Char_t * TimeStampAsString(TString & TimeString, UInt_t TimeStamp);
+		const Char_t * TimeStampAsString(TString & TimeString, UInt_t TimeStamp);
 
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag; };
 		inline Bool_t IsVerbose() { return(fVerboseMode); };
 
 		inline TMrbLofNamedX * GetMonitorLayout() { return(&fMonitorLayout); }; // get monitor layout
 
+		void Print(Option_t * Option) const { TObject::Print(Option); }
 		virtual void Print();										// print settings
 
 		void PrintNameTable();										// print adc/dac names

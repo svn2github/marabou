@@ -4,7 +4,7 @@
 #include "TMbsSetup.h"
 #include "TMrbHelpBrowser.h" 
 
-using namespace std;
+namespace std {} using namespace std;
 
 enum CAnalyzeCommandIdentifiers {
    M_CLEAR, M_START_STOP, M_PAUSE, M_CONFIG, M_RESET, M_SAVEMAP, M_DELETEMAP,

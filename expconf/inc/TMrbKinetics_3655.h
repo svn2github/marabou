@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -61,33 +61,35 @@ class TMrbKinetics_3655 : public TMrbCamacModule {
 
 		Bool_t SetFrequency(Int_t Frequency = 1000000);
 		Bool_t SetFrequency(const Char_t * Frequency);
-		TMrbNamedX * GetFrequency();
+		TMrbNamedX * GetFrequency() const;
 
 		void SetRecycleMode(Bool_t RecycleFlag = kTRUE);
-		Bool_t IsRecycleMode();
+		Bool_t IsRecycleMode() const;
 
 		Int_t SetIntervals(Int_t Inv1, Int_t Inv2 = -1, Int_t Inv3 = -1, Int_t Inv4 = -1,
 							Int_t Inv5 = -1, Int_t Inv6 = -1, Int_t Inv7 = -1, Int_t Inv8 = -1);
-		Int_t GetInterval(Int_t InvNo);
-		inline Int_t GetNofIntervals() { return(fNofIntervals); };
+		Int_t GetInterval(Int_t InvNo) const;
+		inline Int_t GetNofIntervals() const { return(fNofIntervals); };
 
 		Bool_t SetInhibit(Int_t InhClear, Int_t InhSet);
 		inline void DontAssertInhibit() { SetInhibit(-1, -1); };
-		inline Bool_t AssertsInhibit() { return(fInhibitFlag); };
+		inline Bool_t AssertsInhibit() const { return(fInhibitFlag); };
+
+		UInt_t GetLamMask() const;
 
 		Bool_t SetLamMask(Bool_t Lam1, Bool_t Lam2 = kFALSE, Bool_t Lam3 = kFALSE, Bool_t Lam4 = kFALSE,
 							Bool_t Lam5 = kFALSE, Bool_t Lam6 = kFALSE, Bool_t Lam7 = kFALSE, Bool_t Lam8 = kFALSE);
-		inline UInt_t GetLamMask();
 
 		inline void SetExtStart(Bool_t StartFlag = kTRUE) { fExtStartFlag = StartFlag; };
-		inline Bool_t IsExtStartMode() { return(fExtStartFlag); };
+		inline Bool_t IsExtStartMode() const { return(fExtStartFlag); };
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
-		virtual inline const Char_t * GetMnemonic() { return("Kinetics_3655"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("Kinetics_3655"); }; 	// module mnemonic
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbKinetics_3655.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbKinetics_3655.html&"); };
 
 	protected:
 		void DefineRegisters(); 			// define camac registers

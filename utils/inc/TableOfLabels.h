@@ -54,7 +54,7 @@ public:
                  TOrdCollection *col_lab,
                  TOrdCollection *row_lab);
    virtual ~TableOfLabels();
-   TList  *GetListOfLabels(){return fEntries;};
+   TList  *GetListOfLabels() const {return fEntries;};
    void SetLabelText(Int_t col, Int_t row, const Char_t * text){
      ((TGLabel*)fEntries->At(fNcols*row + col))->SetText(new TGString(text));};
    void SetLabelColor(Int_t col, Int_t row, ULong_t color){

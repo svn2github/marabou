@@ -13,7 +13,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -63,13 +63,13 @@ class TMrbSubevent : public TNamed {
 			fNofEvents++;
 		};
 
-		inline TObject * FindEvent(const Char_t * EvtName) {	// find a parent
+		inline TObject * FindEvent(const Char_t * EvtName) const {	// find a parent
 			return (fLofEvents.FindObject(EvtName));
 		};
 
 		Bool_t AddParam(TObject * Param);			 	// add a new parameter
 
-		inline TObject * FindParam(const Char_t * ParamName) {		// find param by its name
+		inline TObject * FindParam(const Char_t * ParamName) const {		// find param by its name
 			return(fLofParams.FindObject(ParamName));
 		};
 
@@ -79,47 +79,47 @@ class TMrbSubevent : public TNamed {
 			return(kTRUE);
 		};
 
-		inline TObject * NextModule(TObject * After = NULL) {	// get next module from list
+		inline TObject * NextModule(TObject * After = NULL) const {	// get next module from list
 			return((After == NULL) ? fLofModules.First() : fLofModules.After(After));
 		};
 
-		inline TObject * FindModule(const Char_t * ModuleName) {	// find a module
+		inline TObject * FindModule(const Char_t * ModuleName) const {	// find a module
 			return (fLofModules.FindObject(ModuleName));
 		};
 
-		TObject * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After = NULL); 		// find module by its id
-		inline TObject * FindModuleByID(TMrbNamedX * ModuleID, TObject * After = NULL) {
+		TObject * FindModuleByID(TMrbConfig::EMrbModuleID ModuleID, TObject * After = NULL) const; 		// find module by its id
+		inline TObject * FindModuleByID(TMrbNamedX * ModuleID, TObject * After = NULL) const {
 			return(this->FindModuleByID((TMrbConfig::EMrbModuleID) ModuleID->GetIndex(), After));
 		};
 
-		TObject * FindModuleByType(UInt_t ModuleType, TObject * After = NULL); 	// find module by its type
-		TObject * FindModuleByType(TMrbNamedX * ModuleType, TObject * After = NULL) {
+		TObject * FindModuleByType(UInt_t ModuleType, TObject * After = NULL) const; 	// find module by its type
+		inline TObject * FindModuleByType(TMrbNamedX * ModuleType, TObject * After = NULL) const {
 			return(this->FindModuleByType(ModuleType->GetIndex(), After));
 		};
 
-		TObject * FindModuleBySerial(Int_t ModuleSerial);				 		// find module by its serial number
+		TObject * FindModuleBySerial(Int_t ModuleSerial) const;				 		// find module by its serial number
 
 		Bool_t Use(const Char_t * ModuleName, const Char_t * Assignment); 		// assign parameters
 		inline Bool_t Use(const Char_t * Assignment) { return(Use(NULL, Assignment)); };
 
-		inline Int_t GetSerial() { return(fSerial); };  	 					// return unique subevent id
+		inline Int_t GetSerial() const { return(fSerial); };  	 					// return unique subevent id
 
 		Bool_t Set(const Char_t * ParamName, const Char_t * RegName, Int_t Value);	// set param register by name
 		Bool_t Set(const Char_t * ParamName, Int_t RegIndex, Int_t Value);			// ... by index
-		Int_t Get(const Char_t * ParamName, const Char_t * RegName);				// get param register by name
-		Int_t Get(const Char_t * ParamName, Int_t RegIndex);						// ... by index
+		Int_t Get(const Char_t * ParamName, const Char_t * RegName) const;			// get param register by name
+		Int_t Get(const Char_t * ParamName, Int_t RegIndex) const;					// ... by index
 
-		inline Int_t GetNofEvents() { return(fNofEvents); };
-		inline Int_t GetNofModules() { return(fNofModules); };
+		inline Int_t GetNofEvents() const { return(fNofEvents); };
+		inline Int_t GetNofModules() const { return(fNofModules); };
 
-		inline Int_t GetNofParams() { return(fNofParams); };					// get number of params
-		inline Int_t GetNofShorts() { return(fNofShorts); };					// get number of 16 bit words
-		inline UInt_t GetLegalDataTypes() { return(fLegalDataTypes); }; // data types subevent is capable of
+		inline Int_t GetNofParams() const { return(fNofParams); };					// get number of params
+		inline Int_t GetNofShorts() const { return(fNofShorts); };					// get number of 16 bit words
+		inline UInt_t GetLegalDataTypes() const { return(fLegalDataTypes); }; // data types subevent is capable of
 
-		inline Int_t GetCrate() { return(fCrate); };					// return crate number
+		inline Int_t GetCrate() const { return(fCrate); };					// return crate number
 
-		inline UInt_t GetType() { return(fSevtType); }; 				// subevent's type & subtype
-		inline UInt_t GetSubtype() { return(fSevtSubtype); };
+		inline UInt_t GetType() const { return(fSevtType); }; 				// subevent's type & subtype
+		inline UInt_t GetSubtype() const { return(fSevtSubtype); };
 
 		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); };  // generate part of code
 
@@ -133,12 +133,12 @@ class TMrbSubevent : public TNamed {
 		Bool_t SetReadoutOptions(Option_t * Options = "");					// set options for MakeReadoutCode()
 		Bool_t SetAnalyzeOptions(Option_t * Options = "byName:Histograms");	// set options for MakeAnalyzeCode()
 		Bool_t SetConfigOptions(Option_t * Options = "");					// set options for MakeConfigCode()
-		UInt_t GetReadoutOptions(TMrbEvent * Parent = NULL); 						// return MakeReadoutCode() options
-		UInt_t GetAnalyzeOptions(TMrbEvent * Parent = NULL); 						// return MakeAnalyzeCode() options
-		UInt_t GetConfigOptions(TMrbEvent * Parent = NULL);							// return MakeConfigCode() options
+		UInt_t GetReadoutOptions(TMrbEvent * Parent = NULL) const; 			// return MakeReadoutCode() options
+		UInt_t GetAnalyzeOptions(TMrbEvent * Parent = NULL) const; 			// return MakeAnalyzeCode() options
+		UInt_t GetConfigOptions(TMrbEvent * Parent = NULL) const;			// return MakeConfigCode() options
 
-		inline const Char_t * GetPrefix() { return(fPrefix.Data()); };
-		inline Bool_t PrefixToBePrepended() { return(fPrependPrefix); };	// prepend an individual prefix?
+		inline const Char_t * GetPrefix() const { return(fPrefix.Data()); };
+		inline Bool_t PrefixToBePrepended() const { return(fPrependPrefix); };	// prepend an individual prefix?
 		void PrependPrefix(const Char_t * Prefix) {
 			fPrefix = Prefix;
 			fPrefix.ToLower();
@@ -146,39 +146,40 @@ class TMrbSubevent : public TNamed {
 		};
 		inline void PrependPrefix(Bool_t Flag = kTRUE) { fPrependPrefix = fPrefix.IsNull() ? kFALSE : Flag; };
 
-		void Print(ostream & OutStrm, const Char_t * Prefix = "");	// show data
-		inline virtual void Print() { Print(cout, ""); };
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
+		inline virtual void Print() const { Print(cout, ""); };
 
 		inline void AllocateHistograms(Bool_t Flag = kTRUE) { fHistosToBeAllocated = Flag; }; // create histograms?
-		inline Bool_t HistosToBeAllocated() { return(fHistosToBeAllocated); };
+		inline Bool_t HistosToBeAllocated() const { return(fHistosToBeAllocated); };
 		inline void FillHistogramsIfTrueHitOnly(Bool_t Flag = kTRUE) { fHistosToBeFilledIfTrueHit = Flag; };
-		inline Bool_t HistosToBeFilledIfTrueHit() { return(fHistosToBeFilledIfTrueHit); };
+		inline Bool_t HistosToBeFilledIfTrueHit() const { return(fHistosToBeFilledIfTrueHit); };
 
-		virtual inline Bool_t HasFixedLengthFormat() { return(kTRUE); };		// fixed length data
-		virtual inline Bool_t AllowsMultipleModules() { return(kTRUE); };		// format allows multiple modules
-		virtual inline Bool_t SerialToBeCreated() { return(kTRUE); }			// create unique serial internally?
-		virtual inline Bool_t IsRaw() { return(kFALSE); };						// not raw (user-defined) mode
-		virtual inline Bool_t CheckModuleID(TMrbModule * Module) { return(kTRUE); }; // subevent may store any modules
+		virtual inline Bool_t HasFixedLengthFormat() const { return(kTRUE); };		// fixed length data
+		virtual inline Bool_t AllowsMultipleModules() const { return(kTRUE); };		// format allows multiple modules
+		virtual inline Bool_t SerialToBeCreated() const { return(kTRUE); }			// create unique serial internally?
+		virtual inline Bool_t IsRaw() const { return(kFALSE); };						// not raw (user-defined) mode
+		virtual inline Bool_t CheckModuleID(TMrbModule * Module) const { return(kTRUE); }; // subevent may store any modules
 
 																				// params to be addressed in array mode?
 		inline void SetArrayMode(Bool_t ArrayMode = kTRUE) { fArrayMode = ArrayMode; };	// single array to be used?
-		inline Bool_t IsInArrayMode() { return(fArrayMode); };
-		inline Bool_t HasIndexedParams() { return(fHasIndexedParams); };
+		inline Bool_t IsInArrayMode() const { return(fArrayMode); };
+		inline Bool_t HasIndexedParams() const { return(fHasIndexedParams); };
 				
-		virtual inline Bool_t NeedsHitBuffer() { return(kFALSE); }; 			// no hit buffer needed
-		virtual inline Bool_t NeedsBranchMode() { return(kFALSE); }; 			// may run with leaves or branches
+		virtual inline Bool_t NeedsHitBuffer() const { return(kFALSE); }; 			// no hit buffer needed
+		virtual inline Bool_t NeedsBranchMode() const { return(kFALSE); }; 			// may run with leaves or branches
 
-		virtual inline Bool_t HasPrivateCode() { return(kFALSE); }; 			// normal code generation
-		virtual inline const Char_t * GetPrivateCodeFile() { return(NULL); };
-		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
+		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 			// normal code generation
+		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
+		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		
 		inline TObjArray * GetLofEvents() { return(&fLofEvents); };			// get address of ...
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
-		const Char_t * GetLofModulesAsString(TString & LofModules);
+		const Char_t * GetLofModulesAsString(TString & LofModules) const;
 		inline TObjArray * GetLofParams() { return(&fLofParams); };
-		const Char_t * GetLofParamsAsString(TString & LofParams);
+		const Char_t * GetLofParamsAsString(TString & LofParams) const;
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent.html&"); };
+		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent.html&"); };
 
 	protected:
 		UInt_t fSevtType;					// subevent type

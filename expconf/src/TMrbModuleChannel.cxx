@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -165,7 +165,7 @@ Bool_t TMrbModuleChannel::Set(Int_t RegIndex, const Char_t * Value) {
 	}
 }
 
-Int_t TMrbModuleChannel::Get(const Char_t * RegName) {
+Int_t TMrbModuleChannel::Get(const Char_t * RegName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModuleChannel::Get
@@ -192,7 +192,7 @@ Int_t TMrbModuleChannel::Get(const Char_t * RegName) {
 	}
 }
 
-Int_t TMrbModuleChannel::Get(Int_t RegIndex) {
+Int_t TMrbModuleChannel::Get(Int_t RegIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModuleChannel::Get
@@ -219,7 +219,7 @@ Int_t TMrbModuleChannel::Get(Int_t RegIndex) {
 	}
 }
 
-Int_t TMrbModuleChannel::GetIndex() {
+Int_t TMrbModuleChannel::GetIndex() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbModuleChannel::GetIndex

@@ -305,7 +305,7 @@ Bool_t TGMrbLabelEntry::SetRange(Double_t LowerLimit, Double_t UpperLimit) {
 	return(kTRUE);
 }
 
-Bool_t TGMrbLabelEntry::WithinRange() {
+Bool_t TGMrbLabelEntry::WithinRange() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::WithinRange
@@ -344,7 +344,7 @@ Bool_t TGMrbLabelEntry::WithinRange() {
 	return(kTRUE);
 }
 
-Bool_t TGMrbLabelEntry::CheckRange(Double_t Value) {
+Bool_t TGMrbLabelEntry::CheckRange(Double_t Value) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::CheckRange
@@ -360,7 +360,7 @@ Bool_t TGMrbLabelEntry::CheckRange(Double_t Value) {
 	return(Value >= fLowerLimit && Value <= fUpperLimit);
 }
 
-Bool_t TGMrbLabelEntry::RangeToBeChecked() {
+Bool_t TGMrbLabelEntry::RangeToBeChecked() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::RangeToBeChecked

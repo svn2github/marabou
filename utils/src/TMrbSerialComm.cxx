@@ -11,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -457,7 +457,7 @@ Int_t TMrbSerialComm::WriteWithDelay(const Char_t * Data, Double_t Delay) {
 	return(buf.Length());
 }
 
-void TMrbSerialComm::Print() {
+void TMrbSerialComm::Print() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSerialComm::Print
@@ -501,7 +501,7 @@ void TMrbSerialComm::Print() {
 	cout	<< endl;
 }
 
-const Char_t * TMrbSerialComm::MakePrintable(TString & PrintString, const Char_t * String) {
+const Char_t * TMrbSerialComm::MakePrintable(TString & PrintString, const Char_t * String) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSerialComm::MakePrintable

@@ -10,7 +10,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-using namespace std;
+namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -199,7 +199,7 @@ Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
 	}
 }
 
-void TMrbLofMacros::PrintMacro(const Char_t * MacroName) {
+void TMrbLofMacros::PrintMacro(const Char_t * MacroName) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofMacro::PrintMacro
@@ -213,9 +213,14 @@ void TMrbLofMacros::PrintMacro(const Char_t * MacroName) {
 
 	TMrbNamedX * macro;
 
-	if (*MacroName == '\0') {
-		if (this->GetLast() >= 0) this->Print();
-		else {
+	if (MacroName == NULL || *MacroName == '\0') {
+		if (this->GetLast() >= 0) {
+			macro = (TMrbNamedX *) this->First();
+			while (macro) {
+				this->PrintMacro(macro->GetName());
+				macro = (TMrbNamedX *) this->After(macro);
+			}
+		} else {
 			gMrbLog->Err() << "List is empty" << endl;
 			gMrbLog->Flush(this->ClassName(), "PrintMacro");
 		}
@@ -372,7 +377,7 @@ TMrbNamedX * TMrbLofMacros::ProcessMacro(const Char_t * MacroPath, const Char_t 
 	return(macroIdx);
 }
 
-Bool_t TMrbLofMacros::CheckMacro(TMrbNamedX * Macro) {
+Bool_t TMrbLofMacros::CheckMacro(TMrbNamedX * Macro) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofMacro::CheckMacro
@@ -443,7 +448,7 @@ Bool_t TMrbLofMacros::CheckMacro(TMrbNamedX * Macro) {
 	return(kTRUE);
 }
 
-Bool_t TMrbLofMacros::CheckEnvName(const Char_t * EnvName, Bool_t IsArgEnv) {
+Bool_t TMrbLofMacros::CheckEnvName(const Char_t * EnvName, Bool_t IsArgEnv) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofMacro::CheckEnvName
