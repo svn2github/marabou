@@ -350,12 +350,14 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 		return(kFALSE);
 	}
 
-	pathName = gMbsSetup->GetHomeDir();
-	pathName += "/";
-	pathName += gMbsSetup->GetPath();
+	if (!pathName.BeginsWith("/")) {
+		pathName = gMbsSetup->GetHomeDir();
+		pathName += "/";
+		pathName += gMbsSetup->GetPath();
+	}
 	pathName += "/";
 	pathName += Path; 			// append subdir
-
+	
 	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 		if (Create) {
 			if (gSystem->MakeDirectory(pathName.Data()) == 0) {
@@ -809,24 +811,24 @@ Bool_t TMbsReadoutProc::CopyMakefile(const Char_t * SrcDir) {
 		isOK = kFALSE;
 	}
 
-	destPath = gMbsSetup->GetHomeDir();
-	if (destPath.Length() == 0) {
-		gMrbLog->Err() << "Remote home directory not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
-		isOK = kFALSE;
-	} else {
-		destPath += "/";
-	}
-
 	rdoPath = gMbsSetup->GetPath();
 	if (rdoPath.Length() == 0) {
 		gMrbLog->Err() << "Setup path not defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
+	} else if (!rdoPath.BeginsWith("/")) {
+		destPath = gMbsSetup->GetHomeDir();
+		if (destPath.Length() == 0) {
+			gMrbLog->Err() << "Remote home directory not defined" << endl;
+			gMrbLog->Flush(this->ClassName(), "CopyMakefile");
+			isOK = kFALSE;
+		} else {
+			destPath += rdoPath;
+		}
 	} else {
-		destPath += rdoPath;
-		destPath += "/";
+		destPath = rdoPath;
 	}
+	destPath += "/";
 
 	if (smode == kModeMultiProc) {
 		rdoPath = this->GetPath();
@@ -907,25 +909,26 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 		isOK = kFALSE;
 	}
 
-	homeDir = gMbsSetup->GetHomeDir();
-	if (homeDir.Length() == 0) {
-		gMrbLog->Err() << "Remote home directory not defined" << endl;
-		gMrbLog->Flush(this->ClassName(), "CompileReadout");
-		isOK = kFALSE;
-	} else {
-		homeDir += "/";
-		srcPath = homeDir;
-	}
-
 	path = gMbsSetup->GetPath();
 	if (path.Length() == 0) {
 		gMrbLog->Err() << "Setup path not defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;
+	} else if (!path.BeginsWith("/")) {
+		homeDir = gMbsSetup->GetHomeDir();
+		if (homeDir.Length() == 0) {
+			gMrbLog->Err() << "Remote home directory not defined" << endl;
+			gMrbLog->Flush(this->ClassName(), "CompileReadout");
+			isOK = kFALSE;
+		} else {
+			homeDir += "/";
+			srcPath = homeDir;
+			srcPath += path;
+		}
 	} else {
-		srcPath += path;
-		srcPath += "/";
+		srcPath = path;
 	}
+	srcPath += "/";
 
 	if (smode == kModeMultiProc) {
 		path = this->GetPath();
