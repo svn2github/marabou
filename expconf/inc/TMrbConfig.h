@@ -550,6 +550,8 @@ class TMrbConfig : public TNamed {
 
 		TObject * FindParam(const Char_t * ParamName);							// find a param 
 
+		Bool_t HistogramExists(const Char_t * HistoName);						// check if histo exists
+
 		inline TObject * FindScaler(const Char_t * ScalerName) {				// find a scaler
 			return (fLofScalers.FindObject(ScalerName));
 		};
@@ -730,10 +732,10 @@ class TMrbConfig : public TNamed {
 		TString fUserMacro; 				// macro name
 		TMrbString fUserMacroCmd;				// ... command
 				
-		TList fLofUserClasses; 				// list of classes added by user
-		TList fLofOnceOnlyTags; 			// list of tags already processed
-		TList fLofUserHistograms;			// list of user-defined histograms
-		TList fLofHistoArrays;				// list of histogram arrays
+		TObjArray fLofUserClasses; 			// list of classes added by user
+		TObjArray fLofOnceOnlyTags; 		// list of tags already processed
+		TObjArray fLofUserHistograms;		// list of user-defined histograms
+		TObjArray fLofHistoArrays;			// list of histogram arrays
 		
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	

@@ -92,9 +92,9 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 
 			fNofModules = 0;
 			
-			fLofEvents.SetObject("Events", "List of events"); 			// named TLists
-			fLofModules.SetObject("Modules", "List of modules");
-			fLofParams.SetObject("Params", "List of parameters");
+			fLofEvents.SetName("List of events");
+			fLofModules.SetName("List of modules");
+			fLofParams.SetName("List of parameters");
 
 			fHasIndexedParams = kFALSE; 	// default: single params only
 

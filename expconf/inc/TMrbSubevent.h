@@ -170,10 +170,10 @@ class TMrbSubevent : public TNamed {
 		virtual inline const Char_t * GetPrivateCodeFile() { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() { return(NULL); };
 		
-		inline TMrbLofNamedX * GetLofEvents() { return(&fLofEvents); };			// get address of ...
-		inline TMrbLofNamedX * GetLofModules() { return(&fLofModules); };
+		inline TObjArray * GetLofEvents() { return(&fLofEvents); };			// get address of ...
+		inline TObjArray * GetLofModules() { return(&fLofModules); };
 		const Char_t * GetLofModulesAsString(TString & LofModules);
-		inline TMrbLofNamedX * GetLofParams() { return(&fLofParams); };
+		inline TObjArray * GetLofParams() { return(&fLofParams); };
 		const Char_t * GetLofParamsAsString(TString & LofParams);
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent.html&"); };
@@ -190,14 +190,14 @@ class TMrbSubevent : public TNamed {
 		Bool_t fHistosToBeFilledIfTrueHit;	// fill histograms if is it true hit
 
 		Int_t fNofEvents;					// list of parent events
-		TMrbLofNamedX fLofEvents;
+		TObjArray fLofEvents;
 
 		Int_t fNofParams;					// number of params
 		Int_t fNofShorts;					// number of 16 bit words;
-		TMrbLofNamedX fLofParams;			// list of params
+		TObjArray fLofParams;				// list of params
 
 		Int_t fNofModules;					// list of modules housing these params
-		TMrbLofNamedX fLofModules;
+		TObjArray fLofModules;
 
 		UInt_t fReadoutOptions; 			// options used in MakeReadoutCode()
 		UInt_t fAnalyzeOptions; 			// ... in MakeAnalyzeCode()

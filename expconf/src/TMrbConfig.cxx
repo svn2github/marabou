@@ -1140,6 +1140,34 @@ TObject * TMrbConfig::FindParam(const Char_t * ParamName) {
 	return(NULL);
 }
 
+Bool_t TMrbConfig::HistogramExists(const Char_t * HistoName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::HistogramExists
+// Purpose:        Check if histogram exists
+// Arguments:      Char_t * HistoName   -- histo name
+// Results:        TMrbNamedX * Param   -- param/channel addr
+// Exceptions:
+// Description:    Search for a histogram name throughout the system.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fLofUserHistograms.FindObject(HistoName)) return(kTRUE);
+	TMrbSubevent * sevt = (TMrbSubevent *) fLofSubevents.First();
+	while (sevt) {
+		TObject * param = sevt->GetLofParams()->First();
+		while (param) {
+			TString pName = param->GetName();
+			pName(0,1).ToUpper();
+			pName.Prepend("h");
+			if (pName.CompareTo(HistoName) == 0) return(kTRUE);
+			param = sevt->GetLofParams()->After(param);
+		}
+		sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+	}
+	return(kFALSE);
+}
+
 Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -2440,23 +2468,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 
 					case TMrbConfig::kAnaHistoFillArrays:
-						if (fLofUserHistograms.First()) {
+						if (fLofHistoArrays.First()) {
 							anaTmpl.InitializeCode("%B%");
 							anaTmpl.WriteCode(anaStrm);
-							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
-							while (h) {
-								TMrbNamedX * hArray = NULL;
-								while ((hArray = this->FindHistoArray(h->GetName(), hArray))) {
-									anaTmpl.InitializeCode("%FHA%");
-									anaTmpl.Substitute("$hArrayName", hArray->GetName());
-									anaTmpl.Substitute("$hName", h->GetName());
-									anaTmpl.Substitute("$hTitle", h->GetTitle());
-									anaTmpl.WriteCode(anaStrm);
-								}
-								h = (TMrbNamedX *) fLofUserHistograms.After(h);
-							}
-						}
-						if (fLofHistoArrays.First()) {
 							TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.First();
 							while (hArray) {
 								ofstream list(hArray->GetTitle(), ios::out);
@@ -2467,7 +2481,17 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
 									TMrbNamedX * h = (TMrbNamedX *) lofHistos->First();
 									while (h) {
-										list << h->GetName() << endl;
+										if (this->HistogramExists(h->GetName())) {
+											anaTmpl.InitializeCode("%FHA%");
+											anaTmpl.Substitute("$hArrayName", hArray->GetName());
+											anaTmpl.Substitute("$hName", h->GetName());
+											anaTmpl.Substitute("$hTitle", h->GetTitle());
+											anaTmpl.WriteCode(anaStrm);
+											list << h->GetName() << endl;
+										} else {
+											gMrbLog->Err() << "No such histogram - " << h->GetName() << endl;
+											gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+										}
 										h = (TMrbNamedX *) lofHistos->After(h);
 									}
 									if (verboseMode) {
