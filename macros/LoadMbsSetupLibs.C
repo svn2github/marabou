@@ -1,0 +1,16 @@
+//________________________________________________________________[ROOT MACRO]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:         %M%
+// @(#)Purpose:      Load libraries needed to run MARaBOU's config
+// Description:      Loads config libraries from /usr/local/marabou
+// @(#)Author:       MBS and ROOT Based Online Offline Utility
+// @(#)Revision:     SCCS:  %W%
+// @(#)Date:         Tue Aug 10 14:00:16 1999
+// URL:              
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+{
+	cout << "[Loading MBS setup lib from " << gSystem->ExpandPathName("$MARABOU/lib") << "]" << endl;
+	gSystem->Load("$MARABOU/lib/libTMbsSetup.so");
+}
