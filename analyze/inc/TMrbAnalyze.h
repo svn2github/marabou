@@ -562,7 +562,7 @@ class TUsrHitBuffer : public TObject {
 				
 		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };		// sort entries by time
 
-		inline TClonesArray * GetCA() { return(fHits); };
+		inline TClonesArray * GetCA() const { return(fHits); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); };
 		void Print(ostream & Out, Int_t Begin = 0, Int_t End = -1) const;						// print data
@@ -905,13 +905,11 @@ class TUsrEvent : public TObject {
 
 		inline void SetScaleDown(Int_t ScaleDown) { fScaleDown = ScaleDown; }; // set individual scale down
 		inline Int_t GetScaleDown() const { return(fScaleDown); };	// get current scale down
-
 		inline Int_t GetClockSecs() const { return(fClockSecs); };	// return event time (secs since 1-Jan-70)
 		inline Int_t GetClockNsecs() const { return(fClockNsecs); };	// return event time (nanosecs of current second)
 		inline Int_t GetTimeStamp() const { return(GetUniqueID()); };	// return time stamp (100 microsecs since start)
 		inline Int_t GetTimeRS() const { return(fTimeRS); };			// get time (ROOT style)
 		Int_t CalcTimeDiff(TUsrEvent * Event) const;					// calc time diff with respect to event
-
 		inline TTree * GetTreeIn() const { return(fTreeIn); }; 	// return tree addr (input)
 		inline TTree * GetTreeOut() const { return(fTreeOut); }; 	// ... (output)
 
@@ -956,13 +954,13 @@ class TUsrEvent : public TObject {
 		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
 
 	protected:
-		TObject * fBranch;					//! ptr to event to be used in TTree::Branch()
+		TBranch * fBranch;					//! ptr to event to be used in TTree::Branch()
 
-		TTree * fTreeOut;					// tree to store data in ROOT format
-		TTree * fTreeIn;					// tree to read data from ROOT file
-		Bool_t fReplayMode; 				// kTRUE if replay mode on
-		Bool_t fFakeMode; 					// kTRUE if fake mode on
-		Bool_t fWriteTree;					// kTRUE if tree data should be written to file
+		TTree * fTreeOut;					//! tree to store data in ROOT format
+		TTree * fTreeIn;					//! tree to read data from ROOT file
+		Bool_t fReplayMode; 				//! kTRUE if replay mode on
+		Bool_t fFakeMode; 					//! kTRUE if fake mode on
+		Bool_t fWriteTree;					//! kTRUE if tree data should be written to file
 
 		Int_t fNofEntries; 					// number of entries in ROOT tree (replay mode only)
 
@@ -977,8 +975,8 @@ class TUsrEvent : public TObject {
 		Int_t fClockNsecs;  				// nano secs of current second
 		Int_t fTimeRS;						// time (ROOT style)
 
-		TObjArray fLofHBXs; 				// list of hit buffer wrappers, indexed by hit buffer
-		TObjArray fLofSubevents;			// list of subevents
+		TObjArray fLofHBXs; 				//! list of hit buffer wrappers, indexed by hit buffer
+		TObjArray fLofSubevents;			//! list of subevents
 
 	ClassDef(TUsrEvent, 1)		// [Analyze] User's event structure
 };
