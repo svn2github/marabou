@@ -1,0 +1,204 @@
+//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%.cxx
+// Purpose:        Implement user-specific class methods
+// Description:    
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TEnv.h"
+#include "%%USER_EVENT_NAME_UC%%.h"
+#include "SetColor.h"
+#include <pthread.h>
+
+// implement class defs
+ClassImp(%%USER_EVENT_NAME_UC%%)
+
+extern TMrbAnalyze * gMrbAnalyze;
+extern TMrbLogger * gMrbLog;
+extern pthread_mutex_t global_data_mutex;
+
+Bool_t %%USER_EVENT_NAME_UC%%::Analyze() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%::Analyze
+// Purpose:        User's analysis code
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+}
+
+void %%USER_EVENT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%::Reset
+// Purpose:        Reset event data
+// Arguments:      Int_t InitValue  -- initialization value
+//                 Bool_t DataOnly  -- reset data only if kTRUE
+// Results:        --
+// Exceptions:     
+// Description:    
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+}
+
+Bool_t %%USER_EVENT_NAME_UC%%::CreateTree() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%::CreateTree
+// Purpose:        Create a tree for event %%USER_EVENT_NAME_LC%%
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a tree for event %%USER_EVENT_NAME_LC%%.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t autoSave;
+	
+	if (gMrbAnalyze->TreeToBeWritten()) {
+		if (gMrbAnalyze->IsVerbose()) {
+			cout	<< this->ClassName() << "::CreateTree(): Creating tree \"%%USER_EVENT_NAME_LC%%\""
+					<< endl;
+		}
+		fTreeOut = new TTree("%%USER_EVENT_NAME_LC%%", "tree to store user-defined event data");
+		autoSave = gEnv->GetValue(gMrbAnalyze->GetResource("Event.%%USER_EVENT_NAME_UC%%.AutoSave"), 10000000);
+				
+		fTreeOut->SetAutoSave(autoSave);
+	}
+	return(kTRUE);
+}
+
+Bool_t %%USER_EVENT_NAME_UC%%::InitializeTree(TFile * RootFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%::InitializeTree
+// Purpose:        Initialize tree for event %%USER_EVENT_NAME_LC%%
+// Arguments:      TFile * RootFile  -- file containing tree data
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Initializes tree and branches for event %%USER_EVENT_NAME_LC%%.
+//                 Replay mode only.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TObject * obj;
+
+	obj = RootFile->Get("%%USER_EVENT_NAME_LC%%");
+	if (obj == NULL) {
+		gMrbLog->Err()	<< "Tree \"%%USER_EVENT_NAME_LC%%\" not found in ROOT file " << RootFile->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "InitializeTree");
+		return(kFALSE);
+	}
+	if (obj->IsA() != TTree::Class()) {
+		gMrbLog->Err()	<< "Not a TTree object - " << obj->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "InitializeTree");
+		return(kFALSE);
+	}
+	fTreeIn = (TTree *) obj;
+	fReplayMode = kTRUE;
+
+	return(kTRUE);
+}
+
+Bool_t %%USER_EVENT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%::ReplayTreeData
+// Purpose:        Replay tree data for event %%USER_EVENT_NAME_LC%%
+// Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Reads in tree data for event %%USER_EVENT_NAME_LC%%.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofEntries, nofEvents, nofBytes, nbytes;
+	Int_t startEvent, stopEvent;
+	TString startTime, stopTime;
+	TMrbAnalyze::EMrbRunStatus rsts;
+	Int_t timeStamp;
+
+	Bool_t verboseMode = gMrbAnalyze->IsVerbose();
+
+	if (!this->IsFakeMode() && fTreeIn == NULL) return(kFALSE);
+
+	nofBytes = 0;
+	nofEvents = 0;
+
+	if (fReplayMode) {
+		if (!this->IsFakeMode()) nofEntries = (Int_t) fTreeIn->GetEntries();
+		startEvent = IOSpec->GetStartEvent();
+		stopEvent = IOSpec->GetStopEvent();
+
+		if (IOSpec->IsTimeStampMode()) {
+			gMrbLog->Err()	<< "Time-stamp mode not implemented for user-defined event classes" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+			return(kFALSE);
+		} else {
+			
+			if (startEvent > stopEvent) {
+				gMrbLog->Err()	<< "Event numbers out of order - start at "
+								<< startEvent << " ... stop at " << stopEvent << endl;
+				gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				return(kFALSE);
+			}
+
+			if (startEvent > nofEntries) {
+				gMrbLog->Err()	<< "StartEvent (" << startEvent
+								<< ") beyond end of data (" << stopEvent << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				return(kFALSE);
+			}
+
+			if (stopEvent == 0 || stopEvent >= nofEntries) stopEvent = nofEntries - 1;
+
+			if (verboseMode) {
+				if (this->IsFakeMode()) {
+					gMrbLog->Out()	<< "Replaying tree in FAKE mode" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				} else {
+					gMrbLog->Out()	<< "Replaying tree " << fTreeIn->GetName() << " -" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+					gMrbLog->Out()	<< "Events " << startEvent << " ... " << stopEvent << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				}
+			}
+
+			for (Int_t i = startEvent; i <= stopEvent; i++) {
+				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
+				pthread_mutex_lock(&global_data_mutex);
+				if (!this->IsFakeMode()) nofBytes += fTreeIn->GetEvent(i);
+				nofEvents++;
+				fNofEvents++;
+				gMrbAnalyze->IncrEventCount();
+				this->Analyze();
+				pthread_mutex_unlock(&global_data_mutex);
+			}
+
+			if (verboseMode) {
+				if (this->IsFakeMode()) {
+					gMrbLog->Out()	<< nofEvents << " entries (" << startEvent << " ... " << stopEvent
+									<< ") faked" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				} else {
+					gMrbLog->Out()	<< nofEvents << " entries (" << startEvent << " ... " << stopEvent
+									<< ") read from tree \"" << fTreeIn->GetName() << "\" (" << nofBytes << " bytes)"
+									<< endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				}
+			}
+		}
+	}
+	return(kTRUE);
+}

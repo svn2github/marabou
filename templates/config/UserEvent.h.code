@@ -1,0 +1,57 @@
+#ifndef __%%USER_EVENT_NAME_UC%%_h__
+#define __%%USER_EVENT_NAME_UC%%_h__
+
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%.h
+// Purpose:        User-defined event class for data analysis
+// Description:    
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TMrbLogger.h"
+#include "TMrbAnalyze.h"
+#include "%%USER_EVENT_CONFIG_UC%%CommonIndices.h"
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%USER_EVENT_NAME_UC%%
+// Purpose:        A user-defined event class
+// Description:    
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+class %%USER_EVENT_NAME_UC%% : public TUsrEvent {
+
+	public:
+		%%USER_EVENT_NAME_UC%%() {			// ctor
+			fType = 0; 					// event type (not used)
+			fSubtype = 0;					// ... subtype (not used)
+			fTrigger = 0; 			// trigger number (not used)
+			fNofEvents = 0; 				// reset event counter
+			fNofEntries = 0;				// number of entries read from tree
+			fEventNumber = 0;				// event number provided by MBS
+			fReplayMode = kFALSE;			// normally online data acquisition
+		};
+		~%%USER_EVENT_NAME_UC%%() {};		// default dtor
+
+		Bool_t CreateTree();									// create a tree if needed
+		Bool_t Analyze();										// user's analyzing code
+		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)
+		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
+		void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE);	// reset event data
+
+	public:
+	// --- user-specific methods for event %%USER_EVENT_NAME_LC%% go here ---
+
+	protected:
+	// --- used-specific data members for event %%USER_EVENT_NAME_LC%% go here ---
+		
+	ClassDef(%%USER_EVENT_NAME_UC%%, 1) 	// [Analyze] User-defined event class
+};
+#endif
