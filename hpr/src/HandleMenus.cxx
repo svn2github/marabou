@@ -1224,17 +1224,26 @@ void HandleMenus::BuildMenus()
       	fViewMenu->AddEntry("Set2Marks",    kFHSet2Marks);
 	//      fViewMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
       	fViewMenu->AddSeparator();
-      	if(is2dim)fViewMenu->AddEntry("ProjectX",    kFHProjectX   );
-      	if(is2dim)fViewMenu->AddEntry("ProjectY",    kFHProjectY   );
-      	if(is2dim)fViewMenu->AddEntry("ProjectBoth", kFHProjectB   );
-      	if(is2dim)fViewMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
-      	if(is2dim)fViewMenu->AddEntry("Transpose",   kFHTranspose  );
-      	if(is2dim)fViewMenu->AddEntry("ProfileX",    kFHProfileX   );
-      	if(is2dim)fViewMenu->AddEntry("ProfileY",    kFHProfileY   );
+        
+      	if(is2dim) {
+            fViewMenu->AddEntry("ProjectX",    kFHProjectX   );
+      	   fViewMenu->AddEntry("ProjectY",    kFHProjectY   );
+      	   fViewMenu->AddEntry("ProjectBoth", kFHProjectB   );
+      	   fViewMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
+      	   fViewMenu->AddEntry("ProfileX",    kFHProfileX   );
+      	   fViewMenu->AddEntry("ProfileY",    kFHProfileY   );
+      	   fViewMenu->AddEntry("Transpose",   kFHTranspose  );
+         }
       	fViewMenu->AddEntry("Superimpose", kFHSuperimpose);
       	if(!is2dim)fViewMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
       	fViewMenu->AddEntry("Show in same Range",    kFHGetRange   );
+
+      	fViewMenu->AddSeparator();
       	fViewMenu->AddEntry("Show Statistics only",  kFHOutputStat );
+      	fViewMenu->AddEntry("SelectInside",  kFHSelectInside);
+      	if(fFitHist->InsideState()) fViewMenu->CheckEntry(kFHSelectInside);
+      	else                        fViewMenu->UnCheckEntry(kFHSelectInside);
+      	fViewMenu->AddSeparator();
       	if(!is2dim)fViewMenu->AddEntry("Show Peaks",     kFHShowPeaks);
       	fViewMenu->AddSeparator();
       	fViewMenu->AddEntry("Magnify",     kFHMagnify    );
@@ -1252,9 +1261,6 @@ void HandleMenus::BuildMenus()
          	else                   fViewMenu->UnCheckEntry(kFHLogY);
       	}
 
-      	fViewMenu->AddEntry("SelectInside",  kFHSelectInside);
-      	if(fFitHist->InsideState()) fViewMenu->CheckEntry(kFHSelectInside);
-      	else                        fViewMenu->UnCheckEntry(kFHSelectInside);
 
       	if(hbrowser)hbrowser->DisplayMenu(fViewMenu, "display.html");
 	//      fViewMenu->AddEntry("ProjectY",    kFHProjectY, );

@@ -187,7 +187,7 @@ Double_t TwoGauss     ( Double_t *x, Double_t *par) \n\
 {\n\
 // two gaussians with common mean\n\
   Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);\n\
-  Double_t BinW = 0.5;\n\
+  Double_t BinW = 0.25;\n\
   Double_t mean = par[2];\n\
 //  force widths /= 0\n\
    if (par[6] == 0)par[6]=1;\n\
@@ -213,6 +213,14 @@ fit_user_function(const char *hname)\n\
    Double_t par[7];\n\
    Double_t from =  0; \n\
    Double_t to   = 50;\n\
+\n\
+   Double_t lin_const  = 0;\n\
+   Double_t lin_slope  = 0;\n\
+   Double_t gaus_mean  = 20;\n\
+   Double_t gaus0_const= 10000;\n\
+   Double_t gaus0_sigma= 4;\n\
+   Double_t gaus1_const= 10000;\n\
+   Double_t gaus1_sigma= 12;\n\
    TF1* f = new TF1(\"two_gaus\",TwoGauss,from,to, 7);\n\
    f->SetParameters(0, 0, 20, 10000, 2, 10000, 4);\n\
    f->SetParName(0,\"lin_const  \");\n\
@@ -224,6 +232,14 @@ fit_user_function(const char *hname)\n\
    f->SetParName(6,\"gaus1_sigma\");\n\
    f->SetLineColor(4);\n\
    f->SetLineWidth(3);\n\
+//  Fill a histogram randomly using function\n\
+//   Int_t entries = gaus0_const  + gaus1_const ;\n\
+//   TH1F * twogran = new TH1F(\"twogran\",\n\
+                               \"Two gaussians with common mean\",\n\
+//                              400, 0, 100);\n\
+//   twogran->FillRandom(\"two_gaus\", entries);\n\
+//   twogran->Draw();\n\
+//   f->Draw(\"same\");   // only draw function, dont do fit\n\
    hist->Fit(\"two_gaus\",\"R+\",\"same\");\n\
 \n\
    f->GetParameters(&par[0]);\n\
@@ -265,11 +281,13 @@ fit_user_function(const char *hname)\n\
 // The function is defined  as a call\n\
 {\n\
 //   gROOT->Reset();\n\
+//  ------- comment out this piece if only a sample histogram should be produced ---\n\
    TH1* hist = (TH1*)gROOT->FindObject(hname);\n\
    if(!hist){\n\
      cout << \"histogram not found\" << endl;\n\
      return 0;\n\
    }\n\
+//  ----------------------------------------------------------------------------   \n\
    Float_t from = -4; \n\
    Float_t to   = 4;\n\
    TF1* f = new TF1(\"BreitWigner\",BreitWigner,from,to, 3);\n\
@@ -277,6 +295,14 @@ fit_user_function(const char *hname)\n\
    f->SetParName(0,\"mean \");\n\
    f->SetParName(1,\"width \");\n\
    f->SetParName(2,\"cont \");\n\
+//  ------- activate  this peace if only a sample histogram should be produced --- \n\
+\n\
+//  Fill a histogram randomly using function\n\
+//   TH1F * breitw = new TH1F(\"breitw\", \"A BreitWigner\",\n\
+//                              400, -10, 10);\n\
+//   breitw->FillRandom(\"BreitWigner\", 10000);\n\
+//  ----------------------------------------------------------------------------   \n\
+//   f-Draw,\"same\");   // only draw function, dont do fit\n\
    hist->Fit(\"BreitWigner\",\"R+\",\"same\");\n\
 }\n\
 ";
@@ -356,8 +382,9 @@ fit_user_function(const char *hname){\n\
    f->SetParName(8,\"cont_2 \");\n\
    f->SetParName(9,\"mean_2 \");\n\
    f->SetParName(10,\"width_2\");\n\
+//   f-Draw,\"same\");   // only draw function, dont do fit\n\
 \n\
-//   hist->Fit(\"landf\",\"R+\",\"same\");   // the real fit\n\
+   hist->Fit(\"landf\",\"R+\",\"same\");   // the real fit\n\
 \n\
 //  ------- activate  this peace if only a sample histogram should be produced --- \n\
 \n\

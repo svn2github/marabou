@@ -194,6 +194,9 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    TEnv env(".rootrc");         // inspect ROOT's environment
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
+   
+   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
+
    fTemplateMacro = "TwoGaus";
    fLiveStat1dim = env.GetValue("HistPresent.LiveStat1dim", 0);
    fLiveStat2dim = env.GetValue("HistPresent.LiveStat2dim", 0);
@@ -981,23 +984,33 @@ void FitHist::Magnify()
       WarnBox("Magnify 2 dim not yet supported ");
       return;
    }
-   Int_t newx = (Int_t) 2.1 * fSelHist->GetNbinsX();
+   Int_t newx = (Int_t) (2.1 * fSelHist->GetNbinsX());
    Int_t wx = cHist->GetWw();
-   if (newx <= wx)
+   if (newx <= wx) {
+      cout << "Screen resolution already good enough" << endl;
       return;
-   else {
+   } else {
       Float_t fac = (Float_t) newx / (Float_t) wx;
       TAxis *xaxis = fSelHist->GetXaxis();
       TAxis *yaxis = fSelHist->GetYaxis();
+
       xaxis->SetNdivisions(2080);
       yaxis->SetTickLength(0.03 / fac);
       cHist->SetLeftMargin(0.1 / fac);
       cHist->SetRightMargin(0.1 / fac);
-      gStyle->SetStatW(0.19 / fac);
-      gStyle->SetTitleXSize(0.02 / fac);
-      gStyle->SetLabelOffset(0.001 / fac, "y");
+      TPaveStats * st = (TPaveStats *)cHist->GetPrimitive("stats");
+      if (st) {
+        st->SetX1NDC(1 - 0.4 / fac);
+        st->SetX2NDC(0.99);
+      }
+//      gStyle->SetStatW(0.19 / fac);
+//      gStyle->SetTitleXSize(0.02 / fac);
+//      gStyle->SetLabelOffset(0.001 / fac, "y");
+
    }
-   Int_t newy = (Int_t) 0.95 * cHist->GetWh();
+   Int_t newy = (Int_t) (0.95 * cHist->GetWh());
+//   cHist->SetWindowSize(wx, cHist->GetWh());
+//   cout << "newx, newy " << newx << " " << newy<< endl;
    cHist->SetCanvasSize(newx, newy);
    cHist->Modified(kTRUE);
    cHist->Update();
@@ -1289,7 +1302,7 @@ Take first");
    cHist->Modified(kTRUE);
    cHist->Update();
    rf->Close();
-   gDirectory=gROOT;
+   gDirectory = gROOT;
 }
 //_______________________________________________________________________________________
 
@@ -1718,25 +1731,24 @@ void FitHist::ClearMarks()
 
 Int_t FitHist::GetMarks(TH1 * hist)
 {
-//   
    Int_t nval = 0;
    Axis_t xmin, xmax, ymin = 0, ymax = 0;
    if (hist) {
       TAxis *xaxis = hist->GetXaxis();
       Int_t first = xaxis->GetFirst();
       Int_t last = xaxis->GetLast();
-      xmin = xaxis->GetBinLowEdge(first) + 0.5 * xaxis->GetBinWidth(first);
-      xmax = xaxis->GetBinUpEdge(last)   - 0.5 * xaxis->GetBinWidth(last);
-//      nxbins = hist->GetNbinsX();
-//      xbinwidth=(xmax-xmin)/nxbins;
+      xmin = xaxis->GetBinLowEdge(first);
+      xmax = xaxis->GetBinUpEdge(last);
+//      xmin = xaxis->GetBinLowEdge(first) + 0.5 * xaxis->GetBinWidth(first);
+//      xmax = xaxis->GetBinUpEdge(last)   - 0.5 * xaxis->GetBinWidth(last);
       if (is2dim(hist)) {
          TAxis *yaxis = hist->GetYaxis();
          first = yaxis->GetFirst();
          last = yaxis->GetLast();
-         ymin = yaxis->GetBinLowEdge(first) + 0.5 * yaxis->GetBinWidth(first);
-         ymax = yaxis->GetBinUpEdge(last)   - 0.5 * yaxis->GetBinWidth(last);
-//         nybins = hist->GetNbinsY();
-//         ybinwidth=(ymax-ymin)/nybins;
+         ymin = yaxis->GetBinLowEdge(first);
+         ymax = yaxis->GetBinUpEdge(last);
+//         ymin = yaxis->GetBinLowEdge(first) + 0.5 * yaxis->GetBinWidth(first);
+//         ymax = yaxis->GetBinUpEdge(last)   - 0.5 * yaxis->GetBinWidth(last);
       }
    } else {
       cout << "Null pointer to hist" << endl;
@@ -1748,8 +1760,6 @@ Int_t FitHist::GetMarks(TH1 * hist)
          markers->Add(new FhMarker(xmin, ymin, 30));
       else
          markers->Add(new FhMarker(xmax, ymax, 30));
-//      if(fSelInside)markers->Add(new TPInputs(1,1,xmin,ymin));
-//      else          markers->Add(new TPInputs(nxbins,nybins,xmax,ymax));
       nval = 2;
    }
    if (nval == 0) {
@@ -1757,7 +1767,6 @@ Int_t FitHist::GetMarks(TH1 * hist)
       markers->Add(new FhMarker(xmax, ymax, 30));
       nval = 2;
    }
-//   } 
    markers->Sort();
    return nval;
 };
@@ -2095,14 +2104,18 @@ void FitHist::OutputStat()
       Double_t mean  = 0;
       Double_t sigma = 0;
       Float_t xlow, xup;
-      if (!Nwindows()) {
+      if (Nwindows() == 0) {
+         if (GetMarks(fSelHist) != 2) {
+            WarnBox("Please select 1 window or exactly 2 marks");
+            return;
+         }  
          GetLimits();
          xlow = fX_1;
          xup = fX_2;
          cout << "Using marks " << endl;
       } else {
          if (Nwindows() > 1) {
-            WarnBox("Please selected one window");
+            WarnBox("Please select one window");
             return;
          }
          TMrbWindow *wdw = (TMrbWindow *) fActiveWindows->First();
@@ -2128,10 +2141,10 @@ void FitHist::OutputStat()
       cout <<
           "-------------------------------------------------------------"
           << endl;
-      cout << "Content " << sum << endl;
-      cout << "Mean    " << mean << endl;
-      cout << "Sigma   " << sigma << endl;
-      cout << "Fwhm    " << 2.35 * sigma << endl;	// 2*sqrt(2ln2)
+      cout << "Content    " << sum << endl;
+      cout << "Mean       " << mean << endl;
+      cout << "Sigma      " << sigma << endl;
+      cout << "2.35*Sigma " << 2.35 * sigma << endl;	// 2*sqrt(2ln2)
       cout <<
           "-------------------------------------------------------------"
           << endl;
@@ -2140,7 +2153,7 @@ void FitHist::OutputStat()
       row_lab->Add(new TObjString("Content"));
       row_lab->Add(new TObjString("Mean"));
       row_lab->Add(new TObjString("Sigma"));
-      row_lab->Add(new TObjString("Fwhm"));
+      row_lab->Add(new TObjString("2.35*Sigma"));
 
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString((char *) fOrigHist->GetName()));
@@ -2177,21 +2190,22 @@ void FitHist::OutputStat()
       TAxis *yaxis = fSelHist->GetYaxis();
       for (int i = 1; i <= fSelHist->GetNbinsX(); i++) {
          Axis_t xcent = xaxis->GetBinCenter(i);
-         if (xcent >= fX_1 && xcent < fX_2) {
+//         if (xcent >= fX_1 && xcent < fX_2) {
             for (int j = 1; j <= fSelHist->GetNbinsY(); j++) {
                Axis_t ycent = yaxis->GetBinCenter(j);
-               if (ycent >= fY_1 && ycent < fY_2) {
+//               if (ycent >= fY_1 && ycent < fY_2) {
                   if (nc <= 0 ||
                       (nc > 0 && InsideCut((float) xcent, (float) ycent)))
                      sum += fSelHist->GetCellContent(i, j);
-               }
+//               }
             }
-         }
+//         }
       }
       cout << "Statistics for 2 dim Histogram:" << fSelHist->
           GetName() << endl;
-      cout << " X from " << fX_1 << " to " << fX_2 << endl;
-      cout << " Y from " << fY_1 << " to " << fY_2 << endl;
+
+//      cout << " X from " << fX_1 << " to " << fX_2 << endl;
+//      cout << " Y from " << fY_1 << " to " << fY_2 << endl;
       cout <<
           "-------------------------------------------------------------"
           << endl;
@@ -2203,8 +2217,13 @@ void FitHist::OutputStat()
          cout <<
              "-------------------------------------------------------------"
              << endl;
+      } else { 
+         cout << "No cuts applied!!!" << endl;
       }
-      cout << "Content " << sum << endl;
+      cout << "Content ";
+      if (fSelInside) cout << "inside: ";
+      else            cout << "outside: ";
+      cout << sum << endl;
       cout <<
           "-------------------------------------------------------------"
           << endl;
@@ -2853,7 +2872,6 @@ void FitHist::Draw1Dim()
    DrawDate(); 
    fSelHist->SetStats(0);
    if (hp->GetShowStatBox()) fSelHist->SetStats(1);
-   cHist->Update();
 //  add extra axis (channels) at top
    if (hp->fDrawAxisAtTop) {
       TPaveStats * st = (TPaveStats *)cHist->GetPrimitive("stats");
@@ -2867,8 +2885,9 @@ void FitHist::Draw1Dim()
       
       TExec * exec = new TExec("exec", cmd.Data());
       exec->Draw();
-      cHist->Update();
    }
+   UpdateDrawOptions();
+   cHist->Update();
 }
 //____________________________________________________________________________
 

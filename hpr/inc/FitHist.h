@@ -58,7 +58,6 @@ private:
    TString fCtitle; 
    TString fEname; 
    TString fCutname;
-   TString fWdwname;
 
    TVirtualPad *fSelPad;          // pointer to the selected pad
 

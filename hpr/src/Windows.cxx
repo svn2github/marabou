@@ -2,6 +2,7 @@
 #include "TArrayF.h"
 #include "TString.h"
 #include "TObjString.h"
+#include "TObjectTable.h"
 
 #include "FhMarker.h"
 #include "FitHist.h"
@@ -45,11 +46,11 @@ void FitHist::MarksToWindow(){
          cname.Prepend(Form("%d_", fCutNumber));
          cname.Prepend("Wdw");
          Bool_t ok;
-         fWdwname = GetString("Window will be saved with name",cname.Data(),
+         cname = GetString("Window will be saved with name",cname.Data(),
                               &ok, mycanvas);
          if(!ok)return; 
          CheckList(fAllWindows);
-         TMrbWindow * wdw_old = (TMrbWindow *)fAllWindows->FindObject(fWdwname.Data());
+         TMrbWindow * wdw_old = (TMrbWindow *)fAllWindows->FindObject(cname.Data());
          if(wdw_old) {
             if (QuestionBox("Window with this name\n\
 already exists, delete it? ", mycanvas)) {
@@ -60,7 +61,7 @@ already exists, delete it? ", mycanvas)) {
                return;
             }
          }
-         TMrbWindowF * wdw = new TMrbWindowF(fWdwname.Data(), x1, x2); 
+         TMrbWindowF * wdw = new TMrbWindowF(cname.Data(), x1, x2); 
          wdw->Draw(); 
          cHist->Update();
          fActiveWindows->Add(wdw);
@@ -313,7 +314,7 @@ void FitHist::InitCut(){
    Bool_t ok;
    fCutname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
    if(!ok)  return; 
-   TMrbWindow * wdw_old = (TMrbWindow *)fAllCuts->FindObject(fWdwname.Data());
+   TMrbWindow2D * wdw_old = (TMrbWindow2D *)fAllCuts->FindObject(fCutname.Data());
    if(wdw_old) {
       if (QuestionBox("Window with this name\n\
 already exists, delete it? ", mycanvas)) {
@@ -324,25 +325,21 @@ already exists, delete it? ", mycanvas)) {
          return;
       }
    }
-//   if(fAllCuts->FindObject((char *)cname.Data())) {
-//      WarnBox("Cut name already exists");
-//      return;
-//   }
    gROOT->SetEditorMode("CutG");
 }
 //______________________________________________________________________________________
   
 Bool_t FitHist::InsideCut(Float_t x, Float_t y){
-   if(!(Ncuts()))return kTRUE;
+   if ((Ncuts() == 0)) return kTRUE;
    TMrbWindow2D *cut;
    TIter next(fActiveCuts);
 // if inside selected: return true if point is within any cut
 // if outside:         point must be outside all cuts
    Int_t atleastone=kFALSE;
-   Bool_t result=!fSelInside;
+   Bool_t result = !fSelInside;
    while( (cut= (TMrbWindow2D*)next()) ){
       if(cut->TestBit(TObject::kNotDeleted)){
-         Bool_t temp=cut->IsInside(x,y);
+         Bool_t temp = cut->IsInside(x,y);
          if(fSelInside)result = result || temp;
          else          result = result && !temp;
          atleastone = kTRUE;
@@ -384,7 +381,9 @@ void FitHist::DrawCutName(){
   
 void FitHist::ClearCut(){
    UpdateCut();
+//   gObjectTable->Print();
    fActiveCuts->Clear();
+//   gObjectTable->Print();
 }
 //______________________________________________________________________________________
   
@@ -572,17 +571,18 @@ void FitHist::MarksToCut(){
    cname.Prepend(Form("%d_", fCutNumber));
    cname.Prepend("Cut");
    Bool_t ok;
-   fWdwname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
+   cname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
    if(!ok)  return; 
    CheckList(fActiveCuts);
    CheckList(fAllCuts);
-   if(fAllCuts->FindObject(fWdwname.Data())) {
+   if(fAllCuts->FindObject(cname.Data())) {
       WarnBox("Cut already exists");
       return;
    }
-   TMrbWindow2D * wdw = new TMrbWindow2D(fWdwname.Data(), nval, &x[0], &y[0]); 
+   TMrbWindow2D * wdw = new TMrbWindow2D(cname.Data(), nval, &x[0], &y[0]); 
    wdw->Draw(); 
    cHist->Update();
    fActiveCuts->Add(wdw);
    fAllCuts->Add(wdw);
+   ClearMarks();
 }
