@@ -141,7 +141,7 @@ void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
 	this->Add(namedX);
 }
 
-void TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title, TObject * Object) {
+TMrbNamedX * TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title, TObject * Object) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofNamedX::AddNamedX
@@ -150,7 +150,7 @@ void TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * T
 //                 const Char_t * Name       -- name
 //                 const Char_t * Title      -- title
 //                 TObject * Object          -- object to be assigned
-// Results:        --
+// Results:        TMrbNamedX * NamedX       -- address of new list entry
 // Exceptions:
 // Description:    Adds a single index.
 // Keywords:
@@ -160,6 +160,7 @@ void TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Char_t * T
 
 	namedX = new TMrbNamedX(Index, Name, Title, Object);
 	this->Add(namedX);
+	return(namedX);
 }
 
 void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX) {
