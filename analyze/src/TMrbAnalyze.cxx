@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.46 2004-12-03 08:51:22 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.47 2004-12-21 07:40:56 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2491,7 +2491,7 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) const {
 
 	TMrbNamedX * nx;
 
-	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
+	if (AbsParamIndex < 0 || AbsParamIndex > fCalibrationList.GetLast()) return(NULL);
 	nx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
 	if (nx == NULL) return(NULL);
 	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
@@ -3104,7 +3104,7 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t Rel
 	}
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
-	ncx = (TMrbNamedX *) fCalibrationList[px + RelParamIndex];
+	ncx = (TMrbNamedX *) fDCorrList[px + RelParamIndex];
 	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
 	if (npx == NULL) {
@@ -3117,7 +3117,7 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t Rel
 	ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
 	dcle = new TMrbDCorrListEntry(nmx, npx, DCorrAddr);
 	ncx->AssignObject(dcle);
-	fCalibrationList.AddAt(ncx, npx->GetIndex());
+	fDCorrList.AddAt(ncx, npx->GetIndex());
 	ple->SetDCorrAddress(DCorrAddr);
 	return(kTRUE);
 }
