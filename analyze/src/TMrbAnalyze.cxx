@@ -519,6 +519,8 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
 					gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
+					if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
+					else									gMrbTransport->CloseLMDFile();
 					if (this->SaveHistograms("*", ioSpec) != -1) {
 						this->ClearHistograms("*", ioSpec);
 					}
