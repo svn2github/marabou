@@ -669,8 +669,7 @@ int main(int argc, char **argv) {
 	u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 
 	
-	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate"
-						<< endl;
+	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate" << endl;
    if (gComSocket > 0 || kUseMap) {
 	void *r;
 	pthread_join(update_thread, &r);
@@ -684,9 +683,11 @@ int main(int argc, char **argv) {
 //		if ( verboseMode ) cout << "M_analyze: Mapfile closed, sleep again 2 sec" << endl;
 //   }
 	if (gComSocket > 0) {
-      pthread_cancel(msg_thread);
+		if ( verboseMode ) cout	<< "M_analyze: Waiting for msg_thread to terminate"
+						<< endl;
 		void *r;
 	   pthread_join(msg_thread, &r);
+    	if ( verboseMode ) cout	<< "M_analyze: msg_thread terminated" << endl;
    }
 	if(!gSystem->AccessPathName(our_pid_file.Data(), kFileExists)){
 		TString RmCmd = "rm  ";
@@ -694,17 +695,17 @@ int main(int argc, char **argv) {
 		gSystem->Exec((const char *)RmCmd);
 		if ( verboseMode ) cout << "M_analyze: removing " << our_pid_file << endl;
 	} 
-	cout << "M_analyze terminated at: " << flush;
-   gSystem->Exec("date");
+	cout << "M_analyze terminated at: " << flush; gSystem->Exec("date");
 
-   cout << "Events Processed: " << 
-         u_analyze->GetEventsProcessed()<< endl;
+	cout << "Events Processed: " << u_analyze->GetEventsProcessed()<< endl;
 
-   PlayQuart(3);
+//   PlayQuart(3);
 //    for(Int_t i=0; i < 5; i++){
 //       usleep(300000);
 // 	   cout << "" << endl;
 //   } 
+	cout << "Exit." << endl;
+	exit(0);
 }
 
 void * update_handler(void * dummy) {
@@ -767,13 +768,11 @@ void * update_handler(void * dummy) {
 			pthread_mutex_unlock(&global_data_mutex);
 		}
 		if(u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING){
-			cout << "update thread stopping" << endl;
 			pthread_mutex_lock(&global_data_mutex);
 			if ( M_prod ) M_prod->Update();  // updates all objects in shared memory
 			pthread_mutex_unlock(&global_data_mutex);
 
-			if ( verboseMode ) cout	<< "M_analyze: Terminating update thread"
-									<< endl;
+			if ( verboseMode ) cout	<< "M_analyze: Terminating update thread" << endl;
 			pthread_exit(0);
 		}
 	}
@@ -849,8 +848,7 @@ void * msg_handler(void * dummy) {
       TSocket *sock;
       sock = mon->Select(maxwait);
       if (sock == (TSocket*)-1) {
-         if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) break;
-         else continue;   
+		if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) break; else continue;   
       }
       if (sock->IsA() == TServerSocket::Class()) {
          Bool_t ok = kFALSE;
@@ -1010,9 +1008,9 @@ void * msg_handler(void * dummy) {
             send_ack = kFALSE;
          	cout << "M_analyze::msg_handler(): M_client exit" << endl;
          	mon->Remove(sock);
-         	for (Int_t i = 0; i < kMaxSock - 1; i++) {
-            	if (sock == s[i]) s[i] = NULL;
-         	}
+//         	for (Int_t i = 0; i < kMaxSock - 1; i++) {
+//            	if (sock == s[i]) s[i] = NULL;
+//         	}
 //         	if (sock == s0) s0 = 0;
 //         	if (sock == s1) s1 = 0;
          	continue;
@@ -1039,14 +1037,14 @@ void * msg_handler(void * dummy) {
       if (mess) { delete mess; mess = 0;};
    }
 
-	for (Int_t i = 0; i < kMaxSock; i++) {
-   	if (s[i]) s[i]->Close() ;
-	}
+//	for (Int_t i = 0; i < kMaxSock; i++) {
+//   	if (s[i]) s[i]->Close() ;
+//	}
 //   if (s0) s0->Close();
 //   if (s1) s1->Close();
 //   if (ss) ss->Close();
 
    if (mess) delete mess;
    cout << "exit msg_handler" << endl;
-   return dummy;
+  return dummy;
 }
