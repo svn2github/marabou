@@ -693,8 +693,10 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				}
 				once = kTRUE;
 				gMrbLog->Err()	<< "Got short host name \"" << hName
-								<< "\" while expecting full host addr - not written to .rhosts file" << endl;
+								<< "\" while expecting full host addr - only SHORT name written to .rhosts file" << endl;
 				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				rhosts << hName << " " << userName << endl;
+				nofHosts++;
 			} else {
 				gMrbLog->Out()	<< "Got short host name \"" << hName
 								<< "\" while expecting full host addr - appending default domain \"." << domain << "\"" << endl;
