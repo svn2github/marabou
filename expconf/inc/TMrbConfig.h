@@ -359,7 +359,7 @@ class TMrbConfig : public TNamed {
 
 		enum EMrbControllerType {	kControllerUnused	=	0,			// controller types (camac)
 									kControllerCBV 		=	5,			// (see MBS manual!)
-									kControllerCC32		=	20
+									kControllerCC32		=	11
 								};
 
 		enum EMrbHistoType  	{	kHistoTH1			=	BIT(10), 	// histogram types
