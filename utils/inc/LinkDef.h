@@ -38,4 +38,8 @@
 #pragma link C++ class TMrbNamedArrayI+;
 #pragma link C++ class TMrbNamedArrayF+;
 #pragma link C++ class TMrbNamedArrayD+;
+#pragma link C++ class TMrbTidyDoc+;
+#pragma link C++ class TMrbTidyNode+;
+#pragma link C++ class TMrbTidyOption+;
+#pragma link C++ class TMrbTidyAttr+;
 #endif

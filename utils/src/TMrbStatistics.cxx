@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         O. Schaile
 // Mailto:         <a href=mailto:otto.schaile@physik.uni-muenchen.de>O. Schaile</a>
-// Revision:       $Id: TMrbStatistics.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbStatistics.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 

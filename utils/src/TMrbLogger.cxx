@@ -7,9 +7,14 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
+
+namespace std {} using namespace std;
+
+#include <iostream>
+#include <iomanip>
 
 #include <sstream>
 #include "TROOT.h"

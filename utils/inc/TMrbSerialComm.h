@@ -8,7 +8,7 @@
 // Description:    Class definitions to control I/O from/to a serial port.
 //                 Inspired by a class c_SerialComm written by Mario Schubert
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSerialComm.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSerialComm.h,v 1.4 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

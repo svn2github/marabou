@@ -42,7 +42,7 @@ $(UTILSLIB):     $(UTILSDO) $(UTILSO) $(MAINLIBS) $(UTILSLIBDEP)
 
 $(UTILSDS):     $(UTILSH) $(UTILSL)
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c $(UTILSH) $(UTILSL)
+		$(ROOTCINT) -f $@ -c -Iinclude $(UTILSH) $(UTILSL)
 
 $(UTILSDO):     $(UTILSDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofNamedX.h,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbLofNamedX.h,v 1.6 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,12 +52,12 @@ class TMrbLofNamedX: public TObjArray {
 		inline const Char_t * GetTitle() const { return(fTitle); };
 		inline void SetObject(const Char_t * Name, const Char_t * Title) { fName = Name; fTitle = Title; };
 
-		inline void SetPatternMode() { fPatternMode = kTRUE; };
+		inline void SetPatternMode(Bool_t Flag = kTRUE) { fPatternMode = Flag; };
 		inline Bool_t IsPatternMode() const { return(fPatternMode); };
 
 		void AddNamedX(const SMrbNamedX * NamedX);							// add one or more indices
 		void AddNamedX(const SMrbNamedXShort * NamedX);					 	// ... (short names only)
-		void AddNamedX(TMrbNamedX * NamedX); 								// add a single index to list
+		void AddNamedX(TMrbNamedX * NamedX); 								// add a single index to list (clone it)
 		void AddNamedX(TMrbLofNamedX * LofNamedX); 	 						// append a list of indices
 		TMrbNamedX * AddNamedX(Int_t Index, const Char_t * Name, const Char_t * Title = "", TObject * Object = NULL);
 		void AddNamedX(const Char_t * NameString, const Char_t * Delim = ":", Bool_t PatternMode = kFALSE);
@@ -88,6 +88,11 @@ class TMrbLofNamedX: public TObjArray {
 
 		const Char_t * Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Delim = ":") const;
 
+		void SortEntries(Bool_t SortIt = kTRUE, Bool_t SortByName = kFALSE); // sort entries?
+		inline Bool_t IsSorted() { return(fIsSorted); };
+		inline Bool_t IsSortedByName() { return(fSortedByName); };					// by name of by index?
+		inline void Sort(Int_t UpTo = kMaxInt) { if (fIsSorted) TObjArray::Sort(UpTo); };
+
 		UInt_t GetMask() const;											// return mask of all bits in list
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
@@ -103,6 +108,8 @@ class TMrbLofNamedX: public TObjArray {
 
 	protected:
 		Bool_t fPatternMode;
+		Bool_t fIsSorted;
+		Bool_t fSortedByName;
 		TString fName;
 		TString fTitle;
 

@@ -8,7 +8,7 @@
 // Class:          TMrbTemplate     -- decode templates
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTemplate.h,v 1.7 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbTemplate.h,v 1.8 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,7 @@
 // Purpose:        Define utilities to be used with MARaBOU
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: SetColor.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: SetColor.h,v 1.4 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

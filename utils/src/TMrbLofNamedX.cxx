@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofNamedX.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbLofNamedX.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -39,6 +39,8 @@ TMrbLofNamedX::TMrbLofNamedX(const Char_t * Name, Bool_t PatternMode) {
 
 	fName = Name ? Name : this->ClassName();
 	fPatternMode = PatternMode;
+	fIsSorted = kFALSE;
+	fSortedByName = kFALSE;
 }
 
 TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode) {
@@ -56,6 +58,8 @@ TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedX * NamedX, Bool_t PatternMode) {
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fPatternMode = PatternMode;
+	fIsSorted = kFALSE;
+	fSortedByName = kFALSE;
 	this->AddNamedX(NamedX);
 }
 
@@ -74,6 +78,8 @@ TMrbLofNamedX::TMrbLofNamedX(const SMrbNamedXShort * NamedX, Bool_t PatternMode)
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fPatternMode = PatternMode;
+	fIsSorted = kFALSE;
+	fSortedByName = kFALSE;
 	this->AddNamedX(NamedX);
 }
 
@@ -94,6 +100,7 @@ void TMrbLofNamedX::AddNamedX(const SMrbNamedX * NamedX) {
 
 	while (NamedX->ShortName) {
 		namedX = new TMrbNamedX(NamedX->Index, NamedX->ShortName, NamedX->LongName);
+		namedX->SortByName(this->IsSortedByName());
 		this->Add(namedX);
 		NamedX++;
 	}
@@ -117,6 +124,7 @@ void TMrbLofNamedX::AddNamedX(const SMrbNamedXShort * NamedX) {
 
 	while (NamedX->ShortName) {
 		namedX = new TMrbNamedX(NamedX->Index, NamedX->ShortName);
+		namedX->SortByName(this->IsSortedByName());
 		this->Add(namedX);
 		NamedX++;
 	}
@@ -140,6 +148,7 @@ void TMrbLofNamedX::AddNamedX(TMrbNamedX * NamedX) {
 								NamedX->GetName(),
 								NamedX->HasTitle() ? NamedX->GetTitle() : NULL,
 								NamedX->GetAssignedObject());
+	namedX->SortByName(this->IsSortedByName());
 	this->Add(namedX);
 }
 
@@ -161,6 +170,7 @@ TMrbNamedX * TMrbLofNamedX::AddNamedX(Int_t Index, const Char_t * Name, const Ch
 	TMrbNamedX * namedX;
 
 	namedX = new TMrbNamedX(Index, Name, Title, Object);
+	namedX->SortByName(this->IsSortedByName());
 	this->Add(namedX);
 	return(namedX);
 }
@@ -181,10 +191,12 @@ void TMrbLofNamedX::AddNamedX(TMrbLofNamedX * LofNamedX) {
 
 	namedX = (TMrbNamedX *) LofNamedX->First();
 	while (namedX) {
-		this->Add(	new TMrbNamedX( namedX->GetIndex(),
+		TMrbNamedX * nx = new TMrbNamedX( namedX->GetIndex(),
 									namedX->GetName(),
 									namedX->HasTitle() ? namedX->GetTitle() : NULL,
-									namedX->GetAssignedObject()));
+									namedX->GetAssignedObject());
+		nx->SortByName(this->IsSortedByName());
+		this->Add(nx);
 		namedX = (TMrbNamedX *) LofNamedX->After(namedX);
 	}
 }
@@ -213,13 +225,13 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 	TObjArray lofSubStr;
 	TMrbString subStr;
 	Int_t nstr;
-	TMrbNamedX * np;
+	TMrbNamedX * nx;
 	TString prefix;
 
-	np = (TMrbNamedX *) this->Last();
-	if (np == NULL) 		idx = 1;
-	else if (PatternMode)	idx = np->GetIndex() << 1;
-	else					idx = np->GetIndex() + 1;
+	nx = (TMrbNamedX *) this->Last();
+	if (nx == NULL) 		idx = 1;
+	else if (PatternMode)	idx = nx->GetIndex() << 1;
+	else					idx = nx->GetIndex() + 1;
 
 	nameString = NameString;
 	nstr = nameString.Split(lofSubStr, Separator);
@@ -230,8 +242,34 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 			subStr.SplitOffInteger(prefix, idx);
 			subStr = (TString) subStr(0, n);
 		}
-		this->AddNamedX(new TMrbNamedX(idx, subStr.Data()));
+		nx = new TMrbNamedX(idx, subStr.Data());
+		nx->SortByName(this->IsSortedByName());
+		this->AddNamedX(nx);
 		if (PatternMode) idx <<= 1; else idx++;
+	}
+}
+
+void TMrbLofNamedX::SortEntries(Bool_t SortIt, Bool_t SortByName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLofNamedX::SortEntries
+// Purpose:        Defines how to sort entries
+// Arguments:      Bool_t SortIt      -- whether to sort or not
+//                 Bool_t SortByName  -- sort by name
+// Results:        --
+// Exceptions:
+// Description:    Defines sorting of entries.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fIsSorted = SortIt;
+	fSortedByName = SortByName;
+	if (fIsSorted) {
+		TMrbNamedX * nx = (TMrbNamedX *) this->First();
+		while (nx) {
+			nx->SortByName(fSortedByName);
+			nx = (TMrbNamedX *) this->After(nx);
+		}
 	}
 }
 

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbNamedX.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $      
+// Revision:       $Id: TMrbNamedX.cxx,v 1.5 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,6 +46,29 @@ const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t
 		FullName += ")";
 	}
 	return(FullName.Data());
+}
+
+Int_t TMrbNamedX::Compare(const TObject * Nx) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbNamedX::Compare
+// Purpose:        Compare objects
+// Arguments:      TObject * Nx   -- TMrbNamedX object to be compared
+// Results:        Int_t Restult  -- <0, 0, >0
+// Exceptions:
+// Description:    Compares TMrbNamedX objects.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	nx = (TMrbNamedX *) Nx;
+	if (this->IsSortedByName()) {
+		TString nxm = this->GetName();
+		return(nxm.CompareTo(nx->GetName()));
+	} else {
+		return(this->GetIndex() - nx->GetIndex());		// compare indices
+	}
 }
 
 void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const {

@@ -8,7 +8,7 @@
 // Class:          TMrbNamedX    -- a TNamed with an index assigned
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbNamedX.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbNamedX.h,v 1.5 2004-11-16 13:30:27 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -77,6 +77,7 @@ class TMrbNamedX: public TNamed {
 					TObject * Obj = NULL) : TNamed(ShortName, LongName ? LongName : ShortName) { 	// ctor
 			fHasTitle = (LongName != NULL);
 			fIndex = Index;
+			fSortedByName = kFALSE;
 			fObject = Obj;
 		};
 
@@ -106,11 +107,17 @@ class TMrbNamedX: public TNamed {
 		inline void Print(Int_t Base) const { Print(cout, Base, kTRUE); };
 		inline void Print() const { Print(cout, 10, kTRUE); };
 
+		inline Bool_t IsSortable() const { return(kTRUE); };							// entries may be sorted
+		inline void SortByName(Bool_t SortFlag = kTRUE) { fSortedByName = SortFlag; };	// by name or by index
+		inline Bool_t IsSortedByName() const { return(fSortedByName); };
+		Int_t Compare(const TObject * Nx) const; 							// how to compare TMrbNamedX objects
+		
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNamedX.html&"); };
 
 	protected:
 		Bool_t fHasTitle;
 		Int_t fIndex;
+		Bool_t fSortedByName;
 		TObject * fObject;
 
 	ClassDef(TMrbNamedX, 1) 	// [Utils] A named index: <Index, Name, Title [,Object]>

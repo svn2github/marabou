@@ -12,7 +12,7 @@
 //                          2) external reference (_MARABOU_MAIN_ undefined)
 //                                 extern TH1F * histo;
 // Author:         R. Lutter
-// Revision:       $Id: GlobDef.h,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: GlobDef.h,v 1.3 2004-11-16 13:30:26 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
