@@ -29,7 +29,7 @@ MARABOU=`pwd`
 
 #____________________________[end editable section]___________________________
 
-BLK='\033[39m'
+BLK='\033[39m' # default foreground color
 RED='\033[31m'
 GRN='\033[32m'
 BLU='\033[34m'
