@@ -136,7 +136,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if(fNrows != 0 && fNcols == 0) fNcols = nvalues/fNrows;
    if(fNcols != 0 && fNrows == 0) fNrows = nvalues/fNcols;
 
-   cout << Ncols  << " " << Nrows  << " "<< Nradio  << " " << nvalues << endl;
+//   cout << Ncols  << " " << Nrows  << " "<< Nradio  << " " << nvalues << endl;
 
    TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX , 2, 2, 2, 2);
    fWidgets->AddFirst(lo1);

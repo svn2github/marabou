@@ -7,6 +7,7 @@
 #include <TGListBox.h>
 #include <TGComboBox.h>
 #include "TGedMarkerSelect.h"
+#include "TGedAlignSelect.h"
 #include "TGedPatternSelect.h"
 #include "TOrdCollection.h"
 #include "TArrayI.h"
@@ -45,6 +46,7 @@ private:
    TGLineStyleComboBox *fLineStyleComboBox;
    TGPictureButton  *fAlignButton;
    TGedMarkerSelect *fMarkerSelect;
+   TGedAlignSelect  *fAlignSelect;
    TGedPatternSelect *fPatternSelect;
    Style_t            fMarker;
    Style_t            fPattern;

@@ -43,4 +43,6 @@
 #pragma link C++ class TGMrbMessageViewer;
 #pragma link C++ class TGMrbProgressBar;
 #pragma link C++ class TableOfLabels;
+#pragma link C++ class TGedAlignSelect;
+#pragma link C++ class TGedAlignPopup;
 #endif

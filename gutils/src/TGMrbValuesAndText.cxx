@@ -204,6 +204,14 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             TString scol(s.Data());
             scol.Remove(0,12);
             fAlign = atoi(scol.Data());
+            fAlignSelect = new TGedAlignSelect(hframe, fAlign, kIdAlignS);
+            fAlignSelect->Associate(this);
+//            fAlignSelect->Connect("AlignSelected(Style_t)", 
+//            "TGMrbValuesAndText", this, "DoAlignStyle(Style_t)");
+            fWidgets->Add(fAlignSelect);
+            fEntries->Add(fAlignSelect);
+            hframe->AddFrame(fAlignSelect, lo1);
+/*
             TString icon_name("align");
             icon_name += fAlign;
             icon_name += ".gif";
@@ -213,6 +221,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
             fEntries->Add(fAlignButton);
             fAlignButton->Associate(this);
             hframe->AddFrame(fAlignButton, lo1);
+*/
 
          } else if (s.BeginsWith("CfontSelect_")) {
             TString scol(s.Data());
@@ -456,6 +465,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                   case kIdHelp:
                       new TGMrbHelpWindow(this, "HistPresent Help", fHelpText, 550, 500);
                       break;
+/*
                   case kIdAlignS:
                       fAlign = GetTextAlign(fAlign, this);
                       TString icon_name("align");
@@ -464,6 +474,7 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       fAlignButton->SetPicture(fClient->GetPicture(icon_name.Data()));
                       gClient->NeedRedraw(fAlignButton);
                       break;
+*/
                  }
              case kCM_RADIOBUTTON:
                 {   
@@ -591,7 +602,7 @@ void TGMrbValuesAndText::StoreValues(){
           TString scol("ColorSelect_");
           scol += col;
           objs->SetString(scol.Data());
-
+/*
        } else if (obj->InheritsFrom("TGPictureButton")) {
           TString salign("AlignSelect_");
           TString pn = ((TGPictureButton*)obj)->GetPicture()->GetName();
@@ -599,6 +610,11 @@ void TGMrbValuesAndText::StoreValues(){
           pn.Remove(0,5);    // e,g. align22.gif
           pn.Resize(2);
           salign += pn;
+          objs->SetString(salign.Data());
+*/
+       } else if (obj->InheritsFrom("TGedAlignSelect")) {
+          TString salign("AlignSelect_");
+          salign += ((TGedAlignSelect*)obj)->GetAlignStyle(); 
           objs->SetString(salign.Data());
 
        } else if (obj->InheritsFrom("TGedMarkerSelect")) {
