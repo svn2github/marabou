@@ -149,6 +149,7 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 			fReadoutError = new TMbsReadoutProc(-1);	// alloc readout proc for errors
 
 			nofReadouts = this->GetNofReadouts();
+			nofReadouts = 1;
 			for (n = 0; n < nofReadouts; n++) fLofReadouts.Add(new TMbsReadoutProc(n));
 		}
 	}
@@ -476,8 +477,8 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 			<< fpath << " -> " << installPath << " ..."
 			<< endl;
 	fname = fpath + "/FILES";
-	ifstream f1(fname.Data(), ios::in);
-	if (!f1.good()) {	
+	ifstream * f = new ifstream(fname.Data(), ios::in);
+	if (!f->good()) {	
 		gMrbLog->Err() << gSystem->GetError() << " - " << fname << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 		nofErrors++;
@@ -485,13 +486,14 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 		lofFiles.Delete();
 		nofFiles = 0;
 		for (;;) {
-			line.ReadLine(f1, kFALSE);
+			line.ReadLine(*f, kFALSE);
 			line = line.Strip(TString::kBoth);
-			if (f1.eof()) break;
+			if (f->eof()) break;
 			lofFiles.Add(new TObjString(line.Data()));
 			nofFiles++;
 		}
-		f1.close();
+		f->close();
+		delete f;
 		if (nofFiles == 0) {
 			gMrbLog->Err() << "FILES is empty" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
@@ -527,9 +529,8 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 					<< fpath << " -> " << destPath << " ..."
 					<< endl;
 			fname = fpath + "/FILES";
-			ifstream f2(fname.Data(), ios::in);
-			f2.open(fname.Data(), ios::in);
-			if (!f2.good()) {	
+			ifstream * f = new ifstream(fname.Data(), ios::in);
+			if (!f->good()) {	
 				gMrbLog->Err() << gSystem->GetError() << " - " << fname << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 				nofErrors++;
@@ -538,13 +539,14 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 				lofFiles.Delete();
 				nofFiles = 0;
 				for (;;) {
-					line.ReadLine(f2, kFALSE);
+					line.ReadLine(*f, kFALSE);
 					line = line.Strip(TString::kBoth);
-					if (f2.eof()) break;
+					if (f->eof()) break;
 					lofFiles.Add(new TObjString(line.Data()));
 					nofFiles++;
 				}
-				f2.close();
+				f->close();
+				delete f;
 				if (nofFiles == 0) {
 					gMrbLog->Err() << "FILES is empty" << endl;
 					gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
@@ -842,7 +844,17 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					break;
 
 				case kSetPipeAddr:
-					for (i = 0; i < nofReadouts; i++) arrayData[i] = this->ReadoutProc(i)->GetPipeBase();
+					for (i = 0; i < nofReadouts; i++) {
+						UInt_t pipeBase = this->ReadoutProc(i)->GetPipeBase();
+						if (pipeBase == 0) {
+							gMrbLog->Err()	<< "Base addr for readout pipe (#"
+											<< (i + 1) << ") is 0 (see resource \"TMbsSetup.Readout"
+											<< (i + 1) << ".PipeBase\")" << endl;
+							gMrbLog->Flush(this->ClassName(), "ExpandFile");
+							isOK = kFALSE;
+						}
+						arrayData[i] = pipeBase;
+					}
 					for (i = nofReadouts; i < kNofRdoProcs; i++) arrayData[i] = 0;
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$rdoPipeArr", this->EncodeArray(arrayData, kNofRdoProcs, 16));
