@@ -823,6 +823,7 @@ Bool_t TMbsReadoutProc::CopyMakefile(const Char_t * SrcDir) {
 			gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 			isOK = kFALSE;
 		} else {
+			destPath += "/";
 			destPath += rdoPath;
 		}
 	} else {
