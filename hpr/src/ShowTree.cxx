@@ -29,6 +29,25 @@
 #include <cstdlib>
 
 //________________________________________________________________________________________
+
+void AddMathExpressions(TList * var_list) 
+{
+   if (!var_list) return;
+   var_list->Add(new TObjString("TMath::Sqrt("));
+   var_list->Add(new TObjString("TMath::Sin("));
+   var_list->Add(new TObjString("TMath::Cos("));
+   var_list->Add(new TObjString("TMath::ATan("));
+   var_list->Add(new TObjString("TMath::ATan2("));
+   var_list->Add(new TObjString("TMath::Log("));
+   var_list->Add(new TObjString("TMath::Log10("));
+   var_list->Add(new TObjString("TMath::Abs("));
+   var_list->Add(new TObjString("TMath::Power("));
+   var_list->Add(new TObjString("TMath::Pi()"));
+   var_list->Add(new TObjString("TMath::TwoPi()"));
+   var_list->Add(new TObjString("TMath::RadToDeg("));
+   var_list->Add(new TObjString("TMath::DegToRad("));
+}
+//________________________________________________________________________________________
 // Show Tree 
   
 void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
@@ -58,13 +77,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    TString nam;
    TString empty;
    TString sel;
-   
    TList * var_list = new TList();
-   cmd = "mypres->EditLeafCut()";
-   nam = "Edit formula cut";
-   sel = "mypres->ToggleLeafCut()";
-   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
-
 
    cmd = "mypres->DefineGraphCut()";
    nam = "Define graphical cut";
@@ -126,8 +139,13 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
  //        fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
      }
    }
+   cmd = "mypres->EditLeafCut(\"";
+   cmd += Form("0x%x",var_list);
+   cmd += "\")";
+   nam = "Edit formula cut";
+   sel = "mypres->ToggleLeafCut()";
+   fCmdLine->AddFirst(new CmdListEntry(cmd, nam, empty, sel));
 
-   
    cmd = "mypres->EditExpression(\"";
    cmd += Form("0x%x",var_list);
    cmd += "\")";
@@ -279,21 +297,7 @@ void HistPresent::EditExpression(const char* vl, const char* bp)
    if (gROOT->GetVersionInt() < 40000) hf = NULL;
    TList * var_list = 0;
    if (bp) var_list = (TList*)strtoul(vl, 0, 16);
-   if (var_list) {
-      var_list->Add(new TObjString("TMath::Sqrt("));
-      var_list->Add(new TObjString("TMath::Sin("));
-      var_list->Add(new TObjString("TMath::Cos("));
-      var_list->Add(new TObjString("TMath::ATan("));
-      var_list->Add(new TObjString("TMath::ATan2("));
-      var_list->Add(new TObjString("TMath::Log("));
-      var_list->Add(new TObjString("TMath::Log10("));
-      var_list->Add(new TObjString("TMath::Abs("));
-      var_list->Add(new TObjString("TMath::Power("));
-      var_list->Add(new TObjString("TMath::Pi()"));
-      var_list->Add(new TObjString("TMath::TwoPi()"));
-      var_list->Add(new TObjString("TMath::RadToDeg("));
-      var_list->Add(new TObjString("TMath::DegToRad("));
-   }
+   if (var_list) AddMathExpressions(var_list);
 //   if (var_list)var_list->Print();
    *fExpression=GetString("Edit expression",(const char *)*fExpression,
                           &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
@@ -306,15 +310,18 @@ void HistPresent::EditExpression(const char* vl, const char* bp)
 }
 //________________________________________________________________________________________
   
-void HistPresent::EditLeafCut(const char* bp)
+void HistPresent::EditLeafCut(const char* vl, const char* bp)
 {
 
    Bool_t ok;
    const char hist_file[] = {"ntupleCuts.txt"};
    const char * hf = hist_file;
-   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   if (gROOT->GetVersionInt() < 40000) hf = NULL;
+   TList * var_list = 0;
+   if (bp) var_list = (TList*)strtoul(vl, 0, 16);
+   if (var_list) AddMathExpressions(var_list);
    *fLeafCut=GetString("Edit formula cut",(const char *)*fLeafCut,
-                         &ok, GetMyCanvas(), 0,0,0,0,0, hf);
+                         &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
    if (!ok) return;
     if (strlen(*fLeafCut) > 1) {
        

@@ -378,7 +378,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SelectContour(const char* , const char*, const char* bp =0); 
    void SelectGraph(const char* , const char*, const char* bp =0); 
    void SelectLeaf(const char*, const char* bp =0); 
-   void EditLeafCut(const char* bp = 0); 
+   void EditLeafCut(const char* vl =0, const char* bp = 0); 
    void ToggleLeafCut(const char* bp = 0); 
    void UseHist(const char* bp =0);  
    void ToggleUseHist(const char* bp = 0);  
