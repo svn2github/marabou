@@ -14,10 +14,10 @@ Bool_t %%USER_EVENT_NAME_UC%%::CreateTree() {
 	
 	if (gMrbAnalyze->TreeToBeWritten()) {
 		if (gMrbAnalyze->IsVerbose()) {
-			cout	<< this->ClassName() << "::CreateTree(): Creating tree \"%%USER_EVENT_NAME_LC%%\""
+			cout	<< this->ClassName() << "::CreateTree(): Creating tree \"t_%%USER_EVENT_NAME_LC%%\""
 					<< endl;
 		}
-		fTreeOut = new TTree("%%USER_EVENT_NAME_LC%%", "tree to store user-defined event data");
+		fTreeOut = new TTree("t_%%USER_EVENT_NAME_LC%%", "tree to store user-defined event data");
 		autoSave = gEnv->GetValue(gMrbAnalyze->GetResource("Event.%%USER_EVENT_NAME_UC%%.AutoSave"), 10000000);
 				
 		fTreeOut->SetAutoSave(autoSave);
@@ -27,12 +27,12 @@ Bool_t %%USER_EVENT_NAME_UC%%::CreateTree() {
 
 		fMyAddr = (TObject *) this; 		// we need a '**' ref to this object
 		if (gMrbAnalyze->IsVerbose()) {
-			cout	<< this->ClassName() << "::CreateTree(): Adding branch \"%%USER_EVENT_NAME_LC%%\""
-					<< " to tree \"%%USER_EVENT_NAME_LC%%\" (bufsiz="
+			cout	<< this->ClassName() << "::CreateTree(): Adding branch \"b_%%USER_EVENT_NAME_LC%%\""
+					<< " to tree \"t_%%USER_EVENT_NAME_LC%%\" (bufsiz="
 					<< bufSize << ", split=" << splitMode << ")"
 					<< endl;
 		}
-		fTreeOut->Branch("%%USER_EVENT_NAME_LC%%", this->ClassName(), &fMyAddr, bufSize, splitMode);
+		fTreeOut->Branch("b_%%USER_EVENT_NAME_LC%%", this->ClassName(), &fMyAddr, bufSize, splitMode);
 	}
 	return(kTRUE);
 }
@@ -52,9 +52,9 @@ Bool_t %%USER_EVENT_NAME_UC%%::InitializeTree(TFile * RootFile) {
 
 	TObject * obj;
 
-	obj = RootFile->Get("%%USER_EVENT_NAME_LC%%");
+	obj = RootFile->Get("t_%%USER_EVENT_NAME_LC%%");
 	if (obj == NULL) {
-		gMrbLog->Err()	<< "Tree \"%%USER_EVENT_NAME_LC%%\" not found in ROOT file " << RootFile->GetName() << endl;
+		gMrbLog->Err()	<< "Tree \"t_%%USER_EVENT_NAME_LC%%\" not found in ROOT file " << RootFile->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "InitializeTree");
 		return(kFALSE);
 	}
@@ -66,7 +66,7 @@ Bool_t %%USER_EVENT_NAME_UC%%::InitializeTree(TFile * RootFile) {
 	fTreeIn = (TTree *) obj;
 	fReplayMode = kTRUE;
 
-	fBranch = fTreeIn->GetBranch("%%USER_EVENT_NAME_LC%%");
+	fBranch = fTreeIn->GetBranch("b_%%USER_EVENT_NAME_LC%%");
 	fMyAddr = this;
 	fBranch->SetAddress(&fMyAddr);
 	return(kTRUE);
