@@ -173,7 +173,7 @@ class TMrbDGF : public TNamed {
 		Int_t LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile, const Char_t * AltParamFile = "");				// read param values to ROOT environment
 		Int_t SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP = kTRUE);		// save values to file
 
-		Int_t LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP = kTRUE);	// read psa params from file
+		Int_t LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFile = "", Bool_t UpdateDSP = kTRUE);	// read psa params from file
 		Int_t SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP = kTRUE);	// save psa params to file
 
 		Bool_t SaveParams(TArrayS & TempStorage);									// save params temporarily
