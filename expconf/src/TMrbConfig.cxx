@@ -5072,6 +5072,95 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	return(kTRUE);
 }
 
+void TMrbConfig::MakeGlobal(const Char_t * Name, Int_t IntVal, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeGlobal
+// Purpose:        Define a global var (const)
+// Arguments:      Char_t * Name     -- variable name
+//                 Int_t IntVal      -- value
+// Results:        --
+// Exceptions:
+// Description:    Defines an integer const.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t * v = new Int_t;
+	*v = IntVal;
+	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobInt, Name, Comment, (TObject *) v));
+}
+
+void TMrbConfig::MakeGlobal(const Char_t * Name, Float_t FloatVal, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeGlobal
+// Purpose:        Define a global var (const)
+// Arguments:      Char_t * Name     -- variable name
+//                 Float_t FloatVal  -- value
+// Results:        --
+// Exceptions:
+// Description:    Defines a float const.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Float_t * v = new Float_t;
+	*v = FloatVal;
+	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobFloat, Name, Comment, (TObject *) v));
+}
+
+void TMrbConfig::MakeGlobal(const Char_t * Name, Double_t DblVal, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeGlobal
+// Purpose:        Define a global var (const)
+// Arguments:      Char_t * Name      -- variable name
+//                 Double_t DblVal    -- value
+// Results:        --
+// Exceptions:
+// Description:    Defines a double const.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t * v = new Double_t;
+	*v = DblVal;
+	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobDouble, Name, Comment, (TObject *) v));
+}
+
+void TMrbConfig::MakeGlobal(const Char_t * Name, Bool_t BoolVal, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeGlobal
+// Purpose:        Define a global var (const)
+// Arguments:      Char_t * Name      -- variable name
+//                 Bool_t BoolVal     -- value
+// Results:        --
+// Exceptions:
+// Description:    Defines a boolean const.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t * v = new Bool_t;
+	*v = BoolVal;
+	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobBool, Name, Comment, (TObject *) v));
+}
+
+void TMrbConfig::MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeGlobal
+// Purpose:        Define a global var (const)
+// Arguments:      Char_t * Name      -- variable name
+//                 Char_t * StrVal    -- value
+// Results:        --
+// Exceptions:
+// Description:    Defines a string const.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString * v = new TString(Str);
+	fLofGlobals.AddNamedX(new TMrbNamedX(TMrbConfig::kGlobString, Name, Comment, (TObject *) v));
+}
+
 Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -5321,7 +5410,8 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
 	}
-	Str = (Char_t *) nx->GetAssignedObject();
+	TString * str = (TString *) nx->GetAssignedObject();
+	Str = str->Data();
 	return(kTRUE);
 };
 
@@ -5349,7 +5439,8 @@ const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) {
 		gMrbLog->Flush(this->ClassName(), "GetGlobStr");
 		return(NULL);
 	}
-	return((Char_t *) nx->GetAssignedObject());
+	TString * str = (TString *) nx->GetAssignedObject();
+	return(str->Data());
 };
 
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) {

@@ -672,8 +672,14 @@ class TMrbConfig : public TNamed {
 		inline void MakeGlobal(const Char_t * Name, Float_t * FloatVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobFloat, Name, Comment, (TObject *) FloatVar)); };
 		inline void MakeGlobal(const Char_t * Name, Double_t * DblVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobDouble, Name, Comment, (TObject *) DblVar)); };
 		inline void MakeGlobal(const Char_t * Name, Bool_t * BoolVar, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobBool, Name, Comment, (TObject *) BoolVar)); };
-		inline void MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobString, Name, Comment, (TObject *) Str)); };
-		inline void MakeGlobal(const Char_t * Name, TString & Str, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobString, Name, Comment, (TObject *) Str.Data())); };
+		inline void MakeGlobal(const Char_t * Name, TString & Str, const Char_t * Comment = "") { fLofGlobals.AddNamedX(new TMrbNamedX(kGlobString, Name, Comment, (TObject *) &Str)); };
+
+		void MakeGlobal(const Char_t * Name, Int_t IntVal, const Char_t * Comment = "");
+		void MakeGlobal(const Char_t * Name, Float_t FloatVal, const Char_t * Comment = "");
+		void MakeGlobal(const Char_t * Name, Double_t DblVal, const Char_t * Comment = "");
+		void MakeGlobal(const Char_t * Name, Bool_t BoolVal, const Char_t * Comment = "");
+		void MakeGlobal(const Char_t * Name, const Char_t * Str, const Char_t * Comment = "");
+
 		Bool_t GetGlobal(const Char_t * Name, Int_t & IntVar);
 		Bool_t GetGlobal(const Char_t * Name, Float_t & FloatVar);
 		Bool_t GetGlobal(const Char_t * Name, Double_t & DblVar);
