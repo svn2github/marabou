@@ -1602,7 +1602,13 @@ Bool_t FhMainFrame::Configure(){
       gSystem->ProcessEvents();
       fC_Status = M_CONFIGURING;
 
-      if(!fMbsControl) fMbsControl = new TMbsControl( masters[fCbMaster->GetSelected()-1],
+      TString mproc =  masters[fCbMaster->GetSelected()-1];
+      if (mproc.IsNull()) {
+      	WarnBox("No master proc given", this);
+        return(kTRUE);
+      }
+
+      if(!fMbsControl) fMbsControl = new TMbsControl(mproc.Data(),
                                                      fMbsVersion->Data(),
                                                      fTbDir->GetString());
       cout << setblue<< "c_ana: Configure, check for running Mbs processes on Lynx"<< setblack << endl;
@@ -1669,7 +1675,12 @@ Try Clear MBS",this);
       } else {
          if(fMbsControl->StartMbs()){
 //    start Message server
-            fMessageServer = new MessageServer(masters[fCbMaster->GetSelected()-1],
+         TString mproc =  masters[fCbMaster->GetSelected()-1];
+         if (mproc.IsNull()) {
+      	   WarnBox("No master proc given", this);
+           return(kTRUE);
+         }
+            fMessageServer = new MessageServer(mproc.Data(),
                               fMessageIntervall, kTRUE);
             fMessageServer->SetLogLevel(fMbsLogLevel);
             if(fMbsControl->Startup(fMbsDebug)){
@@ -2867,10 +2878,14 @@ Bool_t FhMainFrame::PutDefaults(){
    else             wout = "FALSE";
    wstream << "AUTOSETUP:"  <<  wout       << endl;
 
-   if (!fSetup) fSetup = new TMbsSetup();
-   fSetup->EvtBuilder()->SetProcName(masters[fCbMaster->GetSelected()-1]);
-   fSetup->ReadoutProc(0)->SetProcName(slaves[fCbReadout->GetSelected()-1]);
-   fSetup->Save();
+   if( *fInputSource == "TcpIp" ) {
+      if (!fSetup) fSetup = new TMbsSetup();
+      TString mproc = masters[fCbMaster->GetSelected()-1];
+      if (!mproc.IsNull()) fSetup->EvtBuilder()->SetProcName(mproc.Data());
+      TString sproc = slaves[fCbReadout->GetSelected()-1];
+      if (!sproc.IsNull()) fSetup->ReadoutProc(0)->SetProcName(sproc.Data());
+      fSetup->Save();
+   }
 
   return kTRUE; 
 }
