@@ -98,6 +98,7 @@ TMrbCaen_V785::TMrbCaen_V785(const Char_t * ModuleName, UInt_t BaseAddr) :
 			fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUShort);
 			fNofShortsPerChannel = 1;
 			fFFMode = kFALSE;
+			fFineThresh = kTRUE;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
