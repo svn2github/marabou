@@ -817,7 +817,7 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 		frag1 += frag2;
 	}
 
-	if (frag1 + frag2 != evl) {
+	if (frag1 != evl) {
 		sprintf(loc_errbuf,
 		"?EVTERR-[mbs_next_event]- %s (buf %d, evt %d): Illegal event fragmentation",
 					mbs->device, mbs->cur_bufno, mbs->evtno);
