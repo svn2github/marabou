@@ -732,8 +732,13 @@ void TMrbWindow2D::Print(Option_t * Option) {
 		for (Int_t i = 0; i < this->GetN(); i++) {
 			Double_t x, y;
 			this->GetPoint(i, x, y);
-			cout	<< setw(19) << x
-					<< setw(18) << y;
+			if (i == 0) {
+				cout	<< setw(19) << x
+						<< setw(18) << y;
+			} else {
+				cout	<< setw(46) << x
+						<< setw(18) << y;
+			}
 			cout	<< endl;
 		}
 	}

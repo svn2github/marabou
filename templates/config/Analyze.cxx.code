@@ -134,10 +134,11 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%EndOfCode%%
 %%EVT_CLASS_INSTANCE%%
 
+	Double_t cut_x0 = 0.; Double_t cut_y0 = 0.;
 %%BeginOfCode%%
 // instantiate windows
-%1D%if ($varName == NULL) $varName = new $className("$varName", $varLower, $varUpper);
-%2D%if ($varName == NULL) $varName = new $className("$varName", 0);
+%1D%	if ($varName == NULL) $varName = new $className("$varName", $varLower, $varUpper);
+%2D%	if ($varName == NULL) $varName = new $className("$varName", 1, &cut_x0, &cut_y0);
 %%EndOfCode%%
 %%WDW_CLASS_INSTANCE%%
 

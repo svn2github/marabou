@@ -4982,7 +4982,12 @@ Bool_t TMrbConfig::DefineWindows(const Char_t * WdwType, const Char_t * WdwDefs)
 	switch (wType->GetIndex()) {
 		case kWindowI:	proto = (TObject *) new TMrbWindowI("Proto", 0, 0); break;
 		case kWindowF:	proto = (TObject *) new TMrbWindowF("Proto", 0., 0.); break;
-		case kWindow2D:	proto = (TObject *) new TMrbWindow2D("Proto", 1, NULL, NULL); break;
+		case kWindow2D: {
+							Double_t x = 0.;
+							Double_t y = 0.;
+							proto = (TObject *) new TMrbWindow2D("Proto", 1, &x, &y);
+						}
+						break;
 		default:		gMrbLog->Err() << "Illegal window type - " << WdwType << endl;
 						gMrbLog->Flush(this->ClassName(), "DefineWindows");
 						return(kFALSE);
@@ -5220,7 +5225,9 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 												((TMrbWindowF *) VarProto)->GetUpperLimit());
 					break;
 				case kWindow2D:
-					new TMrbWindow2D(varName.Data(), 1, NULL, NULL); break;
+					Double_t x = 0.;
+					Double_t y = 0.;
+					new TMrbWindow2D(varName.Data(), 1, &x, &y); break;
 			}
 		}
 	}

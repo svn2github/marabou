@@ -300,9 +300,9 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 				OutStrm	<< endl << GetName() << "::CUTS:" << endl;
 				OutStrm	<< "   " << setiosflags(ios::left)
 						<< setw(20) << "NAME"
-						<< setw(17) << "TYPE"
-						<< setw(18) << "X"
-						<< setw(11) << "Y"
+						<< setw(15) << "TYPE"
+						<< setw(18) << "POINTS X"
+						<< setw(11) << "       Y"
 						<< endl;
 			}
 			found = kTRUE;
