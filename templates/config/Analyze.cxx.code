@@ -136,7 +136,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 
 %%BeginOfCode%%
 %B%// instantiate user-defined event classes
-%C%	if (g$classNameUC == NULL) {		// event $className
+%C%	if (g$classNameUC == NULL) {		// event $classNameLC
 %C%		g$classNameUC = new $classNameUC();
 %C% 		Bool_t err = g$classNameUC->IsZombie();
 %C% 		if (err) {
