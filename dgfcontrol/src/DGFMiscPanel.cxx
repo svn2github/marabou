@@ -27,6 +27,7 @@ namespace std {} using namespace std;
 
 #include "TMrbLogger.h"
 #include "TMrbLofDGFs.h"
+#include "TGMrbProgressBar.h"
 
 #include "TGMsgBox.h"
 
@@ -294,8 +295,9 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 	nofModules = 0;
 	selectFlag = kFALSE;
 	Bool_t verbose = gDGFControlData->IsVerbose();
-	TString setOrClear = SetFlag ? "Setting" : "Clearing";
-	if (!verbose) cout << "[" << setOrClear << " GFLT bit - wait " << flush;
+	TString setOrClear = SetFlag ? "Setting GFLT bit ..." : "Clearing GFLT bit ...";
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, setOrClear, 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
@@ -316,18 +318,18 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 				selectFlag = kTRUE;
 			}
 		}
-		if (!verbose) cout << "." << flush;
+		pgb->Increment(1, dgfModule->GetName());
+		gSystem->ProcessEvents();
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}				
-	if (!verbose) cout << " done]" << endl;
+	delete pgb;
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
-	} else if (!verbose) {
-		cout << " done]" << endl;
 	}
+
 	return(kTRUE);
 }
 
@@ -354,8 +356,8 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
 	selectFlag = kFALSE;
-	Bool_t verbose = gDGFControlData->IsVerbose();
-	if (!verbose) cout << "[Setting COINCWAIT properly - wait " << flush;
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Setting COINCWAIT ...", 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
@@ -366,17 +368,16 @@ Bool_t DGFMiscPanel::SetCoincWait() {
 				selectFlag = kTRUE;
 			}
 		}
-		if (!verbose) cout << "." << flush;
+		pgb->Increment(1, dgfModule->GetName());
+		gSystem->ProcessEvents();
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}				
-	if (!verbose) cout << " done]" << endl;
+	delete pgb;
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
-	} else if (!verbose) {
-		cout << " done]" << endl;
 	}
 	return(kTRUE);
 }

@@ -32,6 +32,7 @@ namespace std {} using namespace std;
 #include "TMrbLofDGFs.h"
 #include "TMrbSystem.h"
 #include "TMrbEnv.h"
+#include "TGMrbProgressBar.h"
 
 #include "DGFControlData.h"
 #include "DGFSaveModuleSettingsPanel.h"
@@ -338,7 +339,8 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	nofModules = 0;
 	verbose = gDGFControlData->IsVerbose();
 	if (dgfModule) {
-		if (!verbose) cout << "[Saving module params - wait " << flush;
+		TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Saving module params ...", 400, "blue", NULL, kTRUE);
+		pgb->SetRange(0, gDGFControlData->GetNofModules());
 		while (dgfModule) {
 			modIdx = gDGFControlData->GetIndex(dgfModule->GetName(), cl, modNo);
 			modIdx &= 0xFFFF;
@@ -357,10 +359,11 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 				if (!dgf->SavePsaParams(psaFile.Data())) nerr++;
 				nofModules++;
 			}
-			if (!verbose) cout << "." << flush;
+			pgb->Increment(1, dgfModule->GetName());
+			gSystem->ProcessEvents();
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
-		if (!verbose) cout << " done]" << endl;
+		delete pgb;
 	}
 	
 	if (nerr > 0) {

@@ -28,6 +28,7 @@
 #include "TMrbLogger.h"
 #include "TMrbEnv.h"
 #include "TMrbSystem.h"
+#include "TGMrbProgressBar.h"
 
 #include "TGMsgBox.h"
 
@@ -481,8 +482,8 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 		if (!offlineMode) {
 			for (Int_t cr = 0; cr < kNofCrates; cr++) lofDGFs[cr].Delete();
 			DGFModule * dgfModule = gDGFControlData->FirstModule();
-			Bool_t verbose = gDGFControlData->IsVerbose();
-			if (!verbose) cout << "[Connecting to DGF modules - wait " << flush;
+			TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Connecting ...", 400, "blue", NULL, kTRUE);
+			pgb->SetRange(0, gDGFControlData->GetNofModules());
 			while (dgfModule) {
 				if (gDGFControlData->ModuleInUse(dgfModule)) {
 					TMrbDGF * dgf = dgfModule->GetAddr();
@@ -514,10 +515,11 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 						gROOT->Append(dgf);
 					} else nerr++;
 				}
-				if (!verbose) cout << "." << flush;
+				pgb->Increment(1, dgfModule->GetName());
+				gSystem->ProcessEvents();
 				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
-			if (!verbose) cout << " done]" << endl;
+			delete pgb;
 		}
 	}
 
@@ -793,8 +795,8 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 	dgfModule = gDGFControlData->FirstModule();
 	Int_t nofModules = 0;
 	isAborted = kFALSE;
-	Bool_t verbose = gDGFControlData->IsVerbose();
-	if (!verbose) cout << "[Aborting Busy/sync loops - wait " << flush;
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Aborting Busy/Sync ...", 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
 	while (dgfModule) {
 		Int_t cl = nofModules / kNofModulesPerCluster;
 		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
@@ -806,12 +808,13 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 				dgf->SetParValue("SYNCHDONE", 1, kTRUE);
 				if (!dgf->StopRun()) nerr++;
 			}
-			cout << "." << flush;
+			pgb->Increment(1, dgfModule->GetName());
+			gSystem->ProcessEvents();
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	if (!verbose) cout << " done]" << endl;
+	delete pgb;
 
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Aborting busy-sync loop failed" << endl;
@@ -913,9 +916,9 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	Int_t nofModules = 0;
 	Bool_t found = kFALSE;
-	TString onoff = ActivateFlag ? "ON" : "OFF";
-	Bool_t verbose = gDGFControlData->IsVerbose();
-	if (!verbose) cout << "[Turning user PSA code " << onoff << " - wait " << flush;
+	TString onoff = ActivateFlag ? "Turning UserPSA ON ..." : "Turning UserPSA OFF ...";
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, onoff, 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
 	while (dgfModule) {
 		Int_t cl = nofModules / kNofModulesPerCluster;
 		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
@@ -926,12 +929,13 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 				found = kTRUE;
 				dgf->ActivateUserPSACode(ActivateFlag);
 			}
-			cout << "." << flush;
+			pgb->Increment(1, dgfModule->GetName());
+			gSystem->ProcessEvents();
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	if (!verbose) cout << " done]" << endl;
+	delete pgb;
 
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Turning PSA code on/off failed" << endl;

@@ -26,6 +26,7 @@
 
 #include "TMrbDGFData.h"
 #include "TMrbDGFHistogramBuffer.h"
+#include "TGMrbProgressBar.h"
 
 #include "DGFControlData.h"
 #include "DGFMcaDisplayPanel.h"
@@ -222,7 +223,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
 	fRunTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fRunTimeEntry->GetEntry()->SetText("10");
-	fRunTimeEntry->SetRange(1, 1000);
+	fRunTimeEntry->SetRange(0, 1000);
 	fRunTimeEntry->SetIncrement(1);
 	fRunTimeEntry->AddToFocusList(&fFocusList);
 	fRunTimeEntry->Associate(this);
@@ -403,11 +404,13 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		return(kFALSE);
 	}
 
-	cout << "[Accumulating " << accuTime << " " << tp->GetName() << "(s) - wait ... " << ends << flush;
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Accumulating ...", 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, secsToWait);
 	abortAccu = kFALSE;
 	if (offlineMode) secsToWait = 1;
 	for (Int_t i = 0; i < secsToWait; i++) {
 		sleep(1);
+		pgb->Increment(1, Form("%d of %d sec(s)", i, secsToWait));
 		gSystem->ProcessEvents();
 		if (abortAccu) {
 			gMrbLog->Err() << "Aborted after " << i << " secs. Stopping current run." << endl;
@@ -415,7 +418,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 			break;
 		}	
 	}
-	if (!abortAccu) cout << "done]" << endl;
+	delete pgb;
 
 	nofHistos = 0;
 	nofModules = 0;
