@@ -12,6 +12,31 @@
 
 #include "TMrbStatistics.h"
 
+Int_t check_list_of_functions(TH1 * h)
+{
+   Int_t n_removed = 0;
+   if (!h) return n_removed;
+   TObject * obj;
+   TList * lof = h->GetListOfFunctions();
+repeat:
+   Int_t nent = lof->GetSize();
+   if (nent < 2) return n_removed;
+   for (Int_t i = 0; i < nent - 1; i++) {
+      obj = lof->At(i);
+      for (Int_t k = i+1; k < nent; k++) {
+         if (obj == lof->At(k)) {
+            cout << "Removing duplicate: " << obj->GetName()
+                 << " from: " << h->GetName() << endl;
+            lof->Remove(obj);
+            n_removed++;
+            goto repeat;
+         }
+      }
+   }
+   return n_removed;
+}
+      
+
 ClassImp(TMrbStatistics)
 /////////////////////////////////////////////////////////////////////////////////////////
 //  TMrbStatistics                                                                     //
@@ -118,11 +143,13 @@ Int_t TMrbStatistics::Fill(TFile * file){
    TObject* obj;
    while( (key = (TKey*)next()) ){
       if(!strncmp(key->GetClassName(),"TH1",3) ||
+         !strncmp(key->GetClassName(),"TProfile",8) ||
          !strncmp(key->GetClassName(),"TH2",3) ||
          !strncmp(key->GetClassName(),"TH3",3)){
          obj = (TObject*)key->ReadObj(); 
 //      if(obj->InheritsFrom(TH1::Class())){
          h = (TH1*)obj;
+         check_list_of_functions(h);
          ent = new TMrbStatEntry(h, h->GetName(), h->GetTitle());
          fStatEntries->Add(ent); 
          if(h->InheritsFrom(TH2::Class())){
