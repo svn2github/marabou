@@ -26,6 +26,7 @@
 #include <TGFileDialog.h>
 #include "TGScrollBar.h"
 #include "TRegexp.h"
+#include "TObjArray.h"
 #include "TObjString.h"
 #include "TOrdCollection.h"
 #include "TUnixSystem.h"
@@ -48,6 +49,7 @@
 #include "TGMrbInputDialog.h"
 #include "TGMrbHelpWindow.h"
 #include "TMrbNamedX.h"
+#include "TMrbString.h"
 
 #include "SetColor.h"
 #include <iostream>
@@ -2867,7 +2869,10 @@ Bool_t FhMainFrame::GetDefaults(){
    *fSaveMap = *fSaveMap + gSystem->Getenv("USER") + "_RUN.root";
    fMaster       = new TString("ppc-1");
    fReadout      = new TString("ppc-0");
-   fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", "deve"));
+   TMrbString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "v2.2-deve");
+   TObjArray v;
+   if (mbsVersion.Split(v, "-") > 1) mbsVersion = ((TObjString *) v[1])->GetString();
+   fMbsVersion   = new TString(mbsVersion.Data());
    fDir          = new TString("dualppc");
    fTrigger      = new TString("VME");
    fCodeName        = new TString("");
