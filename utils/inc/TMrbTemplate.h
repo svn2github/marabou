@@ -62,7 +62,7 @@ class TMrbTemplate : public TObject {
 			fLofCodeSegments.Delete();
 		};
 
-		TMrbTemplate(const TMrbTemplate &) {};		// default copy ctor
+		TMrbTemplate(const TMrbTemplate &) : TObject() {};		// default copy ctor
 
 		Bool_t Open(const Char_t * TemplateFile, TMrbLofNamedX * LofTagWords);	// open template file
 		inline void Close() { if (fIsActive)	{			// close

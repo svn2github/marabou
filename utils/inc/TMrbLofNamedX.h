@@ -50,7 +50,7 @@ class TMrbLofNamedX: public TObjArray {
 		inline const Char_t * GetName() const { return(fName); };
 		inline void SetTitle(const Char_t * Title) { fTitle = Title; };
 		inline const Char_t * GetTitle() const { return(fTitle); };
-		inline void SetObject(const Char_t * Name, const Char_t * Title) { fName = Name; fTitle = Name; };
+		inline void SetObject(const Char_t * Name, const Char_t * Title) { fName = Name; fTitle = Title; };
 
 		inline void SetPatternMode() { fPatternMode = kTRUE; };
 		inline Bool_t IsPatternMode() const { return(fPatternMode); };
