@@ -5,7 +5,7 @@
 // Description:    
 // Author:         O. Schaile
 // Mailto:         <a href=mailto:otto.schaile@physik.uni-muenchen.de>O. Schaile</a>
-// Revision:       $Id: TGMrbTableFrame.cxx,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       
 // Date:           
 // URL:            
 // Keywords:       
@@ -75,10 +75,13 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 	fWidgets = new TList;
 	fEntries = new TList;
 
-   ULong_t brown, lgrey, linen;
+   ULong_t brown, lgrey, linen, green, blue, yellow;
    gClient->GetColorByName("firebrick", brown);
    gClient->GetColorByName("snow", lgrey);
    gClient->GetColorByName("linen", linen);
+   gClient->GetColorByName("green", green);
+   gClient->GetColorByName("blue", blue);
+   gClient->GetColorByName("yellow", yellow);
 
 	if(Flags)	fFlags = new TList;
 	else		fFlags = NULL;
@@ -133,14 +136,18 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if(fNrows != 0 && fNcols == 0) fNcols = nvalues/fNrows;
    if(fNcols != 0 && fNrows == 0) fNrows = nvalues/fNcols;
 
+   cout << Ncols  << " " << Nrows  << " "<< Nradio  << " " << nvalues << endl;
+
    TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX , 2, 2, 2, 2);
    fWidgets->AddFirst(lo1);
-   TGLayoutHints * lo2 = new TGLayoutHints(kLHintsLeft, 2, 2, 2, 2);
+   TGLayoutHints * lo2 = new TGLayoutHints(kLHintsExpandY | kLHintsLeft, 2, 2, 2, 2);
    fWidgets->AddFirst(lo2);
    TGLayoutHints * lo3 = new TGLayoutHints(kLHintsExpandX | kLHintsRight, 2, 2, 2, 2);
    fWidgets->AddFirst(lo3);
    TGLayoutHints * lo4 = new TGLayoutHints(kLHintsExpandY | kLHintsCenterY | kLHintsCenterX, 2, 2, 2, 2);
    fWidgets->AddFirst(lo4);
+   TGLayoutHints * lo5 = new TGLayoutHints(kLHintsExpandY | kLHintsCenterY | kLHintsCenterX, 1, 1, 1, 1);
+   fWidgets->AddFirst(lo5);
 /*
      --------------------------------------------------
      |          fColFrame                              |
@@ -187,11 +194,12 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 		fWidgets->AddFirst(fRowFrame);
 	}
 
-	fTableFrame             = new TGCompositeFrame(fTableRowFrame, fNcols*itemwidth, fNrows*20,kHorizontalFrame);  
+	fTableFrame = new TGCompositeFrame(fTableRowFrame, fNcols*itemwidth, fNrows*20,kHorizontalFrame| kFixedWidth);  
 
-    fTableFrame->ChangeBackground(brown);
+   fTableFrame->ChangeBackground(brown);
 	if (fl1 > 0) {
 		fFlagFrame1  = new TGCompositeFrame(fTableRowFrame, (Int_t) (0.5*itemwidth), fNrows*20, kVerticalFrame| kFixedWidth);  
+//      fFlagFrame1->ChangeBackground(green);
 		fWidgets->AddFirst(fFlagFrame1);
 	}
 
@@ -299,7 +307,8 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
          }
          if (fFlagButton) {
             fWidgets->AddFirst(fFlagButton);
-            fFlagFrame1->AddFrame(fFlagButton,lo4);
+            if (fColorSelect > 0)fFlagFrame1->AddFrame(fFlagButton,lo5); 
+            else                 fFlagFrame1->AddFrame(fFlagButton,lo4);
             fFlags->Add(fFlagButton);
 
             if (fColorSelect <= 0 && (*Flags)[i]) fFlagButton->SetState(kButtonDown);
@@ -374,13 +383,21 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if(ActionText_2)fActionFrame->AddFrame(fAct_2Button,lo1); 
    if(fHelpText)fActionFrame->AddFrame(fHelpButton,lo1); 
 
-   if (RowLabels) fRowFrame->Resize(itemwidth,fRowFrame->GetDefaultHeight());
+   if (RowLabels) {
+      fRowFrame->Resize(itemwidth,fRowFrame->GetDefaultHeight());
+      fTableRowFrame->AddFrame(fRowFrame,lo2);
+   }
    fTableFrame->Resize(fNcols*itemwidth,fTableFrame->GetDefaultHeight());
+   fTableRowFrame->AddFrame(fTableFrame,lo2);
 
-   if (RowLabels) fTableRowFrame->AddFrame(fRowFrame,lo2);
-   fTableRowFrame->AddFrame(fTableFrame,lo1);
-   if (fl1 > 0) fTableRowFrame->AddFrame(fFlagFrame1,lo4);
-   if (fl2 > 0) fTableRowFrame->AddFrame(fFlagFrame2,lo4);
+   if (fl1 > 0) {
+      fFlagFrame1->Resize((Int_t)0.5 * itemwidth,fFlagFrame1->GetDefaultHeight());
+      fTableRowFrame->AddFrame(fFlagFrame1,lo2);
+   }
+   if (fl2 > 0) {
+      fFlagFrame2->Resize((Int_t)0.5 * itemwidth,fFlagFrame2->GetDefaultHeight());
+      fTableRowFrame->AddFrame(fFlagFrame2,lo2);
+   }
    this->AddFrame(fColFrame,lo1);                // frame into main frame
    this->AddFrame(fTableRowFrame,lo1);                // frame into main frame
    this->AddFrame(fActionFrame,lo1);                // frame into main frame
