@@ -22,7 +22,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-static const char setblack[]	=	"\033[39m";
+static const char setblack[]	=	"\033[30m";
 static const char setred[]		=	"\033[31m";
 static const char setgreen[]	=	"\033[32m";
 static const char setyellow[]	=	"\033[33m";
