@@ -2902,7 +2902,6 @@ Bool_t FhMainFrame::GetDefaults(){
 		(*fCodeName)(endwithmk) = "";
      }
       if (fCodeName->Length() > 0) {
-		cout << "@@ " << fCodeName->Data() << endl;
 		break;
       }
    }
