@@ -1715,9 +1715,13 @@ Bool_t FhMainFrame::MbsSetup(){
    fStatus->ChangeBackground(cyan);
    gClient->NeedRedraw(fStatus);
    gSystem->ProcessEvents();
-	if(!fSetup)fSetup = new TMbsSetup();		// eroeffnet bestehendes .mbssetup bzw. generiert eines
-   else                fSetup->Open(".mbssetup");
-   const char * mproc = masters[fCbMaster->GetSelected()-1];
+	if(!fSetup) {
+		fSetup = new TMbsSetup();
+    } else {
+		delete fSetup;
+        fSetup = new TMbsSetup(".mbssetup");
+    }
+	const char * mproc = masters[fCbMaster->GetSelected()-1];
    const char * sproc = slaves[fCbReadout->GetSelected()-1];
    cout << "mproc " << mproc << " sproc " << sproc;
 
