@@ -51,8 +51,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFOffsetsPanel)
 
-DGFOffsetsPanel::DGFOffsetsPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFOffsetsPanel::DGFOffsetsPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFOffsetsPanel
@@ -221,13 +221,6 @@ DGFOffsetsPanel::DGFOffsetsPanel(const TGWindow * Window, const TGWindow * MainF
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: OffsetsPanel");
 
 	MapSubwindows();
@@ -236,7 +229,6 @@ DGFOffsetsPanel::DGFOffsetsPanel(const TGWindow * Window, const TGWindow * MainF
 	Resize(Width, Height);
 
 	MapWindow();
-//	gClient->WaitFor(this);
 }
 
 Bool_t DGFOffsetsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {

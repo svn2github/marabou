@@ -33,12 +33,12 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetFilesPanel
-// Purpose:        Transient frame to define filenames and paths
+// Purpose:        Main frame to define filenames and paths
 // Description:    A dialog window to enter file names and paths
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFSetFilesPanel : public TGTransientFrame {
+class DGFSetFilesPanel : public TGMainFrame {
 
 	public:
 
@@ -67,11 +67,11 @@ class DGFSetFilesPanel : public TGTransientFrame {
 		enum					{	kButtonHeight			= 20					};
 
 	public:
-		DGFSetFilesPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFSetFilesPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFSetFilesPanel() { fHeap.Delete(); };
 
-		DGFSetFilesPanel(const DGFSetFilesPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFSetFilesPanel(const DGFSetFilesPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

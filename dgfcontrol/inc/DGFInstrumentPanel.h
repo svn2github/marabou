@@ -38,7 +38,7 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel
-// Purpose:        Transient frame to define module params
+// Purpose:        Main frame to define module params
 // Constructors:   
 // Methods:        CloseWindow      -- close main frame
 //                 ProcessMessage   -- process widget events
@@ -46,7 +46,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFInstrumentPanel : public TGTransientFrame {
+class DGFInstrumentPanel : public TGMainFrame {
 
 	public:
 
@@ -98,14 +98,14 @@ class DGFInstrumentPanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFInstrumentPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFInstrumentPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFInstrumentPanel() {
 			fFocusList.Clear();
 			fHeap.Delete();
 		};
 
-		DGFInstrumentPanel(const DGFInstrumentPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFInstrumentPanel(const DGFInstrumentPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

@@ -74,8 +74,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFSetupPanel)
 
-DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetupPanel
@@ -295,13 +295,6 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: SetupPanel");
 
 	MapSubwindows();
@@ -310,7 +303,6 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	Resize(Width, Height);
 
 	MapWindow();
-//	gClient->WaitFor(this);
 
 	firstCall = kFALSE;
 }
@@ -576,7 +568,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 	gDGFControlData->fCAMACHost = camacHost;
 
 	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
-		
+
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	while (dgfModule) {
 		TMrbDGF * dgf = dgfModule->GetAddr();

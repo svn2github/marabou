@@ -54,8 +54,8 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFSetFilesPanel)
 
-DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetFilesPanel
@@ -217,13 +217,6 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, const TGWindow * Mai
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: SetFilesPanel");
 
 	MapSubwindows();
@@ -232,7 +225,6 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, const TGWindow * Mai
 	Resize(Width, Height);
 
 	MapWindow();
-//	gClient->WaitFor(this);
 }
 
 Bool_t DGFSetFilesPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {

@@ -41,13 +41,13 @@ using namespace std;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSaveModuleSettingsPanel
-// Purpose:        Transient frame to save module settings
+// Purpose:        Main frame to save module settings
 // Constructors:   
 // Description:    A dialog window to save module settings
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFSaveModuleSettingsPanel : public TGTransientFrame {
+class DGFSaveModuleSettingsPanel : public TGMainFrame {
 
 	public:
 
@@ -70,11 +70,11 @@ class DGFSaveModuleSettingsPanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFSaveModuleSettingsPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFSaveModuleSettingsPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFSaveModuleSettingsPanel() { fHeap.Delete(); };
 
-		DGFSaveModuleSettingsPanel(const DGFSaveModuleSettingsPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFSaveModuleSettingsPanel(const DGFSaveModuleSettingsPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

@@ -59,8 +59,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFRestoreModuleSettingsPanel)
 
-DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFRestoreModuleSettingsPanel
@@ -205,13 +205,6 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Wi
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: RestoreModuleSettingsPanel");
 
 	MapSubwindows();
@@ -220,7 +213,6 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Wi
 	Resize(Width, Height);
 
 	MapWindow();
-//	gClient->WaitFor(this);
 }
 
 Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {

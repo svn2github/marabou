@@ -41,13 +41,13 @@ using namespace std;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetupPanel
-// Purpose:        Transient frame to define setup params
+// Purpose:        Main frame to define setup params
 // Constructors:   
 // Description:    A dialog window to enter setup params
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFSetupPanel : public TGTransientFrame {
+class DGFSetupPanel : public TGMainFrame {
 
 	public:
 
@@ -88,11 +88,11 @@ class DGFSetupPanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFSetupPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFSetupPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFSetupPanel() { fHeap.Delete(); };
 
-		DGFSetupPanel(const DGFSetupPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFSetupPanel(const DGFSetupPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

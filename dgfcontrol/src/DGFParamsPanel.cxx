@@ -49,8 +49,8 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFParamsPanel)
 
-DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFParamsPanel
@@ -249,13 +249,6 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, const TGWindow * MainFra
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: ParamsPanel");
 
 	MapSubwindows();
@@ -264,7 +257,6 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, const TGWindow * MainFra
 	Resize(Width, Height);
 
 	MapWindow();
-//	gClient->WaitFor(this);
 }
 
 Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {

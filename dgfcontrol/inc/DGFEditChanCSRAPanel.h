@@ -33,12 +33,12 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFEditChanCSRAPanel
-// Purpose:        Transient frame to edit the channel control/status reg
+// Purpose:        Main frame to edit the channel control/status reg
 // Description:    A dialog window to modify the channel CSRA
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFEditChanCSRAPanel : public TGTransientFrame {
+class DGFEditChanCSRAPanel : public TGMainFrame {
 
 	public:
 
@@ -60,11 +60,11 @@ class DGFEditChanCSRAPanel : public TGTransientFrame {
 		enum					{	kButtonHeight			= 20					};
 
 	public:
-		DGFEditChanCSRAPanel(const TGWindow * Parent, const TGWindow * Main, TGTextEntry * Entry,
+		DGFEditChanCSRAPanel(const TGWindow * Parent, TGTextEntry * Entry,
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditChanCSRAPanel() { fHeap.Delete(); };
 
-		DGFEditChanCSRAPanel(const DGFEditChanCSRAPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFEditChanCSRAPanel(const DGFEditChanCSRAPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

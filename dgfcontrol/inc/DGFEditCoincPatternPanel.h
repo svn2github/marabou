@@ -34,12 +34,12 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFEditCoincPatternPanel
-// Purpose:        Transient frame to edit coinc patterns
+// Purpose:        Main frame to edit coinc patterns
 // Description:    A dialog window to modify coinc patterns
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFEditCoincPatternPanel : public TGTransientFrame {
+class DGFEditCoincPatternPanel : public TGMainFrame {
 
 	public:
 
@@ -62,11 +62,11 @@ class DGFEditCoincPatternPanel : public TGTransientFrame {
 		enum					{	kButtonHeight			= 20					};
 
 	public:
-		DGFEditCoincPatternPanel(const TGWindow * Parent, const TGWindow * Main, TGTextEntry * Entry,
+		DGFEditCoincPatternPanel(const TGWindow * Parent, TGTextEntry * Entry,
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditCoincPatternPanel() { fHeap.Delete(); };
 
-		DGFEditCoincPatternPanel(const DGFEditCoincPatternPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFEditCoincPatternPanel(const DGFEditCoincPatternPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

@@ -54,9 +54,9 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFEditChanCSRAPanel)
 
-DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, const TGWindow * MainFrame, TGTextEntry * Entry,
+DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry * Entry,
 												UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFEditChanCSRAPanel
@@ -151,13 +151,6 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, const TGWind
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: Edit Channel CSRA");
 
 	MapSubwindows();

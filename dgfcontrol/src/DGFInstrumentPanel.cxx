@@ -45,8 +45,8 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFInstrumentPanel)
 
-DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel
@@ -732,27 +732,23 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, const TGWindow *
 	fModuleButtonFrame->Associate(this);
 
 // initialize data fields
-	this->InitializeValues(kTRUE);
+	if (this->InitializeValues(kTRUE)) {
 
 //	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
+		fKeyBindings.SetParent(this);
+		fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
+		SetWindowName("DGFControl: InstrumentPanel");
 
-	SetWindowName("DGFControl: InstrumentPanel");
+		MapSubwindows();
 
-	MapSubwindows();
+		Resize(GetDefaultSize());
+		Resize(Width, Height);
 
-	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
-	MapWindow();
+		MapWindow();
+	} else {
+		this->CloseWindow();
+	}
 }
 
 Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -778,14 +774,14 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 				case kCM_BUTTON:
 					switch (Param1) {
 						case kDGFInstrStatRegChanCSRAEditButton:
-                    		new DGFEditChanCSRAPanel(fClient->GetRoot(), this, fStatRegChanCSRAEntry->GetEntry(),
+                    		new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
 											DGFEditChanCSRAPanel::kFrameWidth, DGFEditChanCSRAPanel::kFrameHeight);
 							this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
 							break;
 						case kDGFInstrStatCoincPatternEditButton:
-                    		new DGFEditCoincPatternPanel(fClient->GetRoot(), this, fStatCoincPatternEntry->GetEntry(),
+                    		new DGFEditCoincPatternPanel(fClient->GetRoot(), fStatCoincPatternEntry->GetEntry(),
 											DGFEditCoincPatternPanel::kFrameWidth, DGFEditCoincPatternPanel::kFrameHeight);
 							this->UpdateValue(kDGFInstrStatCoincPatternEntry,
 											gDGFControlData->GetSelectedModuleIndex(),
@@ -882,13 +878,23 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	Int_t chn;
 	TMrbString intStr, dblStr;
 	Int_t intVal;
+	Bool_t ok;
 
+	ok = kTRUE;
 	if (ReadFromDSP) {
 		dgfModule = gDGFControlData->FirstModule();
 		while (dgfModule) {
-			if (gDGFControlData->ModuleInUse(dgfModule)) this->ReadDSP(dgfModule, -1);
+			if (gDGFControlData->ModuleInUse(dgfModule)) {
+				if (!this->ReadDSP(dgfModule, -1)) ok = kFALSE;
+			}
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}
+	}
+	if (!ok) {
+		gMrbLog->Err()	<< "Can't read param memory from DSP (try to re-connect)" << endl;
+		gMrbLog->Flush(this->ClassName(), "InitializeValues", setblue);
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Can't read param memory from DSP (try to re-connect)", kMBIconStop);
+		return(kFALSE);
 	}
 	
 	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
@@ -982,23 +988,24 @@ Bool_t DGFInstrumentPanel::ReadDSP(DGFModule * Module, Int_t ChannelId) {
 
 	TMrbDGF * dgf;
 	Int_t chn;
+	Bool_t sts;
 
 	dgf = Module->GetAddr();
 	if (ChannelId == -1) {
 		cout	<< setblue
-			<< "DGFInstrumentPanel::ReadDSP(): Reading DSP for module "
-			<< dgf->GetName()
-			<< setblack << endl;
-		dgf->ReadParamMemory(kTRUE, kTRUE);
+				<< "DGFInstrumentPanel::ReadDSP(): Reading DSP for module "
+				<< dgf->GetName()
+				<< setblack << endl;
+		sts = dgf->ReadParamMemory(kTRUE, kTRUE);
 	} else {
 		chn = gDGFControlData->GetChannel(ChannelId);
 		cout	<< setblue
-			<< "DGFInstrumentPanel::ReadDSP(): Reading DSP for module "
-			<< dgf->GetName() << " (Channel " << chn << ")"
-			<< setblack << endl;
-		dgf->ReadParamMemory(chn);
+				<< "DGFInstrumentPanel::ReadDSP(): Reading DSP for module "
+				<< dgf->GetName() << " (Channel " << chn << ")"
+				<< setblack << endl;
+		sts = dgf->ReadParamMemory(chn);
 	}
-	return(kTRUE);
+	return(sts);
 }
 
 Bool_t DGFInstrumentPanel::WriteDSP(DGFModule * Module, Int_t ChannelId) {
@@ -1017,6 +1024,7 @@ Bool_t DGFInstrumentPanel::WriteDSP(DGFModule * Module, Int_t ChannelId) {
 
 	TMrbDGF * dgf;
 	Int_t chn;
+	Bool_t sts;
 
 	dgf = Module->GetAddr();
 	if (ChannelId == -1) {
@@ -1028,16 +1036,16 @@ Bool_t DGFInstrumentPanel::WriteDSP(DGFModule * Module, Int_t ChannelId) {
 		dgf->SetSynchWait(synchWait, kTRUE);
 		Bool_t inSynch = ((gDGFControlData->fStatus & DGFControlData::kDGFSyncClocks) != 0);
 		dgf->SetInSynch(inSynch, kTRUE);
-		dgf->WriteParamMemory();
+		sts = dgf->WriteParamMemory();
 	} else {
 		chn = gDGFControlData->GetChannel(ChannelId);
 		cout	<< setblue
 			<< "DGFInstrumentPanel::WriteDSP(): Updating DSP for module "
 			<< dgf->GetName() << " (Channel " << chn << ")"
 			<< setblack << endl;
-		dgf->WriteParamMemory(chn);
+		sts = dgf->WriteParamMemory(chn);
 	}
-	return(kTRUE);
+	return(sts);
 }
 
 Bool_t DGFInstrumentPanel::CopyModuleSettings() {
@@ -1064,7 +1072,7 @@ Bool_t DGFInstrumentPanel::CopyModuleSettings() {
 	Bool_t selectOk;
 	Bool_t isCopied;
 			
-	new DGFCopyModuleSettingsPanel(fClient->GetRoot(), this,
+	new DGFCopyModuleSettingsPanel(fClient->GetRoot(),
 								&infoFrom, &infoTo, gDGFControlData,
 								DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kFrameHeight);
 

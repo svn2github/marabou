@@ -41,13 +41,13 @@ using namespace std;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFOffsetsPanel
-// Purpose:        Transient frame to take untriggered traces
+// Purpose:        Main frame to take untriggered traces
 // Constructors:   
 // Description:    A dialog window to take untriggered traces
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFOffsetsPanel : public TGTransientFrame {
+class DGFOffsetsPanel : public TGMainFrame {
 
 	public:
 
@@ -70,11 +70,11 @@ class DGFOffsetsPanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFOffsetsPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFOffsetsPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFOffsetsPanel() { fHeap.Delete(); };
 
-		DGFOffsetsPanel(const DGFOffsetsPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFOffsetsPanel(const DGFOffsetsPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

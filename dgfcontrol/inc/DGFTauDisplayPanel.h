@@ -45,13 +45,13 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFTauDisplayPanel
-// Purpose:        Transient frame to calculate best tau value
+// Purpose:        Main frame to calculate best tau value
 // Constructors:   
 // Description:    A dialog window to enter module params
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFTauDisplayPanel : public TGTransientFrame {
+class DGFTauDisplayPanel : public TGMainFrame {
 
 	public:
 
@@ -102,11 +102,11 @@ class DGFTauDisplayPanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFTauDisplayPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFTauDisplayPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFTauDisplayPanel() { fHeap.Delete(); };
 
-		DGFTauDisplayPanel(const DGFTauDisplayPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFTauDisplayPanel(const DGFTauDisplayPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

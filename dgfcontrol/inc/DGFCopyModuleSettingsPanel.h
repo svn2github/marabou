@@ -40,14 +40,14 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFCopyModuleSettingsPanel
-// Purpose:        Transient frame to copy module settings
+// Purpose:        Main frame to copy module settings
 // Constructors:   
 // Methods:        ProcessMessage   -- process widget events
 // Description:    A dialog window to copy module settings
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFCopyModuleSettingsPanel : public TGTransientFrame {
+class DGFCopyModuleSettingsPanel : public TGMainFrame {
 
 	public:
 
@@ -91,13 +91,13 @@ class DGFCopyModuleSettingsPanel : public TGTransientFrame {
 		enum					{	kButtonHeight			= 20					};
 
 	public:
-		DGFCopyModuleSettingsPanel(const TGWindow * Parent, const TGWindow * Main,
+		DGFCopyModuleSettingsPanel(const TGWindow * Parent,
 											DGFControlInfo * InfoFrom, DGFControlInfo * InfoTo,
 											DGFControlData * Data,
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFCopyModuleSettingsPanel() { fHeap.Delete(); };
 
-		DGFCopyModuleSettingsPanel(const DGFCopyModuleSettingsPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFCopyModuleSettingsPanel(const DGFCopyModuleSettingsPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

@@ -33,14 +33,14 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFEditModICSRPanel
-// Purpose:        Transient frame to edit the ICS reg
+// Purpose:        Main frame to edit the ICS reg
 // Constructors:   
 // Methods:        ProcessMessage   -- process widget events
 // Description:    A dialog window to modify the module ICSR
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFEditModICSRPanel : public TGTransientFrame {
+class DGFEditModICSRPanel : public TGMainFrame {
 
 	public:
 
@@ -62,11 +62,11 @@ class DGFEditModICSRPanel : public TGTransientFrame {
 		enum					{	kButtonHeight			= 20					};
 
 	public:
-		DGFEditModICSRPanel(const TGWindow * Parent, const TGWindow * Main, TGTextEntry * Entry,
+		DGFEditModICSRPanel(const TGWindow * Parent, TGTextEntry * Entry,
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditModICSRPanel() { fHeap.Delete(); };
 
-		DGFEditModICSRPanel(const DGFEditModICSRPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFEditModICSRPanel(const DGFEditModICSRPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

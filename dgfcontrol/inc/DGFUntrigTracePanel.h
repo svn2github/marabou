@@ -41,13 +41,13 @@ using namespace std;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFUntrigTracePanel
-// Purpose:        Transient frame to take untriggered traces
+// Purpose:        Main frame to take untriggered traces
 // Constructors:   
 // Description:    A dialog window to take untriggered traces
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFUntrigTracePanel : public TGTransientFrame {
+class DGFUntrigTracePanel : public TGMainFrame {
 
 	public:
 
@@ -72,11 +72,11 @@ class DGFUntrigTracePanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFUntrigTracePanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFUntrigTracePanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFUntrigTracePanel() { fHeap.Delete(); };
 
-		DGFUntrigTracePanel(const DGFUntrigTracePanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFUntrigTracePanel(const DGFUntrigTracePanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

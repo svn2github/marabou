@@ -50,11 +50,11 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFCopyModuleSettingsPanel)
 
-DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window, const TGWindow * MainFrame,
+DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window, 
 												DGFControlInfo * InfoFrom, DGFControlInfo * InfoTo,
 												DGFControlData * Data,
 												UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFCopyModuleSettingsPanel
@@ -281,13 +281,6 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(const TGWindow * Window, 
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: Copy Module Settings");
 
 	MapSubwindows();

@@ -65,8 +65,8 @@ static TString btnText;
 
 ClassImp(DGFMcaDisplayPanel)
 
-DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGMainFrame(Window, Width, Height, Options) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFMcaDisplayPanel
@@ -275,13 +275,6 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, const TGWindow *
 	fKeyBindings.SetParent(this);
 	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
 	
-	Window_t wdum;
-	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
-								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
-								ax, ay, wdum);
-	Move(ax, ay);
-
 	SetWindowName("DGFControl: McaDisplayPanel");
 
 	MapSubwindows();

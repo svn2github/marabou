@@ -46,13 +46,13 @@
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFMcaDisplayPanel
-// Purpose:        Transient frame to accumulate & display histograms
+// Purpose:        Main frame to accumulate & display histograms
 // Constructors:   
 // Description:    
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFMcaDisplayPanel : public TGTransientFrame {
+class DGFMcaDisplayPanel : public TGMainFrame {
 
 	public:
 
@@ -88,11 +88,11 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 		enum					{	kButtonWidth			= 400					};
 
 	public:
-		DGFMcaDisplayPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+		DGFMcaDisplayPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
                 									UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFMcaDisplayPanel() { fHeap.Delete(); };
 
-		DGFMcaDisplayPanel(const DGFMcaDisplayPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+		DGFMcaDisplayPanel(const DGFMcaDisplayPanel & f) : TGMainFrame(f) {};	// default copy ctor
 
 		inline virtual void CloseWindow() { delete this; };
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };

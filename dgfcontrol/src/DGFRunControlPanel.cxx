@@ -406,7 +406,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFFileSave:
 							if (gDGFControlData->CheckIfStarted()) {
-								new DGFSaveModuleSettingsPanel(fClient->GetRoot(), this, DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
+								new DGFSaveModuleSettingsPanel(fClient->GetRoot(), DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -462,21 +462,21 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						// edit settings
 						case kDGFRunControlSettingsSystem:
-                    		new DGFSetupPanel(fClient->GetRoot(), this, DGFSetupPanel::kFrameWidth, DGFSetupPanel::kFrameHeight);
+                    		new DGFSetupPanel(fClient->GetRoot(), DGFSetupPanel::kFrameWidth, DGFSetupPanel::kFrameHeight);
 							break;
 						case kDGFRunControlSettingsFiles:
-                    		new DGFSetFilesPanel(fClient->GetRoot(), this, DGFSetFilesPanel::kFrameWidth, DGFSetFilesPanel::kFrameHeight);
+                    		new DGFSetFilesPanel(fClient->GetRoot(), DGFSetFilesPanel::kFrameWidth, DGFSetFilesPanel::kFrameHeight);
 							break;
 						case kDGFRunControlSettingsParams:
 							if (gDGFControlData->CheckIfStarted()) {
-                    			new DGFParamsPanel(fClient->GetRoot(), this, DGFParamsPanel::kFrameWidth, DGFParamsPanel::kFrameHeight);
+                    			new DGFParamsPanel(fClient->GetRoot(), DGFParamsPanel::kFrameWidth, DGFParamsPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlSettingsModules:
 							if (gDGFControlData->CheckIfStarted()) {
-                    			new DGFInstrumentPanel(fClient->GetRoot(), this, DGFInstrumentPanel::kFrameWidth, DGFInstrumentPanel::kFrameHeight);
+                    			new DGFInstrumentPanel(fClient->GetRoot(), DGFInstrumentPanel::kFrameWidth, DGFInstrumentPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -485,28 +485,28 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 						// calibrate
 						case kDGFRunControlCalibrateTauTrace:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFTauDisplayPanel(fClient->GetRoot(), this, DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kFrameHeight);
+	                   			new DGFTauDisplayPanel(fClient->GetRoot(), DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlCalibrateTrace:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFTraceDisplayPanel(fClient->GetRoot(), this, DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kFrameHeight);
+	                   			new DGFTraceDisplayPanel(fClient->GetRoot(), DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlCalibrateUntrigTrace:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFUntrigTracePanel(fClient->GetRoot(), this, DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kFrameHeight);
+	                   			new DGFUntrigTracePanel(fClient->GetRoot(), DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlCalibrateOffsets:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFOffsetsPanel(fClient->GetRoot(), this, DGFOffsetsPanel::kFrameWidth, DGFOffsetsPanel::kFrameHeight);
+	                   			new DGFOffsetsPanel(fClient->GetRoot(), DGFOffsetsPanel::kFrameWidth, DGFOffsetsPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -517,7 +517,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;
 						case kDGFRunControlRunMCA:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFMcaDisplayPanel(fClient->GetRoot(), this, DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight);
+	                   			new DGFMcaDisplayPanel(fClient->GetRoot(), DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -528,14 +528,14 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 						// database
 						case kDGFRunControlDatabaseSave:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFSaveModuleSettingsPanel(fClient->GetRoot(), this, DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
+	                   			new DGFSaveModuleSettingsPanel(fClient->GetRoot(), DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 						case kDGFRunControlDatabaseRestore:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFRestoreModuleSettingsPanel(fClient->GetRoot(), this, DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kFrameHeight);
+	                   			new DGFRestoreModuleSettingsPanel(fClient->GetRoot(), DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kFrameHeight);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -559,7 +559,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					break;
 				case TGMrbLofKeyBindings::kGMrbKeyActionSave:
 					if (gDGFControlData->CheckIfStarted()) {
-						new DGFSaveModuleSettingsPanel(fClient->GetRoot(), this, DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
+						new DGFSaveModuleSettingsPanel(fClient->GetRoot(), DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
 					} else {
 						new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 					}
