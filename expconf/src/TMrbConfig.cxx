@@ -6544,6 +6544,7 @@ Bool_t TMrbConfig::IsDefined(const Char_t * Name) const {
 	TMrbNamedX * nx = fLofDefines.FindByName(Name);
 	if (nx == NULL || nx->GetIndex() == 0)	return(kFALSE);
 	else									return(kTRUE);
+	return(kFALSE);
 }
 
 Bool_t TMrbConfig::IsDefined(const Char_t * Name, Int_t & Value) const {
@@ -6566,6 +6567,7 @@ Bool_t TMrbConfig::IsDefined(const Char_t * Name, Int_t & Value) const {
 	TString name = nx->GetName();
 	if (name.BeginsWith("Int_t")) return(kTRUE);
 	if (name.BeginsWith("Bool_t")) return(nx->GetIndex() != 0);
+	return(kFALSE);
 }
 
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {
