@@ -1,4 +1,4 @@
-#!/usr/local/bin/xrcm
+#!/share/local_rh9/bin/xrcm
 {
 	gROOT->Macro("LoadLibs.C");
 	gSystem->Load("$MARABOU/lib/libTMbsSetup.so");

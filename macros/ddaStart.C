@@ -1,4 +1,4 @@
-#!/usr/local/bin/xrcm
+#!/share/local_rh9/bin/xrcm
 
 {
 	gROOT->Macro("LoadUtilityLibs.C");
