@@ -172,6 +172,7 @@ class TMrbConfig : public TNamed {
 									kAnaHistoDefinePointers,
 									kAnaHistoInitializeArrays,
 									kAnaHistoBookUserDefined,
+									kAnaHistoFillArrays,
 									kAnaVarDefinePointers,
 									kAnaVarClassInstance,
 									kAnaVarArrDefinePointers,
@@ -623,16 +624,17 @@ class TMrbConfig : public TNamed {
 		void AddToTagList(const Char_t * CodeFile, Int_t TagIndex); 		// add file:tag to be processed once
 		Bool_t TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex);	// check if tag has already been processed
 
-		Bool_t BookHistogram(const Char_t * Type, const Char_t * Name, const Char_t * Title,
+		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
 									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
 
-		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * Type, const Char_t * Name, const Char_t * Title,
+		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
 									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
 									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
 
 
-		TMrbNamedX * FindHistoArray(const Char_t * HistoName);			// find array histo is to be assigned to
+		TMrbNamedX * AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName);
+		TMrbNamedX * FindHistoArray(const Char_t * HistoName, TMrbNamedX * After = NULL);	// find array histo is to be assigned to
 
 		inline Int_t GetNofModules() { return(fNofModules); };
 		Int_t GetNofModules(const Char_t * Pattern);
