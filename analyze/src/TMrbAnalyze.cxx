@@ -108,6 +108,10 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		fEventsProcPrev = 0;
 		fHistFileVersion = 0;
 		fReplayMode = kFALSE;
+		fWriteRootTree = kFALSE;
+		fRootFileOut = NULL;
+		fRootFileIn = NULL;
+		fFakeMode = kFALSE;
 
 		fLofIOSpecs.Delete();
 
@@ -527,7 +531,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Err()	<< "[" << ioSpec->GetInputFile() << "] Start event != 0" << endl;
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
-               this->WriteRootTree(ioSpec);
+                	this->WriteRootTree(ioSpec);
 					gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
 					if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 					else									gMrbTransport->CloseLMDFile();
@@ -4443,6 +4447,20 @@ TUsrEvent::TUsrEvent() {
 // Description:    Class constructor
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
+	fBranch = NULL;
+	fTreeOut = NULL;
+	fTreeIn = NULL;
+	fReplayMode = kFALSE;
+	fFakeMode = kFALSE;
+	fWriteTree = kFALSE;
+	fNofEntries = kFALSE;
+	fType = 0;
+	fSubtype = 0;
+	fTrigger = 0;
+	fEventNumber = 0;
+	fNofEvents = 0;
+	fScaleDown = 0;
 
 	fLofHBXs.Delete();
 	fLofSubevents.Delete();

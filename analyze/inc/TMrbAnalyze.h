@@ -866,7 +866,7 @@ class TMrbAnalyze : public TObject {
 		Int_t fEventsProcPrev; 		// event count of last update
 		Int_t fHistFileVersion;    // version number of (autosaved) hist file
 
-		TMapFile * fMapFile;		// share memory mmap file
+		TMapFile * fMapFile;		// shared memory mmap file
 		Int_t fMapFileSize;			// ... size
 
 		TList fLofIOSpecs;			// list of i/o specs
@@ -915,6 +915,11 @@ class TUsrEvent : public TObject {
 		inline TTree * GetTreeIn() const { return(fTreeIn); }; 	// return tree addr (input)
 		inline TTree * GetTreeOut() const { return(fTreeOut); }; 	// ... (output)
 
+		inline void WriteTree(const Bool_t WriteFlag = kTRUE) {
+			fWriteTree = (fTreeOut == NULL) ? kFALSE : WriteFlag;
+		};
+		inline Bool_t TreeToBeWritten() const { return(fWriteTree); };
+
 		inline void SetReplayMode(const Bool_t ReplayMode = kTRUE) {
 			fReplayMode = (fTreeIn == NULL) ? kFALSE : ReplayMode;
 		};
@@ -957,6 +962,7 @@ class TUsrEvent : public TObject {
 		TTree * fTreeIn;					// tree to read data from ROOT file
 		Bool_t fReplayMode; 				// kTRUE if replay mode on
 		Bool_t fFakeMode; 					// kTRUE if fake mode on
+		Bool_t fWriteTree;					// kTRUE if tree data should be written to file
 
 		Int_t fNofEntries; 					// number of entries in ROOT tree (replay mode only)
 
