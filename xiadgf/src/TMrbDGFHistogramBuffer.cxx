@@ -207,7 +207,7 @@ Bool_t TMrbDGFHistogramBuffer::FillHistogram(Int_t Channel, Bool_t DrawIt) {
 	}
 
 	hName = fModule->GetName();
-	hName += ".mca.chn"; hName += Channel;
+	hName += "_mca_chn"; hName += Channel;
 	hTitle = fModule->GetName();
 	hTitle += ": MCA histogram chn "; hTitle += Channel;
 	h = fHistogram[Channel];
@@ -271,7 +271,7 @@ Bool_t TMrbDGFHistogramBuffer::Save(const Char_t * McaFile, Int_t Channel) {
 					}
 				}
 				hName = fModule->GetName();
-				hName += ".mca.chn"; hName += chn;
+				hName += "_mca_chn"; hName += chn;
 				hTitle = "MCA histogram ";
 				hTitle += ((TMrbDGF *) fModule)->GetName();
 				hTitle += ", chn ";
