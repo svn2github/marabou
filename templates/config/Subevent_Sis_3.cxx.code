@@ -205,7 +205,7 @@ void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 // Name:           TUsrSevt%%SEVT_NAME_UC%%::Reset
 // Purpose:        Reset subevent data
 // Arguments:      Int_t InitValue   -- initialization value
-//                 Bool_t DataOnly    -- do not reset hit buffer
+//                 Bool_t DataOnly   -- do not reset hit buffer if kFALSE
 // Results:        --
 // Exceptions:     
 // Description:    Initializes subevent data (InitValue ignored!)

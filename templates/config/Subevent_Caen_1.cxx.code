@@ -339,12 +339,13 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %%EndOfCode%%
 %%SEVT_INITIALIZE_BRANCH%%
 
-void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue) {
+void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrSevt%%SEVT_NAME_UC%%::Reset
 // Purpose:        Reset subevent data
 // Arguments:      Int_t InitValue    -- initialization value
+//                 Bool_t DataOnly  -- reset data only if kTRUE (ignored)
 // Results:        --
 // Exceptions:     
 // Description:    Initializes subevent data with given value.

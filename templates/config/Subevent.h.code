@@ -28,7 +28,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TObject {
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 		Bool_t BookParams();					// book params
 %%BeginOfCode%%
-%R% 		void Reset(Int_t InitValue = $iniVal);		// reset param data
+%R% 		void Reset(Int_t InitValue = $iniVal, Bool_t DataOnly = kFALSE);		// reset param data
 %N% 		Bool_t BookHistograms();				// book histograms
 %N% 		Bool_t FillHistograms();				// fill histograms
 %P% 		Bool_t Book$evtNameUCHistograms();		// book private histos for event $evtNameLC

@@ -506,12 +506,13 @@ Bool_t TUsrEvt$evtNameUC::Analyze() {
 %%EndOfCode%%
 %%EVT_FILL_HISTOGRAMS%%
 
-void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue) {
+void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrSevt%%EVT_NAME_UC%%::Reset
 // Purpose:        Reset event data
 // Arguments:      Int_t InitValue  -- initialization value
+//                 Bool_t DataOnly  -- reset data only if kTRUE
 // Results:        --
 // Exceptions:     
 // Description:    Resets all subevents assigned to this event.
@@ -519,7 +520,7 @@ void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue) {
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-%S%	$sevtNameLC.Reset(InitValue);	// reset param data in subevent $sevtNameLC
+%S%	$sevtNameLC.Reset(InitValue, DataOnly);	// reset param data in subevent $sevtNameLC
 %R% 	gMrbAnalyze->ResetModuleHits();
 %%EndOfCode%%
 %%EVT_RESET_DATA%%
