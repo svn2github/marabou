@@ -676,13 +676,16 @@ class TMrbConfig : public TNamed {
 		Bool_t TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) const;	// check if tag has already been processed
 
 		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
-									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
-									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
-
+									Int_t Xbin, Double_t Xlow, Double_t Xup);
 		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
-									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
-									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
+									Int_t Xbin, Double_t Xlow, Double_t Xup);
 
+		Bool_t BookHistogram(const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+									Int_t Xbin, Double_t Xlow, Double_t Xup,
+									Int_t Ybin, Double_t Ylow, Double_t Yup);
+		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * HistoType, const Char_t * HistoName, const Char_t * HistoTitle,
+									Int_t Xbin, Double_t Xlow, Double_t Xup,
+									Int_t Ybin, Double_t Ylow, Double_t Yup);
 
 		TMrbNamedX * AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName);
 		TMrbNamedX * FindHistoArray(const Char_t * HistoName, TMrbNamedX * After = NULL) const;	// find array histo is to be assigned to
