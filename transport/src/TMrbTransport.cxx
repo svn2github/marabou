@@ -6,10 +6,6 @@
 //
 // Description:    Implements class methods to read MBS data from file or server
 //
-// Header files:   stdio.h         -- standard I/O
-//                 errno.h         -- error codes
-//                 iostream.h      -- C++ standard I/O
-//                 TMrbTransport.h -- MARaBOU class definitions
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 // Revision:       
