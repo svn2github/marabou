@@ -36,7 +36,7 @@ extern TMrbLogger * gMrbLog;
 ClassImp(TMrbNE_9041)
 
 TMrbNE_9041::TMrbNE_9041(const Char_t * ModuleName, const Char_t * ModulePosition) :
-                                         TMrbCamacModule(ModuleName, "NE_9041", ModulePosition, 0, 10, 0) {
+                                         TMrbCamacModule(ModuleName, "NE_9041", ModulePosition, 0, 10, 1024) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbNE_9041
