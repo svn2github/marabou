@@ -105,6 +105,9 @@ class TMrbModule : public TNamed {
 		inline Int_t GetCrate() { return(fCrate); };							// return crate number
 		inline Int_t GetSerial() { return(fSerial); };  	 					// return unique module id
 
+		inline void SetTimeOffset(Int_t TimeOffset) { fTimeOffset = TimeOffset; };	// time offset
+		inline Int_t GetTimeOffset() { return(fTimeOffset); };
+
 		inline Bool_t CheckID(TMrbConfig::EMrbModuleID ModuleID) { return(fModuleID.GetIndex() == ModuleID); };
 		
 		inline Int_t GetNofShortsPerChannel() { return(fNofShortsPerChannel); };	// 16 bit words per channel
@@ -167,6 +170,8 @@ class TMrbModule : public TNamed {
 		Int_t fBinSize;							// bin size
 		Int_t fBinRange;						// number of bins
 		Int_t fSubDevice;						// subdevice
+
+		Int_t fTimeOffset;						// time offset
 
 		Bool_t fBlockReadout;					// kTRUE if block readout;
 

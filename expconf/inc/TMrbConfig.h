@@ -105,6 +105,7 @@ class TMrbConfig : public TNamed {
 									kAnaClassImp,
 									kAnaMakeClassNames,
 									kAnaInitializeLists,
+									kAnaModuleTimeOffset,
 									kAnaAddUserEnv,
 									kAnaFindVars,
 									kAnaEventClassDef,
@@ -633,6 +634,7 @@ class TMrbConfig : public TNamed {
 
 
 		inline Int_t GetNofModules() { return(fNofModules); };
+		Int_t GetNofModules(const Char_t * Pattern);
 		
 		inline TMrbLofNamedX * GetLofEvents() { return(&fLofEvents); };		// get address of ...
 		inline TMrbLofNamedX * GetLofSubevents() { return(&fLofSubevents); };
@@ -642,26 +644,39 @@ class TMrbConfig : public TNamed {
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
 		inline TMrbLofNamedX * GetLofHistoTypes() { return(&fLofHistoTypes); };
+		inline TMrbLofNamedX * GetLofGlobals() { return(&fLofGlobals); };
 
 		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName);	// check if name is legal within MARaBOU
+
+		inline void MakeGlobal(const Char_t * Name, Int_t * IntVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Int_t *", (TObject *) IntVar)); };
+		inline void MakeGlobal(const Char_t * Name, Float_t * FloatVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Float_t *", (TObject *) FloatVar)); };
+		inline void MakeGlobal(const Char_t * Name, Double_t * DblVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Double_t *", (TObject *) DblVar)); };
+		inline void MakeGlobal(const Char_t * Name, Bool_t * BoolVar) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Bool_t *", (TObject *) BoolVar)); };
+		inline void MakeGlobal(const Char_t * Name, const Char_t * Str) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Char_t *", (TObject *) Str)); };
+		inline void MakeGlobal(const Char_t * Name, TString & Str) { fLofGlobals.AddNamedX(new TMrbNamedX(0, Name, "Char_t *", (TObject *) Str.Data())); };
+		Bool_t GetGlobal(const Char_t * Name, Int_t & IntVar);
+		Bool_t GetGlobal(const Char_t * Name, Float_t & FloatVar);
+		Bool_t GetGlobal(const Char_t * Name, Double_t & DblVar);
+		Bool_t GetGlobal(const Char_t * Name, Bool_t & BoolVar);
+		Bool_t GetGlobal(const Char_t * Name, TString & Str);
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
 
 	public: 									// public lists of key words:
-		TMrbLofNamedX fLofDataTypes;			// ... data types
-		TMrbLofNamedX fLofCrateTypes;			// ... crate types
-		TMrbLofNamedX fLofControllerTypes;		// ... camac controllers
-		TMrbLofNamedX fLofModuleTypes;			// ... module types
-		TMrbLofNamedX fLofReadoutTags;			// ... readout tags
-		TMrbLofNamedX fLofAnalyzeTags;			// ... analyze tags
-		TMrbLofNamedX fLofConfigTags;			// ... config tags
-		TMrbLofNamedX fLofRcFileTags;			// ... rc file tags
-		TMrbLofNamedX fLofUserMacroTags;		// ... user macro tags
-		TMrbLofNamedX fCNAFNames;				// ... cnaf key words
-		TMrbLofNamedX fLofModuleTags;			// ... camac tags
-		TMrbLofNamedX fLofModuleIDs;			// ... camac modules available
-		TMrbLofNamedX fLofHistoTypes;			// ... histogram types
-
+		TMrbLofNamedX fLofDataTypes;			//! ... data types
+		TMrbLofNamedX fLofCrateTypes;			//! ... crate types
+		TMrbLofNamedX fLofControllerTypes;		//! ... camac controllers
+		TMrbLofNamedX fLofModuleTypes;			//! ... module types
+		TMrbLofNamedX fLofReadoutTags;			//! ... readout tags
+		TMrbLofNamedX fLofAnalyzeTags;			//! ... analyze tags
+		TMrbLofNamedX fLofConfigTags;			//! ... config tags
+		TMrbLofNamedX fLofRcFileTags;			//! ... rc file tags
+		TMrbLofNamedX fLofUserMacroTags;		//! ... user macro tags
+		TMrbLofNamedX fCNAFNames;				//! ... cnaf key words
+		TMrbLofNamedX fLofModuleTags;			//! ... camac tags
+		TMrbLofNamedX fLofModuleIDs;			//! ... camac modules available
+		TMrbLofNamedX fLofHistoTypes;			//! ... histogram types
+		TMrbLofNamedX fLofGlobals;				//! list of global vars
 	protected:
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
 		

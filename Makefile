@@ -24,8 +24,8 @@ MODULES       = build utils gutils \
 				expconf analyze \
                 macrobrowser helpbrowser hpr c_analyze \
 				camcli esone mbssetup mbsio transport \
-				xiadgf dgfcontrol
-##				snake polar
+				xiadgf dgfcontrol \
+				snake polar
 
 ##### ROOT libraries #####
 
