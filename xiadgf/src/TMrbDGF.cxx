@@ -3164,10 +3164,8 @@ Int_t TMrbDGF::SetGain(Int_t Channel, Double_t Gain, Bool_t UpdateDSP) {
 
 //	if (Gain < 0.01) return(32768); 	// gain negative?
 	if (Gain < 0.1639) Gain = 0.1639;
-	cout << "@@ 1.SetGain Gain=" << Gain << endl;
 	dacVal = 65535 - 32768 * log10(Gain / 0.1639);
 	idacVal = (Int_t) (dacVal + 0.5);
-	cout << "@@ 2.SetGain DAC (dbl)=" << dacVal << " (int)=" << idacVal << endl;
 
 	this->SetParValue(Channel, "GAINDAC", idacVal, UpdateDSP);
 	return(idacVal);
@@ -3192,9 +3190,7 @@ Double_t TMrbDGF::GetGain(Int_t Channel, Bool_t ReadFromDSP) {
 	if (!this->CheckChannel("GetGain", Channel)) return(-1);
 
 	gainVal = (Double_t) (65535 - this->GetParValue(Channel, "GAINDAC", ReadFromDSP)) / 32768;
-	cout << "@@ 1.GetGain Gain=" << gainVal << endl;
 	gainVal = 0.1639 * pow(10, gainVal);
-	cout << "@@ 2.GetGain Gain=" << gainVal << endl;
 	return(gainVal);
 }
 

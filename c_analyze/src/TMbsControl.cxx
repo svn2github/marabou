@@ -1,5 +1,6 @@
 #include "TMbsControl.h"
 #include "TSystem.h"
+#include "TEnv.h"
 
 static const char sepline[] =
 "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~";
@@ -250,8 +251,9 @@ Bool_t  TMbsControl::StartMbs(){
    cout << setmagenta<< rshCmd << setblack<< endl;
    gSystem->Exec(rshCmd.Data());
    gSystem->Sleep(2000);      // wait 2 seconds
-   cout << setblue<< "c_mbs: Connecting prompter, (max 10 sec) " << endl;
-   if(!ConnectPrompter(10)) {cout << setred<< " failed !!!!!!!! " << setblack<< endl; return kFALSE;};
+   Int_t SecsToWait = gEnv->GetValue("TMrbAnalyze.WaitForPrompter", 10);
+	cout << setblue<< "c_mbs: Connecting prompter, (max " << SecsToWait << " sec) " << endl;
+   if(!ConnectPrompter(SecsToWait)) {cout << setred<< " failed !!!!!!!! " << setblack<< endl; return kFALSE;};
    cout << setgreen<< " succeeded "<< setblack << endl;
    if(GetMbsNodes() < 1) return kFALSE;
 //   cout << "c_mbs: Status: " << Status << endl;
