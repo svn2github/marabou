@@ -4,6 +4,7 @@
 #include <iostream>
 #include <sstream>
 #include "TROOT.h"
+#include "TQObject.h"
 #include "TEnv.h"
 #include "TSystem.h"
 #include "TDirectory.h"
@@ -64,6 +65,7 @@
 #include "TMrbVarWdwCommon.h"
 #include "TMrbNamedArray.h"
 #include "TMrbArrayD.h"
+#include "TGMrbSliders.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -3130,4 +3132,121 @@ void FitHist::ColorMarked()
    }
    cHist->Modified();
    cHist->Update();
+}
+//___________________________________________________________________________________________
+
+void FitHist::SetBrightness(TGWindow * win)
+{
+   TOrdCollection * lab = new TOrdCollection();
+   lab->Add(new TObjString("red"));
+   lab->Add(new TObjString("green"));
+   lab->Add(new TObjString("blue"));
+   static Int_t val[3];
+   static Int_t max[3];
+   static Int_t min[3];
+   min[0] = 0;
+   min[1] = 0;
+   min[2] = 0;
+   max[0] = 200;
+   max[1] = 200;
+   max[2] = 200;
+
+   val[0] = (Int_t)(100 * hp->fEnhenceRed);
+   val[1] = (Int_t)(100 * hp->fEnhenceGreen);
+   val[2] = (Int_t)(100 * hp->fEnhenceBlue);
+
+   Int_t ret;
+   Int_t id  = 1;
+   TGMrbSliders * sl = new TGMrbSliders("Set Brightness", min, max, val, lab, 3, 
+   id, &ret, mycanvas);
+   sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
+               "AdjustBrightness(Int_t, Int_t, Int_t)");
+//   this->Connect("AdjustBrightness(Int_t, Int_t, Int_t)", "TGMrbSliders", sl, 
+//                 "SliderEvent(Int_t, Int_t, Int_t)");
+}
+//___________________________________________________________________________________________
+
+void FitHist::AdjustBrightness(Int_t id, Int_t row , Int_t val)
+{
+//   cout << "AdjustBrightness: " << id << " " << row << " " << val << endl;
+   switch (row) {
+      case 0:
+        hp->fEnhenceRed   = (Float_t)val / 100.;
+        break;
+      case 1:
+        hp->fEnhenceGreen = (Float_t)val / 100.;
+        break;
+      case 2:
+        hp->fEnhenceBlue  = (Float_t)val / 100.;
+        break;
+      default:
+         return;
+   }
+//   cout << "AdjustBrightness: " <<hp->fEnhenceRed  
+//        << " " << hp->fEnhenceGreen << " " << hp->fEnhenceBlue << endl; 
+   hp->SetTransLevelsRGB();
+   hp->SetColorPalette();
+   this->UpdateCanvas();
+}
+//___________________________________________________________________________________________
+
+void FitHist::SetHLS(TGWindow * win)
+{
+   static const Int_t NVAL = 4;
+   TOrdCollection * lab = new TOrdCollection();
+   lab->Add(new TObjString("Hue Start"));
+   lab->Add(new TObjString("Hue End"));
+   lab->Add(new TObjString("Lightness"));
+   lab->Add(new TObjString("Saturation"));
+   static Int_t val[NVAL];
+   static Int_t max[NVAL];
+   static Int_t min[NVAL];
+   min[0] = 0;
+   min[1] = 0;
+   min[0] = 0;
+   min[1] = 0;
+   max[0] = 360;
+   max[1] = 360;
+   max[2] = 100;
+   max[3] = 100;
+   val[0] = (Int_t)hp->fStartHue;
+   val[1] = (Int_t)hp->fEndHue;
+   val[2] = (Int_t)(100 * hp->fLightness);
+   val[3] = (Int_t)(100 * hp->fSaturation);
+
+   Int_t ret;
+   Int_t id  = 1;
+   TGMrbSliders * sl = new TGMrbSliders("Set HLS", min, max, val, lab, NVAL, 
+   id, &ret, mycanvas);
+   sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
+               "AdjustHLS(Int_t, Int_t, Int_t)");
+//   this->Connect("AdjustBrightness(Int_t, Int_t, Int_t)", "TGMrbSliders", sl, 
+//                 "SliderEvent(Int_t, Int_t, Int_t)");
+}
+//___________________________________________________________________________________________
+
+void FitHist::AdjustHLS(Int_t id, Int_t row , Int_t val)
+{
+//   cout << "AdjustBrightness: " << id << " " << row << " " << val << endl;
+   switch (row) {
+      case 0:
+        hp->fStartHue = val;
+        break;
+      case 1:
+        hp->fEndHue = val;
+        break;
+      case 2:
+        hp->fLightness  = (Float_t)val / 100.;
+        break;
+      case 3:
+        hp->fSaturation = (Float_t)val / 100.;
+        break;
+      default:
+         return;
+   }
+//   cout << "AdjustBrightness: " <<hp->fEnhenceRed  
+//        << " " << hp->fEnhenceGreen << " " << hp->fEnhenceBlue << endl; 
+   hp->SetTransLevelsHLS();
+   hp->SetColorPalette();
+   this->UpdateCanvas();
 }

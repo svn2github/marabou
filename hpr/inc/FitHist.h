@@ -263,6 +263,10 @@ public:
       fTofLabels = 0;
    }
 	void DrawSelectedFunctions();
+   void SetBrightness(TGWindow * win);
+   void AdjustBrightness(Int_t id, Int_t row , Int_t val); // *SIGNAL*
+   void SetHLS(TGWindow * win);
+   void AdjustHLS(Int_t id, Int_t row , Int_t val); // *SIGNAL*
   ClassDef(FitHist,0)      // A histogram presenter
 };
 #endif

@@ -2,6 +2,7 @@
 #define HPR_HPR
 //#define MAXHIST 10
 #include "TROOT.h"
+#include "TQObject.h"
 #include "TArrayI.h"
 #include "TArrayF.h"
 #include <TH1.h>
@@ -26,7 +27,7 @@ enum e_HsOp {kHsOp_None, kHsOp_And, kHsOp_Or, kHsOp_Not};
 const Int_t MAXCAN=10;
 class FitHist;
  
-class HistPresent : public TNamed {
+class HistPresent : public TNamed , public TQObject {
 
 friend class FitHist;
 friend class HTCanvas;
@@ -137,12 +138,17 @@ protected:
    Int_t * fPalette;
 
    Int_t   fNofTransLevels;
-   Int_t * fTransPalette;
+   Int_t * fTransPaletteRGB;
+   Int_t * fTransPaletteHLS;
    Int_t   fStartColor;
    Int_t   fEndColor;
    Float_t fEnhenceRed;
    Float_t fEnhenceGreen;
    Float_t fEnhenceBlue;
+   Int_t   fStartHue;
+   Int_t   fEndHue;
+   Float_t fLightness;
+   Float_t fSaturation;
 
    Int_t   fNofGreyLevels;
    Int_t * fGreyPalette;
@@ -335,7 +341,8 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SetStatAtt();
    void SetAxisAtt();
    void SetGreyLevels();
-   void SetTransLevels();
+   void SetTransLevelsRGB();
+   void SetTransLevelsHLS();
    void SetColorPalette();
    void SetCurlyAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
@@ -349,6 +356,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SetDisplayOptions(TGWindow * win = 0, FitHist * fh = 0);  
    void Set1DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
    void Set2DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
+   void Set2DimColorOpt(TGWindow * win = 0, FitHist * fh = 0);  
    void SetGraphOptions(TGWindow * win = 0, TCanvas * ca = 0);  
    void SetVariousOptions(TGWindow * win = 0, FitHist * fh = 0);
    void SetWindowSizes(TGWindow * win = 0, FitHist * fh = 0);

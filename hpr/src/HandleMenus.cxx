@@ -88,11 +88,14 @@ enum ERootCanvasCommands {
    kOptionDisp,
    kOption1Dim,
    kOption2Dim,
+   kOption2DimCol,
    kOptionGraph,
    kOptionHpr,
    kOptionNum,
    kOptionWin,
    kOptionCol,
+   kOptionBright,
+   kOptionHLS,
    kFHMarks,
    kFHMarkon,
    kFHMarkoff,
@@ -609,6 +612,16 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      }
                      }
                      break;
+                  case kOption2DimCol:
+                     {
+                     if(fHistPresent){
+                        fHistPresent->Set2DimColorOpt(fRootCanvas, fFitHist);
+                        if(fFitHist){
+                           fFitHist->UpdateCanvas();
+                        }
+                     }
+                     }
+                     break;
                   case kOptionGraph:
                      {
                      if(fHistPresent){
@@ -645,6 +658,20 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      if(fHistPresent){
                         fHistPresent->SetFontsAndColors(fRootCanvas, fFitHist);
                         if(fFitHist)fFitHist->UpdateCanvas();
+                     }
+                     }
+                     break;
+                  case kOptionBright:
+                     {
+                     if(fFitHist && fHistPresent){
+                        fFitHist->SetBrightness(fRootCanvas);
+                     }
+                     }
+                     break;
+                  case kOptionHLS:
+                     {
+                     if(fFitHist && fHistPresent){
+                        fFitHist->SetHLS(fRootCanvas);
                      }
                      }
                      break;
@@ -1293,12 +1320,16 @@ void HandleMenus::BuildMenus()
    fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
    if(!fFitHist || !(fFitHist->Its2dim()))
       fOptionMenu->AddEntry("How to display a 1-dim histgram", kOption1Dim);
-   if(!fFitHist || fFitHist->Its2dim())
-      fOptionMenu->AddEntry("How to display a 2-dim histgram", kOption2Dim);
+   if(!fFitHist || fFitHist->Its2dim()){
+      fOptionMenu->AddEntry("Display mode of 2-dim histgram ", kOption2Dim);
+      fOptionMenu->AddEntry("Color mode of 2-dim histgram", kOption2DimCol);
+   }
    fOptionMenu->AddEntry("How to display a graph", kOptionGraph);
    fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
    fOptionMenu->AddEntry("HistPresent Numerical Options", kOptionNum);
    fOptionMenu->AddEntry("Default window sizes", kOptionWin);
+   fOptionMenu->AddEntry("Brightness of rgb", kOptionBright);
+   fOptionMenu->AddEntry("Lightness+Saturation (HLS)", kOptionHLS);
    fOptionMenu->AddEntry("Default colors and fonts", kOptionCol);
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenu->AddEntry("Histogram / function", kOptionHist);
@@ -1421,15 +1452,6 @@ void HandleMenus::BuildMenus()
       	fDisplayMenu->AddSeparator();
 	//      fDisplayMenu->AddEntry("Help",  kFH_Help_ShowSelected);
    	}
-/*
-   	fDisplayMenu->AddSeparator();
-   	fDisplayMenu->AddEntry("Show Colors",             kViewColors);
-   	fDisplayMenu->AddEntry("Show Fonts",              kViewFonts);
-      fDisplayMenu->AddEntry("Show Markers",            kViewMarkers);
-      fDisplayMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
-      fDisplayMenu->AddEntry("Show Line Attr",          kViewLineStyles);
-   	fDisplayMenu->AddEntry("Graph Editor",            kEditEditor);
-*/
    }
    if(fh_menus){
       fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());

@@ -294,6 +294,10 @@ void HistPresent::RestoreOptions()
    fEnhenceRed       = env.GetValue("HistPresent.EnhenceRed", 1.);
    fEnhenceGreen     = env.GetValue("HistPresent.EnhenceGreen", 1.);
    fEnhenceBlue      = env.GetValue("HistPresent.EnhenceBlue", 1.);
+   fStartHue         = env.GetValue("HistPresent.StartHue", 120);
+   fEndHue           = env.GetValue("HistPresent.EndHue", 1);
+   fLightness        = env.GetValue("HistPresent.Lightness", 0.5);
+   fSaturation       = env.GetValue("HistPresent.Saturation ", 1.);
 
    f2DimBackgroundColor =
        env.GetValue("HistPresent.2DimBackgroundColor", 0);
@@ -443,10 +447,12 @@ void HistPresent::RestoreOptions()
       fHelpBrowser = NULL;
    fGreyPalette = NULL;
    fGreyPaletteInv = NULL;
-   fTransPalette = NULL;
+   fTransPaletteRGB = NULL;
+   fTransPaletteHLS = NULL;
    fNofGreyLevels = 20;
    SetGreyLevels();
-   SetTransLevels();
+   SetTransLevelsRGB();
+   SetTransLevelsHLS();
    SetColorPalette();
 //   CheckAutoExecFiles();
 //
@@ -507,6 +513,10 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.EnhenceRed",fEnhenceRed);
    env.SetValue("HistPresent.EnhenceGreen",fEnhenceGreen);
    env.SetValue("HistPresent.EnhenceBlue",fEnhenceBlue);
+   env.SetValue("HistPresent.StartHue",fStartHue);
+   env.SetValue("HistPresent.EndHue",fEndHue);
+   env.SetValue("HistPresent.Lightness", fLightness);
+   env.SetValue("HistPresent.Saturation",fSaturation);
    env.SetValue("HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
    env.SetValue("HistPresent.1DimFillColor", f1DimFillColor);
    env.SetValue("HistPresent.StatBoxFont", fStatFont);
@@ -1550,18 +1560,19 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
 //_______________________________________________________________________
 void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 {
-   const Int_t nopt = 25;
+   const Int_t nopt = 21;
    enum drawopt2 { e_scat,  e_box,   e_cont0, e_contz, e_cont1,
                    e_cont2, e_cont3, e_col,   e_colz,  e_lego1, 
                    e_lego2, e_lego3, e_surf1, e_surf2, e_surf3, 
-                   e_surf4, e_text,  e_arr, e_fb, e_bb, e_livestat
+                   e_surf4, e_text,  e_arr,   e_fb,    e_bb, 
+                   e_livestat
    };
    const char *cdrawopt2[] =
        { "scat",  "box",   "cont0", "contz", "cont1", 
          "cont2", "cont3", "col",   "COLZ",  "lego1", 
          "lego2", "lego3", "surf1", "surf2", "surf3", 
-         "surf4", "text",  "arr", 
-         "BB", "FB", "TRANS", "MONO", "MINV", "REGB", "LBOX"
+         "surf4", "text",  "arr",   "BB",    "FB", 
+         "LBOX"
    };
    const char *gDrawOpt2Text[] = {
       "Scatter pixels",
@@ -1583,12 +1594,8 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       "Numbers",
       "Arrows indicating gradient",
 
-      "Dont show back box",
-      "Dont show front box",
-      "Color transition",
-      "Grey levels, highest=white",
-      "Grey levels, highest=black",
-      "Rainbow colors",
+      "Dont show back box (LEGO)",
+      "Dont show front box (LEGO)",
       "Show live statbox when dragging mouse"
    };
    TArrayI flags(nopt);
@@ -1600,14 +1607,6 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
          flags[i] = 0;
       svalues->Add(new TObjString(gDrawOpt2Text[i]));
    }
-   if (f2DimColorPalette->Contains("REGB"))
-      flags[nopt - 2] = 1;
-   else if (f2DimColorPalette->Contains("MINV"))
-      flags[nopt - 3] = 1;
-   else if (f2DimColorPalette->Contains("MONO"))
-      flags[nopt - 4] = 1;
-   else if (f2DimColorPalette->Contains("TRANS"))
-      flags[nopt - 5] = 1;
    flags[nopt - 1] = fLiveStat2dim;
    Int_t retval;
    Int_t itemwidth = 240;
@@ -1615,12 +1614,12 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
    						  "How to show a 2dim hist",
    						  itemwidth, 1, nopt,
    						  svalues, 0, 0, &flags,
-   						  nopt - 6);
+   						  nopt - 3);
    if (retval < 0) {
 //      cout << "canceled" << endl;
       return;
    }
-   for (Int_t i = 0; i < nopt - 6; i++) {
+   for (Int_t i = 0; i < nopt - 3; i++) {
       if (flags[i] != 0)
          *fDrawOpt2Dim = cdrawopt2[i];
    }
@@ -1632,24 +1631,12 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
        sopt.Contains("LEGO", TString::kIgnoreCase)) {
        cout << " sopt " << sopt << endl;
 
-      if (flags[nopt - 6] != 0)
+      if (flags[nopt - 3] != 0)
          *fDrawOpt2Dim += "BB";
-      if (flags[nopt - 5] != 0)
+      if (flags[nopt - 2] != 0)
          *fDrawOpt2Dim += "FB";
    }
 
-   if (flags[nopt - 5] != 0) {
-      *f2DimColorPalette = "TRANS";
-   } else if (flags[nopt - 4] != 0) {
-      *f2DimColorPalette = "MONO";
-   } else if (flags[nopt - 3] != 0) {
-      *f2DimColorPalette = "MINV";
-   } else if (flags[nopt - 2] != 0) {
-      *f2DimColorPalette = "REGB";
-   } else {
-      *f2DimColorPalette = "DEFA";
-   }
-   SetColorPalette();
 
    if (fh) {
       fh->SetSelectedPad();
@@ -1657,6 +1644,51 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       fh->GetSelHist()->SetOption(fDrawOpt2Dim->Data());
       fh->GetSelHist()->SetDrawOption(fDrawOpt2Dim->Data());
    }
+   SaveOptions();
+}
+
+//_______________________________________________________________________
+
+void HistPresent::Set2DimColorOpt(TGWindow * win, FitHist * fh)
+{
+   const Int_t nopt = 5;
+   enum drawopt2 {e_trgb, e_thls, e_mono, e_minv, e_regb};
+   const char *cdrawopt2[] =
+       { "TRANSRGB", "TRANSHLS", "MONO", "MINV", "REGB"};
+   const char *gDrawOpt2Text[] = {
+      "Color transition RGB",
+      "Color transition HLS",
+      "Grey levels, highest=white",
+      "Grey levels, highest=black",
+      "Rainbow colors"
+   };
+   TArrayI flags(nopt);
+   TOrdCollection *svalues = new TOrdCollection();
+   for (Int_t i = 0; i < nopt; i++) {
+      if (f2DimColorPalette->Contains(cdrawopt2[i]))
+         flags[i] = 1;
+      else
+         flags[i] = 0;
+      svalues->Add(new TObjString(gDrawOpt2Text[i]));
+   }
+   Int_t retval;
+   Int_t itemwidth = 240;
+   new TGMrbTableFrame(win, &retval,
+   						  "Color mode for 2dim hist",
+   						  itemwidth, 1, nopt,
+   						  svalues, 0, 0, &flags,
+   						  nopt);
+   if (retval < 0) {
+//      cout << "canceled" << endl;
+      return;
+   }
+   *f2DimColorPalette = "DEFA"; 
+   for (Int_t i = 0; i < nopt; i++) {
+      if (flags[i] != 0)
+         *f2DimColorPalette = cdrawopt2[i];
+   }
+
+   SetColorPalette();
    SaveOptions();
 }
 
@@ -2189,7 +2221,7 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 10;
+   Int_t nopt = 14;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
@@ -2198,9 +2230,14 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Nof transition levels"));
    row_lab->Add(new TObjString("Color transition start"));
    row_lab->Add(new TObjString("Color transition end"));
-   row_lab->Add(new TObjString("Enhence red (gamma)"));
-   row_lab->Add(new TObjString("Enhence green (gamma)"));
-   row_lab->Add(new TObjString("Enhence blue (gamma)"));
+   row_lab->Add(new TObjString("Enhence red (RGB)"));
+   row_lab->Add(new TObjString("Enhence green (RGB)"));
+   row_lab->Add(new TObjString("Enhence blue (RGB)"));
+
+   row_lab->Add(new TObjString("Start Hue (HLS)"));
+   row_lab->Add(new TObjString("End Hue (HLS)"));
+   row_lab->Add(new TObjString("Lightness (HLS)"));
+   row_lab->Add(new TObjString("Saturation (HLS)"));
    row_lab->Add(new TObjString("1_Dim_FillColor"));
    row_lab->Add(new TObjString("2_Dim_BackgroundColor"));
    row_lab->Add(new TObjString("StatBox font"));
@@ -2212,6 +2249,10 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
    values[vp++] = fEnhenceRed;
    values[vp++] = fEnhenceGreen;
    values[vp++] = fEnhenceBlue;
+   values[vp++] = fStartHue;
+   values[vp++] = fEndHue;
+   values[vp++] = fLightness;
+   values[vp++] = fSaturation;
    values[vp++] = f1DimFillColor;
    values[vp++] = f2DimBackgroundColor;
    values[vp++] = fStatFont;
@@ -2236,7 +2277,20 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
          fEnhenceRed   = er;
          fEnhenceGreen = eg;
          fEnhenceBlue  = eb;
-         SetTransLevels();
+         SetTransLevelsRGB();
+         SetColorPalette();
+      }
+      Int_t sh = (Int_t) values[vp++];
+      Int_t eh = (Int_t) values[vp++];
+      Float_t li = values[vp++];
+      Float_t sa = values[vp++];
+      if (sh != fStartHue || eh != fEndHue || tl != fNofTransLevels
+          || li != fLightness || sa != fSaturation) {
+         fStartHue = sh;
+         fEndHue   = eh;
+         fLightness = li;
+         fSaturation = sa;
+         SetTransLevelsHLS();
          SetColorPalette();
       }
 
@@ -2295,11 +2349,47 @@ void HistPresent::SetGreyLevels()
 }
 //___________________________________________________________________________________________
 
-void HistPresent::SetTransLevels()
+void HistPresent::SetColorPalette()
+{
+   if (f2DimColorPalette->Contains("MONO")) {
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPalette;
+      fStartColorIndex = 301;
+   } else if (f2DimColorPalette->Contains("MINV")) {
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPaletteInv;
+      fStartColorIndex = 331;
+   } else if (f2DimColorPalette->Contains("TRANSRGB")) {
+      fNofColorLevels = fNofTransLevels;
+      fPalette = fTransPaletteRGB;
+      fStartColorIndex = 361;
+   } else if (f2DimColorPalette->Contains("TRANSHLS")) {
+      fNofColorLevels = fNofTransLevels;
+      fPalette = fTransPaletteHLS;
+      fStartColorIndex = 391;
+   } else if (f2DimColorPalette->Contains("REGB")) {
+      fNofColorLevels = 50;
+      fStartColorIndex = 51;
+      fPalette = NULL;
+   } else {
+      fNofColorLevels = 50;
+      fPalette = NULL;
+      fStartColorIndex = 1;
+   }
+//   cout << "SetColorPalette: " << *f2DimColorPalette << " " 
+//        << fNofColorLevels << " " <<  fPalette << " " << fStartColorIndex << endl;
+   if ( f2DimColorPalette->Contains("REGB"))
+      gStyle->SetPalette(1, NULL);
+   else
+      gStyle->SetPalette(fNofColorLevels, fPalette);
+}
+//___________________________________________________________________________________________
+
+void HistPresent::SetTransLevelsRGB()
 {
    if (fNofTransLevels < 2) fNofTransLevels = 2;
-   if (fTransPalette) delete [] fTransPalette;
-   fTransPalette    = new Int_t[fNofTransLevels];
+   if (fTransPaletteRGB) delete [] fTransPaletteRGB;
+   fTransPaletteRGB    = new Int_t[fNofTransLevels];
    TColor * color;
 //   fStartColor = 2;
 //   fEndColor   = 4;
@@ -2321,9 +2411,13 @@ void HistPresent::SetTransLevels()
       if (color) delete color;
 //      Float_t dc = 1 + 2. * (1. - 2. * TMath::Abs((i - nof2) / fNofTransLevels ));
       Float_t rgb[3];
+      Float_t h, l, s;
       rgb[0] = start_r + frac_r;
       rgb[1] = start_g + frac_g;
       rgb[2] = start_b + frac_b;
+      TColor::RGB2HLS(rgb[0], rgb[1], rgb[2], h, l, s);
+//      cout << setprecision(3) << "rgb: " << rgb[0] << " " << rgb[1] << " " << rgb[2] << " "  
+//           << "hls " << h << " " << l << " " << s << endl;
 //    adjust to same lightness
 //      Float_t max = TMath::MaxElement(3, rgb);
 //      if (max > 0) max = 1. / max;
@@ -2350,7 +2444,7 @@ void HistPresent::SetTransLevels()
       }           
       color = new TColor(fStartColorIndex + i, rgb[0], rgb[1], rgb[2],"");
 //      color->Print();
-      fTransPalette[i] = fStartColorIndex + i;
+      fTransPaletteRGB[i] = fStartColorIndex + i;
       frac_r += step_r;
       frac_g += step_g;
       frac_b += step_b;
@@ -2358,33 +2452,32 @@ void HistPresent::SetTransLevels()
 }
 //___________________________________________________________________________________________
 
-void HistPresent::SetColorPalette()
+void HistPresent::SetTransLevelsHLS()
 {
-   if (f2DimColorPalette->Contains("MONO")) {
-      fNofColorLevels = fNofGreyLevels;
-      fPalette = fGreyPalette;
-      fStartColorIndex = 301;
-   } else if (f2DimColorPalette->Contains("MINV")) {
-      fNofColorLevels = fNofGreyLevels;
-      fPalette = fGreyPaletteInv;
-      fStartColorIndex = 331;
-   } else if (f2DimColorPalette->Contains("TRANS")) {
-      fNofColorLevels = fNofTransLevels;
-      fPalette = fTransPalette;
-      fStartColorIndex = 361;
-   } else if (f2DimColorPalette->Contains("REGB")) {
-      fNofColorLevels = 50;
-      fStartColorIndex = 51;
-      fPalette = NULL;
-   } else {
-      fNofColorLevels = 50;
-      fPalette = NULL;
-      fStartColorIndex = 1;
+   if (fNofTransLevels < 2) fNofTransLevels = 2;
+   if (fTransPaletteHLS) delete [] fTransPaletteHLS;
+   fTransPaletteHLS    = new Int_t[fNofTransLevels];
+   TColor * color;
+  
+   Float_t step_h = (fEndHue - fStartHue) / (Float_t)(fNofTransLevels - 1);
+   Float_t rgb[3];
+   Float_t h, l, s;
+
+   fStartColorIndex = 391;
+   h = fStartHue;
+   l = fLightness;
+   s = fSaturation;
+
+   for (Int_t i = 0; i < fNofTransLevels; i++) {
+      color = GetColorByInd(fStartColorIndex + i);
+      if (color) delete color;
+    
+      TColor::HLS2RGB(h, l, s, rgb[0], rgb[1], rgb[2]);
+     
+      color = new TColor(fStartColorIndex + i, rgb[0], rgb[1], rgb[2],"");
+//      cout << setprecision(3) << "rgb: " << rgb[0] << " " << rgb[1] << " " << rgb[2] << " "  
+//           << "hls " << h << " " << l << " " << s << endl;
+      fTransPaletteHLS[i] = fStartColorIndex + i;
+      h += step_h;
    }
-//   cout << "SetColorPalette: " << *f2DimColorPalette << " " 
-//        << fNofColorLevels << " " <<  fPalette << " " << fStartColorIndex << endl;
-   if ( f2DimColorPalette->Contains("REGB"))
-      gStyle->SetPalette(1, NULL);
-   else
-      gStyle->SetPalette(fNofColorLevels, fPalette);
 }
