@@ -30,6 +30,8 @@
 #define SIS_3801_B_FIFO_HALF_FULL	(0x1 << 10)
 #define SIS_3801_B_FIFO_FULL		(0x1 << 12)
 
+#define SIS_3801_CS_B_ENA_EXT_NEXT		(0x1 << 16)
+
 #define SIS_3801_A_STATUS(module)			((unsigned long *) (module + SIS_3801_R_STATUS))
 #define SIS_3801_A_IDENT(module)		((unsigned long *) (module + SIS_3801_R_IDENT))
 #define SIS_3801_A_COPY_DISABLE(module) 	((unsigned long *) (module + SIS_3801_R_COPY_DISABLE))
@@ -46,6 +48,7 @@
 #define SIS_3801_A_READ_FIFO(module)		((unsigned long *) (module + SIS_3801_R_READ_FIFO))
 
 #define SIS_3801_READ_STATUS(module)			*SIS_3801_A_STATUS(module)
+#define SIS_3801_SET_CTRL_BIT(module, b)		*SIS_3801_A_STATUS(module) |= b
 #define SIS_3801_RESET(module)					*SIS_3801_A_RESET(module) = 0
 #define SIS_3801_CLEAR_FIFO(module)				*SIS_3801_A_CLEAR_FIFO(module) = 0
 #define SIS_3801_ENABLE_NEXT_CLOCK(module)		*SIS_3801_A_CLOCK_ENABLE(module) = 0
@@ -59,6 +62,7 @@
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					SIS_3801_RESET($moduleName);
 					SIS_3801_CLEAR_FIFO($moduleName);
+					SIS_3801_SET_CTRL_BIT($moduleName, SIS_3801_CS_B_ENA_EXT_NEXT);
 					sis_3801_module_info($moduleName);
 
 %%EndOfCode%%
@@ -75,8 +79,14 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
+					rdoinp = SIS_3801_A_READ_FIFO($moduleName);
 					sisSts = SIS_3801_READ_STATUS($moduleName);
-					if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
+					if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) {
+						RDO_BLT_32(32);
+#ifdef DEBUG
+						f_ut_send_msg("m_read_meb", "scaler data ok", ERR__MSG_INFO, MASK__PRTT);
+#endif
+					}
 %%EndOfCode%%
 %%READ_MODULE%%
 
