@@ -24,8 +24,8 @@ MODULES       = build utils gutils \
 				expconf analyze \
                 macrobrowser helpbrowser hpr c_analyze \
 				camcli esone mbssetup mbsio transport \
-				xiadgf dgfcontrol \
-				snake polar
+				xiadgf dgfcontrol\
+				polar snake
 
 ##### ROOT libraries #####
 
@@ -215,10 +215,10 @@ install:
 	else \
 		echo "Installing binaries in  $(BINDIR)"; \
 		$(INSTALLDIR) $(BINDIR); \
-		$(INSTALL) $(ALLEXECS) $(BINDIR); \
+		$(INSTALLFILES) $(ALLEXECS) $(BINDIR); \
 		echo "Installing libraries in $(LIBDIR)"; \
 		$(INSTALLDIR) $(LIBDIR); \
-		$(INSTALL) $(ALLLIBS) $(LIBDIR); \
+		$(INSTALLFILES) $(ALLLIBS) $(LIBDIR); \
 		echo "Installing objs in      $(OBJDIR)"; \
 		$(INSTALLDIR) $(OBJDIR); \
 		$(INSTALL) $(ALLOBJS) $(OBJDIR); \
