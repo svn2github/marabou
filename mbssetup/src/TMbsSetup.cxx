@@ -976,8 +976,12 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							if (crate != 0) arrayData[crate] = memBase;
-							memBase += memLength;
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memBase;
+								memBase += memLength;
+							}
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemMemoryBase", this->EncodeArray(arrayData, kNofCrates, 16));
@@ -1007,7 +1011,11 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							if (crate != 0) arrayData[crate] = memLength;
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memLength;
+							}
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemMemoryLength", this->EncodeArray(arrayData, kNofCrates, 16));
@@ -1033,8 +1041,12 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							if (crate != 0) arrayData[crate] = memBase;
-							memBase += memLength;
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memBase;
+								memBase += memLength;
+							}
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacBase", this->EncodeArray(arrayData, kNofCrates, 16));
@@ -1064,7 +1076,11 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							if (crate != 0) arrayData[crate] = memLength;
+							if (crate == 0) {
+								arrayData[crate] = 0;
+							} else {
+								arrayData[crate] = memLength;
+							}
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacLength", this->EncodeArray(arrayData, kNofCrates, 16));
