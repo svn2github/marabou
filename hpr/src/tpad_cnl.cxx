@@ -83,8 +83,8 @@ void TPad::CreateNewLine(Int_t event, Int_t px, Int_t py, Int_t mode)
          gPad->GetCanvas()->Selected((TPad*)gPad, arrow, event);
       }
       if (mode == kCurlyLine || mode == kCurlyArc) {
-         Double_t rd      = gEnv->GetValue("HistPresent.Amplitude", 0.025);
-         Double_t wl      = gEnv->GetValue("HistPresent.WaveLength",0.01);
+         Double_t rd      = gEnv->GetValue("HistPresent.CurlyAmplitude", 0.025);
+         Double_t wl      = gEnv->GetValue("HistPresent.CurlyWaveLength",0.01);
          Int_t    acol    = gEnv->GetValue("HistPresent.CurlyColor", 1);
          Int_t    awid  = gEnv->GetValue("HistPresent.CurlyWidth", 1);
          Int_t    asty  = gEnv->GetValue("HistPresent.CurlyStyle", 1);
@@ -102,6 +102,8 @@ void TPad::CreateNewLine(Int_t event, Int_t px, Int_t py, Int_t mode)
          cline->SetLineColor(acol);
          cline->SetLineWidth(awid);
          cline->SetLineStyle(asty);
+         cline->SetWaveLength(wl);
+         cline->SetAmplitude(rd);
          cline->Draw();
          gPad->GetCanvas()->Selected((TPad*)gPad, cline, event);
       }
