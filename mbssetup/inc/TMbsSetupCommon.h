@@ -67,6 +67,13 @@ enum EMbsSetupTags			{	kSetHostName				=	1,
 								kSetDispEvb,
 								kSetFlushTime,
 								kSetMasterType,
+								kSetRemMemoryBase,
+								kSetRemMemoryOffset,
+								kSetRemMemoryLength,
+								kSetRemCamacBase,
+								kSetRemCamacOffset,
+								kSetRemCamacLength,
+								kSetRemEsoneBase,
 								kSetSevtSize,
 								kSetRdoFlag,
 								kSetControllerID,
@@ -81,6 +88,11 @@ enum EMbsSetupTags			{	kSetHostName				=	1,
 								kPrintBanner,
 								kSetVsbAddr
 							};
+
+enum						{	kRemMemoryBaseCBV		= 0xd0380000	};
+enum						{	kRemMemoryBaseCC32		= 0xee550000	};
+enum						{	kRemMemoryLengthCBV 	= 0x00200000	};
+enum						{	kRemMemoryLengthCC32	= 0x00008000	};
 
 const SMrbNamedXShort kMbsLofSetupModes[] =		// list of legal setup modes
 							{
@@ -138,6 +150,13 @@ const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 								{kSetDispEvb,			"SET_DISP_EVB"				},
 								{kSetFlushTime, 		"SET_FLUSHTIME" 			},
 								{kSetMasterType,		"SET_MASTER_TYPE"			},
+								{kSetRemMemoryBase,		"SET_REM_MEMORY_BASE"		},
+								{kSetRemMemoryOffset,	"SET_REM_MEMORY_OFFSET"		},
+								{kSetRemMemoryLength,	"SET_REM_MEMORY_LENGTH"		},
+								{kSetRemCamacBase,		"SET_REM_CAMAC_BASE"		},
+								{kSetRemCamacOffset,	"SET_REM_CAMAC_OFFSET"		},
+								{kSetRemCamacLength,	"SET_REM_CAMAC_LENGTH"		},
+								{kSetRemEsoneBase,		"SET_REM_ESONE_BASE"		},
 								{kSetSevtSize,			"SET_SEVT_BUFSIZE"			},
 								{kSetRdoFlag,			"SET_RDO_FLAG"				},
 								{kSetControllerID,		"SET_CONTROLLER_ID" 		},

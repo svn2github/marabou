@@ -730,7 +730,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsSetup::ExpandFile
 // Purpose:        Expand setup file
-// Arguments:      Int_t ProcID                -- readout proc id
+// Arguments:      Int_t ProcID                 -- readout proc id
 //                 TString & TemplatePath       -- where templates reside
 //                 TString & SetupFile          -- file name
 //                 TString & DestPath           -- destination
@@ -927,6 +927,142 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					stpTmpl.Substitute("$rdoIntType", (Int_t) k->GetIndex());
 					stpTmpl.Substitute("$rdoAscType", k->GetName());
 					stpTmpl.WriteCode(stp);
+					break;
+
+				case kSetRemMemoryBase:
+					{
+						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemMemoryBase"), 0);
+						if (memBase == 0) {
+							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
+							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
+						} 
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemMemoryLength"), 0);
+						if (memLength == 0) {
+							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
+							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+						} 
+						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (i = 1; i < n; i++) {
+							crate = lofCrates[i];
+							arrayData[crate] = memBase;
+							memBase += memLength;
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemMemoryBase", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemMemoryOffset:
+					{
+						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemMemoryOffset", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemMemoryLength:
+					{
+						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemMemoryLength"), 0);
+						if (memLength == 0) {
+							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
+							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+						} 
+						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (i = 1; i < n; i++) {
+							crate = lofCrates[i];
+							arrayData[crate] = memLength;
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemMemoryLength", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemCamacBase:
+					{
+						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacBase"), 0);
+						if (memBase == 0) {
+							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
+							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
+						} 
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacLength"), 0);
+						if (memLength == 0) {
+							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
+							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+						} 
+						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (i = 1; i < n; i++) {
+							crate = lofCrates[i];
+							arrayData[crate] = memBase;
+							memBase += memLength;
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemCamacBase", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemCamacOffset:
+					{
+						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemCamacOffset", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemCamacLength:
+					{
+						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
+						TString res;
+						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacLength"), 0);
+						if (memLength == 0) {
+							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
+							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+						} 
+						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
+						for (i = 1; i < n; i++) {
+							crate = lofCrates[i];
+							arrayData[crate] = memLength;
+						}
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemCamacLength", this->EncodeArray(arrayData, kNofCrates, 16));
+						stpTmpl.WriteCode(stp);
+					}
+					break;
+
+				case kSetRemEsoneBase:
+					{
+						TString res;
+						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacBase"), 0);
+						if (memBase == 0) {
+							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
+							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
+						} 
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacLength"), 0);
+						if (memLength == 0) {
+							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
+							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+						} 
+						memBase -= memLength;
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$rdoRemEsoneBase", memBase, 16);
+						stpTmpl.Substitute("$rdoRemCamacLength", memLength, 16);
+						stpTmpl.WriteCode(stp);
+					}
 					break;
 
 				case kSetSevtSize:
