@@ -2310,7 +2310,7 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) {
 	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
 	px = mle->GetIndexOfFirstParam() + RelParamIndex;
 	if (px < 0 || px > fCalibrationList.GetLast()) return(NULL);
-	nx = (TMrbNamedX *) fHistoList[px];
+	nx = (TMrbNamedX *) fCalibrationList[px];
 	if (nx == NULL) return(NULL);
 	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
 }
@@ -2372,7 +2372,7 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 				TF1 * calFct = new TF1(calName.Data(), "[0] + [1] * x", xmin, xmax);
 				calFct->SetParameter(0, offset);
 				calFct->SetParameter(1, gain);
-				this->AddCalibrationToList(calFct, hle->GetModule()->GetIndex(), hle->GetParam()->GetIndex());
+				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
 				nofCalibs++;
 			}
 		}
@@ -2670,6 +2670,46 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 	cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
 	nhx->AssignObject(cle);
 	fCalibrationList.AddAt(nhx, px + RelParamIndex);
+	ple->SetCalibrationAddress(CalibrationAddr);
+	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AddCalibrationToList
+// Purpose:        Add a new calibration function to list
+// Arguments:      TF1 * CalibrationAddr  -- address
+//                 Int_t AbsParamIndex    -- absolute param index
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a new entry in calibration list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nmx;
+	TMrbNamedX * npx;
+	TMrbNamedX * nhx;
+	TMrbModuleListEntry * mle;
+	TMrbParamListEntry * ple;
+	TMrbCalibrationListEntry * cle;
+	Int_t px;
+
+	px = mle->GetIndexOfFirstParam();
+	nhx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
+	if (nhx != NULL) return(kFALSE);
+	npx = (TMrbNamedX *) fParamList[AbsParamIndex];
+	if (npx == NULL) {
+		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] No param assigned to index "
+						<< AbsParamIndex << " (abs)" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddCalibrationToList");
+		return(kFALSE);
+	}
+	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
+	nhx = new TMrbNamedX(px, CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
+	cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
+	nhx->AssignObject(cle);
+	fCalibrationList.AddAt(nhx, AbsParamIndex);
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }

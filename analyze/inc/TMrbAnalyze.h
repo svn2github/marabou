@@ -669,6 +669,7 @@ class TMrbAnalyze : public TObject {
 
 		Int_t ReadCalibrationFromFile(const Char_t * CalibrationFile);		// read calibration data from file
 		Bool_t AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
+		Bool_t AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIndex);
 		TF1 * AddCalibrationToList(const Char_t * Name, const Char_t * Formula, Double_t Xmin, Double_t Xmax, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
 		TF1 * GetCalibration(const Char_t * CalibrationName); 				// get calibration by name
 		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex);		// get calibration by module + param
