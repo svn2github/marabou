@@ -980,7 +980,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 								<< ": Values missing" << endl;
 				gMrbLog->Flush(this->ClassName());
 			} else {
-				UInt_t m = 1;
+				Int_t m = 1;
 				macroArg->fButtons.Delete();
 				macroArg->fButtons.SetPatternMode();
 				lofSubstrings.Delete();
@@ -993,7 +993,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if (nsep > 0) {
 						UInt_t at = macroArg->fType->GetIndex();
 						if (at == TGMrbMacroArg::kGMrbMacroArgInt || at == TGMrbMacroArg::kGMrbMacroArgUInt) {
-							m = str.SplitOffInteger(prefix, intBase);
+							str.SplitOffInteger(prefix, m, intBase);
 							str.Resize(nsep);
 						} else {
 							tip = str(nsep + 1, str.Length());
