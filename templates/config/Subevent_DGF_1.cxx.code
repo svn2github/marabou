@@ -46,7 +46,7 @@
 %C% 		cerr	<< setred
 %C% 				<< this->ClassName() << "::FillSubevent(): At SevtWC = "
 %C% 				<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong format descriptor - 0x"
-%C% 				<< setbase(16) << runTask << setbase(10) << endl;
+%C% 				<< setbase(16) << runTask << setbase(10)
 %C% 				<< setblack << endl;
 %C% 		return(kTRUE);
 %C% 	}  				 // unable to decode data
