@@ -1,6 +1,6 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            DGFUntrigTracePanel
+// Name:           DGFUntrigTracePanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Setup
 // Modules:        
