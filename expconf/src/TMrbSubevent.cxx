@@ -711,9 +711,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				case TMrbConfig::kAnaSevtPrivateHistograms:
 					evt = (TMrbEvent *) fLofEvents.First();
 					stdHistosOK = kFALSE;
+					anaTmpl.InitializeCode("%R%");
+					anaTmpl.Substitute("$iniVal", this->HistosToBeFilledIfTrueHit() ? -1 : 0);
 					while (evt) {
-						anaTmpl.InitializeCode("%R%");
-						anaTmpl.Substitute("$iniVal", this->HistosToBeFilledIfTrueHit() ? -1 : 0);
 						anaTmpl.WriteCode(AnaStrm);
 						if (evt->HasPrivateHistograms()) {
 							evtNameLC = evt->GetName();
