@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGScrollBar</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGScrollBar:description">class description</a> - <a href="src/TGScrollBar.cxx.html">source file</a> - <a href="TGScrollBar_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGScrollBar" href="TGScrollBar.h">TGScrollBar</a> : public <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>, public <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:~TGScrollBar">~TGScrollBar</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGScrollBar:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:GetBckgndPixmap">GetBckgndPixmap</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:GetPageSize">GetPageSize</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:GetPosition">GetPosition</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:GetRange">GetRange</a><!--PLAIN-->() const
+<!--TAB6-->         static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:GetScrollBarWidth">GetScrollBarWidth</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:GrabPointer">GrabPointer</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> grab)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:HandleTimer">HandleTimer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* t)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGScrollBar:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:MapSubwindows">MapSubwindows</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:SetPosition">SetPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> pos)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> range, <a href="ListOfTypes.html#Int_t">Int_t</a> page_size)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGScrollBar:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGScrollBar:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fX0">fX0</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fX0"></a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fY0">fY0</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fY0">current slider position in pixels</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fXp">fXp</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fXp"></a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fYp">fYp</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fYp">previous slider position in pixels</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fDragging">fDragging</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fDragging">in dragging mode?</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fGrabPointer">fGrabPointer</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fGrabPointer">grab pointer when dragging</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fRange">fRange</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fRange">logical upper range of scrollbar</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fPsize">fPsize</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fPsize">logical page size of scrollbar</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fPos">fPos</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fPos">logical current position</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fSliderSize">fSliderSize</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fSliderSize">logical slider size</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fSliderRange">fSliderRange</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fSliderRange">logical slider range</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGScrollBarElement.html">TGScrollBarElement</a>* <!--TAB--><!--BOLD--><a name="TGScrollBar:fHead">fHead</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fHead">head button of scrollbar</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGScrollBarElement.html">TGScrollBarElement</a>* <!--TAB--><!--BOLD--><a name="TGScrollBar:fTail">fTail</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fTail">tail button of scrollbar</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGScrollBarElement.html">TGScrollBarElement</a>* <!--TAB--><!--BOLD--><a name="TGScrollBar:fSlider">fSlider</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSlider">slider</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGScrollBar:fHeadPic">fHeadPic</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fHeadPic">picture in head (up or left arrow)</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGScrollBar:fTailPic">fTailPic</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fTailPic">picture in tail (down or right arrow)</a></i>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* <!--TAB--><!--BOLD--><a name="TGScrollBar:fRepeat">fRepeat</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fRepeat">repeat rate timer (when mouse stays pressed)</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Window_t">Window_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fSubw">fSubw</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fSubw">sub window in which mouse is pressed</a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fgBckgndPixmap">fgBckgndPixmap</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fgBckgndPixmap"></a></i>
+<!--TAB6-->             static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGScrollBar:fgScrollBarWidth">fgScrollBarWidth</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgScrollBarWidth"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGHScrollBar.html">TGHScrollBar</a>, <a href="http://root.cern.ch/root/html/TGVScrollBar.html">TGVScrollBar</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGScrollBar:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:18 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

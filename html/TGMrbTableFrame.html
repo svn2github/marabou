@@ -1,0 +1,195 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbTableFrame</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbTableFrame:description">class description</a> - <a href="src/TGMrbTableFrame.cxx.html">source file</a> - <a href="TGMrbTableFrame_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbTableFrame" href="TGMrbTableFrame.h">TGMrbTableFrame</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TGMrbTableFrame.html">TGMrbTableFrame</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:TGMrbTableFrame">TGMrbTableFrame</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* MainFrame, <a href="ListOfTypes.html#Int_t">Int_t</a>* RetValue, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Title, <a href="ListOfTypes.html#Int_t">Int_t</a> ItemWidth, <a href="ListOfTypes.html#Int_t">Int_t</a> Ncols, <a href="ListOfTypes.html#Int_t">Int_t</a> Nrows, <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* Values, <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* ColumnLabels = NULL, <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* RowLabels = NULL, <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>* Flags = NULL, <a href="ListOfTypes.html#Int_t">Int_t</a> Nradio = 0, const <a href="ListOfTypes.html#Char_t">Char_t</a>* HelpText = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* ActionText_1 = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* ActionText_2 = "NULL")
+<!--TAB6-->      <a href="./TGMrbTableFrame.html">TGMrbTableFrame</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:TGMrbTableFrame">TGMrbTableFrame</a><!--PLAIN-->(const <a href="./TGMrbTableFrame.html">TGMrbTableFrame</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:~TGMrbTableFrame">~TGMrbTableFrame</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:StoreValues">StoreValues</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTableFrame:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbTableFrame:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fWidgets">fWidgets</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fWidgets">list of widgets on heap</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fColFrame">fColFrame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fColFrame"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fTableRowFrame">fTableRowFrame</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTableRowFrame"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fRowFrame">fRowFrame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fRowFrame"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fTableFrame">fTableFrame</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTableFrame"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fFlagFrame1">fFlagFrame1</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fFlagFrame1"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fFlagFrame2">fFlagFrame2</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fFlagFrame2"></a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fFlagButton">fFlagButton</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fFlagButton"></a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fEntries">fEntries</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fEntries"></a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fFlags">fFlags</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFlags"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fTEItem">fTEItem</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTEItem"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextBuffer.html">TGTextBuffer</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fTBItem">fTBItem</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTBItem"></a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGMatrixLayout.html">TGMatrixLayout</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fLMMatrix">fLMMatrix</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLMMatrix"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fActionFrame">fActionFrame</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fActionFrame"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fColLabFrame">fColLabFrame</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fColLabFrame"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fColLabel">fColLabel</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fColLabel"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fRowLabFrame">fRowLabFrame</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fRowLabFrame"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fRowLabel">fRowLabel</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fRowLabel"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextButton.html">TGTextButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fCancelButton">fCancelButton</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fCancelButton"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextButton.html">TGTextButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fOkButton">fOkButton</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fOkButton"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextButton.html">TGTextButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fAct_2Button">fAct_2Button</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAct_2Button"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextButton.html">TGTextButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fHelpButton">fHelpButton</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHelpButton"></a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fValues">fValues</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fValues"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGPictureButton.html">TGPictureButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fBtnAll1">fBtnAll1</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fBtnAll1"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGPictureButton.html">TGPictureButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fBtnAll2">fBtnAll2</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fBtnAll2"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGPictureButton.html">TGPictureButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fBtnNone1">fBtnNone1</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fBtnNone1"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGPictureButton.html">TGPictureButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fBtnNone2">fBtnNone2</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fBtnNone2"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fNrows">fNrows</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNrows"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fNcols">fNcols</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNcols"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fNent">fNent</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNent"></a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fRet">fRet</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fRet"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fFlagsReturn">fFlagsReturn</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFlagsReturn"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fRadio">fRadio</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fRadio"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fCheck">fCheck</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fCheck"></a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fCancelOk">fCancelOk</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fCancelOk"></a></i>
+<!--TAB6-->          const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:fHelpText">fHelpText</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fHelpText"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameCancel">kTableFrameCancel</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kTableFrameCancel"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameOk">kTableFrameOk</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kTableFrameOk"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameHelp">kTableFrameHelp</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kTableFrameHelp"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameAct_2">kTableFrameAct_2</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kTableFrameAct_2"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameAll_1">kTableFrameAll_1</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kTableFrameAll_1"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameNone_1">kTableFrameNone_1</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kTableFrameNone_1"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameAll_2">kTableFrameAll_2</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kTableFrameAll_2"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbTableFrame.html#TGMrbTableFrame:EGMrbTableFrameCmdId">TGMrbTableFrame::EGMrbTableFrameCmdId</a> <!--TAB--><!--BOLD--><a name="TGMrbTableFrame:kTableFrameNone_2">kTableFrameNone_2</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kTableFrameNone_2"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbTableFrame:description">Class Description</a></h2>
+<pre> ame:            gutils/src/<a href="./TGMrbTableFrame.html">TGMrbTableFrame</a>.cxx
+ Purpose:        A matrix of N * M text entries + check buttons
+ Description:
+ Author:         O. Schaile
+ Mailto:         &lt;a href=mailto:otto.schaile@physik.uni-muenchen.de&gt;O. Schaile&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+//////////////////////////////////////////////////////////////////////////*
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbTableFrame:TGMrbTableFrame" href="src/TGMrbTableFrame.cxx.html#TGMrbTableFrame:TGMrbTableFrame">TGMrbTableFrame</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> * RetValue, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Title,
+													<a href="ListOfTypes.html#Int_t">Int_t</a> ItemWidth, <a href="ListOfTypes.html#Int_t">Int_t</a> Ncols, <a href="ListOfTypes.html#Int_t">Int_t</a> Nrows,
+													<a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> * Values, 
+													<a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> * ColumnLabels,
+													<a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> * RowLabels,
+													<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> * Flags, 
+                                        			<a href="ListOfTypes.html#Int_t">Int_t</a> Nradio, 
+                                        			const <a href="ListOfTypes.html#Char_t">Char_t</a> * HelpText, 
+                                        			const <a href="ListOfTypes.html#Char_t">Char_t</a> * ActionText_1,  
+                                        			const <a href="ListOfTypes.html#Char_t">Char_t</a> * ActionText_2) :
+											<a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="http://root.cern.ch/root/html/TGClient.html">gClient</a>-&gt;<a href="http://root.cern.ch/root/html/TGClient.html#TGClient:GetRoot">GetRoot</a>(), <a href="ListOfTypes.html#Window">Window</a>, 10, 10) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbTableFrame.html">TGMrbTableFrame</a>
+ Purpose:        Provide a matrix of text entries
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>               -- parent window
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> * RetValue                -- return value (button id)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Title                  -- title
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ItemWidth                 -- item width (in pixels 120-240)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Ncols                     -- number of columns
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Nrows                     -- number of Rows
+                 <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> * Values         -- collection of values (strings)
+                 <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> * ColumnLabels   -- column headings
+                 <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> * RowLabels      -- row labels
+                 <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> * Flags                 -- checkbutton flags
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Nradio                    -- first Nradio flags are RadioButtons
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> *HelpText                -- display a help button
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> *ActionText_1            -- replace text in Ok Button
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> *ActionText_2            -- put extra Button, RetValue = 1
+ Exceptions:
+ Description:    A matrix of Ncols * Nrows text entries together with checkbuttons
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TGMrbTableFrame:StoreValues" href="src/TGMrbTableFrame.cxx.html#TGMrbTableFrame:StoreValues">StoreValues</a>()<br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbTableFrame.html#TGMrbTableFrame:StoreValues">TGMrbTableFrame::StoreValues</a>()
+ Purpose:        Store return values
+ Arguments:
+
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbTableFrame:ProcessMessage" href="src/TGMrbTableFrame.cxx.html#TGMrbTableFrame:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbTableFrame.html#TGMrbTableFrame:ProcessMessage">TGMrbTableFrame::ProcessMessage</a>
+ Purpose:        Handle X events
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId    -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX   -- params
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTableFrame:Help" href="TGMrbTableFrame.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbTableFrame:Class" href="TGMrbTableFrame.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbTableFrame:IsA" href="TGMrbTableFrame.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTableFrame:ShowMembers" href="TGMrbTableFrame.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTableFrame:Streamer" href="TGMrbTableFrame.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTableFrame:StreamerNVirtual" href="TGMrbTableFrame.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbTableFrame.html">TGMrbTableFrame</a> <a name="TGMrbTableFrame:TGMrbTableFrame" href="TGMrbTableFrame.h">TGMrbTableFrame</a>(const <a href="./TGMrbTableFrame.html">TGMrbTableFrame</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTableFrame:~TGMrbTableFrame" href="TGMrbTableFrame.h">~TGMrbTableFrame</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:otto.schaile@physik.uni-muenchen.de>O. Schaile</a>
+<br>
+Last update: Mon Aug 26 10:55:13 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

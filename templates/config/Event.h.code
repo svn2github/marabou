@@ -1,0 +1,52 @@
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%
+// Purpose:        Define a user-specific event class
+// Description:    Event assigned to trigger %%EVT_TRIGGER%%
+//                 %%EVT_TITLE%%
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
+
+	public:
+		TUsrEvt%%EVT_NAME_UC%%() {			// ctor
+			fType = 10; 					// event type (given by MBS)
+			fSubtype = 1;					// ... subtype
+			fTrigger = kMrbTrigger%%EVT_NAME_UC%%; 	// trigger number associated with this event
+			fNofEvents = 0; 				// reset event counter
+			fNofEntries = 0;				// number of entries read from tree
+			fEventNumber = 0;				// event number provided by MBS
+			fReplayMode = kFALSE;			// normally online data acquisition
+		};
+		~TUsrEvt%%EVT_NAME_UC%%() {};		// default dtor
+
+		Bool_t FillEvent(const s_vehe *, const MBSDataIO *);	// event filling function supplied by system
+		Bool_t BookParams();									// book params for this event
+		Bool_t BookHistograms();								// book histograms for this event
+		Bool_t AllocHitBuffers();								// allocate hit buffers for subevents if needed
+		Bool_t CreateTree();									// create a tree if needed
+		Bool_t BuildEvent();									// special event builder
+		Bool_t Analyze();										// user's analyzing code
+		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)
+		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
+		void Reset(Int_t InitValue = 0);						// reset subevent data
+
+		inline UInt_t GetSubeventPattern() { return(fSubeventPattern); };
+		inline Bool_t ThereIsSubevent(UInt_t SubeventBit) { return((fSubeventPattern & SubeventBit) != 0); };
+
+//%%EVT_USER_METHODS%%			user-specific methods may be included here
+		
+	protected:
+		UInt_t fSubeventPattern;
+%%BeginOfCode%%
+		TUsrSevt$sevtNameUC $sevtNameLC;
+%%EndOfCode%%
+%%SEVT_CLASS_INSTANCE%%
+
+//%%EVT_PRIVATE_DATA%%			any other private data go here
+
+//%%EVT_USER_DATA%%				user-specific data members may be included here
+		
+	ClassDef(TUsrEvt%%EVT_NAME_UC%%, 1) 	// [Analyze] Standard methods to handle event data
+};

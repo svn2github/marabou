@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbFileEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbFileEntry:description">class description</a> - <a href="src/TGMrbFileEntry.cxx.html">source file</a> - <a href="TGMrbFileEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbFileEntry" href="TGMrbFileEntry.h">TGMrbFileEntry</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>, public <a href="./TGMrbObject.html">TGMrbObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="./TGMrbFileEntry.html">TGMrbFileEntry</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:TGMrbFileEntry">TGMrbFileEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Label, <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth, <a href="./TGFileInfo.html">TGFileInfo</a>* FileInfo, EFileDialogMode DialogMode, <a href="./TGMrbLayout.html">TGMrbLayout</a>* FrameGC, <a href="./TGMrbLayout.html">TGMrbLayout</a>* LabelGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* EntryGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* BrowseGC = NULL, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions = kHorizontalFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> EntryOptions = kSunkenFrame|kDoubleBorder)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:~TGMrbFileEntry">~TGMrbFileEntry</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:GetEntry">GetEntry</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbFileEntry:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fEntry">fEntry</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fEntry">!</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGPictureButton.html">TGPictureButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fBrowse">fBrowse</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fBrowse">!</a></i>
+<!--TAB6-->            <a href="./TGFileInfo.html">TGFileInfo</a> <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fFileInfo">fFileInfo</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFileInfo">!</a></i>
+<!--TAB6-->       EFileDialogMode <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fDialogMode">fDialogMode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDialogMode"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbFileEntry:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/<a href="./TGMrbFileEntry.html">TGMrbFileEntry</a>.cxx
+ Purpose:        MARaBOU graphic utilities: a labelled file entry
+ Description:    Implements class methods to handle a labelled file entry
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ Layout:
+
+/*
+<img src=gutils/TGMrbFileEntry.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbFileEntry:TGMrbFileEntry" href="src/TGMrbFileEntry.cxx.html#TGMrbFileEntry:TGMrbFileEntry">TGMrbFileEntry</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent,
+												const <a href="ListOfTypes.html#Char_t">Char_t</a> * Label,
+												<a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId,
+												<a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height,
+												<a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth,
+												<a href="./TGFileInfo.html">TGFileInfo</a> * FileInfo, EFileDialogMode DialogMode,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * FrameGC,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * EntryGC,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * BrowseGC,
+												<a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions,
+												<a href="ListOfTypes.html#UInt_t">UInt_t</a> EntryOptions) :
+								<a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>(Parent, Width, Height, FrameOptions, FrameGC-&gt;BG()) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbFileEntry.html">TGMrbFileEntry</a>
+ Purpose:        Define a labelled entry suitable to browse files
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent           -- parent window
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Label              -- label text
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize            -- size of text buffer in chars
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId               -- id to be used in ProcessMessage
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Width                 -- frame width
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Height                -- frame height
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth            -- widht of the entry field
+                 <a href="./TGFileInfo.html">TGFileInfo</a> * FileInfo       -- file info
+                 EFileDialogMode DialogMode  -- mode: open or save
+                 <a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC       -- graphic context &amp; layout (frame)
+                 <a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC       -- ... (label)
+                 <a href="./TGMrbLayout.html">TGMrbLayout</a> * ButtonGC      -- ... (button)
+                 <a href="./TGMrbLayout.html">TGMrbLayout</a> * BrowseGC      -- ... (browse)
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions         -- frame options
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> EntryOptions         -- options to configure the entry
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbFileEntry:ProcessMessage" href="src/TGMrbFileEntry.cxx.html#TGMrbFileEntry:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbFileEntry.html#TGMrbFileEntry:ProcessMessage">TGMrbFileEntry::ProcessMessage</a>
+ Purpose:        Message handler for browse button
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle message received from browse button
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <a name="TGMrbFileEntry:GetEntry" href="TGMrbFileEntry.h">GetEntry</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TGMrbFileEntry:Help" href="TGMrbFileEntry.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbFileEntry:Class" href="TGMrbFileEntry.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbFileEntry:IsA" href="TGMrbFileEntry.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TGMrbFileEntry:ShowMembers" href="TGMrbFileEntry.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TGMrbFileEntry:Streamer" href="TGMrbFileEntry.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TGMrbFileEntry:StreamerNVirtual" href="TGMrbFileEntry.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TGMrbFileEntry:~TGMrbFileEntry" href="TGMrbFileEntry.h">~TGMrbFileEntry</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:54:26 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

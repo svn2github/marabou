@@ -1,0 +1,180 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Caen_V820.code
+// @(#)Purpose:    VME code for adc CAEN V820
+// Description:    Contains pieces of code to operate an adc CAEN V820
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME ADC CAEN V820 */
+#define CAEN_V820_R_COUNTER0						0x1000
+#define CAEN_V820_R_FIRMWARE						0x1132
+#define CAEN_V820_R_CONTROL							0x1108
+#define CAEN_V820_R_CONTROL_BITSET					0x110A
+#define CAEN_V820_R_CONTROL_BITCLEAR				0x110C
+#define CAEN_V820_R_STATUS							0x110E
+#define CAEN_V820_R_GEOADDR							0x1110
+#define CAEN_V820_R_MODULE_RESET					0x1120
+#define CAEN_V820_R_SOFT_CLEAR						0x1122
+#define CAEN_V820_R_SOFT_TRIGGER					0x1124
+#define CAEN_V820_R_ROM	 							0x4000
+
+#define CAEN_V820_B_CONTROL_BIT_TRIGGER_DIS	 		0x3
+#define CAEN_V820_B_CONTROL_BIT_TRIGGER_EXT	 		0x1
+#define CAEN_V820_B_CONTROL_BIT_TRIGGER_PER	 		0x2
+#define CAEN_V820_B_CONTROL_BIT_AUTO_RESET			(0x1 << 7)
+
+#define CAEN_V820_A_COUNTER0(module)		((unsigned int *) (module + CAEN_V820_R_COUNTER0))
+#define CAEN_V820_A_FIRMWARE(module) 		((unsigned short *) (module + CAEN_V820_R_FIRMWARE))
+#define CAEN_V820_A_GEOADDR(module)			((unsigned short *) (module + CAEN_V820_R_GEOADDR))
+#define CAEN_V820_A_CONTROL_BITSET(module)	((unsigned short *) (module + CAEN_V820_R_CONTROL_BITSET))
+#define CAEN_V820_A_CONTROL_BITCLEAR(module)	((unsigned short *) (module + CAEN_V820_R_CONTROL_BITCLEAR))
+#define CAEN_V820_A_STATUS(module)			((unsigned short *) (module + CAEN_V820_R_STATUS))
+#define CAEN_V820_A_MODULE_RESET(module)	((unsigned short *) (module + CAEN_V820_R_MODULE_RESET))
+#define CAEN_V820_A_SOFT_CLEAR(module)	((unsigned short *) (module + CAEN_V820_R_SOFT_CLEAR))
+#define CAEN_V820_A_SOFT_TRIGGER(module)	((unsigned short *) (module + CAEN_V820_R_SOFT_TRIGGER))
+#define CAEN_V820_A_ROM(module)				((unsigned short *) (module + CAEN_V820_R_ROM))
+
+#define CAEN_V820_MODULE_RESET(module)  	*(CAEN_V820_A_MODULE_RESET(module)) = 1
+#define CAEN_V820_SOFT_CLEAR(module)  		*(CAEN_V820_A_SOFT_CLEAR(module)) = 1
+
+#define CAEN_V820_SET_TRIGGER_DISABLED(module)  	*(CAEN_V820_A_CONTROL_BITCLEAR(module)) = CAEN_V820_B_CONTROL_BIT_ACQ_MODE
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					caen_v820_module_info(CAEN_V820_A_ROM($moduleName));
+					CAEN_V820_MODULE_RESET($moduleName);
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_C2MI_32();				/* read $chnName:$chnNo */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_BLTI_32($nofParams);		/* $moduleName: read $nofParams scaler data a 32 bits */
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+					RDO_INCR_ADDR();			/* skip next channel */
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_SKIP_ADDR($data);		/* skip $data channels */
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+					RDO_2MEM_32($subaddr)		/* store subaddr $chnNo */
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+					RDO_2MEM_32($data)			/* store data word */
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+					CAEN_V820_SOFT_CLEAR($moduleName);		/* clear scaler $moduleName */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+					RDO_SETUP_VME($moduleName, CAEN_V820_R_COUNTER0 + $chnNo * sizeof(unsigned long));	/* setup read module $moduleName, start with param $chnName */
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					CAEN_V820_SOFT_CLEAR($moduleName);		/* clear scaler $moduleName */
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void caen_v820_module_info(volatile unsigned short * firmWare) {
+	unsigned short revision;
+	unsigned short serialMSB, serialLSB;
+	unsigned short boardIdMSB, boardIdLSB;
+	int serial, boardId;
+	char str[256];
+	
+	boardIdMSB = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
+	boardIdLSB = *(firmWare + 0x3E / sizeof(unsigned short)) & 0xFF;
+	boardId = (int) (boardIdMSB << 8) + (int) boardIdLSB;
+	revision = *(firmWare + 0x4E / sizeof(unsigned short)) & 0xFF;
+	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
+	serialMSB = *(firmWare + 0xF02 / sizeof(unsigned short)) & 0xFF;
+	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
+	serial = (int) (serialMSB << 8) + (int) serialLSB;
+	sprintf(str, "  CAEN module info: type V%d, serial# %d, revision %d\n", boardId, serial, revision);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+	if (boardId != 820) {
+		sprintf(str, "  CAEN module info: Illegal board ID %d - should be 820\n", boardId);
+		f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+	}
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void caen_v820_module_info(volatile unsigned short * firmWare);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned int * caen_v820_rdoinp;
+	int caen_v820_wc;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

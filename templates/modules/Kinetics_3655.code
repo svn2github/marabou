@@ -1,0 +1,132 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Kinetics_3655.code
+// @(#)Purpose:    Camac code for module Silena 4418/V
+// Description:    Contains pieces of camac code to operate a
+//                 Kinetics-3655 timing generator
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+%C%
+%C%									/* init module $moduleName in $modulePosition */
+%C%					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+%C%					CIO_CTRL_R2B($moduleName, F(11), A(12));		/* clear lam */
+%C%					CIO_CTRL_R2B($moduleName, F(24), A(9)); 		/* don't assert inhibit */
+%C%					CIO_WRITE_R2B($moduleName, F(17), A(0), 0L);	/* clear cycle control reg */
+%C%					CIO_WRITE_R2B($moduleName, F(17), A(9), $inhibitControlL);	/* inhibit control reg */
+%C%					CIO_WRITE_R2B($moduleName, F(17), A(13), $lamMaskL);		/* lam mask reg */
+%WI%					CIO_WRITE_R2B($moduleName, F(16), A($inv0No), $invVal);	/* set interval $inv1No */
+%AI%					CIO_CTRL_R2B($moduleName, F(26), A(9)); 	/* enable inhibit assertion */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+%IS%					CIO_WRITE_R2B($moduleName, F(17), A(0), $cycleControlL);	/* $moduleName in $modulePosition: set cycle control reg */
+%IS%					CIO_CTRL_R2B($moduleName, F(25), A(0)); 		/* start counting cycle */
+%XS%					CIO_WRITE_R2B($moduleName, F(17), A(0), $cycleControlL);	/* $moduleName in $modulePosition: set cycle control reg */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					CIO_WRITE_R2B($moduleName, F(17), A(0), 0L);	/* $moduleName in $modulePosition: stop counting cycle */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

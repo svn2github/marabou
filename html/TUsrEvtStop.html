@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TUsrEvtStop</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TUsrEvtStop:description">class description</a> - <a href="src/TUsrEvtStop.cxx.html">source file</a> - <a href="TUsrEvtStop_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TUsrEvtStop" href="TMrbAnalyze.h">TUsrEvtStop</a> : public <a href="./TUsrEvent.html">TUsrEvent</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TUsrEvtStop.html">TUsrEvtStop</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:TUsrEvtStop">TUsrEvtStop</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:~TUsrEvtStop">~TUsrEvtStop</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:CreateTree">CreateTree</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:ExtractTimeStamp">ExtractTimeStamp</a><!--PLAIN-->(const <a href="ListOfTypes.html#s_vehe">s_vehe</a>*, const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>*)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:GetTime">GetTime</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:InitializeTree">InitializeTree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* RootFile)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvtStop:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TUsrEvtStop:Data Members">Data Members</a></h3>
+<pre>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TUsrEvtStop:description">Class Description</a></h2>
+<pre>
+ Name:           <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.cxx
+ Purpose:        Implement class methods for user's analysis
+ Description:    This code defines class methods for data analysis
+                 common to all user applications
+
+ Header files:   <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.h     -- class definitions
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TUsrEvtStop:TUsrEvtStop" href="src/TUsrEvtStop.cxx.html#TUsrEvtStop:TUsrEvtStop">TUsrEvtStop</a>() <br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrEvtStop:CreateTree" href="src/TUsrEvtStop.cxx.html#TUsrEvtStop:CreateTree">CreateTree</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvtStop.html#TUsrEvtStop:CreateTree">TUsrEvtStop::CreateTree</a>
+ Purpose:        Create a tree for event "Stop Acquisition"
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Creates a tree for event "Stop Acquisition"
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrEvtStop:ExtractTimeStamp" href="src/TUsrEvtStop.cxx.html#TUsrEvtStop:ExtractTimeStamp">ExtractTimeStamp</a>(const <a href="ListOfTypes.html#s_vehe">s_vehe</a> * EventData, const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvtStop.html#TUsrEvtStop:ExtractTimeStamp">TUsrEvtStop::ExtractTimeStamp</a>
+ Purpose:        Get time stamp from (sub)event header
+ Arguments:      const <a href="ListOfTypes.html#s_vehe">s_vehe</a> * EventData   -- pointer to MBS event structure
+                 const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr -- pointer to MBS data base
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Decodes the event header,
+                 then looks for a subevent [9000,1] = time stamp
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrEvtStop:InitializeTree" href="src/TUsrEvtStop.cxx.html#TUsrEvtStop:InitializeTree">InitializeTree</a>(<a href="http://root.cern.ch/root/html/TFile.html">TFile</a> * RootFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvtStop.html#TUsrEvtStop:InitializeTree">TUsrEvtStop::InitializeTree</a>
+ Purpose:        Initialize stop event tree to read data
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Initializes the stop event tree.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TUsrEvtStop:Print" href="src/TUsrEvtStop.cxx.html#TUsrEvtStop:Print">Print</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvtStop.html#TUsrEvtStop:Print">TUsrEvtStop::Print</a>
+ Purpose:        Output time stamp of last "stop acquisition"
+ Arguments:
+ Results:
+ Exceptions:
+ Description:    Outputs a message containing time of last stop cmd
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvtStop:GetTime" href="TMrbAnalyze.h">GetTime</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvtStop:Help" href="TMrbAnalyze.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrEvtStop:Class" href="TMrbAnalyze.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrEvtStop:IsA" href="TMrbAnalyze.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvtStop:ShowMembers" href="TMrbAnalyze.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvtStop:Streamer" href="TMrbAnalyze.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvtStop:StreamerNVirtual" href="TMrbAnalyze.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvtStop:~TUsrEvtStop" href="TMrbAnalyze.h">~TUsrEvtStop</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:58:49 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

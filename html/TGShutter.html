@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGShutter</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGShutter:description">class description</a> - <a href="src/TGShutter.cxx.html">source file</a> - <a href="TGShutter_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGShutter" href="TGShutter.h">TGShutter</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGShutter.html">TGShutter</a> <!--TAB--><!--BOLD--><a href="#TGShutter:TGShutter">TGShutter</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kSunkenFrame)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGShutter.html">TGShutter</a> <!--TAB--><!--BOLD--><a href="#TGShutter:TGShutter">TGShutter</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGShutter.html">TGShutter</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGShutter:~TGShutter">~TGShutter</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGShutter:AddItem">AddItem</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGShutterItem.html">TGShutterItem</a>* item)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGShutter:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGShutter:HandleTimer">HandleTimer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* t)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGShutter:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGShutter:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGShutter:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> cmd, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a> parm2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGShutter:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGShutter:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGShutter:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGShutter:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* <!--TAB--><!--BOLD--><a name="TGShutter:fTimer">fTimer</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fTimer">Timer for animation</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGShutterItem.html">TGShutterItem</a>* <!--TAB--><!--BOLD--><a name="TGShutter:fSelectedItem">fSelectedItem</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelectedItem">Item currently open</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGShutterItem.html">TGShutterItem</a>* <!--TAB--><!--BOLD--><a name="TGShutter:fClosingItem">fClosingItem</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fClosingItem">Item closing down</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGShutter:fTrash">fTrash</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fTrash">Items that need to be cleaned up</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGShutter:fHeightIncrement">fHeightIncrement</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fHeightIncrement">Height delta</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGShutter:fClosingHeight">fClosingHeight</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fClosingHeight">Closing items current height</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGShutter:fClosingHadScrollbar">fClosingHadScrollbar</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fClosingHadScrollbar">Closing item had a scroll bar</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGShutter:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:19 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGHotString</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGHotString:description">class description</a> - <a href="src/TGHotString.cxx.html">source file</a> - <a href="TGHotString_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGHotString" href="TGString.h">TGHotString</a> : public <a href="http://root.cern.ch/root/html/TGString.html">TGString</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:DrawHotChar">DrawHotChar</a><!--PLAIN-->(<a href="ListOfTypes.html#Drawable_t">Drawable_t</a> id, <a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a> <!--TAB--><!--BOLD--><a href="#TGHotString:TGHotString">TGHotString</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s)
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a> <!--TAB--><!--BOLD--><a href="#TGHotString:TGHotString">TGHotString</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>&amp;)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:~TGHotString">~TGHotString</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGHotString:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Drawable_t">Drawable_t</a> id, <a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:DrawWrapped">DrawWrapped</a><!--PLAIN-->(<a href="ListOfTypes.html#Drawable_t">Drawable_t</a> id, <a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGHotString:GetHotChar">GetHotChar</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGHotString:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGHotString:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGHotString:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a> <!--TAB--><!--BOLD--><a name="TGHotString:fHotChar">fHotChar</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHotChar">hot character</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGHotString:fHotPos">fHotPos</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fHotPos">position of hot character</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGHotString:fLastGC">fLastGC</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLastGC">context used during last drawing</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGHotString:fOff1">fOff1</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOff1">variable used during drawing (cache)</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGHotString:fOff2">fOff2</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOff2">variable used during drawing (cache)</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGHotString:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:21 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

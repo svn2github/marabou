@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGPopupMenu</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGPopupMenu:description">class description</a> - <a href="src/TGPopupMenu.cxx.html">source file</a> - <a href="TGPopupMenu_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGPopupMenu" href="TGMenu.h">TGPopupMenu</a> : public <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Activate">Activate</a><!--PLAIN-->(<a href="./TGMenuEntry.html">TGMenuEntry</a>* entry)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DoRedraw">DoRedraw</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DrawCheckMark">DrawCheckMark</a><!--PLAIN-->(<a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> l, <a href="ListOfTypes.html#Int_t">Int_t</a> t, <a href="ListOfTypes.html#Int_t">Int_t</a> r, <a href="ListOfTypes.html#Int_t">Int_t</a> b)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DrawEntry">DrawEntry</a><!--PLAIN-->(<a href="./TGMenuEntry.html">TGMenuEntry</a>* entry)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DrawRCheckMark">DrawRCheckMark</a><!--PLAIN-->(<a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> l, <a href="ListOfTypes.html#Int_t">Int_t</a> t, <a href="ListOfTypes.html#Int_t">Int_t</a> r, <a href="ListOfTypes.html#Int_t">Int_t</a> b)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DrawTrianglePattern">DrawTrianglePattern</a><!--PLAIN-->(<a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> l, <a href="ListOfTypes.html#Int_t">Int_t</a> t, <a href="ListOfTypes.html#Int_t">Int_t</a> r, <a href="ListOfTypes.html#Int_t">Int_t</a> b)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Reposition">Reposition</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:TGPopupMenu">TGPopupMenu</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w = 10, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h = 10, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = 0)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:TGPopupMenu">TGPopupMenu</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>&amp;)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:~TGPopupMenu">~TGPopupMenu</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Activate">Activate</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a>)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Activated">Activated</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddEntry">AddEntry</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* s, <a href="ListOfTypes.html#Int_t">Int_t</a> id, <a href="ListOfTypes.html#void">void</a>* ud = 0, const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* p = 0, <a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddEntry">AddEntry</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s, <a href="ListOfTypes.html#Int_t">Int_t</a> id, <a href="ListOfTypes.html#void">void</a>* ud = 0, const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* p = 0, <a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddLabel">AddLabel</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* s, const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* p = 0, <a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddLabel">AddLabel</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s, const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* p = 0, <a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddPopup">AddPopup</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* s, <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* popup, <a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddPopup">AddPopup</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s, <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* popup, <a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:AddSeparator">AddSeparator</a><!--PLAIN-->(<a href="./TGMenuEntry.html">TGMenuEntry</a>* before = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Associate">Associate</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* w)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:CheckEntry">CheckEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DefaultEntry">DefaultEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DeleteEntry">DeleteEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DeleteEntry">DeleteEntry</a><!--PLAIN-->(<a href="./TGMenuEntry.html">TGMenuEntry</a>* entry)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DisableEntry">DisableEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:EnableEntry">EnableEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:EndMenu">EndMenu</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>*&amp; userData)
+<!--TAB6-->      virtual <a href="./TGMenuEntry.html">TGMenuEntry</a>* <!--TAB--><!--BOLD--><a href="#TGPopupMenu:GetEntry">GetEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->      virtual <a href="./TGMenuEntry.html">TGMenuEntry</a>* <!--TAB--><!--BOLD--><a href="#TGPopupMenu:GetEntry">GetEntry</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s)
+<!--TAB6-->              const <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TGPopupMenu:GetListOfEntries">GetListOfEntries</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:HandleCrossing">HandleCrossing</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:HandleTimer">HandleTimer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* t)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:HideEntry">HideEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Highlighted">Highlighted</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGPopupMenu:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:IsEntryChecked">IsEntryChecked</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:IsEntryEnabled">IsEntryEnabled</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:IsEntryHidden">IsEntryHidden</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:IsEntryRChecked">IsEntryRChecked</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:PlaceMenu">PlaceMenu</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#Bool_t">Bool_t</a> stick_mode, <a href="ListOfTypes.html#Bool_t">Bool_t</a> grab_pointer)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:RCheckEntry">RCheckEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id, <a href="ListOfTypes.html#Int_t">Int_t</a> IDfirst, <a href="ListOfTypes.html#Int_t">Int_t</a> IDlast)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPopupMenu:UnCheckEntry">UnCheckEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGPopupMenu:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGPopupMenu:fEntryList">fEntryList</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fEntryList">list of menu entries</a></i>
+<!--TAB6-->             <a href="./TGMenuEntry.html">TGMenuEntry</a>* <!--TAB--><!--BOLD--><a name="TGPopupMenu:fCurrent">fCurrent</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:fCurrent">currently selected menu entry</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fStick">fStick</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fStick">stick mode (popup menu stays sticked on screen)</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fHasGrab">fHasGrab</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:fHasGrab">true if menu has grabbed pointer</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fXl">fXl</a><!--PLAIN-->                            <!--TAB--><i><a name="Title:fXl">Max width of all menu entries</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fWidth">fWidth</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fWidth">width of popup menu</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fHeight">fHeight</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fHeight">height of popup menu</a></i>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* <!--TAB--><!--BOLD--><a name="TGPopupMenu:fDelay">fDelay</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fDelay">delay before poping up cascading menu</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fNormGC">fNormGC</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fNormGC">normal drawing graphics context</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fSelGC">fSelGC</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fSelGC">graphics context for drawing selections</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fSelbackGC">fSelbackGC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fSelbackGC">graphics context for drawing selection background</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fFontStruct">fFontStruct</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fFontStruct">font to draw menu entries</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fHifontStruct">fHifontStruct</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fHifontStruct">font to draw highlighted entries</a></i>
+<!--TAB6-->          const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* <!--TAB--><!--BOLD--><a name="TGPopupMenu:fMsgWindow">fMsgWindow</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fMsgWindow">window which handles menu events</a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgDefaultSelectedGC">fgDefaultSelectedGC</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgDefaultSelectedGC"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgDefaultSelectedBackgroundGC">fgDefaultSelectedBackgroundGC</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultSelectedBackgroundGC"></a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgHilightFontStruct">fgHilightFontStruct</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgHilightFontStruct"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Cursor_t">Cursor_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgDefaultCursor">fgDefaultCursor</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fgDefaultCursor"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgCheckmark">fgCheckmark</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgCheckmark"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGPopupMenu:fgRadiomark">fgRadiomark</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgRadiomark"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TGMrbMacroBrowserPopup.html">TGMrbMacroBrowserPopup</a>, <a href="http://root.cern.ch/root/html/TRootContextMenu.html">TRootContextMenu</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGPopupMenu:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:18 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

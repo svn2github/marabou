@@ -1,0 +1,25 @@
+# Makefile definitions included by the top Makefile
+
+ARCH           := linuxegcs
+USECONFIG      := FALSE
+
+EXTRA_CFLAGS   := -Iinclude 
+EXTRA_CXXFLAGS := -Iinclude 
+EXTRA_LDFLAGS  := 
+
+BINDIR         := $(MARABOU)/bin
+LIBDIR         := $(MARABOU)/lib
+INCDIR         := $(MARABOU)/include
+ETCDIR         := $(MARABOU)
+DATADIR        := $(MARABOU)
+MACRODIR       := $(MARABOU)/macros
+SRCDIR         := $(MARABOU)/src
+ICONPATH       := $(MARABOU)/icons
+CINTINCDIR     := $(MARABOU)/cint
+DOCDIR         := $(MARABOU)
+TESTDIR        := $(MARABOU)/test
+TUTDIR         := $(MARABOU)/tutorials
+
+INSTALL        := cp -dpR
+INSTALLDATA    := cp -dpR
+INSTALLDIR     := mkdir -p

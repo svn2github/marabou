@@ -1,0 +1,232 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TTree</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TTree:description">class description</a> - <a href="src/TTree.cxx.html">source file</a> - <a href="TTree_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TTree" href="TTree.h">TTree</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>, public <a href="http://root.cern.ch/root/html/TAttLine.html">TAttLine</a>, public <a href="http://root.cern.ch/root/html/TAttFill.html">TAttFill</a>, public <a href="http://root.cern.ch/root/html/TAttMarker.html">TAttMarker</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetNameByIndex">GetNameByIndex</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; varexp, <a href="ListOfTypes.html#Int_t">Int_t</a>* index, <a href="ListOfTypes.html#Int_t">Int_t</a> colindex) const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:MakeIndex">MakeIndex</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; varexp, <a href="ListOfTypes.html#Int_t">Int_t</a>* index)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TTree.html">TTree</a> <!--TAB--><!--BOLD--><a href="#TTree:TTree">TTree</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TTree.html">TTree</a> <!--TAB--><!--BOLD--><a href="#TTree:TTree">TTree</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 99)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:~TTree">~TTree</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TFriendElement.html">TFriendElement</a>* <!--TAB--><!--BOLD--><a href="#TTree:AddFriend">AddFriend</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* treename, const <a href="ListOfTypes.html#char">char</a>* filename)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TFriendElement.html">TFriendElement</a>* <!--TAB--><!--BOLD--><a href="#TTree:AddFriend">AddFriend</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* treename, <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* file)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:AddTotBytes">AddTotBytes</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tot)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:AddZipBytes">AddZipBytes</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> zip)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:AutoSave">AutoSave</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Branch">Branch</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* list, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 99, const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Branch">Branch</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* list, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 99)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Branch">Branch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* folder, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 99)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:Branch">Branch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#void">void</a>* address, const <a href="ListOfTypes.html#char">char</a>* leaflist, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:Branch">Branch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#void">void</a>* clonesaddress, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 1)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:Branch">Branch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* classname, <a href="ListOfTypes.html#void">void</a>* addobj, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 99)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:BranchOld">BranchOld</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* classname, <a href="ListOfTypes.html#void">void</a>* addobj, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 1)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:Bronch">Bronch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* classname, <a href="ListOfTypes.html#void">void</a>* addobj, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 32000, <a href="ListOfTypes.html#Int_t">Int_t</a> splitlevel = 99)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:BuildIndex">BuildIndex</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* majorname, const <a href="ListOfTypes.html#char">char</a>* minorname)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a>* <!--TAB--><!--BOLD--><a href="#TTree:BuildStreamerInfo">BuildStreamerInfo</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#void">void</a>* pointer = 0)
+<!--TAB6-->               static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TTree:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a href="#TTree:CloneTree">CloneTree</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nentries = -1, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:CopyAddresses">CopyAddresses</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* tree)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:CopyEntries">CopyEntries</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* tree, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = -1)
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a href="#TTree:CopyTree">CopyTree</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Debug">Debug</a><!--PLAIN-->() const
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Draw">Draw</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, <a href="http://root.cern.ch/root/html/TCut.html">TCut</a> selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Draw">Draw</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:DropBuffers">DropBuffers</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Fill">Fill</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:FindBranch">FindBranch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* <!--TAB--><!--BOLD--><a href="#TTree:FindLeaf">FindLeaf</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Fit">Fit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* funcname, const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Option_t">Option_t</a>* goption, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetBranch">GetBranch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                 static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetBranchStyle">GetBranchStyle</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetChainEntryNumber">GetChainEntryNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetChainOffset">GetChainOffset</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetCurrentFile">GetCurrentFile</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetDebugMax">GetDebugMax</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetDebugMin">GetDebugMin</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TDirectory.html">TDirectory</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetDirectory">GetDirectory</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntries">GetEntries</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntriesFast">GetEntriesFast</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntriesFriend">GetEntriesFriend</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntry">GetEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> getall = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntryNumber">GetEntryNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntryNumberWithBestIndex">GetEntryNumberWithBestIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> major, <a href="ListOfTypes.html#Int_t">Int_t</a> minor) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntryNumberWithIndex">GetEntryNumberWithIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> major, <a href="ListOfTypes.html#Int_t">Int_t</a> minor) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEntryWithIndex">GetEntryWithIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> major, <a href="ListOfTypes.html#Int_t">Int_t</a> minor)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEstimate">GetEstimate</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetEvent">GetEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> getall = 0)
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TEventList.html">TEventList</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetEventList">GetEventList</a><!--PLAIN-->() const
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetHistogram">GetHistogram</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetIndex">GetIndex</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetIndexValues">GetIndexValues</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetIteratorOnAllLeaves">GetIteratorOnAllLeaves</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> dir = kIterForward)
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetLeaf">GetLeaf</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetListOfBranches">GetListOfBranches</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetListOfFriends">GetListOfFriends</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetListOfLeaves">GetListOfLeaves</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetMakeClass">GetMakeClass</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetMaxEntryLoop">GetMaxEntryLoop</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetMaximum">GetMaximum</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* columname)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetMaxVirtualSize">GetMaxVirtualSize</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetMinimum">GetMinimum</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* columname)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetNbranches">GetNbranches</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetNotify">GetNotify</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetPacketSize">GetPacketSize</a><!--PLAIN-->() const
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TVirtualTreePlayer.html">TVirtualTreePlayer</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetPlayer">GetPlayer</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetReadEntry">GetReadEntry</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetReadEvent">GetReadEvent</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetScanField">GetScanField</a><!--PLAIN-->() const
+<!--TAB6-->                TTreeFormula* <!--TAB--><!--BOLD--><a href="#TTree:GetSelect">GetSelect</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetSelectedRows">GetSelectedRows</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetTimerInterval">GetTimerInterval</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetTotBytes">GetTotBytes</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetTree">GetTree</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetTreeNumber">GetTreeNumber</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetUpdate">GetUpdate</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetV1">GetV1</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetV2">GetV2</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetV3">GetV3</a><!--PLAIN-->()
+<!--TAB6-->                TTreeFormula* <!--TAB--><!--BOLD--><a href="#TTree:GetVar1">GetVar1</a><!--PLAIN-->()
+<!--TAB6-->                TTreeFormula* <!--TAB--><!--BOLD--><a href="#TTree:GetVar2">GetVar2</a><!--PLAIN-->()
+<!--TAB6-->                TTreeFormula* <!--TAB--><!--BOLD--><a href="#TTree:GetVar3">GetVar3</a><!--PLAIN-->()
+<!--TAB6-->                TTreeFormula* <!--TAB--><!--BOLD--><a href="#TTree:GetVar4">GetVar4</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TTree:GetW">GetW</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetWeight">GetWeight</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TTree:GetZipBytes">GetZipBytes</a><!--PLAIN-->() const
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:IncrementTotalBuffers">IncrementTotalBuffers</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->              virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TTree:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTree:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:LoadTree">LoadTree</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Loop">Loop</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:MakeClass">MakeClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname = "0", <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:MakeCode">MakeCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename = "0")
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:MakeSelector">MakeSelector</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* selector = "0")
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTree:MemoryFull">MemoryFull</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Notify">Notify</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TPrincipal.html">TPrincipal</a>* <!--TAB--><!--BOLD--><a href="#TTree:Principal">Principal</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "np", <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Process">Process</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Process">Process</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a>* selector, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Project">Project</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* hname, const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TSQLResult.html">TSQLResult</a>* <!--TAB--><!--BOLD--><a href="#TTree:Query">Query</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Reset">Reset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:Scan">Scan</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetAutoSave">SetAutoSave</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> autos = 10000000)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetBasketSize">SetBasketSize</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* bname, <a href="ListOfTypes.html#Int_t">Int_t</a> buffsize = 16000)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetBranchAddress">SetBranchAddress</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* bname, <a href="ListOfTypes.html#void">void</a>* add)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetBranchStatus">SetBranchStatus</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* bname, <a href="ListOfTypes.html#Bool_t">Bool_t</a> status = 1)
+<!--TAB6-->                  static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetBranchStyle">SetBranchStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> style = 1)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetChainOffset">SetChainOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> offset = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetDebug">SetDebug</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> level = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> min = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> max = 9999999)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetDirectory">SetDirectory</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TDirectory.html">TDirectory</a>* dir)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetEstimate">SetEstimate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 10000)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetEventList">SetEventList</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TEventList.html">TEventList</a>* list)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetMakeClass">SetMakeClass</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> make)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetMaxEntryLoop">SetMaxEntryLoop</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> maxev = 1000000000)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetMaxVirtualSize">SetMaxVirtualSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> size = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetNotify">SetNotify</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetObject">SetObject</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetScanField">SetScanField</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n = 50)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetTimerInterval">SetTimerInterval</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> msec = 333)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetUpdate">SetUpdate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> freq = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:SetWeight">SetWeight</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> w = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Show">Show</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry = -1)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:StartViewer">StartViewer</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTree:UnbinnedFit">UnbinnedFit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* funcname, const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = 1000000000, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTree:UseCurrentStyle">UseCurrentStyle</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TTree:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TTree:fEntries">fEntries</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fEntries">Number of entries</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TTree:fTotBytes">fTotBytes</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTotBytes">Total number of bytes in all branches before compression</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TTree:fZipBytes">fZipBytes</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fZipBytes">Total number of bytes in all branches after compression</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TTree:fSavedBytes">fSavedBytes</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fSavedBytes">Number of autosaved bytes</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TTree:fWeight">fWeight</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fWeight">Tree weight (see TTree::SetWeight)</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fTimerInterval">fTimerInterval</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTimerInterval">Timer interval in milliseconds</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fScanField">fScanField</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fScanField">Number of runs before prompting in Scan</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fUpdate">fUpdate</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fUpdate">Update frequency for EntryLoop</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fMaxEntryLoop">fMaxEntryLoop</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMaxEntryLoop">Maximum number of entries to process</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fMaxVirtualSize">fMaxVirtualSize</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMaxVirtualSize">Maximum total size of buffers kept in memory</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fAutoSave">fAutoSave</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fAutoSave">Autosave tree when fAutoSave bytes produced</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fEstimate">fEstimate</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fEstimate">Number of entries to estimate histogram limits</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fChainOffset">fChainOffset</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fChainOffset">! Offset of 1st entry of this Tree in a TChain</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fReadEntry">fReadEntry</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fReadEntry">! Number of the entry being processed</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fTotalBuffers">fTotalBuffers</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTotalBuffers">! Total number of bytes in branch buffers</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fPacketSize">fPacketSize</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPacketSize">! Number of entries in one packet for parallel root</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fNfill">fNfill</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNfill">! Local for EntryLoop</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fDebug">fDebug</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDebug">! Debug level</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fDebugMin">fDebugMin</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fDebugMin">! First entry number to debug</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fDebugMax">fDebugMax</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fDebugMax">! Last entry number to debug</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fMakeClass">fMakeClass</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fMakeClass">! not zero when processing code generated by MakeClass</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TTree:fNotify">fNotify</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNotify">! Object to be notified when loading a Tree</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TDirectory.html">TDirectory</a>* <!--TAB--><!--BOLD--><a name="TTree:fDirectory">fDirectory</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fDirectory">! Pointer to directory holding this tree</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TTree:fBranches">fBranches</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fBranches">List of Branches</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TTree:fLeaves">fLeaves</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fLeaves">Direct pointers to individual branch leaves</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TEventList.html">TEventList</a>* <!--TAB--><!--BOLD--><a name="TTree:fEventList">fEventList</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fEventList">! Pointer to event selection list (if one)</a></i>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TArrayD.html">TArrayD</a> <!--TAB--><!--BOLD--><a name="TTree:fIndexValues">fIndexValues</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fIndexValues">Sorted index values</a></i>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TTree:fIndex">fIndex</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fIndex">Index of sorted values</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TTree:fFriends">fFriends</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFriends">pointer to list of friend elements</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TVirtualTreePlayer.html">TVirtualTreePlayer</a>* <!--TAB--><!--BOLD--><a name="TTree:fPlayer">fPlayer</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPlayer">! Pointer to current Tree player</a></i>
+<!--TAB6-->             static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTree:fgBranchStyle">fgBranchStyle</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fgBranchStyle">Old/New branch style</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TTree:kForceRead">kForceRead</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kForceRead"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TChain.html">TChain</a>, <a href="http://root.cern.ch/root/html/TNtuple.html">TNtuple</a>, <a href="http://root.cern.ch/root/html/TNtupleD.html">TNtupleD</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TTree:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:29 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

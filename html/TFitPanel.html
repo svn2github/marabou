@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TFitPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TFitPanel:description">class description</a> - <a href="src/TFitPanel.cxx.html">source file</a> - <a href="TFitPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TFitPanel" href="TFitPanel.h">TFitPanel</a> : public <a href="http://root.cern.ch/root/html/TDialogCanvas.html">TDialogCanvas</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TFitPanel.html">TFitPanel</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:TFitPanel">TFitPanel</a><!--PLAIN-->()
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TFitPanel.html">TFitPanel</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:TFitPanel">TFitPanel</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ww = 300, <a href="ListOfTypes.html#UInt_t">UInt_t</a> wh = 400)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:~TFitPanel">~TFitPanel</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:AddOption">AddOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:Apply">Apply</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* action)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:BuildStandardButtons">BuildStandardButtons</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TFitPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TFitPanel:GetObjectFit">GetObjectFit</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TFitPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:SetDefaults">SetDefaults</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:SetFunction">SetFunction</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* function)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:SetSame">SetSame</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFitPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TFitPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TFitPanel:fOption">fOption</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOption">Fitting options</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TFitPanel:fFunction">fFunction</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fFunction">Function to fit</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TFitPanel:fSame">fSame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fSame">graphics option to superimpose new fit on existing picture</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TSlider.html">TSlider</a>* <!--TAB--><!--BOLD--><a name="TFitPanel:fSlider">fSlider</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fSlider">Pointer to fitpanel slider</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TFitPanel:fObjectFit">fObjectFit</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fObjectFit">Pointer to object to fit</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TFitPanelGraph.html">TFitPanelGraph</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TFitPanel:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:16 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,127 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGeometry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGeometry:description">class description</a> - <a href="src/TGeometry.cxx.html">source file</a> - <a href="TGeometry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGeometry" href="TGeometry.h">TGeometry</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGeometry.html">TGeometry</a> <!--TAB--><!--BOLD--><a href="#TGeometry:TGeometry">TGeometry</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGeometry.html">TGeometry</a> <!--TAB--><!--BOLD--><a href="#TGeometry:TGeometry">TGeometry</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGeometry.html">TGeometry</a> <!--TAB--><!--BOLD--><a href="#TGeometry:TGeometry">TGeometry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGeometry.html">TGeometry</a>&amp;)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:~TGeometry">~TGeometry</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:cd">cd</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* path = "0")
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:FindObject">FindObject</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:FindObject">FindObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGeometry:GeomLevel">GeomLevel</a><!--PLAIN-->() const
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:Get">Get</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGeometry:GetBomb">GetBomb</a><!--PLAIN-->() const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetCurrentMatrix">GetCurrentMatrix</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetCurrentNode">GetCurrentNode</a><!--PLAIN-->() const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetCurrentPosition">GetCurrentPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Double_t">Double_t</a>* z) const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetCurrentPosition">GetCurrentPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* x, <a href="ListOfTypes.html#Float_t">Float_t</a>* y, <a href="ListOfTypes.html#Float_t">Float_t</a>* z) const
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGeometry:GetCurrentReflection">GetCurrentReflection</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetListOfMaterials">GetListOfMaterials</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetListOfMatrices">GetListOfMatrices</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetListOfNodes">GetListOfNodes</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetListOfShapes">GetListOfShapes</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMaterial.html">TMaterial</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetMaterial">GetMaterial</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMaterial.html">TMaterial</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetMaterialByNumber">GetMaterialByNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> number) const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetNode">GetNode</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetRotMatrix">GetRotMatrix</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetRotMatrixByNumber">GetRotMatrixByNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> number) const
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TShape.html">TShape</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetShape">GetShape</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TShape.html">TShape</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:GetShapeByNumber">GetShapeByNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> number) const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGeometry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGeometry:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Local2Master">Local2Master</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* local, <a href="ListOfTypes.html#Double_t">Double_t</a>* master)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Local2Master">Local2Master</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* local, <a href="ListOfTypes.html#Float_t">Float_t</a>* master)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "rsn2") const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Master2Local">Master2Local</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* master, <a href="ListOfTypes.html#Double_t">Double_t</a>* local)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Master2Local">Master2Local</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* master, <a href="ListOfTypes.html#Float_t">Float_t</a>* local)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Node">Node</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, const <a href="ListOfTypes.html#char">char</a>* shapename, <a href="ListOfTypes.html#Double_t">Double_t</a> x = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> y = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> z = 0, const <a href="ListOfTypes.html#char">char</a>* matrixname, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGeometry:PopLevel">PopLevel</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGeometry:PushLevel">PushLevel</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetBomb">SetBomb</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> bomb = 1.4)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetCurrentNode">SetCurrentNode</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* node)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetGeomLevel">SetGeomLevel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> level = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetMatrix">SetMatrix</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* matrix = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetPosition">SetPosition</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* matrix, <a href="ListOfTypes.html#Double_t">Double_t</a> x = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> y = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> z = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetPosition">SetPosition</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* matrix, <a href="ListOfTypes.html#Float_t">Float_t</a> x, <a href="ListOfTypes.html#Float_t">Float_t</a> y, <a href="ListOfTypes.html#Float_t">Float_t</a> z)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetPosition">SetPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:SetPosition">SetPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> x, <a href="ListOfTypes.html#Float_t">Float_t</a> y, <a href="ListOfTypes.html#Float_t">Float_t</a> z)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:UpdateMatrix">UpdateMatrix</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* node)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:UpdateTempMatrix">UpdateTempMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> y = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> z = 0, <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* matrix = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:UpdateTempMatrix">UpdateTempMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z, <a href="ListOfTypes.html#Double_t">Double_t</a>* matrix, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isReflection = kFALSE)
+<!--TAB6-->            static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGeometry:UpdateTempMatrix">UpdateTempMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* dx1, <a href="ListOfTypes.html#Double_t">Double_t</a>* rmat1, <a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z, <a href="ListOfTypes.html#Double_t">Double_t</a>* matrix, <a href="ListOfTypes.html#Double_t">Double_t</a>* dxnew, <a href="ListOfTypes.html#Double_t">Double_t</a>* rmatnew)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGeometry:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a name="TGeometry:fMaterials">fMaterials</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMaterials">-&gt;Collection of materials</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a name="TGeometry:fMatrices">fMatrices</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fMatrices">-&gt;Collection of rotation matrices</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a name="TGeometry:fShapes">fShapes</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fShapes">-&gt;Collection of shapes</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGeometry:fNodes">fNodes</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fNodes">-&gt;Collection of nodes</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* <!--TAB--><!--BOLD--><a name="TGeometry:fMatrix">fMatrix</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMatrix">!Pointers to current rotation matrices</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* <!--TAB--><!--BOLD--><a name="TGeometry:fCurrentNode">fCurrentNode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fCurrentNode">!Pointer to current node</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TMaterial.html">TMaterial</a>** <!--TAB--><!--BOLD--><a name="TGeometry:fMaterialPointer">fMaterialPointer</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMaterialPointer">!Pointers to materials</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>** <!--TAB--><!--BOLD--><a name="TGeometry:fMatrixPointer">fMatrixPointer</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fMatrixPointer">!Pointers to rotation matrices</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TShape.html">TShape</a>** <!--TAB--><!--BOLD--><a name="TGeometry:fShapePointer">fShapePointer</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fShapePointer">!Pointers to shapes</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fBomb">fBomb</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fBomb">Bomb factor for exploded geometry</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fGeomLevel">fGeomLevel</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fGeomLevel">!</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fX">fX</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fX">!</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fY">fY</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fY">! The global translation of the current node</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fZ">fZ</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fZ">!</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fTranslation">fTranslation[20][3]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTranslation">!</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fRotMatrix">fRotMatrix[20][9]</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fRotMatrix">!</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGeometry:fIsReflection">fIsReflection[20]</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fIsReflection">!</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGeometry:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:23 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGViewPort</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGViewPort:description">class description</a> - <a href="src/TGViewPort.cxx.html">source file</a> - <a href="TGViewPort_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGViewPort" href="TGCanvas.h">TGViewPort</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGViewPort.html">TGViewPort</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:TGViewPort">TGViewPort</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kChildFrame, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGViewPort.html">TGViewPort</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:TGViewPort">TGViewPort</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGViewPort.html">TGViewPort</a>&amp;)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:~TGViewPort">~TGViewPort</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGViewPort:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* <!--TAB--><!--BOLD--><a href="#TGViewPort:GetContainer">GetContainer</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:GetHPos">GetHPos</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:GetVPos">GetVPos</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:HandleConfigureNotify">HandleConfigureNotify</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGViewPort:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:SetContainer">SetContainer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:SetHPos">SetHPos</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> xpos)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:SetPos">SetPos</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> xpos, <a href="ListOfTypes.html#Int_t">Int_t</a> ypos)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:SetVPos">SetVPos</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ypos)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGViewPort:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGViewPort:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGViewPort:fX0">fX0</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fX0"></a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGViewPort:fY0">fY0</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fY0">position of container frame in viewport</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* <!--TAB--><!--BOLD--><a name="TGViewPort:fContainer">fContainer</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fContainer">container frame</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGViewPort:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:22 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

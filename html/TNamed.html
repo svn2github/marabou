@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TNamed</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TNamed:description">class description</a> - <a href="src/TNamed.cxx.html">source file</a> - <a href="TNamed_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TNamed" href="TNamed.h">TNamed</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> <!--TAB--><!--BOLD--><a href="#TNamed:TNamed">TNamed</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> <!--TAB--><!--BOLD--><a href="#TNamed:TNamed">TNamed</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> <!--TAB--><!--BOLD--><a href="#TNamed:TNamed">TNamed</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; name, const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; title)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> <!--TAB--><!--BOLD--><a href="#TNamed:TNamed">TNamed</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>&amp; named)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:~TNamed">~TNamed</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TNamed:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TNamed:Clone">Clone</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* newname) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNamed:Compare">Compare</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; named)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:FillBuffer">FillBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>*&amp; buffer)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TNamed:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TNamed:GetTitle">GetTitle</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TNamed:Hash">Hash</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TNamed:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TNamed:IsSortable">IsSortable</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>&amp; <!--TAB--><!--BOLD--><a href="#TNamed:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>&amp; rhs)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:SetNameTitle">SetNameTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:SetTitle">SetTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNamed:Sizeof">Sizeof</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamed:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TNamed:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TNamed:fName">fName</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fName">object identifier</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TNamed:fTitle">fTitle</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTitle">object title</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./DGFControlData.html">DGFControlData</a>, <a href="./DGFModule.html">DGFModule</a>, <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>, <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a>, <a href="http://root.cern.ch/root/html/TBenchmark.html">TBenchmark</a>, <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>, <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>, <a href="http://root.cern.ch/root/html/TChainElement.html">TChainElement</a>, <a href="http://root.cern.ch/root/html/TClassTree.html">TClassTree</a>, <a href="http://root.cern.ch/root/html/TColor.html">TColor</a>, <a href="http://root.cern.ch/root/html/TContextMenu.html">TContextMenu</a>, <a href="http://root.cern.ch/root/html/TControlBarButton.html">TControlBarButton</a>, <a href="http://root.cern.ch/root/html/TCut.html">TCut</a>, <a href="http://root.cern.ch/root/html/TDSet.html">TDSet</a>, <a href="http://root.cern.ch/root/html/TDirectory.html">TDirectory</a>, <a href="http://root.cern.ch/root/html/TEventList.html">TEventList</a>, <a href="http://root.cern.ch/root/html/TExec.html">TExec</a>, <a href="http://root.cern.ch/root/html/TFolder.html">TFolder</a>, <a href="http://root.cern.ch/root/html/TFormula.html">TFormula</a>, <a href="http://root.cern.ch/root/html/TFriendElement.html">TFriendElement</a>, <a href="http://root.cern.ch/root/html/TGeometry.html">TGeometry</a>, <a href="http://root.cern.ch/root/html/TGraph.html">TGraph</a>, <a href="http://root.cern.ch/root/html/TGraphSmooth.html">TGraphSmooth</a>, <a href="http://root.cern.ch/root/html/TGuiFactory.html">TGuiFactory</a>, <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>, <a href="http://root.cern.ch/root/html/THStack.html">THStack</a>, <a href="http://root.cern.ch/root/html/TInterpreter.html">TInterpreter</a>, <a href="http://root.cern.ch/root/html/TKey.html">TKey</a>, <a href="http://root.cern.ch/root/html/TKeyMapFile.html">TKeyMapFile</a>, <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>, <a href="http://root.cern.ch/root/html/TMaterial.html">TMaterial</a>, <a href="./TMbsNode.html">TMbsNode</a>, <a href="http://root.cern.ch/root/html/TMessageHandler.html">TMessageHandler</a>, <a href="http://root.cern.ch/root/html/TMinuit.html">TMinuit</a>, <a href="./TMrbCNAF.html">TMrbCNAF</a>, <a href="./TMrbConfig.html">TMrbConfig</a>, <a href="./TMrbDGF.html">TMrbDGF</a>, <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>, <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>, <a href="./TMrbEvent.html">TMrbEvent</a>, <a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a>, <a href="./TMrbLofData.html">TMrbLofData</a>, <a href="./TMrbLofUserVars.html">TMrbLofUserVars</a>, <a href="./TMrbLogger.html">TMrbLogger</a>, <a href="./TMrbModule.html">TMrbModule</a>, <a href="./TMrbModuleChannel.html">TMrbModuleChannel</a>, <a href="./TMrbNamedX.html">TMrbNamedX</a>, <a href="./TMrbSerialComm.html">TMrbSerialComm</a>, <a href="./TMrbStatCheck.html">TMrbStatCheck</a>, <a href="./TMrbStatEntry.html">TMrbStatEntry</a>, <a href="./TMrbStatistics.html">TMrbStatistics</a>, <a href="./TMrbSubevent.html">TMrbSubevent</a>, <a href="./TMrbTransport.html">TMrbTransport</a>, <a href="./TMrbVariable.html">TMrbVariable</a>, <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a>, <a href="http://root.cern.ch/root/html/TMultiGraph.html">TMultiGraph</a>, <a href="./TNamedBytes.html">TNamedBytes</a>, <a href="./TNamedString.html">TNamedString</a>, <a href="http://root.cern.ch/root/html/TNode.html">TNode</a>, <a href="http://root.cern.ch/root/html/TPrincipal.html">TPrincipal</a>, <a href="http://root.cern.ch/root/html/TProcessID.html">TProcessID</a>, <a href="http://root.cern.ch/root/html/TRandom.html">TRandom</a>, <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>, <a href="http://root.cern.ch/root/html/TShape.html">TShape</a>, <a href="./TSnkDDA0816.html">TSnkDDA0816</a>, <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>, <a href="http://root.cern.ch/root/html/TSpectrum.html">TSpectrum</a>, <a href="http://root.cern.ch/root/html/TSpline.html">TSpline</a>, <a href="http://root.cern.ch/root/html/TStreamerElement.html">TStreamerElement</a>, <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a>, <a href="http://root.cern.ch/root/html/TStyle.html">TStyle</a>, <a href="http://root.cern.ch/root/html/TSystem.html">TSystem</a>, <a href="http://root.cern.ch/root/html/TSystemFile.html">TSystemFile</a>, <a href="http://root.cern.ch/root/html/TTask.html">TTask</a>, <a href="http://root.cern.ch/root/html/TText.html">TText</a>, <a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>, <a href="http://root.cern.ch/root/html/TToggleGroup.html">TToggleGroup</a>, <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>, <a href="http://root.cern.ch/root/html/TVirtualPS.html">TVirtualPS</a>, <a href="http://root.cern.ch/root/html/TVirtualX.html">TVirtualX</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TNamed:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:05 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,115 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TKey</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TKey:description">class description</a> - <a href="src/TKey.cxx.html">source file</a> - <a href="TKey_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TKey" href="TKey.h">TKey</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:Create">Create</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:Read">Read</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TKey.html">TKey</a> <!--TAB--><!--BOLD--><a href="#TKey:TKey">TKey</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TKey.html">TKey</a> <!--TAB--><!--BOLD--><a href="#TKey:TKey">TKey</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TKey.html">TKey</a> <!--TAB--><!--BOLD--><a href="#TKey:TKey">TKey</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; name, const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; title, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TKey.html">TKey</a> <!--TAB--><!--BOLD--><a href="#TKey:TKey">TKey</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize)
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TKey.html">TKey</a> <!--TAB--><!--BOLD--><a href="#TKey:TKey">TKey</a><!--PLAIN-->(<a href="ListOfTypes.html#Seek_t">Seek_t</a> pointer, <a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TKey.html">TKey</a> <!--TAB--><!--BOLD--><a href="#TKey:TKey">TKey</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TKey.html">TKey</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:~TKey">~TKey</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TKey:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:DeleteBuffer">DeleteBuffer</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:FillBuffer">FillBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>*&amp; buffer)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TKey:GetBuffer">GetBuffer</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>* <!--TAB--><!--BOLD--><a href="#TKey:GetBufferRef">GetBufferRef</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TKey:GetClassName">GetClassName</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetCycle">GetCycle</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetKeep">GetKeep</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetKeylen">GetKeylen</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetNbytes">GetNbytes</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetObjlen">GetObjlen</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetSeekKey">GetSeekKey</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetSeekPdir">GetSeekPdir</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:GetVersion">GetVersion</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TKey:Hash">Hash</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TKey:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TKey:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:Keep">Keep</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:Read">Read</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>*&amp; buffer)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:ReadFile">ReadFile</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TKey:ReadObj">ReadObj</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:SetBuffer">SetBuffer</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:SetParent">SetParent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:Sizeof">Sizeof</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TKey:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TKey:WriteFile">WriteFile</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> cycle = 1)
+</pre>
+
+<h3><!--TAB2-->  <a name="TKey:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TKey:fVersion">fVersion</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fVersion">Key version identifier</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TKey:fNbytes">fNbytes</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNbytes">Number of bytes for the object on file</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TKey:fObjlen">fObjlen</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fObjlen">Length of uncompressed object in bytes</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TDatime.html">TDatime</a> <!--TAB--><!--BOLD--><a name="TKey:fDatime">fDatime</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fDatime">Date/Time of insertion in file</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a name="TKey:fKeylen">fKeylen</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fKeylen">Number of bytes for the key itself</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a name="TKey:fCycle">fCycle</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fCycle">Cycle number</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a name="TKey:fSeekKey">fSeekKey</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSeekKey">Location of object on file</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a name="TKey:fSeekPdir">fSeekPdir</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fSeekPdir">Location of parent directory on file</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TKey:fClassName">fClassName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fClassName">Object Class name</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TKey:fLeft">fLeft</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLeft">Number of bytes left in current segment</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TKey:fBuffer">fBuffer</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fBuffer">Object buffer</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>* <!--TAB--><!--BOLD--><a name="TKey:fBufferRef">fBufferRef</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fBufferRef">Pointer to the TBuffer object</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TBasket.html">TBasket</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TKey:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

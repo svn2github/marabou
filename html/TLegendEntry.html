@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TLegendEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TLegendEntry:description">class description</a> - <a href="src/TLegendEntry.cxx.html">source file</a> - <a href="TLegendEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TLegendEntry" href="TLegendEntry.h">TLegendEntry</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>, public <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a>, public <a href="http://root.cern.ch/root/html/TAttLine.html">TAttLine</a>, public <a href="http://root.cern.ch/root/html/TAttFill.html">TAttFill</a>, public <a href="http://root.cern.ch/root/html/TAttMarker.html">TAttMarker</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TLegendEntry.html">TLegendEntry</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:TLegendEntry">TLegendEntry</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TLegendEntry.html">TLegendEntry</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:TLegendEntry">TLegendEntry</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* label = "0", <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "lpf")
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TLegendEntry.html">TLegendEntry</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:TLegendEntry">TLegendEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TLegendEntry.html">TLegendEntry</a>&amp; entry)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:~TLegendEntry">~TLegendEntry</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TLegendEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; obj)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TLegendEntry:GetLabel">GetLabel</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TLegendEntry:GetObject">GetObject</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TLegendEntry:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TLegendEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:SaveEntry">SaveEntry</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:SetLabel">SetLabel</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* label)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:SetObject">SetObject</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:SetObject">SetObject</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* objectName)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:SetOption">SetOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "lpf")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLegendEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TLegendEntry:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TLegendEntry:fObject">fObject</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fObject">pointer to object being represented by this entry</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TLegendEntry:fLabel">fLabel</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLabel">Text associated with the entry, will become latex</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TLegendEntry:fOption">fOption</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fOption">Options associated with this entry</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TLegendEntry:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:30 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

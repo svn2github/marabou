@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGLayoutHints</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGLayoutHints:description">class description</a> - <a href="src/TGLayoutHints.cxx.html">source file</a> - <a href="TGLayoutHints_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGLayoutHints" href="TGLayout.h">TGLayoutHints</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:TGLayoutHints">TGLayoutHints</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> hints = kLHintsNormal, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padleft = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padright = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padtop = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padbottom = 0)
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:TGLayoutHints">TGLayoutHints</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:~TGLayoutHints">~TGLayoutHints</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLayoutHints:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:GetLayoutHints">GetLayoutHints</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:GetPadBottom">GetPadBottom</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:GetPadLeft">GetPadLeft</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:GetPadRight">GetPadRight</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:GetPadTop">GetPadTop</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLayoutHints:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLayoutHints:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGLayoutHints:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGLayoutHints:fLayoutHints">fLayoutHints</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLayoutHints">layout hints (combination of ELayoutHints)</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGLayoutHints:fPadtop">fPadtop</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fPadtop">amount of top padding</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGLayoutHints:fPadbottom">fPadbottom</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fPadbottom">amount of bottom padding</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGLayoutHints:fPadleft">fPadleft</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPadleft">amount of left padding</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGLayoutHints:fPadright">fPadright</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fPadright">amount of right padding</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGTableLayoutHints.html">TGTableLayoutHints</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGLayoutHints:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:22 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

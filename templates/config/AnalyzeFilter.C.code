@@ -1,0 +1,48 @@
+//________________________________________________________________[ROOT MACRO]
+//////////////////////////////////////////////////////////////////////////////
+// Name:             %%ANALYZE_FILE%%Filter.C
+// Purpose:          Define filter conditions for %%ANALYZE_NAME_UC%%Analyze
+// Description:      Prototype of a ROOT macro to be used when
+//                   replaying and/or filtering event data. 
+// Author:           %%AUTHOR%%
+// Revision:         
+// Date:             %%CREATION_DATE%%
+// URL:              
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+%%ANALYZE_FILE%%Filter(Bool_t ReplayMode)
+{
+	gROOT->Reset();
+	gROOT->Macro("LoadColors.C");
+
+// how to find objects in the ROOT dictionary
+//	TObject * obj = gROOT->FindObject(ObjName);
+
+%%BeginOfCode%%
+	$className * $varName = ($className *) gROOT->FindObject("$orgVarName");
+%%EndOfCode%%
+%%ANALYZE_FIND_VARS%%
+
+	if (ReplayMode) {
+		cout	<< setblue
+				<< "TMrbAnalyze::ExecFilterMacro(): Running in REPLAY mode"
+				<< setblack << endl;
+
+%%BeginOfCode%%
+%B%// tree and branches for event $treeName
+%B%		TTree * $treeName = (TTree *) gROOT->FindObject("$treeName");	// find tree $treeName
+%B%		if ($treeName != NULL) {
+%B%			$treeName->SetBranchStatus("*", 0);				// disable all branches
+%S%			$treeName->SetBranchStatus("$prefix$paramNameLC", 1);	// $sevtNameLC.$paramNameLC
+%X%			$treeName->SetBranchStatus("$prefix$paramNameLC*", 1);	// $sevtNameLC.$paramNameLC[$indexRange]
+%E%			$treeName->SetBranchStatus("fTimeStamp", 1);	// (de)activate time stamp
+%E%		} else {
+%E%			cerr	<< setred
+%E%					<< "TMrbAnalyze::ExecFilterMacro(): No such tree - $treeName"
+%E%					<< setblack << endl;
+%E%		}
+%%EndOfCode%%
+%%EVT_SET_BRANCH_STATUS%%
+	}
+}

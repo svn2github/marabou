@@ -1,0 +1,211 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFRunControlPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFRunControlPanel:description">class description</a> - <a href="src/DGFRunControlPanel.cxx.html">source file</a> - <a href="DGFRunControlPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFRunControlPanel" href="DGFRunControlPanel.h">DGFRunControlPanel</a> : public <a href="http://root.cern.ch/root/html/TGMainFrame.html">TGMainFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:PopupMessageViewer">PopupMessageViewer</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:DGFRunControlPanel">DGFRunControlPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* <a href="ListOfTypes.html#Window">Window</a>, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height)
+<!--TAB6-->      <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:DGFRunControlPanel">DGFRunControlPanel</a><!--PLAIN-->(const <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a>&amp; f)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:~DGFRunControlPanel">~DGFRunControlPanel</a><!--PLAIN-->()
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRunControlPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFRunControlPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fHeap">fHeap</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGMenuBar.html">TGMenuBar</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMenuBar">fMenuBar</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMenuBar">main menu bar</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMenuFile">fMenuFile</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fMenuFile">pulldown menu: file</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMenuView">fMenuView</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fMenuView">pulldown menu: view</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMenuGeneral">fMenuGeneral</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMenuGeneral">pulldown menu: general</a></i>
+<!--TAB6-->      <a href="./TGMrbMacroBrowserPopup.html">TGMrbMacroBrowserPopup</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMenuMacros">fMenuMacros</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMenuMacros">pulldown menu: macros</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMenuHelp">fMenuHelp</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fMenuHelp">pulldown menu: help</a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fRunControlFrame">fRunControlFrame</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fRunControlFrame">vert. frame to store different items</a></i>
+<!--TAB6-->        <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fSettingsFrame">fSettingsFrame</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fSettingsFrame">edit settings</a></i>
+<!--TAB6-->        <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fDatabaseFrame">fDatabaseFrame</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fDatabaseFrame">database</a></i>
+<!--TAB6-->        <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fCalibrateFrame">fCalibrateFrame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fCalibrateFrame">calibrate</a></i>
+<!--TAB6-->        <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fRunFrame">fRunFrame</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fRunFrame">run</a></i>
+<!--TAB6-->               <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fLofMacros">fLofMacros</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fLofMacros">list of macros</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fRunControlSettings">fRunControlSettings</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fRunControlSettings">list of buttons: edit settings</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fRunControlDatabase">fRunControlDatabase</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fRunControlDatabase">database</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fRunControlCalibrate">fRunControlCalibrate</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fRunControlCalibrate">calibrate					</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fRunControlRun">fRunControlRun</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fRunControlRun">run</a></i>
+<!--TAB6-->          <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>* <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fMsgViewer">fMsgViewer</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fMsgViewer"></a></i>
+<!--TAB6-->          <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFFileExit">kDGFFileExit</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:kDGFFileExit"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFFileSave">kDGFFileSave</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:kDGFFileSave"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFViewErrors">kDGFViewErrors</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kDGFViewErrors"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralOutputNormal">kDGFGeneralOutputNormal</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kDGFGeneralOutputNormal"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralOutputVerbose">kDGFGeneralOutputVerbose</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kDGFGeneralOutputVerbose"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralOutputDebug">kDGFGeneralOutputDebug</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kDGFGeneralOutputDebug"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralModNumLocal">kDGFGeneralModNumLocal</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kDGFGeneralModNumLocal"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralModNumGlobal">kDGFGeneralModNumGlobal</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kDGFGeneralModNumGlobal"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralOffline">kDGFGeneralOffline</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kDGFGeneralOffline"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFGeneralOnline">kDGFGeneralOnline</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kDGFGeneralOnline"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFHelpContents">kDGFHelpContents</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kDGFHelpContents"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFHelpAbout">kDGFHelpAbout</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kDGFHelpAbout"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlSettingsSystem">kDGFRunControlSettingsSystem</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFRunControlSettingsSystem"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlSettingsFiles">kDGFRunControlSettingsFiles</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFRunControlSettingsFiles"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlSettingsModules">kDGFRunControlSettingsModules</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFRunControlSettingsModules"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlSettingsParams">kDGFRunControlSettingsParams</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFRunControlSettingsParams"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlCalibrateTauTrace">kDGFRunControlCalibrateTauTrace</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFRunControlCalibrateTauTrace"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlCalibrateTrace">kDGFRunControlCalibrateTrace</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFRunControlCalibrateTrace"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlCalibrateUntrigTrace">kDGFRunControlCalibrateUntrigTrace</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFRunControlCalibrateUntrigTrace"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlCalibrateOffsets">kDGFRunControlCalibrateOffsets</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDGFRunControlCalibrateOffsets"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlRunEvents">kDGFRunControlRunEvents</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kDGFRunControlRunEvents"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlRunMCA">kDGFRunControlRunMCA</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kDGFRunControlRunMCA"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlRunStatistics">kDGFRunControlRunStatistics</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFRunControlRunStatistics"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlDatabaseSave">kDGFRunControlDatabaseSave</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFRunControlDatabaseSave"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlDatabaseRestore">kDGFRunControlDatabaseRestore</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFRunControlDatabaseRestore"></a></i>
+<!--TAB6-->      static const <a href="./DGFRunControlPanel.html#DGFRunControlPanel:EDGFRunControlCmdId">DGFRunControlPanel::EDGFRunControlCmdId</a> <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kDGFRunControlClose">kDGFRunControlClose</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kDGFRunControlClose"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                            <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                           <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRunControlPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFRunControlPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Run Control
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFRunControlPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFRunControlPanel:DGFRunControlPanel" href="src/DGFRunControlPanel.cxx.html#DGFRunControlPanel:DGFRunControlPanel">DGFRunControlPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height)
+      																: <a href="http://root.cern.ch/root/html/TGMainFrame.html">TGMainFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, Width, Height) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a>
+ Purpose:        Main frame
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFRunControlPanel:CloseWindow" href="src/DGFRunControlPanel.cxx.html#DGFRunControlPanel:CloseWindow">CloseWindow</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFRunControlPanel.html#DGFRunControlPanel:CloseWindow">DGFRunControlPanel::CloseWindow</a>
+ Purpose:        Close window and terminate application
+ Arguments:
+ Results:
+ Exceptions:
+ Description:    Got close message for this MainFrame.
+                 Calls parent's <a href="#DGFRunControlPanel:CloseWindow">CloseWindow</a>()
+                 (which destroys the window) and terminates the application.
+                 The close message is generated by the window manager when
+                 its close window menu item is selected.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFRunControlPanel:PopupMessageViewer" href="src/DGFRunControlPanel.cxx.html#DGFRunControlPanel:PopupMessageViewer">PopupMessageViewer</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFRunControlPanel.html#DGFRunControlPanel:PopupMessageViewer">DGFRunControlPanel::PopupMessageViewer</a>
+ Purpose:        Create a message viewer window
+ Arguments:
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFRunControlPanel:ProcessMessage" href="src/DGFRunControlPanel.cxx.html#DGFRunControlPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFRunControlPanel.html#DGFRunControlPanel:ProcessMessage">DGFRunControlPanel::ProcessMessage</a>
+ Purpose:        Message handler for the main frame widget
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a> <a name="DGFRunControlPanel:DGFRunControlPanel" href="DGFRunControlPanel.h">DGFRunControlPanel</a>(const <a href="./DGFRunControlPanel.html">DGFRunControlPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFRunControlPanel:HandleKey" href="DGFRunControlPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFRunControlPanel:Class" href="DGFRunControlPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFRunControlPanel:IsA" href="DGFRunControlPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFRunControlPanel:ShowMembers" href="DGFRunControlPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFRunControlPanel:Streamer" href="DGFRunControlPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFRunControlPanel:StreamerNVirtual" href="DGFRunControlPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFRunControlPanel:~DGFRunControlPanel" href="DGFRunControlPanel.h">~DGFRunControlPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:58 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,215 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbLofMacros</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbLofMacros:description">class description</a> - <a href="src/TMrbLofMacros.cxx.html">source file</a> - <a href="TMrbLofMacros_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbLofMacros" href="TMrbLofMacros.h">TMrbLofMacros</a> : public <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:CheckMacro">CheckMacro</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Macro)
+<!--TAB6-->      <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:ProcessMacro">ProcessMacro</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* MacroPath, const <a href="ListOfTypes.html#Char_t">Char_t</a>* MdefPath = "NULL", <a href="ListOfTypes.html#Bool_t">Bool_t</a> TestFormat = kTRUE)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="./TMrbLofMacros.html">TMrbLofMacros</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:TMrbLofMacros">TMrbLofMacros</a><!--PLAIN-->()
+<!--TAB6-->        <a href="./TMrbLofMacros.html">TMrbLofMacros</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:TMrbLofMacros">TMrbLofMacros</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:~TMrbLofMacros">~TMrbLofMacros</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:AddMacro">AddMacro</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* MacroName)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:AskForArgs">AskForArgs</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* MacroName)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:CheckEnvName">CheckEnvName</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* EnvName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> IsArgEnv = kTRUE)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:FirstMacro">FirstMacro</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:GetLofEnvNames">GetLofEnvNames</a><!--PLAIN-->()
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:GetLofFilePatterns">GetLofFilePatterns</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:GetPath">GetPath</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:NextMacro">NextMacro</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Last)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:PrintMacro">PrintMacro</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* MacroName)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:SetPath">SetPath</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofMacros:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbLofMacros:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:fPath">fPath</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fPath"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:fLofFilePatterns">fLofFilePatterns</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofFilePatterns"></a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:fLofEnvNames">fLofEnvNames</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fLofEnvNames"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroName">kMrbMacroName</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kMrbMacroName"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroTitle">kMrbMacroTitle</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kMrbMacroTitle"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroPath">kMrbMacroPath</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kMrbMacroPath"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroWidth">kMrbMacroWidth</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kMrbMacroWidth"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroNofArgs">kMrbMacroNofArgs</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kMrbMacroNofArgs"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgName">kMrbMacroArgName</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kMrbMacroArgName"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgTitle">kMrbMacroArgTitle</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kMrbMacroArgTitle"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgType">kMrbMacroArgType</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kMrbMacroArgType"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgEntryType">kMrbMacroArgEntryType</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kMrbMacroArgEntryType"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgEntryWidth">kMrbMacroArgEntryWidth</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kMrbMacroArgEntryWidth"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgDefaultValue">kMrbMacroArgDefaultValue</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kMrbMacroArgDefaultValue"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgValues">kMrbMacroArgValues</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kMrbMacroArgValues"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgAddLofValues">kMrbMacroArgAddLofValues</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kMrbMacroArgAddLofValues"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgLowerLimit">kMrbMacroArgLowerLimit</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kMrbMacroArgLowerLimit"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgUpperLimit">kMrbMacroArgUpperLimit</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kMrbMacroArgUpperLimit"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgIncrement">kMrbMacroArgIncrement</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kMrbMacroArgIncrement"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgBase">kMrbMacroArgBase</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kMrbMacroArgBase"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgOrientation">kMrbMacroArgOrientation</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kMrbMacroArgOrientation"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLofMacros.html#TMrbLofMacros:EMrbMacroEnvNames">TMrbLofMacros::EMrbMacroEnvNames</a> <!--TAB--><!--BOLD--><a name="TMrbLofMacros:kMrbMacroArgNofCL">kMrbMacroArgNofCL</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kMrbMacroArgNofCL"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbLofMacros:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbLofMacros.html">TMrbLofMacros</a>.cxx
+ Purpose:        MARaBOU utilities: A list of root macros
+ Description:    Implements class methods to manage root macros
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbLofMacros:TMrbLofMacros" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:TMrbLofMacros">TMrbLofMacros</a>() <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbLofMacros.html">TMrbLofMacros</a>
+ Purpose:        Manage a list of ROOT macros
+ Arguments:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbLofMacros:TMrbLofMacros" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:TMrbLofMacros">TMrbLofMacros</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Path) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbLofMacros.html">TMrbLofMacros</a>
+ Purpose:        Manage a list of ROOT macros
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Path     -- macro path
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLofMacros:AddMacro" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:AddMacro">AddMacro</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLofMacros.html#TMrbLofMacros:AddMacro">TMrbLofMacros::AddMacro</a>
+ Purpose:        Add a macro to the list
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroName    -- macro name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Adds a new macro to the list. Macro name may be wildcarded.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:PrintMacro" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:PrintMacro">PrintMacro</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           TMrbLofMacro::PrintMacro
+ Purpose:        Print macro data
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroName  -- macro name
+ Results:        --
+ Exceptions:
+ Description:    Outputs macro data to cout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbLofMacros:ProcessMacro" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:ProcessMacro">ProcessMacro</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroPath, const <a href="ListOfTypes.html#Char_t">Char_t</a> * MdefPath, <a href="ListOfTypes.html#Bool_t">Bool_t</a> TestFormat) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           TMrbLofMacro::ProcessMacro
+ Purpose:        Process macro file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroPath     -- macro path
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * MdefPath      -- path of macro definition file
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> TestFormat      -- test for //+-Exec tags
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * MacroIdx  -- named index pointing to macro defs
+ Exceptions:
+ Description:    Decodes info data from macro file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLofMacros:CheckMacro" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:CheckMacro">CheckMacro</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a> * Macro) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           TMrbLofMacro::CheckMacro
+ Purpose:        Check consistency
+ Arguments:      <a href="./TMrbNamedX.html">TMrbNamedX</a> * Macro     -- macro definition
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks macro arguments.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLofMacros:CheckEnvName" href="src/TMrbLofMacros.cxx.html#TMrbLofMacros:CheckEnvName">CheckEnvName</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * EnvName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> IsArgEnv) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           TMrbLofMacro::CheckEnvName
+ Purpose:        Check if environment name is legal
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * EnvName    -- environment name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> IsArgEnv     -- kTRUE if used by arguments
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks if a given environment name is legal.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:SetPath" href="TMrbLofMacros.h">SetPath</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbLofMacros:GetPath" href="TMrbLofMacros.h">GetPath</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLofMacros:AskForArgs" href="TMrbLofMacros.h">AskForArgs</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* MacroName)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbLofMacros:FirstMacro" href="TMrbLofMacros.h">FirstMacro</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbLofMacros:NextMacro" href="TMrbLofMacros.h">NextMacro</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Last)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbLofMacros:GetLofEnvNames" href="TMrbLofMacros.h">GetLofEnvNames</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <a name="TMrbLofMacros:GetLofFilePatterns" href="TMrbLofMacros.h">GetLofFilePatterns</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:Help" href="TMrbLofMacros.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbLofMacros:Class" href="TMrbLofMacros.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbLofMacros:IsA" href="TMrbLofMacros.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:ShowMembers" href="TMrbLofMacros.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:Streamer" href="TMrbLofMacros.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:StreamerNVirtual" href="TMrbLofMacros.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofMacros:~TMrbLofMacros" href="TMrbLofMacros.h">~TMrbLofMacros</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:02 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

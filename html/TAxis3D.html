@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TAxis3D</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TAxis3D:description">class description</a> - <a href="src/TAxis3D.cxx.html">source file</a> - <a href="TAxis3D_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TAxis3D" href="TAxis3D.h">TAxis3D</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:AxisChoice">AxisChoice</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis) const
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:Build">Build</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; hnew)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:InitSet">InitSet</a><!--PLAIN-->()
+<!--TAB6-->            <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SwitchZoom">SwitchZoom</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:TAxis3D">TAxis3D</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:TAxis3D">TAxis3D</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:TAxis3D">TAxis3D</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a>&amp; axis)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:~TAxis3D">~TAxis3D</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:DistancetoPrimitive">DistancetoPrimitive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetAxisColor">GetAxisColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetCenter">GetCenter</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a>* center)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetLabelColor">GetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetLabelFont">GetLabelFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetLabelOffset">GetLabelOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetLabelSize">GetLabelSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetLowEdge">GetLowEdge</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a>* edge)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetNdivisions">GetNdivisions</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:GetObjectInfo">GetObjectInfo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py) const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:GetPadAxis">GetPadAxis</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad = 0)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetTickLength">GetTickLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:GetTitleOffset">GetTitleOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:GetXaxis">GetXaxis</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:GetYaxis">GetYaxis</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:GetZaxis">GetZaxis</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:PaintAxis">PaintAxis</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGaxis.html">TGaxis</a>* axis, <a href="ListOfTypes.html#Float_t">Float_t</a> ang)
+<!--TAB6-->       static <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:PixeltoXYZ">PixeltoXYZ</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> px, <a href="ListOfTypes.html#Double_t">Double_t</a> py, <a href="ListOfTypes.html#Double_t">Double_t</a>* point3D, <a href="http://root.cern.ch/root/html/TView.html">TView</a>* view = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetAxisColor">SetAxisColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetAxisRange">SetAxisRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetLabelColor">SetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetLabelFont">SetLabelFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> font = 62, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetLabelOffset">SetLabelOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 0.005, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetLabelSize">SetLabelSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0.02, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetNdivisions">SetNdivisions</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n = 510, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetOption">SetOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = " ")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetTickLength">SetTickLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> length = 0.02, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetTitleOffset">SetTitleOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "*")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetXTitle">SetXTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetYTitle">SetYTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:SetZTitle">SetZTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:ToggleRulers">ToggleRulers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad = 0)
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TAxis3D.html">TAxis3D</a>* <!--TAB--><!--BOLD--><a href="#TAxis3D:ToggleZoom">ToggleZoom</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis3D:UseCurrentStyle">UseCurrentStyle</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TAxis3D:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a> <!--TAB--><!--BOLD--><a name="TAxis3D:fAxis">fAxis[3]</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fAxis">X/Y/Z axis</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TAxis3D:fOption">fOption</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fOption">Options (is not use yet)</a></i>
+<!--TAB6-->      static const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a name="TAxis3D:rulerName">rulerName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:rulerName">The default object name</a></i>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>* <!--TAB--><!--BOLD--><a name="TAxis3D:fSelected">fSelected</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSelected">!  The selected axis to play with</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TAxis3D:fZoomMode">fZoomMode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fZoomMode">Zoom mode for the entire parent TPad</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TAxis3D:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:09 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

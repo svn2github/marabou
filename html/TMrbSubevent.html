@@ -1,0 +1,534 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbSubevent</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbSubevent:description">class description</a> - <a href="src/TMrbSubevent.cxx.html">source file</a> - <a href="TMrbSubevent_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbSubevent" href="TMrbSubevent.h">TMrbSubevent</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="./TMrbSubevent.html">TMrbSubevent</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:TMrbSubevent">TMrbSubevent</a><!--PLAIN-->()
+<!--TAB6-->               <a href="./TMrbSubevent.html">TMrbSubevent</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:TMrbSubevent">TMrbSubevent</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtTitle, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate = -1)
+<!--TAB6-->               <a href="./TMrbSubevent.html">TMrbSubevent</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:TMrbSubevent">TMrbSubevent</a><!--PLAIN-->(const <a href="./TMrbSubevent.html">TMrbSubevent</a>&amp;)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:~TMrbSubevent">~TMrbSubevent</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:AddEvent">AddEvent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Evt)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:AddModule">AddModule</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:AddParam">AddParam</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Param)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:AllocateHistograms">AllocateHistograms</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:AllowsMultipleModules">AllowsMultipleModules</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:CheckModuleID">CheckModuleID</a><!--PLAIN-->(<a href="./TMrbModule.html">TMrbModule</a>* Module)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindEvent">FindEvent</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* EvtName)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindModule">FindModule</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindModuleByID">FindModuleByID</a><!--PLAIN-->(<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> ModuleID, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindModuleByID">FindModuleByID</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* ModuleID, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindModuleBySerial">FindModuleBySerial</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleSerial)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindModuleByType">FindModuleByType</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindModuleByType">FindModuleByType</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* ModuleType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:FindParam">FindParam</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Get">Get</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Get">Get</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex)
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetAnalyzeOptions">GetAnalyzeOptions</a><!--PLAIN-->(<a href="./TMrbEvent.html">TMrbEvent</a>* Parent = NULL)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetCommonCodeFile">GetCommonCodeFile</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetConfigOptions">GetConfigOptions</a><!--PLAIN-->(<a href="./TMrbEvent.html">TMrbEvent</a>* Parent = NULL)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetCrate">GetCrate</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetLegalDataTypes">GetLegalDataTypes</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetLofEvents">GetLofEvents</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetLofModules">GetLofModules</a><!--PLAIN-->()
+<!--TAB6-->              const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetLofModulesAsString">GetLofModulesAsString</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; LofModules) const
+<!--TAB6-->             <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetLofParams">GetLofParams</a><!--PLAIN-->()
+<!--TAB6-->              const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetLofParamsAsString">GetLofParamsAsString</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; LofParams) const
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetNofEvents">GetNofEvents</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetNofModules">GetNofModules</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetNofParams">GetNofParams</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetNofShorts">GetNofShorts</a><!--PLAIN-->()
+<!--TAB6-->              const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetPrefix">GetPrefix</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetPrivateCodeFile">GetPrivateCodeFile</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetReadoutOptions">GetReadoutOptions</a><!--PLAIN-->(<a href="./TMrbEvent.html">TMrbEvent</a>* Parent = NULL)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetSerial">GetSerial</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetSubtype">GetSubtype</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:GetType">GetType</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:HasFixedLengthFormat">HasFixedLengthFormat</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:HasIndexedParams">HasIndexedParams</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:HasPrivateCode">HasPrivateCode</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:HistosToBeAllocated">HistosToBeAllocated</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:IsInArrayMode">IsInArrayMode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:IsRaw">IsRaw</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:MakeAnalyzeCode">MakeAnalyzeCode</a><!--PLAIN-->(ofstream&amp; AnaStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Extension)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:MakeAnalyzeCode">MakeAnalyzeCode</a><!--PLAIN-->(ofstream&amp; AnaStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, <a href="./TMrbEvent.html">TMrbEvent</a>* Event, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:MakeConfigCode">MakeConfigCode</a><!--PLAIN-->(ofstream&amp; CfgStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:MakeRcFile">MakeRcFile</a><!--PLAIN-->(ofstream&amp; RcStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ResourceName)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:NeedsBranchMode">NeedsBranchMode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:NeedsEventTime">NeedsEventTime</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:NeedsHitBuffer">NeedsHitBuffer</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent:NextModule">NextModule</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:PrefixToBePrepended">PrefixToBePrepended</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:PrependPrefix">PrependPrefix</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:PrependPrefix">PrependPrefix</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Print">Print</a><!--PLAIN-->(ostream&amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:ProvidesEventTime">ProvidesEventTime</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:SerialToBeCreated">SerialToBeCreated</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Set">Set</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName, <a href="ListOfTypes.html#Int_t">Int_t</a> Value)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Set">Set</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Value)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:SetAnalyzeOptions">SetAnalyzeOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Options = "byName:Histograms")
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:SetArrayMode">SetArrayMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayMode = kTRUE)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:SetConfigOptions">SetConfigOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Options)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:SetReadoutOptions">SetReadoutOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Options)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Use">Use</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Assignment)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent:Use">Use</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Assignment)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbSubevent:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fSevtType">fSevtType</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fSevtType">subevent type</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fSevtSubtype">fSevtSubtype</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSevtSubtype">subevent subtype</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fLegalDataTypes">fLegalDataTypes</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLegalDataTypes">datatypes legal for this type of subevent</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fSerial">fSerial</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fSerial">header words: unique subevent id</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fCrate">fCrate</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fCrate">crate number</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fHistosToBeAllocated">fHistosToBeAllocated</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHistosToBeAllocated">kTRUE if histograms to be allocated for all params</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fNofEvents">fNofEvents</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNofEvents">list of parent events</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fLofEvents">fLofEvents</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fLofEvents"></a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fNofParams">fNofParams</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNofParams">number of params</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fNofShorts">fNofShorts</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNofShorts">number of 16 bit words;</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fLofParams">fLofParams</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fLofParams">list of params</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fNofModules">fNofModules</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNofModules">list of modules housing these params</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fLofModules">fLofModules</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofModules"></a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fReadoutOptions">fReadoutOptions</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fReadoutOptions">options used in MakeReadoutCode()</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fAnalyzeOptions">fAnalyzeOptions</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fAnalyzeOptions">... in MakeAnalyzeCode()</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fConfigOptions">fConfigOptions</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fConfigOptions">... in MakeConfigCode()</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fHasIndexedParams">fHasIndexedParams</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHasIndexedParams">if there are TArrayX params</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fArrayMode">fArrayMode</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fArrayMode">kTRUE if subevent data are stored in an array</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fPrependPrefix">fPrependPrefix</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fPrependPrefix">kTRUE if subevents has its own prefix</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbSubevent:fPrefix">fPrefix</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fPrefix">prefix to be prepended to params &amp; histos</a></i>
+<!--TAB6-->        <a href="./TMrbModule.html">TMrbModule</a>* <!--TAB--><!--BOLD--><a name="TMrbSubevent:fSoftModule">fSoftModule</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSoftModule">internal module name, simulated by software</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TMrbSubeventRaw.html">TMrbSubeventRaw</a>, <a href="./TMrbSubevent_10_1.html">TMrbSubevent_10_1</a>, <a href="./TMrbSubevent_10_11.html">TMrbSubevent_10_11</a>, <a href="./TMrbSubevent_10_12.html">TMrbSubevent_10_12</a>, <a href="./TMrbSubevent_10_13.html">TMrbSubevent_10_13</a>, <a href="./TMrbSubevent_10_14.html">TMrbSubevent_10_14</a>, <a href="./TMrbSubevent_Caen_1.html">TMrbSubevent_Caen_1</a>, <a href="./TMrbSubevent_Caen_2.html">TMrbSubevent_Caen_2</a>, <a href="./TMrbSubevent_DGF_1.html">TMrbSubevent_DGF_1</a>, <a href="./TMrbSubevent_DGF_2.html">TMrbSubevent_DGF_2</a>, <a href="./TMrbSubevent_DGF_TS.html">TMrbSubevent_DGF_TS</a>, <a href="./TMrbSubevent_Data_I.html">TMrbSubevent_Data_I</a>, <a href="./TMrbSubevent_Data_S.html">TMrbSubevent_Data_S</a>, <a href="./TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</a>, <a href="./TMrbSubevent_Silena_2.html">TMrbSubevent_Silena_2</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbSubevent:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbSubevent.html">TMrbSubevent</a>.cxx
+ Purpose:        MARaBOU configuration: subevent definition
+ Description:    Implements class methods to define subevents
+ Header files:   <a href="./TMrbConfig.html">TMrbConfig</a>.h  -- MARaBOU class definitions
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbSubevent:TMrbSubevent" href="src/TMrbSubevent.cxx.html#TMrbSubevent:TMrbSubevent">TMrbSubevent</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtTitle, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbSubevent.html">TMrbSubevent</a>
+ Purpose:        Create a subevent
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtName       -- subevent name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtTitle      -- ... and title
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Crate             -- crate number
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:AddParam" href="src/TMrbSubevent.cxx.html#TMrbSubevent:AddParam">AddParam</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Param) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:AddParam">TMrbSubevent::AddParam</a>
+ Purpose:        Add a new param to subevent
+ Arguments:      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Param        -- param addr
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Adds a param to list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindModuleByID" href="src/TMrbSubevent.cxx.html#TMrbSubevent:FindModuleByID">FindModuleByID</a>(<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> ModuleID, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:FindModuleByID">TMrbSubevent::FindModuleByID</a>
+ Purpose:        Find a module by its id
+ Arguments:      EMrbModuleID ModuleID  -- module id
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After        -- search to be started after this module
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module       -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 next module having specified id
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindModuleByType" href="src/TMrbSubevent.cxx.html#TMrbSubevent:FindModuleByType">FindModuleByType</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:FindModuleByType">TMrbSubevent::FindModuleByType</a>
+ Purpose:        Find a module by its type
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType     -- module type
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After       -- search to be started after this module
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module      -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 next module having specified type
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindModuleBySerial" href="src/TMrbSubevent.cxx.html#TMrbSubevent:FindModuleBySerial">FindModuleBySerial</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleSerial) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:FindModuleBySerial">TMrbSubevent::FindModuleBySerial</a>
+ Purpose:        Find a module by its unique serial number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleSerial       -- serial number
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module         -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 specified serial number
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:Use" href="src/TMrbSubevent.cxx.html#TMrbSubevent:Use">Use</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Assignment) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:Use">TMrbSubevent::Use</a>
+ Purpose:        Assign parameters
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName  -- module which houses these channels
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Assignment  -- param name(s) &amp; channel number(s)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines which subaddresses to be used by assigning meangingful names.
+                 Assignment may be a single param name or a set of names, separated by blanks.
+                 Subsequent names will be assigned subsequent channel numbers.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:MakeAnalyzeCode" href="src/TMrbSubevent.cxx.html#TMrbSubevent:MakeAnalyzeCode">MakeAnalyzeCode</a>(ofstream &amp; AnaStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:MakeAnalyzeCode">TMrbSubevent::MakeAnalyzeCode</a>
+ Purpose:        Write a piece of code for data analysis
+ Arguments:      ofstream &amp; AnaStrm       -- file output stream
+                 EMrbAnalyzeTag TagIndex  -- index of tag word from template file
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension       -- file extensions to be appended (.h or .cxx)
+ Results:
+ Exceptions:
+ Description:    Writes code needed for data analysis.
+                 Searches for following files:
+                      (1)  if subevent has private code
+                      (1a)    Subevent_&lt;Name&gt;.&lt;Extension&gt;.code
+                      (1b)    &lt;PrivateCodeFile&gt;.&lt;Extension&gt;.code
+                      (1c)    Subevent_&lt;Class&gt;.&lt;Extension&gt;.code
+                      (2)  standard:
+                              Subevent.&lt;Extension&gt;.code
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:MakeAnalyzeCode" href="src/TMrbSubevent.cxx.html#TMrbSubevent:MakeAnalyzeCode">MakeAnalyzeCode</a>(ofstream &amp; AnaStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex,
+															<a href="./TMrbEvent.html">TMrbEvent</a> * Event,
+															<a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template,
+															const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:MakeAnalyzeCode">TMrbSubevent::MakeAnalyzeCode</a>
+ Purpose:        Write a piece of code for data analysis
+ Arguments:      ofstream &amp; AnaStrm           -- file output stream
+                 EMrbAnalyzeTag TagIndex      -- index of tag word from template file
+                 <a href="./TMrbEvent.html">TMrbEvent</a> * Event            -- associated event
+                 <a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template      -- template
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix              -- prefix to select template code
+ Results:
+ Exceptions:
+ Description:    Writes code needed for data analysis.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:MakeConfigCode" href="src/TMrbSubevent.cxx.html#TMrbSubevent:MakeConfigCode">MakeConfigCode</a>(ofstream &amp; CfgStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> TagIndex,
+														<a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template,
+														const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:MakeConfigCode">TMrbSubevent::MakeConfigCode</a>
+ Purpose:        Write some lines to the config file
+ Arguments:      ofstream &amp; CfgStrm           -- file output stream
+                 EMrbConfigTag TagIndex       -- index of tag word from template file
+                 <a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template      -- template
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix              -- prefix to select template code
+ Results:
+ Exceptions:
+ Description:    Writes code into config file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:Print" href="src/TMrbSubevent.cxx.html#TMrbSubevent:Print">Print</a>(ostream &amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:Print">TMrbSubevent::Print</a>
+ Purpose:        Output current subevent definitions
+ Arguments:      ofstream &amp; Out   -- output stream
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix  -- prefix to be output in front
+ Results:        --
+ Exceptions:
+ Description:    Outputs current subevent definition to stdout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:Set" href="src/TMrbSubevent.cxx.html#TMrbSubevent:Set">Set</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName, <a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:Set">TMrbSubevent::Set</a>
+ Purpose:        Set register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName       -- parameter name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName         -- register name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value              -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets register values of specified param
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:Set" href="src/TMrbSubevent.cxx.html#TMrbSubevent:Set">Set</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName, <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:Set">TMrbSubevent::Set</a>
+ Purpose:        Set register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName       -- parameter name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex           -- register index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value              -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets register values of specified param
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:Get" href="src/TMrbSubevent.cxx.html#TMrbSubevent:Get">Get</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:Get">TMrbSubevent::Get</a>
+ Purpose:        Get register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName       -- parameter name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName         -- register name
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Value              -- value to be set
+ Exceptions:
+ Description:    Gets register values of specified param
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:Get" href="src/TMrbSubevent.cxx.html#TMrbSubevent:Get">Get</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName, <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:Get">TMrbSubevent::Get</a>
+ Purpose:        Get register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName       -- parameter name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex           -- register index
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Value              -- value to be set
+ Exceptions:
+ Description:    Gets register values of specified param
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:SetReadoutOptions" href="src/TMrbSubevent.cxx.html#TMrbSubevent:SetReadoutOptions">SetReadoutOptions</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:SetReadoutOptions">TMrbSubevent::SetReadoutOptions</a>
+ Purpose:        Define some options to be used in <a href="#TMrbSubevent:MakeReadoutCode">MakeReadoutCode</a>()
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Options   -- options to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets readout options for this subevent individually
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:SetAnalyzeOptions" href="src/TMrbSubevent.cxx.html#TMrbSubevent:SetAnalyzeOptions">SetAnalyzeOptions</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:SetAnalyzeOptions">TMrbSubevent::SetAnalyzeOptions</a>
+ Purpose:        Define some options to be used in <a href="#TMrbSubevent:MakeAnalyzeCode">MakeAnalyzeCode</a>()
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Options   -- options to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets analyze options for this subevent individually
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:SetConfigOptions" href="src/TMrbSubevent.cxx.html#TMrbSubevent:SetConfigOptions">SetConfigOptions</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:SetConfigOptions">TMrbSubevent::SetConfigOptions</a>
+ Purpose:        Define some options to be used in <a href="#TMrbSubevent:MakeConfigCode">MakeConfigCode</a>()
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Options   -- options to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets config options for this subevent individually
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbSubevent:GetReadoutOptions" href="src/TMrbSubevent.cxx.html#TMrbSubevent:GetReadoutOptions">GetReadoutOptions</a>(<a href="./TMrbEvent.html">TMrbEvent</a> * Parent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:GetReadoutOptions">TMrbSubevent::GetReadoutOptions</a>
+ Purpose:        Return current options for method <a href="#TMrbSubevent:MakeReadoutCode">MakeReadoutCode</a>()
+ Arguments:      <a href="./TMrbEvent.html">TMrbEvent</a> * Parent -- parent event
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options     -- readout options
+ Exceptions:
+ Description:    Returns readout options:
+                     local options if <a href="./TMrbSubevent.html#TMrbSubevent:fReadoutOptions">fReadoutOptions</a> is set
+                     options of parent event otherwise
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbSubevent:GetAnalyzeOptions" href="src/TMrbSubevent.cxx.html#TMrbSubevent:GetAnalyzeOptions">GetAnalyzeOptions</a>(<a href="./TMrbEvent.html">TMrbEvent</a> * Parent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:GetAnalyzeOptions">TMrbSubevent::GetAnalyzeOptions</a>
+ Purpose:        Return current options for method <a href="#TMrbSubevent:MakeAnalyzeCode">MakeAnalyzeCode</a>()
+ Arguments:      <a href="./TMrbEvent.html">TMrbEvent</a> * Parent -- parent event
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options     -- readout options
+ Exceptions:
+ Description:    Returns analyze options:
+                     local options if <a href="./TMrbSubevent.html#TMrbSubevent:fAnalyzeOptions">fAnalyzeOptions</a> is set
+                     options of parent event otherwise
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbSubevent:GetConfigOptions" href="src/TMrbSubevent.cxx.html#TMrbSubevent:GetConfigOptions">GetConfigOptions</a>(<a href="./TMrbEvent.html">TMrbEvent</a> * Parent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:GetConfigOptions">TMrbSubevent::GetConfigOptions</a>
+ Purpose:        Return current options for method <a href="#TMrbSubevent:MakeConfigCode">MakeConfigCode</a>()
+ Arguments:      <a href="./TMrbEvent.html">TMrbEvent</a> * Parent -- parent event
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options     -- readout options
+ Exceptions:
+ Description:    Returns config options:
+                     local options if <a href="./TMrbSubevent.html#TMrbSubevent:fConfigOptions">fConfigOptions</a> is set
+                     options of parent event otherwise
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSubevent:GetLofModulesAsString" href="src/TMrbSubevent.cxx.html#TMrbSubevent:GetLofModulesAsString">GetLofModulesAsString</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; LofModules) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:GetLofModulesAsString">TMrbSubevent::GetLofModulesAsString</a>
+ Purpose:        Return a colon-separated string with module names
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; LofModules      -- where to store module names
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * LofModules       -- string containing module names
+ Exceptions:
+ Description:    Returns a colon-separated string with module names.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSubevent:GetLofParamsAsString" href="src/TMrbSubevent.cxx.html#TMrbSubevent:GetLofParamsAsString">GetLofParamsAsString</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; LofParams) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent.html#TMrbSubevent:GetLofParamsAsString">TMrbSubevent::GetLofParamsAsString</a>
+ Purpose:        Return a colon-separated string with module names
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; LofParams      -- where to store module names
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * LofParams       -- string containing module names
+ Exceptions:
+ Description:    Returns a colon-separated string with module names.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbSubevent.html">TMrbSubevent</a> <a name="TMrbSubevent:TMrbSubevent" href="TMrbSubevent.h">TMrbSubevent</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtTitle, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate = -1)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbSubevent.html">TMrbSubevent</a> <a name="TMrbSubevent:TMrbSubevent" href="TMrbSubevent.h">TMrbSubevent</a>(const <a href="./TMrbSubevent.html">TMrbSubevent</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:AddEvent" href="TMrbSubevent.h">AddEvent</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Evt)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindEvent" href="TMrbSubevent.h">FindEvent</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* EvtName)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindParam" href="TMrbSubevent.h">FindParam</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:AddModule" href="TMrbSubevent.h">AddModule</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:NextModule" href="TMrbSubevent.h">NextModule</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindModule" href="TMrbSubevent.h">FindModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindModuleByID" href="TMrbSubevent.h">FindModuleByID</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* ModuleID, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbSubevent:FindModuleByType" href="TMrbSubevent.h">FindModuleByType</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* ModuleType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:Use" href="TMrbSubevent.h">Use</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Assignment)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:GetSerial" href="TMrbSubevent.h">GetSerial</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:GetNofEvents" href="TMrbSubevent.h">GetNofEvents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:GetNofModules" href="TMrbSubevent.h">GetNofModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:GetNofParams" href="TMrbSubevent.h">GetNofParams</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:GetNofShorts" href="TMrbSubevent.h">GetNofShorts</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbSubevent:GetLegalDataTypes" href="TMrbSubevent.h">GetLegalDataTypes</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSubevent:GetCrate" href="TMrbSubevent.h">GetCrate</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbSubevent:GetType" href="TMrbSubevent.h">GetType</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbSubevent:GetSubtype" href="TMrbSubevent.h">GetSubtype</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:MakeReadoutCode" href="TMrbSubevent.h">MakeReadoutCode</a>(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:MakeRcFile" href="TMrbSubevent.h">MakeRcFile</a>(ofstream&amp; RcStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ResourceName)
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSubevent:GetPrefix" href="TMrbSubevent.h">GetPrefix</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:PrefixToBePrepended" href="TMrbSubevent.h">PrefixToBePrepended</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:PrependPrefix" href="TMrbSubevent.h">PrependPrefix</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:PrependPrefix" href="TMrbSubevent.h">PrependPrefix</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:Print" href="TMrbSubevent.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:AllocateHistograms" href="TMrbSubevent.h">AllocateHistograms</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:HistosToBeAllocated" href="TMrbSubevent.h">HistosToBeAllocated</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:HasFixedLengthFormat" href="TMrbSubevent.h">HasFixedLengthFormat</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:AllowsMultipleModules" href="TMrbSubevent.h">AllowsMultipleModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:SerialToBeCreated" href="TMrbSubevent.h">SerialToBeCreated</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:IsRaw" href="TMrbSubevent.h">IsRaw</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:CheckModuleID" href="TMrbSubevent.h">CheckModuleID</a>(<a href="./TMrbModule.html">TMrbModule</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:SetArrayMode" href="TMrbSubevent.h">SetArrayMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayMode = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:IsInArrayMode" href="TMrbSubevent.h">IsInArrayMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:HasIndexedParams" href="TMrbSubevent.h">HasIndexedParams</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:ProvidesEventTime" href="TMrbSubevent.h">ProvidesEventTime</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:NeedsHitBuffer" href="TMrbSubevent.h">NeedsHitBuffer</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:NeedsEventTime" href="TMrbSubevent.h">NeedsEventTime</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:NeedsBranchMode" href="TMrbSubevent.h">NeedsBranchMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent:HasPrivateCode" href="TMrbSubevent.h">HasPrivateCode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSubevent:GetPrivateCodeFile" href="TMrbSubevent.h">GetPrivateCodeFile</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSubevent:GetCommonCodeFile" href="TMrbSubevent.h">GetCommonCodeFile</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbSubevent:GetLofEvents" href="TMrbSubevent.h">GetLofEvents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbSubevent:GetLofModules" href="TMrbSubevent.h">GetLofModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbSubevent:GetLofParams" href="TMrbSubevent.h">GetLofParams</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:Help" href="TMrbSubevent.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSubevent:Class" href="TMrbSubevent.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSubevent:IsA" href="TMrbSubevent.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:ShowMembers" href="TMrbSubevent.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:Streamer" href="TMrbSubevent.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:StreamerNVirtual" href="TMrbSubevent.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent:~TMrbSubevent" href="TMrbSubevent.h">~TMrbSubevent</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:36 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

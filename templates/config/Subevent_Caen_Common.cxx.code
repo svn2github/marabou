@@ -1,0 +1,134 @@
+%%BeginOfCode%%
+Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		   TMrbSubevent_Caen::FillSubevent
+// Purpose: 	   Decode CAEN buffer
+// Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
+//  			   Int_t SevtWC 			   -- word count
+//  			   Int_t TimeStamp  		   -- time since last start
+//  											  in units of 100 microsecs
+// Results: 	   kTRUE/kFALSE
+// Exceptions:     
+// Description:    Decodes data from a CAEN V7X5.
+// Keywords:	   
+//////////////////////////////////////////////////////////////////////////////
+
+		UInt_t header;
+		UInt_t trailer;
+	Int_t wcs, wc;
+	Int_t moduleNumber;
+	Int_t chn;
+	UShort_t * dataPtr;
+	Int_t data;
+	Int_t * paramAddr;
+	Int_t wordsProcessed, eventsProcessed;
+	UShort_t evtData[2];
+							
+	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+
+	this->GetHitBuffer()->Reset();			// clear hit buffer
+
+	recNo++;						// count this record	
+	wordsProcessed = 0; 			// words processed so far
+	dataPtr = (UShort_t *) SevtData;
+	eventsProcessed = 0;
+	while (SevtWC > 0) {									// subevent may contain several CAEN modules
+		header = (*dataPtr++) << 16; 					// header word (MSB)
+		header |= *dataPtr++; 							// header word (LSB)
+		if ((header & CAEN_V7X5_D_HDR) == 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed
+					<< ") : Wrong header - 0x" << setbase(16) << header << setbase(10)
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		wc = (header >> CAEN_V7X5_SH_WC) & CAEN_V7X5_M_WC;				// extract wc
+		wcs = wc;
+		if (wc <= 0 || wc > 32) {				// max 32 data words
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		moduleNumber = header & CAEN_V7X5_M_MSERIAL;	// extract module number
+		if (moduleNumber <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+							<< SevtWC << " (relWC = " << wordsProcessed
+							<< ") : Wrong module number - " << moduleNumber
+							<< setblack << endl;
+		}
+		for (; wc; wc--) {
+			data = (*dataPtr++) << 16;		// data (MSB)
+			data |= *dataPtr++; 			// data (LSB)
+			if ((data & CAEN_V7X5_M_ID) != CAEN_V7X5_D_DATA) {
+				if ((data & CAEN_V7X5_M_ID) == CAEN_V7X5_D_EOB) {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Unexpected EOB", SevtData, SevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+							<< SevtWC << " (relWC = " << wordsProcessed
+							<< ") : Unexpected EOB - remaining wc=" << wc << " ignored. Continuing with next event."
+							<< setblack << endl;
+					dataPtr -= 2;
+					wcs -= wc;
+					break;
+				} else {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong data", SevtData, SevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+							<< SevtWC << " (relWC = " << wordsProcessed
+							<< ") : Wrong data - 0x" << setbase(16) << data << setbase(10)
+							<< setblack << endl;
+					return(kTRUE);
+				}
+			}
+			chn = (data >> CAEN_V7X5_SH_CHN) & CAEN_V7X5_M_CHN;
+			if (moduleNumber > 0) {
+				evtData[0] = 0;
+				evtData[1] = (Int_t) (data & CAEN_V7X5_M_ADCDATA);
+				this->GetHitBuffer()->AddHit(	eventsProcessed,
+													moduleNumber,
+													chn,
+													NULL,
+													evtData, 2);
+			}
+		}
+		trailer = (*dataPtr++) << 16; 					// trailer word (MSB)
+		trailer |= *dataPtr++; 							// trailer word (LSB)
+		if ((trailer & CAEN_V7X5_D_EOB) == 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOB", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed
+					<< ") : Wrong EOB - 0x" << setbase(16) << trailer << setbase(10)
+					<< setblack << endl;
+			return(kTRUE);
+		}
+		wcs = (wcs + 2) * 2;
+		SevtWC -= wcs;						// remaining subevent data
+		wordsProcessed += wcs;
+		eventsProcessed++;
+	}
+	return(kTRUE);
+}
+
+%%EndOfCode%%
+%%SEVT_CLASS_METHODS%%
+
+		
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INITIALIZE_EVT_SEVT_MODS%%

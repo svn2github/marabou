@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TToggleGroup</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TToggleGroup:description">class description</a> - <a href="src/TToggleGroup.cxx.html">source file</a> - <a href="TToggleGroup_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TToggleGroup" href="TToggleGroup.h">TToggleGroup</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TToggleGroup.html">TToggleGroup</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:TToggleGroup">TToggleGroup</a><!--PLAIN-->()
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TToggleGroup.html">TToggleGroup</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:TToggleGroup">TToggleGroup</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TToggleGroup.html">TToggleGroup</a>&amp;)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:~TToggleGroup">~TToggleGroup</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* t, <a href="ListOfTypes.html#Bool_t">Bool_t</a> select = 1)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* <!--TAB--><!--BOLD--><a href="#TToggleGroup:At">At</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> idx)
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TToggleGroup:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:DeleteAll">DeleteAll</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* <!--TAB--><!--BOLD--><a href="#TToggleGroup:First">First</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:GetTogglesCount">GetTogglesCount</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:IndexOf">IndexOf</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* t)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:InsertAt">InsertAt</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* t, <a href="ListOfTypes.html#Int_t">Int_t</a> pos, <a href="ListOfTypes.html#Bool_t">Bool_t</a> select = 1)
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TToggleGroup:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* <!--TAB--><!--BOLD--><a href="#TToggleGroup:Last">Last</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:Remove">Remove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* t)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:Remove">Remove</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> pos)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:Select">Select</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> idx)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:Select">Select</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* t)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TToggleGroup:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TToggleGroup:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* <!--TAB--><!--BOLD--><a name="TToggleGroup:fToggles">fToggles</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fToggles">list of TToggle objects</a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TToggle.html">TToggle</a>* <!--TAB--><!--BOLD--><a name="TToggleGroup:fSelected">fSelected</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSelected">currently selected object</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TToggleGroup:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

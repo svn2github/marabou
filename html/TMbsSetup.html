@@ -1,0 +1,458 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMbsSetup</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMbsSetup:description">class description</a> - <a href="src/TMbsSetup.cxx.html">source file</a> - <a href="TMbsSetup_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMbsSetup" href="TMbsSetup.h">TMbsSetup</a> : public <a href="./TMrbEnv.html">TMrbEnv</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:CreateNodeList">CreateNodeList</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; NodeListFile)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:ExpandFile">ExpandFile</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ProcID, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; TemplatePath, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; SetupFile, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; DestPath)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:WriteRhostsFile">WriteRhostsFile</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; RhostsFile)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="./TMbsSetup.html">TMbsSetup</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:TMbsSetup">TMbsSetup</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SetupFile = ".mbssetup")
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:~TMbsSetup">~TMbsSetup</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:CheckSetup">CheckSetup</a><!--PLAIN-->()
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:EncodeArray">EncodeArray</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 10) const
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:EncodeArray">EncodeArray</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 10) const
+<!--TAB6-->       <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:EvtBuilder">EvtBuilder</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:FirstReadout">FirstReadout</a><!--PLAIN-->()
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:GetHomeDir">GetHomeDir</a><!--PLAIN-->() const
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:GetMode">GetMode</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:GetNofReadouts">GetNofReadouts</a><!--PLAIN-->()
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:GetPath">GetPath</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:MakeSetupFiles">MakeSetupFiles</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:NextReadout">NextReadout</a><!--PLAIN-->(<a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* Readout)
+<!--TAB6-->      <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:ReadoutProc">ReadoutProc</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ReadoutId)
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsSetup:RemoteHomeDir">RemoteHomeDir</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:RemoveSetup">RemoveSetup</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:SetHomeDir">SetHomeDir</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HomeDir)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:SetHomeDirFromRemote">SetHomeDirFromRemote</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:SetMode">SetMode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Mode)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:SetMode">SetMode</a><!--PLAIN-->(EMbsSetupMode Mode)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:SetNofReadouts">SetNofReadouts</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofReadouts)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:SetPath">SetPath</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Create = kFALSE)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsSetup:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMbsSetup:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fTemplatePath">fTemplatePath</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTemplatePath">where to find template files</a></i>
+<!--TAB6-->       <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>* <!--TAB--><!--BOLD--><a name="TMbsSetup:fEvtBuilder">fEvtBuilder</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fEvtBuilder">! event builder (master)</a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofReadouts">fLofReadouts</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLofReadouts">readout processors (slaves)</a></i>
+<!--TAB6-->      <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <!--TAB--><!--BOLD--><a name="TMbsSetup:fReadoutError">fReadoutError</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fReadoutError">... error</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fHomeDir">fHomeDir</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fHomeDir">temp storage: home dir</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fPath">fPath</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPath">... path</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fRemoteHome">fRemoteHome</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fRemoteHome">... remote home dir</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fArrayString">fArrayString</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fArrayString">temp storage method EncodeArray()</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofSetupModes">fLofSetupModes</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fLofSetupModes">... setup modes</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofProcs">fLofProcs</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofProcs">... processors</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofControllers">fLofControllers</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLofControllers">... crate controllers</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofTriggerModules">fLofTriggerModules</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofTriggerModules">... trigger modules</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofTriggerModes">fLofTriggerModes</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLofTriggerModes">... trigger modes</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMbsSetup:fLofSetupTags">fLofSetupTags</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLofSetupTags">... setup tags</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMbsSetup:description">Class Description</a></h2>
+<pre>
+ Name:           mbssetup/src/<a href="./TMbsSetup.html">TMbsSetup</a>.cxx
+ Purpose:        MBS setup
+ Description:    Implements class methods to define a MBS setup
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+ ************************************************************************************************************************
+ Class <a href="./TMbsSetup.html">TMbsSetup</a> refers to a resource file in user's working directory
+ named ".mbssetup" (if not defined otherwise).
+
+ Follows a list of resource items together with their associated methods:
+
+ RESOURCE NAME                             DEFAULT     CLASS             METHODS
+-------------------------------------------------------------------------------------------------------------------------
+ <a href="./TMbsSetup.html">TMbsSetup</a>.HomeDir                         n/a         <a href="./TMbsSetup.html">TMbsSetup</a>         GetHomeDir, SetHomeDir
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Path                            n/a         <a href="./TMbsSetup.html">TMbsSetup</a>         GetPath, SetPath
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Name                 n/a         <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetName, SetName
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Address              n/a         <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetAddr, SetAddr
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Type                 n/a         <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetType, SetType
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Crate                0           <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetCrate, SetCrate
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.NofStreams           8           <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetNofStreams, SetBuffers
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.NofBuffers           8           <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetNofBuffers, SetBuffers
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.BufferSize           0x4000      <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetBufferSize, SetBuffers
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.FlushTime            1           <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetFlushTime, SetFlushTime
+ <a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.VSBAddr              0xf5000000  <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>    GetVSBAddr, SetVSBAddr
+ <a href="./TMbsSetup.html">TMbsSetup</a>.MaxReadouts                     1           <a href="./TMbsSetup.html">TMbsSetup</a>         n/a
+ <a href="./TMbsSetup.html">TMbsSetup</a>.NofReadouts                     0           <a href="./TMbsSetup.html">TMbsSetup</a>         GetNofReadouts, SetNofReadouts
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Mode                            n/a         <a href="./TMbsSetup.html">TMbsSetup</a>         GetMode, SetMode
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.Name                   n/a         <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetName, SetName
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.Address                n/a         <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetAddr, SetAddr
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.Type                   n/a         <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetType, SetType
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.Path                   vme1        <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetPath, SetPath
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.Crate                  0           <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetCrate, SetCrate
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.SourceCode             n/a         <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetSourceCode, SetSourceCode, CompileSourceCode
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.TriggerModule.Type     n/a         <a href="./TMbsTriggerModule.html">TMbsTriggerModule</a> GetType, SetType
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.TriggerModule.Mode     POLLING(1)  <a href="./TMbsTriggerModule.html">TMbsTriggerModule</a> GetTriggerMode, SetTriggerMode
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.TriggerModule.ConvTime 500         <a href="./TMbsTriggerModule.html">TMbsTriggerModule</a> GetConversionTime, SetConversionTime
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.TriggerModule.FastClearTime 20     <a href="./TMbsTriggerModule.html">TMbsTriggerModule</a> GetFastClearTime, SetFastClearTime
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.CratesToBeRead         0,1         <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetCratesToBeRead, SetCratesToBeRead
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.Controller             CBV(5)      <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetController, SetController
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.PipeBase               0xd0000000  <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetPipeBase, SetPipeBase
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.VSBAddr                0xf0000000  <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetVSBAddr, SetVSBAddr
+ <a href="./TMbsSetup.html">TMbsSetup</a>.Readout1.SevtSize               2048        <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>   GetSevtSize, SetSevtSize
+ ************************************************************************************************************************
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMbsSetup:TMbsSetup" href="src/TMbsSetup.cxx.html#TMbsSetup:TMbsSetup">TMbsSetup</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * SetupFile) : <a href="./TMrbEnv.html">TMrbEnv</a>() <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMbsSetup.html">TMbsSetup</a>
+ Purpose:        Define a MBS setup
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * SetupFile -- name of setup file
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMbsSetup:~TMbsSetup" href="src/TMbsSetup.cxx.html#TMbsSetup:~TMbsSetup">~TMbsSetup</a>() <br>
+<pre>__________________________________________________________________[C++ DTOR]
+
+ Name:           <a href="./TMbsSetup.html">TMbsSetup</a>
+ Purpose:        Delete a MBS setup
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Class destructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMbsSetup:RemoveSetup" href="src/TMbsSetup.cxx.html#TMbsSetup:RemoveSetup">RemoveSetup</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:RemoveSetup">TMbsSetup::RemoveSetup</a>
+ Purpose:        Remove entries from setup data base
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Remove resources "<a href="./TMbsSetup.html">TMbsSetup</a>.*".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMbsSetup:Reset" href="src/TMbsSetup.cxx.html#TMbsSetup:Reset">Reset</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:Reset">TMbsSetup::Reset</a>
+ Purpose:        Reset resources to default values
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Resets resources "<a href="./TMbsSetup.html">TMbsSetup</a>.*".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <a name="TMbsSetup:ReadoutProc" href="src/TMbsSetup.cxx.html#TMbsSetup:ReadoutProc">ReadoutProc</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ReadoutId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:ReadoutProc">TMbsSetup::ReadoutProc</a>
+ Purpose:        Return addr of readout process
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ReadoutId         -- proc id
+ Results:        <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a> * Proc  -- process
+ Exceptions:
+ Description:    Returns addr of readout proc defined by its id.
+                 Legal ids start with 1.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:SetHomeDir" href="src/TMbsSetup.cxx.html#TMbsSetup:SetHomeDir">SetHomeDir</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * HomeDir) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:SetHomeDir">TMbsSetup::SetHomeDir</a>
+ Purpose:        Define user's home dir
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HomeDir    -- home directory
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.HomeDir".
+                 HomeDir is user's home directory as seen from MBS.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsSetup:GetHomeDir" href="src/TMbsSetup.cxx.html#TMbsSetup:GetHomeDir">GetHomeDir</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:GetHomeDir">TMbsSetup::GetHomeDir</a>
+ Purpose:        Read user's home dir
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * HomeDir       -- home directory
+ Exceptions:
+ Description:    Gets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.HomeDir".
+                 HomeDir is user's home directory as seen from MBS.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:SetPath" href="src/TMbsSetup.cxx.html#TMbsSetup:SetPath">SetPath</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Path, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Create) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:SetPath">TMbsSetup::SetPath</a>
+ Purpose:        Define path where to write setup files
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Path       -- path name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Create       -- kTRUE if path is to be created
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.Path".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsSetup:GetPath" href="src/TMbsSetup.cxx.html#TMbsSetup:GetPath">GetPath</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:GetPath">TMbsSetup::GetPath</a>
+ Purpose:        Read path where to write setup files
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Path       -- path name
+ Exceptions:
+ Description:    Gets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.Path".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:SetNofReadouts" href="src/TMbsSetup.cxx.html#TMbsSetup:SetNofReadouts">SetNofReadouts</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofReadouts) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:SetNofReadouts">TMbsSetup::SetNofReadouts</a>
+ Purpose:        Define number of readout procs
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NofReadouts    -- number of readout procs
+ Results:        --
+ Exceptions:
+ Description:    Sets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.NofReadouts".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMbsSetup:GetNofReadouts" href="src/TMbsSetup.cxx.html#TMbsSetup:GetNofReadouts">GetNofReadouts</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:GetNofReadouts">TMbsSetup::GetNofReadouts</a>
+ Purpose:        Return number of readout procs
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofReadouts    -- number of readout procs
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.NofReadouts".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:MakeSetupFiles" href="src/TMbsSetup.cxx.html#TMbsSetup:MakeSetupFiles">MakeSetupFiles</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:MakeSetupFiles">TMbsSetup::MakeSetupFiles</a>
+ Purpose:        Install setup files
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Generates setup files from templates.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:WriteRhostsFile" href="src/TMbsSetup.cxx.html#TMbsSetup:WriteRhostsFile">WriteRhostsFile</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; RhostsFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:WriteRhostsFile">TMbsSetup::WriteRhostsFile</a>
+ Purpose:        Rewrite .rhosts in home dir
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> RhostsFile   -- path to .rhosts
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Creates a new .rhosts file containing all Lynx and Marabou
+                 hosts.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:CreateNodeList" href="src/TMbsSetup.cxx.html#TMbsSetup:CreateNodeList">CreateNodeList</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; NodeListFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:CreateNodeList">TMbsSetup::CreateNodeList</a>
+ Purpose:        Rewrite node list for MBS
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> NodeListFile   -- path to node_list.txt
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Creates file node_list.txt
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:ExpandFile" href="src/TMbsSetup.cxx.html#TMbsSetup:ExpandFile">ExpandFile</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ProcID, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; TemplatePath, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; SetupFile, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; DestPath) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:ExpandFile">TMbsSetup::ExpandFile</a>
+ Purpose:        Expand setup file
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ProcID                -- readout proc id
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; TemplatePath       -- where templates reside
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; SetupFile          -- file name
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; DestPath           -- destination
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Opens a template file and expands it.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsSetup:EncodeArray" href="src/TMbsSetup.cxx.html#TMbsSetup:EncodeArray">EncodeArray</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> Base) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:EncodeArray">TMbsSetup::EncodeArray</a>
+ Purpose:        Fill array data in a string
+ Arguments:      <a href="http://root.cern.ch/root/html/TArray.html">TArray</a> &amp; Data         -- data to be encoded
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries      -- number of data entries
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base            -- base
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * ArrayString  -- string representing array data
+ Exceptions:
+ Description:    Produces a string "(d1, d2, ..., dN)".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsSetup:EncodeArray" href="src/TMbsSetup.cxx.html#TMbsSetup:EncodeArray">EncodeArray</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> Base) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:EncodeArray">TMbsSetup::EncodeArray</a>
+ Purpose:        Fill array data in a string
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Data            -- data to be encoded
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Index           -- array index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries      -- number of data points
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base            -- base
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * ArrayString  -- string representing array data
+ Exceptions:
+ Description:    Produces a string "(0, ..., d, ..., 0)".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:CheckSetup" href="src/TMbsSetup.cxx.html#TMbsSetup:CheckSetup">CheckSetup</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:CheckSetup">TMbsSetup::CheckSetup</a>
+ Purpose:        Consistency check
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks resource data base for its consistency.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsSetup:RemoteHomeDir" href="src/TMbsSetup.cxx.html#TMbsSetup:RemoteHomeDir">RemoteHomeDir</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:RemoteHomeDir">TMbsEvtBuilder::RemoteHomeDir</a>
+ Purpose:        Get user's home directory as seen from MBS
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * HomeDir    -- home directory
+ Exceptions:
+ Description:    Tries a "rsh &lt;proc&gt; pwd".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:SetHomeDirFromRemote" href="src/TMbsSetup.cxx.html#TMbsSetup:SetHomeDirFromRemote">SetHomeDirFromRemote</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:SetHomeDirFromRemote">TMbsSetup::SetHomeDirFromRemote</a>
+ Purpose:        Set user's home directory as seen from MBS
+ Arguments:
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines resource "<a href="./TMbsSetup.html">TMbsSetup</a>.HomeDir".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:SetMode" href="src/TMbsSetup.cxx.html#TMbsSetup:SetMode">SetMode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Mode) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:SetMode">TMbsSetup::SetMode</a>
+ Purpose:        Define setup mode
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Mode    -- setup mode
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines resource "<a href="./TMbsSetup.html">TMbsSetup</a>.Mode".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsSetup:SetMode" href="src/TMbsSetup.cxx.html#TMbsSetup:SetMode">SetMode</a>(EMbsSetupMode Mode) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:SetMode">TMbsSetup::SetMode</a>
+ Purpose:        Define setup mode
+ Arguments:      EMbsSetupMode Mode    -- setup mode
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines resource "<a href="./TMbsSetup.html">TMbsSetup</a>.Mode".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMbsSetup:GetMode" href="src/TMbsSetup.cxx.html#TMbsSetup:GetMode">GetMode</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsSetup.html#TMbsSetup:GetMode">TMbsSetup::GetMode</a>
+ Purpose:        Read setup mode
+ Arguments:      --
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Mode
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.Mode".
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <a name="TMbsSetup:FirstReadout" href="TMbsSetup.h">FirstReadout</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* <a name="TMbsSetup:NextReadout" href="TMbsSetup.h">NextReadout</a>(<a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>* Readout)
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>* <a name="TMbsSetup:EvtBuilder" href="TMbsSetup.h">EvtBuilder</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMbsSetup:Help" href="TMbsSetup.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMbsSetup:Class" href="TMbsSetup.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMbsSetup:IsA" href="TMbsSetup.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMbsSetup:ShowMembers" href="TMbsSetup.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMbsSetup:Streamer" href="TMbsSetup.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMbsSetup:StreamerNVirtual" href="TMbsSetup.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:41 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,230 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbDGFHistogramBuffer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbDGFHistogramBuffer:description">class description</a> - <a href="src/TMrbDGFHistogramBuffer.cxx.html">source file</a> - <a href="TMrbDGFHistogramBuffer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbDGFHistogramBuffer" href="TMrbDGFHistogramBuffer.h">TMrbDGFHistogramBuffer</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>, public <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:TMrbDGFHistogramBuffer">TMrbDGFHistogramBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* BufferName = "dgfHbuf", <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module = NULL)
+<!--TAB6-->      <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:TMrbDGFHistogramBuffer">TMrbDGFHistogramBuffer</a><!--PLAIN-->(const <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>&amp;)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:~TMrbDGFHistogramBuffer">~TMrbDGFHistogramBuffer</a><!--PLAIN-->()
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:FillHistogram">FillHistogram</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:GetBSize">GetBSize</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:GetBSizePerChannel">GetBSizePerChannel</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:GetContents">GetContents</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:GetESize">GetESize</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:GetESizePerChannel">GetESizePerChannel</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:GetNofChannels">GetNofChannels</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:Histogram">Histogram</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:IsActive">IsActive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:Save">Save</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* McaFile = "mca.root", <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:SetActive">SetActive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> HistNo)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:SetBSize">SetBSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Size)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:SetESize">SetESize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Size)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:SetModule">SetModule</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:SetNofChannels">SetNofChannels</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFHistogramBuffer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbDGFHistogramBuffer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fModule">fModule</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fModule">! ptr to dgf module</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fNofChannels">fNofChannels</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fNofChannels">number of DGF channels</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fESize">fESize</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fESize">size of energy region</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fESizePerChannel">fESizePerChannel</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fESizePerChannel">... per DGF channel</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fBSize">fBSize</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fBSize">size of base line region</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fBSizePerChannel">fBSizePerChannel</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fBSizePerChannel">... per DGF channel</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fIsActive">fIsActive[4]</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fIsActive">channel active?</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fHistNo">fHistNo[4]</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fHistNo">histogram number</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a name="TMrbDGFHistogramBuffer:fHistogram">fHistogram[4]</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistogram">histograms</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbDGFHistogramBuffer:description">Class Description</a></h2>
+<pre>
+ Name:           xiadgf/src/<a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>.cxx
+ Purpose:        Methods to operate a module XIA DGF-4C
+ Description:    Implements class methods for module XIA DGF-4C
+ Header files:   <a href="./TMrbDGF.html">TMrbDGF</a>.h          -- class defs
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbDGFHistogramBuffer:TMrbDGFHistogramBuffer" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:TMrbDGFHistogramBuffer">TMrbDGFHistogramBuffer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * BufferName, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module) :
+																	<a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>(BufferName, "DGF-4C Histogram Buffer") <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>
+ Purpose:        DGF's histogram buffer
+ Description:    Describes the histogram buffer.
+ Keywords:       |
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:Reset" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:Reset">Reset</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:Reset">TMrbDGFHistogramBuffer::Reset</a>
+ Purpose:        Reset to initial values
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Resets event buffer
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFHistogramBuffer:SetActive" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:SetActive">SetActive</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> HistNo) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:SetActive">TMrbDGFHistogramBuffer::SetActive</a>
+ Purpose:        Mark channel active
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> HistNo           -- histogram number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets active flag for given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFHistogramBuffer:IsActive" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:IsActive">IsActive</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:IsActive">TMrbDGFHistogramBuffer::IsActive</a>
+ Purpose:        Test if channel active
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- channel number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Tests a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:Print" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:Print">Print</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:Print">TMrbDGFHistogramBuffer::Print</a>
+ Purpose:        Output buffer statistics
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Buffer printout
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFHistogramBuffer:GetContents" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:GetContents">GetContents</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:GetContents">TMrbDGFHistogramBuffer::GetContents</a>
+ Purpose:        Get channel contents
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel   -- DGF channel
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Contents  -- channel contents
+ Exceptions:
+ Description:    Returns histogram contents for a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFHistogramBuffer:FillHistogram" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:FillHistogram">FillHistogram</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:FillHistogram">TMrbDGFHistogramBuffer::FillHistogram</a>
+ Purpose:        Fill and display histogram
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel   -- DGF channel
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Fills and draws a MCA histogram for a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFHistogramBuffer:Save" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:Save">Save</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * McaFile, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:Save">TMrbDGFHistogramBuffer::Save</a>
+ Purpose:        Save histograms to root file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * McaFile   -- file name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel      -- DGF channel
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Saves histograms to root file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <a name="TMrbDGFHistogramBuffer:Histogram" href="src/TMrbDGFHistogramBuffer.cxx.html#TMrbDGFHistogramBuffer:Histogram">Histogram</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFHistogramBuffer.html#TMrbDGFHistogramBuffer:Histogram">TMrbDGFHistogramBuffer::Histogram</a>
+ Purpose:        Return histo addr for given channel
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel     -- DGF channel
+ Results:        <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a> * HistAddr   -- histo addr
+ Exceptions:
+ Description:    Rerutns histo addr.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFHistogramBuffer:GetNofChannels" href="TMrbDGFHistogramBuffer.h">GetNofChannels</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:SetNofChannels" href="TMrbDGFHistogramBuffer.h">SetNofChannels</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFHistogramBuffer:GetESize" href="TMrbDGFHistogramBuffer.h">GetESize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFHistogramBuffer:GetESizePerChannel" href="TMrbDGFHistogramBuffer.h">GetESizePerChannel</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:SetESize" href="TMrbDGFHistogramBuffer.h">SetESize</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Size)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFHistogramBuffer:GetBSize" href="TMrbDGFHistogramBuffer.h">GetBSize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFHistogramBuffer:GetBSizePerChannel" href="TMrbDGFHistogramBuffer.h">GetBSizePerChannel</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:SetBSize" href="TMrbDGFHistogramBuffer.h">SetBSize</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Size)
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:SetModule" href="TMrbDGFHistogramBuffer.h">SetModule</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbDGFHistogramBuffer:Class" href="TMrbDGFHistogramBuffer.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbDGFHistogramBuffer:IsA" href="TMrbDGFHistogramBuffer.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:ShowMembers" href="TMrbDGFHistogramBuffer.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:Streamer" href="TMrbDGFHistogramBuffer.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:StreamerNVirtual" href="TMrbDGFHistogramBuffer.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a> <a name="TMrbDGFHistogramBuffer:TMrbDGFHistogramBuffer" href="TMrbDGFHistogramBuffer.h">TMrbDGFHistogramBuffer</a>(const <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFHistogramBuffer:~TMrbDGFHistogramBuffer" href="TMrbDGFHistogramBuffer.h">~TMrbDGFHistogramBuffer</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:31 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

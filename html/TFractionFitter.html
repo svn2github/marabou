@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TFractionFitter</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TFractionFitter:description">class description</a> - <a href="src/TFractionFitter.cxx.html">source file</a> - <a href="TFractionFitter_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TFractionFitter" href="TFractionFitter.h">TFractionFitter</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:CheckConsistency">CheckConsistency</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:CheckParNo">CheckParNo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> parm) const
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:ComputeFCN">ComputeFCN</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; npar, <a href="ListOfTypes.html#Double_t">Double_t</a>* gin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; f, <a href="ListOfTypes.html#Double_t">Double_t</a>* par, <a href="ListOfTypes.html#Int_t">Int_t</a> flag)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:FindPrediction">FindPrediction</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> bin, <a href="ListOfTypes.html#double">double</a>* fractions, <a href="ListOfTypes.html#double">double</a>&amp; Ti, <a href="ListOfTypes.html#int">int</a>&amp; k0, <a href="ListOfTypes.html#double">double</a>&amp; Aki) const
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:GetRanges">GetRanges</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; minX, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; maxX, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; minY, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; maxY, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; minZ, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; maxZ) const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TFractionFitter.html">TFractionFitter</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:TFractionFitter">TFractionFitter</a><!--PLAIN-->()
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TFractionFitter.html">TFractionFitter</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:TFractionFitter">TFractionFitter</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* data, <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* MCs)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:~TFractionFitter">~TFractionFitter</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TFractionFitter:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:Constrain">Constrain</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> parm, <a href="ListOfTypes.html#Double_t">Double_t</a> low, <a href="ListOfTypes.html#Double_t">Double_t</a> high)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:ErrorAnalysis">ErrorAnalysis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> UP)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:Fit">Fit</a><!--PLAIN-->()
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TVirtualFitter.html">TVirtualFitter</a>* <!--TAB--><!--BOLD--><a href="#TFractionFitter:GetFitter">GetFitter</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a href="#TFractionFitter:GetPlot">GetPlot</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:GetResult">GetResult</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> parm, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; value, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; error) const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TFractionFitter:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:ReleaseRangeX">ReleaseRangeX</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:ReleaseRangeY">ReleaseRangeY</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:ReleaseRangeZ">ReleaseRangeZ</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:SetData">SetData</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* data)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:SetMC">SetMC</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> parm, <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* MC)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:SetRangeX">SetRangeX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> low, <a href="ListOfTypes.html#Int_t">Int_t</a> high)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:SetRangeY">SetRangeY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> low, <a href="ListOfTypes.html#Int_t">Int_t</a> high)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:SetRangeZ">SetRangeZ</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> low, <a href="ListOfTypes.html#Int_t">Int_t</a> high)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:SetWeight">SetWeight</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> parm, <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* weight)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFractionFitter:UnConstrain">UnConstrain</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> parm)
+</pre>
+
+<h3><!--TAB2-->  <a name="TFractionFitter:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fFitDone">fFitDone</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fFitDone">flags whether a valid fit has been performed</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fLowLimitX">fLowLimitX</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLowLimitX">first bin in X dimension</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fHighLimitX">fHighLimitX</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fHighLimitX">last  bin in X dimension</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fLowLimitY">fLowLimitY</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLowLimitY">first bin in Y dimension</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fHighLimitY">fHighLimitY</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fHighLimitY">last  bin in Y dimension</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fLowLimitZ">fLowLimitZ</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLowLimitZ">first bin in Z dimension</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fHighLimitZ">fHighLimitZ</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fHighLimitZ">last  bin in Z dimension</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a name="TFractionFitter:fData">fData</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fData">pointer to the "data" histogram to be fitted to</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fMCs">fMCs</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMCs">array of pointers to template histograms</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fWeights">fWeights</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fWeights">array of pointers to corresponding weight factors (may be null)</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fIntegralData">fIntegralData</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fIntegralData">"data" histogram content integral over allowed fit range</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TFractionFitter:fIntegralMCs">fIntegralMCs</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fIntegralMCs">same for template histograms (weights not taken into account)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TFractionFitter:fFractions">fFractions</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fFractions">template fractions scaled to the "data" histogram statistics</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a name="TFractionFitter:fPlot">fPlot</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPlot">pointer to histogram containing summed template predictions</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TFractionFitter:fNpar">fNpar</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNpar">number of fit parameters</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TFractionFitter:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

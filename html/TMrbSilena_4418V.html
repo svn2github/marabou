@@ -1,0 +1,188 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbSilena_4418V</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbSilena_4418V:description">class description</a> - <a href="src/TMrbSilena_4418V.cxx.html">source file</a> - <a href="TMrbSilena_4418V_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbSilena_4418V" href="TMrbSilena_4418V.h">TMrbSilena_4418V</a> : public <a href="./TMrbCamacModule.html">TMrbCamacModule</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="./TMrbSilena_4418V.html">TMrbSilena_4418V</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:TMrbSilena_4418V">TMrbSilena_4418V</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./TMrbSilena_4418V.html">TMrbSilena_4418V</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:TMrbSilena_4418V">TMrbSilena_4418V</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:~TMrbSilena_4418V">~TMrbSilena_4418V</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:CheckSubeventType">CheckSubeventType</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:HasZeroSuppression">HasZeroSuppression</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:SetZeroSuppression">SetZeroSuppression</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSilena_4418V:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbSilena_4418V:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:fZeroSuppression">fZeroSuppression</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fZeroSuppression">zero compression on/off</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbRegisters">TMrbSilena_4418V::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kRegLowerThresh">kRegLowerThresh</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kRegLowerThresh"></a></i>
+<!--TAB6-->         static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbRegisters">TMrbSilena_4418V::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kRegUpperThresh">kRegUpperThresh</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kRegUpperThresh"></a></i>
+<!--TAB6-->         static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbRegisters">TMrbSilena_4418V::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kRegOffset">kRegOffset</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kRegOffset"></a></i>
+<!--TAB6-->         static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbRegisters">TMrbSilena_4418V::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kRegStatus">kRegStatus</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kRegStatus"></a></i>
+<!--TAB6-->         static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbRegisters">TMrbSilena_4418V::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kRegCommonThresh">kRegCommonThresh</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kRegCommonThresh"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbSilenaStatus">TMrbSilena_4418V::EMrbSilenaStatus</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kStatusSUB">kStatusSUB</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kStatusSUB"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbSilenaStatus">TMrbSilena_4418V::EMrbSilenaStatus</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kStatusEEN">kStatusEEN</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kStatusEEN"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbSilenaStatus">TMrbSilena_4418V::EMrbSilenaStatus</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kStatusOVF">kStatusOVF</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kStatusOVF"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbSilenaStatus">TMrbSilena_4418V::EMrbSilenaStatus</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kStatusCCE">kStatusCCE</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kStatusCCE"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbSilenaStatus">TMrbSilena_4418V::EMrbSilenaStatus</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kStatusCSR">kStatusCSR</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kStatusCSR"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:EMrbSilenaStatus">TMrbSilena_4418V::EMrbSilenaStatus</a> <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kStatusCLE">kStatusCLE</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kStatusCLE"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kDefaultOffset">kDefaultOffset</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDefaultOffset"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kDefaultCommonThresh">kDefaultCommonThresh</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDefaultCommonThresh"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kDefaultStatus">kDefaultStatus</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDefaultStatus"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbSilena_4418V:kZeroCompressionStatus">kZeroCompressionStatus</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kZeroCompressionStatus"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbSilena_4418V:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbSilena_4418V.html">TMrbSilena_4418V</a>.cxx
+ Purpose:        MARaBOU configuration: Silena ADCs
+ Description:    Implements class methods to handle Silena type 4418V
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbSilena_4418V:TMrbSilena_4418V" href="src/TMrbSilena_4418V.cxx.html#TMrbSilena_4418V:TMrbSilena_4418V">TMrbSilena_4418V</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition) :
+									<a href="./TMrbCamacModule.html">TMrbCamacModule</a>(ModuleName, "Silena_4418V", ModulePosition, 0, 8, 4096) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbSilena_4418V.html">TMrbSilena_4418V</a>
+ Purpose:        Create an ADC of type Silena 4418/V
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- name of camac module
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition  -- B.C.N for this module
+ Results:        --
+ Exceptions:
+ Description:    Creates a camac module of type Silena 4418/V.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSilena_4418V:CheckSubeventType" href="src/TMrbSilena_4418V.cxx.html#TMrbSilena_4418V:CheckSubeventType">CheckSubeventType</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Subevent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:CheckSubeventType">TMrbSilena_4418V::CheckSubeventType</a>
+ Purpose:        Check if calling subevent is applicable
+ Arguments:
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    If zero suppression is turned on make sure that
+                 a subevent of type [10,3x] (Silena 4418 with zero suppr)
+                 is calling.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:DefineRegisters" href="src/TMrbSilena_4418V.cxx.html#TMrbSilena_4418V:DefineRegisters">DefineRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:DefineRegisters">TMrbSilena_4418V::DefineRegisters</a>
+ Purpose:        Define camac registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Defines status, common threshold, lower &amp; upper thresholds, and offset.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSilena_4418V:MakeReadoutCode" href="src/TMrbSilena_4418V.cxx.html#TMrbSilena_4418V:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:MakeReadoutCode">TMrbSilena_4418V::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a silena adc
+ Arguments:      ofstream &amp; RdoStrm         -- file output stream
+                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a silena 4418/V module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSilena_4418V:MakeReadoutCode" href="src/TMrbSilena_4418V.cxx.html#TMrbSilena_4418V:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex,
+															<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSilena_4418V.html#TMrbSilena_4418V:MakeReadoutCode">TMrbSilena_4418V::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a silena adc
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel            -- channel
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value                  -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a silena 4418/V module.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbSilena_4418V.html">TMrbSilena_4418V</a> <a name="TMrbSilena_4418V:TMrbSilena_4418V" href="TMrbSilena_4418V.h">TMrbSilena_4418V</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:SetZeroSuppression" href="TMrbSilena_4418V.h">SetZeroSuppression</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSilena_4418V:HasZeroSuppression" href="TMrbSilena_4418V.h">HasZeroSuppression</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSilena_4418V:GetMnemonic" href="TMrbSilena_4418V.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:Help" href="TMrbSilena_4418V.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSilena_4418V:Class" href="TMrbSilena_4418V.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSilena_4418V:IsA" href="TMrbSilena_4418V.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:ShowMembers" href="TMrbSilena_4418V.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:Streamer" href="TMrbSilena_4418V.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:StreamerNVirtual" href="TMrbSilena_4418V.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbSilena_4418V:~TMrbSilena_4418V" href="TMrbSilena_4418V.h">~TMrbSilena_4418V</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

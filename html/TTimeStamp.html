@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TTimeStamp</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TTimeStamp:description">class description</a> - <a href="src/TTimeStamp.cxx.html">source file</a> - <a href="TTimeStamp_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TTimeStamp" href="TTimeStamp.h">TTimeStamp</a> </h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:NormalizeNanoSec">NormalizeNanoSec</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Set">Set</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> year, <a href="ListOfTypes.html#Int_t">Int_t</a> month, <a href="ListOfTypes.html#Int_t">Int_t</a> day, <a href="ListOfTypes.html#Int_t">Int_t</a> hour, <a href="ListOfTypes.html#Int_t">Int_t</a> min, <a href="ListOfTypes.html#Int_t">Int_t</a> sec, <a href="ListOfTypes.html#Int_t">Int_t</a> nsec, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isUTC, <a href="ListOfTypes.html#Int_t">Int_t</a> secOffset)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> date, <a href="ListOfTypes.html#Int_t">Int_t</a> time, <a href="ListOfTypes.html#Int_t">Int_t</a> nsec, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isUTC, <a href="ListOfTypes.html#Int_t">Int_t</a> secOffset)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:TTimeStamp">TTimeStamp</a><!--PLAIN-->()
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:TTimeStamp">TTimeStamp</a><!--PLAIN-->(const <a href="ListOfTypes.html#timespec_t">timespec_t</a>&amp; ts)
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:TTimeStamp">TTimeStamp</a><!--PLAIN-->(<a href="ListOfTypes.html#time_t">time_t</a> t, <a href="ListOfTypes.html#Int_t">Int_t</a> nsec)
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:TTimeStamp">TTimeStamp</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> year, <a href="ListOfTypes.html#UInt_t">UInt_t</a> month, <a href="ListOfTypes.html#UInt_t">UInt_t</a> day, <a href="ListOfTypes.html#UInt_t">UInt_t</a> hour, <a href="ListOfTypes.html#UInt_t">UInt_t</a> min, <a href="ListOfTypes.html#UInt_t">UInt_t</a> sec, <a href="ListOfTypes.html#UInt_t">UInt_t</a> nsec = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isUTC = kTRUE, <a href="ListOfTypes.html#Int_t">Int_t</a> secOffset = 0)
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:TTimeStamp">TTimeStamp</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> date, <a href="ListOfTypes.html#UInt_t">UInt_t</a> time, <a href="ListOfTypes.html#UInt_t">UInt_t</a> nsec, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isUTC = kTRUE, <a href="ListOfTypes.html#Int_t">Int_t</a> secOffset = 0)
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:TTimeStamp">TTimeStamp</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:~TTimeStamp">~TTimeStamp</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Add">Add</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a>&amp; offset)
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TTimeStamp:AsString">AsString</a><!--PLAIN-->(const <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TTimeStamp:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTimeStamp.html">TTimeStamp</a>&amp; ts)
+<!--TAB6-->          static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:DumpTMStruct">DumpTMStruct</a><!--PLAIN-->(const <a href="ListOfTypes.html#tm_t">tm_t</a>&amp; tmstruct)
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:GetDate">GetDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> inUTC = kTRUE, <a href="ListOfTypes.html#Int_t">Int_t</a> secOffset = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a>* year = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a>* month = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a>* day = 0) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:GetNanoSec">GetNanoSec</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#time_t">time_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:GetSec">GetSec</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:GetTime">GetTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> inUTC = kTRUE, <a href="ListOfTypes.html#Int_t">Int_t</a> secOffset = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a>* hour = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a>* min = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a>* sec = 0) const
+<!--TAB6-->           <a href="ListOfTypes.html#timespec_t">timespec_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:GetTimeSpec">GetTimeSpec</a><!--PLAIN-->() const
+<!--TAB6-->         static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:GetZoneOffset">GetZoneOffset</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TTimeStamp:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->        static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:IsLeapYear">IsLeapYear</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> year)
+<!--TAB6-->        static <a href="ListOfTypes.html#time_t">time_t</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:MktimeFromUTC">MktimeFromUTC</a><!--PLAIN-->(<a href="ListOfTypes.html#tm_t">tm_t</a>* tmstruct)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Print">Print</a><!--PLAIN-->(const <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimeStamp:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TTimeStamp:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTimeStamp:fSec">fSec</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fSec">seconds</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TTimeStamp:fNanoSec">fNanoSec</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNanoSec">nanoseconds</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TTimeStamp:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

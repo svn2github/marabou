@@ -1,0 +1,368 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TStyle</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TStyle:description">class description</a> - <a href="src/TStyle.cxx.html">source file</a> - <a href="TStyle_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TStyle" href="TStyle.h">TStyle</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>, public <a href="http://root.cern.ch/root/html/TAttLine.html">TAttLine</a>, public <a href="http://root.cern.ch/root/html/TAttFill.html">TAttFill</a>, public <a href="http://root.cern.ch/root/html/TAttMarker.html">TAttMarker</a>, public <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TStyle.html">TStyle</a> <!--TAB--><!--BOLD--><a href="#TStyle:TStyle">TStyle</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TStyle.html">TStyle</a> <!--TAB--><!--BOLD--><a href="#TStyle:TStyle">TStyle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TStyle.html">TStyle</a> <!--TAB--><!--BOLD--><a href="#TStyle:TStyle">TStyle</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TStyle.html">TStyle</a>&amp; style)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:~TStyle">~TStyle</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:AxisChoice">AxisChoice</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->          static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:BuildStyles">BuildStyles</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:cd">cd</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStyle:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; style)
+<!--TAB6-->         static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:CreateGradientColorTable">CreateGradientColorTable</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Number, <a href="ListOfTypes.html#Double_t">Double_t</a>* Length, <a href="ListOfTypes.html#Double_t">Double_t</a>* Red, <a href="ListOfTypes.html#Double_t">Double_t</a>* Green, <a href="ListOfTypes.html#Double_t">Double_t</a>* Blue, <a href="ListOfTypes.html#UInt_t">UInt_t</a> NColors)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetAttDate">GetAttDate</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetAxisColor">GetAxisColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetBarOffset">GetBarOffset</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetBarWidth">GetBarWidth</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasBorderMode">GetCanvasBorderMode</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasBorderSize">GetCanvasBorderSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasColor">GetCanvasColor</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasDefH">GetCanvasDefH</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasDefW">GetCanvasDefW</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasDefX">GetCanvasDefX</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetCanvasDefY">GetCanvasDefY</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetColorPalette">GetColorPalette</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i) const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetDateX">GetDateX</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetDateY">GetDateY</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetDrawBorder">GetDrawBorder</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetEndErrorSize">GetEndErrorSize</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetErrorMarker">GetErrorMarker</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetErrorX">GetErrorX</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetFitFormat">GetFitFormat</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameBorderMode">GetFrameBorderMode</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameBorderSize">GetFrameBorderSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameFillColor">GetFrameFillColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameFillStyle">GetFrameFillStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameLineColor">GetFrameLineColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameLineStyle">GetFrameLineStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFrameLineWidth">GetFrameLineWidth</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFuncColor">GetFuncColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFuncStyle">GetFuncStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetFuncWidth">GetFuncWidth</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetGridColor">GetGridColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetGridStyle">GetGridStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetGridWidth">GetGridWidth</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetHeaderPS">GetHeaderPS</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetHistFillColor">GetHistFillColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetHistFillStyle">GetHistFillStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetHistLineColor">GetHistLineColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetHistLineStyle">GetHistLineStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetHistLineWidth">GetHistLineWidth</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetLabelColor">GetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetLabelFont">GetLabelFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetLabelOffset">GetLabelOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetLabelSize">GetLabelSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetLegoInnerR">GetLegoInnerR</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetLineScalePS">GetLineScalePS</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetLineStyleString">GetLineStyleString</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i = 1) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetNdivisions">GetNdivisions</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetNumberOfColors">GetNumberOfColors</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptDate">GetOptDate</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptFile">GetOptFile</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptFit">GetOptFit</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptLogx">GetOptLogx</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptLogy">GetOptLogy</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptLogz">GetOptLogz</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptStat">GetOptStat</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetOptTitle">GetOptTitle</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadBorderMode">GetPadBorderMode</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadBorderSize">GetPadBorderSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadBottomMargin">GetPadBottomMargin</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadColor">GetPadColor</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadGridX">GetPadGridX</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadGridY">GetPadGridY</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadLeftMargin">GetPadLeftMargin</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadRightMargin">GetPadRightMargin</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadTickX">GetPadTickX</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadTickY">GetPadTickY</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPadTopMargin">GetPadTopMargin</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetPaintTextFormat">GetPaintTextFormat</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetPaperSize">GetPaperSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>&amp; xsize, <a href="ListOfTypes.html#Float_t">Float_t</a>&amp; ysize)
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetScreenFactor">GetScreenFactor</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetShowEventStatus">GetShowEventStatus</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatBorderSize">GetStatBorderSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatColor">GetStatColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatFont">GetStatFont</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatFontSize">GetStatFontSize</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetStatFormat">GetStatFormat</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatH">GetStatH</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatStyle">GetStatStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatTextColor">GetStatTextColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatW">GetStatW</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatX">GetStatX</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStatY">GetStatY</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetStripDecimals">GetStripDecimals</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTickLength">GetTickLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTimeOffset">GetTimeOffset</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleBorderSize">GetTitleBorderSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleColor">GetTitleColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleFont">GetTitleFont</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleFontSize">GetTitleFontSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleH">GetTitleH</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleOffset">GetTitleOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStyle:GetTitlePS">GetTitlePS</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleSize">GetTitleSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X") const
+<!--TAB6-->              <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleStyle">GetTitleStyle</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleTextColor">GetTitleTextColor</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleW">GetTitleW</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleX">GetTitleX</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleXOffset">GetTitleXOffset</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleXSize">GetTitleXSize</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleY">GetTitleY</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleYOffset">GetTitleYOffset</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TStyle:GetTitleYSize">GetTitleYSize</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStyle:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:Reset">Reset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetAxisColor">SetAxisColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetBarOffset">SetBarOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> baroff = 0.5)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetBarWidth">SetBarWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> barwidth = 0.5)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasBorderMode">SetCanvasBorderMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> mode = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasBorderSize">SetCanvasBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> size = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasColor">SetCanvasColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 19)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasDefH">SetCanvasDefH</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> h = 500)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasDefW">SetCanvasDefW</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> w = 700)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasDefX">SetCanvasDefX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> topx = 10)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetCanvasDefY">SetCanvasDefY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> topy = 10)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetDateX">SetDateX</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> x = 0.01)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetDateY">SetDateY</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> y = 0.01)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetDrawBorder">SetDrawBorder</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> drawborder = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetEndErrorSize">SetEndErrorSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> np = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetErrorMarker">SetErrorMarker</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> marker = 21)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetErrorX">SetErrorX</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> errorx = 0.5)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFitFormat">SetFitFormat</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* format = "5.4g")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameBorderMode">SetFrameBorderMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> mode = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameBorderSize">SetFrameBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> size = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameFillColor">SetFrameFillColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameFillStyle">SetFrameFillStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> styl = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameLineColor">SetFrameLineColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameLineStyle">SetFrameLineStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> styl = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFrameLineWidth">SetFrameLineWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> width = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFuncColor">SetFuncColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFuncStyle">SetFuncStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> style = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetFuncWidth">SetFuncWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> width = 4)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetGridColor">SetGridColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetGridStyle">SetGridStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> style = 3)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetGridWidth">SetGridWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> width = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetHeaderPS">SetHeaderPS</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* header)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetHistFillColor">SetHistFillColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetHistFillStyle">SetHistFillStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> styl = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetHistLineColor">SetHistLineColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetHistLineStyle">SetHistLineStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> styl = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetHistLineWidth">SetHistLineWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> width = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLabelColor">SetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLabelFont">SetLabelFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> font = 62, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLabelOffset">SetLabelOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 0.005, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLabelSize">SetLabelSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0.04, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLegoInnerR">SetLegoInnerR</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> rad = 0.5)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLineScalePS">SetLineScalePS</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> scale = 3)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetLineStyleString">SetLineStyleString</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i, const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetNdivisions">SetNdivisions</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n = 510, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptDate">SetOptDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> datefl = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptFile">SetOptFile</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> file = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptFit">SetOptFit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> fit = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptLogx">SetOptLogx</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> logx = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptLogy">SetOptLogy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> logy = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptLogz">SetOptLogz</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> logz = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptStat">SetOptStat</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> stat = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptStat">SetOptStat</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* stat)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetOptTitle">SetOptTitle</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tit = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadBorderMode">SetPadBorderMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> mode = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadBorderSize">SetPadBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> size = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadBottomMargin">SetPadBottomMargin</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> margin = 0.1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadColor">SetPadColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 19)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadGridX">SetPadGridX</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> gridx)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadGridY">SetPadGridY</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> gridy)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadLeftMargin">SetPadLeftMargin</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> margin = 0.1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadRightMargin">SetPadRightMargin</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> margin = 0.1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadTickX">SetPadTickX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tickx)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadTickY">SetPadTickY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ticky)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPadTopMargin">SetPadTopMargin</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> margin = 0.1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPaintTextFormat">SetPaintTextFormat</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* format = "g")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPalette">SetPalette</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ncolors = 0, <a href="ListOfTypes.html#Int_t">Int_t</a>* colors = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPaperSize">SetPaperSize</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TStyle.html#TStyle:EPaperSize">TStyle::EPaperSize</a> size)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetPaperSize">SetPaperSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> xsize = 20, <a href="ListOfTypes.html#Float_t">Float_t</a> ysize = 26)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetScreenFactor">SetScreenFactor</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> factor = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatBorderSize">SetStatBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> size = 2)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatColor">SetStatColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> color = 19)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatFont">SetStatFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> font = 62)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatFontSize">SetStatFontSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatFormat">SetStatFormat</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* format = "6.4g")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatH">SetStatH</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> h = 0.1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatStyle">SetStatStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> style = 1001)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatTextColor">SetStatTextColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatW">SetStatW</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> w = 0.19)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatX">SetStatX</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> x = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStatY">SetStatY</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> y = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetStripDecimals">SetStripDecimals</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> strip = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTickLength">SetTickLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> length = 0.03, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTimeOffset">SetTimeOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> toffset)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleBorderSize">SetTitleBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Width_t">Width_t</a> size = 2)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleColor">SetTitleColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> color = 19)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleFont">SetTitleFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> font = 62)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleFontSize">SetTitleFontSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleH">SetTitleH</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> h = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleOffset">SetTitleOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitlePS">SetTitlePS</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* pstitle)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleSize">SetTitleSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0.02, <a href="ListOfTypes.html#Option_t">Option_t</a>* axis = "X")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleStyle">SetTitleStyle</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> style = 1001)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleTextColor">SetTitleTextColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> color = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleW">SetTitleW</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> w = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleX">SetTitleX</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> x = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleXOffset">SetTitleXOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleXSize">SetTitleXSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0.02)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleY">SetTitleY</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> y = 0.985)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleYOffset">SetTitleYOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:SetTitleYSize">SetTitleYSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0.02)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStyle:ToggleEventStatus">ToggleEventStatus</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TStyle:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a> <!--TAB--><!--BOLD--><a name="TStyle:fXaxis">fXaxis</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fXaxis">X axis attributes</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a> <!--TAB--><!--BOLD--><a name="TStyle:fYaxis">fYaxis</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fYaxis">Y axis attributes</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a> <!--TAB--><!--BOLD--><a name="TStyle:fZaxis">fZaxis</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fZaxis">Z axis attributes</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fBarWidth">fBarWidth</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fBarWidth">width of bar for graphs</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fBarOffset">fBarOffset</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fBarOffset">offset of bar for graphs</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fDrawBorder">fDrawBorder</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fDrawBorder">flag to draw border(=1) or not (0)</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptLogx">fOptLogx</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fOptLogx">=1 if log scale in X</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptLogy">fOptLogy</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fOptLogy">=1 if log scale in y</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptLogz">fOptLogz</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fOptLogz">=1 if log scale in z</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptDate">fOptDate</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fOptDate">=1 if date option is selected</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptStat">fOptStat</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fOptStat">=1 if option Stat is selected</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptTitle">fOptTitle</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fOptTitle">=1 if option Title is selected</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptFile">fOptFile</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fOptFile">=1 if option File is selected</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fOptFit">fOptFit</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fOptFit">=1 if option Fit is selected</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fErrorMarker">fErrorMarker</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fErrorMarker">marker for error bars</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fShowEventStatus">fShowEventStatus</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fShowEventStatus">Show event status panel</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a> <!--TAB--><!--BOLD--><a name="TStyle:fAttDate">fAttDate</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fAttDate">canvas date attribute</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fDateX">fDateX</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDateX">X position of the date in the canvas (in NDC)</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fDateY">fDateY</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDateY">Y position of the date in the canvas (in NDC)</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fEndErrorSize">fEndErrorSize</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fEndErrorSize">Size of lines at the end of error bars</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fErrorX">fErrorX</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fErrorX">per cent of bin width for errors along X</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFuncColor">fFuncColor</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFuncColor">function color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFuncStyle">fFuncStyle</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFuncStyle">function style</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFuncWidth">fFuncWidth</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFuncWidth">function line width</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fGridColor">fGridColor</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fGridColor">grid line color (if 0 use axis line color)</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fGridStyle">fGridStyle</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fGridStyle">grid line style</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fGridWidth">fGridWidth</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fGridWidth">grid line width</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameFillColor">fFrameFillColor</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFrameFillColor">pad frame fill color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameLineColor">fFrameLineColor</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFrameLineColor">pad frame line color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameFillStyle">fFrameFillStyle</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFrameFillStyle">pad frame fill style</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameLineStyle">fFrameLineStyle</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFrameLineStyle">pad frame line style</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameLineWidth">fFrameLineWidth</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFrameLineWidth">pad frame line width</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameBorderSize">fFrameBorderSize</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fFrameBorderSize">pad frame border size</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fFrameBorderMode">fFrameBorderMode</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fFrameBorderMode">pad frame border mode</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fHistFillColor">fHistFillColor</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistFillColor">histogram fill color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fHistLineColor">fHistLineColor</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistLineColor">histogram line color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fHistFillStyle">fHistFillStyle</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistFillStyle">histogram fill style</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fHistLineStyle">fHistLineStyle</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistLineStyle">histogram line style</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fHistLineWidth">fHistLineWidth</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistLineWidth">histogram line width</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasColor">fCanvasColor</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fCanvasColor">canvas color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasBorderSize">fCanvasBorderSize</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCanvasBorderSize">canvas border size</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasBorderMode">fCanvasBorderMode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCanvasBorderMode">canvas border mode</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasDefH">fCanvasDefH</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCanvasDefH">default canvas height</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasDefW">fCanvasDefW</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCanvasDefW">default canvas width</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasDefX">fCanvasDefX</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCanvasDefX">default canvas top X position</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fCanvasDefY">fCanvasDefY</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCanvasDefY">default canvas top Y position</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadColor">fPadColor</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPadColor">pad color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadBorderSize">fPadBorderSize</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fPadBorderSize">pad border size</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadBorderMode">fPadBorderMode</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fPadBorderMode">pad border mode</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadBottomMargin">fPadBottomMargin</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fPadBottomMargin">pad bottom margin</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadTopMargin">fPadTopMargin</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPadTopMargin">pad top margin</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadLeftMargin">fPadLeftMargin</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fPadLeftMargin">pad left margin</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadRightMargin">fPadRightMargin</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fPadRightMargin">pad right margin</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadGridX">fPadGridX</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPadGridX">true to get the grid along X</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadGridY">fPadGridY</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPadGridY">true to get the grid along Y</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadTickX">fPadTickX</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPadTickX">=1 to set special pad ticks along X</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPadTickY">fPadTickY</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPadTickY">=1 to set special pad ticks along Y</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPaperSizeX">fPaperSizeX</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fPaperSizeX">PostScript paper size along X</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fPaperSizeY">fPaperSizeY</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fPaperSizeY">PostScript paper size along Y</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fScreenFactor">fScreenFactor</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fScreenFactor">Multiplication factor for canvas size and position</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatColor">fStatColor</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fStatColor">stat fill area color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatTextColor">fStatTextColor</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStatTextColor">stat text color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatBorderSize">fStatBorderSize</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fStatBorderSize">border size of Stats PaveLabel</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatFont">fStatFont</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fStatFont">font style of Stats PaveLabel</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatFontSize">fStatFontSize</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fStatFontSize">font size in pixels for fonts with precision type 3</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatStyle">fStatStyle</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fStatStyle">fill area style of Stats PaveLabel</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatFormat">fStatFormat</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fStatFormat">Printing format for stats</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatX">fStatX</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fStatX">X position of top right corner of stat box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatY">fStatY</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fStatY">Y position of top right corner of stat box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatW">fStatW</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fStatW">width of stat box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStatH">fStatH</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fStatH">height of stat box</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fStripDecimals">fStripDecimals</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStripDecimals">Strip decimals in axis labels</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleColor">fTitleColor</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTitleColor">title fill area color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleTextColor">fTitleTextColor</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTitleTextColor">title text color</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Width_t">Width_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleBorderSize">fTitleBorderSize</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTitleBorderSize">border size of Title PavelLabel</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleFont">fTitleFont</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTitleFont">font style of Title PaveLabel</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleFontSize">fTitleFontSize</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTitleFontSize">font size in pixels for fonts with precision type 3</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleStyle">fTitleStyle</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTitleStyle">fill area style of title PaveLabel</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleX">fTitleX</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTitleX">X position of top left corner of title box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleY">fTitleY</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTitleY">Y position of top left corner of title box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleW">fTitleW</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTitleW">width of title box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitleH">fTitleH</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTitleH">height of title box</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fLegoInnerR">fLegoInnerR</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLegoInnerR">Inner radius for cylindrical legos</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TStyle:fPalette">fPalette</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fPalette">Color palette</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TStyle:fLineStyle">fLineStyle[30]</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLineStyle">String describing line style i (for postScript)</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TStyle:fHeaderPS">fHeaderPS</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fHeaderPS">User defined additional Postscript header</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TStyle:fTitlePS">fTitlePS</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTitlePS">User defined Postscript file title</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TStyle:fFitFormat">fFitFormat</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFitFormat">Printing format for fit parameters</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TStyle:fPaintTextFormat">fPaintTextFormat</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fPaintTextFormat">Printing format for TH2::PaintText</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fLineScalePS">fLineScalePS</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLineScalePS">Line scale factor when drawing lines on Postscript</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TStyle:fTimeOffset">fTimeOffset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTimeOffset">Time offset to the beginning of an axis</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStyle.html#TStyle:EPaperSize">TStyle::EPaperSize</a> <!--TAB--><!--BOLD--><a name="TStyle:kA4">kA4</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kA4"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStyle.html#TStyle:EPaperSize">TStyle::EPaperSize</a> <!--TAB--><!--BOLD--><a name="TStyle:kUSLetter">kUSLetter</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kUSLetter"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TStyle:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:26 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

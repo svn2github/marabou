@@ -1,0 +1,104 @@
+#ifndef __DGFSetFilesPanel_h__
+#define __DGFSetFilesPanel_h__
+
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetFilesPanel.h
+// Purpose:        Class defs for the XIA DGF-4C GUI
+// Class:          DGFSetFilesPanel
+// Description:    A GUI to operate a XIA DGF-4C
+// Author:         R. Lutter
+// Revision:       
+// Date:           
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TList.h"
+
+#include "TGWindow.h"
+#include "TGFrame.h"
+
+#include "TMrbLofNamedX.h"
+#include "TMrbDGF.h"
+
+#include "TGMrbTextButton.h"
+#include "TGMrbLabelEntry.h"
+#include "TGMrbFileEntry.h"
+#include "TGMrbFocusList.h"
+#include "TGMrbLofKeyBindings.h"
+
+#include "DGFControlCommon.h"
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetFilesPanel
+// Purpose:        Transient frame to define filenames and paths
+// Description:    A dialog window to enter file names and paths
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class DGFSetFilesPanel : public TGTransientFrame {
+
+	public:
+
+		// cmd ids to dispatch over X events in this panel
+		enum EDGFSetFilesCmdId 	{	kDGFSetFilesUserPath,
+									kDGFSetFilesUserSettings,
+									kDGFSetFilesUserRunData,
+									kDGFSetFilesSystemPath,
+									kDGFSetFilesSystemDSPCode,
+									kDGFSetFilesSystemDSPParams,
+									kDGFSetFilesSystemSystemFPGAConfig,
+									kDGFSetFilesSystemFippiFPGAConfig,
+									kDGFSetFilesApply,
+									kDGFSetFilesClose
+								};
+
+		// geometry settings
+		enum					{	kFrameWidth 			= 700					};
+		enum					{	kFrameHeight 			= 370					};
+
+		enum					{	kLEWidth				= kAutoWidth			};
+		enum					{	kEntryWidth				= 400					};
+		enum					{	kLEHeight				= 20					};
+
+		enum					{	kButtonWidth			= kAutoWidth			};
+		enum					{	kButtonHeight			= 20					};
+
+	public:
+		DGFSetFilesPanel(const TGWindow * Parent, const TGWindow * Main, UInt_t Width, UInt_t Height,
+                									UInt_t Options = kMainFrame | kVerticalFrame);
+		virtual ~DGFSetFilesPanel() { fHeap.Delete(); };
+
+		DGFSetFilesPanel(const DGFSetFilesPanel & f) : TGTransientFrame(f) {};	// default copy ctor
+
+		inline virtual void CloseWindow() { delete this; };
+		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
+		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+
+	protected:
+		TList fHeap;									//! list of objects created on heap
+		TGGroupFrame * fUserFrame; 						// user
+		TGMrbLabelEntry * fUserRunDataEntry;			//		run data file
+		TGGroupFrame * fSystemFrame; 					// system
+		TGMrbFileEntry * fSystemDSPCodeEntry;			//		DSP code
+		TGMrbFileEntry * fSystemDSPParamsEntry; 		//		params
+		TGMrbFileEntry * fSystemSystemFPGAConfigEntry;	//		FPGA config (system)
+		TGMrbFileEntry * fSystemFippiFPGAConfig[TMrbDGFData::kNofRevs];	//		... (fippi, rev D, E)
+		TGMrbTextButtonList * fButtonFrame; 			// buttons: apply/close
+
+		TGFileInfo fSystemDSPCodeFileInfo;				//		DSP code
+		TGFileInfo fSystemDSPParamsFileInfo; 			//		params
+		TGFileInfo fSystemSystemFPGAFileInfo;			//		FPGA config (system)
+		TGFileInfo fSystemFippiFPGAFileInfo[TMrbDGFData::kNofRevs];	//		... (fippi, revD, revE)
+
+		TMrbLofNamedX fLofButtons; 
+		TGMrbFocusList fFocusList;
+
+		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
+		
+	ClassDef(DGFSetFilesPanel, 0)		// [DGFControl] Define file paths
+};
+
+#endif

@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TableOfLabels</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TableOfLabels:description">class description</a> - <a href="src/TableOfLabels.cxx.html">source file</a> - <a href="TableOfLabels_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TableOfLabels" href="TableOfLabels.h">TableOfLabels</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="./TableOfLabels.html">TableOfLabels</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:TableOfLabels">TableOfLabels</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* main, <a href="http://root.cern.ch/root/html/TString.html">TString</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> ncols, <a href="ListOfTypes.html#Int_t">Int_t</a> nrows, <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* entries, <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* col_lab, <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* row_lab)
+<!--TAB6-->        <a href="./TableOfLabels.html">TableOfLabels</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:TableOfLabels">TableOfLabels</a><!--PLAIN-->(const <a href="./TableOfLabels.html">TableOfLabels</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:~TableOfLabels">~TableOfLabels</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TableOfLabels:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TableOfLabels:GetListOfLabels">GetListOfLabels</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TableOfLabels:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a>)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:SetLabelColor">SetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> col, <a href="ListOfTypes.html#Int_t">Int_t</a> row, <a href="ListOfTypes.html#ULong_t">ULong_t</a> color)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:SetLabelText">SetLabelText</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> col, <a href="ListOfTypes.html#Int_t">Int_t</a> row, const <a href="ListOfTypes.html#Char_t">Char_t</a>* text)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TableOfLabels:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TableOfLabels:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fWidgets">fWidgets</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fWidgets"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fMainFrame">fMainFrame</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMainFrame">transient frame, main dialog window</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fRowFrame">fRowFrame</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fRowFrame"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fLabelFrame">fLabelFrame</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLabelFrame"></a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fEntries">fEntries</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fEntries"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fFrame">fFrame</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFrame"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fItemLabel">fItemLabel</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fItemLabel"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fLabel">fLabel</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLabel"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fRowLabel">fRowLabel</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fRowLabel"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fLO1">fLO1</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLO1"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fLO2">fLO2</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLO2"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fLO3">fLO3</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLO3"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fLO4">fLO4</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLO4"></a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fValues">fValues</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fValues"></a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextButton.html">TGTextButton</a>* <!--TAB--><!--BOLD--><a name="TableOfLabels:fCancelButton">fCancelButton</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCancelButton"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TableOfLabels:fNrows">fNrows</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNrows"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TableOfLabels:fNcols">fNcols</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNcols"></a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TableOfLabels:fNent">fNent</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNent"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TableOfLabels:description">Class Description</a></h2>
+<hr>
+<!--FUNCTION--> <a name="TableOfLabels:TableOfLabels" href="src/TableOfLabels.cxx.html#TableOfLabels:TableOfLabels">TableOfLabels</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> *win, <a href="http://root.cern.ch/root/html/TString.html">TString</a> *title,
+                               <a href="ListOfTypes.html#Int_t">Int_t</a> nc, <a href="ListOfTypes.html#Int_t">Int_t</a> nr, 
+                               <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> *values, 
+                               <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> *col_labels,
+                               <a href="http://root.cern.ch/root/html/TOrdCollection.html">TOrdCollection</a> *row_labels)<br>
+<hr>
+<!--FUNCTION--> <a name="TableOfLabels:~TableOfLabels" href="src/TableOfLabels.cxx.html#TableOfLabels:~TableOfLabels">~TableOfLabels</a>()<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TableOfLabels:ProcessMessage" href="src/TableOfLabels.cxx.html#TableOfLabels:ProcessMessage">ProcessMessage</a> (<a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a>)<br>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <a name="TableOfLabels:GetListOfLabels" href="TableOfLabels.h">GetListOfLabels</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TableOfLabels:SetLabelText" href="TableOfLabels.h">SetLabelText</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> col, <a href="ListOfTypes.html#Int_t">Int_t</a> row, const <a href="ListOfTypes.html#Char_t">Char_t</a>* text)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TableOfLabels:SetLabelColor" href="TableOfLabels.h">SetLabelColor</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> col, <a href="ListOfTypes.html#Int_t">Int_t</a> row, <a href="ListOfTypes.html#ULong_t">ULong_t</a> color)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TableOfLabels:Class" href="TableOfLabels.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TableOfLabels:IsA" href="TableOfLabels.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TableOfLabels:ShowMembers" href="TableOfLabels.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TableOfLabels:Streamer" href="TableOfLabels.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TableOfLabels:StreamerNVirtual" href="TableOfLabels.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TableOfLabels.html">TableOfLabels</a> <a name="TableOfLabels:TableOfLabels" href="TableOfLabels.h">TableOfLabels</a>(const <a href="./TableOfLabels.html">TableOfLabels</a>&amp;)
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:59:01 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

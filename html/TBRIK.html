@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TBRIK</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TBRIK:description">class description</a> - <a href="src/TBRIK.cxx.html">source file</a> - <a href="TBRIK_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TBRIK" href="TBRIK.h">TBRIK</a> : public <a href="http://root.cern.ch/root/html/TShape.html">TShape</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TBRIK.html">TBRIK</a> <!--TAB--><!--BOLD--><a href="#TBRIK:TBRIK">TBRIK</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TBRIK.html">TBRIK</a> <!--TAB--><!--BOLD--><a href="#TBRIK:TBRIK">TBRIK</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, const <a href="ListOfTypes.html#char">char</a>* material, <a href="ListOfTypes.html#Float_t">Float_t</a> dx, <a href="ListOfTypes.html#Float_t">Float_t</a> dy, <a href="ListOfTypes.html#Float_t">Float_t</a> dz)
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TBRIK.html">TBRIK</a> <!--TAB--><!--BOLD--><a href="#TBRIK:TBRIK">TBRIK</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TBRIK.html">TBRIK</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:~TBRIK">~TBRIK</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TBRIK:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TBRIK:DistancetoPrimitive">DistancetoPrimitive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TBRIK:GetDx">GetDx</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TBRIK:GetDy">GetDy</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TBRIK:GetDz">GetDz</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TBRIK:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:PaintGLPoints">PaintGLPoints</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* buff)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:SetPoints">SetPoints</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* buff)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:Sizeof3D">Sizeof3D</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBRIK:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TBRIK:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TBRIK:fDx">fDx</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDx">half length in x</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TBRIK:fDy">fDy</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDy">half length in y</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TBRIK:fDz">fDz</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDz">half length in z</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGTRA.html">TGTRA</a>, <a href="http://root.cern.ch/root/html/TPARA.html">TPARA</a>, <a href="http://root.cern.ch/root/html/TTRAP.html">TTRAP</a>, <a href="http://root.cern.ch/root/html/TTRD1.html">TTRD1</a>, <a href="http://root.cern.ch/root/html/TTRD2.html">TTRD2</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TBRIK:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:09 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

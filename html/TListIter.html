@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TListIter</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TListIter:description">class description</a> - <a href="src/TListIter.cxx.html">source file</a> - <a href="TListIter_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TListIter" href="TList.h">TListIter</a> : public <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TListIter.html">TListIter</a> <!--TAB--><!--BOLD--><a href="#TListIter:TListIter">TListIter</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TListIter.html">TListIter</a> <!--TAB--><!--BOLD--><a href="#TListIter:TListIter">TListIter</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TList.html">TList</a>* l, <a href="ListOfTypes.html#Bool_t">Bool_t</a> dir = kIterForward)
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TListIter.html">TListIter</a> <!--TAB--><!--BOLD--><a href="#TListIter:TListIter">TListIter</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TListIter.html">TListIter</a>&amp; iter)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TListIter:~TListIter">~TListIter</a><!--PLAIN-->()
+<!--TAB6-->                  static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TListIter:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* <!--TAB--><!--BOLD--><a href="#TListIter:GetCollection">GetCollection</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TListIter:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->                 virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TListIter:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TListIter:Next">Next</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>&amp; <!--TAB--><!--BOLD--><a href="#TListIter:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>&amp; rhs)
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TListIter.html">TListIter</a>&amp; <!--TAB--><!--BOLD--><a href="#TListIter:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TListIter.html">TListIter</a>&amp; rhs)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TListIter:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TListIter:SetOption">SetOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TListIter:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TListIter:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TListIter:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TListIter:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      const <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TListIter:fList">fList</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fList">list being iterated</a></i>
+<!--TAB6-->         TObjLink* <!--TAB--><!--BOLD--><a name="TListIter:fCurCursor">fCurCursor</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCurCursor">current position in list</a></i>
+<!--TAB6-->         TObjLink* <!--TAB--><!--BOLD--><a name="TListIter:fCursor">fCursor</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fCursor">next position in list</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TListIter:fDirection">fDirection</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDirection">iteration direction</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TListIter:fStarted">fStarted</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fStarted">iteration started</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TListIter:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:30 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

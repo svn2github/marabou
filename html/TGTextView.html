@@ -1,0 +1,117 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGTextView</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGTextView:description">class description</a> - <a href="src/TGTextView.cxx.html">source file</a> - <a href="TGTextView_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGTextView" href="TGTextView.h">TGTextView</a> : public <a href="http://root.cern.ch/root/html/TGView.html">TGView</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp;)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:DrawRegion">DrawRegion</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Init">Init</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> bg)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Mark">Mark</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> xPos, <a href="ListOfTypes.html#Long_t">Long_t</a> yPos)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:UnMark">UnMark</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a> <!--TAB--><!--BOLD--><a href="#TGTextView:TGTextView">TGTextView</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#UInt_t">UInt_t</a> sboptions = 0, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetWhitePixel())
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a> <!--TAB--><!--BOLD--><a href="#TGTextView:TGTextView">TGTextView</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* text, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#UInt_t">UInt_t</a> sboptions = 0, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetWhitePixel())
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a> <!--TAB--><!--BOLD--><a href="#TGTextView:TGTextView">TGTextView</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, const <a href="ListOfTypes.html#char">char</a>* string, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#UInt_t">UInt_t</a> sboptions = 0, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetWhitePixel())
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a> <!--TAB--><!--BOLD--><a href="#TGTextView:TGTextView">TGTextView</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:~TGTextView">~TGTextView</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:AddLine">AddLine</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* string)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:AddText">AddText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* text)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:AdjustWidth">AdjustWidth</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTextView:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>*)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Copy">Copy</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:DataChanged">DataChanged</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* <!--TAB--><!--BOLD--><a href="#TGTextView:GetText">GetText</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:HandleSelectionRequest">HandleSelectionRequest</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTextView:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:IsSaved">IsSaved</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:LoadBuffer">LoadBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* txtbuf)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:LoadFile">LoadFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* fname, <a href="ListOfTypes.html#long">long</a> startpos = 0, <a href="ListOfTypes.html#long">long</a> length = -1)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ReturnHeighestColHeight">ReturnHeighestColHeight</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ReturnLineCount">ReturnLineCount</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ReturnLineLength">ReturnLineLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> line)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ReturnLongestLine">ReturnLongestLine</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ReturnLongestLineWidth">ReturnLongestLineWidth</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Search">Search</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* string, <a href="ListOfTypes.html#Bool_t">Bool_t</a> direction, <a href="ListOfTypes.html#Bool_t">Bool_t</a> caseSensitive)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:SelectAll">SelectAll</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:SetFont">SetFont</a><!--PLAIN-->(<a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:SetText">SetText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* text)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextView:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ToObjXCoord">ToObjXCoord</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> xCoord, <a href="ListOfTypes.html#Long_t">Long_t</a> line)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ToObjYCoord">ToObjYCoord</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> yCoord)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ToScrXCoord">ToScrXCoord</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> xCoord, <a href="ListOfTypes.html#Long_t">Long_t</a> line)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGTextView:ToScrYCoord">ToScrYCoord</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> yCoord)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGTextView:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* <!--TAB--><!--BOLD--><a name="TGTextView:fText">fText</a><!--PLAIN-->                          <!--TAB--><i><a name="Title:fText">text buffer</a></i>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* <!--TAB--><!--BOLD--><a name="TGTextView:fClipText">fClipText</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fClipText">clipboard text buffer</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fFont">fFont</a><!--PLAIN-->                          <!--TAB--><i><a name="Title:fFont">text font</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fMaxAscent">fMaxAscent</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fMaxAscent">maximum ascent in font</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fMaxDescent">fMaxDescent</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fMaxDescent">maximum descent in font</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fMaxWidth">fMaxWidth</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fMaxWidth">maximum width of character in font</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fNormGC">fNormGC</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fNormGC">graphics context for drawing text</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fSelGC">fSelGC</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fSelGC">graphics context for drawing marked text</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fSelbackGC">fSelbackGC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fSelbackGC">graphics context for drawing marked background</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fMarkedFromX">fMarkedFromX</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fMarkedFromX">true if text is marked from x</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fMarkedFromY">fMarkedFromY</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fMarkedFromY">true if text is marker from y</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fDeleteGC">fDeleteGC</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fDeleteGC">delete widget specific contexts</a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTextView:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTextView:fgDefaultSelectedGC">fgDefaultSelectedGC</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgDefaultSelectedGC"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTextView:fgDefaultSelectedBackgroundGC">fgDefaultSelectedBackgroundGC</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultSelectedBackgroundGC"></a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGTextView:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGTextEdit.html">TGTextEdit</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGTextView:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:21 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,101 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGButtonGroup</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGButtonGroup:description">class description</a> - <a href="src/TGButtonGroup.cxx.html">source file</a> - <a href="TGButtonGroup_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGButtonGroup" href="TGButtonGroup.h">TGButtonGroup</a> : public <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Init">Init</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGButtonGroup.html">TGButtonGroup</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:TGButtonGroup">TGButtonGroup</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kChildFrame|kVerticalFrame, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = GetDefaultGC()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = GetDefaultFontStruct(), <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGButtonGroup.html">TGButtonGroup</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:TGButtonGroup">TGButtonGroup</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#UInt_t">UInt_t</a> r, <a href="ListOfTypes.html#UInt_t">UInt_t</a> c, <a href="ListOfTypes.html#Int_t">Int_t</a> s = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> h = 0, const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; title, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = GetDefaultGC()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = GetDefaultFontStruct(), <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGButtonGroup.html">TGButtonGroup</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:TGButtonGroup">TGButtonGroup</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGButtonGroup.html">TGButtonGroup</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:~TGButtonGroup">~TGButtonGroup</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:ButtonClicked">ButtonClicked</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:ButtonPressed">ButtonPressed</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:ButtonReleased">ButtonReleased</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Clicked">Clicked</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Find">Find</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id) const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a href="#TGButtonGroup:GetButton">GetButton</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:GetCount">GetCount</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:GetId">GetId</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* button) const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Hide">Hide</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Insert">Insert</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* button, <a href="ListOfTypes.html#int">int</a> id = -1)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGButtonGroup:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:IsBorderDrawn">IsBorderDrawn</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:IsExclusive">IsExclusive</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:IsRadioButtonExclusive">IsRadioButtonExclusive</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Pressed">Pressed</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:ReleaseButtons">ReleaseButtons</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Released">Released</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Remove">Remove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* button)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetBorderDrawn">SetBorderDrawn</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> enable = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetButton">SetButton</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id, <a href="ListOfTypes.html#Bool_t">Bool_t</a> down = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetExclusive">SetExclusive</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetLayoutHints">SetLayoutHints</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* l, <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* button = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetRadioButtonExclusive">SetRadioButtonExclusive</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetTitle">SetTitle</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGString.html">TGString</a>* title)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:SetTitle">SetTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Show">Show</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGButtonGroup:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGButtonGroup:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGButtonGroup:fExclGroup">fExclGroup</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fExclGroup">kTRUE if group is exclusive</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGButtonGroup:fRadioExcl">fRadioExcl</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fRadioExcl">kTRUE if radio buttons are exclusive</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGButtonGroup:fDrawBorder">fDrawBorder</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDrawBorder">kTRUE if border and title are drawn</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TMap.html">TMap</a>* <!--TAB--><!--BOLD--><a name="TGButtonGroup:fMapOfButtons">fMapOfButtons</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMapOfButtons">map of button/id pairs in this group</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGHButtonGroup.html">TGHButtonGroup</a>, <a href="http://root.cern.ch/root/html/TGVButtonGroup.html">TGVButtonGroup</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGButtonGroup:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:18 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

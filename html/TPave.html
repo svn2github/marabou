@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TPave</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TPave:description">class description</a> - <a href="src/TPave.cxx.html">source file</a> - <a href="TPave_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TPave" href="TPave.h">TPave</a> : public <a href="http://root.cern.ch/root/html/TBox.html">TBox</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TPave.html">TPave</a> <!--TAB--><!--BOLD--><a href="#TPave:TPave">TPave</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TPave.html">TPave</a> <!--TAB--><!--BOLD--><a href="#TPave:TPave">TPave</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2, <a href="ListOfTypes.html#Int_t">Int_t</a> bordersize = 4, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "br")
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TPave.html">TPave</a> <!--TAB--><!--BOLD--><a href="#TPave:TPave">TPave</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TPave.html">TPave</a>&amp; pave)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:~TPave">~TPave</a><!--PLAIN-->()
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPave:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:ConvertNDCtoPad">ConvertNDCtoPad</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; pave)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:DrawPave">DrawPave</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2, <a href="ListOfTypes.html#Int_t">Int_t</a> bordersize = 4, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "br")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPave:GetBorderSize">GetBorderSize</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TPave:GetCornerRadius">GetCornerRadius</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TPave:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TPave:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TPave:GetX1NDC">GetX1NDC</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TPave:GetX2NDC">GetX2NDC</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TPave:GetY1NDC">GetY1NDC</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TPave:GetY2NDC">GetY2NDC</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPave:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:PaintPave">PaintPave</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2, <a href="ListOfTypes.html#Int_t">Int_t</a> bordersize = 4, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "br")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:PaintPaveArc">PaintPaveArc</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2, <a href="ListOfTypes.html#Int_t">Int_t</a> bordersize = 4, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "br")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetBorderSize">SetBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bordersize = 4)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetCornerRadius">SetCornerRadius</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> rad = 0.2)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetOption">SetOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "br")
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetX1NDC">SetX1NDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetX2NDC">SetX2NDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x2)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetY1NDC">SetY1NDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> y1)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:SetY2NDC">SetY2NDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> y2)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPave:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TPave:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPave:fX1NDC">fX1NDC</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fX1NDC">X1 point in NDC coordinates</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPave:fY1NDC">fY1NDC</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fY1NDC">Y1 point in NDC coordinates</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPave:fX2NDC">fX2NDC</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fX2NDC">X2 point in NDC coordinates</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPave:fY2NDC">fY2NDC</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fY2NDC">Y2 point in NDC coordinates</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TPave:fBorderSize">fBorderSize</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fBorderSize">window box bordersize in pixels</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TPave:fInit">fInit</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fInit">(=0 if transformation to NDC not yet done)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPave:fCornerRadius">fCornerRadius</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCornerRadius">Corner radius in case of option arc</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPave:fOption">fOption</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fOption">Pave style</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPave:fName">fName</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fName">Pave name</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPave:kNameIsAction">kNameIsAction</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNameIsAction"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TLegend.html">TLegend</a>, <a href="http://root.cern.ch/root/html/TPaveLabel.html">TPaveLabel</a>, <a href="http://root.cern.ch/root/html/TPaveText.html">TPaveText</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TPave:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:08 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

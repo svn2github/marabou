@@ -1,0 +1,126 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbVMEChannel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbVMEChannel:description">class description</a> - <a href="src/TMrbVMEChannel.cxx.html">source file</a> - <a href="TMrbVMEChannel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbVMEChannel" href="TMrbVMEChannel.h">TMrbVMEChannel</a> : public <a href="./TMrbModuleChannel.html">TMrbModuleChannel</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="./TMrbVMEChannel.html">TMrbVMEChannel</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:TMrbVMEChannel">TMrbVMEChannel</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbVMEChannel.html">TMrbVMEChannel</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:TMrbVMEChannel">TMrbVMEChannel</a><!--PLAIN-->(<a href="./TMrbVMEModule.html">TMrbVMEModule</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:~TMrbVMEChannel">~TMrbVMEChannel</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:GetOffset">GetOffset</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:GetPosition">GetPosition</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:Print">Print</a><!--PLAIN-->(ostream&amp; OutStrm, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayFlag, <a href="ListOfTypes.html#Bool_t">Bool_t</a> SevtFlag, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEChannel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbVMEChannel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbVMEChannel:fOffset">fOffset</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fOffset">channel offset</a></i>
+<!--TAB6-->      <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a name="TMrbVMEChannel:fPosition">fPosition</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPosition">crate &amp; addr</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbVMEChannel:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbVMEChannel.html">TMrbVMEChannel</a>.cxx
+ Purpose:        MARaBOU configuration: single VME channels
+ Description:    Implements class methods to describe a single channel
+                 of a VME module
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbVMEChannel:TMrbVMEChannel" href="src/TMrbVMEChannel.cxx.html#TMrbVMEChannel:TMrbVMEChannel">TMrbVMEChannel</a>(<a href="./TMrbVMEModule.html">TMrbVMEModule</a> * Module, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) : <a href="./TMrbModuleChannel.html">TMrbModuleChannel</a>(Module, Channel) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbCamacChannel.html">TMrbCamacChannel</a>
+ Purpose:        Create a single VME channel
+ Arguments:      <a href="./TMrbVMEModule.html">TMrbVMEModule</a> * Module     -- addr of parent module
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel              -- channel number
+ Results:        --
+ Exceptions:
+ Description:    Defines a single VME channel
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:Print" href="src/TMrbVMEChannel.cxx.html#TMrbVMEChannel:Print">Print</a>(ostream &amp; OutStrm, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayFlag, <a href="ListOfTypes.html#Bool_t">Bool_t</a> SevtFlag, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCamacChannel.html#TMrbCamacChannel:Show">TMrbCamacChannel::Show</a>
+ Purpose:        Output current channel settings
+ Arguments:      ofstream &amp; OutStrm   -- output stream
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayFlag     -- kTRUE, if array-like output
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> SevtFlag      -- if kTRUE, use subevent name as prefix
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix      -- prefix to be output in front
+ Results:        --
+ Exceptions:
+ Description:    Outputs current channel definition to stdout.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbVMEChannel.html">TMrbVMEChannel</a> <a name="TMrbVMEChannel:TMrbVMEChannel" href="TMrbVMEChannel.h">TMrbVMEChannel</a>(<a href="./TMrbVMEModule.html">TMrbVMEModule</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbVMEChannel:GetOffset" href="TMrbVMEChannel.h">GetOffset</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbVMEChannel:GetPosition" href="TMrbVMEChannel.h">GetPosition</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:Help" href="TMrbVMEChannel.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:Print" href="TMrbVMEChannel.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbVMEChannel:Class" href="TMrbVMEChannel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbVMEChannel:IsA" href="TMrbVMEChannel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:ShowMembers" href="TMrbVMEChannel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:Streamer" href="TMrbVMEChannel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:StreamerNVirtual" href="TMrbVMEChannel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEChannel:~TMrbVMEChannel" href="TMrbVMEChannel.h">~TMrbVMEChannel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:51 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

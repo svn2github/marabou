@@ -1,0 +1,135 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TAxis</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TAxis:description">class description</a> - <a href="src/TAxis.cxx.html">source file</a> - <a href="TAxis_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TAxis" href="TAxis.h">TAxis</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>, public <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a> <!--TAB--><!--BOLD--><a href="#TAxis:TAxis">TAxis</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a> <!--TAB--><!--BOLD--><a href="#TAxis:TAxis">TAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbins, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xmin, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xmax)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a> <!--TAB--><!--BOLD--><a href="#TAxis:TAxis">TAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbins, const <a href="ListOfTypes.html#Axis_t">Axis_t</a>* xbins)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a> <!--TAB--><!--BOLD--><a href="#TAxis:TAxis">TAxis</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>&amp; axis)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:~TAxis">~TAxis</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:CenterTitle">CenterTitle</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> center = kTRUE)
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAxis:ChooseTimeFormat">ChooseTimeFormat</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> axislength = 0) const
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TAxis:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; axis)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>*)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:DistancetoPrimitive">DistancetoPrimitive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TAxis:DrawClone">DrawClone</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>*) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:FindBin">FindBin</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:FindBin">FindBin</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* label)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:FindFixBin">FindFixBin</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetBinCenter">GetBinCenter</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetBinLabel">GetBinLabel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetBinLowEdge">GetBinLowEdge</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetBinUpEdge">GetBinUpEdge</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetBinWidth">GetBinWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetCenter">GetCenter</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a>* center) const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetFirst">GetFirst</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetLabels">GetLabels</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetLast">GetLast</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetLowEdge">GetLowEdge</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a>* edge) const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetNbins">GetNbins</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetParent">GetParent</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetTicks">GetTicks</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetTimeDisplay">GetTimeDisplay</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetTimeFormat">GetTimeFormat</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetTitle">GetTitle</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TArrayD.html">TArrayD</a>* <!--TAB--><!--BOLD--><a href="#TAxis:GetXbins">GetXbins</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetXmax">GetXmax</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a href="#TAxis:GetXmin">GetXmin</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TAxis:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:LabelsOption">LabelsOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "h")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:RotateTitle">RotateTitle</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> rotate = kTRUE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SaveAttributes">SaveAttributes</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* subname)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbins, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xmin, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xmax)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbins, const <a href="ListOfTypes.html#Float_t">Float_t</a>* xbins)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nbins, const <a href="ListOfTypes.html#Axis_t">Axis_t</a>* xbins)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetBinLabel">SetBinLabel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin, const <a href="ListOfTypes.html#char">char</a>* label)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetDrawOption">SetDrawOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>*)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetLimits">SetLimits</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> xmin, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xmax)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetNoExponent">SetNoExponent</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> noExponent = kTRUE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetParent">SetParent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> first = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> last = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetRangeUser">SetRangeUser</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> ufirst, <a href="ListOfTypes.html#Axis_t">Axis_t</a> ulast)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetTicks">SetTicks</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "+")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetTimeDisplay">SetTimeDisplay</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:SetTimeFormat">SetTimeFormat</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* format)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAxis:UnZoom">UnZoom</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TAxis:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TAxis:fNbins">fNbins</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fNbins">Number of bins</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a name="TAxis:fXmin">fXmin</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fXmin">low edge of first bin</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Axis_t">Axis_t</a> <!--TAB--><!--BOLD--><a name="TAxis:fXmax">fXmax</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fXmax">upper edge of last bin</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TArrayD.html">TArrayD</a> <!--TAB--><!--BOLD--><a name="TAxis:fXbins">fXbins</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fXbins">Bin edges array in X</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TAxis:fFirst">fFirst</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fFirst">first bin to display</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TAxis:fLast">fLast</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLast">last bin to display</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TAxis:fTimeDisplay">fTimeDisplay</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTimeDisplay">on/off displaying time values instead of numerics</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TAxis:fTimeFormat">fTimeFormat</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTimeFormat">Date&amp;time format, ex: 09/12/99 12:34:00</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TAxis:fParent">fParent</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fParent">!Object owning this axis</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/THashList.html">THashList</a>* <!--TAB--><!--BOLD--><a name="TAxis:fLabels">fLabels</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLabels">List of labels</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kAxisRange">kAxisRange</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kAxisRange"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kCenterTitle">kCenterTitle</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kCenterTitle"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kRotateTitle">kRotateTitle</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kRotateTitle"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kPalette">kPalette</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kPalette"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kNoExponent">kNoExponent</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kNoExponent"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kLabelsHori">kLabelsHori</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kLabelsHori"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kLabelsVert">kLabelsVert</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kLabelsVert"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kLabelsDown">kLabelsDown</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kLabelsDown"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kLabelsUp">kLabelsUp</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kLabelsUp"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kIsInteger">kIsInteger</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kIsInteger"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kTickPlus">kTickPlus</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kTickPlus"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TAxis:kTickMinus">kTickMinus</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kTickMinus"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TAxis:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:09 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

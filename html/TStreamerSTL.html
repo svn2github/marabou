@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TStreamerSTL</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TStreamerSTL:description">class description</a> - <a href="src/TStreamerSTL.cxx.html">source file</a> - <a href="TStreamerSTL_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TStreamerSTL" href="TStreamerElement.h">TStreamerSTL</a> : public <a href="http://root.cern.ch/root/html/TStreamerElement.html">TStreamerElement</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TStreamerSTL.html">TStreamerSTL</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:TStreamerSTL">TStreamerSTL</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TStreamerSTL.html">TStreamerSTL</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:TStreamerSTL">TStreamerSTL</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> offset, const <a href="ListOfTypes.html#char">char</a>* typeName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> dmPointer)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TStreamerSTL.html">TStreamerSTL</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:TStreamerSTL">TStreamerSTL</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TStreamerSTL.html">TStreamerSTL</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:~TStreamerSTL">~TStreamerSTL</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStreamerSTL:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:GetCtype">GetCtype</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TStreamerSTL:GetInclude">GetInclude</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:GetSize">GetSize</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:GetSTLtype">GetSTLtype</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStreamerSTL:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerSTL:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TStreamerSTL:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerSTL:fSTLtype">fSTLtype</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSTLtype">type of STL vector</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerSTL:fCtype">fCtype</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCtype">STL contained type</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TStreamerSTLstring.html">TStreamerSTLstring</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TStreamerSTL:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:26 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,23 @@
+//________________________________________________________________[ROOT MACRO]
+//////////////////////////////////////////////////////////////////////////////
+// Name:             %%ANALYZE_NAME_UC%%LoadLibs.C
+// Purpose:          Load libraries needed in an interactive ROOT session
+// Description:      RootCint macro for experiment "%%ANALYZE_NAME%%"
+//                   (%%ANALYZE_TITLE%%)
+//                   Loads any libraries needed for an interactive session.
+// Author:           %%AUTHOR%%
+// Revision:         
+// Date:             %%CREATION_DATE%%
+// URL:              
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+{
+	cout << "[Loading %%ANALYZE_NAME_UC%% libs]" << endl;
+	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+	gSystem->Load("$MARABOU/lib/libTGMrbUtils.so");
+	gSystem->Load("$MARABOU/lib/libTMrbTransport.so");
+	gSystem->Load("$MARABOU/lib/libMutex.so");
+	gSystem->Load("$MARABOU/lib/libTMrbAnalyze.so");
+	gSystem->Load("lib%%ANALYZE_FILE%%.so");
+}

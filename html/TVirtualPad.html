@@ -1,0 +1,239 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TVirtualPad</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TVirtualPad:description">class description</a> - <a href="src/TVirtualPad.cxx.html">source file</a> - <a href="TVirtualPad_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TVirtualPad" href="TVirtualPad.h">TVirtualPad</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>, public <a href="http://root.cern.ch/root/html/TAttLine.html">TAttLine</a>, public <a href="http://root.cern.ch/root/html/TAttFill.html">TAttFill</a>, public <a href="http://root.cern.ch/root/html/TAttPad.html">TAttPad</a>, public <a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetSender">GetSender</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:~TVirtualPad">~TVirtualPad</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:AbsCoordinates">AbsCoordinates</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> set)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:AbsPixeltoX">AbsPixeltoX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:AbsPixeltoY">AbsPixeltoY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:AddExec">AddExec</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* command)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:cd">cd</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> subpadnumber = 0)
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Close">Close</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:CloseToolTip">CloseToolTip</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* tip)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:CopyPixmap">CopyPixmap</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:CopyPixmaps">CopyPixmaps</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:CreateToolTip">CreateToolTip</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TBox.html">TBox</a>* b, const <a href="ListOfTypes.html#char">char</a>* text, <a href="ListOfTypes.html#Long_t">Long_t</a> delayms)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DeleteExec">DeleteExec</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DeleteToolTip">DeleteToolTip</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* tip)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Divide">Divide</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nx = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> ny = 1, <a href="ListOfTypes.html#Float_t">Float_t</a> xmargin = 0.01, <a href="ListOfTypes.html#Float_t">Float_t</a> ymargin = 0.01, <a href="ListOfTypes.html#Int_t">Int_t</a> color = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DrawClassObject">DrawClassObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:DrawFrame">DrawFrame</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DrawLine">DrawLine</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DrawLineNDC">DrawLineNDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> u1, <a href="ListOfTypes.html#Double_t">Double_t</a> v1, <a href="ListOfTypes.html#Double_t">Double_t</a> u2, <a href="ListOfTypes.html#Double_t">Double_t</a> v2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DrawText">DrawText</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:DrawTextNDC">DrawTextNDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> u, <a href="ListOfTypes.html#Double_t">Double_t</a> v, const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetAbsHNDC">GetAbsHNDC</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetAbsWNDC">GetAbsWNDC</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetAbsXlowNDC">GetAbsXlowNDC</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetAbsYlowNDC">GetAbsYlowNDC</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetAspectRatio">GetAspectRatio</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetBorderMode">GetBorderMode</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetBorderSize">GetBorderSize</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetCanvas">GetCanvas</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetCanvasID">GetCanvasID</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetEvent">GetEvent</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetEventX">GetEventX</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetEventY">GetEventY</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TFrame.html">TFrame</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetFrame">GetFrame</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetGridx">GetGridx</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetGridy">GetGridy</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetHighLightColor">GetHighLightColor</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetHNDC">GetHNDC</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetListOfExecs">GetListOfExecs</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetListOfPrimitives">GetListOfPrimitives</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetLogx">GetLogx</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetLogy">GetLogy</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetLogz">GetLogz</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetMother">GetMother</a><!--PLAIN-->() const
+<!--TAB6-->       virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPadPaint">GetPadPaint</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPadPar">GetPadPar</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xlow, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ylow, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xup, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; yup)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPadPointer">GetPadPointer</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPadSave">GetPadSave</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPhi">GetPhi</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPixmapID">GetPixmapID</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetPrimitive">GetPrimitive</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetRange">GetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; x1, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; y1, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; x2, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; y2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetRangeAxis">GetRangeAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmax, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymax)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetSelected">GetSelected</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetSelectedPad">GetSelectedPad</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetTheta">GetTheta</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetTickx">GetTickx</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetTicky">GetTicky</a><!--PLAIN-->() const
+<!--TAB6-->       virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetTitle">GetTitle</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetUxmax">GetUxmax</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetUxmin">GetUxmin</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetUymax">GetUymax</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetUymin">GetUymin</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TView.html">TView</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetView">GetView</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="./TPadView3D.html">TPadView3D</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetView3D">GetView3D</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetVirtCanvas">GetVirtCanvas</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetWh">GetWh</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetWNDC">GetWNDC</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetWw">GetWw</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetX1">GetX1</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetX2">GetX2</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetXlowNDC">GetXlowNDC</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetY1">GetY1</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetY2">GetY2</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:GetYlowNDC">GetYlowNDC</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:HasCrosshair">HasCrosshair</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:HasFixedAspectRatio">HasFixedAspectRatio</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:HighLight">HighLight</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> col = kRed, <a href="ListOfTypes.html#Bool_t">Bool_t</a> set = kTRUE)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsBatch">IsBatch</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsBeingResized">IsBeingResized</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsEditable">IsEditable</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsModified">IsModified</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsRetained">IsRetained</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:IsVertical">IsVertical</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Modified">Modified</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = 1)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:OpaqueMoving">OpaqueMoving</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:OpaqueResizing">OpaqueResizing</a><!--PLAIN-->() const
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>*&amp; <!--TAB--><!--BOLD--><a href="#TVirtualPad:Pad">Pad</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PadtoX">PadtoX</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x) const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PadtoY">PadtoY</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> y) const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintBorderPS">PaintBorderPS</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xl, <a href="ListOfTypes.html#Double_t">Double_t</a> yl, <a href="ListOfTypes.html#Double_t">Double_t</a> xt, <a href="ListOfTypes.html#Double_t">Double_t</a> yt, <a href="ListOfTypes.html#Int_t">Int_t</a> bmode, <a href="ListOfTypes.html#Int_t">Int_t</a> bsize, <a href="ListOfTypes.html#Int_t">Int_t</a> dark, <a href="ListOfTypes.html#Int_t">Int_t</a> light)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintBox">PaintBox</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintFillArea">PaintFillArea</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* x, <a href="ListOfTypes.html#Float_t">Float_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintFillArea">PaintFillArea</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintLine">PaintLine</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintLine3D">PaintLine3D</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* p1, <a href="ListOfTypes.html#Float_t">Float_t</a>* p2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintLine3D">PaintLine3D</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* p1, <a href="ListOfTypes.html#Double_t">Double_t</a>* p2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintLineNDC">PaintLineNDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> u1, <a href="ListOfTypes.html#Double_t">Double_t</a> v1, <a href="ListOfTypes.html#Double_t">Double_t</a> u2, <a href="ListOfTypes.html#Double_t">Double_t</a> v2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintModified">PaintModified</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPadFrame">PaintPadFrame</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPolyLine">PaintPolyLine</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* x, <a href="ListOfTypes.html#Float_t">Float_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPolyLine">PaintPolyLine</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPolyLine3D">PaintPolyLine3D</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Double_t">Double_t</a>* p)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPolyLineNDC">PaintPolyLineNDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPolyMarker">PaintPolyMarker</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* x, <a href="ListOfTypes.html#Float_t">Float_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintPolyMarker">PaintPolyMarker</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintText">PaintText</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PaintTextNDC">PaintTextNDC</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> u, <a href="ListOfTypes.html#Double_t">Double_t</a> v, const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PixeltoX">PixeltoX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:PixeltoY">PixeltoY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Pop">Pop</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Print">Print</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename) const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Print">Print</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Range">Range</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:RangeAxis">RangeAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:RedrawAxis">RedrawAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:ResetToolTip">ResetToolTip</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* tip)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:ResetView3D">ResetView3D</a><!--PLAIN-->(<a href="./TPadView3D.html">TPadView3D</a>* view = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:ResizePad">ResizePad</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SaveAs">SaveAs</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetAttFillPS">SetAttFillPS</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Style_t">Style_t</a> style)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetAttLinePS">SetAttLinePS</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Style_t">Style_t</a> style, <a href="ListOfTypes.html#Width_t">Width_t</a> lwidth)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetAttMarkerPS">SetAttMarkerPS</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Style_t">Style_t</a> style, <a href="ListOfTypes.html#Size_t">Size_t</a> msize)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetAttTextPS">SetAttTextPS</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> align, <a href="ListOfTypes.html#Float_t">Float_t</a> angle, <a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Style_t">Style_t</a> font, <a href="ListOfTypes.html#Float_t">Float_t</a> tsize)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetBatch">SetBatch</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> batch = kTRUE)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetBorderMode">SetBorderMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Short_t">Short_t</a> bordermode)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetBorderSize">SetBorderSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Short_t">Short_t</a> bordersize)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetCanvas">SetCanvas</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* c)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetCanvasSize">SetCanvasSize</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ww, <a href="ListOfTypes.html#UInt_t">UInt_t</a> wh)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetCrosshair">SetCrosshair</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> crhair = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetCursor">SetCursor</a><!--PLAIN-->(ECursor cursor)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetDoubleBuffer">SetDoubleBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> mode = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetEditable">SetEditable</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mode = kTRUE)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetFixedAspectRatio">SetFixedAspectRatio</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> fixed = kTRUE)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetGrid">SetGrid</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> valuex = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> valuey = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetGridx">SetGridx</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetGridy">SetGridy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetLogx">SetLogx</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetLogy">SetLogy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetLogz">SetLogz</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetPad">SetPad</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Double_t">Double_t</a> xlow, <a href="ListOfTypes.html#Double_t">Double_t</a> ylow, <a href="ListOfTypes.html#Double_t">Double_t</a> xup, <a href="ListOfTypes.html#Double_t">Double_t</a> yup, <a href="ListOfTypes.html#Color_t">Color_t</a> color = 35, <a href="ListOfTypes.html#Short_t">Short_t</a> bordersize = 5, <a href="ListOfTypes.html#Short_t">Short_t</a> bordermode = -1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetPad">SetPad</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xlow, <a href="ListOfTypes.html#Double_t">Double_t</a> ylow, <a href="ListOfTypes.html#Double_t">Double_t</a> xup, <a href="ListOfTypes.html#Double_t">Double_t</a> yup)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetPhi">SetPhi</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> phi = 30)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetSelected">SetSelected</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetTheta">SetTheta</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> theta = 30)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetTicks">SetTicks</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> valuex = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> valuey = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetTickx">SetTickx</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetTicky">SetTicky</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetTitle">SetTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetToolTipText">SetToolTipText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text, <a href="ListOfTypes.html#Long_t">Long_t</a> delayms = 1000)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetVertical">SetVertical</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> vert = kTRUE)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:SetView">SetView</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TView.html">TView</a>* view)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:Update">Update</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:UtoAbsPixel">UtoAbsPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> u) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:UtoPixel">UtoPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> u) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:VtoAbsPixel">VtoAbsPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> v) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:VtoPixel">VtoPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> v) const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TVirtualPad:WaitPrimitive">WaitPrimitive</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* pname, const <a href="ListOfTypes.html#char">char</a>* emode)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:x3d">x3d</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:XtoAbsPixel">XtoAbsPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x) const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:XtoPad">XtoPad</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:XtoPixel">XtoPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:YtoAbsPixel">YtoAbsPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> y) const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:YtoPad">YtoPad</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> y) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualPad:YtoPixel">YtoPixel</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> y) const
+</pre>
+
+<h3><!--TAB2-->  <a name="TVirtualPad:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TVirtualPad:fResizing">fResizing</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fResizing">!true when resizing the pad</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TPad.html">TPad</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TVirtualPad:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:59:00 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

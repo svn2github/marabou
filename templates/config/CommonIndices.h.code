@@ -1,0 +1,60 @@
+#ifndef __%%ANALYZE_NAME_UC%%CommonIndices_h__
+#define __%%ANALYZE_NAME_UC%%CommonIndices_h__
+
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%ANALYZE_NAME_UC%%CommonIndices.h
+// Purpose:        Index declarations common to analysis and readout
+// Description:    Defines a set of indices which should be used in analysis
+//                 as well as readout code to guarantee coherent addresses
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+enum EMrbTriggerId	{
+%%BeginOfCode%%
+						kMrbTrigger$evtNameUC = $trigNo,		// event $evtNameLC, trigger $trigNo
+%%EndOfCode%%
+%%EVT_ID_ENUM%%
+						kMrbTriggerStartAcquisition = 14,	// start acquisition, trigger 14
+						kMrbTriggerStopAcquisition = 15 	// stop acquisition, trigger 15
+					};
+
+enum EMrbSevtSerial {
+%%BeginOfCode%%
+%NS%						kMrbSevt$sevtNameUC = $sevtHexSerial,			// subevent $sevtNameLC, serial = [$sevtType,$sevtSubtype]
+%S% 						kMrbSevt$sevtNameUC = $sevtSerial,				// subevent $sevtNameLC, unique serial number
+%%EndOfCode%%
+%%SEVT_SERIAL_ENUM%%
+						kMrbSevtDeadTime = 998, 			// dead time, serial=998
+						kMrbSevtTimeStamp = 999, 			// time stamp, serial=999
+						kMrbSevtDummy = 888 	 			// dummy subevent created by MBS internally, serial=888
+					};
+
+enum EMrbSevtBits	 {
+%%BeginOfCode%%
+%NS%						kMrbSevtBit$sevtNameUC = $sevtHexBit,	// subevent $sevtNameLC
+%S% 						kMrbSevtBit$sevtNameUC = $sevtBit,		// subevent $sevtNameLC
+%%EndOfCode%%
+%%SEVT_BITS_ENUM%%
+					};
+
+%%BeginOfCode%%
+%B%enum EMrbSevtIndices 	{
+%H%							k$paramNameUC = $parNo,				// subevent $sevtNameLC, serial $sevtSerial
+%X%							k$paramNameUC = $parNo,
+%E%						};
+%%EndOfCode%%
+%%SEVT_INDICES_ENUM%%
+
+enum EMrbModuleSerial {
+%%BeginOfCode%%
+						kMrbModule$moduleNameUC = $moduleSerial,			// module $moduleNameLC ($moduleTitle)
+%%EndOfCode%%
+%%MODULE_SERIAL_ENUM%%
+					};
+#endif

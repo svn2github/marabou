@@ -1,0 +1,509 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbDGFData</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbDGFData:description">class description</a> - <a href="src/TMrbDGFData.cxx.html">source file</a> - <a href="TMrbDGFData_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbDGFData" href="TMrbDGFData.h">TMrbDGFData</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:CheckXiaRelease">CheckXiaRelease</a><!--PLAIN-->()
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:Setup">Setup</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TMrbDGFData.html">TMrbDGFData</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:TMrbDGFData">TMrbDGFData</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:~TMrbDGFData">~TMrbDGFData</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:DSPCodeRead">DSPCodeRead</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:FindParam">FindParam</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:FindParam">FindParam</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:FindParam">FindParam</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:FirstParam">FirstParam</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:FPGACodeRead">FPGACodeRead</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:FPGACodeRead">FPGACodeRead</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>)
+<!--TAB6-->            <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetDSPCodeAddr">GetDSPCodeAddr</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetDSPCodeSize">GetDSPCodeSize</a><!--PLAIN-->()
+<!--TAB6-->            <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetFPGACodeAddr">GetFPGACodeAddr</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetFPGACodeSize">GetFPGACodeSize</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>)
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetLofParamNames">GetLofParamNames</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetNofParams">GetNofParams</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:GetXiaRelease">GetXiaRelease</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:IsVerbose">IsVerbose</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFData:NextParam">NextParam</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Param)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ParamNamesRead">ParamNamesRead</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:PrintXiaRelease">PrintXiaRelease</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadDSPCode">ReadDSPCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadDSPCodeAscii">ReadDSPCodeAscii</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadDSPCodeBinary">ReadDSPCodeBinary</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadFPGACode">ReadFPGACode</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadFPGACode">ReadFPGACode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadFPGACodeAscii">ReadFPGACodeAscii</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadFPGACodeAscii">ReadFPGACodeAscii</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadFPGACodeBinary">ReadFPGACodeBinary</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadFPGACodeBinary">ReadFPGACodeBinary</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ReadNameTable">ReadNameTable</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:SetLocal">SetLocal</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> LocalFlag)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:SetVerboseMode">SetVerboseMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> VerboseFlag = kTRUE)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFData:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbDGFData:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                            <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fVerboseMode">fVerboseMode</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fVerboseMode">common verbosity flag for all DGF modules</a></i>
+<!--TAB6-->                            <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fXiaRelease">fXiaRelease</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fXiaRelease">xia release</a></i>
+<!--TAB6-->                            <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fStatusD">fStatusD</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fStatusD">soft status (data)</a></i>
+<!--TAB6-->                            <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLocalData">fLocalData</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLocalData">kTRUE if data base is local</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fDSPFile">fDSPFile</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDSPFile">name of DSP code file</a></i>
+<!--TAB6-->      <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFFileType">TMrbDGFData::EMrbDGFFileType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fDSPType">fDSPType</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDSPType">type of DSP file: ascii or binary</a></i>
+<!--TAB6-->                             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fDSPSize">fDSPSize</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDSPSize">actual size of DSP code</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fDSPCode">fDSPCode</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDSPCode">DSP code: 32 bit words, stored in 2 * UShort_t</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fSystemFPGAFile">fSystemFPGAFile</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSystemFPGAFile">name of FPGA code file (SYSTEM)</a></i>
+<!--TAB6-->      <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFFileType">TMrbDGFData::EMrbDGFFileType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fSystemFPGAType">fSystemFPGAType</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSystemFPGAType">type of FPGA file: ascii or binary</a></i>
+<!--TAB6-->                             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fSystemFPGASize">fSystemFPGASize</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSystemFPGASize">actual size of FPGA code</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fSystemFPGACode">fSystemFPGACode</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSystemFPGACode">FPGA code: byte oriented, stored in UShort_t(LSB), MSB=0</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fFippiFPGAFile">fFippiFPGAFile[2]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFippiFPGAFile">name of FPGA code file (FIPPI)</a></i>
+<!--TAB6-->      <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFFileType">TMrbDGFData::EMrbDGFFileType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fFippiFPGAType">fFippiFPGAType[2]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFippiFPGAType">type of FPGA file: ascii or binary</a></i>
+<!--TAB6-->                             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fFippiFPGASize">fFippiFPGASize[2]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFippiFPGASize">actual size of FPGA code</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fFippiFPGACode">fFippiFPGACode[2]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFippiFPGACode">FPGA code: byte oriented, stored in UShort_t(LSB), MSB=0</a></i>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fParamFile">fParamFile</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fParamFile">file containing param names</a></i>
+<!--TAB6-->                             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fNofParams">fNofParams</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNofParams">number of params</a></i>
+<!--TAB6-->                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fParamNames">fParamNames</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fParamNames">DSP param table, pairs of (ParamName, Offset)</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFPGAMaxSize">kFPGAMaxSize</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kFPGAMaxSize"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDSPMaxSize">kDSPMaxSize</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kDSPMaxSize"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFFileType">TMrbDGFData::EMrbDGFFileType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFileUndef">kFileUndef</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kFileUndef"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFFileType">TMrbDGFData::EMrbDGFFileType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFileAscii">kFileAscii</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kFileAscii"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFFileType">TMrbDGFData::EMrbDGFFileType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFileBinary">kFileBinary</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kFileBinary"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kSystemFPGA">kSystemFPGA</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kSystemFPGA"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGA">kFippiFPGA</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kFippiFPGA"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofDSPInputParams">kNofDSPInputParams</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNofDSPInputParams"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofDSPOutputParams">kNofDSPOutputParams</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNofDSPOutputParams"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofDSPInparModule">kNofDSPInparModule</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNofDSPInparModule"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofDSPInparChannel">kNofDSPInparChannel</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNofDSPInparChannel"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDSPInparStartAddr">kDSPInparStartAddr</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDSPInparStartAddr"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDSPOutparStartAddr">kDSPOutparStartAddr</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDSPOutparStartAddr"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunEna">kRunEna</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRunEna"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNewRun">kNewRun</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kNewRun"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kEnaLAM">kEnaLAM</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kEnaLAM"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDSPReset">kDSPReset</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kDSPReset"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDSPError">kDSPError</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kDSPError"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kActive">kActive</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kActive"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacCSR">TMrbDGFData::EMrbCamacCSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kLAMActive">kLAMActive</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kLAMActive"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kCamacCSRMask">kCamacCSRMask</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCamacCSRMask"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kSystemFPGAReset">kSystemFPGAReset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kSystemFPGAReset"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGA0Reset">kFippiFPGA0Reset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kFippiFPGA0Reset"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGA1Reset">kFippiFPGA1Reset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kFippiFPGA1Reset"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGA2Reset">kFippiFPGA2Reset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kFippiFPGA2Reset"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGA3Reset">kFippiFPGA3Reset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kFippiFPGA3Reset"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectDSPFromRight">kConnectDSPFromRight</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kConnectDSPFromRight"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectDSPFromLeft">kConnectDSPFromLeft</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kConnectDSPFromLeft"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kTerminateDSP">kTerminateDSP</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kTerminateDSP"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectFastFromRight">kConnectFastFromRight</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kConnectFastFromRight"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectFastFromLeft">kConnectFastFromLeft</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kConnectFastFromLeft"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kTerminateFast">kTerminateFast</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kTerminateFast"></a></i>
+<!--TAB6-->           static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbCamacICSR">TMrbDGFData::EMrbCamacICSR</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kSwitchBusNormal">kSwitchBusNormal</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kSwitchBusNormal"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGAReset">kFippiFPGAReset</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kFippiFPGAReset"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFPGAReset">kFPGAReset</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kFPGAReset"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectDSPTrigger">kConnectDSPTrigger</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kConnectDSPTrigger"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectFastTrigger">kConnectFastTrigger</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kConnectFastTrigger"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kSwitchBus">kSwitchBus</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kSwitchBus"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kCamacICSRMask">kCamacICSRMask</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCamacICSRMask"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbModCSRA">TMrbDGFData::EMrbModCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kWriteLevel1">kWriteLevel1</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kWriteLevel1"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbRunTask">TMrbDGFData::EMrbRunTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunControl">kRunControl</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRunControl"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbRunTask">TMrbDGFData::EMrbRunTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunLinear">kRunLinear</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kRunLinear"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbRunTask">TMrbDGFData::EMrbRunTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunCircular">kRunCircular</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kRunCircular"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbRunTask">TMrbDGFData::EMrbRunTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunPSA">kRunPSA</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRunPSA"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbRunTask">TMrbDGFData::EMrbRunTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunShort">kRunShort</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kRunShort"></a></i>
+<!--TAB6-->             static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbRunTask">TMrbDGFData::EMrbRunTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRunMCA">kRunMCA</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRunMCA"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kProgramDACs">kProgramDACs</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kProgramDACs"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kConnectInputs">kConnectInputs</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kConnectInputs"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDisconnectInputs">kDisconnectInputs</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDisconnectInputs"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kCalibrate">kCalibrate</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCalibrate"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kSampleADCs">kSampleADCs</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kSampleADCs"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kUpdateFPGA">kUpdateFPGA</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kUpdateFPGA"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kReadHistoFirstPage">kReadHistoFirstPage</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kReadHistoFirstPage"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbControlTask">TMrbDGFData::EMrbControlTask</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kReadHistoNextPage">kReadHistoNextPage</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kReadHistoNextPage"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kGroupTriggerOnly">kGroupTriggerOnly</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGroupTriggerOnly"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kIndivLiveTime">kIndivLiveTime</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kIndivLiveTime"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kGoodChannel">kGoodChannel</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kGoodChannel"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kReadAlways">kReadAlways</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kReadAlways"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kEnableTrigger">kEnableTrigger</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kEnableTrigger"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kTriggerPositive">kTriggerPositive</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kTriggerPositive"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kGFLTValidate">kGFLTValidate</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kGFLTValidate"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kHistoEnergies">kHistoEnergies</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kHistoEnergies"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kHistoBaselines">kHistoBaselines</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kHistoBaselines"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kCorrBallDeficit">kCorrBallDeficit</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kCorrBallDeficit"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kComputeCFT">kComputeCFT</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kComputeCFT"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kEnaMultiplicity">kEnaMultiplicity</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kEnaMultiplicity"></a></i>
+<!--TAB6-->            static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbChanCSRA">TMrbDGFData::EMrbChanCSRA</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kBipolarSignals">kBipolarSignals</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kBipolarSignals"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kChanCSRAMask">kChanCSRAMask</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kChanCSRAMask"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFStatusDBits">TMrbDGFData::EMrbDGFStatusDBits</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kSystemFPGACodeRead">kSystemFPGACodeRead</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kSystemFPGACodeRead"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFStatusDBits">TMrbDGFData::EMrbDGFStatusDBits</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGARevDCodeRead">kFippiFPGARevDCodeRead</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kFippiFPGARevDCodeRead"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFStatusDBits">TMrbDGFData::EMrbDGFStatusDBits</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kFippiFPGARevECodeRead">kFippiFPGARevECodeRead</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kFippiFPGARevECodeRead"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFStatusDBits">TMrbDGFData::EMrbDGFStatusDBits</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kDSPCodeRead">kDSPCodeRead</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kDSPCodeRead"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFStatusDBits">TMrbDGFData::EMrbDGFStatusDBits</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kParamNamesRead">kParamNamesRead</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kParamNamesRead"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofChannels">kNofChannels</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kNofChannels"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofMCAPages">kNofMCAPages</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kNofMCAPages"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kMCAPageSize">kMCAPageSize</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kMCAPageSize"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRevD">kRevD</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kRevD"></a></i>
+<!--TAB6-->         static const <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:kRevE">kRevE</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kRevE"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFData:kNofRevs">kNofRevs</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kNofRevs"></a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofDGFStatusDBits">fLofDGFStatusDBits</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fLofDGFStatusDBits">soft status (data)</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofDGFFileTypes">fLofDGFFileTypes</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofDGFFileTypes">file types for DSP and FPGA code files</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofFPGATypes">fLofFPGATypes</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofFPGATypes">FPGA types: system or fippi</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofCamacCSRBits">fLofCamacCSRBits</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofCamacCSRBits">camac control &amp; status</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofCamacICSRBits">fLofCamacICSRBits</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLofCamacICSRBits">... (system)</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofModCSRABits">fLofModCSRABits</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLofModCSRABits">module control &amp; status A</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofChanCSRABits">fLofChanCSRABits</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofChanCSRABits">channel control &amp; status A</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofRunTasks">fLofRunTasks</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fLofRunTasks">list of run tasks	</a></i>
+<!--TAB6-->                                     <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGFData:fLofControlTasks">fLofControlTasks</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofControlTasks">list of control tasks</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbDGFData:description">Class Description</a></h2>
+<pre>
+ Name:           xiadgf/src/<a href="./TMrbDGFData.html">TMrbDGFData</a>.cxx
+ Purpose:        Methods to operate a module XIA DGF-4C
+ Description:    Implements class methods for module XIA DGF-4C
+ Header files:   <a href="./TMrbDGF.html">TMrbDGF</a>.h          -- class defs
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbDGFData:TMrbDGFData" href="src/TMrbDGFData.cxx.html#TMrbDGFData:TMrbDGFData">TMrbDGFData</a>() <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbDGFData.html">TMrbDGFData</a>
+ Purpose:        Data base to hold DSP / FPGA data
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:Setup" href="src/TMrbDGFData.cxx.html#TMrbDGFData:Setup">Setup</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:Setup">TMrbDGFData::Setup</a>
+ Purpose:        Setup data base
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Initializes DGF's data base.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:Reset" href="src/TMrbDGFData.cxx.html#TMrbDGFData:Reset">Reset</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:Reset">TMrbDGFData::Reset</a>
+ Purpose:        Reset to initial values
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Initializes DGF's data base.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadFPGACode" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadFPGACode">ReadFPGACode</a>(EMrbFPGAType FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, EMrbDGFRevision Rev, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadFPGACode">TMrbDGFData::ReadFPGACode</a>
+ Purpose:        Read FPGA code
+ Arguments:      EMrbFPGAType FPGAType -- fpga type (system or fippi)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 EMrbDGFRevision Rev   -- module revision
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads FPGA code. Data format depends on file extension:
+                       .fip  -- ascii
+                       .bin  -- binary
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadFPGACode" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadFPGACode">ReadFPGACode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, EMrbDGFRevision Rev, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadFPGACode">TMrbDGFData::ReadFPGACode</a>
+ Purpose:        Read FPGA code
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType     -- fpga type (system or fippi)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 EMrbDGFRevision Rev   -- module revision
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads FPGA code. Data format depends on file extension
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadFPGACodeBinary" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadFPGACodeBinary">ReadFPGACodeBinary</a>(EMrbFPGAType FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, EMrbDGFRevision Rev, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadFPGACodeBinary">TMrbDGFData::ReadFPGACodeBinary</a>
+ Purpose:        Read FPGA code from binary file
+ Arguments:      EMrbFPGAType FPGAType -- fpga type (system or fippi)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 EMrbDGFRevision Rev   -- module revision
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads FPGA code.
+                   Input:    byte-oriented binary
+                   Output:   <a href="ListOfTypes.html#UShort_t">UShort_t</a>, MSB = 0
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadFPGACodeBinary" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadFPGACodeBinary">ReadFPGACodeBinary</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, EMrbDGFRevision Rev, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadFPGACodeBinary">TMrbDGFData::ReadFPGACodeBinary</a>
+ Purpose:        Read FPGA code from binary file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType     -- fpga type (system or fippi)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 EMrbDGFRevision Rev   -- module revision
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads FPGA code.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadFPGACodeAscii" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadFPGACodeAscii">ReadFPGACodeAscii</a>(EMrbFPGAType FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, EMrbDGFRevision Rev, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadFPGACodeAscii">TMrbDGFData::ReadFPGACodeAscii</a>
+ Purpose:        Read FPGA code from ascii file
+ Arguments:      EMrbFPGAType FPGAType -- fpga type (system or fippi)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 EMrbDGFRevision Rev   -- module revision
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads FPGA code.
+                   Input:    hex code ascii
+                   Output:   <a href="ListOfTypes.html#UShort_t">UShort_t</a>, MSB = 0
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadFPGACodeAscii" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadFPGACodeAscii">ReadFPGACodeAscii</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, EMrbDGFRevision Rev, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadFPGACodeAscii">TMrbDGFData::ReadFPGACodeAscii</a>
+ Purpose:        Read FPGA code from ascii file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType     -- fpga type (system or fippi)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 EMrbDGFRevision Rev   -- module revision
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads FPGA code.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadDSPCode" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadDSPCode">ReadDSPCode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadDSPCode">TMrbDGFData::ReadDSPCode</a>
+ Purpose:        Read DSP code
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads DSP code. Data format depends on file extension:
+                      .exe  -- ascii
+                      .bin  -- binary
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadDSPCodeBinary" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadDSPCodeBinary">ReadDSPCodeBinary</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadDSPCodeBinary">TMrbDGFData::ReadDSPCodeBinary</a>
+ Purpose:        Read DSP code from binary file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads DSP code.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadDSPCodeAscii" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadDSPCodeAscii">ReadDSPCodeAscii</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadDSPCodeAscii">TMrbDGFData::ReadDSPCodeAscii</a>
+ Purpose:        Read DSP code from WaveMetrics ascii file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile     -- file name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if code already loaded
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords        -- number of words read
+ Exceptions:
+ Description:    Reads DSP code.
+                 Format: WaveMetrics (ASCII)
+                 Code: 24 bits per line, 0xHHHHLL -&gt; 0xHHHH 0x00LL
+                 Lines starting with '@' indicate address specifier in next line
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:ReadNameTable" href="src/TMrbDGFData.cxx.html#TMrbDGFData:ReadNameTable">ReadNameTable</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadNameTable">TMrbDGFData::ReadNameTable</a>
+ Purpose:        Read param names from file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamFile    -- file name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Forced         -- read even if names already read
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofParams       -- number of params read
+ Exceptions:
+ Description:    Reads param names and offsets from file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGFData:FindParam" href="src/TMrbDGFData.cxx.html#TMrbDGFData:FindParam">FindParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:FindParam">TMrbDGFData::FindParam</a>
+ Purpose:        Search a param for a given channel
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- channel number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName    -- param name
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Param       -- param name &amp; index
+ Exceptions:
+ Description:    Searches a param for a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFData:FPGACodeRead" href="src/TMrbDGFData.cxx.html#TMrbDGFData:FPGACodeRead">FPGACodeRead</a>(EMrbFPGAType FPGAType, EMrbDGFRevision Rev) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:FGPACodeRead">TMrbDGF::FGPACodeRead</a>
+ Purpose:        Test if FPGA code is read
+ Arguments:      EMrbFPGAType FPGAType    -- fpga type (system or fippi)
+                 EMrbDGFRevision Rev      -- module revision (if fippi)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Tests if FPGA code has been read.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFData:FPGACodeRead" href="src/TMrbDGFData.cxx.html#TMrbDGFData:FPGACodeRead">FPGACodeRead</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType, EMrbDGFRevision Rev) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:FGPACodeRead">TMrbDGF::FGPACodeRead</a>
+ Purpose:        Test if FPGA code is read
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FPGAType    -- fpga type (system or fippi)
+                 EMrbDGFRevision Rev      -- module revision (if fippi)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Tests if FPGA code has been read.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:Print" href="src/TMrbDGFData.cxx.html#TMrbDGFData:Print">Print</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:Print">TMrbDGFData::Print</a>
+ Purpose:        Print status
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Outputs status info.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFData:CheckXiaRelease" href="src/TMrbDGFData.cxx.html#TMrbDGFData:CheckXiaRelease">CheckXiaRelease</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:CheckXiaRelease">TMrbDGFData::CheckXiaRelease</a>
+ Purpose:        Determine XIA's release number
+ Arguments:      kTRUE/kFALSE
+ Results:        --
+ Exceptions:
+ Description:    Looks for env var <a href="./TMrbDGF.html">TMrbDGF</a>.XiaRelease.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:PrintXiaRelease" href="src/TMrbDGFData.cxx.html#TMrbDGFData:PrintXiaRelease">PrintXiaRelease</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:PrintXiaRelease">TMrbDGFData::PrintXiaRelease</a>
+ Purpose:        Output XIA's release number
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Outputs current XIA release to stdout.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:GetFPGACodeSize" href="TMrbDGFData.h">GetFPGACodeSize</a>(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TMrbDGFData:GetFPGACodeAddr" href="TMrbDGFData.h">GetFPGACodeAddr</a>(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType, <a href="./TMrbDGFData.html#TMrbDGFData:EMrbDGFRevision">TMrbDGFData::EMrbDGFRevision</a> Rev = <a href="./TMrbDGFData.html#TMrbDGFData:kRevD">kRevD</a>)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFData:DSPCodeRead" href="TMrbDGFData.h">DSPCodeRead</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:GetDSPCodeSize" href="TMrbDGFData.h">GetDSPCodeSize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TMrbDGFData:GetDSPCodeAddr" href="TMrbDGFData.h">GetDSPCodeAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGFData:FindParam" href="TMrbDGFData.h">FindParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGFData:FindParam" href="TMrbDGFData.h">FindParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGFData:FirstParam" href="TMrbDGFData.h">FirstParam</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGFData:NextParam" href="TMrbDGFData.h">NextParam</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Param)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFData:ParamNamesRead" href="TMrbDGFData.h">ParamNamesRead</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:GetNofParams" href="TMrbDGFData.h">GetNofParams</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbDGFData:GetLofParamNames" href="TMrbDGFData.h">GetLofParamNames</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFData:GetXiaRelease" href="TMrbDGFData.h">GetXiaRelease</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:SetLocal" href="TMrbDGFData.h">SetLocal</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> LocalFlag)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:SetVerboseMode" href="TMrbDGFData.h">SetVerboseMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> VerboseFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFData:IsVerbose" href="TMrbDGFData.h">IsVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:Help" href="TMrbDGFData.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbDGFData:Class" href="TMrbDGFData.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbDGFData:IsA" href="TMrbDGFData.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:ShowMembers" href="TMrbDGFData.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:Streamer" href="TMrbDGFData.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:StreamerNVirtual" href="TMrbDGFData.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFData:~TMrbDGFData" href="TMrbDGFData.h">~TMrbDGFData</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

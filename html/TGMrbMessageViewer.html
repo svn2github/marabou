@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbMessageViewer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbMessageViewer:description">class description</a> - <a href="src/TGMrbMessageViewer.cxx.html">source file</a> - <a href="TGMrbMessageViewer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbMessageViewer" href="TGMrbMessageViewer.h">TGMrbMessageViewer</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:TGMrbMessageViewer">TGMrbMessageViewer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="./TMrbLogger.html">TMrbLogger</a>* MsgLog = NULL, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Connect = kFALSE, const <a href="ListOfTypes.html#Char_t">Char_t</a>* File = "NULL")
+<!--TAB6-->      <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:TGMrbMessageViewer">TGMrbMessageViewer</a><!--PLAIN-->(const <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>&amp; f)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:~TGMrbMessageViewer">~TGMrbMessageViewer</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:AddEntries">AddEntries</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Type = <a href="./TMrbLogMessage.html#TMrbLogMessage:kMrbMsgAny">TMrbLogMessage::kMrbMsgAny</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithDate = kTRUE)
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:Disable">Disable</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:Enable">Enable</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:Notify">Notify</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:SetWithDate">SetWithDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> WithDate)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMessageViewer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbMessageViewer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fHeap">fHeap</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fHeap"></a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fWidth">fWidth</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fWidth"></a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fHeight">fHeight</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fHeight"></a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fEnabled">fEnabled</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fEnabled">one bit for each stream</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fWithDate">fWithDate</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fWithDate">kTRUE, if message date is to be shown</a></i>
+<!--TAB6-->               <a href="./TMrbLogger.html">TMrbLogger</a>* <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fMsgLog">fMsgLog</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMsgLog">! connect to logging system</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fLogFile">fLogFile</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLogFile">log file</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a>* <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fTextView">fTextView</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTextView">! text viewer widget</a></i>
+<!--TAB6-->      <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>* <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fAction">fAction</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fAction">! action buttons</a></i>
+<!--TAB6-->             <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:fLofActions">fLofActions</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofActions"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:EGMrbViewerId">TGMrbMessageViewer::EGMrbViewerId</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:kGMrbViewerIdReset">kGMrbViewerIdReset</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kGMrbViewerIdReset"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:EGMrbViewerId">TGMrbMessageViewer::EGMrbViewerId</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:kGMrbViewerIdAll">kGMrbViewerIdAll</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kGMrbViewerIdAll"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:EGMrbViewerId">TGMrbMessageViewer::EGMrbViewerId</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:kGMrbViewerIdErrors">kGMrbViewerIdErrors</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kGMrbViewerIdErrors"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:EGMrbViewerId">TGMrbMessageViewer::EGMrbViewerId</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:kGMrbViewerIdAdjust">kGMrbViewerIdAdjust</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kGMrbViewerIdAdjust"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:EGMrbViewerId">TGMrbMessageViewer::EGMrbViewerId</a> <!--TAB--><!--BOLD--><a name="TGMrbMessageViewer:kGMrbViewerIdClose">kGMrbViewerIdClose</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kGMrbViewerIdClose"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbMessageViewer:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/<a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>.cxx
+ Purpose:        MARaBOU graphic utilities: a message viewer
+ Description:    Implements class methods to show messages
+                 in a scrollable listbox.
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+
+/*
+<img src=gutils/TGMrbMessageViewer.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbMessageViewer:TGMrbMessageViewer" href="src/TGMrbMessageViewer.cxx.html#TGMrbMessageViewer:TGMrbMessageViewer">TGMrbMessageViewer</a>( const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent,
+										const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Main,
+										const <a href="ListOfTypes.html#Char_t">Char_t</a> * Title,
+										<a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height,
+										<a href="./TMrbLogger.html">TMrbLogger</a> * MsgLog,
+										<a href="ListOfTypes.html#Bool_t">Bool_t</a> Connect,
+										const <a href="ListOfTypes.html#Char_t">Char_t</a> * File) : <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(Parent, Main, Width, Height) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>
+ Purpose:        Display messages in scrollable listbox
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent             -- parent window
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Main               -- main window
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Title                -- title
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width                  -- window width
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height                 -- window height
+                 <a href="./TMrbLogger.html">TMrbLogger</a> * MsgLog           -- where to take messages from
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Connect                -- kTRUE if to be connected to logging system
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * File                 -- where to read messages from
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TGMrbMessageViewer:AddEntries" href="src/TGMrbMessageViewer.cxx.html#TGMrbMessageViewer:AddEntries">AddEntries</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Type, <a href="ListOfTypes.html#Int_t">Int_t</a> Start, <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithDate) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:AddEntries">TGMrbMessageViewer::AddEntries</a>
+ Purpose:        Add messages to the viewer widget
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type        -- message type
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Start        -- entry to start with
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithDate    -- show message date
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofMessages  -- number of messages added
+ Exceptions:
+ Description:    Displays a number of messages from the logging system.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbMessageViewer:Notify" href="src/TGMrbMessageViewer.cxx.html#TGMrbMessageViewer:Notify">Notify</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:Notify">TGMrbMessageViewer::Notify</a>
+ Purpose:        Get notified if a new message is present
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Displays a number of messages from the logging system.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbMessageViewer:ProcessMessage" href="src/TGMrbMessageViewer.cxx.html#TGMrbMessageViewer:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMessageViewer.html#TGMrbMessageViewer:ProcessMessage">TGMrbMessageViewer::ProcessMessage</a>
+ Purpose:        Message handler
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a> <a name="TGMrbMessageViewer:TGMrbMessageViewer" href="TGMrbMessageViewer.h">TGMrbMessageViewer</a>(const <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TGMrbMessageViewer:Enable" href="TGMrbMessageViewer.h">Enable</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TGMrbMessageViewer:Disable" href="TGMrbMessageViewer.h">Disable</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMessageViewer:SetWithDate" href="TGMrbMessageViewer.h">SetWithDate</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> WithDate)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMessageViewer:Help" href="TGMrbMessageViewer.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbMessageViewer:Class" href="TGMrbMessageViewer.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbMessageViewer:IsA" href="TGMrbMessageViewer.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMessageViewer:ShowMembers" href="TGMrbMessageViewer.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMessageViewer:Streamer" href="TGMrbMessageViewer.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMessageViewer:StreamerNVirtual" href="TGMrbMessageViewer.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMessageViewer:~TGMrbMessageViewer" href="TGMrbMessageViewer.h">~TGMrbMessageViewer</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:08 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

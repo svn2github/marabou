@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TAttAxis</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TAttAxis:description">class description</a> - <a href="src/TAttAxis.cxx.html">source file</a> - <a href="TAttAxis_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TAttAxis" href="TAttAxis.h">TAttAxis</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:TAttAxis">TAttAxis</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:TAttAxis">TAttAxis</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:~TAttAxis">~TAttAxis</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TAttAxis:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TAttAxis.html">TAttAxis</a>&amp; attaxis) const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetAxisColor">GetAxisColor</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetLabelColor">GetLabelColor</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetLabelFont">GetLabelFont</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetLabelOffset">GetLabelOffset</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetLabelSize">GetLabelSize</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetNdivisions">GetNdivisions</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetTickLength">GetTickLength</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetTitleColor">GetTitleColor</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetTitleFont">GetTitleFont</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetTitleOffset">GetTitleOffset</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:GetTitleSize">GetTitleSize</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TAttAxis:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:ResetAttAxis">ResetAttAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SaveAttributes">SaveAttributes</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* subname)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetAxisColor">SetAxisColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetLabelColor">SetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetLabelFont">SetLabelFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> font = 62)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetLabelOffset">SetLabelOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 0.005)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetLabelSize">SetLabelSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = 0.04)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetNdivisions">SetNdivisions</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n = 510, <a href="ListOfTypes.html#Bool_t">Bool_t</a> optim = kTRUE)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetTickLength">SetTickLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> length = 0.03)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetTitleColor">SetTitleColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color = 1)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetTitleFont">SetTitleFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Style_t">Style_t</a> font = 62)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetTitleOffset">SetTitleOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 1)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:SetTitleSize">SetTitleSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size = .005)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAttAxis:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TAttAxis:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fNdivisions">fNdivisions</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fNdivisions">Number of divisions(10000*n3 + 100*n2 + n1)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fAxisColor">fAxisColor</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAxisColor">color of the line axis</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fLabelColor">fLabelColor</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLabelColor">color of labels</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fLabelFont">fLabelFont</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLabelFont">font for labels</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fLabelOffset">fLabelOffset</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLabelOffset">offset of labels</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fLabelSize">fLabelSize</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLabelSize">size of labels</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fTickLength">fTickLength</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTickLength">length of tick marks</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fTitleOffset">fTitleOffset</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTitleOffset">offset of axis title</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fTitleSize">fTitleSize</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTitleSize">size of axis title</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fTitleColor">fTitleColor</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTitleColor">color of axis title</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Style_t">Style_t</a> <!--TAB--><!--BOLD--><a name="TAttAxis:fTitleFont">fTitleFont</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTitleFont">font for axis title</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TAttAxis:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:08 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

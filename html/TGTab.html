@@ -1,0 +1,92 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGTab</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGTab:description">class description</a> - <a href="src/TGTab.cxx.html">source file</a> - <a href="TGTab_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGTab" href="TGTab.h">TGTab</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>, public <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:ChangeTab">ChangeTab</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tabIndex)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                          <a href="http://root.cern.ch/root/html/TGTab.html">TGTab</a> <!--TAB--><!--BOLD--><a href="#TGTab:TGTab">TGTab</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGTab:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGTab:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kChildFrame, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->                          <a href="http://root.cern.ch/root/html/TGTab.html">TGTab</a> <!--TAB--><!--BOLD--><a href="#TGTab:TGTab">TGTab</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGTab.html">TGTab</a>&amp;)
+<!--TAB6-->                   virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:~TGTab">~TGTab</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a href="#TGTab:AddTab">AddTab</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGString.html">TGString</a>* text)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a href="#TGTab:AddTab">AddTab</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->                 static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTab:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                   virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a href="#TGTab:GetContainer">GetContainer</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTab:GetCurrent">GetCurrent</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a href="#TGTab:GetCurrentContainer">GetCurrentContainer</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TGTabElement.html">TGTabElement</a>* <!--TAB--><!--BOLD--><a href="#TGTab:GetCurrentTab">GetCurrentTab</a><!--PLAIN-->() const
+<!--TAB6-->            static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a href="#TGTab:GetDefaultFontStruct">GetDefaultFontStruct</a><!--PLAIN-->()
+<!--TAB6-->             static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGTab:GetDefaultGC">GetDefaultGC</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTab:GetNumberOfTabs">GetNumberOfTabs</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a href="#TGTab:GetTabContainer">GetTabContainer</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tabIndex) const
+<!--TAB6-->                         <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGTab:GetTabHeight">GetTabHeight</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TGTabElement.html">TGTabElement</a>* <!--TAB--><!--BOLD--><a href="#TGTab:GetTabTab">GetTabTab</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tabIndex) const
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTab:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTab:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                   virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:RemoveTab">RemoveTab</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tabIndex)
+<!--TAB6-->                   virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:Selected">Selected</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTab:SetTab">SetTab</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> tabIndex)
+<!--TAB6-->                   virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                   virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                           <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTab:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGTab:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTab:fCurrent">fCurrent</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fCurrent">index of current tab</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTab:fTabh">fTabh</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fTabh">tab height</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGTab:fContainer">fContainer</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fContainer">main container</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGTab:fRemoved">fRemoved</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fRemoved">list of removed tabs</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGTab:fFontStruct">fFontStruct</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFontStruct">font</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTab:fNormGC">fNormGC</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fNormGC">drawing context</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGTab:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTab:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGTab:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:19 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

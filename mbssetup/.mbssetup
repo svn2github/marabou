@@ -1,0 +1,15 @@
+TMrbEnv.Info.File:                       .mbssetup
+TMrbEnv.Info.Modified:                   Wed Jul 24 14:41:07 2002
+TMrbEnv.Info.Created:                    Wed Jul 24 14:38:41 2002
+TMbsSetup.TemplatePath:                  $MARABOU/templates/mbssetup
+TMbsSetup.HomeDir:                       
+TMbsSetup.Path:                          
+TMbsSetup.Mode:                          
+TMbsSetup.EvtBuilder.Name:               
+TMbsSetup.EvtBuilder.Address:            
+TMbsSetup.EvtBuilder.Type:               
+TMbsSetup.EvtBuilder.Crate:              0
+TMbsSetup.EvtBuilder.NofStreams:         8
+TMbsSetup.EvtBuilder.NofBuffers:         8
+TMbsSetup.EvtBuilder.BufferSize:         0x4000
+TMbsSetup.EvtBuilder.VSBAddr:            0xf5000000

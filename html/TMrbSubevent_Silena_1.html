@@ -1,0 +1,156 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbSubevent_Silena_1</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbSubevent_Silena_1:description">class description</a> - <a href="src/TMrbSubevent_Silena_1.cxx.html">source file</a> - <a href="TMrbSubevent_Silena_1_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbSubevent_Silena_1" href="TMrbSubevent_Silena_1.h">TMrbSubevent_Silena_1</a> : public <a href="./TMrbSubevent.html">TMrbSubevent</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:TMrbSubevent_Silena_1">TMrbSubevent_Silena_1</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:TMrbSubevent_Silena_1">TMrbSubevent_Silena_1</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtTitle, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate = -1)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:~TMrbSubevent_Silena_1">~TMrbSubevent_Silena_1</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:AllowsMultipleModules">AllowsMultipleModules</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:CheckModuleID">CheckModuleID</a><!--PLAIN-->(<a href="./TMrbModule.html">TMrbModule</a>* Module)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:HasFixedLengthFormat">HasFixedLengthFormat</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:HasPrivateCode">HasPrivateCode</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSubevent_Silena_1:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbSubevent_Silena_1:Data Members">Data Members</a></h3>
+<pre>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbSubevent_Silena_1:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</a>.cxx
+ Purpose:        MARaBOU configuration: subevents of type [10,31] - Silena data
+ Description:    Implements class methods to handle [10,31] subevents
+                 Special format to be used for Silena 4418 ADCs running in
+                 zero-compression mode.
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbSubevent_Silena_1:TMrbSubevent_Silena_1" href="src/TMrbSubevent_Silena_1.cxx.html#TMrbSubevent_Silena_1:TMrbSubevent_Silena_1">TMrbSubevent_Silena_1</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtTitle, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+																: <a href="./TMrbSubevent.html">TMrbSubevent</a>(SevtName, SevtTitle, Crate) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</a>
+ Purpose:        Create a subevent type [10,31]
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtName       -- subevent name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * SevtTitle      -- ... and title
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Crate             -- crate number
+ Results:        --
+ Exceptions:
+ Description:    Create a new subevent of type [10,31]
+                 used to store Silena list-mode data (zero-compression mode)
+
+                 Data format as given by the producer (MBS):
+                 (for details see SILENA manual)
+                 -  header word containing module number and word count
+                 -  hit pattern reflecting active channels
+                 -  1 data word per active channel, may contain channel id
+                    in front (depending on status settings)
+                 -  several modules per buffer
+
+                 15               8|7                  0
+                 |=================|===================| module header
+                 |1|      |   wc   |   module number   |
+                 |-------------------------------------|
+                 |0|               |   hit pattern     |
+                 |-------------------------------------| data section
+                 |OVF|    SUB | 1st data word (12 bit) |
+                 |-------------------------------------|
+                 |                ~~~                  |
+                 |-------------------------------------|
+                 |OVF|    SUB |    last data word      |
+                 15====================================0
+
+                 Data storage by the consumer (ROOT):
+                 -  stored in a fixed-length vector, indexed by channel number
+                 -  empty channels padded with a zero value
+
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent_Silena_1:MakeReadoutCode" href="src/TMrbSubevent_Silena_1.cxx.html#TMrbSubevent_Silena_1:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex,
+															<a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template,
+															const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSubevent_Silena_1.html#TMrbSubevent_Silena_1:MakeReadoutCode">TMrbSubevent_Silena_1::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for subevent [10,31]
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbReadoutTag TagIndex      -- index of tag word from template file
+                 <a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template      -- template
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix              -- prefix to select template code
+ Results:
+ Exceptions:
+ Description:    Writes code needed for subevent handling.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbSubevent_Silena_1.html">TMrbSubevent_Silena_1</a> <a name="TMrbSubevent_Silena_1:TMrbSubevent_Silena_1" href="TMrbSubevent_Silena_1.h">TMrbSubevent_Silena_1</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtTitle, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate = -1)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent_Silena_1:HasFixedLengthFormat" href="TMrbSubevent_Silena_1.h">HasFixedLengthFormat</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent_Silena_1:AllowsMultipleModules" href="TMrbSubevent_Silena_1.h">AllowsMultipleModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent_Silena_1:CheckModuleID" href="TMrbSubevent_Silena_1.h">CheckModuleID</a>(<a href="./TMrbModule.html">TMrbModule</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSubevent_Silena_1:HasPrivateCode" href="TMrbSubevent_Silena_1.h">HasPrivateCode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent_Silena_1:Help" href="TMrbSubevent_Silena_1.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSubevent_Silena_1:Class" href="TMrbSubevent_Silena_1.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSubevent_Silena_1:IsA" href="TMrbSubevent_Silena_1.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent_Silena_1:ShowMembers" href="TMrbSubevent_Silena_1.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent_Silena_1:Streamer" href="TMrbSubevent_Silena_1.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent_Silena_1:StreamerNVirtual" href="TMrbSubevent_Silena_1.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TMrbSubevent_Silena_1:~TMrbSubevent_Silena_1" href="TMrbSubevent_Silena_1.h">~TMrbSubevent_Silena_1</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:45 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbModuleListEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbModuleListEntry:description">class description</a> - <a href="src/TMrbModuleListEntry.cxx.html">source file</a> - <a href="TMrbModuleListEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbModuleListEntry" href="TMrbAnalyze.h">TMrbModuleListEntry</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:TMrbModuleListEntry">TMrbModuleListEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofParams = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> IndexOfFirstParam = 0, <a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstParam = NULL, <a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstHisto = NULL)
+<!--TAB6-->      <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:TMrbModuleListEntry">TMrbModuleListEntry</a><!--PLAIN-->(const <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:~TMrbModuleListEntry">~TMrbModuleListEntry</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:GetFirstHisto">GetFirstHisto</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:GetFirstParam">GetFirstParam</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:GetIndexOfFirstParam">GetIndexOfFirstParam</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:GetNofParams">GetNofParams</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:SetFirstHisto">SetFirstHisto</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstHisto)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:SetFirstParam">SetFirstParam</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstParam)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:SetIndexOfFirstParam">SetIndexOfFirstParam</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> FirstParam)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:SetNofParams">SetNofParams</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofParams)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModuleListEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbModuleListEntry:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->            <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModuleListEntry:fNofParams">fNofParams</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNofParams"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModuleListEntry:fIndexOfFirstParam">fIndexOfFirstParam</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fIndexOfFirstParam"></a></i>
+<!--TAB6-->      <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="TMrbModuleListEntry:fFirstParam">fFirstParam</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFirstParam"></a></i>
+<!--TAB6-->      <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="TMrbModuleListEntry:fFirstHisto">fFirstHisto</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFirstHisto"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbModuleListEntry:description">Class Description</a></h2>
+<pre>
+ Name:           <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.cxx
+ Purpose:        Implement class methods for user's analysis
+ Description:    This code defines class methods for data analysis
+                 common to all user applications
+
+ Header files:   <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.h     -- class definitions
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a> <a name="TMrbModuleListEntry:TMrbModuleListEntry" href="TMrbAnalyze.h">TMrbModuleListEntry</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofParams = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> IndexOfFirstParam = 0, <a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstParam = NULL, <a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstHisto = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModuleListEntry:GetNofParams" href="TMrbAnalyze.h">GetNofParams</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:SetNofParams" href="TMrbAnalyze.h">SetNofParams</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofParams)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModuleListEntry:GetIndexOfFirstParam" href="TMrbAnalyze.h">GetIndexOfFirstParam</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:SetIndexOfFirstParam" href="TMrbAnalyze.h">SetIndexOfFirstParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> FirstParam)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModuleListEntry:GetFirstParam" href="TMrbAnalyze.h">GetFirstParam</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:SetFirstParam" href="TMrbAnalyze.h">SetFirstParam</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstParam)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModuleListEntry:GetFirstHisto" href="TMrbAnalyze.h">GetFirstHisto</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:SetFirstHisto" href="TMrbAnalyze.h">SetFirstHisto</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* FirstHisto)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbModuleListEntry:Class" href="TMrbAnalyze.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbModuleListEntry:IsA" href="TMrbAnalyze.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:ShowMembers" href="TMrbAnalyze.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:Streamer" href="TMrbAnalyze.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:StreamerNVirtual" href="TMrbAnalyze.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a> <a name="TMrbModuleListEntry:TMrbModuleListEntry" href="TMrbAnalyze.h">TMrbModuleListEntry</a>(const <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="TMrbModuleListEntry:~TMrbModuleListEntry" href="TMrbAnalyze.h">~TMrbModuleListEntry</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:14 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

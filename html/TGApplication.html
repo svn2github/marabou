@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGApplication</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGApplication:description">class description</a> - <a href="src/TGApplication.cxx.html">source file</a> - <a href="TGApplication_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGApplication" href="TGApplication.h">TGApplication</a> : public <a href="http://root.cern.ch/root/html/TApplication.html">TApplication</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGApplication.html">TGApplication</a> <!--TAB--><!--BOLD--><a href="#TGApplication:TGApplication">TGApplication</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGApplication:LoadGraphicsLibs">LoadGraphicsLibs</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGApplication.html">TGApplication</a> <!--TAB--><!--BOLD--><a href="#TGApplication:TGApplication">TGApplication</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* appClassName, <a href="ListOfTypes.html#Int_t">Int_t</a>* argc, <a href="ListOfTypes.html#char">char</a>** argv, <a href="ListOfTypes.html#void">void</a>* options = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> numOptions = 0)
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGApplication.html">TGApplication</a> <!--TAB--><!--BOLD--><a href="#TGApplication:TGApplication">TGApplication</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGApplication.html">TGApplication</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGApplication:~TGApplication">~TGApplication</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGApplication:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGApplication:GetOptions">GetOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>* argc, <a href="ListOfTypes.html#char">char</a>** argv)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGApplication:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGApplication:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGApplication:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGApplication:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGApplication:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->          <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TGApplication:fDisplay">fDisplay</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDisplay">display server to connect to</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGClient.html">TGClient</a>* <!--TAB--><!--BOLD--><a name="TGApplication:fClient">fClient</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fClient">pointer to the client environment</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGApplication:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

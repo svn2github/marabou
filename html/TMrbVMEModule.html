@@ -1,0 +1,157 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbVMEModule</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbVMEModule:description">class description</a> - <a href="src/TMrbVMEModule.cxx.html">source file</a> - <a href="TMrbVMEModule_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbVMEModule" href="TMrbVMEModule.h">TMrbVMEModule</a> : public <a href="./TMrbModule.html">TMrbModule</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="./TMrbVMEModule.html">TMrbVMEModule</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:TMrbVMEModule">TMrbVMEModule</a><!--PLAIN-->()
+<!--TAB6-->        <a href="./TMrbVMEModule.html">TMrbVMEModule</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:TMrbVMEModule">TMrbVMEModule</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleID, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr, <a href="ListOfTypes.html#UInt_t">UInt_t</a> AddrMod, <a href="ListOfTypes.html#Int_t">Int_t</a> SegLength, <a href="ListOfTypes.html#Int_t">Int_t</a> SubDevice, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:~TMrbVMEModule">~TMrbVMEModule</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:GetAddrModifier">GetAddrModifier</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:GetBaseAddr">GetBaseAddr</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:GetPosition">GetPosition</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:GetSegmentSize">GetSegmentSize</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:Print">Print</a><!--PLAIN-->(ostream&amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVMEModule:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbVMEModule:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbVMEModule:fBaseAddr">fBaseAddr</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fBaseAddr">base address</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbVMEModule:fAddrModifier">fAddrModifier</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAddrModifier">address modifier</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbVMEModule:fSegmentSize">fSegmentSize</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fSegmentSize">segment size</a></i>
+<!--TAB6-->      <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a name="TMrbVMEModule:fPosition">fPosition</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPosition">crate &amp; addr</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TMrbAcromag_IP341.html">TMrbAcromag_IP341</a>, <a href="./TMrbCaen_V556.html">TMrbCaen_V556</a>, <a href="./TMrbCaen_V785.html">TMrbCaen_V785</a>, <a href="./TMrbVMEScaler.html">TMrbVMEScaler</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbVMEModule:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbVMEModule.html">TMrbVMEModule</a>.cxx
+ Purpose:        MARaBOU configuration: VME modules
+ Description:    Implements class methods to handle VME modules
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbVMEModule:TMrbVMEModule" href="src/TMrbVMEModule.cxx.html#TMrbVMEModule:TMrbVMEModule">TMrbVMEModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleID,
+										<a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr, <a href="ListOfTypes.html#UInt_t">UInt_t</a> AddrMod, <a href="ListOfTypes.html#Int_t">Int_t</a> SegSize,
+										<a href="ListOfTypes.html#Int_t">Int_t</a> SubDevice, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range) :
+												<a href="./TMrbModule.html">TMrbModule</a>(ModuleName, ModuleID, NofChannels, Range) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbVMEModule.html">TMrbVMEModule</a>
+ Purpose:        Create a camac module
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- module name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleID        -- module type
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr          -- vme base address
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> AddrMod           -- address modifier
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> SegSize            -- size of segment
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> SubDevice          -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels        -- number of channels
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Range              -- number of data points
+ Results:        --
+ Exceptions:
+ Description:    Defines a new camac module having specified number of channels
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:Print" href="src/TMrbVMEModule.cxx.html#TMrbVMEModule:Print">Print</a>(ostream &amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbVMEModule.html#TMrbVMEModule:Print">TMrbVMEModule::Print</a>
+ Purpose:        Output current module definitions
+ Arguments:      ofstream &amp; OutStrm   -- output stream
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix 	    -- prefix to be output in front
+ Results:        --
+ Exceptions:
+ Description:    Outputs current module definition to stdout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVMEModule:MakeReadoutCode" href="src/TMrbVMEModule.cxx.html#TMrbVMEModule:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbVMEModule.html#TMrbVMEModule:MakeReadoutCode">TMrbVMEModule::MakeReadoutCode</a>
+ Purpose:        Generate a piece of readout code
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbReadoutTag TagIndex      -- index of tag word from template file
+                 <a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template      -- template
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix              -- prefix to select template code
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes readout code needed for this module.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbVMEModule.html">TMrbVMEModule</a> <a name="TMrbVMEModule:TMrbVMEModule" href="TMrbVMEModule.h">TMrbVMEModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleID, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr, <a href="ListOfTypes.html#UInt_t">UInt_t</a> AddrMod, <a href="ListOfTypes.html#Int_t">Int_t</a> SegLength, <a href="ListOfTypes.html#Int_t">Int_t</a> SubDevice, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbVMEModule:GetBaseAddr" href="TMrbVMEModule.h">GetBaseAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbVMEModule:GetSegmentSize" href="TMrbVMEModule.h">GetSegmentSize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbVMEModule:GetAddrModifier" href="TMrbVMEModule.h">GetAddrModifier</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbVMEModule:GetPosition" href="TMrbVMEModule.h">GetPosition</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:Help" href="TMrbVMEModule.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:Print" href="TMrbVMEModule.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbVMEModule:Class" href="TMrbVMEModule.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbVMEModule:IsA" href="TMrbVMEModule.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:ShowMembers" href="TMrbVMEModule.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:Streamer" href="TMrbVMEModule.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:StreamerNVirtual" href="TMrbVMEModule.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVMEModule:~TMrbVMEModule" href="TMrbVMEModule.h">~TMrbVMEModule</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:51 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

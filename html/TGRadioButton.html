@@ -1,0 +1,94 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGRadioButton</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGRadioButton:description">class description</a> - <a href="src/TGRadioButton.cxx.html">source file</a> - <a href="TGRadioButton_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGRadioButton" href="TGButton.h">TGRadioButton</a> : public <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:DoRedraw">DoRedraw</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:PSetState">PSetState</a><!--PLAIN-->(EButtonState state)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGRadioButton.html">TGRadioButton</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:TGRadioButton">TGRadioButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* s, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGRadioButton:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGRadioButton:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGRadioButton.html">TGRadioButton</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:TGRadioButton">TGRadioButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, const <a href="ListOfTypes.html#char">char</a>* s, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGRadioButton:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGRadioButton:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGRadioButton.html">TGRadioButton</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:TGRadioButton">TGRadioButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, const <a href="ListOfTypes.html#char">char</a>* s, const <a href="ListOfTypes.html#char">char</a>* cmd, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGRadioButton:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGRadioButton:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGRadioButton.html">TGRadioButton</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:TGRadioButton">TGRadioButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGRadioButton.html">TGRadioButton</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:~TGRadioButton">~TGRadioButton</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGRadioButton:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:GetDefaultFontStruct">GetDefaultFontStruct</a><!--PLAIN-->()
+<!--TAB6-->       static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGRadioButton:GetDefaultGC">GetDefaultGC</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:HandleCrossing">HandleCrossing</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGRadioButton:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:IsExclusiveToggle">IsExclusiveToggle</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:IsToggleButton">IsToggleButton</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:SetState">SetState</a><!--PLAIN-->(EButtonState state)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGRadioButton:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGRadioButton:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* <!--TAB--><!--BOLD--><a name="TGRadioButton:fLabel">fLabel</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fLabel">radio button label</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fHKeycode">fHKeycode</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fHKeycode">hotkey</a></i>
+<!--TAB6-->             EButtonState <!--TAB--><!--BOLD--><a name="TGRadioButton:fPrevState">fPrevState</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fPrevState">radio button state</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGRadioButton:fOn">fOn</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fOn">button ON picture</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGRadioButton:fOff">fOff</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fOff">button OFF picture</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fFontStruct">fFontStruct</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFontStruct">font to draw label</a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgR1">fgR1</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgR1"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgR2">fgR2</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgR2"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgR3">fgR3</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgR3"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgR4">fgR4</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgR4"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgR5">fgR5</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgR5"></a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgR6">fgR6</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgR6"></a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGRadioButton:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGRadioButton:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:18 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

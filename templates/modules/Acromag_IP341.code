@@ -1,0 +1,194 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Acromag_IP341.code
+// @(#)Purpose:    VME code for adc Acromag-9660/IP341
+// Description:    Contains pieces of code to operate an adc Acromag-9660/IP341
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME ADC Acromag-9660/IP341 */
+#define $mnemoUC_IP_SEGSIZE	0x100	/* segment size */
+#define $mnemoUC_IP_IDSPACE	0x80	/* start of module ID space */
+#define $mnemoUC_IP_IPAC	 	0x1 	/* IP identifier */
+#define $mnemoUC_IP_MODEL 	0xB 	/* IP model code */
+#define $mnemoUC_CCSR			0x0 	/* channel control/status reg */
+#define $mnemoUC_CCSR_SCONV	(0x1 << 0)		/* single conversion */
+#define $mnemoUC_CCSR_CCONV	(0x1 << 1)		/* continuous conversion */
+#define $mnemoUC_CCSR_XTINP	(0x1 << 4)		/* external trigger input */	
+#define $mnemoUC_CCSR_XTOUT	(0x1 << 5)		/* external trigger output */	
+#define $mnemoUC_CCSR_INTR	(0x1 << 6)		/* interrupt enable */	
+#define $mnemoUC_CCSR_FNE		(0x1 << 8)		/* fifo not empty */	
+#define $mnemoUC_CCSR_FTHR	(0x1 << 9)		/* fifo threshold reached */	
+#define $mnemoUC_CCSR_RESET	(0x1 << 15)		/* soft reset */	
+#define $mnemoUC_CHENC		0x2 	/* channel enable control */
+#define $mnemoUC_CTIM_LOW		0x4 	/* conversion timer 0-15 */
+#define $mnemoUC_CTIM_HGH		0x7		/* ... 16-23 */
+#define $mnemoUC_HBTIM_LOW	0x8 	/* high bank timer 0-15 */
+#define $mnemoUC_HBTIM_HGH	0xB 	/* ... 16-23 */
+#define $mnemoUC_FTHR			0xC 	/* fifo threshold */
+#define $mnemoUC_START		0x10	/* start conversion */
+#define $mnemoUC_DATA			0x12	/* fifo channel data */
+#define $mnemoUC_TAG			0x15	/* fifo data tag */
+
+#define $mnemoUC_ADDR_CONTROL(module)		((unsigned short *) (module + $mnemoUC_CCSR ))
+#define $mnemoUC_ADDR_CHANNEL_ENABLE(module) ((unsigned short *) (module + $mnemoUC_CHENC))
+#define $mnemoUC_ADDR_START(module)			((unsigned short *) (module + $mnemoUC_START))
+#define $mnemoUC_ADDR_DATA(module)			((unsigned short *) (module + $mnemoUC_DATA))
+#define $mnemoUC_ADDR_TAG(module)			(module + $mnemoUC_TAG)
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					$mnemoLC_module_info($moduleName);
+					$moduleNameControl = $mnemoUC_ADDR_CONTROL($moduleName);
+					$moduleNameChannelEnable = $mnemoUC_ADDR_CHANNEL_ENABLE($moduleName);
+					$moduleNameStart = $mnemoUC_ADDR_START($moduleName);
+					$moduleNameFifoData = $mnemoUC_ADDR_DATA($moduleName);
+					$moduleNameFifoTag = $mnemoUC_ADDR_TAG($moduleName);
+					
+					*$moduleNameControl = $mnemoUC_CCSR_RESET; 	/* reset $moduleName */
+					*$moduleNameControl = $mnemoUC_CCSR_SCONV | $mnemoUC_CCSR_XTINP; 	/* single conversion, external trigger */
+					*$moduleNameChannelEnable = $chnMask;		/* enable channels in use */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					/* read fifo data from $moduleName, $moduleTitle */
+					while (*$moduleNameControl & $mnemoUC_CCSR_FNE) { 	/* fifo containing data? */
+						$moduleNameData = ((short) *$moduleNameFifoData) / 4 + 8192; /* data port MUST be read first!! */
+						$moduleNameTag = *$moduleNameFifoTag;						/* channel */
+						RDO_2MEM_16($moduleNameTag);						/* write addr */
+						RDO_2MEM_16($moduleNameData); /* write data: adjust to 14 bits positive */
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+volatile char * $mnemoLC_get_subdevice(volatile char * base, int subdev) {
+	return(base + subdev * $mnemoUC_IP_SEGSIZE / sizeof(unsigned short));
+}
+
+void $mnemoLC_module_info(volatile char * base) {
+	int i;
+	volatile char * idp;
+	char model;
+	char id[16];
+	char str[256];
+
+	memset(id, 0, 16);
+	idp = base + $mnemoUC_IP_IDSPACE + $mnemoUC_IP_IPAC;
+	for (i = 0; i < 4; i++, idp += 2) id[i] = *idp;
+	id[4] = ' ';
+	model = *(base + $mnemoUC_IP_IDSPACE + $mnemoUC_IP_MODEL);
+	if (model == 0x28) strcat(id, "IP341"); else strcat(id, "IP341");
+	sprintf(str, "  Acromag-9660 module info: %s\n", id);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info(volatile char * base);
+volatile char * $mnemoLC_get_subdevice(volatile char *, int);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+/* global vars for VME ADC Acromag-9660/IP341 */
+volatile unsigned short * $moduleNameControl;
+volatile unsigned short * $moduleNameChannelEnable;
+volatile unsigned short * $moduleNameStart;
+volatile unsigned short * $moduleNameFifoData;
+volatile char * $moduleNameFifoTag;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	short $moduleNameTag;
+	short $moduleNameData;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

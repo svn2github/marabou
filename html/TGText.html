@@ -1,0 +1,104 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGText</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGText:description">class description</a> - <a href="src/TGText.cxx.html">source file</a> - <a href="TGText_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGText" href="TGText.h">TGText</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:LongestLine">LongestLine</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:SetCurrentRow">SetCurrentRow</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> row)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGText.html">TGText</a> <!--TAB--><!--BOLD--><a href="#TGText:TGText">TGText</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGText.html">TGText</a> <!--TAB--><!--BOLD--><a href="#TGText:TGText">TGText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* text)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGText.html">TGText</a> <!--TAB--><!--BOLD--><a href="#TGText:TGText">TGText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* string)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGText.html">TGText</a> <!--TAB--><!--BOLD--><a href="#TGText:TGText">TGText</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGText.html">TGText</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:~TGText">~TGText</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:AddText">AddText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* text)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:Append">Append</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* fn)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:BreakLine">BreakLine</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> pos)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGText:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:Clear">Clear</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGText:ColCount">ColCount</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:DelChar">DelChar</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> pos)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:DelLine">DelLine</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> pos)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:DelText">DelText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> start, <a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> end)
+<!--TAB6-->                 <a href="ListOfTypes.html#char">char</a> <!--TAB--><!--BOLD--><a href="#TGText:GetChar">GetChar</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> pos)
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGText:GetFileName">GetFileName</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGText:GetLine">GetLine</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> pos, <a href="ListOfTypes.html#ULong_t">ULong_t</a> length)
+<!--TAB6-->               <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGText:GetLineLength">GetLineLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> row)
+<!--TAB6-->               <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGText:GetLongestLine">GetLongestLine</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:InsChar">InsChar</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> pos, <a href="ListOfTypes.html#char">char</a> c)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:InsLine">InsLine</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> row, const <a href="ListOfTypes.html#char">char</a>* string)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:InsText">InsText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> pos, const <a href="ListOfTypes.html#char">char</a>* buf)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:InsText">InsText</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> ins_pos, <a href="http://root.cern.ch/root/html/TGText.html">TGText</a>* src, <a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> start_src, <a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> end_src)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGText:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:IsSaved">IsSaved</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:Load">Load</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* fn, <a href="ListOfTypes.html#Long_t">Long_t</a> startpos = 0, <a href="ListOfTypes.html#Long_t">Long_t</a> length = -1)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:LoadBuffer">LoadBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* txtbuf)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:Replace">Replace</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> start, const <a href="ListOfTypes.html#char">char</a>* oldText, const <a href="ListOfTypes.html#char">char</a>* newText, <a href="ListOfTypes.html#Bool_t">Bool_t</a> direction, <a href="ListOfTypes.html#Bool_t">Bool_t</a> caseSensitive)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:ReTab">ReTab</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> row)
+<!--TAB6-->               <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGText:RowCount">RowCount</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:Save">Save</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* fn)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGText:Search">Search</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a>* foundPos, <a href="http://root.cern.ch/root/html/TGLongPosition.html">TGLongPosition</a> start, const <a href="ListOfTypes.html#char">char</a>* searchString, <a href="ListOfTypes.html#Bool_t">Bool_t</a> direction, <a href="ListOfTypes.html#Bool_t">Bool_t</a> caseSensitive)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGText:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGText:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGText:fFilename">fFilename</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fFilename">name of opened file ("" if open buffer)</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGText:fIsSaved">fIsSaved</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fIsSaved">false if text needs to be saved</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTextLine.html">TGTextLine</a>* <!--TAB--><!--BOLD--><a name="TGText:fFirst">fFirst</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fFirst">first line of text</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTextLine.html">TGTextLine</a>* <!--TAB--><!--BOLD--><a name="TGText:fCurrent">fCurrent</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fCurrent">current line</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TGText:fCurrentRow">fCurrentRow</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fCurrentRow">current row number</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TGText:fRowCount">fRowCount</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fRowCount">number of rows</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TGText:fColCount">fColCount</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fColCount">number of columns in current line</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TGText:fLongestLine">fLongestLine</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLongestLine">length of longest line</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGText:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

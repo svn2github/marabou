@@ -1,0 +1,934 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbEsone</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbEsone:description">class description</a> - <a href="src/TMrbEsone.cxx.html">source file</a> - <a href="TMrbEsone_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbEsone" href="TMrbEsone.h">TMrbEsone</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:CheckConnection">CheckConnection</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:CheckCrate">CheckCrate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:CheckIndex">CheckIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:CheckList">CheckList</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:CheckSize">CheckSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Size, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:PrintResults">PrintResults</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method, <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a>* c1 = NULL, <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a>* c2 = NULL)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:Reset">Reset</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kFALSE)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetCB">SetCB</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Repeat = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Tally = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Lam = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> DMA = 0)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="./TMrbEsone.html">TMrbEsone</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:TMrbEsone">TMrbEsone</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kFALSE)
+<!--TAB6-->             <a href="./TMrbEsone.html">TMrbEsone</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:TMrbEsone">TMrbEsone</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HostName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kFALSE)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:~TMrbEsone">~TMrbEsone</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:Abort">Abort</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:AddBroadCast">AddBroadCast</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Station)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:AddressScan">AddressScan</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Start, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Stop, <a href="ListOfTypes.html#Int_t">Int_t</a> WordCount = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:AddressScan">AddressScan</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Start, <a href="ListOfTypes.html#Int_t">Int_t</a> Stop, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function, <a href="ListOfTypes.html#Int_t">Int_t</a> WordCount = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:BlockXfer">BlockXfer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Cnaf, <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> QXfer = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:BlockXfer">BlockXfer</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function, <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> QXfer = kFALSE)
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearBroadCast">ClearBroadCast</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearCnaf">ClearCnaf</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearData">ClearData</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearDW">ClearDW</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate = <a href="./TMrbEsone.html#TMrbEsone:kDefaultCrate">TMrbEsone::kDefaultCrate</a>)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearFunction">ClearFunction</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearQX">ClearQX</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ClearTally">ClearTally</a><!--PLAIN-->()
+<!--TAB6-->           <a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ConnectToHost">ConnectToHost</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HostName)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:DWInhibit">DWInhibit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate = <a href="./TMrbEsone.html#TMrbEsone:kDefaultCrate">TMrbEsone::kDefaultCrate</a>)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ExecCnaf">ExecCnaf</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Cnaf, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data = kNoData, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ExecCnaf">ExecCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data = kNoData, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ExecCnafList">ExecCnafList</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag = kFALSE)
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetAction">GetAction</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetBroadCast">GetBroadCast</a><!--PLAIN-->()
+<!--TAB6-->           <a href="ListOfTypes.html#CamacReg_t">CamacReg_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetCAddr">GetCAddr</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetCnaf">GetCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Host, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Cnaf, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a>&amp; Data)
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetCnaf">GetCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DataFlag = kFALSE) const
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetCnafType">GetCnafType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetControllerIndex">GetControllerIndex</a><!--PLAIN-->()
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetControllerName">GetControllerName</a><!--PLAIN-->() const
+<!--TAB6-->          <a href="ListOfTypes.html#CamacData_t">CamacData_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetDAddr">GetDAddr</a><!--PLAIN-->()
+<!--TAB6-->           <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetData">GetData</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1)
+<!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetError">GetError</a><!--PLAIN-->() const
+<!--TAB6-->      <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetFAddr">GetFAddr</a><!--PLAIN-->()
+<!--TAB6-->       <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetFunction">GetFunction</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1)
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetHost">GetHost</a><!--PLAIN-->(<a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a> HostAddr)
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetHost">GetHost</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HostName)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetQ">GetQ</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1)
+<!--TAB6-->            <a href="ListOfTypes.html#CamacQX_t">CamacQX_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetQXAddr">GetQXAddr</a><!--PLAIN-->()
+<!--TAB6-->         <a href="ListOfTypes.html#CamacStatus_t">CamacStatus_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetStatus">GetStatus</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp;, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp;, <a href="ListOfTypes.html#CamacError_t">CamacError_t</a>&amp;, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp;)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetTally">GetTally</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:GetX">GetX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:HasBroadCast">HasBroadCast</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:HasFastCamac">HasFastCamac</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:InitDW">InitDW</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate = <a href="./TMrbEsone.html#TMrbEsone:kDefaultCrate">TMrbEsone::kDefaultCrate</a>)
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsone:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:IsAborted">IsAborted</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:IsOffline">IsOffline</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:IsVerbose">IsVerbose</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> From = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> To = -1)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:PrintError">PrintError</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* EsoneCall, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:PrintStatus">PrintStatus</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ReadDoubleWord">ReadDoubleWord</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadDW = kTRUE)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ReadFromFile">ReadFromFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ResetBuffers">ResetBuffers</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetAutoRead">SetAutoRead</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> AutoRead = kTRUE)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetBroadCast">SetBroadCast</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BroadCast)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetCnaf">SetCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Cnaf, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data = kNoData)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetCnaf">SetCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data = kNoData)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetData">SetData</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetData">SetData</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Size = -1)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetData">SetData</a><!--PLAIN-->(<a href="ListOfTypes.html#CamacData_t">CamacData_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Size = -1)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetData">SetData</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Size = -1)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetDWInhibit">SetDWInhibit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate = <a href="./TMrbEsone.html#TMrbEsone:kDefaultCrate">TMrbEsone::kDefaultCrate</a>, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetFunction">SetFunction</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetNofCnafs">SetNofCnafs</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetOffline">SetOffline</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kTRUE)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:SetVerboseMode">SetVerboseMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> VerboseFlag = kTRUE)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:StartServer">StartServer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HostName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SetupPath = "/mbsusr/marabou/esone", const <a href="ListOfTypes.html#Char_t">Char_t</a>* MbsVersion = "deve", <a href="ListOfTypes.html#Bool_t">Bool_t</a> PrmFlag = kFALSE)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsone:UseBroadCast">UseBroadCast</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbEsone:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fVerboseMode">fVerboseMode</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fVerboseMode">kTRUE if verbose mode on</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fUseBroadCast">fUseBroadCast</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fUseBroadCast">kTRUE if broadcast mode is to be used</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fOffline">fOffline</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fOffline">access camac hardware?</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fAborted">fAborted</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fAborted">kTRUE if operation aborted</a></i>
+<!--TAB6-->                      <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fController">fController</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fController">camac controller used (name+index)</a></i>
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fHost">fHost</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fHost">host name</a></i>
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fHostInet">fHostInet</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fHostInet">full inet address</a></i>
+<!--TAB6-->                     <a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fHostAddr">fHostAddr</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fHostAddr">ESONE host address</a></i>
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fCnafAscii">fCnafAscii</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fCnafAscii">cnaf (ascii representation)</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fCrate">fCrate</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fCrate">crate number</a></i>
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fError">fError</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fError">error message</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#CamacError_t">CamacError_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fErrorCode">fErrorCode</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fErrorCode">error code</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TArrayL.html">TArrayL</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fCnaf">fCnaf</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fCnaf">cnafs</a></i>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fFunction">fFunction</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fFunction">functions</a></i>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fData">fData</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fData">data</a></i>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fQX">fQX</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fQX">Q/X</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fMaxNofCnafs">fMaxNofCnafs</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fMaxNofCnafs">max number of cnafs</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fCurNofCnafs">fCurNofCnafs</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fCurNofCnafs">actual number of cnafs</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fTally">fTally</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTally">resulting number of data words</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fCB">fCB[4]</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fCB">control block</a></i>
+<!--TAB6-->      <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fAction">fAction</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fAction">type of last action</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbEsone:kDefaultCrate">kDefaultCrate</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDefaultCrate"></a></i>
+<!--TAB6-->                      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbEsone:kMaxNofCnafs">kMaxNofCnafs</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kMaxNofCnafs"></a></i>
+<!--TAB6-->      static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacController">TMrbEsone::EMrbCamacController</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCC_CBV">kCC_CBV</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kCC_CBV"></a></i>
+<!--TAB6-->      static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacController">TMrbEsone::EMrbCamacController</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCC_CC32">kCC_CC32</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCC_CC32"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCANone">kCANone</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kCANone"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCASingle">kCASingle</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCASingle"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCAMultiple">kCAMultiple</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kCAMultiple"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCAAddrScan">kCAAddrScan</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kCAAddrScan"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCABlockXfer">kCABlockXfer</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kCABlockXfer"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCAQDriven">kCAQDriven</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kCAQDriven"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA16Bit">kCA16Bit</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCA16Bit"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA24Bit">kCA24Bit</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCA24Bit"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_cfsa">kCA_cfsa</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCA_cfsa"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_cssa">kCA_cssa</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCA_cssa"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_cfga">kCA_cfga</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCA_cfga"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_csga">kCA_csga</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kCA_csga"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_cfmad">kCA_cfmad</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCA_cfmad"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_csmad">kCA_csmad</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCA_csmad"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_cfubc">kCA_cfubc</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCA_cfubc"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_csubc">kCA_csubc</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCA_csubc"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_cfubr">kCA_cfubr</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCA_cfubr"></a></i>
+<!--TAB6-->          static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacAction">TMrbEsone::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kCA_csubr">kCA_csubr</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCA_csubr"></a></i>
+<!--TAB6-->              static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacQX">TMrbEsone::EMrbCamacQX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kQFlag">kQFlag</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kQFlag"></a></i>
+<!--TAB6-->              static const <a href="./TMrbEsone.html#TMrbEsone:EMrbCamacQX">TMrbEsone::EMrbCamacQX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:kXFlag">kXFlag</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kXFlag"></a></i>
+<!--TAB6-->                      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbEsone:kBroadCast_N_CC32">kBroadCast_N_CC32</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kBroadCast_N_CC32"></a></i>
+<!--TAB6-->                      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbEsone:kFastCamac_F_CC32">kFastCamac_F_CC32</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kFastCamac_F_CC32"></a></i>
+<!--TAB6-->                      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbEsone:kAutoRead_CC32">kAutoRead_CC32</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kAutoRead_CC32"></a></i>
+<!--TAB6-->                                    <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fLofCamacActions">fLofCamacActions</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLofCamacActions">list of camac actions</a></i>
+<!--TAB6-->                                    <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fLofCNAFNames">fLofCNAFNames</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fLofCNAFNames">list of camac registers</a></i>
+<!--TAB6-->                                    <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fLofCNAFTypes">fLofCNAFTypes</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fLofCNAFTypes">list of cnaf types</a></i>
+<!--TAB6-->                                    <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbEsone:fLofControllers">fLofControllers</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLofControllers">list of camac controllers available</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbEsone:description">Class Description</a></h2>
+<pre>
+ Name:           esone/src/<a href="./TMrbEsone.html">TMrbEsone</a>.cxx
+ Purpose:        ESONE client class
+ Description:    Implements class methods to interface the ESONE client library
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:Reset" href="src/TMrbEsone.cxx.html#TMrbEsone:Reset">Reset</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:Reset">TMrbEsone::Reset</a>
+ Purpose:        Reset internal data base
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline         -- camac access to be simulated?
+ Results:        --
+ Exceptions:
+ Description:    Reset data base (protected method).
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:CheckConnection" href="src/TMrbEsone.cxx.html#TMrbEsone:CheckConnection">CheckConnection</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:CheckConnection">TMrbEsone::CheckConnection</a>
+ Purpose:        Check if connected to camac host
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Method    -- calling method
+ Results:        kTRUE/kFALSe
+ Exceptions:
+ Description:    Checks if there is a valid connection to camac.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:CheckCrate" href="src/TMrbEsone.cxx.html#TMrbEsone:CheckCrate">CheckCrate</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:CheckCrate">TMrbEsone::CheckCrate</a>
+ Purpose:        Check if crate number is legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate        -- crate number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method    -- calling method
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Crate        -- crate number or -1 if error
+ Exceptions:
+ Description:    Checks if crate number is ok.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:CheckIndex" href="src/TMrbEsone.cxx.html#TMrbEsone:CheckIndex">CheckIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:CheckIndex">TMrbEsone::CheckIndex</a>
+ Purpose:        Check if index is legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index        -- index in cnaf/data array
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method    -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks if index is ok.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:CheckSize" href="src/TMrbEsone.cxx.html#TMrbEsone:CheckSize">CheckSize</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Size, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:CheckSize">TMrbEsone::CheckSize</a>
+ Purpose:        Check if data size is legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Size         -- data size
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method    -- calling method
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Size         -- actual size
+ Exceptions:
+ Description:    Checks if data size is ok.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:StartServer" href="src/TMrbEsone.cxx.html#TMrbEsone:StartServer">StartServer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * HostName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * SetupPath, const <a href="ListOfTypes.html#Char_t">Char_t</a> * MbsVersion, <a href="ListOfTypes.html#Bool_t">Bool_t</a> PrmFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:StartServer">TMrbEsone::StartServer</a>
+ Purpose:        Try to start esone server on host
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HostName    -- host name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * SetupPath   -- where to find MBS setup files
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * MbsVersion  -- MBS version to be used
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> PrmFlag       -- start m_prompt if kTRUE
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Tries to start mbs.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a> <a name="TMrbEsone:ConnectToHost" href="src/TMrbEsone.cxx.html#TMrbEsone:ConnectToHost">ConnectToHost</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * HostName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ConnectToHost">TMrbEsone::ConnectToHost</a>
+ Purpose:        Establish connection to camac host
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HostName  -- host name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline     -- hardware access to be simulated by software?
+ Results:        <a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a>        -- host address, 0 if error
+ Exceptions:
+ Description:    ESONE ccopen.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:ClearDW" href="src/TMrbEsone.cxx.html#TMrbEsone:ClearDW">ClearDW</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ClearDW">TMrbEsone::ClearDW</a>
+ Purpose:        Clear dataway
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate      -- crate number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    ESONE cccc.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetDWInhibit" href="src/TMrbEsone.cxx.html#TMrbEsone:SetDWInhibit">SetDWInhibit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Inhibit) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetDWInhibit">TMrbEsone::SetDWInhibit</a>
+ Purpose:        Set/Clear dataway inhibit
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate      -- crate number
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Inhibit   -- inhibit flag
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    ESONE ccci.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:DWInhibit" href="src/TMrbEsone.cxx.html#TMrbEsone:DWInhibit">DWInhibit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:DWInhibit">TMrbEsone::DWInhibit</a>
+ Purpose:        Test dataway inhibit
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate        -- crate number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Test the dataway inhibit flag (ESONE ctci).
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:InitDW" href="src/TMrbEsone.cxx.html#TMrbEsone:InitDW">InitDW</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:InitDW">TMrbEsone::InitDW</a>
+ Purpose:        Initialize dataway
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate     -- crate number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    ESONE cccz.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:ExecCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:ExecCnaf">ExecCnaf</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ExecCnaf">TMrbEsone::ExecCnaf</a>
+ Purpose:        Exec a single CNAF
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf     -- cnaf (ascii representation)
+                 <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data  -- data
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag    -- kTRUE if 16 bits only
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount  -- -1 (error), 1 (normally)
+ Exceptions:
+ Description:    ESONE cfsa / cssa.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:ExecCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:ExecCnaf">ExecCnaf</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ExecCnaf">TMrbEsone::ExecCnaf</a>
+ Purpose:        Exec a single CNAF
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate               -- crate number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Station             -- station
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr             -- subaddress
+                 <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function  -- function
+                 <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data          -- data
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag            -- kTRUE if 16 bits only
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount          -- resulting number of data words
+ Exceptions:
+ Description:    ESONE cfsa / cssa.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:ExecCnafList" href="src/TMrbEsone.cxx.html#TMrbEsone:ExecCnafList">ExecCnafList</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ExecCnafList">TMrbEsone::ExecCnafList</a>
+ Purpose:        Exec a list of CNAFs
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs    -- number of CNAFs to be executed
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag    -- kTRUE if 16 bits only
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount  -- resulting number of data words
+ Exceptions:
+ Description:    ESONE cfga / csga.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:AddressScan" href="src/TMrbEsone.cxx.html#TMrbEsone:AddressScan">AddressScan</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Start, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Stop, <a href="ListOfTypes.html#Int_t">Int_t</a> WordCount, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:AddressScan">TMrbEsone::AddressScan</a>
+ Purpose:        Exec cnafs between N(start) and N(Stop)
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Start            -- C.N.F to start with
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Stop             -- C.N.F to stop with
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> WordCount           -- number of cnafs to execute / data to take
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag            -- kTRUE if 16 bits only
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount          -- resulting number of data words
+ Exceptions:
+ Description:    ESONE cfmad / csmad.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:AddressScan" href="src/TMrbEsone.cxx.html#TMrbEsone:AddressScan">AddressScan</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Start, <a href="ListOfTypes.html#Int_t">Int_t</a> Stop, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function,
+																	<a href="ListOfTypes.html#Int_t">Int_t</a> WordCount, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:AddressScan">TMrbEsone::AddressScan</a>
+ Purpose:        Exec cnafs between N(start) and N(Stop)
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate               -- crate number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Start               -- station to start with
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Stop                -- station to stop with
+                 <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function  -- function code
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> WordCount           -- number of cnafs to execute / data to take
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag            -- kTRUE if 16 bits only
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount          -- resulting number of data words
+ Exceptions:
+ Description:    ESONE cfmad / csmad.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:BlockXfer" href="src/TMrbEsone.cxx.html#TMrbEsone:BlockXfer">BlockXfer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf, <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag, <a href="ListOfTypes.html#Bool_t">Bool_t</a> QXfer) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:BlockXfer">TMrbEsone::BlockXfer</a>
+ Purpose:        Start block transfer
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf            -- C.N.F to be executed
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs           -- number of cnafs
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag           -- kTRUE if 16 bits only
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> QXfer             -- kTRUE if Q-driven
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount         -- resulting number of data words
+ Exceptions:
+ Description:    ESONE cfubc / csubc / cfubr / csubr.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:BlockXfer" href="src/TMrbEsone.cxx.html#TMrbEsone:BlockXfer">BlockXfer</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station, <a href="ListOfTypes.html#Int_t">Int_t</a> SubAddr, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function,
+										<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs, <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag, <a href="ListOfTypes.html#Bool_t">Bool_t</a> QXfer) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:BlockXfer">TMrbEsone::BlockXfer</a>
+ Purpose:        Start block transfer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate              -- crate number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Station            -- station
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> SubAddr            -- subaddress
+                 <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function -- function code
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs           -- number of cnafs
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> D16Flag           -- kTRUE if 16 bits only
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> QXfer             -- kTRUE if Q-driven
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TallyCount         -- resulting number of data words
+ Exceptions:
+ Description:    ESONE cfubc / csubc / cfubr / csubr.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ResetBuffers" href="src/TMrbEsone.cxx.html#TMrbEsone:ResetBuffers">ResetBuffers</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ResetBuffers">TMrbEsone::ResetBuffers</a>
+ Purpose:        Define length of internal arrays
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs       -- max number of cnafs
+ Results:        --
+ Exceptions:
+ Description:    Defines buffer length and resets buffers.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetNofCnafs" href="src/TMrbEsone.cxx.html#TMrbEsone:SetNofCnafs">SetNofCnafs</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetNofCnafs">TMrbEsone::SetNofCnafs</a>
+ Purpose:        Define actual number of cnafs in list
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs       -- number of cnafs
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines number of valid cnafs in list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ClearCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:ClearCnaf">ClearCnaf</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ClearCnaf">TMrbEsone::ClearCnaf</a>
+ Purpose:        Clear cnaf list
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Clears list of cnafs.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:SetCnaf">SetCnaf</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetCnaf">TMrbEsone::SetCnaf</a>
+ Purpose:        Set cnaf at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index      -- array index
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf    -- C.N.A.F
+                 <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data -- data
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets a data element in cnaf list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:SetCnaf">SetCnaf</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr,
+												<a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetCnaf">TMrbEsone::SetCnaf</a>
+ Purpose:        Set cnaf at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index               -- array index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Crate               -- crate number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Station             -- station
+                 <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function  -- function code
+                 <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data          -- data
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets a data element in cnaf list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:GetCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:GetCnaf">GetCnaf</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Host, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Cnaf, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> &amp; Data) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetCnaf">TMrbEsone::GetCnaf</a>
+ Purpose:        Get cnaf at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index              -- array index
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Host            -- host name
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Cnaf            -- cnaf (ascii representation)
+                 <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> &amp; Data        -- data
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Returns an element of cnaf list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEsone:GetCnaf" href="src/TMrbEsone.cxx.html#TMrbEsone:GetCnaf">GetCnaf</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DataFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetCnaf">TMrbEsone::GetCnaf</a>
+ Purpose:        Get cnaf at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index               -- array index
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Cnaf             -- full cnaf: HOST:Cxx.Nxx.Axx.Fxx D=xx
+ Exceptions:
+ Description:    Returns an element of cnaf list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbEsone:GetCnafType" href="src/TMrbEsone.cxx.html#TMrbEsone:GetCnafType">GetCnafType</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetCnafType">TMrbEsone::GetCnafType</a>
+ Purpose:        Get cnaf type at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index               -- array index
+ Results:        EMrbCnafType type         -- cnaf type
+ Exceptions:
+ Description:    Returns cnaf type.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ClearData" href="src/TMrbEsone.cxx.html#TMrbEsone:ClearData">ClearData</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ClearData">TMrbEsone::ClearData</a>
+ Purpose:        Clear data buffer
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Clears data buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetData" href="src/TMrbEsone.cxx.html#TMrbEsone:SetData">SetData</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetData">TMrbEsone::SetData</a>
+ Purpose:        Set data at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index        -- array index
+                 <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data   -- data
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets a data element in the data buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetData" href="src/TMrbEsone.cxx.html#TMrbEsone:SetData">SetData</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetData">TMrbEsone::SetData</a>
+ Purpose:        Set data from external array
+ Arguments:      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data    -- ext data array
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofData         -- number of data points
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets data buffer from external array.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetData" href="src/TMrbEsone.cxx.html#TMrbEsone:SetData">SetData</a>(<a href="ListOfTypes.html#CamacData_t">CamacData_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetData">TMrbEsone::SetData</a>
+ Purpose:        Set data from external array
+ Arguments:      <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> * Data    -- ext data array
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofData         -- number of data points
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets data buffer from external array.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetData" href="src/TMrbEsone.cxx.html#TMrbEsone:SetData">SetData</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetData">TMrbEsone::SetData</a>
+ Purpose:        Set data from external array
+ Arguments:      <a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data       -- ext data array (16 bit)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofData         -- number of data points
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets data buffer from external array.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#CamacData_t">CamacData_t</a> <a name="TMrbEsone:GetData" href="src/TMrbEsone.cxx.html#TMrbEsone:GetData">GetData</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetData">TMrbEsone::GetData</a>
+ Purpose:        Get data at a given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index          -- data index
+ Results:        <a href="ListOfTypes.html#CamacData_t">CamacData_t</a> Data     -- data
+ Exceptions:
+ Description:    Returns data stored at a given index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ClearFunction" href="src/TMrbEsone.cxx.html#TMrbEsone:ClearFunction">ClearFunction</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ClearFunction">TMrbEsone::ClearFunction</a>
+ Purpose:        Clear function list
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Clears function list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetFunction" href="src/TMrbEsone.cxx.html#TMrbEsone:SetFunction">SetFunction</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetFunction">TMrbEsone::SetFunction</a>
+ Purpose:        Set data at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index              -- array index
+                 <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function -- data
+ Results:        kFALSE/kTRUE
+ Exceptions:
+ Description:    Sets an element in the function list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> <a name="TMrbEsone:GetFunction" href="src/TMrbEsone.cxx.html#TMrbEsone:GetFunction">GetFunction</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetFunction">TMrbEsone::GetFunction</a>
+ Purpose:        Get function code at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index                  -- data index
+ Results:        <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a> Function     -- function code
+ Exceptions:
+ Description:    Returns function code stored at a given index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ClearQX" href="src/TMrbEsone.cxx.html#TMrbEsone:ClearQX">ClearQX</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ClearQX">TMrbEsone::ClearQX</a>
+ Purpose:        Clear Q/X buffer
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Clears Q/X buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:GetQ" href="src/TMrbEsone.cxx.html#TMrbEsone:GetQ">GetQ</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetQ">TMrbEsone::GetQ</a>
+ Purpose:        Get Q flag at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index         -- index
+ Results:        <a href="ListOfTypes.html#Bool_t">Bool_t</a> QFlag        -- Q flag
+ Exceptions:
+ Description:    Returns Q flag (bit 0) stored at a given index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:GetX" href="src/TMrbEsone.cxx.html#TMrbEsone:GetX">GetX</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetX">TMrbEsone::GetX</a>
+ Purpose:        Get X flag at given index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index         -- index
+ Results:        <a href="ListOfTypes.html#Bool_t">Bool_t</a> XFlag        -- X flag
+ Exceptions:
+ Description:    Returns X flag (bit 1) stored at a given index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#CamacStatus_t">CamacStatus_t</a> <a name="TMrbEsone:GetStatus" href="src/TMrbEsone.cxx.html#TMrbEsone:GetStatus">GetStatus</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; XFlag, <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; QFlag, <a href="ListOfTypes.html#CamacError_t">CamacError_t</a> &amp; ErrorCode, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Error) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetStatus">TMrbEsone::GetStatus</a>
+ Purpose:        Get ESONE status of prev camac action
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; XFlag         -- CAMAC X
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; QFlag         -- CAMAC Q
+                 <a href="ListOfTypes.html#CamacError_t">CamacError_t</a> ErrorCode -- error code
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Error        -- error message
+ Results:        <a href="ListOfTypes.html#CamacStatus_t">CamacStatus_t</a> Status   -- status word
+ Exceptions:
+ Description:    Reads and decodes the ESONE status register.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEsone:GetError" href="src/TMrbEsone.cxx.html#TMrbEsone:GetError">GetError</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetError">TMrbEsone::GetError</a>
+ Purpose:        Get error of prev cnaf action
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Error    -- error string
+ Exceptions:
+ Description:    Returns an error message.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbEsone:GetHost" href="src/TMrbEsone.cxx.html#TMrbEsone:GetHost">GetHost</a>(<a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a> HostAddr) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetHost">TMrbEsone::GetHost</a>
+ Purpose:        Get host by ESONE address
+ Arguments:      <a href="ListOfTypes.html#CamacHost_t">CamacHost_t</a> HostAddr   -- ESONE address
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * HostKey      -- host name / address
+ Exceptions:
+ Description:    Finds host by its address.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbEsone:GetHost" href="src/TMrbEsone.cxx.html#TMrbEsone:GetHost">GetHost</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * HostName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:GetHost">TMrbEsone::GetHost</a>
+ Purpose:        Get host by name
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HostName      -- host name
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * HostKey      -- host name / address
+ Exceptions:
+ Description:    Finds host by its name.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:Print" href="src/TMrbEsone.cxx.html#TMrbEsone:Print">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> From, <a href="ListOfTypes.html#Int_t">Int_t</a> To) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:Print">TMrbEsone::Print</a>
+ Purpose:        Print cnafs &amp; data
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> From            -- start
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> To              -- stop
+ Results:        --
+ Exceptions:
+ Description:    Outputs cnafs, data, flags.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:PrintError" href="src/TMrbEsone.cxx.html#TMrbEsone:PrintError">PrintError</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * EsoneCall, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:PrintError">TMrbEsone::PrintError</a>
+ Purpose:        Print error message
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * EsoneCall      -- ESONE call
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method         -- calling method
+ Results:        --
+ Exceptions:
+ Description:    Error printout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:PrintStatus" href="src/TMrbEsone.cxx.html#TMrbEsone:PrintStatus">PrintStatus</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:PrintStatus">TMrbEsone::PrintStatus</a>
+ Purpose:        Print status message
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Method     -- calling method
+ Results:        --
+ Exceptions:
+ Description:    Status.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:PrintResults" href="src/TMrbEsone.cxx.html#TMrbEsone:PrintResults">PrintResults</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method, <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a> * c1, <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a> * c2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:PrintResults">TMrbEsone::PrintResults</a>
+ Purpose:        Print results
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Method         -- calling method
+                 <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a> * c1      -- cnaf 1
+                 <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a> * c2      -- cnaf 2
+ Results:        --
+ Exceptions:
+ Description:    Outputs cnaf results.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:HasFastCamac" href="src/TMrbEsone.cxx.html#TMrbEsone:HasFastCamac">HasFastCamac</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:HasFastCamac">TMrbEsone::HasFastCamac</a>
+ Purpose:        Test for fast camac capability
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> FastCamacFct   -- function F to be used for
+                                         fast camac read
+ Exceptions:     F = -1 -&gt; no fast camac capability
+ Description:    Returns function F to be used for fast camac read.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:HasBroadCast" href="src/TMrbEsone.cxx.html#TMrbEsone:HasBroadCast">HasBroadCast</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:HasBroadCast">TMrbEsone::HasBroadCast</a>
+ Purpose:        Test for broadcast capability
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> BroadCastStation   -- station N to be used for
+                                             broadcasting
+ Exceptions:     N = -1 -&gt; no broad cast capability
+ Description:    Returns station N to be used for broadcasting.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetBroadCast" href="src/TMrbEsone.cxx.html#TMrbEsone:SetBroadCast">SetBroadCast</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BroadCast) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetBroadCast">TMrbEsone::SetBroadCast</a>
+ Purpose:        Set broadcast register
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate          -- crate number
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> BroadCast     -- bits to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes the broadcast mask register.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbEsone:GetBroadCast" href="src/TMrbEsone.cxx.html#TMrbEsone:GetBroadCast">GetBroadCast</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetBroadCast">TMrbEsone::SetBroadCast</a>
+ Purpose:        Read broadcast register
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> BroadCast     -- bits on bc mask
+ Exceptions:
+ Description:    Reads the broadcast mask register.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:AddBroadCast" href="src/TMrbEsone.cxx.html#TMrbEsone:AddBroadCast">AddBroadCast</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Station) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:AddBroadCast">TMrbEsone::AddBroadCast</a>
+ Purpose:        Add station to broadcast mask
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Station      -- camac station
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Adds a bit to the broadcast mask register.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:SetAutoRead" href="src/TMrbEsone.cxx.html#TMrbEsone:SetAutoRead">SetAutoRead</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> AutoRead) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:SetAutoRead">TMrbEsone::SetAutoRead</a>
+ Purpose:        Enable/disable AutoRead mode
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> AutoRead   -- on/off flag
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Enables/disable auto read mode (CC32 only).
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:ReadDoubleWord" href="src/TMrbEsone.cxx.html#TMrbEsone:ReadDoubleWord">ReadDoubleWord</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadDW) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsone.html#TMrbEsone:ReadDoubleWord">TMrbEsone::ReadDoubleWord</a>
+ Purpose:        Enable/disable 32 bit mode
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadDW   -- on/off flag
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Enables/disable 32 bit mode (CC32 only).
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="./TMrbEsone.html">TMrbEsone</a> <a name="TMrbEsone:TMrbEsone" href="TMrbEsone.h">TMrbEsone</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kFALSE)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="./TMrbEsone.html">TMrbEsone</a> <a name="TMrbEsone:TMrbEsone" href="TMrbEsone.h">TMrbEsone</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HostName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kFALSE)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ClearTally" href="TMrbEsone.h">ClearTally</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:GetTally" href="TMrbEsone.h">GetTally</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#CamacReg_t">CamacReg_t</a>* <a name="TMrbEsone:GetCAddr" href="TMrbEsone.h">GetCAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="ListOfTypes.html#CamacData_t">CamacData_t</a>* <a name="TMrbEsone:GetDAddr" href="TMrbEsone.h">GetDAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="ListOfTypes.html#CamacFunction_t">CamacFunction_t</a>* <a name="TMrbEsone:GetFAddr" href="TMrbEsone.h">GetFAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#CamacQX_t">CamacQX_t</a>* <a name="TMrbEsone:GetQXAddr" href="TMrbEsone.h">GetQXAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbEsone:GetAction" href="TMrbEsone.h">GetAction</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:SetOffline" href="TMrbEsone.h">SetOffline</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:IsOffline" href="TMrbEsone.h">IsOffline</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:ClearBroadCast" href="TMrbEsone.h">ClearBroadCast</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:UseBroadCast" href="TMrbEsone.h">UseBroadCast</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:ReadFromFile" href="TMrbEsone.h">ReadFromFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName)
+<!--INLINE FUNCTION--><!--TAB6-->           const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEsone:GetControllerName" href="TMrbEsone.h">GetControllerName</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:GetControllerIndex" href="TMrbEsone.h">GetControllerIndex</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:Help" href="TMrbEsone.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:SetVerboseMode" href="TMrbEsone.h">SetVerboseMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> VerboseFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:IsVerbose" href="TMrbEsone.h">IsVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:Abort" href="TMrbEsone.h">Abort</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsone:IsAborted" href="TMrbEsone.h">IsAborted</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsone:CheckList" href="TMrbEsone.h">CheckList</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofCnafs, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:SetCB" href="TMrbEsone.h">SetCB</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Repeat = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Tally = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Lam = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> DMA = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbEsone:Class" href="TMrbEsone.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbEsone:IsA" href="TMrbEsone.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:ShowMembers" href="TMrbEsone.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:Streamer" href="TMrbEsone.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:StreamerNVirtual" href="TMrbEsone.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsone:~TMrbEsone" href="TMrbEsone.h">~TMrbEsone</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:37 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbCamacRegister</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbCamacRegister:description">class description</a> - <a href="src/TMrbCamacRegister.cxx.html">source file</a> - <a href="TMrbCamacRegister_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbCamacRegister" href="TMrbCamacRegister.h">TMrbCamacRegister</a> : public <a href="./TMrbModuleRegister.html">TMrbModuleRegister</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:TMrbCamacRegister">TMrbCamacRegister</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:TMrbCamacRegister">TMrbCamacRegister</a><!--PLAIN-->(<a href="./TMrbCamacModule.html">TMrbCamacModule</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="./TMrbNamedX.html">TMrbNamedX</a>* RegDef, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CnafSet = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* CnafClear = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* CnafGet = "NULL", <a href="ListOfTypes.html#Int_t">Int_t</a> InitValue = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> LowerLimit = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> UpperLimit = -1, <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* BitNames = NULL, <a href="ListOfTypes.html#Bool_t">Bool_t</a> PatternMode = kFALSE)
+<!--TAB6-->      <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:TMrbCamacRegister">TMrbCamacRegister</a><!--PLAIN-->(const <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a>&amp;)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:~TMrbCamacRegister">~TMrbCamacRegister</a><!--PLAIN-->()
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbCNAF.html">TMrbCNAF</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:CnafClear">CnafClear</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbCNAF.html">TMrbCNAF</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:CnafGet">CnafGet</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbCNAF.html">TMrbCNAF</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:CnafSet">CnafSet</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:HasClearCnaf">HasClearCnaf</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:HasCnafs">HasCnafs</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:HasGetCnaf">HasGetCnaf</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:HasSetCnaf">HasSetCnaf</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacRegister:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbCamacRegister:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:fHasCnafs">fHasCnafs</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fHasCnafs">any cnafs given?</a></i>
+<!--TAB6-->      <a href="./TMrbCNAF.html">TMrbCNAF</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:fCnafSet">fCnafSet</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCnafSet">cnaf to set bits</a></i>
+<!--TAB6-->      <a href="./TMrbCNAF.html">TMrbCNAF</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:fCnafClear">fCnafClear</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCnafClear">cnaf to clear bits</a></i>
+<!--TAB6-->      <a href="./TMrbCNAF.html">TMrbCNAF</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:fCnafGet">fCnafGet</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCnafGet">cnaf to get contents</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TMrbCamacRegister.html#TMrbCamacRegister:EMrbRegCnafBits">TMrbCamacRegister::EMrbRegCnafBits</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:kRegGetCnaf">kRegGetCnaf</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kRegGetCnaf"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCamacRegister.html#TMrbCamacRegister:EMrbRegCnafBits">TMrbCamacRegister::EMrbRegCnafBits</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:kRegClearCnaf">kRegClearCnaf</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kRegClearCnaf"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCamacRegister.html#TMrbCamacRegister:EMrbRegCnafBits">TMrbCamacRegister::EMrbRegCnafBits</a> <!--TAB--><!--BOLD--><a name="TMrbCamacRegister:kRegSetCnaf">kRegSetCnaf</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kRegSetCnaf"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbCamacRegister:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbCamacRegister.html">TMrbCamacRegister</a>.cxx
+ Purpose:        MARaBOU configuration: module registers
+ Description:    Implements class methods to describe a register
+                 of a CAMAC module
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbCamacRegister:TMrbCamacRegister" href="src/TMrbCamacRegister.cxx.html#TMrbCamacRegister:TMrbCamacRegister">TMrbCamacRegister</a>(<a href="./TMrbCamacModule.html">TMrbCamacModule</a> * Module, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="./TMrbNamedX.html">TMrbNamedX</a> * RegDef,
+								const <a href="ListOfTypes.html#Char_t">Char_t</a> * CnafSet, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CnafClear, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CnafGet,
+								<a href="ListOfTypes.html#Int_t">Int_t</a> InitValue, <a href="ListOfTypes.html#Int_t">Int_t</a> LowerLimit, <a href="ListOfTypes.html#Int_t">Int_t</a> UpperLimit,
+								<a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * BitNames, <a href="ListOfTypes.html#Bool_t">Bool_t</a> PatternMode) :
+																<a href="./TMrbModuleRegister.html">TMrbModuleRegister</a>(Module, NofChannels,
+																			RegDef, InitValue, LowerLimit, UpperLimit,
+																			BitNames, PatternMode) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a>
+ Purpose:        Create a camac register
+ Arguments:      <a href="./TMrbCamacModule.html">TMrbCamacModule</a> * Module       -- addr of parent module
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels              -- number of channels (0 = register is common)
+                 <a href="./TMrbNamedX.html">TMrbNamedX</a> * RegDef            -- register index
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CnafSet               -- Axx.Fyy to set bits
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CnafClear             -- Axx.Fyy to set bits
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CnafGet               -- Axx.Fyy to get contents
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> InitValue                -- initial value
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> LowerLimit               -- lower limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> UpperLimit               -- upper limit
+                 <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * BitNames       -- list of possible bit values
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> PatternMode             -- kTRUE if bitwise values
+ Results:        --
+ Exceptions:
+ Description:    Defines a camac register.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a> <a name="TMrbCamacRegister:TMrbCamacRegister" href="TMrbCamacRegister.h">TMrbCamacRegister</a>(<a href="./TMrbCamacModule.html">TMrbCamacModule</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="./TMrbNamedX.html">TMrbNamedX</a>* RegDef, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CnafSet = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* CnafClear = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* CnafGet = "NULL", <a href="ListOfTypes.html#Int_t">Int_t</a> InitValue = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> LowerLimit = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> UpperLimit = -1, <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* BitNames = NULL, <a href="ListOfTypes.html#Bool_t">Bool_t</a> PatternMode = kFALSE)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCamacRegister:HasCnafs" href="TMrbCamacRegister.h">HasCnafs</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCamacRegister:HasGetCnaf" href="TMrbCamacRegister.h">HasGetCnaf</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCamacRegister:HasClearCnaf" href="TMrbCamacRegister.h">HasClearCnaf</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCamacRegister:HasSetCnaf" href="TMrbCamacRegister.h">HasSetCnaf</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="./TMrbCNAF.html">TMrbCNAF</a>* <a name="TMrbCamacRegister:CnafSet" href="TMrbCamacRegister.h">CnafSet</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="./TMrbCNAF.html">TMrbCNAF</a>* <a name="TMrbCamacRegister:CnafClear" href="TMrbCamacRegister.h">CnafClear</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="./TMrbCNAF.html">TMrbCNAF</a>* <a name="TMrbCamacRegister:CnafGet" href="TMrbCamacRegister.h">CnafGet</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacRegister:Help" href="TMrbCamacRegister.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCamacRegister:Class" href="TMrbCamacRegister.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCamacRegister:IsA" href="TMrbCamacRegister.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacRegister:ShowMembers" href="TMrbCamacRegister.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacRegister:Streamer" href="TMrbCamacRegister.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacRegister:StreamerNVirtual" href="TMrbCamacRegister.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a> <a name="TMrbCamacRegister:TMrbCamacRegister" href="TMrbCamacRegister.h">TMrbCamacRegister</a>(const <a href="./TMrbCamacRegister.html">TMrbCamacRegister</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacRegister:~TMrbCamacRegister" href="TMrbCamacRegister.h">~TMrbCamacRegister</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:00 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,89 @@
+%%BeginOfCode%%
+TMrbConfig.ResourceName:				$resource
+$resource.Name:							$expName
+$resource.Title:						$expTitle
+$resource.NofEvents:					$nofEvents
+$resource.NofSubevents:					$nofSubevents
+$resource.NofModules: 					$nofModules
+$resource.NofCrates:					$nofCrates
+$resource.CratePattern: 				$cratePattern
+$resource.Author: 	 					$author
+$resource.CreationDate:					$creationDate
+$resource.ClassName:					$className
+%%EndOfCode%%
+%%EXP_DATA%%
+%%BeginOfCode%%
+%NUM%$resource.Event.$evtNo.Name:			$evtNameLC
+%NUM%$resource.Event.$evtNo.Title:			$evtTitle
+%NUM%$resource.Event.$evtNo.Type: 			$evtType
+%NUM%$resource.Event.$evtNo.Subtype: 		$evtSubtype
+%NUM%$resource.Event.$evtNo.ClassName:		$className
+%NUM%$resource.Event.$evtNo.Trigger:			$trigNo
+%NUM%$resource.Event.$evtNo.NofSubevents: 	$nofSubevents
+%NUM%$resource.Event.$evtNo.LofSubevents: 	$lofSubevents
+%NUMH%$resource.Event.$evtNo.HitBuffer.NofEntries: 	$nofEntries
+%NUMH%$resource.Event.$evtNo.HitBuffer.HighWater: 	$highWater
+%NUMH%$resource.Event.$evtNo.HitBuffer.Offset: 	$offset
+%NAM%$resource.Event.$evtNo.Name:				$evtNameLC
+%NAM%$resource.Event.$evtNameUC.Title:			$evtTitle
+%NAM%$resource.Event.$evtNameUC.Type: 			$evtType
+%NAM%$resource.Event.$evtNameUC.Subtype: 			$evtSubtype
+%NAM%$resource.Event.$evtNameUC.ClassName:		$className
+%NAM%$resource.Event.$evtNameUC.Trigger:			$trigNo
+%NAM%$resource.Event.$evtNameUC.NofSubevents: 	$nofSubevents
+%NAM%$resource.Event.$evtNameUC.LofSubevents: 	$lofSubevents
+%NAMH%$resource.Event.$evtNameUC.HitBuffer.NofEntries: 	$nofEntries
+%NAMH%$resource.Event.$evtNameUC.HitBuffer.HighWater: 	$highWater
+%NAMH%$resource.Event.$evtNameUC.HitBuffer.Offset: 	$offset
+%%EndOfCode%%
+%%EVT_DATA%%
+%%BeginOfCode%%
+%NUM%$resource.Subevent.$sevtNo.Name:			$sevtNameLC
+%NUM%$resource.Subevent.$sevtNo.Title:		$sevtTitle
+%NUM%$resource.Subevent.$sevtNo.Type: 		$sevtType
+%NUM%$resource.Subevent.$sevtNo.Serial: 		$sevtSerial
+%NUM%$resource.Subevent.$sevtNo.Subtype: 		$sevtSubtype
+%NUM%$resource.Subevent.$sevtNo.ClassName:	$className
+%NUM%$resource.Subevent.$sevtNo.NofModules:	$nofModules
+%NUM%$resource.Subevent.$sevtNo.LofModules:	$lofModules
+%NAM%$resource.Subevent.$sevtNo.Name:			$sevtNameLC
+%NAM%$resource.Subevent.$sevtNameUC.Title:		$sevtTitle
+%NAM%$resource.Subevent.$sevtNameUC.Type: 		$sevtType
+%NAM%$resource.Subevent.$sevtNameUC.Serial: 		$sevtSerial
+%NAM%$resource.Subevent.$sevtNameUC.Subtype: 		$sevtSubtype
+%NAM%$resource.Subevent.$sevtNameUC.ClassName:	$className
+%NAM%$resource.Subevent.$sevtNameUC.NofModules:	$nofModules
+%NAM%$resource.Subevent.$sevtNameUC.LofModules:	$lofModules
+%%EndOfCode%%
+%%SEVT_DATA%%
+%%BeginOfCode%%
+%NUM%$resource.Module.$modNo.Name:			$moduleNameLC
+%NUM%$resource.Module.$modNo.Title:			$moduleTitle
+%NUM%$resource.Module.$modNo.Interface:		$interface
+%NUM%$resource.Module.$modNo.Serial:			$moduleSerial
+%NUM%$resource.Module.$modNo.ClassName:		$className
+%NUM%$resource.Module.$modNo.Type:			$moduleType
+%NUM%$resource.Module.$modNo.Address:			$moduleAddr
+%NUM%$resource.Module.$modNo.Crate:			$moduleCrate
+%NUM%$resource.Module.$modNo.Station:			$moduleStation
+%NUM%$resource.Module.$modNo.NofSubdevices:	$nofSubdevices
+%NUM%$resource.Module.$modNo.Subdevice:		$subDevice
+%NUM%$resource.Module.$modNo.NofChannels:		$nofChannels
+%NUM%$resource.Module.$modNo.NofChannelsUsed:	$nofChannelsUsed
+%NUM%$resource.Module.$modNo.ChannelPattern:	$channelPattern
+%NAM%$resource.Module.$modNo.Name:			$moduleNameLC
+%NAM%$resource.Module.$moduleNameUC.Title:			$moduleTitle
+%NAM%$resource.Module.$moduleNameUC.Interface:		$interface
+%NAM%$resource.Module.$moduleNameUC.Serial:			$moduleSerial
+%NAM%$resource.Module.$moduleNameUC.ClassName:		$className
+%NAM%$resource.Module.$moduleNameUC.Type:			$moduleType
+%NAM%$resource.Module.$moduleNameUC.Address:			$moduleAddr
+%NAM%$resource.Module.$moduleNameUC.Crate:			$moduleCrate
+%NAM%$resource.Module.$moduleNameUC.Station:			$moduleStation
+%NAM%$resource.Module.$moduleNameUC.NofSubdevices:	$nofSubdevices
+%NAM%$resource.Module.$moduleNameUC.Subdevice:		$subDevice
+%NAM%$resource.Module.$moduleNameUC.NofChannels:		$nofChannels
+%NAM%$resource.Module.$moduleNameUC.NofChannelsUsed:	$nofChannelsUsed
+%NAM%$resource.Module.$moduleNameUC.ChannelPattern:	$channelPattern
+%%EndOfCode%%
+%%MODULE_DATA%%

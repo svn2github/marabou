@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGCompositeFrame</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGCompositeFrame:description">class description</a> - <a href="src/TGCompositeFrame.cxx.html">source file</a> - <a href="TGCompositeFrame_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGCompositeFrame" href="TGFrame.h">TGCompositeFrame</a> : public <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:TGCompositeFrame">TGCompositeFrame</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = 0, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:TGCompositeFrame">TGCompositeFrame</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGClient.html">TGClient</a>* c, <a href="ListOfTypes.html#Window_t">Window_t</a> id, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent = 0)
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:TGCompositeFrame">TGCompositeFrame</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:~TGCompositeFrame">~TGCompositeFrame</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:AddFrame">AddFrame</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* l = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:ChangeOptions">ChangeOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> options)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:GetDefaultHeight">GetDefaultHeight</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:GetDefaultWidth">GetDefaultWidth</a><!--PLAIN-->() const
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutManager.html">TGLayoutManager</a>* <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:GetLayoutManager">GetLayoutManager</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:GetList">GetList</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:GetState">GetState</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleButton">HandleButton</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleCrossing">HandleCrossing</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleDoubleClick">HandleDoubleClick</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleFocusChange">HandleFocusChange</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleKey">HandleKey</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HandleSelection">HandleSelection</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:HideFrame">HideFrame</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:IsArranged">IsArranged</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f) const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:IsArranged">IsArranged</a><!--PLAIN-->(<a href="./TGFrameElement.html">TGFrameElement</a>* ptr) const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:IsVisible">IsVisible</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f) const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:IsVisible">IsVisible</a><!--PLAIN-->(<a href="./TGFrameElement.html">TGFrameElement</a>* ptr) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:MapSubwindows">MapSubwindows</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a>, <a href="ListOfTypes.html#Long_t">Long_t</a>, <a href="ListOfTypes.html#Long_t">Long_t</a>)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:RemoveFrame">RemoveFrame</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:SetLayoutManager">SetLayoutManager</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLayoutManager.html">TGLayoutManager</a>* l)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:ShowFrame">ShowFrame</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>* f)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCompositeFrame:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGCompositeFrame:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGLayoutManager.html">TGLayoutManager</a>* <!--TAB--><!--BOLD--><a name="TGCompositeFrame:fLayoutManager">fLayoutManager</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLayoutManager">layout manager</a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGCompositeFrame:fList">fList</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fList">container of frame elements</a></i>
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGCompositeFrame:fgDefaultHints">fgDefaultHints</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultHints">default hints used by AddFrame()</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGComboBox.html">TGComboBox</a>, <a href="http://root.cern.ch/root/html/TGComboBoxPopup.html">TGComboBoxPopup</a>, <a href="http://root.cern.ch/root/html/TGContainer.html">TGContainer</a>, <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>, <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>, <a href="http://root.cern.ch/root/html/TGLBContainer.html">TGLBContainer</a>, <a href="http://root.cern.ch/root/html/TGListBox.html">TGListBox</a>, <a href="http://root.cern.ch/root/html/TGMainFrame.html">TGMainFrame</a>, <a href="./TGMrbCheckButtonList.html">TGMrbCheckButtonList</a>, <a href="./TGMrbFileEntry.html">TGMrbFileEntry</a>, <a href="./TGMrbFileObjectCombo.html">TGMrbFileObjectCombo</a>, <a href="./TGMrbLabelCombo.html">TGMrbLabelCombo</a>, <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>, <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>, <a href="./TGMrbRadioButtonList.html">TGMrbRadioButtonList</a>, <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>, <a href="http://root.cern.ch/root/html/TGNumberEntry.html">TGNumberEntry</a>, <a href="http://root.cern.ch/root/html/TGShutter.html">TGShutter</a>, <a href="http://root.cern.ch/root/html/TGTab.html">TGTab</a>, <a href="http://root.cern.ch/root/html/TGToolBar.html">TGToolBar</a>, <a href="http://root.cern.ch/root/html/TGToolTip.html">TGToolTip</a>, <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>, <a href="http://root.cern.ch/root/html/TGView.html">TGView</a>, <a href="http://root.cern.ch/root/html/TGViewFrame.html">TGViewFrame</a>, <a href="http://root.cern.ch/root/html/TGViewPort.html">TGViewPort</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGCompositeFrame:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:19 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

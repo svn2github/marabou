@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TBrowser</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TBrowser:description">class description</a> - <a href="src/TBrowser.cxx.html">source file</a> - <a href="TBrowser_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TBrowser" href="TBrowser.h">TBrowser</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "Browser", const <a href="ListOfTypes.html#char">char</a>* title = "ROOT Object Browser")
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* title = "ROOT Object Browser")
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a> <!--TAB--><!--BOLD--><a href="#TBrowser:TBrowser">TBrowser</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:~TBrowser">~TBrowser</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* name = "0")
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TBrowser:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:Create">Create</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:ExecuteDefaultAction">ExecuteDefaultAction</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TBrowserImp.html">TBrowserImp</a>* <!--TAB--><!--BOLD--><a href="#TBrowser:GetBrowserImp">GetBrowserImp</a><!--PLAIN-->() const
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TContextMenu.html">TContextMenu</a>* <!--TAB--><!--BOLD--><a href="#TBrowser:GetContextMenu">GetContextMenu</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TBrowser:GetRefreshFlag">GetRefreshFlag</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TBrowser:GetSelected">GetSelected</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:Iconify">Iconify</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TBrowser:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:Refresh">Refresh</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:SetRefreshFlag">SetRefreshFlag</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:SetSelected">SetSelected</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* clickedObject)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:Show">Show</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TBrowser:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TBrowser:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TBrowser:fLastSelectedObject">fLastSelectedObject</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLastSelectedObject">The last TObject selected by user</a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TBrowserImp.html">TBrowserImp</a>* <!--TAB--><!--BOLD--><a name="TBrowser:fImp">fImp</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fImp">!Window system specific browser implementation</a></i>
+<!--TAB6-->      TBrowserTimer* <!--TAB--><!--BOLD--><a name="TBrowser:fTimer">fTimer</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTimer">Browser's timer</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TContextMenu.html">TContextMenu</a>* <!--TAB--><!--BOLD--><a name="TBrowser:fContextMenu">fContextMenu</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fContextMenu">Context menu pointer</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TBrowser:fNeedRefresh">fNeedRefresh</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNeedRefresh">True if the browser needs refresh</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TBrowser:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:10 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

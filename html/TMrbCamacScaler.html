@@ -1,0 +1,106 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbCamacScaler</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbCamacScaler:description">class description</a> - <a href="src/TMrbCamacScaler.cxx.html">source file</a> - <a href="TMrbCamacScaler_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbCamacScaler" href="TMrbCamacScaler.h">TMrbCamacScaler</a> : public <a href="./TMrbCamacModule.html">TMrbCamacModule</a>, public <a href="./TMrbScaler.html">TMrbScaler</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbCamacScaler.html">TMrbCamacScaler</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:TMrbCamacScaler">TMrbCamacScaler</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMrbCamacScaler.html">TMrbCamacScaler</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:TMrbCamacScaler">TMrbCamacScaler</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerID, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerPosition, <a href="ListOfTypes.html#Int_t">Int_t</a> SubDevice, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:~TMrbCamacScaler">~TMrbCamacScaler</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:Print">Print</a><!--PLAIN-->(ostream&amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCamacScaler:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbCamacScaler:Data Members">Data Members</a></h3>
+<pre>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TMrbUct_8904.html">TMrbUct_8904</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbCamacScaler:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbCamacScaler.html">TMrbCamacScaler</a>.cxx
+ Purpose:        MARaBOU configuration: scaler definitions
+ Description:    Implements class methods to handle scalers
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:Print" href="src/TMrbCamacScaler.cxx.html#TMrbCamacScaler:Print">Print</a>(ostream &amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCamacScaler.html#TMrbCamacScaler:Print">TMrbCamacScaler::Print</a>
+ Purpose:        Output current scaler definitions
+ Arguments:      ofstream &amp; OutStrm   -- output stream
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix      -- prefix to be output in front
+ Results:        --
+ Exceptions:
+ Description:    Outputs current scaler definition to stdout.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbCamacScaler.html">TMrbCamacScaler</a> <a name="TMrbCamacScaler:TMrbCamacScaler" href="TMrbCamacScaler.h">TMrbCamacScaler</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbCamacScaler.html">TMrbCamacScaler</a> <a name="TMrbCamacScaler:TMrbCamacScaler" href="TMrbCamacScaler.h">TMrbCamacScaler</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerID, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerPosition, <a href="ListOfTypes.html#Int_t">Int_t</a> SubDevice, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:Print" href="TMrbCamacScaler.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:Help" href="TMrbCamacScaler.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCamacScaler:Class" href="TMrbCamacScaler.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCamacScaler:IsA" href="TMrbCamacScaler.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:ShowMembers" href="TMrbCamacScaler.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:Streamer" href="TMrbCamacScaler.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:StreamerNVirtual" href="TMrbCamacScaler.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbCamacScaler:~TMrbCamacScaler" href="TMrbCamacScaler.h">~TMrbCamacScaler</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:01 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

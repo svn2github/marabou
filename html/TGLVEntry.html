@@ -1,0 +1,98 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGLVEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGLVEntry:description">class description</a> - <a href="src/TGLVEntry.cxx.html">source file</a> - <a href="TGLVEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGLVEntry" href="TGListView.h">TGLVEntry</a> : public <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:DoRedraw">DoRedraw</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGLVEntry.html">TGLVEntry</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:TGLVEntry">TGLVEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* bigpic, const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* smallpic, <a href="http://root.cern.ch/root/html/TGString.html">TGString</a>* name, <a href="http://root.cern.ch/root/html/TGString.html">TGString</a>** subnames, EListViewMode ViewMode, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kChildFrame, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetWhitePixel())
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGLVEntry.html">TGLVEntry</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:TGLVEntry">TGLVEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGLVEntry.html">TGLVEntry</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:~TGLVEntry">~TGLVEntry</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:Activate">Activate</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> a)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLVEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:DrawCopy">DrawCopy</a><!--PLAIN-->(<a href="ListOfTypes.html#Handle_t">Handle_t</a> id, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGString.html">TGString</a>* <!--TAB--><!--BOLD--><a href="#TGLVEntry:GetItemName">GetItemName</a><!--PLAIN-->() const
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a href="#TGLVEntry:GetPicture">GetPicture</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:GetSubnameWidth">GetSubnameWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> idx) const
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TGLVEntry:GetUserData">GetUserData</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLVEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:IsActive">IsActive</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:SetColumns">SetColumns</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>* cpos, <a href="ListOfTypes.html#Int_t">Int_t</a>* jmode)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:SetItemName">SetItemName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:SetUserData">SetUserData</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* userData)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:SetViewMode">SetViewMode</a><!--PLAIN-->(EListViewMode ViewMode)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGLVEntry:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGString.html">TGString</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fName">fName</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fName">name of item</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGString.html">TGString</a>** <!--TAB--><!--BOLD--><a name="TGLVEntry:fSubnames">fSubnames</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSubnames">sub names of item (details)</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fCpos">fCpos</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fCpos">position of sub names</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fJmode">fJmode</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fJmode">alignment for sub names</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fCtw">fCtw</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fCtw">width of sub names</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fTWidth">fTWidth</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fTWidth">width of name</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fTHeight">fTHeight</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fTHeight">height of name</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fActive">fActive</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fActive">true if item is active</a></i>
+<!--TAB6-->            EListViewMode <!--TAB--><!--BOLD--><a name="TGLVEntry:fViewMode">fViewMode</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fViewMode">list view viewing mode</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fBigPic">fBigPic</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fBigPic">big icon</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fSmallPic">fSmallPic</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSmallPic">small icon</a></i>
+<!--TAB6-->         const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fCurrent">fCurrent</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fCurrent">current icon</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGSelectedPicture.html">TGSelectedPicture</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fSelPic">fSelPic</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fSelPic">selected icon</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fNormGC">fNormGC</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fNormGC">drawing graphics context</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fFontStruct">fFontStruct</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFontStruct">text font</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TGLVEntry:fUserData">fUserData</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fUserData">pointer to user data structure</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+<!--TAB6-->           static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGLVEntry:fgSelPixel">fgSelPixel</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fgSelPixel"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGLVEntry:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:21 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

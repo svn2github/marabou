@@ -1,0 +1,209 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFOffsetsPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFOffsetsPanel:description">class description</a> - <a href="src/DGFOffsetsPanel.cxx.html">source file</a> - <a href="DGFOffsetsPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFOffsetsPanel" href="DGFOffsetsPanel.h">DGFOffsetsPanel</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:CalibrateDac">CalibrateDac</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; DacValue)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:StartRamp">StartRamp</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:DGFOffsetsPanel">DGFOffsetsPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
+<!--TAB6-->      <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:DGFOffsetsPanel">DGFOffsetsPanel</a><!--PLAIN-->(const <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a>&amp; f)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:~DGFOffsetsPanel">~DGFOffsetsPanel</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFOffsetsPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFOffsetsPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fHeap">fHeap</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fModules">fModules</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fModules">module list</a></i>
+<!--TAB6-->        <a href="./TGMrbCheckButtonList.html">TGMrbCheckButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fCluster">fCluster[20]</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCluster"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fGroupFrame">fGroupFrame</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fGroupFrame"></a></i>
+<!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fGroupSelect">fGroupSelect[6]</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fGroupSelect"></a></i>
+<!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fAllSelect">fAllSelect</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fAllSelect"></a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fActionFrame">fActionFrame</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fActionFrame"></a></i>
+<!--TAB6-->         <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fActionButtons">fActionButtons</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fActionButtons"></a></i>
+<!--TAB6-->             <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fOffsetValue">fOffsetValue</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fOffsetValue"></a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fActions">fActions</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fActions">text buttons:	actions to be taken</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fLofModuleKeys">fLofModuleKeys[20]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofModuleKeys"></a></i>
+<!--TAB6-->               <a href="./TGMrbFocusList.html">TGMrbFocusList</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fFocusList">fFocusList</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFocusList"></a></i>
+<!--TAB6-->          <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:EDGFOffsetsActionId">DGFOffsetsPanel::EDGFOffsetsActionId</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kDGFOffsetsStart">kDGFOffsetsStart</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFOffsetsStart"></a></i>
+<!--TAB6-->      static const <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:EDGFOffsetsActionId">DGFOffsetsPanel::EDGFOffsetsActionId</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kDGFOffsetsClose">kDGFOffsetsClose</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFOffsetsClose"></a></i>
+<!--TAB6-->      static const <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:EDGFOffsetsActionId">DGFOffsetsPanel::EDGFOffsetsActionId</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kDGFOffsetsSelectAll">kDGFOffsetsSelectAll</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFOffsetsSelectAll"></a></i>
+<!--TAB6-->      static const <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:EDGFOffsetsActionId">DGFOffsetsPanel::EDGFOffsetsActionId</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kDGFOffsetsSelectNone">kDGFOffsetsSelectNone</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFOffsetsSelectNone"></a></i>
+<!--TAB6-->      static const <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:EDGFOffsetsActionId">DGFOffsetsPanel::EDGFOffsetsActionId</a> <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kDGFOffsetsSelectColumn">kDGFOffsetsSelectColumn</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFOffsetsSelectColumn"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kNumEntryWidth">kNumEntryWidth</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kNumEntryWidth"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                            static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFOffsetsPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFOffsetsPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Setup
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFOffsetsPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFOffsetsPanel:DGFOffsetsPanel" href="src/DGFOffsetsPanel.cxx.html#DGFOffsetsPanel:DGFOffsetsPanel">DGFOffsetsPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options)
+														: <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, MainFrame, Width, Height, Options) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a>
+ Purpose:        DGF Viewer: Setup Panel
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame -- main frame
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options       -- options
+ Results:
+ Exceptions:
+ Description:    Implements DGF Viewer's Untrig Trace Panel
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFOffsetsPanel:ProcessMessage" href="src/DGFOffsetsPanel.cxx.html#DGFOffsetsPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:ProcessMessage">DGFOffsetsPanel::ProcessMessage</a>
+ Purpose:        Message handler for the setup panel
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFOffsetsPanel:StartRamp" href="src/DGFOffsetsPanel.cxx.html#DGFOffsetsPanel:StartRamp">StartRamp</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:StartRamp">DGFOffsetsPanel::StartRamp</a>
+ Purpose:        Start DAC ramp
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFOffsetsPanel:CalibrateDac" href="src/DGFOffsetsPanel.cxx.html#DGFOffsetsPanel:CalibrateDac">CalibrateDac</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Trace[], <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceOffset, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; DacValue) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFOffsetsPanel.html#DGFOffsetsPanel:StartRamp">DGFOffsetsPanel::StartRamp</a>
+ Purpose:        Start DAC ramp
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Trace[]        -- trace data containing dac ramp
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength    -- length of trace
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> TraceOffset    -- wanted offset for trace
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; dacValue     -- pointer to dac_value that produces the wanted offset
+ Exceptions:
+                 -1 - big problemCalibrateDac
+                 0 - everything ok
+                 1 - not perfect, but ok
+ Description:
+                 Algorithm:
+                 The dac-ramp trace can be divided in 3 parts.
+                      1) arbitrary but constant values
+                      2) actual ramp
+                      3) arbitrary but constant values
+                 like:
+
+                        (1)     (2)    (3)
+                                      ------------
+                                     
+                        --------    
+                                   
+                                  
+                                 
+                                
+
+                 - to find the start and end we search for different neigboring values (from
+                   the beginning and from the end)
+                 - do linear fit of section (2) and determine right dac values from fit parameters
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a> <a name="DGFOffsetsPanel:DGFOffsetsPanel" href="DGFOffsetsPanel.h">DGFOffsetsPanel</a>(const <a href="./DGFOffsetsPanel.html">DGFOffsetsPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="DGFOffsetsPanel:CloseWindow" href="DGFOffsetsPanel.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFOffsetsPanel:HandleKey" href="DGFOffsetsPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFOffsetsPanel:Class" href="DGFOffsetsPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFOffsetsPanel:IsA" href="DGFOffsetsPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="DGFOffsetsPanel:ShowMembers" href="DGFOffsetsPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="DGFOffsetsPanel:Streamer" href="DGFOffsetsPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="DGFOffsetsPanel:StreamerNVirtual" href="DGFOffsetsPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="DGFOffsetsPanel:~DGFOffsetsPanel" href="DGFOffsetsPanel.h">~DGFOffsetsPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:54 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

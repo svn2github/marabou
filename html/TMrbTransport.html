@@ -1,0 +1,390 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbTransport</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbTransport:description">class description</a> - <a href="src/TMrbTransport.cxx.html">source file</a> - <a href="TMrbTransport_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbTransport" href="TMrbTransport.h">TMrbTransport</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         <a href="./TMrbTransport.html">TMrbTransport</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:TMrbTransport">TMrbTransport</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*, const <a href="ListOfTypes.html#Char_t">Char_t</a>* XptTitle)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:~TMrbTransport">~TMrbTransport</a><!--PLAIN-->()
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbTransport:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:ClearError">ClearError</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:Close">Close</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:CloseLMDFile">CloseLMDFile</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:FreeBuffers">FreeBuffers</a><!--PLAIN-->()
+<!--TAB6-->      const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>* <!--TAB--><!--BOLD--><a href="#TMrbTransport:GetMbsBase">GetMbsBase</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbTransport:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:IsError">IsError</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:NextSubevent">NextSubevent</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>*)
+<!--TAB6-->       const <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbTransport:NextSubevent">NextSubevent</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:Open">Open</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Mode = "FILE", <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize = <a href="./TMrbTransport.html#TMrbTransport:kSizeOfData">TMrbTransport::kSizeOfData</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:OpenLMDFile">OpenLMDFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* LMDFile)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:OpenLogFile">OpenLogFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:PrintMbsIoError">PrintMbsIoError</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:ProcessEvent">ProcessEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#s_vehe">s_vehe</a>*)
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:ReadEvents">ReadEvents</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofEvents = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SetDumpInterval">SetDumpInterval</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NofRecs = 0)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SetError">SetError</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SetShow">SetShow</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* BufElemStr = "Events:Subevents", <a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown = 100, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Output = "NULL")
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SetStat">SetStat</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown = 100, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Output = "NULL")
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SetStream">SetStream</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> MaxStreams = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> SlowDown = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:Show">Show</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* BufElemKey = "Subevents", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Output = "NULL")
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:ShowStat">ShowStat</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Output = "NULL")
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SubeventID">SubeventID</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:SubeventWC">SubeventWC</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbTransport:Version">Version</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbTransport:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fInputFile">fInputFile</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fInputFile">input file</a></i>
+<!--TAB6-->      <a href="./TMrbTransport.html#TMrbTransport:EMrbTransportMode">TMrbTransport::EMrbTransportMode</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fTransportMode">fTransportMode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTransportMode">transport mode</a></i>
+<!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fBufferSize">fBufferSize</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fBufferSize">buffer size</a></i>
+<!--TAB6-->                               <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fErrorString">fErrorString</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fErrorString">error message</a></i>
+<!--TAB6-->                      const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>* <!--TAB--><!--BOLD--><a name="TMrbTransport:fMBSDataIO">fMBSDataIO</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMBSDataIO">i/o data base</a></i>
+<!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fErrorFlag">fErrorFlag</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fErrorFlag">error indicator</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbTransport:kSizeOfData">kSizeOfData</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kSizeOfData"></a></i>
+<!--TAB6-->                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbTransport:kERROR">kERROR</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kERROR"></a></i>
+<!--TAB6-->                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbTransport:kEOF">kEOF</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kEOF"></a></i>
+<!--TAB6-->                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbTransport:kEOE">kEOE</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kEOE"></a></i>
+<!--TAB6-->                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbTransport:kMaxErrors">kMaxErrors</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kMaxErrors"></a></i>
+<!--TAB6-->           static const <a href="./TMrbTransport.html#TMrbTransport:EMrbRunStatus">TMrbTransport::EMrbRunStatus</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kReady">kReady</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kReady"></a></i>
+<!--TAB6-->           static const <a href="./TMrbTransport.html#TMrbTransport:EMrbRunStatus">TMrbTransport::EMrbRunStatus</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kRunning">kRunning</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kRunning"></a></i>
+<!--TAB6-->           static const <a href="./TMrbTransport.html#TMrbTransport:EMrbRunStatus">TMrbTransport::EMrbRunStatus</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kTerminate">kTerminate</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kTerminate"></a></i>
+<!--TAB6-->           static const <a href="./TMrbTransport.html#TMrbTransport:EMrbRunStatus">TMrbTransport::EMrbRunStatus</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kError">kError</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kError"></a></i>
+<!--TAB6-->       static const <a href="./TMrbTransport.html#TMrbTransport:EMrbTransportMode">TMrbTransport::EMrbTransportMode</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kUndefined">kUndefined</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kUndefined"></a></i>
+<!--TAB6-->       static const <a href="./TMrbTransport.html#TMrbTransport:EMrbTransportMode">TMrbTransport::EMrbTransportMode</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kSync">kSync</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kSync"></a></i>
+<!--TAB6-->       static const <a href="./TMrbTransport.html#TMrbTransport:EMrbTransportMode">TMrbTransport::EMrbTransportMode</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kAsync">kAsync</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAsync"></a></i>
+<!--TAB6-->       static const <a href="./TMrbTransport.html#TMrbTransport:EMrbTransportMode">TMrbTransport::EMrbTransportMode</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kFile">kFile</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kFile"></a></i>
+<!--TAB6-->       static const <a href="./TMrbTransport.html#TMrbTransport:EMrbTransportMode">TMrbTransport::EMrbTransportMode</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kRemote">kRemote</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRemote"></a></i>
+<!--TAB6-->      static const <a href="./TMrbTransport.html#TMrbTransport:EMrbBufferElements">TMrbTransport::EMrbBufferElements</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kBufferHeader">kBufferHeader</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kBufferHeader"></a></i>
+<!--TAB6-->      static const <a href="./TMrbTransport.html#TMrbTransport:EMrbBufferElements">TMrbTransport::EMrbBufferElements</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kFileHeader">kFileHeader</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kFileHeader"></a></i>
+<!--TAB6-->      static const <a href="./TMrbTransport.html#TMrbTransport:EMrbBufferElements">TMrbTransport::EMrbBufferElements</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kEventHeader">kEventHeader</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kEventHeader"></a></i>
+<!--TAB6-->      static const <a href="./TMrbTransport.html#TMrbTransport:EMrbBufferElements">TMrbTransport::EMrbBufferElements</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kSubeventHeader">kSubeventHeader</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kSubeventHeader"></a></i>
+<!--TAB6-->      static const <a href="./TMrbTransport.html#TMrbTransport:EMrbBufferElements">TMrbTransport::EMrbBufferElements</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:kSubeventData">kSubeventData</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kSubeventData"></a></i>
+<!--TAB6-->                                       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fLofTransportModes">fLofTransportModes</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofTransportModes">... transport modes</a></i>
+<!--TAB6-->                                       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbTransport:fLofBufferElements">fLofBufferElements</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofBufferElements">... buffer elements</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbTransport:description">Class Description</a></h2>
+<pre>
+ Name:           transport/src/<a href="./TMrbTransport.html">TMrbTransport</a>.cxx
+
+ Purpose:        MARaBOU transport mechanism
+
+ Description:    Implements class methods to read MBS data from file or server
+
+ Header files:   stdio.h         -- standard I/O
+                 errno.h         -- error codes
+                 iostream.h      -- C++ standard I/O
+                 <a href="./TMrbTransport.html">TMrbTransport</a>.h -- MARaBOU class definitions
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbTransport:TMrbTransport" href="src/TMrbTransport.cxx.html#TMrbTransport:TMrbTransport">TMrbTransport</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * XptName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * XptTitle) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbTransport.html">TMrbTransport</a>
+
+ Purpose:        Create a MARaBOU transport object
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * XptName  -- name of transport
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * XptTitle -- (opt.) title
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:Open" href="src/TMrbTransport.cxx.html#TMrbTransport:Open">Open</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * File, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Mode, <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:Open">TMrbTransport::Open</a>
+ Purpose:        Open connection (file or network)
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * File     -- file name or network addr
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Mode     -- transport mode (FILE, SYNC, ASYNC, or REMOTE)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize  -- buffer size (default is 16k)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Opens a connection to MBS: either reading from file or via network.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:Close" href="src/TMrbTransport.cxx.html#TMrbTransport:Close">Close</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:Close">TMrbTransport::Close</a>
+ Purpose:        Close connection (file or network)
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Closes an open connection to MBS.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:FreeBuffers" href="src/TMrbTransport.cxx.html#TMrbTransport:FreeBuffers">FreeBuffers</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:FreeBuffers">TMrbTransport::FreeBuffers</a>
+ Purpose:        Free data base buffers
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Removes data base.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbTransport:ReadEvents" href="src/TMrbTransport.cxx.html#TMrbTransport:ReadEvents">ReadEvents</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofEvents) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:ReadEvents">TMrbTransport::ReadEvents</a>
+ Purpose:        Read events from buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NofEvents  -- number of events to be read (0 = ad infinitum)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Rstatus    -- status info
+ Exceptions:
+ Description:    Reads a given number of events from MBS buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbTransport:NextSubevent" href="src/TMrbTransport.cxx.html#TMrbTransport:NextSubevent">NextSubevent</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a> * SevtData) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:NextSubevent">TMrbTransport::NextSubevent</a>
+ Purpose:        Get next subevent
+ Arguments:      <a href="ListOfTypes.html#UShort_t">UShort_t</a> SevtData  -- pointer to (unpacked) subevent data
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Swc          -- word count
+ Exceptions:
+ Description:    Unpacks next subevent from current event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:ProcessEvent" href="src/TMrbTransport.cxx.html#TMrbTransport:ProcessEvent">ProcessEvent</a>(<a href="ListOfTypes.html#s_vehe">s_vehe</a> * EventData) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:ProcessEvent">TMrbTransport::ProcessEvent</a>
+ Purpose:        Process event data
+ Arguments:      <a href="ListOfTypes.html#s_vehe">s_vehe</a> * EventData  -- pointer to event data (including header)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    This is the event filling function.
+                 User will be called by method Analyze().
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TMrbTransport:NextSubevent" href="src/TMrbTransport.cxx.html#TMrbTransport:NextSubevent">NextSubevent</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:NextSubevent">TMrbTransport::NextSubevent</a>
+ Purpose:        Get next subevent
+ Arguments:      none
+ Results:        const <a href="ListOfTypes.html#UShort_t">UShort_t</a> * SevtData  -- pointer to current (unpacked) data
+ Exceptions:
+ Description:    Unpacks next subevent from current event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:Show" href="src/TMrbTransport.cxx.html#TMrbTransport:Show">Show</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * BufElemKey, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Output) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:Show">TMrbTransport::Show</a>
+ Purpose:        Show buffer elem data
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * BufElemKey  -- buffer elem key (one <a href="ListOfTypes.html#char">char</a> out of "FBES")
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Output      -- output stream (NULL = stdout)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Outputs samples of buffer element data.
+                 Buffer element may be: F(ileheader), B(uffer), E(vent), or S(ubevent)
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:SetShow" href="src/TMrbTransport.cxx.html#TMrbTransport:SetShow">SetShow</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * BufElemStr, <a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Output) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:SetShow">TMrbTransport::SetShow</a>
+ Purpose:        Define show profile
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * BufElemStr  -- string of buffer elem keys (out of "FBES")
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown      -- scale down
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Output      -- output stream (NULL = stdout)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines which buffer elements to be shown automatically.
+                 Buffer elements may be: F(ileheader), B(uffer), E(vent), or S(ubevent)
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:ShowStat" href="src/TMrbTransport.cxx.html#TMrbTransport:ShowStat">ShowStat</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Output) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:ShowStat">TMrbTransport::ShowStat</a>
+ Purpose:        Show events statistics
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Output  -- output stream (NULL = stdout)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Outputs events statistics.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:SetStat" href="src/TMrbTransport.cxx.html#TMrbTransport:SetStat">SetStat</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Output) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:SetStat">TMrbTransport::SetStat</a>
+ Purpose:        Define statistics profile
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown  -- scale down
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Output  -- output stream (NULL = stdout)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a scale down factor for automatic stats output.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:SetStream" href="src/TMrbTransport.cxx.html#TMrbTransport:SetStream">SetStream</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> MaxStreams, <a href="ListOfTypes.html#Int_t">Int_t</a> SlowDown) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:SetStream">TMrbTransport::SetStream</a>
+ Purpose:        Define stream profile
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> MaxStreams  -- max number of streams to be processed (0 = ad infinitum)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> SlowDown    -- number of secs to wait after each request
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines how many streams to be processed.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:SetDumpInterval" href="src/TMrbTransport.cxx.html#TMrbTransport:SetDumpInterval">SetDumpInterval</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NofRecs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:SetDumpInterval">TMrbTransport::SetDumpInterval</a>
+ Purpose:        Define dump interval
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NofRecs   -- dump interval
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines when to dump records to disk.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:OpenLMDFile" href="src/TMrbTransport.cxx.html#TMrbTransport:OpenLMDFile">OpenLMDFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * LMDFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:OpenLMDFile">TMrbTransport::OpenLMDFile</a>
+ Purpose:        Open LMD file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * LogFile    -- log file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Opens a file to dump original LMD data.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:CloseLMDFile" href="src/TMrbTransport.cxx.html#TMrbTransport:CloseLMDFile">CloseLMDFile</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:CloseLMDFile">TMrbTransport::CloseLMDFile</a>
+ Purpose:        Close LMD file
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Closes LMD file which is currently open
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:OpenLogFile" href="src/TMrbTransport.cxx.html#TMrbTransport:OpenLogFile">OpenLogFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * LogFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:OpenLogFile">TMrbTransport::OpenLogFile</a>
+ Purpose:        Open file for log output
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * LogFile    -- log file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Opens a file for data/error logging.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:PrintMbsIoError" href="src/TMrbTransport.cxx.html#TMrbTransport:PrintMbsIoError">PrintMbsIoError</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:PrintMbsIoError">TMrbTransport::PrintMbsIoError</a>
+ Purpose:        Output errors coming from mbsio package
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix  -- prefix to be output in front
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Reports errors passed over by mbsio package.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:Version" href="src/TMrbTransport.cxx.html#TMrbTransport:Version">Version</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbTransport.html#TMrbTransport:Version">TMrbTransport::Version</a>
+ Purpose:        Output version
+ Arguments:      --
+ Results:        kTRUE
+ Exceptions:
+ Description:    Outputs some welcome text.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbTransport:SubeventWC" href="TMrbTransport.h">SubeventWC</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbTransport:SubeventID" href="TMrbTransport.h">SubeventID</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>* <a name="TMrbTransport:GetMbsBase" href="TMrbTransport.h">GetMbsBase</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbTransport:IsError" href="TMrbTransport.h">IsError</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:ClearError" href="TMrbTransport.h">ClearError</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:SetError" href="TMrbTransport.h">SetError</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:Help" href="TMrbTransport.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbTransport:Class" href="TMrbTransport.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbTransport:IsA" href="TMrbTransport.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:ShowMembers" href="TMrbTransport.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:Streamer" href="TMrbTransport.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:StreamerNVirtual" href="TMrbTransport.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <a name="TMrbTransport:~TMrbTransport" href="TMrbTransport.h">~TMrbTransport</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:50 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,34 @@
+#ifndef __%%ANALYZE_FILE%%_h__
+#define __%%ANALYZE_FILE%%_h__
+
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%ANALYZE_FILE%%.h
+// Purpose:        Define user-specific classes for data analysis
+// Description:    %%ANALYZE_TITLE%%
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include <time.h>
+
+#include "TEnv.h"
+#include "TMrbLogger.h"
+
+#include "TMrbAnalyze.h"
+#include "TMrbTransport.h"
+
+#include "TMrbLofData.h"
+
+#include "%%ANALYZE_NAME_UC%%CommonIndices.h"
+
+//%%INCLUDES_AND_DEFS_ANALYZE%% 	include special definitions here
+
+//%%SEVT_CLASS_DEFINITION%%			define user-specific SUBEVENT classes here
+
+//%%EVT_CLASS_DEFINITION%%			define user-specific EVENT classes here
+#endif

@@ -1,0 +1,5 @@
+Test.NofEntries:	100
+Test.NofModules:	200
+Test.FloatTest: 	1.2345
+Test.Boolean:		TRUE
+Test.Title: 		Testing ROOT environment

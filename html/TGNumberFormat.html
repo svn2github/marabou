@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGNumberFormat</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGNumberFormat:description">class description</a> - <a href="src/TGNumberFormat.cxx.html">source file</a> - <a href="TGNumberFormat_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGNumberFormat" href="TGNumberEntry.h">TGNumberFormat</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGNumberFormat.html">TGNumberFormat</a> <!--TAB--><!--BOLD--><a href="#TGNumberFormat:TGNumberFormat">TGNumberFormat</a><!--PLAIN-->()
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGNumberFormat.html">TGNumberFormat</a> <!--TAB--><!--BOLD--><a href="#TGNumberFormat:TGNumberFormat">TGNumberFormat</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGNumberFormat.html">TGNumberFormat</a>&amp;)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberFormat:~TGNumberFormat">~TGNumberFormat</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGNumberFormat:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGNumberFormat:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberFormat:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberFormat:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberFormat:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGNumberFormat:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESInteger">kNESInteger</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNESInteger"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESRealOne">kNESRealOne</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNESRealOne"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESRealTwo">kNESRealTwo</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNESRealTwo"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESRealThree">kNESRealThree</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kNESRealThree"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESRealFour">kNESRealFour</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNESRealFour"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESReal">kNESReal</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kNESReal"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESDegree">kNESDegree</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kNESDegree"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESMinSec">kNESMinSec</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kNESMinSec"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESHourMin">kNESHourMin</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNESHourMin"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESHourMinSec">kNESHourMinSec</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kNESHourMinSec"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESDayMYear">kNESDayMYear</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNESDayMYear"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESMDayYear">kNESMDayYear</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNESMDayYear"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNESHex">kNESHex</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kNESHex"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNEAAnyNumber">kNEAAnyNumber</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kNEAAnyNumber"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNEANonNegative">kNEANonNegative</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNEANonNegative"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNEAPositive">kNEAPositive</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNEAPositive"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNELNoLimits">kNELNoLimits</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNELNoLimits"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNELLimitMin">kNELLimitMin</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNELLimitMin"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNELLimitMax">kNELLimitMax</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kNELLimitMax"></a></i>
+<!--TAB6-->          static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNELLimitMinMax">kNELLimitMinMax</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNELLimitMinMax"></a></i>
+<!--TAB6-->       static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStepSize">TGNumberFormat::EStepSize</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNSSSmall">kNSSSmall</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kNSSSmall"></a></i>
+<!--TAB6-->       static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStepSize">TGNumberFormat::EStepSize</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNSSMedium">kNSSMedium</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kNSSMedium"></a></i>
+<!--TAB6-->       static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStepSize">TGNumberFormat::EStepSize</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNSSLarge">kNSSLarge</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kNSSLarge"></a></i>
+<!--TAB6-->       static const <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStepSize">TGNumberFormat::EStepSize</a> <!--TAB--><!--BOLD--><a name="TGNumberFormat:kNSSHuge">kNSSHuge</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kNSSHuge"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGNumberEntry.html">TGNumberEntry</a>, <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGNumberFormat:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

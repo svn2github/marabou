@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFEditModICSRPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFEditModICSRPanel:description">class description</a> - <a href="src/DGFEditModICSRPanel.cxx.html">source file</a> - <a href="DGFEditModICSRPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFEditModICSRPanel" href="DGFEditModICSRPanel.h">DGFEditModICSRPanel</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:DGFEditModICSRPanel">DGFEditModICSRPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* Entry, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
+<!--TAB6-->      <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:DGFEditModICSRPanel">DGFEditModICSRPanel</a><!--PLAIN-->(const <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a>&amp; f)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:~DGFEditModICSRPanel">~DGFEditModICSRPanel</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditModICSRPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFEditModICSRPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fHeap">fHeap</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fICSRFrame">fICSRFrame</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fICSRFrame"></a></i>
+<!--TAB6-->      <a href="./TGMrbRadioButtonGroup.html">TGMrbRadioButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fDSPTriggerFrame">fDSPTriggerFrame</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fDSPTriggerFrame">bits to be edited (DSP trigger)</a></i>
+<!--TAB6-->      <a href="./TGMrbRadioButtonGroup.html">TGMrbRadioButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fFastTriggerFrame">fFastTriggerFrame</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFastTriggerFrame">bits to be edited (fast trigger)</a></i>
+<!--TAB6-->        <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fButtonFrame">fButtonFrame</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fButtonFrame">buttons: apply/close</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fEntry">fEntry</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fEntry">entry to be editied</a></i>
+<!--TAB6-->               <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fLofDSPTriggerBits">fLofDSPTriggerBits</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLofDSPTriggerBits">dsp trigger chain</a></i>
+<!--TAB6-->               <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fLofFastTriggerBits">fLofFastTriggerBits</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofFastTriggerBits">fast trigger chain</a></i>
+<!--TAB6-->               <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fLofButtons">fLofButtons</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fLofButtons">list of buttons</a></i>
+<!--TAB6-->         <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFEditModICSRPanel.html#DGFEditModICSRPanel:EDGFEditModICSRCmdId">DGFEditModICSRPanel::EDGFEditModICSRCmdId</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kDGFEditModICSRButtonApply">kDGFEditModICSRButtonApply</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFEditModICSRButtonApply"></a></i>
+<!--TAB6-->      static const <a href="./DGFEditModICSRPanel.html#DGFEditModICSRPanel:EDGFEditModICSRCmdId">DGFEditModICSRPanel::EDGFEditModICSRCmdId</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kDGFEditModICSRButtonReset">kDGFEditModICSRButtonReset</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFEditModICSRButtonReset"></a></i>
+<!--TAB6-->      static const <a href="./DGFEditModICSRPanel.html#DGFEditModICSRPanel:EDGFEditModICSRCmdId">DGFEditModICSRPanel::EDGFEditModICSRCmdId</a> <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kDGFEditModICSRButtonClose">kDGFEditModICSRButtonClose</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFEditModICSRButtonClose"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+<!--TAB6-->                                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditModICSRPanel:kButtonHeight">kButtonHeight</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kButtonHeight"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFEditModICSRPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Edit Module ICSR
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFEditModICSRPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFEditModICSRPanel:DGFEditModICSRPanel" href="src/DGFEditModICSRPanel.cxx.html#DGFEditModICSRPanel:DGFEditModICSRPanel">DGFEditModICSRPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame, <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> * Entry,
+												<a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options)
+														: <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, MainFrame, Width, Height, Options) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a>
+ Purpose:        Edit module ICSR bits
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame -- main frame
+                 <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> * Entry  -- entry to be edited
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options       -- options
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFEditModICSRPanel:ProcessMessage" href="src/DGFEditModICSRPanel.cxx.html#DGFEditModICSRPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFEditModICSRPanel.html#DGFEditModICSRPanel:ProcessMessage">DGFEditModICSRPanel::ProcessMessage</a>
+ Purpose:        Message handler for the setup panel
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a> <a name="DGFEditModICSRPanel:DGFEditModICSRPanel" href="DGFEditModICSRPanel.h">DGFEditModICSRPanel</a>(const <a href="./DGFEditModICSRPanel.html">DGFEditModICSRPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="DGFEditModICSRPanel:CloseWindow" href="DGFEditModICSRPanel.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFEditModICSRPanel:HandleKey" href="DGFEditModICSRPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFEditModICSRPanel:Class" href="DGFEditModICSRPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFEditModICSRPanel:IsA" href="DGFEditModICSRPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="DGFEditModICSRPanel:ShowMembers" href="DGFEditModICSRPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="DGFEditModICSRPanel:Streamer" href="DGFEditModICSRPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="DGFEditModICSRPanel:StreamerNVirtual" href="DGFEditModICSRPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <a name="DGFEditModICSRPanel:~DGFEditModICSRPanel" href="DGFEditModICSRPanel.h">~DGFEditModICSRPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:48 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

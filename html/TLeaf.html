@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TLeaf</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TLeaf:description">class description</a> - <a href="src/TLeaf.cxx.html">source file</a> - <a href="TLeaf_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TLeaf" href="TLeaf.h">TLeaf</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a> <!--TAB--><!--BOLD--><a href="#TLeaf:TLeaf">TLeaf</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a> <!--TAB--><!--BOLD--><a href="#TLeaf:TLeaf">TLeaf</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* type)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a> <!--TAB--><!--BOLD--><a href="#TLeaf:TLeaf">TLeaf</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:~TLeaf">~TLeaf</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:Export">Export</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* list, <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:FillBasket">FillBasket</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:GetBranch">GetBranch</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:GetLeafCount">GetLeafCount</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:GetLeafCounter">GetLeafCounter</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; countval) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetLen">GetLen</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetLenStatic">GetLenStatic</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetLenType">GetLenType</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetMaximum">GetMaximum</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetMinimum">GetMinimum</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetNdata">GetNdata</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetOffset">GetOffset</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:GetTypeName">GetTypeName</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:GetValue">GetValue</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i = 0) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:GetValuePointer">GetValuePointer</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:Import">Import</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* list, <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TLeaf:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:IsOnTerminalBranch">IsOnTerminalBranch</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:IsRange">IsRange</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:IsUnsigned">IsUnsigned</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:PrintValue">PrintValue</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i = 0) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:ReadBasket">ReadBasket</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:ReadBasketExport">ReadBasketExport</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp;, <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>*, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TLeaf:ResetAddress">ResetAddress</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* add, <a href="ListOfTypes.html#Bool_t">Bool_t</a> destructor = kFALSE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetAddress">SetAddress</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* add = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetBranch">SetBranch</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* branch)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetLeafCount">SetLeafCount</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* leaf)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetLen">SetLen</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> len = 1)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetOffset">SetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> offset = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> range = kTRUE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:SetUnsigned">SetUnsigned</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TLeaf:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TLeaf:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TLeaf:fNdata">fNdata</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fNdata">! Number of elements in fAddress data buffer</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TLeaf:fLen">fLen</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLen">Number of fixed length elements</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TLeaf:fLenType">fLenType</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLenType">Number of bytes for this data type</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TLeaf:fOffset">fOffset</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fOffset">Offset in ClonesArray object (if one)</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TLeaf:fIsRange">fIsRange</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fIsRange">(=kTRUE if leaf has a range, kFALSE otherwise)</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TLeaf:fIsUnsigned">fIsUnsigned</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fIsUnsigned">(=kTRUE if unsigned, kFALSE otherwise)</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* <!--TAB--><!--BOLD--><a name="TLeaf:fLeafCount">fLeafCount</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLeafCount">Pointer to Leaf count if variable length</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a name="TLeaf:fBranch">fBranch</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fBranch">! Pointer to supporting branch</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TLeaf:kIndirectAddress">kIndirectAddress</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kIndirectAddress"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TLeaf:kNewValue">kNewValue</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kNewValue"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TLeafB.html">TLeafB</a>, <a href="http://root.cern.ch/root/html/TLeafC.html">TLeafC</a>, <a href="http://root.cern.ch/root/html/TLeafD.html">TLeafD</a>, <a href="http://root.cern.ch/root/html/TLeafElement.html">TLeafElement</a>, <a href="http://root.cern.ch/root/html/TLeafF.html">TLeafF</a>, <a href="http://root.cern.ch/root/html/TLeafI.html">TLeafI</a>, <a href="http://root.cern.ch/root/html/TLeafObject.html">TLeafObject</a>, <a href="http://root.cern.ch/root/html/TLeafS.html">TLeafS</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TLeaf:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:29 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

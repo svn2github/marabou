@@ -1,0 +1,71 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TWebFile</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TWebFile:description">class description</a> - <a href="src/TWebFile.cxx.html">source file</a> - <a href="TWebFile_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TWebFile" href="TWebFile.h">TWebFile</a> : public <a href="http://root.cern.ch/root/html/TFile.html">TFile</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TWebFile:Init">Init</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a>)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TWebFile.html">TWebFile</a> <!--TAB--><!--BOLD--><a href="#TWebFile:TWebFile">TWebFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* url)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TWebFile.html">TWebFile</a> <!--TAB--><!--BOLD--><a href="#TWebFile:TWebFile">TWebFile</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a> url)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TWebFile:~TWebFile">~TWebFile</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TWebFile:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a href="#TWebFile:GetSize">GetSize</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TWebFile:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TWebFile:IsOpen">IsOpen</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TWebFile:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* buf, <a href="ListOfTypes.html#Int_t">Int_t</a> len)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TWebFile:Seek">Seek</a><!--PLAIN-->(<a href="ListOfTypes.html#Seek_t">Seek_t</a> offset, <a href="http://root.cern.ch/root/html/TFile.html#TFile:ERelativeTo">TFile::ERelativeTo</a> pos = <a href="http://root.cern.ch/root/html/TFile.html#TFile:kBeg">kBeg</a>)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TWebFile:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TWebFile:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TWebFile:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TWebFile:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a> <!--TAB--><!--BOLD--><a name="TWebFile:fUrl">fUrl</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fUrl">URL of file</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a name="TWebFile:fOffset">fOffset</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fOffset">seek offset</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TWebFile:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:59:00 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

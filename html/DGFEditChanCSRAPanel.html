@@ -1,0 +1,151 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFEditChanCSRAPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFEditChanCSRAPanel:description">class description</a> - <a href="src/DGFEditChanCSRAPanel.cxx.html">source file</a> - <a href="DGFEditChanCSRAPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFEditChanCSRAPanel" href="DGFEditChanCSRAPanel.h">DGFEditChanCSRAPanel</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:DGFEditChanCSRAPanel">DGFEditChanCSRAPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* Entry, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
+<!--TAB6-->      <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:DGFEditChanCSRAPanel">DGFEditChanCSRAPanel</a><!--PLAIN-->(const <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a>&amp; f)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:~DGFEditChanCSRAPanel">~DGFEditChanCSRAPanel</a><!--PLAIN-->()
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFEditChanCSRAPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFEditChanCSRAPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fHeap">fHeap</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->      <a href="./TGMrbCheckButtonGroup.html">TGMrbCheckButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fCSRAFrame">fCSRAFrame</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCSRAFrame">bits to be edited</a></i>
+<!--TAB6-->        <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fButtonFrame">fButtonFrame</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fButtonFrame">buttons: apply/close</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fEntry">fEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fEntry">entry to be editied</a></i>
+<!--TAB6-->               <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fLofCSRABits">fLofCSRABits</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofCSRABits">list of CSRA bits</a></i>
+<!--TAB6-->               <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fLofButtons">fLofButtons</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLofButtons">list of buttons</a></i>
+<!--TAB6-->         <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFEditChanCSRAPanel.html#DGFEditChanCSRAPanel:EDGFEditChanCSRACmdId">DGFEditChanCSRAPanel::EDGFEditChanCSRACmdId</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kDGFEditChanCSRAButtonApply">kDGFEditChanCSRAButtonApply</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFEditChanCSRAButtonApply"></a></i>
+<!--TAB6-->      static const <a href="./DGFEditChanCSRAPanel.html#DGFEditChanCSRAPanel:EDGFEditChanCSRACmdId">DGFEditChanCSRAPanel::EDGFEditChanCSRACmdId</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kDGFEditChanCSRAButtonReset">kDGFEditChanCSRAButtonReset</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFEditChanCSRAButtonReset"></a></i>
+<!--TAB6-->      static const <a href="./DGFEditChanCSRAPanel.html#DGFEditChanCSRAPanel:EDGFEditChanCSRACmdId">DGFEditChanCSRAPanel::EDGFEditChanCSRACmdId</a> <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kDGFEditChanCSRAButtonClose">kDGFEditChanCSRAButtonClose</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFEditChanCSRAButtonClose"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+<!--TAB6-->                                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFEditChanCSRAPanel:kButtonHeight">kButtonHeight</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kButtonHeight"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFEditChanCSRAPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Edit Channel CSRA
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFEditChanCSRAPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFEditChanCSRAPanel:DGFEditChanCSRAPanel" href="src/DGFEditChanCSRAPanel.cxx.html#DGFEditChanCSRAPanel:DGFEditChanCSRAPanel">DGFEditChanCSRAPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame, <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> * Entry,
+												<a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options)
+														: <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, MainFrame, Width, Height, Options) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a>
+ Purpose:        Edit module CSRA bits
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame -- main frame
+                 <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> * Entry  -- entry to be edited
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options       -- options
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFEditChanCSRAPanel:ProcessMessage" href="src/DGFEditChanCSRAPanel.cxx.html#DGFEditChanCSRAPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFEditChanCSRAPanel.html#DGFEditChanCSRAPanel:ProcessMessage">DGFEditChanCSRAPanel::ProcessMessage</a>
+ Purpose:        Message handler for the setup panel
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFEditModCSRAPanel.html">DGFEditModCSRAPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a> <a name="DGFEditChanCSRAPanel:DGFEditChanCSRAPanel" href="DGFEditChanCSRAPanel.h">DGFEditChanCSRAPanel</a>(const <a href="./DGFEditChanCSRAPanel.html">DGFEditChanCSRAPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <a name="DGFEditChanCSRAPanel:CloseWindow" href="DGFEditChanCSRAPanel.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFEditChanCSRAPanel:HandleKey" href="DGFEditChanCSRAPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFEditChanCSRAPanel:Class" href="DGFEditChanCSRAPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFEditChanCSRAPanel:IsA" href="DGFEditChanCSRAPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <a name="DGFEditChanCSRAPanel:ShowMembers" href="DGFEditChanCSRAPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <a name="DGFEditChanCSRAPanel:Streamer" href="DGFEditChanCSRAPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <a name="DGFEditChanCSRAPanel:StreamerNVirtual" href="DGFEditChanCSRAPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <a name="DGFEditChanCSRAPanel:~DGFEditChanCSRAPanel" href="DGFEditChanCSRAPanel.h">~DGFEditChanCSRAPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:46 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

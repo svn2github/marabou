@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TApplicationImp</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TApplicationImp:description">class description</a> - <a href="src/TApplicationImp.cxx.html">source file</a> - <a href="TApplicationImp_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TApplicationImp" href="TApplicationImp.h">TApplicationImp</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:TApplicationImp">TApplicationImp</a><!--PLAIN-->()
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:TApplicationImp">TApplicationImp</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* appClassName, <a href="ListOfTypes.html#int">int</a>* argc, <a href="ListOfTypes.html#char">char</a>** argv)
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:TApplicationImp">TApplicationImp</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:~TApplicationImp">~TApplicationImp</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TApplicationImp:ApplicationName">ApplicationName</a><!--PLAIN-->() const
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TApplicationImp:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:ExecCommand">ExecCommand</a><!--PLAIN-->(TGWin32Command* code, <a href="ListOfTypes.html#Bool_t">Bool_t</a> synch)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Hide">Hide</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Iconify">Iconify</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TApplicationImp:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:IsCmdThread">IsCmdThread</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Lower">Lower</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Open">Open</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Raise">Raise</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Show">Show</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplicationImp:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TApplicationImp:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TApplicationImp:fApplicationName">fApplicationName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fApplicationName">application name</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TRootApplication.html">TRootApplication</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TApplicationImp:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:07 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

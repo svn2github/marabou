@@ -1,0 +1,177 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TVirtualGL</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TVirtualGL:description">class description</a> - <a href="src/TVirtualGL.cxx.html">source file</a> - <a href="TVirtualGL_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TVirtualGL" href="TVirtualGL.h">TVirtualGL</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a href="#TVirtualGL:Invert">Invert</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* vector)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                 <a href="./TVirtualGL.html">TVirtualGL</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:TVirtualGL">TVirtualGL</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="./TVirtualGL.html">TVirtualGL</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:TVirtualGL">TVirtualGL</a><!--PLAIN-->(const <a href="./TVirtualGL.html">TVirtualGL</a>&amp;)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:~TVirtualGL">~TVirtualGL</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:AddRotation">AddRotation</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* rotmatrix, <a href="ListOfTypes.html#Double_t">Double_t</a>* extraangles)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:BeginGLCmd">BeginGLCmd</a><!--PLAIN-->(EG3D2GLmode mode)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:ClearColor">ClearColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> color)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:ClearGL">ClearGL</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> bufbits)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:ClearGLColor">ClearGLColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> red, <a href="ListOfTypes.html#Float_t">Float_t</a> green, <a href="ListOfTypes.html#Float_t">Float_t</a> blue, <a href="ListOfTypes.html#Float_t">Float_t</a> alpha)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:CreateGLLists">CreateGLLists</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> range)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGLViewerImp.html">TGLViewerImp</a>* <!--TAB--><!--BOLD--><a href="#TVirtualGL:CreateGLViewerImp">CreateGLViewerImp</a><!--PLAIN-->(<a href="./TPadOpenGLView.html">TPadOpenGLView</a>* c, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->        virtual <a href="./TPadView3D.html">TPadView3D</a>* <!--TAB--><!--BOLD--><a href="#TVirtualGL:CreatePadGLView">CreatePadGLView</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* c)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:DeleteGLLists">DeleteGLLists</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ilist, <a href="ListOfTypes.html#Int_t">Int_t</a> range)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:DisableGL">DisableGL</a><!--PLAIN-->(EG3D2GLmode mode)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:EnableGL">EnableGL</a><!--PLAIN-->(EG3D2GLmode mode)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:EndGLCmd">EndGLCmd</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:EndGLList">EndGLList</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:FlushGL">FlushGL</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:FrontGLFace">FrontGLFace</a><!--PLAIN-->(EG3D2GLmode faceflag)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetGL">GetGL</a><!--PLAIN-->(EG3D2GLmode mode, <a href="ListOfTypes.html#UChar_t">UChar_t</a>* params)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetGL">GetGL</a><!--PLAIN-->(EG3D2GLmode mode, <a href="ListOfTypes.html#Double_t">Double_t</a>* params)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetGL">GetGL</a><!--PLAIN-->(EG3D2GLmode mode, <a href="ListOfTypes.html#Float_t">Float_t</a>* params)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetGL">GetGL</a><!--PLAIN-->(EG3D2GLmode mode, <a href="ListOfTypes.html#Int_t">Int_t</a>* params)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetGLError">GetGLError</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetRootLight">GetRootLight</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:GetTrueColorMode">GetTrueColorMode</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:MultGLMatrix">MultGLMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* mat)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:NewGLList">NewGLList</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ilist = 1, EG3D2GLmode mode = kCOMPILE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:NewGLModelView">NewGLModelView</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ilist)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:NewModelView">NewModelView</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* angles, <a href="ListOfTypes.html#Double_t">Double_t</a>* delta)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:NewProjectionView">NewProjectionView</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* viewboxmin, <a href="ListOfTypes.html#Double_t">Double_t</a>* viewboxmax, <a href="ListOfTypes.html#Bool_t">Bool_t</a> perspective = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PaintBrik">PaintBrik</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PaintCone">PaintCone</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex, <a href="ListOfTypes.html#Int_t">Int_t</a> ndiv, <a href="ListOfTypes.html#Int_t">Int_t</a> nstacks)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PaintGLPoints">PaintGLPoints</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* p, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PaintGLPointsObject">PaintGLPointsObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TPoints3DABC.html">TPoints3DABC</a>* points, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PaintPolyLine">PaintPolyLine</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* p, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PaintXtru">PaintXtru</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex, <a href="ListOfTypes.html#Int_t">Int_t</a> nxy, <a href="ListOfTypes.html#Int_t">Int_t</a> nz)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PolygonGLMode">PolygonGLMode</a><!--PLAIN-->(EG3D2GLmode face, EG3D2GLmode mode)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PopGLMatrix">PopGLMatrix</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:PushGLMatrix">PushGLMatrix</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:RotateGL">RotateGL</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> angle, <a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:RotateGL">RotateGL</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Theta, <a href="ListOfTypes.html#Double_t">Double_t</a> Phi, <a href="ListOfTypes.html#Double_t">Double_t</a> Psi)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:RunGLList">RunGLList</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> list)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetGLColor">SetGLColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* rgb)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetGLColorIndex">SetGLColorIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> color)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetGLLineWidth">SetGLLineWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> width)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetGLPointSize">SetGLPointSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> size)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetGLVertex">SetGLVertex</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetLineAttr">SetLineAttr</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Int_t">Int_t</a> width = 1)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetRootLight">SetRootLight</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetStack">SetStack</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* matrix = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:SetTrueColorMode">SetTrueColorMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:ShadeGLModel">ShadeGLModel</a><!--PLAIN-->(EG3D2GLmode mode)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:TranslateGL">TranslateGL</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVirtualGL:UpdateMatrix">UpdateMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* translate = 0, <a href="ListOfTypes.html#Double_t">Double_t</a>* rotate = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isreflection = kFALSE)
+</pre>
+
+<h3><!--TAB2-->  <a name="TVirtualGL:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->           <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TVirtualGL:fColorIndx">fColorIndx</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fColorIndx">Current color index;</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TVirtualGL:fRootLight">fRootLight</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fRootLight">Whether the "ROOT" light will be used (otherwise OpenGL)</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TVirtualGL:fTrueColorMode">fTrueColorMode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTrueColorMode">Defines the whether the current hardware layer supports the true colors</a></i>
+<!--TAB6-->      EG3D2GLmode <!--TAB--><!--BOLD--><a name="TVirtualGL:fFaceFlag">fFaceFlag</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fFaceFlag">The current "face" definiton - clockwise/counterclockwise</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TVirtualGL:description">Class Description</a></h2>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Float_t">Float_t</a>* <a name="TVirtualGL:Invert" href="TVirtualGL.h">Invert</a>(<a href="ListOfTypes.html#Float_t">Float_t</a>* vector)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TVirtualGL.html">TVirtualGL</a> <a name="TVirtualGL:TVirtualGL" href="TVirtualGL.h">TVirtualGL</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:AddRotation" href="TVirtualGL.h">AddRotation</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* rotmatrix, <a href="ListOfTypes.html#Double_t">Double_t</a>* extraangles)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:BeginGLCmd" href="TVirtualGL.h">BeginGLCmd</a>(EG3D2GLmode mode)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:ClearColor" href="TVirtualGL.h">ClearColor</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> color)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:ClearGLColor" href="TVirtualGL.h">ClearGLColor</a>(<a href="ListOfTypes.html#Float_t">Float_t</a> red, <a href="ListOfTypes.html#Float_t">Float_t</a> green, <a href="ListOfTypes.html#Float_t">Float_t</a> blue, <a href="ListOfTypes.html#Float_t">Float_t</a> alpha)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:ClearGL" href="TVirtualGL.h">ClearGL</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> bufbits)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TVirtualGL:CreateGLLists" href="TVirtualGL.h">CreateGLLists</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> range)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="http://root.cern.ch/root/html/TGLViewerImp.html">TGLViewerImp</a>* <a name="TVirtualGL:CreateGLViewerImp" href="TVirtualGL.h">CreateGLViewerImp</a>(<a href="./TPadOpenGLView.html">TPadOpenGLView</a>* c, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TPadView3D.html">TPadView3D</a>* <a name="TVirtualGL:CreatePadGLView" href="TVirtualGL.h">CreatePadGLView</a>(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* c)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:DeleteGLLists" href="TVirtualGL.h">DeleteGLLists</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ilist, <a href="ListOfTypes.html#Int_t">Int_t</a> range)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:DisableGL" href="TVirtualGL.h">DisableGL</a>(EG3D2GLmode mode)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:EnableGL" href="TVirtualGL.h">EnableGL</a>(EG3D2GLmode mode)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:EndGLList" href="TVirtualGL.h">EndGLList</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:EndGLCmd" href="TVirtualGL.h">EndGLCmd</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:FlushGL" href="TVirtualGL.h">FlushGL</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:FrontGLFace" href="TVirtualGL.h">FrontGLFace</a>(EG3D2GLmode faceflag)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:GetGL" href="TVirtualGL.h">GetGL</a>(EG3D2GLmode mode, <a href="ListOfTypes.html#UChar_t">UChar_t</a>* params)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:GetGL" href="TVirtualGL.h">GetGL</a>(EG3D2GLmode mode, <a href="ListOfTypes.html#Double_t">Double_t</a>* params)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:GetGL" href="TVirtualGL.h">GetGL</a>(EG3D2GLmode mode, <a href="ListOfTypes.html#Float_t">Float_t</a>* params)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:GetGL" href="TVirtualGL.h">GetGL</a>(EG3D2GLmode mode, <a href="ListOfTypes.html#Int_t">Int_t</a>* params)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TVirtualGL:GetGLError" href="TVirtualGL.h">GetGLError</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TVirtualGL:GetRootLight" href="TVirtualGL.h">GetRootLight</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TVirtualGL:GetTrueColorMode" href="TVirtualGL.h">GetTrueColorMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:MultGLMatrix" href="TVirtualGL.h">MultGLMatrix</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* mat)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:NewGLList" href="TVirtualGL.h">NewGLList</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ilist = 1, EG3D2GLmode mode = kCOMPILE)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:NewGLModelView" href="TVirtualGL.h">NewGLModelView</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ilist)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PaintGLPoints" href="TVirtualGL.h">PaintGLPoints</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* p, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PolygonGLMode" href="TVirtualGL.h">PolygonGLMode</a>(EG3D2GLmode face, EG3D2GLmode mode)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PushGLMatrix" href="TVirtualGL.h">PushGLMatrix</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PopGLMatrix" href="TVirtualGL.h">PopGLMatrix</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:RotateGL" href="TVirtualGL.h">RotateGL</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> angle, <a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:RotateGL" href="TVirtualGL.h">RotateGL</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Theta, <a href="ListOfTypes.html#Double_t">Double_t</a> Phi, <a href="ListOfTypes.html#Double_t">Double_t</a> Psi)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetGLVertex" href="TVirtualGL.h">SetGLVertex</a>(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetGLColor" href="TVirtualGL.h">SetGLColor</a>(<a href="ListOfTypes.html#Float_t">Float_t</a>* rgb)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetGLColorIndex" href="TVirtualGL.h">SetGLColorIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> color)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetGLLineWidth" href="TVirtualGL.h">SetGLLineWidth</a>(<a href="ListOfTypes.html#Float_t">Float_t</a> width)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetGLPointSize" href="TVirtualGL.h">SetGLPointSize</a>(<a href="ListOfTypes.html#Float_t">Float_t</a> size)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetStack" href="TVirtualGL.h">SetStack</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* matrix = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:ShadeGLModel" href="TVirtualGL.h">ShadeGLModel</a>(EG3D2GLmode mode)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:TranslateGL" href="TVirtualGL.h">TranslateGL</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:RunGLList" href="TVirtualGL.h">RunGLList</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> list)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:NewProjectionView" href="TVirtualGL.h">NewProjectionView</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* viewboxmin, <a href="ListOfTypes.html#Double_t">Double_t</a>* viewboxmax, <a href="ListOfTypes.html#Bool_t">Bool_t</a> perspective = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:NewModelView" href="TVirtualGL.h">NewModelView</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* angles, <a href="ListOfTypes.html#Double_t">Double_t</a>* delta)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PaintCone" href="TVirtualGL.h">PaintCone</a>(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex, <a href="ListOfTypes.html#Int_t">Int_t</a> ndiv, <a href="ListOfTypes.html#Int_t">Int_t</a> nstacks)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PaintPolyLine" href="TVirtualGL.h">PaintPolyLine</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> n, <a href="ListOfTypes.html#Float_t">Float_t</a>* p, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PaintGLPointsObject" href="TVirtualGL.h">PaintGLPointsObject</a>(const <a href="http://root.cern.ch/root/html/TPoints3DABC.html">TPoints3DABC</a>* points, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PaintBrik" href="TVirtualGL.h">PaintBrik</a>(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:PaintXtru" href="TVirtualGL.h">PaintXtru</a>(<a href="ListOfTypes.html#Float_t">Float_t</a>* vertex, <a href="ListOfTypes.html#Int_t">Int_t</a> nxy, <a href="ListOfTypes.html#Int_t">Int_t</a> nz)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetRootLight" href="TVirtualGL.h">SetRootLight</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetLineAttr" href="TVirtualGL.h">SetLineAttr</a>(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Int_t">Int_t</a> width = 1)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:UpdateMatrix" href="TVirtualGL.h">UpdateMatrix</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* translate = 0, <a href="ListOfTypes.html#Double_t">Double_t</a>* rotate = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> isreflection = kFALSE)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:SetTrueColorMode" href="TVirtualGL.h">SetTrueColorMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TVirtualGL.html">TVirtualGL</a> <a name="TVirtualGL:TVirtualGL" href="TVirtualGL.h">TVirtualGL</a>(const <a href="./TVirtualGL.html">TVirtualGL</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TVirtualGL:~TVirtualGL" href="TVirtualGL.h">~TVirtualGL</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:59 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TClassTable</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TClassTable:description">class description</a> - <a href="src/TClassTable.cxx.html">source file</a> - <a href="TClassTable_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TClassTable" href="TClassTable.h">TClassTable</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TClassTable.html">TClassTable</a> <!--TAB--><!--BOLD--><a href="#TClassTable:TClassTable">TClassTable</a><!--PLAIN-->()
+<!--TAB6-->      static ClassRec_t* <!--TAB--><!--BOLD--><a href="#TClassTable:FindElement">FindElement</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* cname, <a href="ListOfTypes.html#Bool_t">Bool_t</a> insert = kFALSE)
+<!--TAB6-->             static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:SortTable">SortTable</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TClassTable.html">TClassTable</a> <!--TAB--><!--BOLD--><a href="#TClassTable:TClassTable">TClassTable</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClassTable.html">TClassTable</a>&amp;)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:~TClassTable">~TClassTable</a><!--PLAIN-->()
+<!--TAB6-->               static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Add">Add</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* cname, <a href="ListOfTypes.html#Version_t">Version_t</a> id, const type_info&amp; info, <a href="ListOfTypes.html#VoidFuncPtr_t">VoidFuncPtr_t</a> dict, <a href="ListOfTypes.html#Int_t">Int_t</a> pragmabits)
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClassTable:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Classes">Classes</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="ListOfTypes.html#VoidFuncPtr_t">VoidFuncPtr_t</a> <!--TAB--><!--BOLD--><a href="#TClassTable:GetDict">GetDict</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* cname)
+<!--TAB6-->      static <a href="ListOfTypes.html#VoidFuncPtr_t">VoidFuncPtr_t</a> <!--TAB--><!--BOLD--><a href="#TClassTable:GetDict">GetDict</a><!--PLAIN-->(const type_info&amp; info)
+<!--TAB6-->          static <a href="ListOfTypes.html#Version_t">Version_t</a> <!--TAB--><!--BOLD--><a href="#TClassTable:GetID">GetID</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* cname)
+<!--TAB6-->              static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClassTable:GetPragmaBits">GetPragmaBits</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->               static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClassTable:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->              static <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClassTable:Next">Next</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->               static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:PrintTable">PrintTable</a><!--PLAIN-->()
+<!--TAB6-->               static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Remove">Remove</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* cname)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->               static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTable:Terminate">Terminate</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TClassTable:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                   static ClassRec_t** <!--TAB--><!--BOLD--><a name="TClassTable:fgTable">fgTable</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fgTable"></a></i>
+<!--TAB6-->                   static ClassRec_t** <!--TAB--><!--BOLD--><a name="TClassTable:fgSortedTable">fgSortedTable</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgSortedTable"></a></i>
+<!--TAB6-->      static ROOT::TMapTypeToClassRec* <!--TAB--><!--BOLD--><a name="TClassTable:fgIdMap">fgIdMap</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fgIdMap"></a></i>
+<!--TAB6-->                            static <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a name="TClassTable:fgSize">fgSize</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fgSize"></a></i>
+<!--TAB6-->                            static <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a name="TClassTable:fgTally">fgTally</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fgTally"></a></i>
+<!--TAB6-->                         static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TClassTable:fgSorted">fgSorted</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fgSorted"></a></i>
+<!--TAB6-->                            static <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a name="TClassTable:fgCursor">fgCursor</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fgCursor"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClassTable:kNoStreamer">kNoStreamer</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kNoStreamer"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClassTable:kNoInputOperator">kNoInputOperator</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNoInputOperator"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClassTable:kAutoStreamer">kAutoStreamer</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kAutoStreamer"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TClassTable:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:12 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

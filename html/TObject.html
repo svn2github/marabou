@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TObject</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TObject:description">class description</a> - <a href="src/TObject.cxx.html">source file</a> - <a href="TObject_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TObject" href="TObject.h">TObject</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:DoError">DoError</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> level, const <a href="ListOfTypes.html#char">char</a>* location, const <a href="ListOfTypes.html#char">char</a>* fmt, va_list va) const
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:MakeZombie">MakeZombie</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> <!--TAB--><!--BOLD--><a href="#TObject:TObject">TObject</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> <!--TAB--><!--BOLD--><a href="#TObject:TObject">TObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; object)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:~TObject">~TObject</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:AbstractMethod">AbstractMethod</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method) const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:AppendPad">AppendPad</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TObject:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TObject:ClassName">ClassName</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>*)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObject:Clone">Clone</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* newname) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObject:Compare">Compare</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; object)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObject:DistancetoPrimitive">DistancetoPrimitive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:DrawClass">DrawClass</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObject:DrawClone">DrawClone</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Dump">Dump</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Error">Error</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* msgfmt) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Execute">Execute</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* params, <a href="ListOfTypes.html#Int_t">Int_t</a>* error = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Execute">Execute</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* method, <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* params, <a href="ListOfTypes.html#Int_t">Int_t</a>* error = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Fatal">Fatal</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* msgfmt) const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObject:FindObject">FindObject</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObject:FindObject">FindObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TObject:GetDrawOption">GetDrawOption</a><!--PLAIN-->() const
+<!--TAB6-->            static <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TObject:GetDtorOnly">GetDtorOnly</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TObject:GetIconName">GetIconName</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TObject:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TObject:GetObjectInfo">GetObjectInfo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py) const
+<!--TAB6-->            static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:GetObjectStat">GetObjectStat</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TObject:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TObject:GetTitle">GetTitle</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TObject:GetUniqueID">GetUniqueID</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:HandleTimer">HandleTimer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* timer)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TObject:Hash">Hash</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Info">Info</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* msgfmt) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:InheritsFrom">InheritsFrom</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:InheritsFrom">InheritsFrom</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Inspect">Inspect</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:InvertBit">InvertBit</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> f)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TObject:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:IsEqual">IsEqual</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:IsOnHeap">IsOnHeap</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:IsSortable">IsSortable</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:IsZombie">IsZombie</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:MayNotUse">MayNotUse</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:Notify">Notify</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:operator delete">operator delete</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* ptr)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TObject:operator new">operator new</a><!--PLAIN-->(<a href="ListOfTypes.html#size_t">size_t</a> sz)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TObject:operator new">operator new</a><!--PLAIN-->(<a href="ListOfTypes.html#size_t">size_t</a> sz, <a href="ListOfTypes.html#void">void</a>* vp)
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; <!--TAB--><!--BOLD--><a href="#TObject:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; rhs)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Pop">Pop</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObject:Read">Read</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:ResetBit">ResetBit</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> f)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SetBit">SetBit</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> f, <a href="ListOfTypes.html#Bool_t">Bool_t</a> set)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SetBit">SetBit</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> f)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SetDrawOption">SetDrawOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SetDtorOnly">SetDtorOnly</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* obj)
+<!--TAB6-->              static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SetObjectStat">SetObjectStat</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> stat)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SetUniqueID">SetUniqueID</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> uid)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:SysError">SysError</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* msgfmt) const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObject:TestBit">TestBit</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> f) const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObject:TestBits">TestBits</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> f) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:UseCurrentStyle">UseCurrentStyle</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObject:Warning">Warning</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* msgfmt) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObject:Write">Write</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "0", <a href="ListOfTypes.html#Int_t">Int_t</a> option = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 0)
+</pre>
+
+<h3><!--TAB2-->  <a name="TObject:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TObject:fUniqueID">fUniqueID</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fUniqueID">object unique identifier</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TObject:fBits">fBits</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fBits">bit field status word</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TObject:fgDtorOnly">fgDtorOnly</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fgDtorOnly">object for which to call dtor only (i.e. no delete)</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TObject:fgObjectStat">fgObjectStat</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgObjectStat">if true keep track of objects in TObjectTable</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TObject:kIsOnHeap">kIsOnHeap</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kIsOnHeap"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TObject:kNotDeleted">kNotDeleted</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNotDeleted"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TObject:kZombie">kZombie</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kZombie"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TObject:kBitMask">kBitMask</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kBitMask"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TObject:kSingleKey">kSingleKey</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kSingleKey"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TObject:kOverwrite">kOverwrite</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kOverwrite"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TApplication.html">TApplication</a>, <a href="./TAssoc.html">TAssoc</a>, <a href="http://root.cern.ch/root/html/TAuthenticate.html">TAuthenticate</a>, <a href="http://root.cern.ch/root/html/TBits.html">TBits</a>, <a href="http://root.cern.ch/root/html/TBox.html">TBox</a>, <a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>, <a href="http://root.cern.ch/root/html/TCache.html">TCache</a>, <a href="http://root.cern.ch/root/html/TClassMenuItem.html">TClassMenuItem</a>, <a href="http://root.cern.ch/root/html/TClassTable.html">TClassTable</a>, <a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>, <a href="http://root.cern.ch/root/html/TDSetElement.html">TDSetElement</a>, <a href="http://root.cern.ch/root/html/TDictionary.html">TDictionary</a>, <a href="http://root.cern.ch/root/html/TEllipse.html">TEllipse</a>, <a href="http://root.cern.ch/root/html/TEnv.html">TEnv</a>, <a href="http://root.cern.ch/root/html/TExMap.html">TExMap</a>, <a href="http://root.cern.ch/root/html/TFTP.html">TFTP</a>, <a href="http://root.cern.ch/root/html/TFractionFitter.html">TFractionFitter</a>, <a href="http://root.cern.ch/root/html/TFree.html">TFree</a>, <a href="http://root.cern.ch/root/html/TGClient.html">TGClient</a>, <a href="./TGFrameElement.html">TGFrameElement</a>, <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>, <a href="http://root.cern.ch/root/html/TGLayoutManager.html">TGLayoutManager</a>, <a href="./TGMenuEntry.html">TGMenuEntry</a>, <a href="http://root.cern.ch/root/html/TGMimeTypes.html">TGMimeTypes</a>, <a href="./TGMrbLayout.html">TGMrbLayout</a>, <a href="./TGMrbMacroArg.html">TGMrbMacroArg</a>, <a href="http://root.cern.ch/root/html/TGObject.html">TGObject</a>, <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>, <a href="http://root.cern.ch/root/html/TGPicturePool.html">TGPicturePool</a>, <a href="http://root.cern.ch/root/html/TGRegion.html">TGRegion</a>, <a href="http://root.cern.ch/root/html/TGUnknownWindowHandler.html">TGUnknownWindowHandler</a>, <a href="http://root.cern.ch/root/html/TGrid.html">TGrid</a>, <a href="http://root.cern.ch/root/html/TGridResult.html">TGridResult</a>, <a href="http://root.cern.ch/root/html/THLimitsFinder.html">THLimitsFinder</a>, <a href="http://root.cern.ch/root/html/THtml.html">THtml</a>, <a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a>, <a href="http://root.cern.ch/root/html/TLazyMatrix.html">TLazyMatrix</a>, <a href="http://root.cern.ch/root/html/TLazyMatrixD.html">TLazyMatrixD</a>, <a href="http://root.cern.ch/root/html/TLegendEntry.html">TLegendEntry</a>, <a href="http://root.cern.ch/root/html/TLine.html">TLine</a>, <a href="http://root.cern.ch/root/html/TMapFile.html">TMapFile</a>, <a href="http://root.cern.ch/root/html/TMarker.html">TMarker</a>, <a href="http://root.cern.ch/root/html/TMarker3DBox.html">TMarker3DBox</a>, <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>, <a href="http://root.cern.ch/root/html/TMatrixColumn.html">TMatrixColumn</a>, <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a>, <a href="http://root.cern.ch/root/html/TMatrixDColumn.html">TMatrixDColumn</a>, <a href="http://root.cern.ch/root/html/TMatrixDDiag.html">TMatrixDDiag</a>, <a href="http://root.cern.ch/root/html/TMatrixDRow.html">TMatrixDRow</a>, <a href="http://root.cern.ch/root/html/TMatrixDiag.html">TMatrixDiag</a>, <a href="http://root.cern.ch/root/html/TMatrixRow.html">TMatrixRow</a>, <a href="./TMbsControl.html">TMbsControl</a>, <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>, <a href="./TMbsReadoutProc.html">TMbsReadoutProc</a>, <a href="./TMbsTriggerModule.html">TMbsTriggerModule</a>, <a href="http://root.cern.ch/root/html/TMethodCall.html">TMethodCall</a>, <a href="http://root.cern.ch/root/html/TMonitor.html">TMonitor</a>, <a href="./TMrbAnalyze.html">TMrbAnalyze</a>, <a href="./TMrbDGFData.html">TMrbDGFData</a>, <a href="./TMrbDGFEvent.html">TMrbDGFEvent</a>, <a href="./TMrbEnv.html">TMrbEnv</a>, <a href="./TMrbEsone.html">TMrbEsone</a>, <a href="./TMrbEsoneCNAF.html">TMrbEsoneCNAF</a>, <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a>, <a href="./TMrbIOSpec.html">TMrbIOSpec</a>, <a href="./TMrbLogMessage.html">TMrbLogMessage</a>, <a href="./TMrbModuleListEntry.html">TMrbModuleListEntry</a>, <a href="./TMrbModuleRegister.html">TMrbModuleRegister</a>, <a href="./TMrbParamListEntry.html">TMrbParamListEntry</a>, <a href="./TMrbSystem.html">TMrbSystem</a>, <a href="./TMrbTemplate.html">TMrbTemplate</a>, <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>, <a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a>, <a href="http://root.cern.ch/root/html/TObjectTable.html">TObjectTable</a>, <a href="http://root.cern.ch/root/html/TPluginHandler.html">TPluginHandler</a>, <a href="http://root.cern.ch/root/html/TPluginManager.html">TPluginManager</a>, <a href="http://root.cern.ch/root/html/TPoints3DABC.html">TPoints3DABC</a>, <a href="http://root.cern.ch/root/html/TPolyLine.html">TPolyLine</a>, <a href="http://root.cern.ch/root/html/TPolyLine3D.html">TPolyLine3D</a>, <a href="http://root.cern.ch/root/html/TPolyMarker.html">TPolyMarker</a>, <a href="http://root.cern.ch/root/html/TPolyMarker3D.html">TPolyMarker3D</a>, <a href="http://root.cern.ch/root/html/TRealData.html">TRealData</a>, <a href="http://root.cern.ch/root/html/TRef.html">TRef</a>, <a href="http://root.cern.ch/root/html/TSQLResult.html">TSQLResult</a>, <a href="http://root.cern.ch/root/html/TSQLRow.html">TSQLRow</a>, <a href="http://root.cern.ch/root/html/TSQLServer.html">TSQLServer</a>, <a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a>, <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a>, <a href="./TSnkDDAMessage.html">TSnkDDAMessage</a>, <a href="http://root.cern.ch/root/html/TSplinePoly.html">TSplinePoly</a>, <a href="http://root.cern.ch/root/html/TStopwatch.html">TStopwatch</a>, <a href="http://root.cern.ch/root/html/TSysEvtHandler.html">TSysEvtHandler</a>, <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a>, <a href="./TUsrDeadTime.html">TUsrDeadTime</a>, <a href="./TUsrEvent.html">TUsrEvent</a>, <a href="./TUsrHit.html">TUsrHit</a>, <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a>, <a href="http://root.cern.ch/root/html/TVector.html">TVector</a>, <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>, <a href="http://root.cern.ch/root/html/TView.html">TView</a>, <a href="http://root.cern.ch/root/html/TVirtualFitter.html">TVirtualFitter</a>, <a href="http://root.cern.ch/root/html/TVirtualHistPainter.html">TVirtualHistPainter</a>, <a href="http://root.cern.ch/root/html/TVirtualMutex.html">TVirtualMutex</a>, <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>, <a href="http://root.cern.ch/root/html/TVirtualTreePlayer.html">TVirtualTreePlayer</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TObject:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:06 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

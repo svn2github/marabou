@@ -1,0 +1,68 @@
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt%%SEVT_NAME_UC%%
+// Purpose:        Define a user-specific subevent class
+// Description:    %%SEVT_TITLE%%
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
+
+// declare all parent events as friends
+// so user may address subevent data directly from event level
+%%BeginOfCode%%
+	friend class TUsrEvt$className;
+%%EndOfCode%%
+%%SEVT_FRIENDS%%
+
+	public:
+		TUsrSevt%%SEVT_NAME_UC%%() {			// default ctor
+			fSevtName = "%%SEVT_NAME_LC%%";
+		};
+		~TUsrSevt%%SEVT_NAME_UC%%() {};			// default dtor
+
+		inline const Char_t * GetName() { return(fSevtName.Data()); };
+
+		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
+		Bool_t BookParams();					// book params
+%%BeginOfCode%%
+%R% 		void Reset(Int_t InitValue = $iniVal);		// reset param data
+%N% 		Bool_t BookHistograms();				// book histograms
+%N% 		Bool_t FillHistograms();				// fill histograms
+%P% 		Bool_t Book$evtNameUCHistograms();		// book private histos for event $evtNameLC
+%P% 		Bool_t Fill$evtNameUCHistograms();		// fill private histos for event $evtNameLC
+%%EndOfCode%%
+%%SEVT_PRIVATE_HISTOGRAMS%%
+		Bool_t AddBranch(TTree * Tree);				// add a branch to the tree
+		Bool_t InitializeBranch(TTree * Tree);		// init branch addresses (replay mode only)
+		inline Int_t GetTimeStamp() { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
+		
+//%%SEVT_USER_METHODS%%			user-specific methods may be included here
+
+												// get param addr (method needed to access params from outside, eg. in macros)
+%%BeginOfCode%%
+%S%		inline $dataType * GetAddr$paramNameUC() { return(&$paramNameLC); };	// addr of $paramNameLC
+%S%		inline $dataType Get$paramNameUC() { return($paramNameLC); };	// value of $paramNameLC
+%X%		inline $dataType * GetAddr$paramNameUC() { return($paramNameLC); };	// addr of $paramNameLC
+%X%		inline $dataType Get$paramNameUC(Int_t Offset) { return($paramNameLC[Offset]); };	// value of $paramNameLC[n]
+%A%		inline $dataType * GetAddr(Int_t Offset) { return(&fData[Offset]); };	// addr of subevent data
+%A%		inline $dataType Get(Int_t Offset) { return(fData[Offset]); };		// value of data[n]
+%%EndOfCode%%
+%%SEVT_DEFINE_ADDR%%
+
+	protected:
+		TString fSevtName;						//! subevent name
+
+// define private data members here
+%%BeginOfCode%%	
+%S% 		$dataType $paramNameLC; 				// $sevtNameLC.$paramNameLC
+%X% 		$dataType $paramNameLC[$indexRange];			// $sevtNameLC.$paramNameLC
+%A% 		$dataType fData[$nofParams];
+%%EndOfCode%%
+%%SEVT_PRIVATE_DATA%%
+
+//%%SEVT_USER_DATA%%			user-specific data members may be included here
+		
+	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)			// [Analyze] Store subevent data in hit buffer
+};

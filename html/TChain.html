@@ -1,0 +1,123 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TChain</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TChain:description">class description</a> - <a href="src/TChain.cxx.html">source file</a> - <a href="TChain_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TChain" href="TChain.h">TChain</a> : public <a href="http://root.cern.ch/root/html/TTree.html">TTree</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TChain.html">TChain</a> <!--TAB--><!--BOLD--><a href="#TChain:TChain">TChain</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TChain.html">TChain</a> <!--TAB--><!--BOLD--><a href="#TChain:TChain">TChain</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:~TChain">~TChain</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TChain.html">TChain</a>* chain)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Add">Add</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = <a href="http://root.cern.ch/root/html/TChain.html#TChain:kBigNumber">kBigNumber</a>)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:AddFile">AddFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TFriendElement.html">TFriendElement</a>* <!--TAB--><!--BOLD--><a href="#TChain:AddFriend">AddFriend</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* chainname, const <a href="ListOfTypes.html#char">char</a>* dummy)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TFriendElement.html">TFriendElement</a>* <!--TAB--><!--BOLD--><a href="#TChain:AddFriend">AddFriend</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* chainname, <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* dummy)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->               static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TChain:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:CreatePackets">CreatePackets</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Draw">Draw</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, <a href="http://root.cern.ch/root/html/TCut.html">TCut</a> selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = <a href="http://root.cern.ch/root/html/TChain.html#TChain:kBigNumber">kBigNumber</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Draw">Draw</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* varexp, const <a href="ListOfTypes.html#char">char</a>* selection, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = <a href="http://root.cern.ch/root/html/TChain.html#TChain:kBigNumber">kBigNumber</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Fill">Fill</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TBranch.html">TBranch</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetBranch">GetBranch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetChainEntryNumber">GetChainEntryNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetEntries">GetEntries</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetEntry">GetEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> getall = 0)
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetFile">GetFile</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TLeaf.html">TLeaf</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetLeaf">GetLeaf</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetListOfBranches">GetListOfBranches</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetListOfFiles">GetListOfFiles</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetListOfLeaves">GetListOfLeaves</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetMaximum">GetMaximum</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* columname)
+<!--TAB6-->                 static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetMaxMergeSize">GetMaxMergeSize</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetMinimum">GetMinimum</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* columname)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetNbranches">GetNbranches</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetNtrees">GetNtrees</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetStatus">GetStatus</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetTree">GetTree</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetTreeNumber">GetTreeNumber</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TChain:GetTreeOffset">GetTreeOffset</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetTreeOffsetLen">GetTreeOffsetLen</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TChain:GetWeight">GetWeight</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TChain:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:LoadTree">LoadTree</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> entry)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:Loop">Loop</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = <a href="http://root.cern.ch/root/html/TChain.html#TChain:kBigNumber">kBigNumber</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Merge">Merge</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Merge">Merge</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* file, <a href="ListOfTypes.html#Int_t">Int_t</a> basketsize, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Process">Process</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = <a href="http://root.cern.ch/root/html/TChain.html#TChain:kBigNumber">kBigNumber</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TChain:Process">Process</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a>* selector, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, <a href="ListOfTypes.html#Int_t">Int_t</a> nentries = <a href="http://root.cern.ch/root/html/TChain.html#TChain:kBigNumber">kBigNumber</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> firstentry = 0)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:Reset">Reset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:SetBranchAddress">SetBranchAddress</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* bname, <a href="ListOfTypes.html#void">void</a>* add)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:SetBranchStatus">SetBranchStatus</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* bname, <a href="ListOfTypes.html#Bool_t">Bool_t</a> status = 1)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:SetDirectory">SetDirectory</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TDirectory.html">TDirectory</a>* dir)
+<!--TAB6-->                  static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:SetMaxMergeSize">SetMaxMergeSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> maxsize = 1900000000)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:SetPacketSize">SetPacketSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> size = 100)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:SetWeight">SetWeight</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> w = 1, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TChain:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TChain:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TChain:fTreeOffsetLen">fTreeOffsetLen</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTreeOffsetLen">Current size of fTreeOffset array</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TChain:fNtrees">fNtrees</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNtrees">Number of Trees</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TChain:fTreeNumber">fTreeNumber</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTreeNumber">! Current Tree number in fTreeOffset table</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TChain:fTreeOffset">fTreeOffset</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTreeOffset">[fTreeOffsetLen]Array of variables</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a name="TChain:fTree">fTree</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTree">! Pointer to current tree</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <!--TAB--><!--BOLD--><a name="TChain:fFile">fFile</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fFile">! Pointer to current file</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a name="TChain:fFiles">fFiles</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFiles">-&gt;  List of file names containing the Trees</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TChain:fStatus">fStatus</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fStatus">-&gt;  List of active/inactive branches</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TChain:fgMaxMergeSize">fgMaxMergeSize</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgMaxMergeSize">Maximum size of a merged file</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TChain:kGlobalWeight">kGlobalWeight</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kGlobalWeight"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TChain:kBigNumber">kBigNumber</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kBigNumber"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TChain:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:12 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TNamedString</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TNamedString:description">class description</a> - <a href="src/TNamedString.cxx.html">source file</a> - <a href="TNamedString_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TNamedString" href="TNamedString.h">TNamedString</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <!--TAB--><!--BOLD--><a href="#TNamedString:TNamedString">TNamedString</a><!--PLAIN-->()
+<!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <!--TAB--><!--BOLD--><a href="#TNamedString:TNamedString">TNamedString</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* name)
+<!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <!--TAB--><!--BOLD--><a href="#TNamedString:TNamedString">TNamedString</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* text)
+<!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <!--TAB--><!--BOLD--><a href="#TNamedString:TNamedString">TNamedString</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; name, const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text)
+<!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <!--TAB--><!--BOLD--><a href="#TNamedString:TNamedString">TNamedString</a><!--PLAIN-->(const <a href="./TNamedString.html">TNamedString</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamedString:~TNamedString">~TNamedString</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TNamedString:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNamedString:FromFile">FromFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* fname)
+<!--TAB6-->        const <a href="ListOfTypes.html#Text_t">Text_t</a>* <!--TAB--><!--BOLD--><a href="#TNamedString:GetText">GetText</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TNamedString:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNamedString:Length">Length</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamedString:Print">Print</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamedString:SetText">SetText</a><!--PLAIN-->(<a href="ListOfTypes.html#Text_t">Text_t</a>* text)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamedString:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamedString:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNamedString:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNamedString:ToFile">ToFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* fname)
+</pre>
+
+<h3><!--TAB2-->  <a name="TNamedString:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TNamedString:fString">fString</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fString">the wrapped TString</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TNamedString:description">Class Description</a></h2>
+<pre>
+ This class wraps e <a href="http://root.cern.ch/root/html/TString.html">TString</a> into a <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> object, this allows
+ the <a href="http://root.cern.ch/root/html/TString.html">TString</a> to written to a root file and retrieved by name
+_________________________________________________________________________
+</pre><hr>
+<!--FUNCTION--> <a name="TNamedString:TNamedString" href="src/TNamedString.cxx.html#TNamedString:TNamedString">TNamedString</a>(const <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; name, const <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; text):
+   <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>(name.Data(),"") <br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TNamedString:FromFile" href="src/TNamedString.cxx.html#TNamedString:FromFile">FromFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * fname)<br>
+<pre>_________________________________________________________________________
+
+   fill string from file
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TNamedString:ToFile" href="src/TNamedString.cxx.html#TNamedString:ToFile">ToFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * fname)<br>
+<pre>_________________________________________________________________________
+
+   write  string to file
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <a name="TNamedString:TNamedString" href="TNamedString.h">TNamedString</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* name)
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <a name="TNamedString:TNamedString" href="TNamedString.h">TNamedString</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* text)
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <a name="TNamedString:TNamedString" href="TNamedString.h">TNamedString</a>(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; name, const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TNamedString:SetText" href="TNamedString.h">SetText</a>(<a href="ListOfTypes.html#Text_t">Text_t</a>* text)
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Text_t">Text_t</a>* <a name="TNamedString:GetText" href="TNamedString.h">GetText</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TNamedString:Length" href="TNamedString.h">Length</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TNamedString:Print" href="TNamedString.h">Print</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TNamedString:Class" href="TNamedString.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TNamedString:IsA" href="TNamedString.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TNamedString:ShowMembers" href="TNamedString.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TNamedString:Streamer" href="TNamedString.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TNamedString:StreamerNVirtual" href="TNamedString.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TNamedString.html">TNamedString</a> <a name="TNamedString:TNamedString" href="TNamedString.h">TNamedString</a>(const <a href="./TNamedString.html">TNamedString</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TNamedString:~TNamedString" href="TNamedString.h">~TNamedString</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:05 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

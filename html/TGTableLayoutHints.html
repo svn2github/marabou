@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGTableLayoutHints</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGTableLayoutHints:description">class description</a> - <a href="src/TGTableLayoutHints.cxx.html">source file</a> - <a href="TGTableLayoutHints_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGTableLayoutHints" href="TGTableLayout.h">TGTableLayoutHints</a> : public <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTableLayoutHints.html">TGTableLayoutHints</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:TGTableLayoutHints">TGTableLayoutHints</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> attach_left, <a href="ListOfTypes.html#UInt_t">UInt_t</a> attach_right, <a href="ListOfTypes.html#UInt_t">UInt_t</a> attach_top, <a href="ListOfTypes.html#UInt_t">UInt_t</a> attach_bottom, <a href="ListOfTypes.html#ULong_t">ULong_t</a> hints = kLHintsNormal, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padleft = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padright = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padtop = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> padbottom = 0)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTableLayoutHints.html">TGTableLayoutHints</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:TGTableLayoutHints">TGTableLayoutHints</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGTableLayoutHints.html">TGTableLayoutHints</a>&amp;)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:~TGTableLayoutHints">~TGTableLayoutHints</a><!--PLAIN-->()
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:GetAttachBottom">GetAttachBottom</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:GetAttachLeft">GetAttachLeft</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:GetAttachRight">GetAttachRight</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:GetAttachTop">GetAttachTop</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayoutHints:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGTableLayoutHints:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayoutHints:fAttachLeft">fAttachLeft</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAttachLeft">Column/row division number on which</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayoutHints:fAttachRight">fAttachRight</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fAttachRight">to attach the frame.  Starts at 0</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayoutHints:fAttachTop">fAttachTop</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fAttachTop">and goes to # columns / # rows</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayoutHints:fAttachBottom">fAttachBottom</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAttachBottom">respectively</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGTableLayoutHints:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

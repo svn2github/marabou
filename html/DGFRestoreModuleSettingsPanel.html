@@ -1,0 +1,171 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFRestoreModuleSettingsPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFRestoreModuleSettingsPanel:description">class description</a> - <a href="src/DGFRestoreModuleSettingsPanel.cxx.html">source file</a> - <a href="DGFRestoreModuleSettingsPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFRestoreModuleSettingsPanel" href="DGFRestoreModuleSettingsPanel.h">DGFRestoreModuleSettingsPanel</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:LoadDatabase">LoadDatabase</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:DGFRestoreModuleSettingsPanel">DGFRestoreModuleSettingsPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
+<!--TAB6-->      <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:DGFRestoreModuleSettingsPanel">DGFRestoreModuleSettingsPanel</a><!--PLAIN-->(const <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a>&amp; f)
+<!--TAB6-->                       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:~DGFRestoreModuleSettingsPanel">~DGFRestoreModuleSettingsPanel</a><!--PLAIN-->()
+<!--TAB6-->                     static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->                     virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->                    virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->                       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                               <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFRestoreModuleSettingsPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFRestoreModuleSettingsPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fHeap">fHeap</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fModules">fModules</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fModules">module list</a></i>
+<!--TAB6-->        <a href="./TGMrbCheckButtonList.html">TGMrbCheckButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fCluster">fCluster[20]</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCluster"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fGroupFrame">fGroupFrame</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fGroupFrame"></a></i>
+<!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fGroupSelect">fGroupSelect[6]</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fGroupSelect"></a></i>
+<!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fAllSelect">fAllSelect</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fAllSelect"></a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fActionFrame">fActionFrame</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fActionFrame"></a></i>
+<!--TAB6-->         <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fActionButtons">fActionButtons</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fActionButtons"></a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fActions">fActions</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fActions">text buttons:	actions to be taken</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fLofModuleKeys">fLofModuleKeys[20]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofModuleKeys"></a></i>
+<!--TAB6-->               <a href="./TGMrbFocusList.html">TGMrbFocusList</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fFocusList">fFocusList</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFocusList"></a></i>
+<!--TAB6-->          <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:EDGFRestoreModuleSettingsActionsId">DGFRestoreModuleSettingsPanel::EDGFRestoreModuleSettingsActionsId</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kDGFRestoreModuleSettingsRestore">kDGFRestoreModuleSettingsRestore</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFRestoreModuleSettingsRestore"></a></i>
+<!--TAB6-->      static const <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:EDGFRestoreModuleSettingsActionsId">DGFRestoreModuleSettingsPanel::EDGFRestoreModuleSettingsActionsId</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kDGFRestoreModuleSettingsClose">kDGFRestoreModuleSettingsClose</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFRestoreModuleSettingsClose"></a></i>
+<!--TAB6-->      static const <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:EDGFRestoreModuleSettingsActionsId">DGFRestoreModuleSettingsPanel::EDGFRestoreModuleSettingsActionsId</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kDGFRestoreModuleSettingsSelectAll">kDGFRestoreModuleSettingsSelectAll</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFRestoreModuleSettingsSelectAll"></a></i>
+<!--TAB6-->      static const <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:EDGFRestoreModuleSettingsActionsId">DGFRestoreModuleSettingsPanel::EDGFRestoreModuleSettingsActionsId</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kDGFRestoreModuleSettingsSelectNone">kDGFRestoreModuleSettingsSelectNone</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFRestoreModuleSettingsSelectNone"></a></i>
+<!--TAB6-->      static const <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:EDGFRestoreModuleSettingsActionsId">DGFRestoreModuleSettingsPanel::EDGFRestoreModuleSettingsActionsId</a> <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kDGFRestoreModuleSettingsSelectColumn">kDGFRestoreModuleSettingsSelectColumn</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFRestoreModuleSettingsSelectColumn"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->                            <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->                           <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                               <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->                            <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kNumEntryWidth">kNumEntryWidth</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:kNumEntryWidth"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                              <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                                                         static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFRestoreModuleSettingsPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->                           <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFRestoreModuleSettingsPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Restore settings
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFRestoreModuleSettingsPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFRestoreModuleSettingsPanel:DGFRestoreModuleSettingsPanel" href="src/DGFRestoreModuleSettingsPanel.cxx.html#DGFRestoreModuleSettingsPanel:DGFRestoreModuleSettingsPanel">DGFRestoreModuleSettingsPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options)
+														: <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, MainFrame, Width, Height, Options) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a>
+ Purpose:        DGF Viewer: Setup Panel
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame -- main frame
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options       -- options
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFRestoreModuleSettingsPanel:ProcessMessage" href="src/DGFRestoreModuleSettingsPanel.cxx.html#DGFRestoreModuleSettingsPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:ProcessMessage">DGFRestoreModuleSettingsPanel::ProcessMessage</a>
+ Purpose:        Message handler for the setup panel
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFRestoreModuleSettingsPanel:LoadDatabase" href="src/DGFRestoreModuleSettingsPanel.cxx.html#DGFRestoreModuleSettingsPanel:LoadDatabase">LoadDatabase</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFRestoreModuleSettingsPanel.html#DGFRestoreModuleSettingsPanel:LoadDatabase">DGFRestoreModuleSettingsPanel::LoadDatabase</a>
+ Purpose:        Restore DGF settings from file
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Restores DGF settings.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a> <a name="DGFRestoreModuleSettingsPanel:DGFRestoreModuleSettingsPanel" href="DGFRestoreModuleSettingsPanel.h">DGFRestoreModuleSettingsPanel</a>(const <a href="./DGFRestoreModuleSettingsPanel.html">DGFRestoreModuleSettingsPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#void">void</a> <a name="DGFRestoreModuleSettingsPanel:CloseWindow" href="DGFRestoreModuleSettingsPanel.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFRestoreModuleSettingsPanel:HandleKey" href="DGFRestoreModuleSettingsPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFRestoreModuleSettingsPanel:Class" href="DGFRestoreModuleSettingsPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFRestoreModuleSettingsPanel:IsA" href="DGFRestoreModuleSettingsPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#void">void</a> <a name="DGFRestoreModuleSettingsPanel:ShowMembers" href="DGFRestoreModuleSettingsPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#void">void</a> <a name="DGFRestoreModuleSettingsPanel:Streamer" href="DGFRestoreModuleSettingsPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#void">void</a> <a name="DGFRestoreModuleSettingsPanel:StreamerNVirtual" href="DGFRestoreModuleSettingsPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#void">void</a> <a name="DGFRestoreModuleSettingsPanel:~DGFRestoreModuleSettingsPanel" href="DGFRestoreModuleSettingsPanel.h">~DGFRestoreModuleSettingsPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:56 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGNumberEntryField</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGNumberEntryField:description">class description</a> - <a href="src/TGNumberEntryField.cxx.html">source file</a> - <a href="TGNumberEntryField_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGNumberEntryField" href="TGNumberEntry.h">TGNumberEntryField</a> : public <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>, public <a href="http://root.cern.ch/root/html/TGNumberFormat.html">TGNumberFormat</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:TGNumberEntryField">TGNumberEntryField</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#Int_t">Int_t</a> id, <a href="ListOfTypes.html#Double_t">Double_t</a> val, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm, <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = GetDefaultFontStruct(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = kSunkenFrame|kDoubleBorder, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetWhitePixel())
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:TGNumberEntryField">TGNumberEntryField</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#Double_t">Double_t</a> val = 0, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> style = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNESReal">kNESReal</a>, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> attr = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNEAAnyNumber">kNEAAnyNumber</a>, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> limits = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNELNoLimits">kNELNoLimits</a>, <a href="ListOfTypes.html#Double_t">Double_t</a> min = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> max = 1)
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:TGNumberEntryField">TGNumberEntryField</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a>&amp;)
+<!--TAB6-->                                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:~TGNumberEntryField">~TGNumberEntryField</a><!--PLAIN-->()
+<!--TAB6-->                          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetCharWidth">GetCharWidth</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text = "0") const
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetDate">GetDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; year, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; month, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; day) const
+<!--TAB6-->                         virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetHexNumber">GetHexNumber</a><!--PLAIN-->() const
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetIntNumber">GetIntNumber</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetNumAttr">GetNumAttr</a><!--PLAIN-->() const
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetNumber">GetNumber</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetNumLimits">GetNumLimits</a><!--PLAIN-->() const
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetNumMax">GetNumMax</a><!--PLAIN-->() const
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetNumMin">GetNumMin</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetNumStyle">GetNumStyle</a><!--PLAIN-->() const
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:GetTime">GetTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; hour, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; min, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; sec) const
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:HandleFocusChange">HandleFocusChange</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:IncreaseNumber">IncreaseNumber</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStepSize">TGNumberFormat::EStepSize</a> step = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNSSSmall">kNSSSmall</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> sign = 1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> logstep = kFALSE)
+<!--TAB6-->                         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:IsLogStep">IsLogStep</a><!--PLAIN-->() const
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:ReturnPressed">ReturnPressed</a><!--PLAIN-->()
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetDate">SetDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> year, <a href="ListOfTypes.html#Int_t">Int_t</a> month, <a href="ListOfTypes.html#Int_t">Int_t</a> day)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetFormat">SetFormat</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> style, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> attr = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNEAAnyNumber">kNEAAnyNumber</a>)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetHexNumber">SetHexNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> val)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetIntNumber">SetIntNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> val)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetLimits">SetLimits</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> limits = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNELNoLimits">kNELNoLimits</a>, <a href="ListOfTypes.html#Double_t">Double_t</a> min = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> max = 1)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetLogStep">SetLogStep</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> on = kTRUE)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetNumber">SetNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetState">SetState</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> state)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetText">SetText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:SetTime">SetTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> hour, <a href="ListOfTypes.html#Int_t">Int_t</a> min, <a href="ListOfTypes.html#Int_t">Int_t</a> sec)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntryField:TextChanged">TextChanged</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text = "0")
+</pre>
+
+<h3><!--TAB2-->  <a name="TGNumberEntryField:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fNeedsVerification">fNeedsVerification</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNeedsVerification">Needs verification of input</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fNumStyle">fNumStyle</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNumStyle">Number style</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fNumAttr">fNumAttr</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNumAttr">Number attribute</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fNumLimits">fNumLimits</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNumLimits">Limit attributes</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fNumMin">fNumMin</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fNumMin">Lower limit</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fNumMax">fNumMax</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fNumMax">Upper limit</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGNumberEntryField:fStepLog">fStepLog</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fStepLog">Logarithmic steps for increase?</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGNumberEntryField:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

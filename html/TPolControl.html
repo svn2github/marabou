@@ -1,0 +1,487 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TPolControl</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TPolControl:description">class description</a> - <a href="src/TPolControl.cxx.html">source file</a> - <a href="TPolControl_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TPolControl" href="TPolControl.h">TPolControl</a> : public <a href="./TMrbSerialComm.html">TMrbSerialComm</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:CheckAdcChannel">CheckAdcChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method = "NULL")
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:CheckAdcChannel">CheckAdcChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method = "NULL")
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:CheckDacChannel">CheckDacChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method = "NULL")
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:CheckDacChannel">CheckDacChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method = "NULL")
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:CheckDacValue">CheckDacValue</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method = "NULL")
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:CheckSubdev">CheckSubdev</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method = "NULL")
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TPolControl.html">TPolControl</a> <!--TAB--><!--BOLD--><a href="#TPolControl:TPolControl">TPolControl</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Device = "/dev/ttyS0")
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:~TPolControl">~TPolControl</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:AddName">AddName</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* NameString)
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:AddName">AddName</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Int_t">Int_t</a> Subdevice, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Type = "A", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Comment = "NULL")
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:ClearNameTable">ClearNameTable</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:Draw">Draw</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:Plot">Plot</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HistoName, <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> X, <a href="ListOfTypes.html#Int_t">Int_t</a> Y, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> Steps, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Xaxis = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Yaxis = "NULL")
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:Plot">Plot</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HistoName, <a href="ListOfTypes.html#Int_t">Int_t</a> X, <a href="ListOfTypes.html#Int_t">Int_t</a> Y, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> Steps, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Xaxis = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Yaxis = "NULL")
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TPolControl:Plot">Plot</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* HistoName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* X, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Y, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> Steps, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Xaxis = "NULL", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Yaxis = "NULL")
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:PrintNameTable">PrintNameTable</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:ReadAdc">ReadAdc</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:ReadAdc">ReadAdc</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:ReadAdc">ReadAdc</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ChnName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:ReadNameTable">ReadNameTable</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName = "polNames.dat")
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:SetDac">SetDac</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, <a href="ListOfTypes.html#Int_t">Int_t</a> ReadBack = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:SetDac">SetDac</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, <a href="ListOfTypes.html#Int_t">Int_t</a> ReadBack = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPolControl:SetDac">SetDac</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ChnName, <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ReadBack = "NULL", <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:SetSubdevs">SetSubdevs</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> S1, <a href="ListOfTypes.html#Int_t">Int_t</a> S2 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> S3 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> S4 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> S5 = -1)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:SetWait">SetWait</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> WaitAV, <a href="ListOfTypes.html#Int_t">Int_t</a> WaitAR = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> WaitSD = 0)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPolControl:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TPolControl:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a name="TPolControl:fHisto">fHisto</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fHisto">! histogram to store XY plot</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPolControl:fNameTableFile">fNameTableFile</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fNameTableFile">! file where to get names from</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TPolControl:fNofTableEntries">fNofTableEntries</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNofTableEntries">number of entries in name table</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TPolControl:fNameTable">fNameTable</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fNameTable">name table</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TPolControl:fSubdevPattern">fSubdevPattern</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSubdevPattern">bit pattern for subdevs</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TPolControl:fWaitAV">fWaitAV</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fWaitAV">wait states</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TPolControl:fWaitAR">fWaitAR</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fWaitAR"></a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TPolControl:fWaitSD">fWaitSD</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fWaitSD"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolNofAdcs">kPolNofAdcs</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kPolNofAdcs"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolNofDacs">kPolNofDacs</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kPolNofDacs"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolAdcRange">kPolAdcRange</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kPolAdcRange"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolDacRange">kPolDacRange</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kPolDacRange"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolMaxVoltage">kPolMaxVoltage</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kPolMaxVoltage"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolAdcBit">kPolAdcBit</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kPolAdcBit"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolDacBit">kPolDacBit</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kPolDacBit"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolChannelMask">kPolChannelMask</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kPolChannelMask"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolIdxName">kPolIdxName</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kPolIdxName"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolIdxSubdev">kPolIdxSubdev</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kPolIdxSubdev"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolIdxChannel">kPolIdxChannel</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kPolIdxChannel"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolIdxType">kPolIdxType</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kPolIdxType"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolIdxComment">kPolIdxComment</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kPolIdxComment"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TPolControl:kPolNofFields">kPolNofFields</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kPolNofFields"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TPolControl:description">Class Description</a></h2>
+<pre>
+ Name:           polar/src/<a href="./TPolControl.html">TPolControl</a>.cxx
+ Purpose:        Control of the polarized ion source
+ Description:    Implements methods to control Ralf Hertenberger's polarized ion source via RS232
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TPolControl:TPolControl" href="src/TPolControl.cxx.html#TPolControl:TPolControl">TPolControl</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Device) : <a href="./TMrbSerialComm.html">TMrbSerialComm</a>(Device) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TPolControl.html">TPolControl</a>
+ Purpose:        Control the polarized ion source
+ Description:    Class to control Ralf's polarized ion source via RS232.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:ReadAdc" href="src/TPolControl.cxx.html#TPolControl:ReadAdc">ReadAdc</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:ReadAdc">TPolControl::ReadAdc</a>
+ Purpose:        Read ADC value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev          -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- (relative) adc channel to be read
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution  -- read high/low resolution adc
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> AdcValue        -- adc value
+ Exceptions:     Value=-1 on error
+ Description:    Reads data from given adc channel
+                 either with high or low resolution.
+                 Channel adressing is RELATIVE to subdevice.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:ReadAdc" href="src/TPolControl.cxx.html#TPolControl:ReadAdc">ReadAdc</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:ReadAdc">TPolControl::ReadAdc</a>
+ Purpose:        Read ADC value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- (absolute) adc channel to be read
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution  -- read high/low resolution adc
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> AdcValue        -- adc value
+ Exceptions:     Value=-1 on error
+ Description:    Reads data from given adc channel
+                 either with high or low resolution.
+                 Channel adressing is ABSOLUTE.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:ReadAdc" href="src/TPolControl.cxx.html#TPolControl:ReadAdc">ReadAdc</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ChnName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:ReadAdc">TPolControl::ReadAdc</a>
+ Purpose:        Read ADC value
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ChnName      -- channel name
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution  -- read high/low resolution adc
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> AdcValue        -- adc value
+ Exceptions:     Value=-1 on error
+ Description:    Reads data from given adc channel
+                 either with high or low resolution.
+                 Channel adressing is BY NAME.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:SetDac" href="src/TPolControl.cxx.html#TPolControl:SetDac">SetDac</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, <a href="ListOfTypes.html#Int_t">Int_t</a> ReadBack, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:SetDac">TPolControl::SetDac</a>
+ Purpose:        Set DAC value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel      -- (absolute) dac channel to be addressed
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue     -- value to be set
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ReadBack        -- (absolute) adc channel for readback
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution  -- read with high/low resolution
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> AdcValue        -- adc value read back
+ Exceptions:     Value=-1 on error
+ Description:    Sets given dac channel and reads result from readback adc.
+                 Channel adressing is ABSOLUTE.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:SetDac" href="src/TPolControl.cxx.html#TPolControl:SetDac">SetDac</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, <a href="ListOfTypes.html#Int_t">Int_t</a> ReadBack, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:SetDac">TPolControl::SetDac</a>
+ Purpose:        Set DAC value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev          -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- (relative) dac channel to be addressed
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue     -- value to be set
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ReadBack        -- (relative) adc channel for readback
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution  -- read with high/low resolution
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> AdcValue        -- adc value read back
+ Exceptions:     Value=-1 on error
+ Description:    Sets given dac channel and reads result from readback adc
+                 Channel adressing is RELATIVE to subdevice.
+                 Dac channel and readback adc have to be taken from SAME subdevice.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:SetDac" href="src/TPolControl.cxx.html#TPolControl:SetDac">SetDac</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ChnName, <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, const <a href="ListOfTypes.html#Char_t">Char_t</a> *  ReadBack, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:SetDac">TPolControl::SetDac</a>
+ Purpose:        Set DAC value
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ChnName      -- channel name
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue     -- value to be set
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ReadBack     -- adc channel for readback
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> LowResolution  -- read with high/low resolution
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> AdcValue        -- adc value read back
+ Exceptions:     Value=-1 on error
+ Description:    Sets given dac channel and reads result from readback adc
+                 Channel adressing is BY NAME.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <a name="TPolControl:Plot" href="src/TPolControl.cxx.html#TPolControl:Plot">Plot</a>(	const <a href="ListOfTypes.html#Char_t">Char_t</a> * HistoName,
+							<a href="ListOfTypes.html#Int_t">Int_t</a> X, <a href="ListOfTypes.html#Int_t">Int_t</a> Y,
+							<a href="ListOfTypes.html#Double_t">Double_t</a> Xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> Steps,
+							const <a href="ListOfTypes.html#Char_t">Char_t</a> * Xaxis, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Yaxis) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:Plot">TPolControl::Plot</a>
+ Purpose:        Plot Y = f(X)
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HistoName  -- name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> X             -- (absolute) dac channel X
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Y             -- (absolute) adc channel Y
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xmin       -- lower limit
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax       -- upper limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Steps         -- number of steps
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Xaxis      -- text X
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Yaxis      -- text Y
+ Results:        <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a> * Histogram    -- resulting histogram
+ Exceptions:
+ Description:    Take a plot. Channel adressing is ABSOLUTE.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <a name="TPolControl:Plot" href="src/TPolControl.cxx.html#TPolControl:Plot">Plot</a>(	const <a href="ListOfTypes.html#Char_t">Char_t</a> * HistoName,
+							<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> X, <a href="ListOfTypes.html#Int_t">Int_t</a> Y,
+							<a href="ListOfTypes.html#Double_t">Double_t</a> Xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> Steps,
+							const <a href="ListOfTypes.html#Char_t">Char_t</a> * Xaxis, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Yaxis) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:Plot">TPolControl::Plot</a>
+ Purpose:        Plot Y = f(X)
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HistoName  -- name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev        -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> X             -- (relative) dac channel X
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Y             -- (relative) adc channel Y
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xmin       -- lower limit
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax       -- upper limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Steps         -- number of steps
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Xaxis      -- text X
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Yaxis      -- text Y
+ Results:        <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a> * Histogram    -- resulting histogram
+ Exceptions:
+ Description:    Take a plot.
+                 Channel adressing is RELATIVE to subdevice.
+                 X and Y have to be taken from SAME subdevice.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <a name="TPolControl:Plot" href="src/TPolControl.cxx.html#TPolControl:Plot">Plot</a>(	const <a href="ListOfTypes.html#Char_t">Char_t</a> * HistoName,
+							const <a href="ListOfTypes.html#Char_t">Char_t</a> * X, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Y,
+							<a href="ListOfTypes.html#Double_t">Double_t</a> Xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> Steps,
+							const <a href="ListOfTypes.html#Char_t">Char_t</a> * Xaxis, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Yaxis) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:Plot">TPolControl::Plot</a>
+ Purpose:        Plot Y = f(X)
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * HistoName  -- name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> *  X         -- dac channel X
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> *  Y         -- adc channel Y
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xmin       -- lower limit
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xmax       -- upper limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Steps         -- number of steps
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Xaxis      -- text X
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Yaxis      -- text Y
+ Results:        <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a> * Histogram    -- resulting histogram
+ Exceptions:
+ Description:    Take a plot. Channel adressing is BY NAME.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TPolControl:Print" href="src/TPolControl.cxx.html#TPolControl:Print">Print</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:Print">TPolControl::Print</a>
+ Purpose:        Output settings to cout
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Outputs settings to cout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TPolControl:CheckAdcChannel" href="src/TPolControl.cxx.html#TPolControl:CheckAdcChannel">CheckAdcChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#char">char</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:CheckAdcChannel">TPolControl::CheckAdcChannel</a>
+ Purpose:        Check if adc channel legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev          -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- adc channel to be addressed
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Check if adc channel is legal.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TPolControl:CheckAdcChannel" href="src/TPolControl.cxx.html#TPolControl:CheckAdcChannel">CheckAdcChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, const <a href="ListOfTypes.html#char">char</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:CheckAdcChannel">TPolControl::CheckAdcChannel</a>
+ Purpose:        Check if adc channel legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel      -- adc channel to be addressed
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Check if adc channel is legal.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TPolControl:CheckDacChannel" href="src/TPolControl.cxx.html#TPolControl:CheckDacChannel">CheckDacChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#char">char</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:CheckDacChannel">TPolControl::CheckDacChannel</a>
+ Purpose:        Check if dac channel legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev          -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- dac channel to be addressed
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Check if dac channel is legal.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TPolControl:CheckDacChannel" href="src/TPolControl.cxx.html#TPolControl:CheckDacChannel">CheckDacChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> AbsChannel, const <a href="ListOfTypes.html#char">char</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:CheckDacChannel">TPolControl::CheckDacChannel</a>
+ Purpose:        Check if dac channel legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- adc channel to be addressed
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Check if dac channel is legal.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TPolControl:CheckDacValue" href="src/TPolControl.cxx.html#TPolControl:CheckDacValue">CheckDacValue</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> DacValue, const <a href="ListOfTypes.html#char">char</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:CheckDacValue">TPolControl::CheckDacValue</a>
+ Purpose:        Check if dac value legal
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> DacValue     -- dac value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Check if dac value is legal.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TPolControl:CheckSubdev" href="src/TPolControl.cxx.html#TPolControl:CheckSubdev">CheckSubdev</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, const <a href="ListOfTypes.html#char">char</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:CheckSubdev">TPolControl::CheckSubdev</a>
+ Purpose:        Check if subdevice legal
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev          -- subdevice
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Check if subdevice is legal.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TPolControl:SetWait" href="src/TPolControl.cxx.html#TPolControl:SetWait">SetWait</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> WaitAV, <a href="ListOfTypes.html#Int_t">Int_t</a> WaitAR, <a href="ListOfTypes.html#Int_t">Int_t</a> WaitSD) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:SetWait">TPolControl::SetWait</a>
+ Purpose:        Set wait states
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> WaitAV     -- msecs to wait after AV command
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> WaitAR     -- msecs to wait after AR command
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> WaitSD     -- msecs to wait after SD command
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines several wait states.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TPolControl:SetSubdevs" href="src/TPolControl.cxx.html#TPolControl:SetSubdevs">SetSubdevs</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> S1, <a href="ListOfTypes.html#Int_t">Int_t</a> S2, <a href="ListOfTypes.html#Int_t">Int_t</a> S3, <a href="ListOfTypes.html#Int_t">Int_t</a> S4, <a href="ListOfTypes.html#Int_t">Int_t</a> S5) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:SetSubdevs">TPolControl::SetSubdevs</a>
+ Purpose:        Define list if subdevices
+ Arguments:      SX      -- subdevice #X
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines subdevices.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TPolControl:ReadNameTable" href="src/TPolControl.cxx.html#TPolControl:ReadNameTable">ReadNameTable</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * NameTableFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:ReadNameTable">TPolControl::ReadNameTable</a>
+ Purpose:        Read adc/dac specs from file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * NameTableFile   -- file name
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries         -- number of entries read
+ Exceptions:
+ Description:    Inputs adc/dac specs from file
+                 File format has to be:
+                      &lt;name&gt;:&lt;subdevice&gt;:&lt;channel&gt;:&lt;type&gt;[:&lt;comment&gt;]
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TPolControl:AddName" href="src/TPolControl.cxx.html#TPolControl:AddName">AddName</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
+													const <a href="ListOfTypes.html#Char_t">Char_t</a> * Type, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Comment) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:AddName">TPolControl::AddName</a>
+ Purpose:        Add an entry to name table
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Name         -- adc/dac name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Subdev          -- subdevice
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- channel
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Type         -- "A" for ADC, "D" for DAC
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Comment      -- comment
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Entry    -- table entry
+ Exceptions:
+ Description:    Adds one entry to name table
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TPolControl:AddName" href="src/TPolControl.cxx.html#TPolControl:AddName">AddName</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * NameString) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:AddName">TPolControl::AddName</a>
+ Purpose:        Add an entry to name table
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * NameString   -- string
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Entry    -- table entry
+ Exceptions:
+ Description:    Adds one entry to name table
+                 Format has to be:
+                      &lt;name&gt;:&lt;subdevice&gt;:&lt;channel&gt;:&lt;type&gt;[:&lt;comment&gt;]
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TPolControl:PrintNameTable" href="src/TPolControl.cxx.html#TPolControl:PrintNameTable">PrintNameTable</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TPolControl.html#TPolControl:PrintNameTable">TPolControl::PrintNameTable</a>
+ Purpose:        Output contents of name table
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Outputs name table to cout
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:ClearNameTable" href="TPolControl.h">ClearNameTable</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:Draw" href="TPolControl.h">Draw</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:Help" href="TPolControl.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TPolControl:Class" href="TPolControl.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TPolControl:IsA" href="TPolControl.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:ShowMembers" href="TPolControl.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:Streamer" href="TPolControl.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:StreamerNVirtual" href="TPolControl.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TPolControl:~TPolControl" href="TPolControl.h">~TPolControl</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:58:11 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

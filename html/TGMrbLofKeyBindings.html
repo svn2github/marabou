@@ -1,0 +1,152 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbLofKeyBindings</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbLofKeyBindings:description">class description</a> - <a href="src/TGMrbLofKeyBindings.cxx.html">source file</a> - <a href="TGMrbLofKeyBindings_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbLofKeyBindings" href="TGMrbLofKeyBindings.h">TGMrbLofKeyBindings</a> : public <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:TGMrbLofKeyBindings">TGMrbLofKeyBindings</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent = NULL)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:~TGMrbLofKeyBindings">~TGMrbLofKeyBindings</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:BindKey">BindKey</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Key, <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> Action = <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:kGMrbKeyActionAllDone">TGMrbLofKeyBindings::kGMrbKeyActionAllDone</a>)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:SetParent">SetParent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbLofKeyBindings:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:fParent">fParent</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fParent"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionAllDone">kGMrbKeyActionAllDone</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kGMrbKeyActionAllDone"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionExit">kGMrbKeyActionExit</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionExit"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionClose">kGMrbKeyActionClose</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kGMrbKeyActionClose"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionSave">kGMrbKeyActionSave</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionSave"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionRestore">kGMrbKeyActionRestore</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kGMrbKeyActionRestore"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionPrint">kGMrbKeyActionPrint</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kGMrbKeyActionPrint"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionOpen">kGMrbKeyActionOpen</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionOpen"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionNew">kGMrbKeyActionNew</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kGMrbKeyActionNew"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionFind">kGMrbKeyActionFind</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionFind"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionFindAgain">kGMrbKeyActionFindAgain</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kGMrbKeyActionFindAgain"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionUndo">kGMrbKeyActionUndo</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionUndo"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionPaste">kGMrbKeyActionPaste</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kGMrbKeyActionPaste"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionCopy">kGMrbKeyActionCopy</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionCopy"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionCut">kGMrbKeyActionCut</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kGMrbKeyActionCut"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionUser">kGMrbKeyActionUser</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionUser"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionAnyKey">kGMrbKeyActionAnyKey</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kGMrbKeyActionAnyKey"></a></i>
+<!--TAB6-->                           static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyModifierMask">kGMrbKeyModifierMask</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kGMrbKeyModifierMask"></a></i>
+<!--TAB6-->                           static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyIndexMask">kGMrbKeyIndexMask</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kGMrbKeyIndexMask"></a></i>
+<!--TAB6-->                           static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyModifierBit">kGMrbKeyModifierBit</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kGMrbKeyModifierBit"></a></i>
+<!--TAB6-->                           static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionMask">kGMrbKeyActionMask</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbKeyActionMask"></a></i>
+<!--TAB6-->                           static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGMrbLofKeyBindings:kGMrbKeyActionBit">kGMrbKeyActionBit</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kGMrbKeyActionBit"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbLofKeyBindings:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/<a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a>.cxx
+ Purpose:        MARaBOU utilities: Maintain a list of key bindings
+ Description:    Implements key handling
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbLofKeyBindings:TGMrbLofKeyBindings" href="src/TGMrbLofKeyBindings.cxx.html#TGMrbLofKeyBindings:TGMrbLofKeyBindings">TGMrbLofKeyBindings</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a>
+ Purpose:        Define key bindings
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent           -- parent window
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLofKeyBindings:BindKey" href="src/TGMrbLofKeyBindings.cxx.html#TGMrbLofKeyBindings:BindKey">BindKey</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Key, EGMrbKeyAction Action) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:BindKey">TGMrbLofKeyBindings::BindKey</a>
+ Purpose:        Define a key binding
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> Key       -- key code in ascii
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Modifier   -- modifier (ctrl, alt etc)
+                 EGMrbKeyAction   -- action to be taken
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a key binding.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLofKeyBindings:HandleKey" href="src/TGMrbLofKeyBindings.cxx.html#TGMrbLofKeyBindings:HandleKey">HandleKey</a>(Event_t * Event) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:HandleKey">TGMrbLofKeyBindings::HandleKey</a>
+ Purpose:        Handle a key
+ Arguments:      Event_t * Event  -- key event
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Handles a key. Calls ProcessMessage(kC_KEY, ...) for this window.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLofKeyBindings:SetParent" href="TGMrbLofKeyBindings.h">SetParent</a>(<a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLofKeyBindings:Help" href="TGMrbLofKeyBindings.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbLofKeyBindings:Class" href="TGMrbLofKeyBindings.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbLofKeyBindings:IsA" href="TGMrbLofKeyBindings.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLofKeyBindings:ShowMembers" href="TGMrbLofKeyBindings.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLofKeyBindings:Streamer" href="TGMrbLofKeyBindings.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLofKeyBindings:StreamerNVirtual" href="TGMrbLofKeyBindings.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLofKeyBindings:~TGMrbLofKeyBindings" href="TGMrbLofKeyBindings.h">~TGMrbLofKeyBindings</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:54:30 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

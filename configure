@@ -1,0 +1,50 @@
+#!/bin/sh
+
+# Very Very Simple configure script.
+#
+# Authors: O.Schaile
+
+if [ -z $INSTDIR ] ; then
+   echo WARNING, INSTDIR not defined
+   echo setting to: `pwd`
+   INSTDIR=`pwd`
+fi
+
+if [ $# -lt 1 ] ; then
+   ARCH=linux 
+else
+   ARCH=$1
+fi
+ARCHS=config/ARCHS
+MAKEIN=config/Makefile.in
+MAKEOUT=config/Makefile.config
+
+echo "ARCH           := $ARCH             " > $MAKEOUT
+echo "USECONFIG      := FALSE             " >> $MAKEOUT
+
+echo "EXTRA_CFLAGS   := -Iinclude         " >> $MAKEOUT
+echo "EXTRA_CXXFLAGS := -Iinclude         " >> $MAKEOUT
+echo "EXTRA_LDFLAGS  :=                   " >> $MAKEOUT
+
+echo "BINDIR         := $INSTDIR/bin      " >> $MAKEOUT
+echo "LIBDIR         := $INSTDIR/lib      " >> $MAKEOUT
+echo "OBJDIR         := $INSTDIR/obj      " >> $MAKEOUT
+echo "INCDIR         := $INSTDIR/include  " >> $MAKEOUT
+echo "ETCDIR         := $INSTDIR          " >> $MAKEOUT
+echo "DATADIR		   := $INSTDIR          " >> $MAKEOUT
+echo "MACRODIR  	   := $INSTDIR/macros   " >> $MAKEOUT
+echo "SRCDIR 		   := $INSTDIR/src      " >> $MAKEOUT
+echo "ICONPATH  	   := $INSTDIR/icons    " >> $MAKEOUT
+echo "DOCDIR 		   := $INSTDIR          " >> $MAKEOUT
+echo "TESTDIR		   := $INSTDIR/test     " >> $MAKEOUT
+echo "TUTDIR 		   := $INSTDIR/tutorials" >> $MAKEOUT
+
+echo "HTMLURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
+echo "DISTURL        := www.bl.physik.uni-muenchen.de" >> $MAKEOUT
+
+echo "INSTALL		   := cp -dpR            " >> $MAKEOUT
+echo "INSTALLDATA    := cp -dpR            " >> $MAKEOUT
+echo "INSTALLDIR	   := mkdir -p           " >> $MAKEOUT
+
+echo "UPLOADHTML     := ncftpput -m -R -u rg \$(HTMLURL) /marabou html" >> $MAKEOUT
+echo "UPLOADDIST     := ncftpput -m -u rg \$(DISTURL) /marabou" >> $MAKEOUT

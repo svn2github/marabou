@@ -1,0 +1,259 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbHelpBrowser</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbHelpBrowser:description">class description</a> - <a href="src/TMrbHelpBrowser.cxx.html">source file</a> - <a href="TMrbHelpBrowser_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbHelpBrowser" href="TMrbHelpBrowser.h">TMrbHelpBrowser</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddTagAtEOL">AddTagAtEOL</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:DisplayImage">DisplayImage</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; img_name)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:LineCount">LineCount</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; str, <a href="ListOfTypes.html#Int_t">Int_t</a>* longest_line)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:MoveOrigin">MoveOrigin</a><!--PLAIN-->()
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:NextAnchor">NextAnchor</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; anchor, <a href="ListOfTypes.html#Int_t">Int_t</a> search_from)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:NextHeading">NextHeading</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; heading, <a href="ListOfTypes.html#Int_t">Int_t</a> search_from)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:NextLine">NextLine</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; line, <a href="ListOfTypes.html#Bool_t">Bool_t</a> start)
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:NextTag">NextTag</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; tag, <a href="ListOfTypes.html#Int_t">Int_t</a> search_from)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:PreScan">PreScan</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; text, <a href="ListOfTypes.html#Bool_t">Bool_t</a> keep_references = kTRUE)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:Squeeze_EOL">Squeeze_EOL</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:Squeeze_White_Space">Squeeze_White_Space</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:TMrbHelpBrowser">TMrbHelpBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* InputFile = "0")
+<!--TAB6-->      <a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:TMrbHelpBrowser">TMrbHelpBrowser</a><!--PLAIN-->(const <a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:~TMrbHelpBrowser">~TMrbHelpBrowser</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddCanvas">AddCanvas</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* RootFile)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddGifFile">AddGifFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* GifFile)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddGifToRoot">AddGifToRoot</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* Input)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddHtml">AddHtml</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* InputFile)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddHtmlDir">AddHtmlDir</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* HtmlDir)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:AddHtmlFile">AddHtmlFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* HtmlFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> keep_references = kTRUE)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:Clear">Clear</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:DisplayMenu">DisplayMenu</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* menu, const <a href="ListOfTypes.html#char">char</a>* pattern)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:DrawText">DrawText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* hname, <a href="ListOfTypes.html#Int_t">Int_t</a> xoff = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> yoff = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:DrawText">DrawText</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a> ind, <a href="ListOfTypes.html#Int_t">Int_t</a> xoff = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> yoff = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:GetNofItems">GetNofItems</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:GetRootFile">GetRootFile</a><!--PLAIN-->()
+<!--TAB6-->          static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:HandleMouseClicks">HandleMouseClicks</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:Print">Print</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>* option = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:SetGifViewer">SetGifViewer</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* viewer)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:SetMaxLineLength">SetMaxLineLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> len)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:SetRootFile">SetRootFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* RootFile)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:SetTextFont">SetTextFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> font)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:SetTextSize">SetTextSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> size)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHelpBrowser:ToRootFile">ToRootFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* Input, const <a href="ListOfTypes.html#char">char</a>* RootFile, const <a href="ListOfTypes.html#char">char</a>* option = "UPDATE")
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbHelpBrowser:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fRootFile">fRootFile</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fRootFile"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fHtmlDir">fHtmlDir</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fHtmlDir"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fHelpList">fHelpList</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fHelpList"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fCanvasList">fCanvasList</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fCanvasList"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fWwX">fWwX</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fWwX"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fWwY">fWwY</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fWwY"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fX0">fX0</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fX0"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fY0">fY0</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fY0"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fScreen_w">fScreen_w</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fScreen_w"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fScreen_h">fScreen_h</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fScreen_h"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fTextSize">fTextSize</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTextSize">size in pixels</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fTextFont">fTextFont</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTextFont"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fMaxLineLength">fMaxLineLength</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMaxLineLength"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbHelpBrowser:fGifViewer">fGifViewer</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fGifViewer"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbHelpBrowser:description">Class Description</a></h2>
+<pre>
+ This class implements a simple HelpBrowser typically used in an interactive
+ application where a standard browser like Netscape appears to be too clumpsy
+ and takes away too much resources especially space on the screen.
+ It does n o t support internet references (e.g. http:) but only file refs.
+ It does n o t support display of the Web documentation of ROOT.
+
+It accepts input in HTML format but does not recognize all possible tags.
+ urrently only the following tags are recognized (others are just ignored):
+
+&lt;Hn&gt; 					  Heading i.e. highlight line
+&lt;B&gt;, &lt;I&gt; 				  bold, italic
+&lt;a NAME=xxx&gt; 			  an anchor
+&lt;a href=yyy&gt;text&lt;/a&gt; 	  a reference (may not be http:)
+&lt;img SRC=pict.canvas.gif&gt;  insert a gif picture
+
+The constructor is normally called with the name of a directory containing
+<a href="http://root.cern.ch/root/html/THtml.html">html</a>-files to be included into the documention.
+NB: A file index.<a href="http://root.cern.ch/root/html/THtml.html">html</a> containing the entry level hrefs should be
+    part of this directory.
+If the complete documentation is in one htmlfile the name of
+this file may be given instead.
+Also a ROOT-file containing ready made documentation can be given
+(see method ToRootFile below);
+More files / directories may be added using the method: AddHtml
+
+It chops text between references (&lt;a href=..) into help items.
+Text before the the first reference gets the name of the the file
+as name of the help item. This is useful to construct an index which
+works also for a normal browser like netscape.
+If a reference is clicked on only the text for this item is displayed.
+The window size is adjusted to the number of lines.
+It is assumed that the help text is preformatted, so no formatting
+is done except optionally breaking lines at fMaxLineLenght.
+A possible image is displayed in a separate window.
+
+As an extrension ROOT-files containing canvases may be
+defined. If an image with name "pict.canvas.gif" appears
+in the documentation a root-file with name "pict.canvas.root"
+is searched for in the same directory.
+i.e. the convention is to replace the suffix .gif by .root
+If not found xv is invoked for the gif-file.
+Otherwise the the canvas contained in the root-file is drawn.
+This allows a standard browser to be used and still have the possiblity
+to exploit the interactive features of root when showing a canvas.
+
+An example (for HistPresent) can be found <A HREF="hpr/index.html">here</A>.
+
+Use View Page source to see how it is done.
+</pre><hr>
+<!--FUNCTION-->  <a name="TMrbHelpBrowser:~TMrbHelpBrowser" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:~TMrbHelpBrowser">~TMrbHelpBrowser</a>()<br>
+<hr>
+<!--FUNCTION-->  <a name="TMrbHelpBrowser:TMrbHelpBrowser" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:TMrbHelpBrowser">TMrbHelpBrowser</a>(const <a href="ListOfTypes.html#char">char</a> * InputFile)
+              :<a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>("<a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a>", "<a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a>") <br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:SetTextSize" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:SetTextSize">SetTextSize</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> size)<br>
+<pre>  set character size (in pixels), supported are 8, 10, 12, 14, 16, 18, 24
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:SetMaxLineLength" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:SetMaxLineLength">SetMaxLineLength</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> len)<br>
+<pre>  if &gt; 0 lines will be broken at <a href="./TMrbHelpBrowser.html#TMrbHelpBrowser:fMaxLineLength">fMaxLineLength</a>
+  however the result is nomally quite mediocre
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:SetTextFont" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:SetTextFont">SetTextFont</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> font)<br>
+<pre>  set text font (see root doc) recommended are only courier fonts (80, 100),
+  proportional fonts like helvetica are not very useful
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:SetGifViewer" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:SetGifViewer">SetGifViewer</a>(const <a href="ListOfTypes.html#char">char</a> * viewer)<br>
+<pre> set a viewer for gif files, the default is xv
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:AddHtml" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddHtml">AddHtml</a>(const <a href="ListOfTypes.html#char">char</a> * InputFile)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:AddHtmlFile" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddHtmlFile">AddHtmlFile</a>(const <a href="ListOfTypes.html#char">char</a> * HtmlFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> keep_references)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:AddHtmlDir" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddHtmlDir">AddHtmlDir</a>(const <a href="ListOfTypes.html#char">char</a> * HtmlDir)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:AddGifToRoot" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddGifToRoot">AddGifToRoot</a>(const <a href="ListOfTypes.html#char">char</a> * Input)<br>
+<pre>
+  look in GifDir for files ending with .gif  or .root
+  and add to <a href="./TMrbHelpBrowser.html#TMrbHelpBrowser:fRootFile">fRootFile</a>
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:AddGifFile" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddGifFile">AddGifFile</a>(const <a href="ListOfTypes.html#char">char</a> * GifFile)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:AddCanvas" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddCanvas">AddCanvas</a>(const <a href="ListOfTypes.html#char">char</a> * RootFile)<br>
+<pre>
+  extract canvas object from a ROOT file and add to doc file
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:Clear" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:Clear">Clear</a>()<br>
+<pre>
+ remove all help - canvases from screen
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbHelpBrowser:ToRootFile" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:ToRootFile">ToRootFile</a>(const <a href="ListOfTypes.html#char">char</a> * InputDir, const <a href="ListOfTypes.html#char">char</a> * RootFile, 
+                  const <a href="ListOfTypes.html#char">char</a> * option = "UPDATE")<br>
+<pre>
+  add <a href="http://root.cern.ch/root/html/THtml.html">html</a> and gif files in directory InputDir to a ROOT file.
+  In this way a single root file containing a complete documentation
+  may be constructed
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:Print" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:Print">Print</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> * option = 0)<br>
+<pre>
+  print a list of currently known help entries
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbHelpBrowser:Squeeze_White_Space" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:Squeeze_White_Space">Squeeze_White_Space</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; s)<br>
+<pre>  Squeeze out tabs and blanks from <a href="http://root.cern.ch/root/html/TString.html">TString</a>
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbHelpBrowser:Squeeze_EOL" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:Squeeze_EOL">Squeeze_EOL</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; s)<br>
+<pre>  Squeeze out end_of_lines from <a href="http://root.cern.ch/root/html/TString.html">TString</a>
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:NextLine" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:NextLine">NextLine</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; text,  <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; line, <a href="ListOfTypes.html#Bool_t">Bool_t</a> start)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:NextTag" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:NextTag">NextTag</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; text,  <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; tag, <a href="ListOfTypes.html#Int_t">Int_t</a> search_from)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:NextAnchor" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:NextAnchor">NextAnchor</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; text,  <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; anchor, <a href="ListOfTypes.html#Int_t">Int_t</a> search_from)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:NextHeading" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:NextHeading">NextHeading</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; text,  <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; heading, <a href="ListOfTypes.html#Int_t">Int_t</a> search_from)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:AddTagAtEOL" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:AddTagAtEOL">AddTagAtEOL</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; s)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:LineCount" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:LineCount">LineCount</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; str, <a href="ListOfTypes.html#Int_t">Int_t</a> * longest_line)<br>
+<pre>  find Number of lines and length of longest line
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:MoveOrigin" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:MoveOrigin">MoveOrigin</a>()<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:PreScan" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:PreScan">PreScan</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; text, <a href="ListOfTypes.html#Bool_t">Bool_t</a> keep_references)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:DisplayImage" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:DisplayImage">DisplayImage</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; img_name)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:DrawText" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:DrawText">DrawText</a>(const <a href="ListOfTypes.html#Int_t">Int_t</a> ind,  <a href="ListOfTypes.html#Int_t">Int_t</a> xoff, <a href="ListOfTypes.html#Int_t">Int_t</a> yoff)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:DrawText" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:DrawText">DrawText</a>(const <a href="ListOfTypes.html#char">char</a> * hname, <a href="ListOfTypes.html#Int_t">Int_t</a> xoff, <a href="ListOfTypes.html#Int_t">Int_t</a> yoff)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:HandleMouseClicks" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:HandleMouseClicks">HandleMouseClicks</a>()
+<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:DisplayMenu" href="src/TMrbHelpBrowser.cxx.html#TMrbHelpBrowser:DisplayMenu">DisplayMenu</a>(<a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a> * menu, const <a href="ListOfTypes.html#char">char</a> * pattern)
+<br>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <a name="TMrbHelpBrowser:SetRootFile" href="TMrbHelpBrowser.h">SetRootFile</a>(const <a href="ListOfTypes.html#char">char</a>* RootFile)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* <a name="TMrbHelpBrowser:GetRootFile" href="TMrbHelpBrowser.h">GetRootFile</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbHelpBrowser:GetNofItems" href="TMrbHelpBrowser.h">GetNofItems</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbHelpBrowser:Class" href="TMrbHelpBrowser.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbHelpBrowser:IsA" href="TMrbHelpBrowser.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:ShowMembers" href="TMrbHelpBrowser.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:Streamer" href="TMrbHelpBrowser.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TMrbHelpBrowser:StreamerNVirtual" href="TMrbHelpBrowser.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a> <a name="TMrbHelpBrowser:TMrbHelpBrowser" href="TMrbHelpBrowser.h">TMrbHelpBrowser</a>(const <a href="./TMrbHelpBrowser.html">TMrbHelpBrowser</a>&amp;)
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:56:44 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

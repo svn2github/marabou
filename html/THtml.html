@@ -1,0 +1,112 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>THtml</h1>
+<hr width=300>
+<!--SDL--><em><a href="#THtml:description">class description</a> - <a href="src/THtml.cxx.html">source file</a> - <a href="THtml_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="THtml" href="THtml.h">THtml</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:Class2Html">Class2Html</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* classPtr, <a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ClassDescription">ClassDescription</a><!--PLAIN-->(ofstream&amp; out, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* classPtr, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; flag)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ClassTree">ClassTree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* canvas, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* classPtr, <a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE)
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#THtml:CopyHtmlFile">CopyHtmlFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* sourceName, const <a href="ListOfTypes.html#char">char</a>* destName)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:CreateIndex">CreateIndex</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>** classNames, <a href="ListOfTypes.html#Int_t">Int_t</a> numberOfClasses)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:CreateIndexByTopic">CreateIndexByTopic</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>** filenames, <a href="ListOfTypes.html#Int_t">Int_t</a> numberOfNames, <a href="ListOfTypes.html#Int_t">Int_t</a> maxLen)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:CreateListOfTypes">CreateListOfTypes</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:DerivedClasses">DerivedClasses</a><!--PLAIN-->(ofstream&amp; out, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* classPtr)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ExpandKeywords">ExpandKeywords</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#char">char</a>* text, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* ptr2class, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; flag, const <a href="ListOfTypes.html#char">char</a>* dir)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ExpandPpLine">ExpandPpLine</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#char">char</a>* line)
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetClass">GetClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Bool_t">Bool_t</a> load = kTRUE)
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetFileName">GetFileName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename) const
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetHtmlFileName">GetHtmlFileName</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* classPtr)
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetSourceFileName">GetSourceFileName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename)
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#THtml:IsModified">IsModified</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* classPtr, const <a href="ListOfTypes.html#Int_t">Int_t</a> type)
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#THtml:IsName">IsName</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> c)
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#THtml:IsWord">IsWord</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> c)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:NameSpace2FileName">NameSpace2FileName</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ReplaceSpecialChars">ReplaceSpecialChars</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a> c)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ReplaceSpecialChars">ReplaceSpecialChars</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a>* string)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:SortNames">SortNames</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>** strings, <a href="ListOfTypes.html#Int_t">Int_t</a> num, <a href="ListOfTypes.html#Bool_t">Bool_t</a> type = 0)
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:StrDup">StrDup</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s1, <a href="ListOfTypes.html#Int_t">Int_t</a> n = 1)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/THtml.html">THtml</a> <!--TAB--><!--BOLD--><a href="#THtml:THtml">THtml</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/THtml.html">THtml</a> <!--TAB--><!--BOLD--><a href="#THtml:THtml">THtml</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/THtml.html">THtml</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:~THtml">~THtml</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#THtml:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:Convert">Convert</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, const <a href="ListOfTypes.html#char">char</a>* title, const <a href="ListOfTypes.html#char">char</a>* dirname)
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetOutputDir">GetOutputDir</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetSourceDir">GetSourceDir</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#THtml:GetXwho">GetXwho</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#THtml:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:MakeAll">MakeAll</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE, const <a href="ListOfTypes.html#char">char</a>* filter = "*")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:MakeClass">MakeClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* className, <a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:MakeIndex">MakeIndex</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filter = "*")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:MakeTree">MakeTree</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* className, <a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:SetEscape">SetEscape</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a> esc = \)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:SetOutputDir">SetOutputDir</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:SetSourceDir">SetSourceDir</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:SetSourcePrefix">SetSourcePrefix</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* prefix)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:SetXwho">SetXwho</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* xwho)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:WriteHtmlFooter">WriteHtmlFooter</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a>* dir, const <a href="ListOfTypes.html#char">char</a>* lastUpdate, const <a href="ListOfTypes.html#char">char</a>* author, const <a href="ListOfTypes.html#char">char</a>* copyright)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THtml:WriteHtmlHeader">WriteHtmlHeader</a><!--PLAIN-->(ofstream&amp; out, const <a href="ListOfTypes.html#char">char</a>* title)
+</pre>
+
+<h3><!--TAB2-->  <a name="THtml:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="THtml:fXwho">fXwho</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fXwho">by default http://xwho.cern.ch/WHO/people?</a></i>
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="THtml:fSourcePrefix">fSourcePrefix</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSourcePrefix">prefix to relative source path</a></i>
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="THtml:fSourceDir">fSourceDir</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fSourceDir">source path</a></i>
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="THtml:fOutputDir">fOutputDir</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOutputDir">output directory</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="THtml:fLine">fLine</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fLine">current line</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="THtml:fLen">fLen</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLen">maximum line length</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="THtml:fCounter">fCounter</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fCounter">counter string</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="THtml:fEscFlag">fEscFlag</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fEscFlag">Flag to mark the symbol must be written "as is"</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#char">char</a> <!--TAB--><!--BOLD--><a name="THtml:fEsc">fEsc</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fEsc">The special symbol ("backslash" by default) to mark "the next symbol should not be converted</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="THtml:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGGotoDialog</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGGotoDialog:description">class description</a> - <a href="src/TGGotoDialog.cxx.html">source file</a> - <a href="TGGotoDialog_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGGotoDialog" href="TGTextEditDialogs.h">TGGotoDialog</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGGotoDialog.html">TGGotoDialog</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:TGGotoDialog">TGGotoDialog</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#Long_t">Long_t</a>* ret_code, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kVerticalFrame)
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGGotoDialog.html">TGGotoDialog</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:TGGotoDialog">TGGotoDialog</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGGotoDialog.html">TGGotoDialog</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:~TGGotoDialog">~TGGotoDialog</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGGotoDialog:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGGotoDialog:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a> parm2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGGotoDialog:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGGotoDialog:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fF1">fF1</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fF1"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fF2">fF2</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fF2">sub frames</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fGotoButton">fGotoButton</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fGotoButton">goto button</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fCancelButton">fCancelButton</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCancelButton">cancel button</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fL1">fL1</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fL1"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fL5">fL5</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fL5"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fL6">fL6</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fL6"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fL21">fL21</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fL21">layout hints</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fGoTo">fGoTo</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fGoTo">goto line number entry widget</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextBuffer.html">TGTextBuffer</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fBGoTo">fBGoTo</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fBGoTo">goto line number text buffer</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fLGoTo">fLGoTo</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLGoTo">goto label</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Long_t">Long_t</a>* <!--TAB--><!--BOLD--><a name="TGGotoDialog:fRetCode">fRetCode</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fRetCode">return code</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGGotoDialog:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

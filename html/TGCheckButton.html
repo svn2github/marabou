@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGCheckButton</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGCheckButton:description">class description</a> - <a href="src/TGCheckButton.cxx.html">source file</a> - <a href="TGCheckButton_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGCheckButton" href="TGButton.h">TGCheckButton</a> : public <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:DoRedraw">DoRedraw</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:PSetState">PSetState</a><!--PLAIN-->(EButtonState state)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGCheckButton.html">TGCheckButton</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:TGCheckButton">TGCheckButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* s, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGCheckButton:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGCheckButton:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGCheckButton.html">TGCheckButton</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:TGCheckButton">TGCheckButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, const <a href="ListOfTypes.html#char">char</a>* s, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGCheckButton:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGCheckButton:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGCheckButton.html">TGCheckButton</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:TGCheckButton">TGCheckButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, const <a href="ListOfTypes.html#char">char</a>* s, const <a href="ListOfTypes.html#char">char</a>* cmd, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGCheckButton:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGCheckButton:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGCheckButton.html">TGCheckButton</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:TGCheckButton">TGCheckButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGCheckButton.html">TGCheckButton</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:~TGCheckButton">~TGCheckButton</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGCheckButton:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:GetDefaultFontStruct">GetDefaultFontStruct</a><!--PLAIN-->()
+<!--TAB6-->       static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGCheckButton:GetDefaultGC">GetDefaultGC</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:HandleCrossing">HandleCrossing</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGCheckButton:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:IsToggleButton">IsToggleButton</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:SetState">SetState</a><!--PLAIN-->(EButtonState state)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGCheckButton:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGCheckButton:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGHotString.html">TGHotString</a>* <!--TAB--><!--BOLD--><a name="TGCheckButton:fLabel">fLabel</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fLabel">check button label</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGCheckButton:fHKeycode">fHKeycode</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fHKeycode">hotkey</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGCheckButton:fFontStruct">fFontStruct</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFontStruct">font to draw label</a></i>
+<!--TAB6-->             EButtonState <!--TAB--><!--BOLD--><a name="TGCheckButton:fPrevState">fPrevState</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fPrevState">previous check button state</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGCheckButton:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGCheckButton:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGCheckButton:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:18 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

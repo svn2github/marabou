@@ -1,0 +1,235 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbWindow</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbWindow:description">class description</a> - <a href="src/TMrbWindow.cxx.html">source file</a> - <a href="TMrbWindow_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbWindow" href="TMrbWdw.h">TMrbWindow</a> : public <a href="http://root.cern.ch/root/html/TLine.html">TLine</a>, public <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:SetInitialType">SetInitialType</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> WdwType)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                 <a href="./TMrbWindow.html">TMrbWindow</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:TMrbWindow">TMrbWindow</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="./TMrbWindow.html">TMrbWindow</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:TMrbWindow">TMrbWindow</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper)
+<!--TAB6-->                 <a href="./TMrbWindow.html">TMrbWindow</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:TMrbWindow">TMrbWindow</a><!--PLAIN-->(const <a href="./TMrbWindow.html">TMrbWindow</a>&amp;)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:~TMrbWindow">~TMrbWindow</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:AddToHist">AddToHist</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Histogram)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbWindow:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Compare">Compare</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Object)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Option)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Text_t">Text_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbWindow:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:GetStatus">GetStatus</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:GetType">GetType</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Hash">Hash</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:HasInitValues">HasInitValues</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Initialize">Initialize</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbWindow:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:IsRangeChecked">IsRangeChecked</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:IsSortable">IsSortable</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Option)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Option) const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwName)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:SetParent">SetParent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Parent)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindow:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbWindow:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbWindow:fName">fName</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fName">name linke in TNamed</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMrbWindow:fParent">fParent</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fParent">! dont stream  addr of parent histogram</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TMbsWindowF.html">TMbsWindowF</a>, <a href="./TMbsWindowI.html">TMbsWindowI</a>, <a href="./TMrbWindowF.html">TMrbWindowF</a>, <a href="./TMrbWindowI.html">TMrbWindowI</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbWindow:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/TMrbWindows.cxx
+ Purpose:        MARaBOU utilities: Provide user-defined variables and windows
+ Description:    Implements class methods to handle variables and 1-dim windows
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbWindow:TMrbWindow" href="src/TMrbWindow.cxx.html#TMrbWindow:TMrbWindow">TMrbWindow</a>() <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbWindow.html">TMrbWindow</a>
+ Purpose:        <a href="http://root.cern.ch/root/html/TStyle.html">Default</a> constructor
+ Description:    Creates list of vars/wdws.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbWindow:TMrbWindow" href="src/TMrbWindow.cxx.html#TMrbWindow:TMrbWindow">TMrbWindow</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper) : <a href="http://root.cern.ch/root/html/TLine.html">TLine</a>(Xlower, 0.0, Xupper, 0.0) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbWindow.html">TMrbWindow</a>
+ Purpose:        <a href="http://root.cern.ch/root/html/TStyle.html">Default</a> constructor
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> Xlower    -- lower limit
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper    -- upper limit
+ Description:    Creates list of vars/wdws.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbWindow:~TMrbWindow" href="src/TMrbWindow.cxx.html#TMrbWindow:~TMrbWindow">~TMrbWindow</a>() <br>
+<pre>__________________________________________________________________[C++ DTOR]
+
+ Name:           ~<a href="./TMrbWindow.html">TMrbWindow</a>
+ Purpose:        Destructor
+ Description:    Remove window from lists.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:SetName" href="src/TMrbWindow.cxx.html#TMrbWindow:SetName">SetName</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:SetName">TMrbWindow::SetName</a>
+ Purpose:        Set window name
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwName  -- window name
+ Results:
+ Exceptions:
+ Description:    Sets the name as done in <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:SetInitialType" href="src/TMrbWindow.cxx.html#TMrbWindow:SetInitialType">SetInitialType</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> WdwType) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:SetInitialType">TMrbWindow::SetInitialType</a>
+ Purpose:        Set variable type
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> WdwType    -- type bits
+ Results:
+ Exceptions:
+ Description:    Defines type bits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbWindow:AddToHist" href="src/TMrbWindow.cxx.html#TMrbWindow:AddToHist">AddToHist</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Histogram) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:AddToHist">TMrbWindow::AddToHist</a>
+ Purpose:        Connect window to Histogram
+ Arguments:      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Histogram   -- object inherited from <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>
+ Results:
+ Exceptions:
+ Description:    Add a window to the list of function of a histo.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:Print" href="src/TMrbWindow.cxx.html#TMrbWindow:Print">Print</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Option) const <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:Print">TMrbWindow::Print</a>
+ Purpose:        Print current value
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Option   -- option
+ Results:
+ Exceptions:
+ Description:    Outputs current value to cout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:Initialize" href="src/TMrbWindow.cxx.html#TMrbWindow:Initialize">Initialize</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:Initialize">TMrbWindow::Initialize</a>
+ Purpose:        Reset to initial value(s)
+ Arguments:
+ Results:
+ Exceptions:
+ Description:    Resets to initial value(s).
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:Draw" href="src/TMrbWindow.cxx.html#TMrbWindow:Draw">Draw</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:Draw">TMrbWindow::Draw</a>
+ Purpose:        Draw a line representing this window
+ Arguments:      <a href="ListOfTypes.html#Option_t">Option_t</a> * Option       -- option(s)
+ Results:
+ Exceptions:
+ Description:    Draws a line with current attr represeinting this window.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:Paint" href="src/TMrbWindow.cxx.html#TMrbWindow:Paint">Paint</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindow.html#TMrbWindow:Paint">TMrbWindow::Paint</a>
+ Purpose:        Draw window with current coordinates
+ Arguments:      <a href="ListOfTypes.html#Option_t">Option_t</a> * Option   -- option
+ Results:
+ Exceptions:
+ Description:    Draws window with current coordinates.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:SetParent" href="TMrbWdw.h">SetParent</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbWindow:GetType" href="TMrbWdw.h">GetType</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbWindow:GetStatus" href="TMrbWdw.h">GetStatus</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:SetRange" href="TMrbWdw.h">SetRange</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbWindow:HasInitValues" href="TMrbWdw.h">HasInitValues</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbWindow:IsRangeChecked" href="TMrbWdw.h">IsRangeChecked</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Text_t">Text_t</a>* <a name="TMrbWindow:GetName" href="TMrbWdw.h">GetName</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbWindow:IsSortable" href="TMrbWdw.h">IsSortable</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbWindow:Compare" href="TMrbWdw.h">Compare</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Object)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#ULong_t">ULong_t</a> <a name="TMrbWindow:Hash" href="TMrbWdw.h">Hash</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:Help" href="TMrbWdw.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbWindow:Class" href="TMrbWdw.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbWindow:IsA" href="TMrbWdw.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:ShowMembers" href="TMrbWdw.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:Streamer" href="TMrbWdw.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindow:StreamerNVirtual" href="TMrbWdw.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbWindow.html">TMrbWindow</a> <a name="TMrbWindow:TMrbWindow" href="TMrbWdw.h">TMrbWindow</a>(const <a href="./TMrbWindow.html">TMrbWindow</a>&amp;)
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:59 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

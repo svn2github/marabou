@@ -1,0 +1,146 @@
+/*__________________________________________________________________CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Silena_4418V.code
+// @(#)Purpose:    Camac code for module Silena 4418/V
+// Description:    Contains pieces of camac code to operate an ADC of type
+//                 Silena 4418/V
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName in $modulePosition */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module */
+					CIO_CTRL_R2B($moduleName, F(2), A(7));	/* clear data */
+					CIO_CTRL_R2B($moduleName, F(10), A(0)); /* clear lam */
+					CIO_WRITE_R2B($moduleName, F(20), A(14), $statusL);	/* set status */
+					$mnemoLCData = CIO_READ_R2B($moduleName, F(4), A(14));	/* check status */
+					$mnemoLCData &= 0xFFFF;
+					if ($mnemoLCData != $statusL) {
+						sprintf(msg, "Module $moduleName in $modulePosition: Status error - %#lx (should be $statusL)\n", $mnemoLCData);
+						f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+					}
+					CIO_WRITE_R2B($moduleName, F(20), A(9), $commonThreshL); 	/* common thresh */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+					CIO_WRITE_R2B($moduleName, F(17), A($chnNo + 8), $lowerThreshL);	/* lower limit $chnName:A($chnNo) */
+					CIO_WRITE_R2B($moduleName, F(17), A($chnNo), $upperThreshL);		/* upper limit */
+					CIO_WRITE_R2B($moduleName, F(20), A($chnNo), $offsetL); 		/* offset */
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_C2MI_16_C();		/* read $chnName:A($chnNo) */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					$mnemoLCData = RDO_READ_16();		/* read header word */ 
+					if ($mnemoLCData != 0) {
+						RDO_2MEM_16($mnemoLCData);			/* store it */
+						$mnemoLCWC = ($mnemoLCData >> 8) & 0xF; 	/* extract word count */
+						RDO_BLT_16($mnemoLCWC + 1); 		/* xfer compressed data (pattern word + 8 data max.) */
+						if ($mnemoLCWC & 1) RDO_2MEM_16(0xFFFF);	/* align to 32 bits */
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+					RDO_INCR_ADDR_C();	/* skip next channel */
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_SKIP_ADDR_C($data);	/* skip next $data channels */
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+					RDO_2MEM_16($subaddr);		/* store subaddr A($chnNo) */
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+					RDO_2MEM_16($data);		/* store data word */
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module $moduleName */
+					CIO_CTRL_R2B($moduleName, F(2), A(7));	/* clear data */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+%RR%					RDO_SETUP($moduleName, F(2), A($chnNo));	/* setup read module $moduleName, start with param $chnName */
+%ZS%					RDO_SETUP($moduleName, F(2), A(0));	/* setup read module $moduleName, zero suppression mode */
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(9), A(0));		/* clear module $moduleName */
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(2), A(7));	/* module $moduleName: clear data */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+	int $mnemoLCData;					/* silena 4418V:	data */
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	int $mnemoLCData;					/* silena 4418V:	data */
+	int $mnemoLCWC;						/*					wc */
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

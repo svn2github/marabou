@@ -1,0 +1,495 @@
+Bool_t TUsrEvt%%EVT_NAME_UC%%::BookParams() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::BookParams
+// Purpose:        Setup param lists for event %%EVT_NAME_LC%%
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Fills param tables for all subevents in event %%EVT_NAME_LC%%.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+	$sevtNameLC.BookParams();
+%%EndOfCode%%
+%%EVT_BOOK_PARAMS%%
+
+%%BeginOfCode%%
+%B%// user-specific code to book parameters
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_BOOK_PARAMS%%
+
+	return(kTRUE);
+}
+
+Bool_t TUsrEvt%%EVT_NAME_UC%%::BookHistograms() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::BookHistograms
+// Purpose:        Book histograms for event %%EVT_NAME_LC%%
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books histograms for all subevents in event %%EVT_NAME_LC%%.
+//                 If this is a multi-trigger event derived from single-bit
+//                 triggers booking is already done there.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%N%	$sevtNameLC.BookHistograms();
+%P%	$sevtNameLC.Book$evtNameUCHistograms();
+%%EndOfCode%%
+%%EVT_BOOK_HISTOGRAMS%%
+
+%%BeginOfCode%%
+%B%// user-specific code to book histograms
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_BOOK_HISTOGRAMS%%
+		
+	return(kTRUE);
+}
+
+Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers
+// Purpose:        Allocate hit buffer for event %%EVT_NAME_LC%%
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Allocates hit buffers for subevents to store subevent data
+//                 (class TUsrHitBuffer / TClonesArray) 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TUsrHitBuffer * eventTimeBuffer = NULL;
+
+	Int_t nofEntriesE, highWaterE, nofEntriesS, highWaterS, offsetE, offsetS;
+
+%%BeginOfCode%%
+%H%// get dimension of hit buffer
+%H% 	nofEntriesE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.NofEntries"), $nofEntries);
+%H% 	highWaterE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.HighWater"), $highWater);
+%H% 	offsetE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.Offset"), $offset);
+%H%
+%S%// alloc hit buffer for subevent $sevtNameLC
+%S% 	nofEntriesS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.NofEntries"), nofEntriesE);
+%S% 	highWaterS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.HighWater"), highWaterE);
+%S% 	offsetS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.Offset"), offsetE);
+%S% 	$sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS, offsetS);
+%S%
+%%EndOfCode%%
+%%EVT_ALLOC_HITBUFFER%%
+
+	return(kTRUE);
+}
+
+Bool_t TUsrEvt%%EVT_NAME_UC%%::CreateTree() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::CreateTree
+// Purpose:        Create a tree for event %%EVT_NAME_LC%%
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a tree for event %%EVT_NAME_LC%%.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t autoSave;
+	
+	if (gMrbAnalyze->TreeToBeWritten()) {
+		if (verboseMode) {
+			cout	<< this->ClassName() << "::CreateTree(): Creating tree \"%%EVT_NAME_LC%%\""
+					<< endl;
+		}
+		fTreeOut = new TTree("%%EVT_NAME_LC%%",
+//- 								arguments have to be on a different lines!!
+								"%%EVT_TITLE%%");
+		autoSave = gEnv->GetValue("TUsrEvt%%EVT_NAME_UC%%.AutoSave",
+//- 								arguments have to be on a different lines!!
+								%%EVT_AUTOSAVE%%);
+				
+		fTreeOut->SetAutoSave(autoSave);
+
+//- add a branch for every subevent
+%%BeginOfCode%%
+		$sevtNameLC.AddBranch(fTreeOut);		// branch for subevent $sevtNameLC
+%%EndOfCode%%
+%%EVT_ADD_BRANCHES%%
+	}
+	return(kTRUE);
+}
+
+Bool_t TUsrEvt%%EVT_NAME_UC%%::InitializeTree(TFile * RootFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::InitializeTree
+// Purpose:        Initialize tree for event %%EVT_NAME_LC%%
+// Arguments:      TFile * RootFile  -- file containing tree data
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Initializes tree and branches for event %%EVT_NAME_LC%%.
+//                 Replay mode only.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	register TObject * obj;
+
+	obj = RootFile->Get("%%EVT_NAME_LC%%");
+	if (obj == NULL) {
+		gMrbLog->Err()	<< "Tree \"%%EVT_NAME_LC%%\" not found in ROOT file " << RootFile->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "InitializeTree");
+		return(kFALSE);
+	}
+	if (obj->IsA() != TTree::Class()) {
+		gMrbLog->Err()	<< "Not a TTree object - " << obj->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "InitializeTree");
+		return(kFALSE);
+	}
+	fTreeIn = (TTree *) obj;
+	fReplayMode = kTRUE;
+
+// initialize branches and assign addresses
+%%BeginOfCode%%
+	$sevtNameLC.InitializeBranch(fTreeIn);
+%%EndOfCode%%
+%%EVT_INITIALIZE_BRANCHES%%
+
+	return(kTRUE);
+}
+
+Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData
+// Purpose:        Replay tree data for event %%EVT_NAME_LC%%
+// Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Reads in tree data for event %%EVT_NAME_LC%%.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofEntries, nofEvents, nofBytes, nbytes;
+	Int_t startEvent, stopEvent;
+	TString startTime, stopTime;
+	register Int_t i;
+	TMrbAnalyze::EMrbRunStatus rsts;
+	Int_t timeStamp;
+
+	if (!this->IsFakeMode() && fTreeIn == NULL) return(kFALSE);
+
+	nofBytes = 0;
+	nofEvents = 0;
+
+	if (fReplayMode) {
+		if (!this->IsFakeMode()) nofEntries = (Int_t) fTreeIn->GetEntries();
+		startEvent = IOSpec->GetStartEvent();
+		stopEvent = IOSpec->GetStopEvent();
+
+		if (IOSpec->IsTimeStampMode()) {
+			IOSpec->ConvertToTimeStamp(startTime, startEvent);
+			IOSpec->ConvertToTimeStamp(stopTime, stopEvent);
+
+			if (startEvent > stopEvent) {
+				gMrbLog->Err()	<< "Timestamps out of order - start at "
+								<< startTime << " ... stop at " << stopTime << endl;
+				gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				return(kFALSE);
+			}
+
+			if (verboseMode) {
+				if (this->IsFakeMode()) {
+					gMrbLog->Out()	<< "Replaying tree in FAKE mode" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				} else {
+					gMrbLog->Out()	<< "Replaying tree " << fTreeIn->GetName() << " -" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+					gMrbLog->Out()	<< "Events with time stamps " << startTime << " ... " << stopTime << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				}
+			}
+
+			for (i = 0; i < nofEntries; i++) {
+				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
+				pthread_mutex_lock(&global_data_mutex);
+				if (!this->IsFakeMode()) nbytes = fTreeIn->GetEvent(i);
+				timeStamp = %%EVT_FIRST_SEVT%%.fTimeStamp;
+				if (timeStamp >= startEvent && timeStamp <= stopEvent) {
+					nofEvents++;
+					fNofEvents++;
+					nofBytes += nbytes;
+					gMrbAnalyze->IncrEventCount();
+					this->Analyze();
+				}
+				pthread_mutex_unlock(&global_data_mutex);
+				if (timeStamp > stopEvent) break;
+			}
+
+			if (verboseMode) {
+				if (this->IsFakeMode()) {
+					gMrbLog->Out()	<< nofEvents
+									<< " entries (timestamps " << startTime << " ... " << stopTime
+									<< ") faked" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				} else {
+					gMrbLog->Out()	<< nofEvents
+									<< " entries (timestamps " << startTime << " ... " << stopTime
+									<< ") read from tree \"" << fTreeIn->GetName() << "\" (" << nofBytes << " bytes)"
+									<< endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				}
+			}
+		
+		} else {
+			
+			if (startEvent > stopEvent) {
+				gMrbLog->Err()	<< "Event numbers out of order - start at "
+								<< startEvent << " ... stop at " << stopEvent << endl;
+				gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				return(kFALSE);
+			}
+
+			if (startEvent > nofEntries) {
+				gMrbLog->Err()	<< "StartEvent (" << startEvent
+								<< ") beyond end of data (" << stopEvent << ")" << endl;
+				gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				return(kFALSE);
+			}
+
+			if (stopEvent == 0 || stopEvent >= nofEntries) stopEvent = nofEntries - 1;
+
+			if (verboseMode) {
+				if (this->IsFakeMode()) {
+					gMrbLog->Out()	<< "Replaying tree in FAKE mode" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData");
+				} else {
+					gMrbLog->Out()	<< "Replaying tree " << fTreeIn->GetName() << " -" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+					gMrbLog->Out()	<< "Events " << startEvent << " ... " << stopEvent << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				}
+			}
+
+			for (i = startEvent; i <= stopEvent; i++) {
+				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
+				pthread_mutex_lock(&global_data_mutex);
+				if (!this->IsFakeMode()) nofBytes += fTreeIn->GetEvent(i);
+				nofEvents++;
+				fNofEvents++;
+				gMrbAnalyze->IncrEventCount();
+				this->Analyze();
+				pthread_mutex_unlock(&global_data_mutex);
+			}
+
+			if (verboseMode) {
+				if (this->IsFakeMode()) {
+					gMrbLog->Out()	<< nofEvents << " entries (" << startEvent << " ... " << stopEvent
+									<< ") faked" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				} else {
+					gMrbLog->Out()	<< nofEvents << " entries (" << startEvent << " ... " << stopEvent
+									<< ") read from tree \"" << fTreeIn->GetName() << "\" (" << nofBytes << " bytes)"
+									<< endl;
+					gMrbLog->Flush(this->ClassName(), "ReplayTreeData", setblue);
+				}
+			}
+		}
+	}
+	return(kTRUE);
+}
+
+Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, const MBSDataIO * BaseAddr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::FillEvent
+// Purpose:        Fill local event instance with MBS data
+// Arguments:      const s_vehe * EventData   -- pointer to MBS event structure
+//                 const MBSDataIO * BaseAddr -- pointer to MBS data base
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Decodes the event header,
+//                 then loops over subevents
+//                 and calls sevt-specific fill methods
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t SevtType;
+	const UShort_t * SevtData;
+	const ULong_t * ClockData;
+	const ULong_t * DeadTimeData;
+	Int_t timeStamp;
+	Int_t dtTotalEvents, dtAccuEvents, dtScalerContents;
+
+	fEventNumber = (ULong_t) EventData->l_count;
+	fNofEvents++;
+	gMrbAnalyze->IncrEventCount();
+
+	fClockRes = 0;									// reset time stamp
+	fClockSecs = 0;
+	fClockNsecs = 0;
+
+	fSubeventPattern = 0;							// reset sevt pattern
+	
+	this->Reset();									// clear data section
+
+	for (;;) {
+		SevtType = NextSubeventHeader(BaseAddr);			// get next subevent
+		if (SevtType == MBS_STYPE_EOE) return(kTRUE);		// end of event
+		if (SevtType == MBS_STYPE_ABORT) return(kFALSE);	// error
+
+%%BeginOfCode%%
+%B%		switch (BaseAddr->sevt_otype) {				// dispatch according to subevent typ/subtype
+%S%			case kMrbSevt$sevtNameUC:				// subevent $sevtNameLC: $sevtTitle, id=[$sevtType,$sevtSubtype]
+%S%				if ((SevtData = NextSubeventData(BaseAddr, $sevtWC, $rawMode)) == NULL) return(kFALSE);
+%S%				if (!$sevtNameLC.FillSubevent(SevtData, BaseAddr->sevt_wc, this->GetTimeStamp())) return(kFALSE);
+%S%				fSubeventPattern |= kMrbSevtBit$sevtNameUC;
+%S%				continue;
+%E%		}
+%%EndOfCode%%
+%%SEVT_DISPATCH_OVER_TYPE%%
+
+		switch (BaseAddr->sevt_id) {				// dispatch according to subevent id
+%%BeginOfCode%%
+			case kMrbSevt$sevtNameUC:				// subevent $sevtNameLC: $sevtTitle, id=$sevtSerial
+				if ((SevtData = NextSubeventData(BaseAddr, $sevtWC, $rawMode)) == NULL) return(kFALSE);
+				if (!$sevtNameLC.FillSubevent(SevtData, BaseAddr->sevt_wc, this->GetTimeStamp())) return(kFALSE);
+				fSubeventPattern |= kMrbSevtBit$sevtNameUC;
+				continue;
+%%EndOfCode%%
+%%SEVT_DISPATCH_OVER_SERIAL%%
+
+			case kMrbSevtTimeStamp:					// subevent type [9000,1] (ROOT Id=999): time stamp
+				if ((SevtData = NextSubeventData(BaseAddr, 100, kFALSE)) == NULL) return(kFALSE);
+				ClockData = (ULong_t *) SevtData;
+				fClockRes = *ClockData++;
+				fClockSecs = *ClockData++;
+				fClockNsecs = *ClockData++;
+				timeStamp = this->CalcTimeDiff((TUsrEvent *) gStartEvent);	// calc time since last start
+				this->SetTimeStamp(timeStamp);		// mark event with time stamp
+				continue;
+
+			case kMrbSevtDeadTime:					// subevent type [9000,2] (ROOT Id=998): dead time data
+				if ((SevtData = NextSubeventData(BaseAddr, 100, kFALSE)) == NULL) return(kFALSE);
+				DeadTimeData = (ULong_t *) SevtData;
+				fClockRes = *DeadTimeData++;
+				fClockSecs = *DeadTimeData++;
+				fClockNsecs = *DeadTimeData++;
+				timeStamp = this->CalcTimeDiff((TUsrEvent *) gStartEvent);	// calc time since last start
+				this->SetTimeStamp(timeStamp);		// mark event with time stamp
+				dtTotalEvents = *DeadTimeData++;
+				dtAccuEvents = *DeadTimeData++;
+				dtScalerContents = *DeadTimeData++;
+				gDeadTime->Set(timeStamp, dtTotalEvents, dtAccuEvents, dtScalerContents);
+				if (gMrbAnalyze->TreeToBeWritten()) gDeadTime->GetTreeOut()->Fill();
+				continue;
+				
+			case kMrbSevtDummy: 					// dummy subevent created by MBS internally [111,111] (ROOT Id=888), wc = 0
+				if ((SevtData = NextSubeventData(BaseAddr, 100, kFALSE)) == NULL) return(kFALSE);
+				if (BaseAddr->sevt_wc != 0) {
+					gMrbLog->Err()	<< "Dummy MBS subevent [111,111], serial=888 - wc = "
+									<< BaseAddr->sevt_wc << " (should be 0)" << endl;
+					gMrbLog->Flush(this->ClassName(), "FillEvent");
+				}
+				continue;
+
+			default: 					// unknown subevent id
+				gMrbLog->Err()	<< "Unknown subevent id - " << BaseAddr->sevt_id << endl;
+				gMrbLog->Flush(this->ClassName(), "FillEvent");
+				continue;
+		}
+		gMrbLog->Err()	<< "Illegal subevent - type=0x"
+						<< setbase(16) << BaseAddr->sevt_otype
+						<< setbase(10) << " ["
+						<< (BaseAddr->sevt_otype >> 16) << "," << (BaseAddr->sevt_otype & 0xffff)
+						<< "], serial=" << BaseAddr->sevt_id << endl;
+		gMrbLog->Flush(this->ClassName(), "FillEvent");
+	}
+	return(kTRUE);
+}
+
+%%BeginOfCode%%
+%B%Bool_t TUsrEvt$evtNameUC::BuildEvent() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:           TUsrEvt$evtNameUC::BuildEvent
+%B%// Purpose:        Event builder for $evtNameLC
+%B%//                 (Trigger $evtTrigger)
+%B%// Arguments:      --
+%B%// Results:        kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Event builder for trigger $evtNameLC to be called before analysis
+%B%// Keywords:       
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%IUC%
+%IUC%//++++++++ Special event builder code goes here +++++++++++++
+%IUC%
+%IUC%#include "$iclFile"
+%IUC%
+%N%
+%N% this->Analyze();
+%N%
+%E%	if (gMrbAnalyze->TreeToBeWritten()) fTreeOut->Fill();
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%EVT_BUILD_EVENT%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrEvt$evtNameUC::Analyze() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:           TUsrEvt$evtNameUC::Analyze
+%B%// Purpose:        Analyze data for event $evtNameLC
+%B%//                 (Trigger $evtTrigger)
+%B%// Arguments:      --
+%B%// Results:        kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    User's analysis function for trigger $evtTrigger
+%B%//                 Any sorting, filtering, and analyzing goes here.
+%B%// Keywords:       
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%WTF% 	Bool_t treeToBeFilled = kTRUE;			// may be changed by user's analysis
+%WTF%
+%FHBN%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
+%FHBP%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
+%AC%
+%AC%//++++++++ User's analyzing code goes here +++++++++++++
+%AC%
+%IUC%#include "$iclFile"
+%IUC%
+%FHAN%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
+%FHAP%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
+%WT%
+%WT%	if (gMrbAnalyze->TreeToBeWritten() && treeToBeFilled) fTreeOut->Fill();
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%EVT_ANALYZE%%
+
+void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt%%EVT_NAME_UC%%::Reset
+// Purpose:        Reset event data
+// Arguments:      Int_t InitValue  -- initialization value
+// Results:        --
+// Exceptions:     
+// Description:    Resets all subevents assigned to this event.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+	$sevtNameLC.Reset(InitValue);	// reset param data in subevent $sevtNameLC
+%%EndOfCode%%
+%%EVT_RESET_DATA%%
+}

@@ -1,0 +1,568 @@
+#include <fstream.h>
+#include <iomanip.h>
+#include <iostream.h>
+#include <strstream.h>
+#include <TList.h>
+#include "TArrayF.h"
+#include "TString.h"
+#include "TObjString.h"
+
+#include "FhMarker.h"
+#include "FitHist.h"
+#include "CmdListEntry.h"
+#include "TGMrbTableFrame.h"
+#include "TGMrbInputDialog.h"
+#include "support.h"
+#include "SetColor.h"
+#include "TMrbWdw.h"
+#include "TMrbVarWdwCommon.h"
+
+//______________________________________________________________________________________ 
+  
+void FitHist::MarksToWindow(){
+   int nval = markers->GetEntries();
+   FhMarker *ti;
+   TIter next(markers);
+   if(is2dim(fSelHist)){
+      MarksToCut(); 
+   } else {
+      if(nval != 2){
+         WarnBox("Please set exactly 2 marks");
+         return;
+      } else {
+         ti = (FhMarker*)next();
+         Double_t x1 = ti->GetX();
+//         Float_t x1 = ti->GetX();
+         ti = (FhMarker*)next();
+         Double_t x2 = ti->GetX();
+//         Float_t x2 = ti->GetX();
+         TString cname=this->GetName();
+         Int_t us = cname.Index("E_");
+         if(us >= 0)cname.Remove(0,2);
+         us = cname.Index("_");
+         if(us >= 0)cname.Remove(0,us+1);
+         ostrstream buf;
+         cut_numb++;
+         buf << cut_numb << "_" << '\0';
+         cname.Prepend(buf.str());
+         cname.Prepend("Wdw");
+         Bool_t ok;
+         fWdwname = GetString("Window will be saved with name",cname.Data(),
+                              &ok, mycanvas);
+         if(!ok)return; 
+         CheckList(fAllWindows);
+         if(fAllWindows->FindObject(fWdwname.Data())) {
+            WarnBox("Window already exists");
+            return;
+         }
+         TMrbWindowF * wdw = new TMrbWindowF(fWdwname.Data(), x1, x2); 
+         wdw->Draw(); 
+         cHist->Update();
+         fActiveWindows->Add(wdw);
+         fAllWindows->Add(wdw);
+      }
+   }
+}
+//______________________________________________________________________________________   
+Bool_t FitHist::UseWindow(TMrbWindow * const wdw){
+   if(!Nwindows())return kFALSE;
+   return fActiveWindows->Contains(wdw);
+}
+//______________________________________________________________________________________ 
+  
+void FitHist::AddWindowsToHist(){
+   Int_t nval = CheckList(fActiveWindows);
+   if(nval>0){
+      TMrbWindow *wdw;
+      TIter next(fActiveWindows);
+      while( (wdw = (TMrbWindow*)next()) ){
+         TMrbWindow * wdwcp;
+         wdwcp = (TMrbWindow*)wdw->Clone();
+         fSelHist->GetListOfFunctions()->Add(wdwcp);
+         TMrbWindow * w = (TMrbWindow*)wdwcp;
+         w->SetParent(fSelHist);
+      }
+   }
+}
+//______________________________________________________________________________________ 
+  
+void FitHist::ClearWindows(){
+   Int_t nval = CheckList(fActiveWindows);
+   if(nval>0){
+      TMrbWindow *wdw;
+      TIter next(fActiveWindows);
+      while( (wdw = (TMrbWindow*)next()) ){
+         gDirectory->GetList()->Remove(wdw);
+      }
+      fActiveWindows->Clear();
+   }
+}
+//______________________________________________________________________________________ 
+  
+void FitHist::DrawWindows(){
+   Int_t nval = CheckList(fActiveWindows);
+   if(nval>0){
+      cHist->cd();
+      cout << "-- Current active Windows " << nval << " -----------" << endl;
+      cout <<setw(9)<<setw(9)<< "Name"<<setw(9)<< "xlow" <<setw(9)<< "xup"
+         <<setw(9)<< "Sum" <<setw(9)<< "Mean" <<setw(9)<< "Sigma" << endl;
+      TMrbWindow *wdwf;
+      TIter next(fActiveWindows);
+      while( (wdwf = (TMrbWindow*)next()) ){
+         Axis_t xlow, xup;
+         Stat_t sum = 0; 
+         Stat_t mean = 0; 
+         Stat_t sigma = 0; 
+         xlow= (Axis_t)wdwf->GetX1();
+         xup = (Axis_t)wdwf->GetX2();
+         sum = Content(fSelHist,xlow, xup, &mean, &sigma);
+         cout <<setw(9)<< wdwf->GetName() 
+              <<setw(9)<< xlow <<setw(9) << xup <<setw(9)
+              << sum <<setw(9)<< mean <<setw(9) << sigma << endl;
+         TMrbWindow *wdw = (TMrbWindow *)wdwf;
+         wdw->SetTextSize(0.03);
+         wdw->SetTextColor(1);
+         wdw->SetLineColor(1);
+         wdw->SetLineWidth(3);
+         wdw->Draw();
+         cHist->Update();
+      }
+   } else {
+     WarnBox("No Windows set");
+   }       
+}
+//______________________________________________________________________________________ 
+  
+void  FitHist::WriteOutWindows(){
+   Int_t nval = CheckList(fActiveWindows);
+   if(nval>0){
+      if(OpenWorkFile()){
+         fActiveWindows->Write();
+         CloseWorkFile();
+      }
+   } else {
+     WarnBox("No Windows active");
+   }
+}
+//______________________________________________________________________________________ 
+  
+void FitHist::ListWindows(){
+   if(CheckList(fAllWindows) < 0){WarnBox("No windows active");return;}
+   CheckList(fActiveWindows);
+   UInt_t xp, yp;
+   GetPosition(gPad,&xp,&yp);
+   TIter next(fAllWindows);
+   TMrbWindow* wdw;
+   while( (wdw=(TMrbWindow*)next()) ){
+      TString nam =  wdw->GetName();
+      TString cmd = this->GetName();
+      TString sel = cmd;
+      cmd = cmd + "->EditWindow(\"" + nam.Data() + "\")";
+      TString tit;
+      sel = sel + "->AddWindow(\"" + nam.Data() + "\")";
+      if(fActiveWindows->Contains(wdw)) sel = sel + " YES";
+      fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel));
+   }
+   if(fCmdLine->IsEmpty()){
+      WarnBox("No windows active");
+      return;
+   }
+   fCutPanel = CommandPanel("Windows", fCmdLine, xp, yp);
+   fCmdLine->Delete();
+}
+//______________________________________________________________________________________ 
+  
+void FitHist::AddWindow(const char * name, const char * bp){
+   TMrbWindow * wdw;
+   wdw = (TMrbWindow *)fAllWindows->FindObject(name);
+   TButton * b;
+   b = (TButton *)strtoul(bp, 0, 16);
+   if(b->TestBit(kSelected)){
+      fActiveWindows->Remove(wdw);
+      b->SetFillColor(16);
+      b->ResetBit(kSelected);
+   } else {
+      fActiveWindows->Add(wdw);
+      b->SetFillColor(3);
+      b->SetBit(kSelected);
+   }
+}
+//______________________________________________________________________________________ 
+  
+void FitHist::EditWindow(const char * name, const char * bp){
+   if(CheckList(fAllWindows)<= 0) return;
+   TObject* obj=fAllWindows->FindObject((char *)name);
+   if(obj){
+      TMrbWindow* wdw = (TMrbWindow*)obj;
+      TArrayD xyvals(4);
+//      Double_t *xyvals = new Double_t[4];
+      TOrdCollection *row_lab = new TOrdCollection(); 
+     
+      row_lab->Add(new TObjString("x,y left"));
+      row_lab->Add(new TObjString("x,y right"));
+      xyvals[0] = wdw->GetX1();
+      xyvals[1] = wdw->GetX2();
+      xyvals[2] = wdw->GetY1();
+      xyvals[3] = wdw->GetY2();
+// show values to caller and let edit
+      TString title="Window: ";
+      title += wdw->GetName();
+      Int_t ret,  itemwidth=120, precission = 5; 
+      TGMrbTableOfDoubles(mycanvas, &ret,title.Data(),itemwidth, 2, 2, xyvals,
+      precission, NULL,row_lab);
+      if(ret >= 0){
+         wdw->SetX1(xyvals[0]);
+         wdw->SetX2(xyvals[1]);
+         wdw->SetY1(xyvals[2]);
+         wdw->SetY2(xyvals[3]);
+      }
+//      if (xyvals) delete [] xyvals;
+      if(row_lab){ row_lab->Delete(); delete row_lab;}
+   }
+}
+//______________________________________________________________________________________
+  
+void FitHist::UpdateCut(){
+//   ClearCut();
+   CheckList(fActiveCuts, "TMrbWindow2D");
+   CheckList(fAllCuts, "TMrbWindow2D");
+   TCutG *cut = (TCutG*)gROOT->FindObject("CUTG");
+   if(cut)
+   {
+//      cut->SetName(fCutname.Data());
+      TMrbWindow2D * wdw2d = 
+      new TMrbWindow2D(fCutname.Data(), cut->GetN(), cut->GetX(), cut->GetY());
+      fActiveCuts->Add(wdw2d);
+      fAllCuts->Add(wdw2d);
+      delete cut;
+      DrawCut();
+   }
+   CloseCuts();
+}
+//______________________________________________________________________________________
+
+void  FitHist::WriteOutCut(){
+   UpdateCut();
+   if(Ncuts()){
+      if(OpenWorkFile()){
+         fActiveCuts->Write();
+         CloseWorkFile();
+      }
+   } else {
+     WarnBox("No cuts active");
+   }
+}
+//______________________________________________________________________________________
+  
+Bool_t FitHist::UseCut(TMrbWindow2D * const cut){
+//   TObjString newcut = (const char*)(name);
+   UpdateCut();
+   if(!Ncuts())return kFALSE;
+   Int_t pos = fActiveCuts->IndexOf(cut);
+   if(pos >= 0)return kTRUE;
+   else        return kFALSE;
+}
+//______________________________________________________________________________________
+  
+void FitHist::AddCutsToHist(){
+   Int_t nval = CheckList(fActiveCuts, "TMrbWindow2D");
+   if(nval>0){
+      TMrbWindow2D *wdw;
+      TIter next(fActiveCuts);
+      while( (wdw = (TMrbWindow2D*)next()) ){
+         TMrbWindow2D * wdwcp= new TMrbWindow2D(*wdw);
+         TIter nextobj(cHist->GetListOfPrimitives());
+         TObject *obj;
+         while( (obj=nextobj()) ){
+//            cout << obj->GetName() << endl;
+            if(obj->InheritsFrom(TText::Class()) && 
+               !strcmp(obj->GetName(), wdw->GetName())){
+               TText*t = (TText*)obj;
+               wdwcp->SetXtext(t->GetX() - wdw->GetX()[0]);
+               wdwcp->SetYtext(t->GetY() - wdw->GetY()[0]);
+            }
+         }
+         fSelHist->GetListOfFunctions()->Add(wdwcp);
+         TMrbWindow2D * w = (TMrbWindow2D*)wdwcp;
+         w->SetParent(fSelHist);
+      }
+   }
+}
+//______________________________________________________________________________________
+  
+void FitHist::InitCut(){
+   UpdateCut();
+//   CheckList(fActiveCuts);
+   TString cname = fHname;
+   ostrstream buf;
+   cut_numb++;
+   buf << cut_numb << "_" << '\0';
+   cname.Prepend(buf.str());
+   cname.Prepend("Cut");
+   Bool_t ok;
+   fCutname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
+   if(!ok)  return; 
+   if(fAllCuts->FindObject((char *)cname.Data())) {
+      WarnBox("Cut name already exists");
+      return;
+   }
+   gROOT->SetEditorMode("CutG");
+}
+//______________________________________________________________________________________
+  
+Bool_t FitHist::InsideCut(Float_t x, Float_t y){
+   if(!(Ncuts()))return kTRUE;
+   TMrbWindow2D *cut;
+   TIter next(fActiveCuts);
+// if inside selected: return true if point is within any cut
+// if outside:         point must be outside all cuts
+   Int_t atleastone=kFALSE;
+   Bool_t result=!fSelInside;
+   while( (cut= (TMrbWindow2D*)next()) ){
+      if(cut->TestBit(TObject::kNotDeleted)){
+         Bool_t temp=cut->IsInside(x,y);
+         if(fSelInside)result = result || temp;
+         else          result = result && !temp;
+         atleastone = kTRUE;
+      }
+   }
+   if(atleastone) return result;
+   else           return kTRUE;
+}
+//______________________________________________________________________________________
+  
+void FitHist::DrawCutName(){
+//   UpdateCut();  
+   if(CheckList(fActiveCuts, "TMrbWindow2D") <=0) return;
+   TMrbWindow2D * wdw;
+   TIter next(fActiveCuts);
+//   markers->Sort();
+   while( (wdw= (TMrbWindow2D*)next()) ){
+      TIter nextobj(cHist->GetListOfPrimitives());
+      TObject *obj;
+      while( (obj=nextobj()) ){
+//         cout << obj->GetName() << endl;
+         if(obj->InheritsFrom(TText::Class()) && 
+            !strcmp(obj->GetName(), wdw->GetName())){
+            cHist->GetListOfPrimitives()->Remove(obj);
+            delete obj;
+         }
+      }
+      TText *t = new TText
+      (wdw->GetX()[0]+wdw->GetXtext(),wdw->GetY()[0]+wdw->GetYtext(),
+      wdw->GetName());
+      t->SetName(wdw->GetName());
+      t->SetTextSize(0.02);
+      cHist->cd();
+      t->Draw(); 
+   }
+   cHist->Update();
+}
+//_____________________________________________________________________________________
+  
+void FitHist::ClearCut(){
+   UpdateCut();
+   fActiveCuts->Clear();
+}
+//______________________________________________________________________________________
+  
+void FitHist::CloseCuts(){
+   if(CheckList(fActiveCuts) <=0) return;
+   TMrbWindow2D *cut;
+   TIter next(fActiveCuts);
+   while( (cut= (TMrbWindow2D*)next()) ){
+      Int_t last = cut->GetN()-1;
+      cut->GetX()[last] = cut->GetX()[0];
+      cut->GetY()[last] = cut->GetY()[0];
+   }
+}
+//______________________________________________________________________________________
+  
+void FitHist::ListCuts(){
+   UInt_t xp, yp;
+   GetPosition(gPad,&xp,&yp);
+   UpdateCut();
+//   CheckList(fActiveCuts);
+   TIter next(fAllCuts);
+   while(TMrbWindow2D* cut = (TMrbWindow2D*)next()){
+      TString cmd = this->GetName();
+      cmd = cmd + "->EditCut(\"" + cut->GetName() + "\")";
+      TString nam =  cut->GetName();
+      TString tit;
+      TString sel = this->GetName();
+      sel = sel + "->AddCut(\"" + cut->GetName() + "\")";
+      if(UseCut(cut)) sel = sel + " YES";
+      fCmdLine->Add(new CmdListEntry(cmd, nam, tit, sel));
+   }
+   if(fCmdLine->IsEmpty()){
+      WarnBox("No cuts active");
+      return;
+   }
+   fCutPanel= CommandPanel("Cuts", fCmdLine, xp, yp);
+   fCmdLine->Delete();
+}
+//______________________________________________________________________________________
+  
+void FitHist::AddCut(const char * name, const char * bp){
+   UpdateCut();
+   TMrbWindow2D* cut = (TMrbWindow2D*)fAllCuts->FindObject((char *)name);
+   if(cut && bp){
+       TButton * b;
+       b = (TButton *)strtoul(bp, 0, 16);
+       if(b->TestBit(kSelected)){
+          fActiveCuts->Remove(cut);
+          b->SetFillColor(16);
+          b->ResetBit(kSelected);
+       } else {
+          if(!UseCut(cut)) fActiveCuts->Add(cut);
+          b->SetFillColor(3);
+          b->SetBit(kSelected);
+       }
+   } else { cout << "Cut not found " << name << endl;}
+}
+//______________________________________________________________________________________
+  
+void FitHist::EditCut(const char * name, const char * bp){
+   UpdateCut();
+   TMrbWindow2D* cut = (TMrbWindow2D*)fActiveCuts->FindObject((char *)name);
+   if(cut){
+//      PrintOneCut(cut);
+      int n = cut->GetN();
+//      Double_t *xyvals = new Double_t[2*n + 2];
+      TArrayD xyvals(2*n + 2);
+      TOrdCollection *row_lab = new TOrdCollection(); 
+     
+      for(int i=0; i<n; i++)  {
+//         float x,y;
+        Double_t x,y;
+        cut->GetPoint(i,x,y);
+         xyvals[i] = x;
+         xyvals[i+n+1] = y;
+         row_lab->Add(new TObjString("x,y value"));
+        cout << "x: " << x << " \ty: " << y << endl;
+//        cout << "x: " << xyvals[i] << " \ty: " << xyvals[i+n+1] << endl;
+      }
+      xyvals[n] = 0;
+      xyvals[2*n+1] = 0;
+      row_lab->Add(new TObjString("x,y shift"));
+// show values to caller and let edit
+      TString title("Cut: ");
+      title += cut->GetName();
+      Int_t ret, itemwidth=240, precission = 5; 
+      TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth, 2, n+1,
+                         xyvals, precission,NULL,row_lab);
+      cout << ret << endl;
+      if(ret >= 0){
+         for(int i=0; i<n; i++)  {
+            cut->SetPoint(i,xyvals[i] + xyvals[n],xyvals[i+n+1] + xyvals[2*n+1]);
+         }
+//         make sure contour is closed
+         xyvals[n-1]   =  xyvals[0];
+         xyvals[2*n] =  xyvals[n+1];
+      }
+//      if (xyvals) delete [] xyvals;
+      if(row_lab){ row_lab->Delete(); delete row_lab;}
+   }
+}
+//------------------------------------------------------ 
+  
+void FitHist::PrintOneCut(TMrbWindow2D* cut){
+   cout << cut->GetName() << ":"<<endl;
+   int n = cut->GetN();
+   for(int i=0; i<n; i++)  {
+      Double_t x,y;
+      cut->GetPoint(i,x,y);
+      cout << "x: " << x << " \ty: " << y << endl;
+   }
+}
+//______________________________________________________________________________________
+  
+Float_t FitHist::DrawCut(){
+
+   UpdateCut();
+   if(Ncuts() <= 0){
+//       WarnBox("No cuts active");
+      return 0;
+   }
+   if(!is2dim(fSelHist)) return 0;
+   cout << "--- Entries inside cut(s) -----------" << endl;
+   cHist->cd();
+   TMrbWindow2D *cut;
+   TIter next(fActiveCuts);
+   TAxis* xaxis = fSelHist->GetXaxis();
+   TAxis* yaxis = fSelHist->GetYaxis();
+   Float_t ent = 0;
+   
+//   markers->Sort();
+   while( (cut= (TMrbWindow2D*)next()) ){
+      cut->Draw();
+      ent = 0;
+      for(int i = 1; i <= fSelHist->GetNbinsX(); i++){
+         for(int j = 1; j <= fSelHist->GetNbinsY(); j++){
+            Axis_t xcent = xaxis->GetBinCenter(i);
+            Axis_t ycent = yaxis->GetBinCenter(j);
+            if(cut->IsInside((float)xcent,(float)ycent))
+            ent += fSelHist->GetCellContent(i, j);
+         }
+      }
+      cout << cut->GetName() << ": Content:" << ent << endl; 
+   }
+   cHist->Modified(kTRUE);
+   cHist->Update();
+   return ent;
+
+}
+//______________________________________________________________________________________
+
+void FitHist::MarksToCut(){
+   Int_t nmarks = markers->GetEntries();
+   FhMarker *mark;
+   TIter next(markers);
+   if(nmarks < 2){
+      WarnBox("Need at least 2 marks");
+      return;
+   }
+   Int_t nval;
+   if(nmarks == 2)nval = 5;
+   else           nval = nmarks+1;
+   TArrayD x(nval);            // need this for 2.25-03
+   TArrayD y(nval);
+//   TArrayF x(nval);
+//   TArrayF y(nval);
+   for(Int_t i=0; i<nmarks; i++){
+      mark = (FhMarker*)next();
+      x[i] = mark->GetX();
+      y[i] = mark->GetY();
+   }
+   x[nval-1] = x[0];
+   y[nval-1] = y[0];
+
+   if(nmarks == 2){
+      x[3] = x[0];
+      y[3] = y[1];
+      x[2] = x[1];
+      y[2] = y[3];
+      x[1] = x[2];
+      y[1] = y[0];   
+   }
+   TString cname = fHname;
+   ostrstream buf;
+   cut_numb++;
+   buf << cut_numb << "_" << '\0';
+   cname.Prepend(buf.str());
+   cname.Prepend("Cut");
+   Bool_t ok;
+   fWdwname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
+   if(!ok)  return; 
+   CheckList(fActiveCuts);
+   CheckList(fAllCuts);
+   if(fAllCuts->FindObject(fWdwname.Data())) {
+      WarnBox("Cut already exists");
+      return;
+   }
+   TMrbWindow2D * wdw = new TMrbWindow2D(fWdwname.Data(), nval, &x[0], &y[0]); 
+   wdw->Draw(); 
+   cHist->Update();
+   fActiveCuts->Add(wdw);
+   fAllCuts->Add(wdw);
+}

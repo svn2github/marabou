@@ -1,0 +1,156 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Caen_V260.code
+// @(#)Purpose:    VME code for scaler CAEN V260
+// Description:    Contains pieces of code to operate a scaler CAEN V260
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME scaler CAEN V260 */
+#define $mnemoUC_COUNTER0 		0x10L
+#define $mnemoUC_CLEAR  		0x50L
+#define $mnemoUC_INHIBIT		0x52L
+#define $mnemoUC_ENABLE		0x54L
+#define $mnemoUC_INCREMENT 	0x56L
+#define $mnemoUC_MODULETYPE	0xfcL
+#define $mnemoUC_VERSION		0xfeL
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_INHIBIT)) = 1; 	/* set inhibit */
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_CLEAR)) = 1;		/* clear scaler */
+					$mnemoLC_module_info();
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_C2MI_24();				/* read $chnName:$chnNo */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_BLTI_24($nofParams);		/* $moduleName: read $nofParams scaler data a 24 bits */
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+					RDO_INCR_ADDR();			/* skip next channel */
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_SKIP_ADDR($data);		/* skip $data channels */
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+					RDO_2MEM_32($subaddr)		/* store subaddr $chnNo */
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+					RDO_2MEM_32($data)			/* store data word */
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_CLEAR)) = 1;		/* clear scaler $moduleName */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+					RDO_SETUP_VME($moduleName, $mnemoUC_COUNTER0 + $chnNo);	/* setup read module $moduleName, start with param $chnName */
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_CLEAR)) = 1;		/* clear scaler $moduleName */
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_ENABLE)) = 1;		/* enable scaler $moduleName */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					*((unsigned short *) ((char *) $moduleName + $mnemoUC_INHIBIT)) = 1;	/* inhibit scaler $moduleName */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info() {
+	unsigned short data, version, serial, manufact, mtype;
+	char str[256];
+	data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_VERSION));
+	serial = data & 0xfff;
+	version = (data >> 12) & 0xf;
+	data = *((unsigned short *) ((char *) $moduleName + $mnemoUC_MODULETYPE));
+	mtype = data & 0x3ff;
+	manufact = (data >> 10) & 0x3f;
+	sprintf(str, "  CAEN module info: serial# %d, version %d\n", serial, version);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+	sprintf(str, "                    module type %#x, manufacturer %#x\n", mtype, manufact);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+}
+
+unsigned long $mnemoLC_dead_time(volatile unsigned long * sca, int clear) { /* read contents (and clear module) */
+	unsigned long data;
+	data = *((unsigned long *) ((char *) sca + $mnemoUC_COUNTER0));
+	if (clear != 0) *((unsigned short *) ((char *) sca + $mnemoUC_CLEAR)) = 1;
+	return(data & 0xffffff);
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info();
+unsigned long $mnemoLC_dead_time();
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

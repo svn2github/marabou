@@ -1,0 +1,118 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TApplication</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TApplication:description">class description</a> - <a href="src/TApplication.cxx.html">source file</a> - <a href="TApplication_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TApplication" href="TApplication.h">TApplication</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TApplication.html">TApplication</a> <!--TAB--><!--BOLD--><a href="#TApplication:TApplication">TApplication</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Help">Help</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* line)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:InitializeColors">InitializeColors</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:LoadGraphicsLibs">LoadGraphicsLibs</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:SetReturnFromRun">SetReturnFromRun</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ret)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:SetSignalHandler">SetSignalHandler</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TSignalHandler.html">TSignalHandler</a>* sh)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TApplication.html">TApplication</a> <!--TAB--><!--BOLD--><a href="#TApplication:TApplication">TApplication</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* appClassName, <a href="ListOfTypes.html#int">int</a>* argc, <a href="ListOfTypes.html#char">char</a>** argv, <a href="ListOfTypes.html#void">void</a>* options = 0, <a href="ListOfTypes.html#int">int</a> numOptions = 0)
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TApplication.html">TApplication</a> <!--TAB--><!--BOLD--><a href="#TApplication:TApplication">TApplication</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TApplication.html">TApplication</a>&amp;)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:~TApplication">~TApplication</a><!--PLAIN-->()
+<!--TAB6-->           virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TApplication:ApplicationName">ApplicationName</a><!--PLAIN-->() const
+<!--TAB6-->                           <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a href="#TApplication:Argc">Argc</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#char">char</a>** <!--TAB--><!--BOLD--><a href="#TApplication:Argv">Argv</a><!--PLAIN-->() const
+<!--TAB6-->                         <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TApplication:Argv">Argv</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> index) const
+<!--TAB6-->                static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TApplication:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:ClearInputFiles">ClearInputFiles</a><!--PLAIN-->()
+<!--TAB6-->                   static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:CreateApplication">CreateApplication</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a>* <!--TAB--><!--BOLD--><a href="#TApplication:GetApplicationImp">GetApplicationImp</a><!--PLAIN-->()
+<!--TAB6-->                   const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TApplication:GetIdleCommand">GetIdleCommand</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:GetOptions">GetOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a>* argc, <a href="ListOfTypes.html#char">char</a>** argv)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TSignalHandler.html">TSignalHandler</a>* <!--TAB--><!--BOLD--><a href="#TApplication:GetSignalHandler">GetSignalHandler</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:HandleIdleTimer">HandleIdleTimer</a><!--PLAIN-->()
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplication:HandleTermInput">HandleTermInput</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Hide">Hide</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Iconify">Iconify</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TApplication:InputFiles">InputFiles</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TApplication:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplication:IsCmdThread">IsCmdThread</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Lower">Lower</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplication:NoLogoOpt">NoLogoOpt</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplication:NoLogOpt">NoLogOpt</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Open">Open</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:ProcessFile">ProcessFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* line, <a href="ListOfTypes.html#int">int</a>* error = 0)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:ProcessLine">ProcessLine</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* line, <a href="ListOfTypes.html#Bool_t">Bool_t</a> sync = kFALSE, <a href="ListOfTypes.html#int">int</a>* error = 0)
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplication:QuitOpt">QuitOpt</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Raise">Raise</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:RemoveIdleTimer">RemoveIdleTimer</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TApplication:ReturnFromRun">ReturnFromRun</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Run">Run</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> retrn = kFALSE)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:SetIdleTimer">SetIdleTimer</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> idleTimeInSec, const <a href="ListOfTypes.html#char">char</a>* command)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Show">Show</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:StartIdleing">StartIdleing</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:StopIdleing">StopIdleing</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TApplication:Terminate">Terminate</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> status = 0)
+</pre>
+
+<h3><!--TAB2-->  <a name="TApplication:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TApplication:fArgc">fArgc</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fArgc">Number of command line arguments</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#char">char</a>** <!--TAB--><!--BOLD--><a name="TApplication:fArgv">fArgv</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fArgv">Command line arguments</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a>* <!--TAB--><!--BOLD--><a name="TApplication:fAppImp">fAppImp</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fAppImp">!Window system specific application implementation</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TApplication:fReturnFromRun">fReturnFromRun</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fReturnFromRun">When true return from Run()</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TApplication:fNoLog">fNoLog</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNoLog">Do not process logon and logoff macros</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TApplication:fNoLogo">fNoLogo</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNoLogo">Do not show splash screen and welcome message</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TApplication:fQuit">fQuit</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fQuit">Exit after having processed input files</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a name="TApplication:fFiles">fFiles</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fFiles">Array of input files (TObjString's)</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TApplication:fIdleCommand">fIdleCommand</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fIdleCommand">Command to execute while application is idle</a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* <!--TAB--><!--BOLD--><a name="TApplication:fIdleTimer">fIdleTimer</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fIdleTimer">Idle timer</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TSignalHandler.html">TSignalHandler</a>* <!--TAB--><!--BOLD--><a name="TApplication:fSigHandler">fSigHandler</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fSigHandler">Interrupt handler</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGApplication.html">TGApplication</a>, <a href="http://root.cern.ch/root/html/TRint.html">TRint</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TApplication:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:07 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

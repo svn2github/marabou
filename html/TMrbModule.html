@@ -1,0 +1,431 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbModule</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbModule:description">class description</a> - <a href="src/TMrbModule.cxx.html">source file</a> - <a href="TMrbModule_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbModule" href="TMrbModule.h">TMrbModule</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:DeleteRegisters">DeleteRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                 <a href="./TMrbModule.html">TMrbModule</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:TMrbModule">TMrbModule</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="./TMrbModule.html">TMrbModule</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:TMrbModule">TMrbModule</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleID, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:~TMrbModule">~TMrbModule</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:AllocateHistograms">AllocateHistograms</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:CheckID">CheckID</a><!--PLAIN-->(<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> ModuleID)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:CheckSubeventType">CheckSubeventType</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:ConvertToInt">ConvertToInt</a><!--PLAIN-->()
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:FindRegister">FindRegister</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName)
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:FindRegister">FindRegister</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Get">Get</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Get">Get</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetBinRange">GetBinRange</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetBinSize">GetBinSize</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetChannel">GetChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetCommonCodeFile">GetCommonCodeFile</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetCrate">GetCrate</a><!--PLAIN-->()
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetDataType">GetDataType</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetLofChannels">GetLofChannels</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetLofRegisters">GetLofRegisters</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetModuleID">GetModuleID</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetNofChannels">GetNofChannels</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetNofChannelsUsed">GetNofChannelsUsed</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetNofShortsPerChannel">GetNofShortsPerChannel</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetNofSubDevices">GetNofSubDevices</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetPatternOfChannelsUsed">GetPatternOfChannelsUsed</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetPrivateCodeFile">GetPrivateCodeFile</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetRange">GetRange</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetSerial">GetSerial</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:GetSubDevice">GetSubDevice</a><!--PLAIN-->()
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:GetType">GetType</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:HasBlockReadout">HasBlockReadout</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:HasPrivateCode">HasPrivateCode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:HasRandomReadout">HasRandomReadout</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:HasRegisters">HasRegisters</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:HistosToBeAllocated">HistosToBeAllocated</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsCamac">IsCamac</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsRaw">IsRaw</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsVME">IsVME</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:LoadCodeTemplates">LoadCodeTemplates</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* TemplateFile)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:MakeAnalyzeCode">MakeAnalyzeCode</a><!--PLAIN-->(ofstream&amp; AnaStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Extension)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:MakeRcFile">MakeRcFile</a><!--PLAIN-->(ofstream&amp; RcStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ResourceName)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:PrintRegister">PrintRegister</a><!--PLAIN-->(ostream&amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:PrintRegister">PrintRegister</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetBinSize">SetBinSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> BinSize)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetBlockReadout">SetBlockReadout</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetType">SetType</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="ListOfTypes.html#Bool_t">Bool_t</a> OrFlag = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbModule:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fModuleID">fModuleID</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fModuleID">module id</a></i>
+<!--TAB6-->         <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fModuleType">fModuleType</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fModuleType">module type</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fSerial">fSerial</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fSerial">unique serial number</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:UtilitiesLoaded">UtilitiesLoaded</a><!--PLAIN-->       <!--TAB--><i><a name="Title:UtilitiesLoaded">kTRUE if some utility procedures already loaded</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fNofChannels">fNofChannels</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNofChannels">number of channels available</a></i>
+<!--TAB6-->        <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="TMrbModule:fDataType">fDataType</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDataType">data type</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fNofShortsPerChannel">fNofShortsPerChannel</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNofShortsPerChannel">number of 16 bit words per channel</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fCrate">fCrate</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fCrate">crate number</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fRange">fRange</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fRange">number of data points</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fBinSize">fBinSize</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fBinSize">bin size</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fBinRange">fBinRange</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fBinRange">number of bins</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fSubDevice">fSubDevice</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSubDevice">subdevice</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fBlockReadout">fBlockReadout</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fBlockReadout">kTRUE if block readout;</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fHistosToBeAllocated">fHistosToBeAllocated</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHistosToBeAllocated">kTRUE if histograms to be allocated for each channel</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fLofRegisters">fLofRegisters</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLofRegisters">list of registers</a></i>
+<!--TAB6-->       <a href="./TMrbTemplate.html">TMrbTemplate</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fCodeTemplates">fCodeTemplates</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCodeTemplates">store template code</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fChannelSpec">fChannelSpec</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fChannelSpec">channel specifications (type TMrbModuleChannel *)</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TMrbCamacModule.html">TMrbCamacModule</a>, <a href="./TMrbModuleRaw.html">TMrbModuleRaw</a>, <a href="./TMrbVMEModule.html">TMrbVMEModule</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbModule:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbModule.html">TMrbModule</a>.cxx
+ Purpose:        MARaBOU configuration: modules
+ Description:    Implements class methods to handle modules
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbModule:TMrbModule" href="src/TMrbModule.cxx.html#TMrbModule:TMrbModule">TMrbModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleID, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbModule.html">TMrbModule</a>
+ Purpose:        Create a camac module
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- module name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleID        -- module type
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels        -- number of channels
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Range              -- number of data points
+ Results:        --
+ Exceptions:
+ Description:    Defines a new module having specified number of channels
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetNofChannelsUsed" href="src/TMrbModule.cxx.html#TMrbModule:GetNofChannelsUsed">GetNofChannelsUsed</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:GetNofChannelsUsed">TMrbModule::GetNofChannelsUsed</a>
+ Purpose:        Calculate number of channels in use
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofUsed  -- number of channels used
+ Exceptions:
+ Description:    Calculates number of active channels
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbModule:GetPatternOfChannelsUsed" href="src/TMrbModule.cxx.html#TMrbModule:GetPatternOfChannelsUsed">GetPatternOfChannelsUsed</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:GetPatternOfChannelsUsed">TMrbModule::GetPatternOfChannelsUsed</a>
+ Purpose:        Return pattern of channels in use
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> PofChannelsUsed  -- pattern of channels used
+ Exceptions:
+ Description:    Build bit pattern of active channels
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:SetBlockReadout" href="src/TMrbModule.cxx.html#TMrbModule:SetBlockReadout">SetBlockReadout</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:SetBlockReadout">TMrbModule::SetBlockReadout</a>
+ Purpose:        Enable/disable block readout
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag    -- block mode flag
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Enables block mode if channels are allocated continuously.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:SetType" href="src/TMrbModule.cxx.html#TMrbModule:SetType">SetType</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="ListOfTypes.html#Bool_t">Bool_t</a> OrFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:SetType">TMrbModule::SetType</a>
+ Purpose:        Set module type
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType    -- type bits
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> OrFlag        -- kTRUE if "or"
+ Results:        --
+ Exceptions:
+ Description:    Sets module type bits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbModule:GetChannel" href="src/TMrbModule.cxx.html#TMrbModule:GetChannel">GetChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:GetChannel">TMrbModule::GetChannel</a>
+ Purpose:        Return addr of specified channel
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel     -- channel number
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * ChAddr  -- channel addr or NULL on error
+ Exceptions:     Channel out of range
+ Description:    Checks if channel number is legal and return addr of class object
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:Set" href="src/TMrbModule.cxx.html#TMrbModule:Set">Set</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:Set">TMrbModule::Set</a>
+ Purpose:        Set register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Regname  -- register name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value       -- value to be set
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel     -- channel number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets register values of specified channel.
+                 Channel = -1: set values for all channels
+                               or set channel of a common register
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:Set" href="src/TMrbModule.cxx.html#TMrbModule:Set">Set</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:Set">TMrbModule::Set</a>
+ Purpose:        Set register values
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex          -- register index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value             -- value to be set
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets register values of specified channel.
+                 Channel = -1: set values for all channels
+                               or set channel of a common register
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:Set" href="src/TMrbModule.cxx.html#TMrbModule:Set">Set</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:Set">TMrbModule::Set</a>
+ Purpose:        Set register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Regname  -- register name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Value    -- mnemonic value to be set
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel     -- channel number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets register values of specified channel.
+                 Channel = -1: set values for all channels
+                               or set channel of a common register
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:Set" href="src/TMrbModule.cxx.html#TMrbModule:Set">Set</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:Set">TMrbModule::Set</a>
+ Purpose:        Set register values
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex          -- register index
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Value          -- mnemonic value to be set
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets register values of specified channel.
+                 Channel = -1: set values for all channels
+                               or set channel of a common register
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:Get" href="src/TMrbModule.cxx.html#TMrbModule:Get">Get</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:Get">TMrbModule::Get</a>
+ Purpose:        Get register values
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName  -- register name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel     -- channel number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Value       -- register value
+ Exceptions:
+ Description:    Gets register values of specified channel
+                 Channel = -1: set value of a common register
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:Get" href="src/TMrbModule.cxx.html#TMrbModule:Get">Get</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:Get">TMrbModule::Get</a>
+ Purpose:        Get register values
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex          -- register index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Value             -- register value
+ Exceptions:
+ Description:    Gets register values of specified channel
+                 Channel = -1: set value of a common register
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:MakeAnalyzeCode" href="src/TMrbModule.cxx.html#TMrbModule:MakeAnalyzeCode">MakeAnalyzeCode</a>(ofstream &amp; AnaStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:MakeAnalyzeCode">TMrbModule::MakeAnalyzeCode</a>
+ Purpose:        Write a piece of code for data analysis
+ Arguments:      ofstream &amp; AnaStrm       -- file output stream
+                 EMrbAnalyzeTag TagIndex  -- index of tag word from template file
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension       -- file extensions to be appended (.h or .cxx)
+ Results:
+ Exceptions:
+ Description:    Writes code needed for data analysis.
+                 Searches for following files:
+                      (1)  if module has private code
+                      (1a)    Module_&lt;Name&gt;.&lt;Extension&gt;.code
+                      (1b)    &lt;PrivateCodeFile&gt;.&lt;Extension&gt;.code
+                      (1c)    Module_&lt;Class&gt;.&lt;Extension&gt;.code
+                      (2)  standard:
+                              Module.&lt;Extension&gt;.code
+
+                 This method is optional and doesn't generate an error
+                 if no template file has been found.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:LoadCodeTemplates" href="src/TMrbModule.cxx.html#TMrbModule:LoadCodeTemplates">LoadCodeTemplates</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * TemplateFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:LoadCodeTemplates">TMrbModule::LoadCodeTemplates</a>
+ Purpose:        Load code from template file
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; TemplateFile   -- file name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Reads code from template file for further expansion
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:DeleteRegisters" href="src/TMrbModule.cxx.html#TMrbModule:DeleteRegisters">DeleteRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:DeleteRegisters">TMrbModule::DeleteRegisters</a>()
+ Purpose:        Empty list of registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Removes registers.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:PrintRegister" href="src/TMrbModule.cxx.html#TMrbModule:PrintRegister">PrintRegister</a>(ostream &amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbModule.html#TMrbModule:PrintRegister">TMrbModule::PrintRegister</a>()
+ Purpose:        Print register settings
+ Arguments:      ostream * OutStrm    -- output stream
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * RegName     -- register name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix      -- prefix
+ Results:        --
+ Exceptions:
+ Description:    Output register settings
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./TMrbModule.html">TMrbModule</a> <a name="TMrbModule:TMrbModule" href="TMrbModule.h">TMrbModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleID, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> Range)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModule:FindRegister" href="TMrbModule.h">FindRegister</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModule:FindRegister" href="TMrbModule.h">FindRegister</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HasRegisters" href="TMrbModule.h">HasRegisters</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:AllocateHistograms" href="TMrbModule.h">AllocateHistograms</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HistosToBeAllocated" href="TMrbModule.h">HistosToBeAllocated</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:ConvertToInt" href="TMrbModule.h">ConvertToInt</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HasBlockReadout" href="TMrbModule.h">HasBlockReadout</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbModule:GetLofRegisters" href="TMrbModule.h">GetLofRegisters</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetRange" href="TMrbModule.h">GetRange</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModule:GetDataType" href="TMrbModule.h">GetDataType</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:SetBinSize" href="TMrbModule.h">SetBinSize</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BinSize)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetBinSize" href="TMrbModule.h">GetBinSize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetBinRange" href="TMrbModule.h">GetBinRange</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetSubDevice" href="TMrbModule.h">GetSubDevice</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModule:GetType" href="TMrbModule.h">GetType</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbModule:GetModuleID" href="TMrbModule.h">GetModuleID</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbModule:GetMnemonic" href="TMrbModule.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetCrate" href="TMrbModule.h">GetCrate</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetSerial" href="TMrbModule.h">GetSerial</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:CheckID" href="TMrbModule.h">CheckID</a>(<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> ModuleID)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetNofShortsPerChannel" href="TMrbModule.h">GetNofShortsPerChannel</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetNofChannels" href="TMrbModule.h">GetNofChannels</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <a name="TMrbModule:GetLofChannels" href="TMrbModule.h">GetLofChannels</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:MakeReadoutCode" href="TMrbModule.h">MakeReadoutCode</a>(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> TagIndex, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:MakeReadoutCode" href="TMrbModule.h">MakeReadoutCode</a>(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:MakeReadoutCode" href="TMrbModule.h">MakeReadoutCode</a>(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:MakeRcFile" href="TMrbModule.h">MakeRcFile</a>(ofstream&amp; RcStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ResourceName)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:IsCamac" href="TMrbModule.h">IsCamac</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:IsVME" href="TMrbModule.h">IsVME</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:PrintRegister" href="TMrbModule.h">PrintRegister</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetNofSubDevices" href="TMrbModule.h">GetNofSubDevices</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HasRandomReadout" href="TMrbModule.h">HasRandomReadout</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:IsRaw" href="TMrbModule.h">IsRaw</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:CheckSubeventType" href="TMrbModule.h">CheckSubeventType</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HasPrivateCode" href="TMrbModule.h">HasPrivateCode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbModule:GetPrivateCodeFile" href="TMrbModule.h">GetPrivateCodeFile</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbModule:GetCommonCodeFile" href="TMrbModule.h">GetCommonCodeFile</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:Help" href="TMrbModule.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:DefineRegisters" href="TMrbModule.h">DefineRegisters</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbModule:Class" href="TMrbModule.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbModule:IsA" href="TMrbModule.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:ShowMembers" href="TMrbModule.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:Streamer" href="TMrbModule.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:StreamerNVirtual" href="TMrbModule.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:~TMrbModule" href="TMrbModule.h">~TMrbModule</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:08 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

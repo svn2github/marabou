@@ -1,0 +1,31 @@
+#ifdef __CINT__
+//___________________________________________________________[CINT DIRECTIVES]
+//////////////////////////////////////////////////////////////////////////////
+// @Name:          %%ANALYZE_FILE%%LinkDef.h
+// @Purpose:       Directives telling CINT how to compile %%ANALYZE_FILE%%
+//                 To be used with user files %%ANALYZE_FILE%%.cxx/.h
+// Description:    Contains a "#pragma link C++ class" statement
+//                 for each user-defined class
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+// classes supplied by system
+#pragma link C++ class TMrbIOSpec+;
+#pragma link C++ class TMrbAnalyze+;
+#pragma link C++ class TUsrEvent+;
+#pragma link C++ class TUsrEvtStart+;
+#pragma link C++ class TUsrEvtStop+;
+// classes defined by user
+%%BeginOfCode%%
+#pragma link C++ class $className+;
+%%EndOfCode%%
+%%PRAGMA_LINK_CLASSES%%
+#endif

@@ -1,0 +1,355 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbString</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbString:description">class description</a> - <a href="src/TMrbString.cxx.html">source file</a> - <a href="TMrbString_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbString" href="TMrbString.h">TMrbString</a> : public <a href="http://root.cern.ch/root/html/TString.html">TString</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:CheckDouble">CheckDouble</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; IsSigned)
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:CheckInteger">CheckInteger</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Base, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; BaseId, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; IsSigned)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Str)
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> BaseId = kTRUE)
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Precision = 0)
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0)
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Precision = 0)
+<!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a href="#TMrbString:TMrbString">TMrbString</a><!--PLAIN-->(const <a href="./TMrbString.html">TMrbString</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:~TMrbString">~TMrbString</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:AppendDouble">AppendDouble</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Precision = 0)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:AppendInteger">AppendInteger</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbString:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Expand">Expand</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a> Escape = %)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbString:Fill">Fill</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Pattern = " ", <a href="ListOfTypes.html#Int_t">Int_t</a> Pos = 0) const
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:FromDouble">FromDouble</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Precision = 0)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:FromInteger">FromInteger</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> BaseId = kTRUE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Increment">Increment</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Increment = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithSign = kFALSE)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Increment">Increment</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Increment, <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithSign = kFALSE)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbString:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator+=">operator+=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator+=">operator+=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a> d)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator+=">operator+=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* s)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator+=">operator+=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a> d)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* s)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="./TMrbString.html">TMrbString</a>&amp; s)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="./TSubString.html">TSubString</a>&amp; s)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ProcessEscapeSequence">ProcessEscapeSequence</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a> CharId, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Replacement)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ResetBase">ResetBase</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SetBase">SetBase</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Base)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SetPrecision">SetPrecision</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Precision)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Split">Split</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; LofSubStrings, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Separator = ":")
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SplitOffDouble">SplitOffDouble</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; IsSigned)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SplitOffInteger">SplitOffInteger</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; IsSigned, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ToDouble">ToDouble</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; DblVal)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ToInteger">ToInteger</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbString:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbString:fPrecision">fPrecision</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPrecision"></a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbString:fBase">fBase</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fBase"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="./TMrbString.html">TMrbString</a>:: <!--TAB--><!--BOLD--><a name="TMrbString:kDefaultBase">kDefaultBase</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDefaultBase"></a></i>
+<!--TAB6-->      static const enum <a href="./TMrbString.html">TMrbString</a>:: <!--TAB--><!--BOLD--><a name="TMrbString:kDefaultPrecision">kDefaultPrecision</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDefaultPrecision"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbString:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbString.html">TMrbString</a>.cxx
+ Purpose:        MARaBOU utilities: type conversion for strings
+ Description:    Implements type conversion for <a href="http://root.cern.ch/root/html/TString.html">TString</a> objects
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbString:TMrbString" href="src/TMrbString.cxx.html#TMrbString:TMrbString">TMrbString</a>() <br>
+<hr>
+<!--FUNCTION--> <a name="TMrbString:TMrbString" href="src/TMrbString.cxx.html#TMrbString:TMrbString">TMrbString</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Str) : <a href="http://root.cern.ch/root/html/TString.html">TString</a>(Str) <br>
+<hr>
+<!--FUNCTION--><a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:FromInteger" href="src/TMrbString.cxx.html#TMrbString:FromInteger">FromInteger</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar, <a href="ListOfTypes.html#Int_t">Int_t</a> Base, <a href="ListOfTypes.html#Bool_t">Bool_t</a> BaseId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:FromInteger">TMrbString::FromInteger</a>
+ Purpose:        Convert integer to string
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> IntVal   -- integer value
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Width    -- number of digits
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar -- how to pad leading blanks
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base     -- conversion base (2, 8, 10, 16)
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> BaseId  -- prepend base identifier (0b, 0, 0x) if kTRUE
+ Results:        --
+ Exceptions:
+ Description:    Converts an integer value to its ascii representation
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:AppendInteger" href="src/TMrbString.cxx.html#TMrbString:AppendInteger">AppendInteger</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar, <a href="ListOfTypes.html#Int_t">Int_t</a> Base) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:AppendInteger">TMrbString::AppendInteger</a>
+ Purpose:        Append integer to string
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> IntVal   -- integer value
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Width    -- number of digits
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar -- hwo to pad leading blanks
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base     -- conversion base (2, 8, 10, 16)
+ Results:        --
+ Exceptions:
+ Description:    Appends an integer value to an existing string
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbString:ToInteger" href="src/TMrbString.cxx.html#TMrbString:ToInteger">ToInteger</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> &amp; IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Base) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:ToInteger">TMrbString::ToInteger</a>
+ Purpose:        Convert string to integer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; IntVal   -- integer representation
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base       -- force conversion to given base
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Converts a string to its integer value
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:SplitOffInteger" href="src/TMrbString.cxx.html#TMrbString:SplitOffInteger">SplitOffInteger</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned, <a href="ListOfTypes.html#Int_t">Int_t</a> Base) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:SplitOffInteger">TMrbString::SplitOffInteger</a>
+ Purpose:        Return trailing integer
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix    -- leading substring
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned   -- kTRUE if signed number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base          -- numerical base
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> IntVal        -- trailing integer part (unsigned)
+ Exceptions:
+ Description:    Inspects a string for trailing digits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:Increment" href="src/TMrbString.cxx.html#TMrbString:Increment">Increment</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Increment, <a href="ListOfTypes.html#Int_t">Int_t</a> Base, <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithSign) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:Increment">TMrbString::Increment</a>
+ Purpose:        Increment trailing integer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Increment     -- increment
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base          -- numerical base
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithSign     -- include sign if present
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> IntVal        -- integer value
+ Exceptions:
+ Description:    Increments the trailing integer of a string (if present).
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:FromDouble" href="src/TMrbString.cxx.html#TMrbString:FromDouble">FromDouble</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar, <a href="ListOfTypes.html#Int_t">Int_t</a> Precision) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:FromDouble">TMrbString::FromDouble</a>
+ Purpose:        Convert <a href="ListOfTypes.html#double">double</a> to string
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> DblVal     -- <a href="ListOfTypes.html#double">double</a> value
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Width      -- number of digits
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar   -- how to pad blanks
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Precision  -- precision
+ Results:        --
+ Exceptions:
+ Description:    Converts an integer value to its ascii representation
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:AppendDouble" href="src/TMrbString.cxx.html#TMrbString:AppendDouble">AppendDouble</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar, <a href="ListOfTypes.html#Int_t">Int_t</a> Precision) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:AppendDouble">TMrbString::AppendDouble</a>
+ Purpose:        Append <a href="ListOfTypes.html#double">double</a> to string
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> DblVal    -- integer value
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Width        -- number of digits
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar     -- how to pad blanks
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Precision    -- precision
+ Results:        --
+ Exceptions:
+ Description:    Appends a <a href="ListOfTypes.html#double">double</a> value to an existing string
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbString:ToDouble" href="src/TMrbString.cxx.html#TMrbString:ToDouble">ToDouble</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> &amp; DblVal) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:ToDouble">TMrbString::ToDouble</a>
+ Purpose:        Convert string to <a href="ListOfTypes.html#double">double</a>
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> &amp; DblVal   -- <a href="ListOfTypes.html#double">double</a> representation
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Converts a string to its <a href="ListOfTypes.html#double">double</a> value
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbString:SplitOffDouble" href="src/TMrbString.cxx.html#TMrbString:SplitOffDouble">SplitOffDouble</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:SplitOffDouble">TMrbString::SplitOffDouble</a>
+ Purpose:        Return trailing <a href="ListOfTypes.html#double">double</a>
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix    -- leading substring
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned   -- ktrue if signed number
+ Results:        <a href="ListOfTypes.html#Double_t">Double_t</a> DblVal     -- trailing <a href="ListOfTypes.html#double">double</a> part (unsigned)
+ Exceptions:
+ Description:    Inspects a string for trailing digits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbString:Increment" href="src/TMrbString.cxx.html#TMrbString:Increment">Increment</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Increment, <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithSign) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:Increment">TMrbString::Increment</a>
+ Purpose:        Increment trailing <a href="ListOfTypes.html#double">double</a>
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> Increment     -- increment
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> WithSign        -- allow number to be signed
+ Results:        <a href="ListOfTypes.html#Double_t">Double_t</a> IntVal        -- <a href="ListOfTypes.html#double">double</a> value
+ Exceptions:
+ Description:    Increments the trailing <a href="ListOfTypes.html#double">double</a> of a string (if present).
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:Split" href="src/TMrbString.cxx.html#TMrbString:Split">Split</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; LofSubStrings, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Separator) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:Split">TMrbString::Split</a>
+ Purpose:        Split string into substrings
+ Arguments:      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; LofSubStrings   -- list of substrings
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Separator          -- separator between substrings
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofSubStrings         -- number of substrings
+ Exceptions:
+ Description:    Appends substrings to list.
+                 Substrings have to be converted to <a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a> to get stored.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbString:Expand" href="src/TMrbString.cxx.html#TMrbString:Expand">Expand</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> Escape) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:Expand">TMrbString::Expand</a>
+ Purpose:        Expand escape sequences
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> Escape    -- escape <a href="ListOfTypes.html#char">char</a>
+ Results:        --
+ Exceptions:
+ Description:    Looks for given escape <a href="ListOfTypes.html#char">char</a>
+                 and calls method "ProcessEscapeSequence".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbString:ProcessEscapeSequence" href="src/TMrbString.cxx.html#TMrbString:ProcessEscapeSequence">ProcessEscapeSequence</a>(<a href="ListOfTypes.html#Char_t">Char_t</a> CharId, <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Replacement) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:ProcessEscapeSequence">TMrbString::ProcessEscapeSequence</a>
+ Purpose:        Expand escape sequences
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> CharId          -- escape sequence <a href="ListOfTypes.html#char">char</a>
+                 <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Replacement  -- replacement
+ Results:        --
+ Exceptions:
+ Description:    User's method to replace escape sequences.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:CheckInteger" href="src/TMrbString.cxx.html#TMrbString:CheckInteger">CheckInteger</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Base, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; BaseId, <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:CheckInteger">TMrbString::CheckInteger</a>
+ Purpose:        Check if string is valid integer
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix       -- where to store prefix
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base             -- expected base
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; BaseId         -- actual base id (0x, 0b)
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned      -- kTRUE if signed number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Index            -- where integer number starts
+ Exceptions:
+ Description:    Test if string chars are legal integer digits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:CheckDouble" href="src/TMrbString.cxx.html#TMrbString:CheckDouble">CheckDouble</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; IsSigned) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:CheckDouble">TMrbString::CheckDouble</a>
+ Purpose:        Check if string is valid integer
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Prefix       -- where to store prefix
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Index            -- where <a href="ListOfTypes.html#double">double</a> number starts
+ Exceptions:
+ Description:    Test if string chars are legal <a href="ListOfTypes.html#double">double</a> digits.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:TMrbString" href="TMrbString.h">TMrbString</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> BaseId = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:TMrbString" href="TMrbString.h">TMrbString</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar =  , <a href="ListOfTypes.html#Int_t">Int_t</a> Precision = 0)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:TMrbString" href="TMrbString.h">TMrbString</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> IntVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:TMrbString" href="TMrbString.h">TMrbString</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Double_t">Double_t</a> DblVal, <a href="ListOfTypes.html#Int_t">Int_t</a> Width = 0, <a href="ListOfTypes.html#Char_t">Char_t</a> PadChar = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> Precision = 0)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="ListOfTypes.html#Double_t">Double_t</a> d)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator+=" href="TMrbString.h">operator+=</a>(const <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator+=" href="TMrbString.h">operator+=</a>(const <a href="ListOfTypes.html#Double_t">Double_t</a> d)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* s)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="./TMrbString.html">TMrbString</a>&amp; s)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator+=" href="TMrbString.h">operator+=</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* s)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator+=" href="TMrbString.h">operator+=</a>(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="./TSubString.html">TSubString</a>&amp; s)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:SetPrecision" href="TMrbString.h">SetPrecision</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Precision)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:SetBase" href="TMrbString.h">SetBase</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Base)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:ResetBase" href="TMrbString.h">ResetBase</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbString:Fill" href="TMrbString.h">Fill</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Pattern = " ", <a href="ListOfTypes.html#Int_t">Int_t</a> Pos = 0) const
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbString:Class" href="TMrbString.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbString:IsA" href="TMrbString.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:ShowMembers" href="TMrbString.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:Streamer" href="TMrbString.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:StreamerNVirtual" href="TMrbString.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbString.html">TMrbString</a> <a name="TMrbString:TMrbString" href="TMrbString.h">TMrbString</a>(const <a href="./TMrbString.html">TMrbString</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:~TMrbString" href="TMrbString.h">~TMrbString</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:32 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

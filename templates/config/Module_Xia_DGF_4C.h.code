@@ -1,0 +1,86 @@
+%%BeginOfCode%%
+//_________________________________________________________________[C INDICES]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGF-4C: Internal Scalers
+// Purpose:        Define indices for internal scaler data
+// Description:    Indices to access internal scaler data
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+enum EDgfScaIdx	{
+							kDgfModuleIndex = 0,
+							kDgfRealTimeA,
+							kDgfRealTimeB,
+							kDgfRealTimeC,
+							kDgfRunTimeA,
+							kDgfRunTimeB,
+							kDgfRunTimeC,
+							kDgfGSLTTimeA,
+							kDgfGSLTTimeB,
+							kDgfGSLTTimeC,
+							kDgfNumEventsA,
+							kDgfNumEventsB,
+							kDgfLiveTimeA0,							
+							kDgfLiveTimeB0,							
+							kDgfLiveTimeC0,							
+							kDgfLiveTimeA1,							
+							kDgfLiveTimeB1,							
+							kDgfLiveTimeC1,							
+							kDgfLiveTimeA2,							
+							kDgfLiveTimeB2,							
+							kDgfLiveTimeC2,							
+							kDgfLiveTimeA3,							
+							kDgfLiveTimeB3,							
+							kDgfLiveTimeC3,							
+							kDgfFastPeaksA0,							
+							kDgfFastPeaksB0,							
+							kDgfFastPeaksA1,							
+							kDgfFastPeaksB1,							
+							kDgfFastPeaksA2,							
+							kDgfFastPeaksB2,							
+							kDgfFastPeaksA3,							
+							kDgfFastPeaksB3,							
+						};							
+enum					{	kDgfNofScalerData = kDgfFastPeaksB3 - kDgfModuleIndex	+ 1};
+
+#ifndef __DgfBuffer__
+#define __DgfBuffer__
+//_______________________________________________________________[C STRUCTURE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DgfEventBufferHeader, DgfEventHeader, DgfEventChannelHeader
+// Purpose:        Describe list mode format for XIA DGF-4C
+// Description:    Struct defs for buffer header, event header, and
+//                 channel header, resp.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+enum					{	kDgfNofChannels 		=	4	};
+enum					{	kDgfMaxNofChannelWords 	=	9	};
+
+typedef struct {
+	Short_t nofWords;			// number of data words in this buffer
+	Short_t moduleNumber;		// module number
+	UShort_t formatDescr;		// format descriptor
+	UShort_t startTime[3];		// run start time
+} DgfEventBufferHeader;
+
+typedef struct {
+	UShort_t hitPattern;		// channel hit pattern
+	UShort_t eventTime[2];		// event time
+} DgfEventHeader;
+
+typedef struct {
+	UShort_t fastTriggerTime;	// fast trigger time
+	UShort_t energy;			// energy
+	UShort_t xiaPSA;			// XIA PSA value
+	UShort_t userPSA;			// user PSA
+	UShort_t GFLTHi;			// GFLT value
+	UShort_t GFLTMi;
+	UShort_t GFLTLO;
+	UShort_t raw;				// reserved
+} DgfEventChannelHeader;
+
+#endif
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%

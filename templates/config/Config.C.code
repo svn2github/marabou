@@ -1,0 +1,86 @@
+#!/usr/local/bin/xrcm
+//________________________________________________________________[ROOT MACRO]
+//////////////////////////////////////////////////////////////////////////////
+// Name:             %%CONFIG_FILE%%.C
+// Purpose:          Example configuration for a MARaBOU session
+// Description:      Config file to to define the experimental setup.
+//                   Generates a C readout function to be used with MBS
+//                   as well as C++ class definitions and methods for the 
+//                   data analysis with ROOT.
+// Experiment:       %%CONFIG_NAME_UC%%
+//                   %%CONFIG_TITLE%%
+// Author:           %%AUTHOR%%
+// Revision:         
+// Date:             %%CREATION_DATE%%
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+{
+	gROOT->Macro("LoadConfigLibs.C");	// load libraries containing class defs and methods
+
+	TMrbConfig::Version();
+
+// create a config object
+%%BeginOfCode%%
+	$cfgClass * $cfgNameLC = new $cfgClass("$cfgNameLC", "$cfgTitle");
+%%EndOfCode%%
+%%CREATE_CONFIG%%
+
+// define events/triggers to be used
+%%BeginOfCode%%
+	$evtNameLC = new TMrbEvent($trigNo, "$evtNameLC", "$evtTitle");
+%%EndOfCode%%
+%%DEFINE_EVENTS%%
+
+// define subevents
+%%BeginOfCode%%
+	$sevtClass * $sevtNameLC = new $sevtClass("$sevtNameLC", "$sevtTitle");
+%%EndOfCode%%
+%%DEFINE_SUBEVENTS%%
+
+// define (camac) modules
+%%BeginOfCode%%
+	$moduleClass * $moduleNameLC = new $moduleClass("$moduleNameLC", "$modulePosition");	// $moduleTitle
+%%EndOfCode%%
+%%DEFINE_MODULES%%
+
+// assign module params to subevents
+%%BeginOfCode%%
+	$sevtNameLC->Use("$moduleNameLC", "$lofParams");		
+%%EndOfCode%%
+%%ASSIGN_PARAMS%%
+
+// connect subevent to event
+%%BeginOfCode%%
+	$evtNameLC->HasSubevent("$sevtNameLC");
+%%EndOfCode%%
+%%CONNECT_TO_EVENT%%
+
+// define variables
+%%BeginOfCode%%
+	$cfgNameLC->DefineVariables("$varType", "$lofVars");
+%%EndOfCode%%
+%%DEFINE_VARIABLES%%
+
+// define windows
+%%BeginOfCode%%
+	$cfgNameLC->DefineWindows("$wdwType", "$lofWdws");
+%%EndOfCode%%
+%%DEFINE_WINDOWS%%
+
+// define scalers
+%%BeginOfCode%%
+	$scalerClass * $scalerNameLC = new $scalerClass("$scalerNameLC", "$scalerPosition");	// $scalerTitle
+%%EndOfCode%%
+%%DEFINE_SCALERS%%
+
+// generate code
+%%BeginOfCode%%
+	$cfgNameLC->MakeReadoutCode("", "Overwrite");		// C readout code for MBS
+	$cfgNameLC->MakeAnalyzeCode();						// C++ class defs & methods for data analysis within ROOT
+	$cfgNameLC->WriteToFile("$cfgFile.root");			// save config objects to root file
+%%EndOfCode%%
+%%MAKE_CODE%%
+
+	gSystem->Exit(0);
+}

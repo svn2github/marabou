@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TPARA</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TPARA:description">class description</a> - <a href="src/TPARA.cxx.html">source file</a> - <a href="TPARA_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TPARA" href="TPARA.h">TPARA</a> : public <a href="http://root.cern.ch/root/html/TBRIK.html">TBRIK</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TPARA.html">TPARA</a> <!--TAB--><!--BOLD--><a href="#TPARA:TPARA">TPARA</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TPARA.html">TPARA</a> <!--TAB--><!--BOLD--><a href="#TPARA:TPARA">TPARA</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, const <a href="ListOfTypes.html#char">char</a>* material, <a href="ListOfTypes.html#Float_t">Float_t</a> dx, <a href="ListOfTypes.html#Float_t">Float_t</a> dy, <a href="ListOfTypes.html#Float_t">Float_t</a> dz, <a href="ListOfTypes.html#Float_t">Float_t</a> alpha, <a href="ListOfTypes.html#Float_t">Float_t</a> theta, <a href="ListOfTypes.html#Float_t">Float_t</a> phi)
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TPARA.html">TPARA</a> <!--TAB--><!--BOLD--><a href="#TPARA:TPARA">TPARA</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TPARA.html">TPARA</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPARA:~TPARA">~TPARA</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPARA:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TPARA:GetAlpha">GetAlpha</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TPARA:GetPhi">GetPhi</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TPARA:GetTheta">GetTheta</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPARA:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPARA:SetPoints">SetPoints</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* buff)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPARA:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPARA:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPARA:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TPARA:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TPARA:fAlpha">fAlpha</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAlpha">angle w.r.t. the y axis from the centre of the low y to the high y</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TPARA:fTheta">fTheta</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTheta">polar angle from the centre of the low z to the high z</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TPARA:fPhi">fPhi</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fPhi">polar angle from the centre of the low z to the high z</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TPARA:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:06 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

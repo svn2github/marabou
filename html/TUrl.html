@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TUrl</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TUrl:description">class description</a> - <a href="src/TUrl.cxx.html">source file</a> - <a href="TUrl_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TUrl" href="TUrl.h">TUrl</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a> <!--TAB--><!--BOLD--><a href="#TUrl:TUrl">TUrl</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a> <!--TAB--><!--BOLD--><a href="#TUrl:TUrl">TUrl</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* url)
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a> <!--TAB--><!--BOLD--><a href="#TUrl:TUrl">TUrl</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a>&amp; url)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUrl:~TUrl">~TUrl</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUrl:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TUrl:GetAnchor">GetAnchor</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TUrl:GetFile">GetFile</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TUrl:GetHost">GetHost</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TUrl:GetOptions">GetOptions</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUrl:GetPort">GetPort</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TUrl:GetProtocol">GetProtocol</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TUrl:GetUrl">GetUrl</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUrl:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUrl:IsValid">IsValid</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a>&amp; <!--TAB--><!--BOLD--><a href="#TUrl:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a>&amp; rhs)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUrl:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUrl:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUrl:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUrl:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TUrl:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUrl:fUrl">fUrl</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fUrl">full URL</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUrl:fProtocol">fProtocol</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fProtocol">protocol: http, ftp, news, root, rfio, hpss</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUrl:fHost">fHost</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fHost">remote host</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUrl:fFile">fFile</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fFile">remote object</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUrl:fAnchor">fAnchor</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAnchor">anchor in object</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUrl:fOptions">fOptions</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fOptions">options (after ?)</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUrl:fPort">fPort</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPort">port through which to contact remote server</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TUrl:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:29 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

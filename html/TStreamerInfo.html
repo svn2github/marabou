@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TStreamerInfo</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TStreamerInfo:description">class description</a> - <a href="src/TStreamerInfo.cxx.html">source file</a> - <a href="TStreamerInfo_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TStreamerInfo" href="TStreamerInfo.h">TStreamerInfo</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:BuildUserInfo">BuildUserInfo</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* info)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:TStreamerInfo">TStreamerInfo</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:TStreamerInfo">TStreamerInfo</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, const <a href="ListOfTypes.html#char">char</a>* info)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:TStreamerInfo">TStreamerInfo</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a>&amp;)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:~TStreamerInfo">~TStreamerInfo</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:Build">Build</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:BuildCheck">BuildCheck</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:BuildFake">BuildFake</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* file)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:BuildOld">BuildOld</a><!--PLAIN-->()
+<!--TAB6-->                   static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:CanDelete">CanDelete</a><!--PLAIN-->()
+<!--TAB6-->                   static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:CanOptimize">CanOptimize</a><!--PLAIN-->()
+<!--TAB6-->                  static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:Compile">Compile</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:ComputeSize">ComputeSize</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:ForceWriteInfo">ForceWriteInfo</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* file)
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GenerateHeaderFile">GenerateHeaderFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dirname)
+<!--TAB6-->                          <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetCheckSum">GetCheckSum</a><!--PLAIN-->() const
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetClass">GetClass</a><!--PLAIN-->() const
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetClassVersion">GetClassVersion</a><!--PLAIN-->() const
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TStreamerElement.html">TStreamerElement</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetCurrentElement">GetCurrentElement</a><!--PLAIN-->()
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetDataMemberOffset">GetDataMemberOffset</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TDataMember.html">TDataMember</a>* dm, <a href="ListOfTypes.html#Streamer_t">Streamer_t</a>&amp; streamer) const
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TStreamerBasicType.html">TStreamerBasicType</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetElementCounter">GetElementCounter</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* countName, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#Int_t">Int_t</a> version)
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetElements">GetElements</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#ULong_t">ULong_t</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetElems">GetElems</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetLengths">GetLengths</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#ULong_t">ULong_t</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetMethods">GetMethods</a><!--PLAIN-->() const
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetNdata">GetNdata</a><!--PLAIN-->() const
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetNumber">GetNumber</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetOffsets">GetOffsets</a><!--PLAIN-->() const
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetSize">GetSize</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TStreamerElement.html">TStreamerElement</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetStreamerElement">GetStreamerElement</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* datamember, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; offset) const
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetTypes">GetTypes</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetValue">GetValue</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* pointer, <a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Int_t">Int_t</a> j, <a href="ListOfTypes.html#Int_t">Int_t</a> len) const
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:GetValueClones">GetValueClones</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* clones, <a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Int_t">Int_t</a> j, <a href="ListOfTypes.html#Int_t">Int_t</a> k, <a href="ListOfTypes.html#Int_t">Int_t</a> eoffset) const
+<!--TAB6-->                 virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TStreamerInfo:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:IsOptimized">IsOptimized</a><!--PLAIN-->() const
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:New">New</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* p)
+<!--TAB6-->                     static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:Optimize">Optimize</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> opt = kTRUE)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:PrintValue">PrintValue</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#char">char</a>* pointer, <a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Int_t">Int_t</a> len) const
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:PrintValueClones">PrintValueClones</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* clones, <a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Int_t">Int_t</a> eoffset) const
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="ListOfTypes.html#char">char</a>* pointer, <a href="ListOfTypes.html#Int_t">Int_t</a> first)
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:ReadBufferClones">ReadBufferClones</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* clones, <a href="ListOfTypes.html#Int_t">Int_t</a> nc, <a href="ListOfTypes.html#Int_t">Int_t</a> first, <a href="ListOfTypes.html#Int_t">Int_t</a> eoffset)
+<!--TAB6-->                     static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:SetCanDelete">SetCanDelete</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> opt = kTRUE)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:SetClass">SetClass</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:SetClassVersion">SetClassVersion</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> vers)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                    virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                            <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:TagFile">TagFile</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TFile.html">TFile</a>* fFile)
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:WriteBuffer">WriteBuffer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="ListOfTypes.html#char">char</a>* pointer, <a href="ListOfTypes.html#Int_t">Int_t</a> first)
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TStreamerInfo:WriteBufferClones">WriteBufferClones</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* clones, <a href="ListOfTypes.html#Int_t">Int_t</a> nc, <a href="ListOfTypes.html#Int_t">Int_t</a> first, <a href="ListOfTypes.html#Int_t">Int_t</a> eoffset)
+</pre>
+
+<h3><!--TAB2-->  <a name="TStreamerInfo:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                        <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fCheckSum">fCheckSum</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fCheckSum">checksum of original class</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fClassVersion">fClassVersion</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fClassVersion">Class version identifier</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fNumber">fNumber</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fNumber">!Unique identifier</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fNdata">fNdata</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNdata">!number of optmized types</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fSize">fSize</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSize">!size of the persistent class</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fType">fType</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fType">![fNdata]</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fNewType">fNewType</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fNewType">![fNdata]</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fOffset">fOffset</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fOffset">![fNdata]</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fLength">fLength</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLength">![fNdata]</a></i>
+<!--TAB6-->                      <a href="ListOfTypes.html#ULong_t">ULong_t</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fElem">fElem</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fElem">![fNdata]</a></i>
+<!--TAB6-->                      <a href="ListOfTypes.html#ULong_t">ULong_t</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fMethod">fMethod</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fMethod">![fNdata]</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fOptimized">fOptimized</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOptimized">! true if has been optimized</a></i>
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fClass">fClass</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fClass">!pointer to class</a></i>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fElements">fElements</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fElements">Array of TStreamerElements</a></i>
+<!--TAB6-->                  static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fgCount">fgCount</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fgCount">Number of TStreamerInfo instances</a></i>
+<!--TAB6-->                 static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fgCanDelete">fgCanDelete</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fgCanDelete">True if ReadBuffer can delete object</a></i>
+<!--TAB6-->                 static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:fgOptimize">fgOptimize</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fgOptimize">True if optimization on</a></i>
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TStreamerElement.html">TStreamerElement</a>* <!--TAB--><!--BOLD--><a name="TStreamerInfo:fgElement">fgElement</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fgElement">Pointer to current TStreamerElement</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                 static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TStreamerInfo:kCannotOptimize">kCannotOptimize</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kCannotOptimize"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kBase">kBase</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kBase"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kOffsetL">kOffsetL</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kOffsetL"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kOffsetP">kOffsetP</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kOffsetP"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kCounter">kCounter</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kCounter"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kCharStar">kCharStar</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kCharStar"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kChar">kChar</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kChar"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kShort">kShort</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kShort"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kInt">kInt</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kInt"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kLong">kLong</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kLong"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kFloat">kFloat</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kFloat"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kDouble">kDouble</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDouble"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kUChar">kUChar</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kUChar"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kUShort">kUShort</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kUShort"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kUInt">kUInt</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kUInt"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kULong">kULong</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kULong"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kBits">kBits</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kBits"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kObject">kObject</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kObject"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kAny">kAny</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAny"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kObjectp">kObjectp</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kObjectp"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kObjectP">kObjectP</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kObjectP"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kTString">kTString</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kTString"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kTObject">kTObject</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kTObject"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kTNamed">kTNamed</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kTNamed"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kAnyp">kAnyp</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnyp"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kAnyP">kAnyP</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnyP"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kMissing">kMissing</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kMissing"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kSkip">kSkip</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kSkip"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kSkipL">kSkipL</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kSkipL"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kSkipP">kSkipP</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kSkipP"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kConv">kConv</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kConv"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kConvL">kConvL</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kConvL"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kConvP">kConvP</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kConvP"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kStreamer">kStreamer</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kStreamer"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TStreamerInfo.html#TStreamerInfo:EReadWrite">TStreamerInfo::EReadWrite</a> <!--TAB--><!--BOLD--><a name="TStreamerInfo:kStreamLoop">kStreamLoop</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kStreamLoop"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TStreamerInfo:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:25 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TH2</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TH2:description">class description</a> - <a href="src/TH2.cxx.html">source file</a> - <a href="TH2_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TH2" href="TH2.h">TH2</a> : public <a href="http://root.cern.ch/root/html/TH1.html">TH1</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:BufferFill">BufferFill</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x, <a href="ListOfTypes.html#Stat_t">Stat_t</a> w)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:BufferFill">BufferFill</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x, <a href="ListOfTypes.html#Axis_t">Axis_t</a> y, <a href="ListOfTypes.html#Stat_t">Stat_t</a> w)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsx, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xlow, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xup, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsy, <a href="ListOfTypes.html#Axis_t">Axis_t</a> ylow, <a href="ListOfTypes.html#Axis_t">Axis_t</a> yup)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsx, const <a href="ListOfTypes.html#Double_t">Double_t</a>* xbins, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsy, <a href="ListOfTypes.html#Axis_t">Axis_t</a> ylow, <a href="ListOfTypes.html#Axis_t">Axis_t</a> yup)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsx, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xlow, <a href="ListOfTypes.html#Axis_t">Axis_t</a> xup, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsy, const <a href="ListOfTypes.html#Double_t">Double_t</a>* ybins)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsx, const <a href="ListOfTypes.html#Double_t">Double_t</a>* xbins, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsy, const <a href="ListOfTypes.html#Double_t">Double_t</a>* ybins)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsx, const <a href="ListOfTypes.html#Float_t">Float_t</a>* xbins, <a href="ListOfTypes.html#Int_t">Int_t</a> nbinsy, const <a href="ListOfTypes.html#Float_t">Float_t</a>* ybins)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH2.html">TH2</a> <!--TAB--><!--BOLD--><a href="#TH2:TH2">TH2</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TH2.html">TH2</a>&amp;)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:~TH2">~TH2</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:BufferEmpty">BufferEmpty</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> deleteBuffer = kFALSE)
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TH2:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; hnew)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a>)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>*, <a href="ListOfTypes.html#Stat_t">Stat_t</a>)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x, <a href="ListOfTypes.html#Axis_t">Axis_t</a> y)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x, <a href="ListOfTypes.html#Axis_t">Axis_t</a> y, <a href="ListOfTypes.html#Stat_t">Stat_t</a> w)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a> x, const <a href="ListOfTypes.html#char">char</a>* namey, <a href="ListOfTypes.html#Stat_t">Stat_t</a> w)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* namex, <a href="ListOfTypes.html#Axis_t">Axis_t</a> y, <a href="ListOfTypes.html#Stat_t">Stat_t</a> w)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Fill">Fill</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* namex, const <a href="ListOfTypes.html#char">char</a>* namey, <a href="ListOfTypes.html#Stat_t">Stat_t</a> w)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:FillN">FillN</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, const <a href="ListOfTypes.html#Axis_t">Axis_t</a>*, const <a href="ListOfTypes.html#Double_t">Double_t</a>*, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:FillN">FillN</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ntimes, const <a href="ListOfTypes.html#Axis_t">Axis_t</a>* x, const <a href="ListOfTypes.html#Axis_t">Axis_t</a>* y, const <a href="ListOfTypes.html#Double_t">Double_t</a>* w, <a href="ListOfTypes.html#Int_t">Int_t</a> stride = 1)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:FillRandom">FillRandom</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* fname, <a href="ListOfTypes.html#Int_t">Int_t</a> ntimes = 5000)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:FillRandom">FillRandom</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* h, <a href="ListOfTypes.html#Int_t">Int_t</a> ntimes = 5000)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:FitSlicesX">FitSlicesX</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* f1 = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> binmin = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> binmax = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> cut = 0, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "QNR")
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:FitSlicesY">FitSlicesY</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* f1 = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> binmin = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> binmax = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> cut = 0, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "QNR")
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TH2:GetCorrelationFactor">GetCorrelationFactor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> axis1 = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> axis2 = 2) const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TH2:GetCovariance">GetCovariance</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> axis1 = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> axis2 = 2) const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:GetRandom2">GetRandom2</a><!--PLAIN-->(<a href="ListOfTypes.html#Axis_t">Axis_t</a>&amp; x, <a href="ListOfTypes.html#Axis_t">Axis_t</a>&amp; y)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:GetStats">GetStats</a><!--PLAIN-->(<a href="ListOfTypes.html#Stat_t">Stat_t</a>* stats) const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> binx1, <a href="ListOfTypes.html#Int_t">Int_t</a> binx2, <a href="ListOfTypes.html#Int_t">Int_t</a> biny1, <a href="ListOfTypes.html#Int_t">Int_t</a> biny2, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TH2:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TH2:KolmogorovTest">KolmogorovTest</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* h2, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TH2:Merge">Merge</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* list)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TProfile.html">TProfile</a>* <!--TAB--><!--BOLD--><a href="#TH2:ProfileX">ProfileX</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "_pfx", <a href="ListOfTypes.html#Int_t">Int_t</a> firstybin = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> lastybin = 9999, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TProfile.html">TProfile</a>* <!--TAB--><!--BOLD--><a href="#TH2:ProfileY">ProfileY</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "_pfy", <a href="ListOfTypes.html#Int_t">Int_t</a> firstxbin = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> lastxbin = 9999, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TH1D.html">TH1D</a>* <!--TAB--><!--BOLD--><a href="#TH2:ProjectionX">ProjectionX</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "_px", <a href="ListOfTypes.html#Int_t">Int_t</a> firstybin = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> lastybin = 9999, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TH1D.html">TH1D</a>* <!--TAB--><!--BOLD--><a href="#TH2:ProjectionY">ProjectionY</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "_py", <a href="ListOfTypes.html#Int_t">Int_t</a> firstxbin = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> lastxbin = 9999, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:PutStats">PutStats</a><!--PLAIN-->(<a href="ListOfTypes.html#Stat_t">Stat_t</a>* stats)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:Reset">Reset</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TH2:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TH2:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TH2:fScalefactor">fScalefactor</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fScalefactor">Scale factor</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TH2:fTsumwy">fTsumwy</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTsumwy">Total Sum of weight*Y</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TH2:fTsumwy2">fTsumwy2</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fTsumwy2">Total Sum of weight*Y*Y</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TH2:fTsumwxy">fTsumwxy</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fTsumwxy">Total Sum of weight*X*Y</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TH2C.html">TH2C</a>, <a href="http://root.cern.ch/root/html/TH2D.html">TH2D</a>, <a href="http://root.cern.ch/root/html/TH2F.html">TH2F</a>, <a href="http://root.cern.ch/root/html/TH2S.html">TH2S</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TH2:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:26 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

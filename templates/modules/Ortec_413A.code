@@ -1,0 +1,128 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Silena_4418V.code
+// @(#)Purpose:    Camac code for module Silena 4418/V
+// Description:    Contains pieces of camac code to operate an ADC of type
+//                 Silena 4418/V
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName in $modulePosition */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module */
+					CIO_CTRL_R2B($moduleName, F(10), A(0)); /* clear lam */
+					CIO_WRITE_R2B($moduleName, F(16), A(0), $statusL);	/* set status (control reg 1) */
+					CIO_WRITE_R2B($moduleName, F(16), A(1), $gateL); 	/* set gate (control reg 2)  */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+					CIO_WRITE_R2B($moduleName, F(17), A($chnNo), $lowerThreshL);	/* lower limit $chnName:A($chnNo) */
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_C2MI_16_C();		/* read $chnName:A($chnNo) */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+					RDO_INCR_ADDR_C();	/* skip next channel */
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_SKIP_ADDR_C($data);	/* skip next $data channels */
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+					RDO_2MEM_16($subaddr);		/* store subaddr A($chnNo) */
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+					RDO_2MEM_16($data);		/* store data word */
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module $moduleName */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+					RDO_SETUP($moduleName, F(2), A($chnNo));	/* setup read module $moduleName, start with param $chnName */
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(9), A(0));		/* clear module $moduleName */
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

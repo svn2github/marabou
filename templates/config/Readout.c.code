@@ -1,0 +1,419 @@
+/*____________________________________________________________[C LIBRARY FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%READOUT_FILE%%.c
+// Purpose:        MBS readout function
+//                 %%EXP_TITLE%%
+//
+// Description:    This file provides any functions needed for data readout
+//                 in a specific experiment.
+//-                Template file to be used for user-defined MBS readout.
+//-                Used by TMBSReadout class to create a runnable readout function
+//-                according to the user's requirements.
+//
+// Modules:        f_user_get_virt_ptr  -- pass hardware offsets to user
+//                 f_user_init          -- initialize user readout
+//                 f_user_readout       -- user-defined readout
+//                 write_setup          -- write setup description
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// Keywords:       
+//
+//EXP_SETUP
+////////////////////////////////////////////////////////////////////////////*/
+
+#include <stdio.h>
+#include <sys/stat.h>
+#include <time.h>
+#include "s_evhe.h"
+#include "s_veshe.h"
+#include "gd_cnaf.h"
+#include "gd_camio.h"
+#include "gd_readout.h"
+#include "gd_tstamp.h"
+#include "vmelib.h"
+
+#include "err_mask_def.h"
+#include "errnum_def.h"
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Common indices used by readout as well as analysis
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#include "%%EXP_NAME_UC%%CommonIndices.h"
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Definitions depending on user's setup
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+#include "%%READOUT_FILE%%.h"
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Static variables
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+static long clock_resolution;		/* clock resolution as given by clock_getres system call */
+static long trigger_count; 		/* count user triggers */
+static struct pdparam_master s_param; 		/* vme segment params */
+
+static long total_event_count; 	/* events since last start */
+static long dt_event_count;		/* events since last dead-time stamp */
+static long dt_scaler_contents;	/* contents of dead-time scaler */
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Global variables
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+%%DEFINE_GLOBALS%%
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Global variables, once per module class
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Prototypes
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+%%DEFINE_PROTOTYPES%%
+
+/* access to ROOT-style environment files */
+int root_env_read(char * file, int append);
+int root_env_getval_i(char * resource, int ivalue);
+double root_env_getval_f(char * resource, double dvalue);
+const char * root_env_getval_s(char * resource, char * svalue);
+int root_env_getval_b(char * resource, int bvalue);
+
+/* access files containing :-separated strings */
+int unix_string_read(char * file);
+TUnixEntry * unix_string_get_entry(int eno);
+int unix_string_getval_i(TUnixEntry * e, char * name, int vnum, int ivalue);
+double unix_string_getval_f(TUnixEntry * e, char * name, int vnum, double dvalue);
+const char * unix_string_getval_s(TUnixEntry * e, char * name, int vnum, char *  svalue);
+int unix_string_getval_b(TUnixEntry * e, const char * name, int vnum, int bvalue);
+
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Define device pointers
+/
+/ Any pointers to camac or vme modules used in functions "f_user_init" and 
+/ "f_user_readout" have to be of type
+/                      >> static volatile unsigned long * << (CAMAC)
+/                  or  >> static volatile char * <<          (VME)
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+%%BeginOfCode%%
+%C%static volatile unsigned long * $moduleName; 			/* Camac: $modulePosition: $moduleTitle */
+%CBV%static volatile unsigned long * cam_dwinh_C$crateNo; 		/* dataway inhibit in crate C$crateNo */
+%CBV%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
+%CBV%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
+%CC32%static volatile unsigned long * cam_dwinh_C$crateNo; 		/* dataway inhibit in crate C$crateNo */
+%CC32%static volatile unsigned long * cam_auto_C$crateNo; 		/* auto read */
+%CC32%static volatile unsigned long * cam_rddw_C$crateNo; 		/* read double word */
+%CC32%static volatile unsigned long * cam_bcast_C$crateNo; 		/* broadcast */
+%CC32%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
+%CC32%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
+%V%static volatile char * $moduleName;	 				/* VME: $modulePosition: $moduleTitle */
+%VS%											/* VME: $modulePosition: $moduleTitle */
+%VS%static volatile char * $moduleNameBase;	 			/* --   base addr*/
+%VS%static volatile char * $moduleName;	 				/* --   offset for subdevice $subdevice */
+
+%%EndOfCode%%
+%%DEFINE_POINTERS%%
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ User tables:
+/          moduleTable[]          -- module specs, indexed by module number
+/          sevtTable[]            -- subevent specs, indexed by subevent number
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+%%BeginOfCode%%
+%MTA%/* module table, indexed by module number */
+%MTA%/* struct members: name, index, crate, station, lam, number of params, params used, param pattern, addr */
+%MTA%ModuleDef moduleTable[] = {
+%MT%	{"$moduleNameLC", kMrbModule$moduleNameUC, $crate, $station, $lam, $nofParams, $nofParUsed, $paramPattern, NULL},
+%MTE%	NULL
+%MTE%};
+
+%STA%/* subevent table, indexed by subevent number */
+%STA%/* struct members: name, index, number of modules, index of first module, lam pattern */
+%STA%SevtDef sevtTable[] = {
+%ST%	{"$sevtNameLC", kMrbSevt$sevtNameUC, $nofModules, kMrbModule$firstModule, $lam},
+%ST0%	{"$sevtNameLC", kMrbSevt$sevtNameUC, 0, 0, 0x0},
+%STE%	NULL
+%STE%};
+
+%%EndOfCode%%
+%%DEVICE_TABLES%%
+
+int f_user_get_virt_ptr(long *pl_loc_hwacc,
+                        long *pl_rem_cam[]) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           f_user_get_virt_ptr
+// Purpose:        Pass hardware offsets to user
+// Arguments:      long *pl_loc_hwacc   -- hardware offset to local camac crate
+//                 long *pl_rem_cam[]   -- offset to remote crate(s),
+//                                         indexed by crate no.
+// Results:        TRUE(1)
+// Exceptions:     
+// Description:    This function assigns values to all pointers defined above.
+//                 It should be called once on startup of event builder task.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	static long ptrs_passed = 0L;	/* once only code */
+	if ( ptrs_passed ) return(1);
+	ptrs_passed = 1L;
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Initialize pointers to camac and/or vme modules
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+%%BeginOfCode%%
+%BV% 	s_param.iack = 1;						/* prepare vme segment */
+%BV% 	s_param.rdpref = 0;
+%BV% 	s_param.wrpost = 0;
+%BV% 	s_param.swap = SINGLE_AUTO_SWAP;
+%BV% 	s_param.dum[0] = 0; 					/* forces static mapping! */
+%BV%
+%C% 	$moduleNameLC = CIO_SET_BASE(B(0), C($crateNo), N($station)); 			/* $moduleNameLC: $moduleTitle */
+%C% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = $moduleNameLC;
+%CBV% 	cam_dwinh_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(30));	/* dataway inhibit in crate C$crateNo */
+%CBV% 	cam_sreg_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));	/* X/Q enable in crate C$crateNo */
+%CC32% 	cam_dwinh_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* dataway inhibit in crate C$crateNo */
+%CC32% 	cam_auto_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(0)); 	/* auto read in crate C$crateNo */
+%CC32% 	cam_rddw_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* read double in crate C$crateNo */
+%CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
+%CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
+%V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
+%V% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (volatile unsigned long *) $moduleNameLC;
+%VS%																		/* $moduleName: $moduleTitle */
+%VS% 	$moduleNameLCBase = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* -- base addr */
+%VS% 	$moduleNameLC = $mnemoLC_get_subdevice($moduleNameLCBase, $subDevice);								/* -- subdevice $subDevice */
+%VS% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = (volatile unsigned long *) $moduleNameLC;
+%%EndOfCode%%
+%%INIT_POINTERS%%
+
+	return(1);
+}	/* f_user_get_virt_ptr */
+
+int f_user_init (unsigned char  bh_crate_nr,
+                 long           *pl_loc_hwacc,
+                 long           *pl_rem_cam[],
+                 long           *pl_stat) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           f_user_init
+// Purpose:        Initialize user readout
+// Arguments:      unsigned char bh_crate_nr    -- crate number
+//                 long *pl_loc_hwacc           -- offset (local crate)
+//                 long *pl_rem_cam[]           -- offset (remote crates)
+//                 long *pl_stat                -- status (unused)
+// Results:        TRUE(1)
+// Exceptions:     
+// Description:    This function performs initialization of modules.
+//                 It is called for every begin of run ( start of acquisition )
+//                 and for every crate that is expected to be read out by
+//                 event builder - as specified in the 'setup.usf' file.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	struct timespec res;
+	char msg[256];								/* (error) message */
+%%DEFINE_LOCAL_VARS_INIT%%
+
+	clock_getres(CLOCK_REALTIME, &res); 	/* get resolution of the real-time clock */
+	clock_resolution = res.tv_nsec; 		/* and save it for WRITE_TIME_STAMP macro */
+
+%%BeginOfCode%%
+%B%
+%B% 	root_env_read(".rootrc", 0);			/* read ROOT's environment file */
+%B% 	root_env_read("$envFile", 1);			/* and experiment's configuration data */
+%B%
+%B% 	switch (bh_crate_nr) {
+%CB% 		case $crateNo:						/* init modules in crate C$crateNo ($crateType) */
+%CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
+%CECBV%
+%CECBV%			CIO_CTRL_R2B(cam_sreg_C$crateNo, F(26), A(1));	/* enable X and Q for crate C$crateNo */
+%CBCC32%				CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
+%CBCC32%				CIO_WRITE_R2B(cam_lam_C$crateNo, F(16), A(0), 0L);		/* crate C1: clear lam ff */
+%CECC32%
+%CE% 			break;
+%CE%
+%E%  		default:
+%E% 			sprintf(msg, "user_init: Unexpected crate %d\n", bh_crate_nr);
+%E% 			f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+%E% 			break;
+%E% 	}
+%%EndOfCode%%
+%%INIT_MODULES%%
+
+	return(1);
+}	/* f_user_init */
+
+
+int f_user_readout (unsigned char  bh_trig_typ,
+                    unsigned char  bh_crate_nr,
+                    long           *pl_loc_hwacc,
+                    long           *pl_rem_cam[],
+                    long           *pl_dat,
+                    s_veshe        *ps_veshe,
+                    long           *l_se_read_len,
+                    long           *l_read_stat) {
+/*________________________________________________________________[C FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           f_user_readout
+// Purpose:        Read event data out of camac modules
+// Arguments:      unsigned char bh_trig_typ  -- trigger type
+//                 unsigned char bh_crate_nr  -- crate number
+//                 long *pl_loc_hwacc         -- offset (local crate)
+//                 long *pl_rem_cam[]         -- offset (remote crates)
+//                 long *pl_dat               -- pointer to event buffer
+//                 s_veshe *ps_veshe          -- pointer to subevent header
+//                 long *l_se_read_len        -- actual length of subevent
+//                 long *l_read_stat          -- status (unused)
+// Results:        TRUE(1)
+//                 l_se_read_len              -- actual subevent length
+//                 l_read_stat                -- status (not yet implemented)
+// Exceptions:     
+// Description:    This is the user's readout routine.
+//                 It is called for every event trigger and for every crate
+//                 that is expected to be read out by event builder
+//                 (as specified in 'setup.usf' file).
+//
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	register int i;
+
+	register unsigned long data;				/* temp data storage */
+	int wc;										/* word count */
+	char msg[256];								/* (error) message */
+
+%%DEFINE_LOCAL_VARS_READOUT%%
+
+/* define pointers for input and output (to be used in macros): */
+/*		rdoinp	-- will be mapped to a device pointer */
+/*		evt		-- points to event buffer starting at "pl_dat" */
+
+	register unsigned long *rdoinp; 			/* pointer to camac base address */
+	unsigned short *pmodh;						/* pointer to module header on output */
+
+	union {										/* pointer to event buffer */
+		unsigned long *out32;					/* (long), (short), or (char) */
+		unsigned short *out16;
+		unsigned char *out8;
+	} evt;
+
+	evt.out32 = ((unsigned long *) pl_dat);			/* init pointer to event buffer */
+	*l_read_stat = 1L;								/* set initial readout status */
+
+/* Switch according to trigger first */
+/* then select crate number */
+
+	switch (bh_trig_typ)
+	{
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Perform device specific actions on trigger #14 (start acquisition)
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+%%BeginOfCode%%
+%B%		case 14:							/* start acquisition */
+%B%			switch (bh_crate_nr) {
+%CB%				case $crateNo:				/* start modules in crate C$crateNo ($crateType) */
+%CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
+%CBCC32%					CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
+%CT% 	 				WRITE_TIME_STAMP(); 	/* include time stamp for this trigger */
+%CECBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(24), A(9));	/* crate C$crateNo: dataway enable */
+%CECC32%					CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(1), 0L);	/* crate C$crateNo: dataway enable */
+%CE%					break;
+%E% 				 default:
+%E% 					sprintf(msg, "user_readout: Unexpected crate %d\n", bh_crate_nr);
+%E% 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+%E% 					break;
+%E% 			}
+%E% 			total_event_count = 0;		/* reset event counters */
+%E% 			dt_event_count = 0;
+%E%			break;
+%%EndOfCode%%
+%%ON_START_ACQUISITION%%
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Perform device specific actions on trigger #15 (stop acquisition)
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+%%BeginOfCode%%
+%B%		case 15:							/* stop acquisition */
+%B%			switch (bh_crate_nr) {
+%CB%				case $crateNo:				/* stop modules in crate C$crateNo ($crateType) */
+%CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
+%CBCC32%					CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
+%CT% 	 				WRITE_TIME_STAMP(); 	/* include time stamp for this trigger */
+%CE%					break;
+%E% 				default:
+%E% 					sprintf(msg, "user_readout: Unexpected crate %d\n", bh_crate_nr);
+%E% 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+%E% 					break;
+%E% 			}
+%E% 			dt_event_count = 0;			/* reset event count */
+%E%			sleep(1);					/* needed to keep m_transport happy (!?) */
+%E%										/* (otherwise soft trigger #15 won't be delivered to ROOT) */
+%E%			break;
+%%EndOfCode%%
+%%ON_STOP_ACQUISITION%%
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Read event data according to trigger and crate numbers
+/ (one "case" per trigger each containing a "switch" over crate number)
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+%%BeginOfCode%%
+%B% 		case kMrbTrigger$trigName:		/* on trigger $trigName ($trigNo) */
+%B%			switch (bh_crate_nr) {
+%CB%				case $crateNo:			/* include data from crate C$crateNo ($crateType) */
+%CD%		 			total_event_count++;		/* count this event (once per trigger!) */
+%CD%		 			dt_event_count++;			/* dead-time limit reached? */
+%CD%					if (dt_event_count >= $dtInterval) {	/* include time-stamp and dead-time data */
+%CD%						dt_scaler_contents = $scaRead($dtScaler, 1);	/* read and clear dead-time scaler */
+%CD%						WRITE_DEAD_TIME();					/* write dead time subevent */
+%CD%						dt_event_count = 0;				/* reset counters */
+%CD%						dt_scaler_contents = 0;
+%CD%					}
+%CDT%					else { WRITE_TIME_STAMP(); }		/* include time stamp */
+%CT% 	 				WRITE_TIME_STAMP(); 				/* include time stamp */
+%SB%					BEGIN_SUBEVENT($sevtType, $sevtSubtype, 0, $crateNo, kMrbSevt$sevtNameUC); /* subevent $sevtNameLC (type=[$sevtType,$sevtSubtype], crate C$crateNo, serial=$sevtSerial) */
+%SMB%					pmodh = evt.out16;			/* save addr of module header for module $moduleName */
+%SMB%					RDO_2MEM_16($moduleHeader);	/* header for module $moduleName: serial=$moduleSerial, $maxWords data words max */
+%SMB%					RDO_2MEM_16(0);				/* 2nd header word is wc - updated afterwards */
+%SME%					*(pmodh + 1) = (int) (evt.out16 - pmodh);	/* end of data section for module $moduleName: update wc */
+%AL%					RDO_2MEM_16(0xffff);	/* + 1 word to align to 32 bit boundary */
+%SE%					END_SUBEVENT(); 	/* end of subevent $sevtNameLC */
+%CE%					break;
+%E% 			 	default:
+%E% 					sprintf(msg, "user_readout: Unexpected crate %d\n", bh_crate_nr);
+%E% 					f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+%E% 					break;
+%E% 			}
+%E% 			break;
+%%EndOfCode%%
+%%ON_TRIGGER_XX%%
+
+%%BeginOfCode%%
+%C% 		case $trigNo:				/* ignore trigger pattern $trigNo */
+%E% 			break;
+%%EndOfCode%%
+%%IGNORE_TRIGGER_XX%%
+
+		default:
+	  		sprintf(msg, "user_readout: Unexpected trigger %d\n", bh_trig_typ);
+			f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+			break;
+	}
+
+/* Set actual length of data */
+
+	*l_se_read_len = ((unsigned char *) evt.out32) - ((unsigned char *) pl_dat);
+	return(1);
+}	/* f_user_readout */
+
+/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+/ Utility functions
+/~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+%%UTILITIES%%

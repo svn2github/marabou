@@ -1,0 +1,264 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbXia_DGF_4C</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbXia_DGF_4C:description">class description</a> - <a href="src/TMrbXia_DGF_4C.cxx.html">source file</a> - <a href="TMrbXia_DGF_4C_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbXia_DGF_4C" href="TMrbXia_DGF_4C.h">TMrbXia_DGF_4C</a> : public <a href="./TMrbCamacModule.html">TMrbCamacModule</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="./TMrbXia_DGF_4C.html">TMrbXia_DGF_4C</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:TMrbXia_DGF_4C">TMrbXia_DGF_4C</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbXia_DGF_4C.html">TMrbXia_DGF_4C</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:TMrbXia_DGF_4C">TMrbXia_DGF_4C</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:~TMrbXia_DGF_4C">~TMrbXia_DGF_4C</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:CheckSubeventType">CheckSubeventType</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:DSPLoadedFromBinary">DSPLoadedFromBinary</a><!--PLAIN-->()
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:FindParam">FindParam</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:FindParam">FindParam</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:FindParam">FindParam</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:FirstParam">FirstParam</a><!--PLAIN-->()
+<!--TAB6-->              const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetClusterColor">GetClusterColor</a><!--PLAIN-->() const
+<!--TAB6-->              const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetClusterSegments">GetClusterSegments</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetClusterSerial">GetClusterSerial</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetInSynch">GetInSynch</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetMaxEvents">GetMaxEvents</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetNofParams">GetNofParams</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetRelease">GetRelease</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetRunTask">GetRunTask</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetSynchWait">GetSynchWait</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:GetTraceLength">GetTraceLength</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:HasPrivateCode">HasPrivateCode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:HasRandomReadout">HasRandomReadout</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:MakeRcFile">MakeRcFile</a><!--PLAIN-->(ofstream&amp; RcStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ResourceName)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:NextParam">NextParam</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Param)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:ReadNameTable">ReadNameTable</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:SetClusterID">SetClusterID</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Color, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Segments)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:SetInSynch">SetInSynch</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> InSynch = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:SetMaxEvents">SetMaxEvents</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> MaxEvents)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:SetRunTask">SetRunTask</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RunTask = 0x100)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:SetSynchWait">SetSynchWait</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> SynchWait = 1)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:SetTraceLength">SetTraceLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength = 0)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbXia_DGF_4C:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbXia_DGF_4C:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fRelease">fRelease</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fRelease">xia release</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fDSPLoadedFromBinary">fDSPLoadedFromBinary</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDSPLoadedFromBinary">dsp format</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fParamFile">fParamFile</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fParamFile">file containing param names</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fNofParams">fNofParams</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNofParams">number of params</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fParamNames">fParamNames</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fParamNames">DSP param table, pairs of (ParamName, Offset)</a></i>
+<!--TAB6-->         <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fClusterID">fClusterID</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fClusterID">cluster serial, color, segment info</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fMaxEvents">fMaxEvents</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fMaxEvents">parameter MAXEVENTS</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fTraceLength">fTraceLength</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fTraceLength">parameter TRACELENGTH (common to all 4 channels)</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fRunTask">fRunTask</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fRunTask">parameter RUNTASK</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fSynchWait">fSynchWait</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSynchWait">parameter SYNCHWAIT</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbXia_DGF_4C:fInSynch">fInSynch</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fInSynch">parameter INSYNCH</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbXia_DGF_4C:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbXia_DGF_4C.html">TMrbXia_DGF_4C</a>.cxx
+ Purpose:        MARaBOU configuration: Xia ADCs
+ Description:    Implements class methods to handle modules of type XIA DGF-4C
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbXia_DGF_4C:TMrbXia_DGF_4C" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:TMrbXia_DGF_4C">TMrbXia_DGF_4C</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition) :
+									<a href="./TMrbCamacModule.html">TMrbCamacModule</a>(ModuleName, "Xia_DGF_4C", ModulePosition, 0, 4, 1 &lt;&lt; 15) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbXia_DGF_4C.html">TMrbXia_DGF_4C</a>
+ Purpose:        Create an ADC of type Xia 4418/V
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- name of camac module
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition  -- B.C.N for this module
+ Results:        --
+ Exceptions:
+ Description:    Creates a camac module of type Xia 4418/V.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:DefineRegisters" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:DefineRegisters">DefineRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbXia_DGF_4C.html#TMrbXia_DGF_4C:DefineRegisters">TMrbXia_DGF_4C::DefineRegisters</a>
+ Purpose:        Define camac registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Defines status, common threshold, lower &amp; upper thresholds, and offset.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:MakeReadoutCode" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbXia_DGF_4C.html#TMrbXia_DGF_4C:MakeReadoutCode">TMrbXia_DGF_4C::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a DGF module
+ Arguments:      ofstream &amp; RdoStrm         -- file output stream
+                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a DGF-4C module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:MakeReadoutCode" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex,
+															<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbXia_DGF_4C.html#TMrbXia_DGF_4C:MakeReadoutCode">TMrbXia_DGF_4C::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a DGF module
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel            -- channel
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value                  -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a DGF-4C module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:CheckSubeventType" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:CheckSubeventType">CheckSubeventType</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Subevent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbXia_DGF_4C.html#TMrbXia_DGF_4C:CheckSubeventType">TMrbXia_DGF_4C::CheckSubeventType</a>
+ Purpose:        Check if calling subevent is applicable
+ Arguments:
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Makes sure that a subevent of type [10,2x] (DGF)
+                 is calling.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:ReadNameTable" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:ReadNameTable">ReadNameTable</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:ReadNameTable">TMrbDGFData::ReadNameTable</a>
+ Purpose:        Read param names from file
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Reads param names and offsets from file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbXia_DGF_4C:FindParam" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:FindParam">FindParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFData.html#TMrbDGFData:FindParam">TMrbDGFData::FindParam</a>
+ Purpose:        Search a param for a given channel
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel         -- channel number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName    -- param name
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Param       -- param name &amp; index
+ Exceptions:
+ Description:    Searches a param for a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:MakeRcFile" href="src/TMrbXia_DGF_4C.cxx.html#TMrbXia_DGF_4C:MakeRcFile">MakeRcFile</a>(ofstream &amp; RcStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ResourceName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbXia_DGF_4C.html#TMrbXia_DGF_4C:MakeRcFile">TMrbXia_DGF_4C::MakeRcFile</a>
+ Purpose:        Generate module-specific entries to resource file
+ Arguments:      ofstream &amp; RcStrm           -- where to output code
+                 EMrbRcFileTag TagIndex      -- tag word index
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ResourceName       -- resource prefix
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Generates module-specific entries to resource file.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbXia_DGF_4C.html">TMrbXia_DGF_4C</a> <a name="TMrbXia_DGF_4C:TMrbXia_DGF_4C" href="TMrbXia_DGF_4C.h">TMrbXia_DGF_4C</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbXia_DGF_4C:GetMnemonic" href="TMrbXia_DGF_4C.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbXia_DGF_4C:FindParam" href="TMrbXia_DGF_4C.h">FindParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbXia_DGF_4C:FindParam" href="TMrbXia_DGF_4C.h">FindParam</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbXia_DGF_4C:FirstParam" href="TMrbXia_DGF_4C.h">FirstParam</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbXia_DGF_4C:NextParam" href="TMrbXia_DGF_4C.h">NextParam</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Param)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetNofParams" href="TMrbXia_DGF_4C.h">GetNofParams</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:HasRandomReadout" href="TMrbXia_DGF_4C.h">HasRandomReadout</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:SetMaxEvents" href="TMrbXia_DGF_4C.h">SetMaxEvents</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> MaxEvents)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetMaxEvents" href="TMrbXia_DGF_4C.h">GetMaxEvents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:SetTraceLength" href="TMrbXia_DGF_4C.h">SetTraceLength</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetTraceLength" href="TMrbXia_DGF_4C.h">GetTraceLength</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:SetRunTask" href="TMrbXia_DGF_4C.h">SetRunTask</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> RunTask = 0x100)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetRunTask" href="TMrbXia_DGF_4C.h">GetRunTask</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:SetSynchWait" href="TMrbXia_DGF_4C.h">SetSynchWait</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> SynchWait = 1)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetSynchWait" href="TMrbXia_DGF_4C.h">GetSynchWait</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:SetInSynch" href="TMrbXia_DGF_4C.h">SetInSynch</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> InSynch = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetInSynch" href="TMrbXia_DGF_4C.h">GetInSynch</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:SetClusterID" href="TMrbXia_DGF_4C.h">SetClusterID</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Color, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Segments)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetClusterSerial" href="TMrbXia_DGF_4C.h">GetClusterSerial</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbXia_DGF_4C:GetClusterColor" href="TMrbXia_DGF_4C.h">GetClusterColor</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbXia_DGF_4C:GetClusterSegments" href="TMrbXia_DGF_4C.h">GetClusterSegments</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbXia_DGF_4C:GetRelease" href="TMrbXia_DGF_4C.h">GetRelease</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:DSPLoadedFromBinary" href="TMrbXia_DGF_4C.h">DSPLoadedFromBinary</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbXia_DGF_4C:HasPrivateCode" href="TMrbXia_DGF_4C.h">HasPrivateCode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:Help" href="TMrbXia_DGF_4C.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbXia_DGF_4C:Class" href="TMrbXia_DGF_4C.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbXia_DGF_4C:IsA" href="TMrbXia_DGF_4C.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:ShowMembers" href="TMrbXia_DGF_4C.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:Streamer" href="TMrbXia_DGF_4C.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:StreamerNVirtual" href="TMrbXia_DGF_4C.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbXia_DGF_4C:~TMrbXia_DGF_4C" href="TMrbXia_DGF_4C.h">~TMrbXia_DGF_4C</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:58:04 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,876 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSnkDDA0816</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSnkDDA0816:description">class description</a> - <a href="src/TSnkDDA0816.cxx.html">source file</a> - <a href="TSnkDDA0816_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSnkDDA0816" href="TSnkDDA0816.h">TSnkDDA0816</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:CheckChannel">CheckChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, const <a href="ListOfTypes.html#Char_t">Char_t</a>*, const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:CheckConnect">CheckConnect</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*, const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:CheckParams">CheckParams</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*, const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetHysteresis">SetHysteresis</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetLShape">SetLShape</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp;, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetSawToothLR">SetSawToothLR</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp;, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetSawToothRL">SetSawToothRL</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp;, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetTriangle">SetTriangle</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp;, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TSnkDDA0816.html">TSnkDDA0816</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:TSnkDDA0816">TSnkDDA0816</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdevice = 0)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:~TSnkDDA0816">~TSnkDDA0816</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:AdjustSettings">AdjustSettings</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Verbose = kTRUE)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Ampl2Dist">Ampl2Dist</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY, <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Calibrate">Calibrate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ChargeState, <a href="ListOfTypes.html#Double_t">Double_t</a> Energy, <a href="ListOfTypes.html#Double_t">Double_t</a> VoltageX, <a href="ListOfTypes.html#Double_t">Double_t</a> VoltageY)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:ClearSoftScale">ClearSoftScale</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:ConnectToServer">ConnectToServer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ServerName = "localhost", <a href="ListOfTypes.html#Int_t">Int_t</a> Port = kSnkDefaultPort, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ServerProg = "NULL")
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Dist2Ampl">Dist2Ampl</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY, <a href="ListOfTypes.html#Double_t">Double_t</a> Distance)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetAmplitude">GetAmplitude</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetAmplYScale">GetAmplYScale</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetChargeState">GetChargeState</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetClockSource">GetClockSource</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetConnection">GetConnection</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Server, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; Port)
+<!--TAB6-->      <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetDac">GetDac</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetEnergy">GetEnergy</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetExecMode">GetExecMode</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetIncrement">GetIncrement</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetLofClockSources">GetLofClockSources</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetLofExecModes">GetLofExecModes</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetLofPreScales">GetLofPreScales</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetLofScanModes">GetLofScanModes</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetLofScanProfiles">GetLofScanProfiles</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetOffset">GetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetPacerClock">GetPacerClock</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetPreScaler">GetPreScaler</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetRange">GetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetScanFile">GetScanFile</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetScanInterval">GetScanInterval</a><!--PLAIN-->()
+<!--TAB6-->         ESnkScanMode <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetScanMode">GetScanMode</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetScanProfile">GetScanProfile</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetSoftScale">GetSoftScale</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetStepWidth">GetStepWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetSubdevice">GetSubdevice</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetSubdeviceName">GetSubdeviceName</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:GetVoltage">GetVoltage</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:IsConnected">IsConnected</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:IsDebug">IsDebug</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:IsOffline">IsOffline</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:IsVerbose">IsVerbose</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:IsXorY">IsXorY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:KillServer">KillServer</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:ResetCalibration">ResetCalibration</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:ResetScan">ResetScan</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Save">Save</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SaveFile)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SaveAs">SaveAs</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SaveDefault">SaveDefault</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetAmplitude">SetAmplitude</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetAmplYScale">SetAmplYScale</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Scale)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetClockSource">SetClockSource</a><!--PLAIN-->(ESnkClockSource ClockSource)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetClockSource">SetClockSource</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetConnection">SetConnection</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>* Socket, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Server, <a href="ListOfTypes.html#Int_t">Int_t</a> Port)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurve">SetCurve</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp;, <a href="ListOfTypes.html#Int_t">Int_t</a> Size = kSnkMaxPoints)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveAsymm">SetCurveAsymm</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveLShape">SetCurveLShape</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveSymm">SetCurveSymm</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveX0Y0">SetCurveX0Y0</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveXOnly">SetCurveXOnly</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveXYConst">SetCurveXYConst</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetCurveYOnly">SetCurveYOnly</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetDebug">SetDebug</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetExecMode">SetExecMode</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ExecMode)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetIncrement">SetIncrement</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetNormalMode">SetNormalMode</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetOffline">SetOffline</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetOffset">SetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, <a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetOnline">SetOnline</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetPacerClock">SetPacerClock</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ClockValue)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetPreScaler">SetPreScaler</a><!--PLAIN-->(ESnkPreScale PreScale)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetPreScaler">SetPreScaler</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetScanMode">SetScanMode</a><!--PLAIN-->(ESnkScanMode Mode)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetScanProfile">SetScanProfile</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, ESnkScanProfile)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetScanProfile">SetScanProfile</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>, const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetSoftScale">SetSoftScale</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetSubdevice">SetSubdevice</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdevice)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:SetVerbose">SetVerbose</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:StartScan">StartScan</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Interval = kSnkMaxInterval)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:StopScan">StopScan</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSnkDDA0816:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TSnkDDA0816:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fSubdevice">fSubdevice</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fSubdevice">subdevice: 0 (chn 0-2), 1 (chn 4-6), 2 (chn 8-10), 3 (chn 12-14)</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fSubdeviceName">fSubdeviceName</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSubdeviceName">...</a></i>
+<!--TAB6-->       <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fDacX">fDacX</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDacX">channel X</a></i>
+<!--TAB6-->       <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fDacY">fDacY</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDacY">channel Y</a></i>
+<!--TAB6-->       <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fDacH">fDacH</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDacH">channel H (hysteresis)</a></i>
+<!--TAB6-->       <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fDacError">fDacError</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fDacError">dummy in case of error</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fAmplYScale">fAmplYScale</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fAmplYScale">scale factor Y in case of symmetric scan</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fChargeState">fChargeState</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fChargeState">charge number</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fMassNo">fMassNo</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMassNo">mass number</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fEnergy">fEnergy</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fEnergy">beam energy [MeV]</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fVoltage">fVoltage[2]</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fVoltage">max voltage X/Y [kV]</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fStepWidth">fStepWidth[2]</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStepWidth">step width X/Y [um]		</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fRange">fRange[2]</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fRange">max range X/Y [um]		</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fPacerClock">fPacerClock</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fPacerClock">pacer clock</a></i>
+<!--TAB6-->         ESnkPreScale <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fPreScale">fPreScale</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fPreScale">prescale frequency</a></i>
+<!--TAB6-->      ESnkClockSource <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fClockSource">fClockSource</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fClockSource">clock source</a></i>
+<!--TAB6-->         ESnkScanMode <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fScanMode">fScanMode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fScanMode">scan mode</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fScanFile">fScanFile</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fScanFile">save of current scan data</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fVerbose">fVerbose</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fVerbose">kTRUE if verbose mode</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fScanInterval">fScanInterval</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fScanInterval">interval in seconds</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fExecMode">fExecMode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fExecMode">exec mode</a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>* <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fSocket">fSocket</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSocket">! connection to server</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fServer">fServer</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fServer">server name</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fPort">fPort</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fPort">port number</a></i>
+<!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fLofPreScales">fLofPreScales</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLofPreScales">prescaler values</a></i>
+<!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fLofClockSources">fLofClockSources</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofClockSources">clock sources</a></i>
+<!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fLofScanProfiles">fLofScanProfiles</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofScanProfiles">scan profiles</a></i>
+<!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fLofScanModes">fLofScanModes</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLofScanModes">scan modes</a></i>
+<!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TSnkDDA0816:fLofExecModes">fLofExecModes</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLofExecModes">exec modes</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TSnkDDA0816:description">Class Description</a></h2>
+<pre>
+ Name:           <a href="./TSnkDDA0816.html">TSnkDDA0816</a>.cxx
+ Purpose:        Implement class methods for dac module DDA0816
+ Description:    Class methods to operate a dac type DDA0816
+                 in the SNAKE environment
+
+ Header files:   <a href="./TSnkDDA0816.html">TSnkDDA0816</a>.h           -- class definitions
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TSnkDDA0816:TSnkDDA0816" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:TSnkDDA0816">TSnkDDA0816</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdevice) : <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>("DDA0816", "Snake DAC") <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TSnkDDA0816.html">TSnkDDA0816</a>
+ Purpose:        Create a DDA0816 object
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetSubdevice" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetSubdevice">SetSubdevice</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Subdevice) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetSubdevice">TSnkDDA0816::SetSubdevice</a>
+ Purpose:        Define channel names according to subdevice
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Subdevice      -- subdevice number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Assigns channel names.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TSnkDDAChannel.html">TSnkDDAChannel</a>* <a name="TSnkDDA0816:GetDac" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetDac">GetDac</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetDac">TSnkDDA0816::GetDac</a>
+ Purpose:        Return DAC address
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+ Results:        TSnkDDAChannl * Addr -- channel address
+ Exceptions:
+ Description:    Returns dac address.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:CheckParams" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:CheckParams">CheckParams</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Class, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:CheckParams">TSnkDDA0816::CheckParams</a>
+ Purpose:        Check if channel number is ok
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Class      -- class name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method     -- calling method
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks validity of params.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TSnkDDAChannel.html">TSnkDDAChannel</a>* <a name="TSnkDDA0816:CheckChannel" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:CheckChannel">CheckChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Class, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:CheckChannel">TSnkDDA0816::CheckChannel</a>
+ Purpose:        Check if channel number is ok
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel            -- channel number (0 or 1)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Class           -- class name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method          -- calling method
+ Results:        <a href="./TSnkDDAChannel.html">TSnkDDAChannel</a> * Chaddr  -- channel addr
+ Exceptions:     returns NULL on error
+ Description:    Checks if channel number is 0, 1 or 2.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>* <a name="TSnkDDA0816:GetConnection" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetConnection">GetConnection</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Server, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Port) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetConnection">TSnkDDA0816::GetConnection</a>
+ Purpose:        Get connection data
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Server    -- server name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Port        -- port number
+ Results:        <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> * Socket    -- TCP socket
+ Exceptions:
+ Description:    Returns connection data to be used bu other DDA objects.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetConnection" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetConnection">SetConnection</a>(<a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> * Socket, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Server, <a href="ListOfTypes.html#Int_t">Int_t</a> Port) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetConnection">TSnkDDA0816::SetConnection</a>
+ Purpose:        Set connection data
+ Arguments:      <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> * Socket    -- TCP socket
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Server     -- server name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Port          -- port number
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets connection to what we got from other DDA object.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:CheckConnect" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:CheckConnect">CheckConnect</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Class, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:CheckConnect">TSnkDDA0816::CheckConnect</a>
+ Purpose:        Check if server connection ok
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:     returns NULL on error
+ Description:    Checks if channel number is 0, 1 or 2.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:AdjustSettings" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:AdjustSettings">AdjustSettings</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Verbose) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:AdjustSettings">TSnkDDA0816::AdjustSettings</a>
+ Purpose:        Calculate a legal set of params
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel       -- DAC channel
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> Verbose      -- error printout on/off
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates increment from amplitude and scan size,
+                 adjusts amplitude if necessary.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetPreScaler" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetPreScaler">SetPreScaler</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * PreScale) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetPreScaler">TSnkDDA0816::SetPreScaler</a>
+ Purpose:        Set prescale
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * PreScale        -- prescale value
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets prescale value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetClockSource" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetClockSource">SetClockSource</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ClockSource) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetClockSource">TSnkDDA0816::SetClockSource</a>
+ Purpose:        Set clock source
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel                 -- channel number (0 or 1)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ClockSource          -- clock source
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets clock source.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetSoftScale" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetSoftScale">SetSoftScale</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetSoftScale">TSnkDDA0816::SetSoftScale</a>
+ Purpose:        Set soft scale
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets soft scale value.
+                 Soft scale down for one channel is derived from scan size
+                 of the other one.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetSoftScale" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetSoftScale">GetSoftScale</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetSoftScale">TSnkDDA0816::GetSoftScale</a>
+ Purpose:        Return soft scale
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> SoftScale         -- soft scale value
+ Exceptions:
+ Description:    Returns spft scale value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetOffset" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetOffset">SetOffset</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetOffset">TSnkDDA0816::SetOffset</a>
+ Purpose:        Set offset value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Offset            -- offset value
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets offset (=start) value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetOffset" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetOffset">GetOffset</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetOffset">TSnkDDA0816::GetOffset</a>
+ Purpose:        Return offset value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Offset            -- offset
+ Exceptions:
+ Description:    Returns offset (=start) value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetAmplitude" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetAmplitude">SetAmplitude</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetAmplitude">TSnkDDA0816::SetAmplitude</a>
+ Purpose:        Set scan range
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude         -- scan amplitude
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets scan range.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetAmplitude" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetAmplitude">GetAmplitude</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetAmplitude">TSnkDDA0816::GetAmplitude</a>
+ Purpose:        Return scan range
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude         -- amplitude value
+ Exceptions:
+ Description:    Returns scan range.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetIncrement" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetIncrement">SetIncrement</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Increment) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetIncrement">TSnkDDA0816::SetIncrement</a>
+ Purpose:        Set scan increment
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Increment         -- scan increment
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets step size.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetIncrement" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetIncrement">GetIncrement</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetIncrement">TSnkDDA0816::GetIncrement</a>
+ Purpose:        Return scan increment
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0 or 1)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Increment         -- increment
+ Exceptions:
+ Description:    Returns step size.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetScanProfile" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetScanProfile">SetScanProfile</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ScanProfile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetScanProfile">TSnkDDA0816::SetScanProfile</a>
+ Purpose:        Set scan profile
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel            -- channel number (0 or 1)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ScanProfile     -- scan profile (triangle, sawtooth left/right)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets scan profile.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetScanProfile" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetScanProfile">SetScanProfile</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, ESnkScanProfile ScanProfile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetScanProfile">TSnkDDA0816::SetScanProfile</a>
+ Purpose:        Set scan profile
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel                  -- channel number (0 or 1)
+                 ESnkScanProfile ScanProfile    -- scan profile (triangle, sawtooth left/right)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets scan profile.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TSnkDDA0816:GetScanProfile" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetScanProfile">GetScanProfile</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetScanProfile">TSnkDDA0816::GetScanProfile</a>
+ Purpose:        Return scan profile
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel            -- channel number (0 or 1)
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * ScanProfile    -- scan profile
+ Exceptions:
+ Description:    Returns scan profile.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurve" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurve">SetCurve</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; CurveData, <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataPoints) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurve">TSnkDDA0816::SetCurve</a>
+ Purpose:        Set curve data
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel            -- channel number (0 or 1)
+                 <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data           -- curve data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataPoints      -- size of data array
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Fills the curve buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:Print" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:Print">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:Print">TSnkDDA0816::Print</a>
+ Purpose:        Output current settings
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel           -- channel number (0, 1 or -1)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Output settings to cout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SaveAs" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SaveAs">SaveAs</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SaveAs">TSnkDDA0816::SaveAs</a>
+ Purpose:        Save setup
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes <a href="./TSnkDDA0816.html">TSnkDDA0816</a> object to root file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SaveDefault" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SaveDefault">SaveDefault</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SaveDefault">TSnkDDA0816::SaveDefault</a>
+ Purpose:        Save setup using default name
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes <a href="./TSnkDDA0816.html">TSnkDDA0816</a> object to root file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:Save" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:Save">Save</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * SaveFile) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:Save">TSnkDDA0816::Save</a>
+ Purpose:        Save setup
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * SaveFile   -- file name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes <a href="./TSnkDDA0816.html">TSnkDDA0816</a> object to root file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveSymm" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveSymm">SetCurveSymm</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveSymm">TSnkDDA0816::SetCurveSymm</a>
+ Purpose:        Setup: symmetric scan
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag  -- kTRUE if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data for a symmetric scan.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveAsymm" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveAsymm">SetCurveAsymm</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveAsymm">TSnkDDA0816::SetCurveAsymm</a>
+ Purpose:        Setup: asymmetric scan
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag   -- kTRUE if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data for an asymmetric scan.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveLShape" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveLShape">SetCurveLShape</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveLShape">TSnkDDA0816::SetCurveLShape</a>
+ Purpose:        Setup: asymmetric scan
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag   -- kTRUE if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data for an asymmetric scan.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveXOnly" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveXOnly">SetCurveXOnly</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveXOnly">TSnkDDA0816::SetCurveXOnly</a>
+ Purpose:        Setup: scan x axis only
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag  -- kTRUE if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data to scan along x.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveYOnly" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveYOnly">SetCurveYOnly</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveYOnly">TSnkDDA0816::SetCurveYOnly</a>
+ Purpose:        Setup: scan y axis only
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag  -- if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data to scan along y.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveXYConst" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveXYConst">SetCurveXYConst</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveXYConst">TSnkDDA0816::SetCurveXYConst</a>
+ Purpose:        Setup: x = const, y = const
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag  -- if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data for x = const and y = const
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetCurveX0Y0" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetCurveX0Y0">SetCurveX0Y0</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetCurveX0Y0">TSnkDDA0816::SetCurveX0Y0</a>
+ Purpose:        Setup: x = 0, y = 0
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> SaveFlag  -- if data should be saved
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates curve data for x = 0 and y = 0
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:ConnectToServer" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:ConnectToServer">ConnectToServer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ServerName, <a href="ListOfTypes.html#Int_t">Int_t</a> Port, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ServerProg) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:ConnectToServer">TSnkDDA0816::ConnectToServer</a>
+ Purpose:        Connect to server
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ServerName    -- server addr
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Port             -- port number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ServerProg    -- program to be started
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Establishes a server connection.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:StartScan" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:StartScan">StartScan</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> ScanInterval) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:StartScan">TSnkDDA0816::StartScan</a>
+ Purpose:        Start actual scan
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> ScanInterval    -- scan time in seconds
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Starts actual scanning.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:StopScan" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:StopScan">StopScan</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:StopScan">TSnkDDA0816::StopScan</a>
+ Purpose:        Stop scan
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Stops scan.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:KillServer" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:KillServer">KillServer</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:KillServer">TSnkDDA0816::KillServer</a>
+ Purpose:        Stop server program
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Stops server program.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:ResetScan" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:ResetScan">ResetScan</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:ResetScan">TSnkDDA0816::ResetScan</a>
+ Purpose:        Reset to x = 0, y = 0
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Resets scan.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:SetTriangle" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetTriangle">SetTriangle</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset, <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude, <a href="ListOfTypes.html#Int_t">Int_t</a> Increment, <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetTriangle">TSnkDDA0816::SetTriangle</a>
+ Purpose:        Setup a triangular shape
+ Arguments:      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data        -- array to store data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Offset          -- offset
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude       -- amplitude
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Increment       -- increment
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels       -- number of pixels
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataPoints   -- actual number of data points
+ Exceptions:
+ Description:    Calculates a triangular shape.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:SetSawToothLR" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetSawToothLR">SetSawToothLR</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset, <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude, <a href="ListOfTypes.html#Int_t">Int_t</a> Increment, <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetSawToothLR">TSnkDDA0816::SetSawToothLR</a>
+ Purpose:        Setup a saw-tooth from left to right
+ Arguments:      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data        -- array to store data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Offset          -- offset
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude       -- amplitude
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Increment       -- increment
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels       -- number of pixels
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataPoints   -- actual number of data points
+ Exceptions:
+ Description:    Calculates a saw-tooth shape.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:SetSawToothRL" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetSawToothRL">SetSawToothRL</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset, <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude, <a href="ListOfTypes.html#Int_t">Int_t</a> Increment, <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetSawToothRL">TSnkDDA0816::SetSawToothRL</a>
+ Purpose:        Setup a saw-tooth from right to left
+ Arguments:      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data        -- array to store data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Offset          -- offset
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude       -- amplitude
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Increment       -- increment
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels       -- number of pixels
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataPoints   -- actual number of data points
+ Exceptions:
+ Description:    Calculates a saw-tooth shape.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:SetLShape" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetLShape">SetLShape</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset,	<a href="ListOfTypes.html#Int_t">Int_t</a> Increment1, <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels1,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Increment2, <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetTriangle">TSnkDDA0816::SetTriangle</a>
+ Purpose:        Setup a triangular shape
+ Arguments:      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data        -- array to store data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Offset          -- offset
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Increment1      -- increment (axis 1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels1      -- number of pixels (axis 1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Increment2      -- increment (axis 2)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofPixels2      -- number of pixels (axis 2)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataPoints   -- actual number of data points
+ Exceptions:
+ Description:    Calculates a L-shaped curve.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetHysteresis" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:SetHysteresis">SetHysteresis</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:SetHysteresis">TSnkDDA0816::SetHysteresis</a>
+ Purpose:        Calculate hysteresis output for channel 2
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets curve data according to slope in dac0 or dac1.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TSnkDDA0816:GetSubdeviceName" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:GetSubdeviceName">GetSubdeviceName</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:GetSubdeviceName">TSnkDDA0816::GetSubdeviceName</a>
+ Purpose:        Return subdevice
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Subdevice  -- subdevice name
+ Exceptions:
+ Description:    Returns subdevice as ascii string.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:Calibrate" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:Calibrate">Calibrate</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ChargeState, <a href="ListOfTypes.html#Double_t">Double_t</a> Energy, <a href="ListOfTypes.html#Double_t">Double_t</a> VoltageX, <a href="ListOfTypes.html#Double_t">Double_t</a> VoltageY) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:Calibrate">TSnkDDA0816::Calibrate</a>
+ Purpose:        Calibrate amplitude
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ChargeState      -- charge number
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Energy     -- beam energy [MeV]
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> VoltageX   -- max voltage power supply X [kV]
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> VoltageY   -- max voltage power supply Y [kV]
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates calibration constants: step width, range.
+
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:Dist2Ampl" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:Dist2Ampl">Dist2Ampl</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY, <a href="ListOfTypes.html#Double_t">Double_t</a> Distance) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:Dist2Ampl">TSnkDDA0816::Dist2Ampl</a>
+ Purpose:        Distance to amplitude conversion
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> XorY          -- X(0) or Y(1)
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Distance   -- distance [um]
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude     -- amplitude [steps]
+ Exceptions:
+ Description:    Converts distance to amplitude.
+
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:Ampl2Dist" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:Ampl2Dist">Ampl2Dist</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY, <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:Ampl2Dist">TSnkDDA0816::Ampl2Dist</a>
+ Purpose:        Amplitude to distance conversion
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> XorY          -- X(0) or Y(1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Amplitude     -- amplitude [steps]
+ Results:        <a href="ListOfTypes.html#Double_t">Double_t</a> Distance   -- distance [um]
+ Exceptions:
+ Description:    Converts amplitude to distance.
+
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:ResetCalibration" href="src/TSnkDDA0816.cxx.html#TSnkDDA0816:ResetCalibration">ResetCalibration</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TSnkDDA0816.html#TSnkDDA0816:ResetCalibration">TSnkDDA0816::ResetCalibration</a>
+ Purpose:        Reset calibration
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Resets calibration to default values.
+
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:Reset" href="TSnkDDA0816.h">Reset</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetPreScaler" href="TSnkDDA0816.h">SetPreScaler</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TSnkDDA0816:GetPreScaler" href="TSnkDDA0816.h">GetPreScaler</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:SetClockSource" href="TSnkDDA0816.h">SetClockSource</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>*)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TSnkDDA0816:GetClockSource" href="TSnkDDA0816.h">GetClockSource</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:ClearSoftScale" href="TSnkDDA0816.h">ClearSoftScale</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:GetScanInterval" href="TSnkDDA0816.h">GetScanInterval</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetPacerClock" href="TSnkDDA0816.h">SetPacerClock</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ClockValue)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetPacerClock" href="TSnkDDA0816.h">GetPacerClock</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetScanMode" href="TSnkDDA0816.h">SetScanMode</a>(ESnkScanMode Mode)
+<!--INLINE FUNCTION--><!--TAB6-->          ESnkScanMode <a name="TSnkDDA0816:GetScanMode" href="TSnkDDA0816.h">GetScanMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:IsConnected" href="TSnkDDA0816.h">IsConnected</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetSubdevice" href="TSnkDDA0816.h">GetSubdevice</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TSnkDDA0816:GetScanFile" href="TSnkDDA0816.h">GetScanFile</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetAmplYScale" href="TSnkDDA0816.h">SetAmplYScale</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Scale)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:GetAmplYScale" href="TSnkDDA0816.h">GetAmplYScale</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:IsXorY" href="TSnkDDA0816.h">IsXorY</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TSnkDDA0816:GetChargeState" href="TSnkDDA0816.h">GetChargeState</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:GetEnergy" href="TSnkDDA0816.h">GetEnergy</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:GetVoltage" href="TSnkDDA0816.h">GetVoltage</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:GetStepWidth" href="TSnkDDA0816.h">GetStepWidth</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TSnkDDA0816:GetRange" href="TSnkDDA0816.h">GetRange</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> XorY)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TSnkDDA0816:GetExecMode" href="TSnkDDA0816.h">GetExecMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetExecMode" href="TSnkDDA0816.h">SetExecMode</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ExecMode)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetNormalMode" href="TSnkDDA0816.h">SetNormalMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetVerbose" href="TSnkDDA0816.h">SetVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:IsVerbose" href="TSnkDDA0816.h">IsVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetDebug" href="TSnkDDA0816.h">SetDebug</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:IsDebug" href="TSnkDDA0816.h">IsDebug</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetOffline" href="TSnkDDA0816.h">SetOffline</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSnkDDA0816:IsOffline" href="TSnkDDA0816.h">IsOffline</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:SetOnline" href="TSnkDDA0816.h">SetOnline</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TSnkDDA0816:GetLofPreScales" href="TSnkDDA0816.h">GetLofPreScales</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TSnkDDA0816:GetLofClockSources" href="TSnkDDA0816.h">GetLofClockSources</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TSnkDDA0816:GetLofScanProfiles" href="TSnkDDA0816.h">GetLofScanProfiles</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TSnkDDA0816:GetLofScanModes" href="TSnkDDA0816.h">GetLofScanModes</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TSnkDDA0816:GetLofExecModes" href="TSnkDDA0816.h">GetLofExecModes</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:Help" href="TSnkDDA0816.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TSnkDDA0816:Class" href="TSnkDDA0816.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TSnkDDA0816:IsA" href="TSnkDDA0816.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:ShowMembers" href="TSnkDDA0816.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:Streamer" href="TSnkDDA0816.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:StreamerNVirtual" href="TSnkDDA0816.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TSnkDDA0816:~TSnkDDA0816" href="TSnkDDA0816.h">~TSnkDDA0816</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:58:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGrid</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGrid:description">class description</a> - <a href="src/TGrid.cxx.html">source file</a> - <a href="TGrid_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGrid" href="TGrid.h">TGrid</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:~TGrid">~TGrid</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:AddAttribute">AddAttribute</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn, const <a href="ListOfTypes.html#char">char</a>* attrname, const <a href="ListOfTypes.html#char">char</a>* attrval)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:AddFile">AddFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn, const <a href="ListOfTypes.html#char">char</a>* pfn, <a href="ListOfTypes.html#Int_t">Int_t</a> size)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:Cd">Cd</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir = "0") const
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:cd">cd</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir = "0") const
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGrid:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:Close">Close</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TGrid.html">TGrid</a>* <!--TAB--><!--BOLD--><a href="#TGrid:Connect">Connect</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* grid, const <a href="ListOfTypes.html#char">char</a>* uid = "0", const <a href="ListOfTypes.html#char">char</a>* pw = "0", const <a href="ListOfTypes.html#char">char</a>* options = "0")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:DeleteAttribute">DeleteAttribute</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn, const <a href="ListOfTypes.html#char">char</a>* attrname)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:DeleteFile">DeleteFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGridResult.html">TGridResult</a>* <!--TAB--><!--BOLD--><a href="#TGrid:GetAttributes">GetAttributes</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn)
+<!--TAB6-->               const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGrid:GetGrid">GetGrid</a><!--PLAIN-->() const
+<!--TAB6-->               const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGrid:GetHost">GetHost</a><!--PLAIN-->() const
+<!--TAB6-->       virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGrid:GetInfo">GetInfo</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:GetPathInfo">GetPathInfo</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn, <a href="ListOfTypes.html#Long_t">Long_t</a>* size, <a href="ListOfTypes.html#Long_t">Long_t</a>* flags, <a href="ListOfTypes.html#Long_t">Long_t</a>* modtime)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGrid:GetPhysicalFileName">GetPhysicalFileName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGridResult.html">TGridResult</a>* <!--TAB--><!--BOLD--><a href="#TGrid:GetPhysicalFileNames">GetPhysicalFileNames</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* lfn)
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:GetPort">GetPort</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGrid:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:IsConnected">IsConnected</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGridResult.html">TGridResult</a>* <!--TAB--><!--BOLD--><a href="#TGrid:Ls">Ls</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir = "0", const <a href="ListOfTypes.html#char">char</a>* options = "0") const
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:ls">ls</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir, const <a href="ListOfTypes.html#char">char</a>* options) const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:ls">ls</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir = "0") const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:Mkdir">Mkdir</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir, const <a href="ListOfTypes.html#char">char</a>* options = "0")
+<!--TAB6-->       virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGrid:Pwd">Pwd</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:pwd">pwd</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGridResult.html">TGridResult</a>* <!--TAB--><!--BOLD--><a href="#TGrid:Query">Query</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* wildcard)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGrid:Rmdir">Rmdir</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir, const <a href="ListOfTypes.html#char">char</a>* options = "0")
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGrid:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGrid:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGrid:fGrid">fGrid</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fGrid">type of GRID (AliEn, Globus, ...)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGrid:fHost">fHost</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHost">GRID portal to which we are connected</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGrid:fPort">fPort</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPort">port to which we are connected</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGrid:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:24 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

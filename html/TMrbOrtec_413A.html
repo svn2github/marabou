@@ -1,0 +1,168 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbOrtec_413A</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbOrtec_413A:description">class description</a> - <a href="src/TMrbOrtec_413A.cxx.html">source file</a> - <a href="TMrbOrtec_413A_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbOrtec_413A" href="TMrbOrtec_413A.h">TMrbOrtec_413A</a> : public <a href="./TMrbCamacModule.html">TMrbCamacModule</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="./TMrbOrtec_413A.html">TMrbOrtec_413A</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:TMrbOrtec_413A">TMrbOrtec_413A</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbOrtec_413A.html">TMrbOrtec_413A</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:TMrbOrtec_413A">TMrbOrtec_413A</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:~TMrbOrtec_413A">~TMrbOrtec_413A</a><!--PLAIN-->()
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbOrtec_413A:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbOrtec_413A:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbRegisters">TMrbOrtec_413A::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kRegLowerThresh">kRegLowerThresh</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kRegLowerThresh"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbRegisters">TMrbOrtec_413A::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kRegStatus">kRegStatus</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kRegStatus"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbRegisters">TMrbOrtec_413A::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kRegGate">kRegGate</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRegGate"></a></i>
+<!--TAB6-->      static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecStatus">TMrbOrtec_413A::EMrbOrtecStatus</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kStatusZSD">kStatusZSD</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kStatusZSD"></a></i>
+<!--TAB6-->      static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecStatus">TMrbOrtec_413A::EMrbOrtecStatus</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kStatusCRE">kStatusCRE</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kStatusCRE"></a></i>
+<!--TAB6-->      static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecStatus">TMrbOrtec_413A::EMrbOrtecStatus</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kStatusSME">kStatusSME</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kStatusSME"></a></i>
+<!--TAB6-->      static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecStatus">TMrbOrtec_413A::EMrbOrtecStatus</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kStatusCRA">kStatusCRA</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kStatusCRA"></a></i>
+<!--TAB6-->      static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecStatus">TMrbOrtec_413A::EMrbOrtecStatus</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kStatusCLE">kStatusCLE</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kStatusCLE"></a></i>
+<!--TAB6-->      static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecStatus">TMrbOrtec_413A::EMrbOrtecStatus</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kStatusOSD">kStatusOSD</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kStatusOSD"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecGate">TMrbOrtec_413A::EMrbOrtecGate</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kGateG1D">kGateG1D</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kGateG1D"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecGate">TMrbOrtec_413A::EMrbOrtecGate</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kGateG2D">kGateG2D</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kGateG2D"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecGate">TMrbOrtec_413A::EMrbOrtecGate</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kGateG3D">kGateG3D</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kGateG3D"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecGate">TMrbOrtec_413A::EMrbOrtecGate</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kGateG4D">kGateG4D</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kGateG4D"></a></i>
+<!--TAB6-->        static const <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:EMrbOrtecGate">TMrbOrtec_413A::EMrbOrtecGate</a> <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kGateMGD">kGateMGD</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kGateMGD"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kDefaultLowerThresh">kDefaultLowerThresh</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDefaultLowerThresh"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kDefaultStatus">kDefaultStatus</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDefaultStatus"></a></i>
+<!--TAB6-->                       static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbOrtec_413A:kDefaultGate">kDefaultGate</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDefaultGate"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbOrtec_413A:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbOrtec_413A.html">TMrbOrtec_413A</a>.cxx
+ Purpose:        MARaBOU configuration: Ortec ADCs
+ Description:    Implements class methods to handle Ortec type 413A
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbOrtec_413A:TMrbOrtec_413A" href="src/TMrbOrtec_413A.cxx.html#TMrbOrtec_413A:TMrbOrtec_413A">TMrbOrtec_413A</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition) :
+									<a href="./TMrbCamacModule.html">TMrbCamacModule</a>(ModuleName, "Ortec_413A", ModulePosition, 0, 4, 8064) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbOrtec_413A.html">TMrbOrtec_413A</a>
+ Purpose:        Create an ADC of type Ortec 413A
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- name of camac module
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition  -- B.C.N for this module
+ Results:        --
+ Exceptions:
+ Description:    Creates a camac module of type Ortec 413A.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbOrtec_413A:DefineRegisters" href="src/TMrbOrtec_413A.cxx.html#TMrbOrtec_413A:DefineRegisters">DefineRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:DefineRegisters">TMrbOrtec_413A::DefineRegisters</a>
+ Purpose:        Define camac registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Defines status, lower threshold, and gate.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbOrtec_413A:MakeReadoutCode" href="src/TMrbOrtec_413A.cxx.html#TMrbOrtec_413A:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:MakeReadoutCode">TMrbOrtec_413A::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for an ortec adc
+ Arguments:      ofstream &amp; RdoStrm         -- file output stream
+                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of an ortec AD413A module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbOrtec_413A:MakeReadoutCode" href="src/TMrbOrtec_413A.cxx.html#TMrbOrtec_413A:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex,
+															<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbOrtec_413A.html#TMrbOrtec_413A:MakeReadoutCode">TMrbOrtec_413A::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for an ortec adc
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel            -- channel
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value                  -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of an ortec AD413A module.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbOrtec_413A.html">TMrbOrtec_413A</a> <a name="TMrbOrtec_413A:TMrbOrtec_413A" href="TMrbOrtec_413A.h">TMrbOrtec_413A</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbOrtec_413A:GetMnemonic" href="TMrbOrtec_413A.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbOrtec_413A:Help" href="TMrbOrtec_413A.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbOrtec_413A:Class" href="TMrbOrtec_413A.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbOrtec_413A:IsA" href="TMrbOrtec_413A.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbOrtec_413A:ShowMembers" href="TMrbOrtec_413A.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbOrtec_413A:Streamer" href="TMrbOrtec_413A.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbOrtec_413A:StreamerNVirtual" href="TMrbOrtec_413A.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbOrtec_413A:~TMrbOrtec_413A" href="TMrbOrtec_413A.h">~TMrbOrtec_413A</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

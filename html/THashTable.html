@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>THashTable</h1>
+<hr width=300>
+<!--SDL--><em><a href="#THashTable:description">class description</a> - <a href="src/THashTable.cxx.html">source file</a> - <a href="THashTable_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="THashTable" href="THashTable.h">THashTable</a> : public <a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:GetHashValue">GetHashValue</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:GetHashValue">GetHashValue</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s) const
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:GetHashValue">GetHashValue</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* str) const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/THashTable.html">THashTable</a> <!--TAB--><!--BOLD--><a href="#THashTable:THashTable">THashTable</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> capacity = <a href="http://root.cern.ch/root/html/TCollection.html#TCollection:kInitHashTableCapacity">TCollection::kInitHashTableCapacity</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> rehash = 0)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:~THashTable">~THashTable</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                 <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:AverageCollisions">AverageCollisions</a><!--PLAIN-->() const
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#THashTable:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:Collisions">Collisions</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:Collisions">Collisions</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#THashTable:FindObject">FindObject</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#THashTable:FindObject">FindObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>** <!--TAB--><!--BOLD--><a href="#THashTable:GetObjectRef">GetObjectRef</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#THashTable:GetSize">GetSize</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#THashTable:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>* <!--TAB--><!--BOLD--><a href="#THashTable:MakeIterator">MakeIterator</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> dir = kIterForward) const
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:Rehash">Rehash</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> newCapacity, <a href="ListOfTypes.html#Bool_t">Bool_t</a> checkObjValidity = kTRUE)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#THashTable:Remove">Remove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#THashTable:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="THashTable:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TList.html">TList</a>** <!--TAB--><!--BOLD--><a name="THashTable:fCont">fCont</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fCont">Hash table (table of lists)</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="THashTable:fEntries">fEntries</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fEntries">Number of objects in table</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="THashTable:fUsedSlots">fUsedSlots</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fUsedSlots">Number of used slots</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="THashTable:fRehashLevel">fRehashLevel</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fRehashLevel">Average collision rate which triggers rehash</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="THashTable:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:27 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

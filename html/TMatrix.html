@@ -1,0 +1,154 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMatrix</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMatrix:description">class description</a> - <a href="src/TMatrix.cxx.html">source file</a> - <a href="TMatrix_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMatrix" href="TMatrix.h">TMatrix</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Allocate">Allocate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nrows, <a href="ListOfTypes.html#Int_t">Int_t</a> ncols, <a href="ListOfTypes.html#Int_t">Int_t</a> row_lwb = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> col_lwb = 0)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:AMultB">AMultB</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; a, const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; b)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:AtMultB">AtMultB</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; a, const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; b)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:EigenSort">EigenSort</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; eigenVectors, <a href="http://root.cern.ch/root/html/TVector.html">TVector</a>&amp; eigenValues)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Invalidate">Invalidate</a><!--PLAIN-->()
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Invert">Invert</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; m)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:InvertPosDef">InvertPosDef</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; m)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:MakeEigenVectors">MakeEigenVectors</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVector.html">TVector</a>&amp; d, <a href="http://root.cern.ch/root/html/TVector.html">TVector</a>&amp; e, <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; z)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:MakeTridiagonal">MakeTridiagonal</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; a, <a href="http://root.cern.ch/root/html/TVector.html">TVector</a>&amp; d, <a href="http://root.cern.ch/root/html/TVector.html">TVector</a>&amp; e)
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Pdcholesky">Pdcholesky</a><!--PLAIN-->(const <a href="ListOfTypes.html#Real_t">Real_t</a>* a, <a href="ListOfTypes.html#Real_t">Real_t</a>* u, const <a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Transpose">Transpose</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; m)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nrows, <a href="ListOfTypes.html#Int_t">Int_t</a> ncols)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> row_lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> row_upb, <a href="ListOfTypes.html#Int_t">Int_t</a> col_lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> col_upb)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nrows, <a href="ListOfTypes.html#Int_t">Int_t</a> ncols, const <a href="ListOfTypes.html#Float_t">Float_t</a>* elements, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> row_lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> row_upb, <a href="ListOfTypes.html#Int_t">Int_t</a> col_lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> col_upb, const <a href="ListOfTypes.html#Float_t">Float_t</a>* elements, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; another)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp1">TMatrix::EMatrixCreatorsOp1</a> op, const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; prototype)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; a, <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp2">TMatrix::EMatrixCreatorsOp2</a> op, const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; b)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:TMatrix">TMatrix</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TLazyMatrix.html">TLazyMatrix</a>&amp; lazy_constructor)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a> <!--TAB--><!--BOLD--><a href="#TMatrix:EigenVectors">EigenVectors</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVector.html">TVector</a>&amp; eigenValues)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:~TMatrix">~TMatrix</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Abs">Abs</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Apply">Apply</a><!--PLAIN-->(TElementAction&amp; action)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Apply">Apply</a><!--PLAIN-->(TElementPosAction&amp; action)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMatrix:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:ColNorm">ColNorm</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Determinant">Determinant</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:E2Norm">E2Norm</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetColLwb">GetColLwb</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetColUpb">GetColUpb</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a href="#TMatrix:GetElements">GetElements</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetElements">GetElements</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* elements, <a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetNcols">GetNcols</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetNoElements">GetNoElements</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetNrows">GetNrows</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetRowLwb">GetRowLwb</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:GetRowUpb">GetRowUpb</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:HilbertMatrix">HilbertMatrix</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Invert">Invert</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* determ_ptr = 0)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:InvertPosDef">InvertPosDef</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMatrix:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:IsSymmetric">IsSymmetric</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:IsValid">IsValid</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Mult">Mult</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; a, const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; b)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Norm1">Norm1</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:NormInf">NormInf</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:operator!=">operator!=</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val) const
+<!--TAB6-->        const <a href="ListOfTypes.html#Real_t">Real_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator()">operator()</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> rown, <a href="ListOfTypes.html#Int_t">Int_t</a> coln) const
+<!--TAB6-->              <a href="ListOfTypes.html#Real_t">Real_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator()">operator()</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> rown, <a href="ListOfTypes.html#Int_t">Int_t</a> coln)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator*=">operator*=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator*=">operator*=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; source)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator*=">operator*=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrixDiag.html">TMatrixDiag</a>&amp; diag)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator+=">operator+=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator-=">operator-=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:operator&lt;">operator&lt;</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val) const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:operator&lt;=">operator&lt;=</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val) const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; source)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TLazyMatrix.html">TLazyMatrix</a>&amp; source)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:operator=">operator=</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:operator==">operator==</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val) const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:operator&gt;">operator&gt;</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val) const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:operator&gt;=">operator&gt;=</a><!--PLAIN-->(<a href="ListOfTypes.html#Real_t">Real_t</a> val) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:ResizeTo">ResizeTo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nrows, <a href="ListOfTypes.html#Int_t">Int_t</a> ncols)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:ResizeTo">ResizeTo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> row_lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> row_upb, <a href="ListOfTypes.html#Int_t">Int_t</a> col_lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> col_upb)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:ResizeTo">ResizeTo</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; m)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMatrix:RowNorm">RowNorm</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:SetElements">SetElements</a><!--PLAIN-->(const <a href="ListOfTypes.html#Float_t">Float_t</a>* elements, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Sqr">Sqr</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Sqrt">Sqrt</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMatrix:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:UnitMatrix">UnitMatrix</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TMatrix.html">TMatrix</a>&amp; <!--TAB--><!--BOLD--><a href="#TMatrix:Zero">Zero</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TMatrix:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMatrix:fNrows">fNrows</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNrows">number of rows</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMatrix:fNcols">fNcols</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNcols">number of columns</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMatrix:fNelems">fNelems</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fNelems">number of elements in matrix</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMatrix:fRowLwb">fRowLwb</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fRowLwb">lower bound of the row index</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMatrix:fColLwb">fColLwb</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fColLwb">lower bound of the col index</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Real_t">Real_t</a>* <!--TAB--><!--BOLD--><a name="TMatrix:fElements">fElements</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fElements">[fNelems] elements themselves</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Real_t">Real_t</a>** <!--TAB--><!--BOLD--><a name="TMatrix:fIndex">fIndex</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fIndex">! index[i] = &amp;matrix(0,i) (col index)</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp1">TMatrix::EMatrixCreatorsOp1</a> <!--TAB--><!--BOLD--><a name="TMatrix:kZero">kZero</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kZero"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp1">TMatrix::EMatrixCreatorsOp1</a> <!--TAB--><!--BOLD--><a name="TMatrix:kUnit">kUnit</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kUnit"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp1">TMatrix::EMatrixCreatorsOp1</a> <!--TAB--><!--BOLD--><a name="TMatrix:kTransposed">kTransposed</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kTransposed"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp1">TMatrix::EMatrixCreatorsOp1</a> <!--TAB--><!--BOLD--><a name="TMatrix:kInverted">kInverted</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kInverted"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp1">TMatrix::EMatrixCreatorsOp1</a> <!--TAB--><!--BOLD--><a name="TMatrix:kInvertedPosDef">kInvertedPosDef</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kInvertedPosDef"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp2">TMatrix::EMatrixCreatorsOp2</a> <!--TAB--><!--BOLD--><a name="TMatrix:kMult">kMult</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kMult"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp2">TMatrix::EMatrixCreatorsOp2</a> <!--TAB--><!--BOLD--><a name="TMatrix:kTransposeMult">kTransposeMult</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kTransposeMult"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp2">TMatrix::EMatrixCreatorsOp2</a> <!--TAB--><!--BOLD--><a name="TMatrix:kInvMult">kInvMult</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kInvMult"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp2">TMatrix::EMatrixCreatorsOp2</a> <!--TAB--><!--BOLD--><a name="TMatrix:kInvPosDefMult">kInvPosDefMult</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kInvPosDefMult"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMatrix.html#TMatrix:EMatrixCreatorsOp2">TMatrix::EMatrixCreatorsOp2</a> <!--TAB--><!--BOLD--><a name="TMatrix:kAtBA">kAtBA</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAtBA"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMatrix:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:31 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,93 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGDoubleSlider</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGDoubleSlider:description">class description</a> - <a href="src/TGDoubleSlider.cxx.html">source file</a> - <a href="TGDoubleSlider_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGDoubleSlider" href="TGDoubleSlider.h">TGDoubleSlider</a> : public <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>, public <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:~TGDoubleSlider">~TGDoubleSlider</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:GetMaxPosition">GetMaxPosition</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:GetMinPosition">GetMinPosition</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:GetPosition">GetPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>&amp; min, <a href="ListOfTypes.html#Float_t">Float_t</a>&amp; max) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:GetPosition">GetPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a>* min, <a href="ListOfTypes.html#Float_t">Float_t</a>* max) const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:MapSubwindows">MapSubwindows</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:PositionChanged">PositionChanged</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:Pressed">Pressed</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:Released">Released</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:SetPosition">SetPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> min, <a href="ListOfTypes.html#Float_t">Float_t</a> max)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> min, <a href="ListOfTypes.html#Float_t">Float_t</a> max)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:SetScale">SetScale</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> scale)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGDoubleSlider:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGDoubleSlider:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fPos">fPos</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fPos">logical position between fVmin and fVmax</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fSmin">fSmin</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSmin">logical position of min value of Slider</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fSmax">fSmax</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSmax">logical position of max value of Slider</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fRelPos">fRelPos</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fRelPos">slider position in pixel coordinates</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fVmin">fVmin</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fVmin">logical lower limit of slider</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fVmax">fVmax</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fVmax">logical upper limit of slider</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fScale">fScale</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fScale">tick mark scale</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fScaleType">fScaleType</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fScaleType">tick mark scale type (no, downright, both)</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fDragging">fDragging</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fDragging">true if in dragging mode</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fPressPoint">fPressPoint</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fPressPoint">mouse position at button press event</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fPressSmin">fPressSmin</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPressSmin">logical min position at button press event</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fPressSmax">fPressSmax</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPressSmax">logical max position at button press event</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fMove">fMove</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMove">1: move min value</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fReversedScale">fReversedScale</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fReversedScale">reverse which end is min and max</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGDoubleSlider:fMarkEnds">fMarkEnds</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fMarkEnds">lines marking where stretch zones begin</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGDoubleHSlider.html">TGDoubleHSlider</a>, <a href="http://root.cern.ch/root/html/TGDoubleVSlider.html">TGDoubleVSlider</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGDoubleSlider:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:19 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

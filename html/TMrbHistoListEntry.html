@@ -1,0 +1,105 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbHistoListEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbHistoListEntry:description">class description</a> - <a href="src/TMrbHistoListEntry.cxx.html">source file</a> - <a href="TMrbHistoListEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbHistoListEntry" href="TMrbAnalyze.h">TMrbHistoListEntry</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:TMrbHistoListEntry">TMrbHistoListEntry</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Module = NULL, <a href="./TMrbNamedX.html">TMrbNamedX</a>* Param = NULL, <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* Address = NULL)
+<!--TAB6-->      <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:TMrbHistoListEntry">TMrbHistoListEntry</a><!--PLAIN-->(const <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a>&amp;)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:~TMrbHistoListEntry">~TMrbHistoListEntry</a><!--PLAIN-->()
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:GetAddress">GetAddress</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:GetModule">GetModule</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:GetParam">GetParam</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:SetAddress">SetAddress</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* Address)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:SetModule">SetModule</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Module)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:SetParam">SetParam</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Param)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistoListEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbHistoListEntry:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="TMrbHistoListEntry:fModule">fModule</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fModule"></a></i>
+<!--TAB6-->      <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="TMrbHistoListEntry:fParam">fParam</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fParam"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a name="TMrbHistoListEntry:fAddress">fAddress</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAddress"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbHistoListEntry:description">Class Description</a></h2>
+<pre>
+ Name:           <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.cxx
+ Purpose:        Implement class methods for user's analysis
+ Description:    This code defines class methods for data analysis
+                 common to all user applications
+
+ Header files:   <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.h     -- class definitions
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a> <a name="TMrbHistoListEntry:TMrbHistoListEntry" href="TMrbAnalyze.h">TMrbHistoListEntry</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Module = NULL, <a href="./TMrbNamedX.html">TMrbNamedX</a>* Param = NULL, <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* Address = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbHistoListEntry:GetModule" href="TMrbAnalyze.h">GetModule</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:SetModule" href="TMrbAnalyze.h">SetModule</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbHistoListEntry:GetParam" href="TMrbAnalyze.h">GetParam</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:SetParam" href="TMrbAnalyze.h">SetParam</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* Param)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <a name="TMrbHistoListEntry:GetAddress" href="TMrbAnalyze.h">GetAddress</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:SetAddress" href="TMrbAnalyze.h">SetAddress</a>(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* Address)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbHistoListEntry:Class" href="TMrbAnalyze.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbHistoListEntry:IsA" href="TMrbAnalyze.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:ShowMembers" href="TMrbAnalyze.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:Streamer" href="TMrbAnalyze.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:StreamerNVirtual" href="TMrbAnalyze.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a> <a name="TMrbHistoListEntry:TMrbHistoListEntry" href="TMrbAnalyze.h">TMrbHistoListEntry</a>(const <a href="./TMrbHistoListEntry.html">TMrbHistoListEntry</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistoListEntry:~TMrbHistoListEntry" href="TMrbAnalyze.h">~TMrbHistoListEntry</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:49 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

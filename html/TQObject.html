@@ -1,0 +1,110 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TQObject</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TQObject:description">class description</a> - <a href="src/TQObject.cxx.html">source file</a> - <a href="TQObject_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TQObject" href="TQObject.h">TQObject</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->            static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:CheckConnectArgs">CheckConnectArgs</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a>* sender, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* sender_class, const <a href="ListOfTypes.html#char">char</a>* signal, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* receiver_class, const <a href="ListOfTypes.html#char">char</a>* slot)
+<!--TAB6-->            static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:ConnectToClass">ConnectToClass</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a>* sender, const <a href="ListOfTypes.html#char">char</a>* signal, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* receiver_class, <a href="ListOfTypes.html#void">void</a>* receiver, const <a href="ListOfTypes.html#char">char</a>* slot)
+<!--TAB6-->            static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:ConnectToClass">ConnectToClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* sender_class, const <a href="ListOfTypes.html#char">char</a>* signal, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* receiver_class, <a href="ListOfTypes.html#void">void</a>* receiver, const <a href="ListOfTypes.html#char">char</a>* slot)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TQObject:GetListOfClassSignals">GetListOfClassSignals</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TQObject:GetListOfConnections">GetListOfConnections</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TQObject:GetListOfSignals">GetListOfSignals</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TQObject:GetSender">GetSender</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TQObject:GetSenderClassName">GetSenderClassName</a><!--PLAIN-->() const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a> <!--TAB--><!--BOLD--><a href="#TQObject:TQObject">TQObject</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a> <!--TAB--><!--BOLD--><a href="#TQObject:TQObject">TQObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:~TQObject">~TQObject</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:ChangedBy">ChangedBy</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TQObject:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:Connect">Connect</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, const <a href="ListOfTypes.html#char">char</a>* receiver_class, <a href="ListOfTypes.html#void">void</a>* receiver, const <a href="ListOfTypes.html#char">char</a>* slot)
+<!--TAB6-->        static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:Connect">Connect</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a>* sender, const <a href="ListOfTypes.html#char">char</a>* signal, const <a href="ListOfTypes.html#char">char</a>* receiver_class, <a href="ListOfTypes.html#void">void</a>* receiver, const <a href="ListOfTypes.html#char">char</a>* slot)
+<!--TAB6-->        static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:Connect">Connect</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* sender_class, const <a href="ListOfTypes.html#char">char</a>* signal, const <a href="ListOfTypes.html#char">char</a>* receiver_class, <a href="ListOfTypes.html#void">void</a>* receiver, const <a href="ListOfTypes.html#char">char</a>* slot)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Connected">Connected</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>*)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Destroyed">Destroyed</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:Disconnect">Disconnect</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal = "0", <a href="ListOfTypes.html#void">void</a>* receiver = 0, const <a href="ListOfTypes.html#char">char</a>* slot = "0")
+<!--TAB6-->        static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:Disconnect">Disconnect</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a>* sender, const <a href="ListOfTypes.html#char">char</a>* signal = "0", <a href="ListOfTypes.html#void">void</a>* receiver = 0, const <a href="ListOfTypes.html#char">char</a>* slot = "0")
+<!--TAB6-->        static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:Disconnect">Disconnect</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* class_name, const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#void">void</a>* receiver = 0, const <a href="ListOfTypes.html#char">char</a>* slot = "0")
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Disconnected">Disconnected</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>*)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Double_t">Double_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Long_t">Long_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, const <a href="ListOfTypes.html#char">char</a>* params)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Long_t">Long_t</a>* paramArr)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Bool_t">Bool_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Char_t">Char_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#UChar_t">UChar_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Short_t">Short_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#UShort_t">UShort_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Int_t">Int_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#UInt_t">UInt_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#ULong_t">ULong_t</a> param)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Emit">Emit</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal, <a href="ListOfTypes.html#Float_t">Float_t</a> param)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:HasConnection">HasConnection</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal_name) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:HighPriority">HighPriority</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal_name, const <a href="ListOfTypes.html#char">char</a>* slot_name = "0")
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TQObject:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:LoadRQ_OBJECT">LoadRQ_OBJECT</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:LowPriority">LowPriority</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* signal_name, const <a href="ListOfTypes.html#char">char</a>* slot_name = "0")
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Message">Message</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* msg)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:NumberOfConnections">NumberOfConnections</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TQObject:NumberOfSignals">NumberOfSignals</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TQObject:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TQObject:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TQObject:fListOfSignals">fListOfSignals</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fListOfSignals">! list of signals from this object</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TQObject:fListOfConnections">fListOfConnections</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fListOfConnections">! list of connections to this object</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>, <a href="http://root.cern.ch/root/html/TQClass.html">TQClass</a>, <a href="http://root.cern.ch/root/html/TQConnection.html">TQConnection</a>, <a href="http://root.cern.ch/root/html/TQObjSender.html">TQObjSender</a>, <a href="http://root.cern.ch/root/html/TSysEvtHandler.html">TSysEvtHandler</a>, <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TQObject:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:12 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

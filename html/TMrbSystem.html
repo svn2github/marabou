@@ -1,0 +1,236 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbSystem</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbSystem:description">class description</a> - <a href="src/TMrbSystem.cxx.html">source file</a> - <a href="TMrbSystem_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbSystem" href="TMrbSystem.h">TMrbSystem</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:CheckAccess">CheckAccess</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path, EAccessMode Mode)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:CheckType">CheckType</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path, <a href="./TMrbSystem.html#TMrbSystem:EMrbFileType">TMrbSystem::EMrbFileType</a> Type)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="./TMrbSystem.html">TMrbSystem</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:TMrbSystem">TMrbSystem</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./TMrbSystem.html">TMrbSystem</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:TMrbSystem">TMrbSystem</a><!--PLAIN-->(const <a href="./TMrbSystem.html">TMrbSystem</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:~TMrbSystem">~TMrbSystem</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:ChangeDirectory">ChangeDirectory</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:CheckExtension">CheckExtension</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Extension)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:Exists">Exists</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:FindFile">FindFile</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; PathList, const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SearchPath, <a href="ListOfTypes.html#Bool_t">Bool_t</a> MultipleMatch = kFALSE)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:GetBaseName">GetBaseName</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* FilePath) const
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:GetDirName">GetDirName</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; DirName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* FilePath, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ExpandWD = kFALSE) const
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:GetExtension">GetExtension</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Extension, const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName) const
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:GetRelPath">GetRelPath</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Path, const <a href="ListOfTypes.html#Char_t">Char_t</a>* BaseDir = "NULL") const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:HasExecutePermission">HasExecutePermission</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:HasReadPermission">HasReadPermission</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:HasWritePermission">HasWritePermission</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:IsDirectory">IsDirectory</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:IsExecutable">IsExecutable</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:IsRegular">IsRegular</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:IsSpecial">IsSpecial</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbSystem:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbSystem:WorkingDirectory">WorkingDirectory</a><!--PLAIN-->() const
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbSystem:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TMrbSystem.html#TMrbSystem:EMrbFileType">TMrbSystem::EMrbFileType</a> <!--TAB--><!--BOLD--><a name="TMrbSystem:kMrbRegularFile">kMrbRegularFile</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kMrbRegularFile"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSystem.html#TMrbSystem:EMrbFileType">TMrbSystem::EMrbFileType</a> <!--TAB--><!--BOLD--><a name="TMrbSystem:kMrbExecutableFile">kMrbExecutableFile</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kMrbExecutableFile"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSystem.html#TMrbSystem:EMrbFileType">TMrbSystem::EMrbFileType</a> <!--TAB--><!--BOLD--><a name="TMrbSystem:kMrbDirectory">kMrbDirectory</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kMrbDirectory"></a></i>
+<!--TAB6-->      static const <a href="./TMrbSystem.html#TMrbSystem:EMrbFileType">TMrbSystem::EMrbFileType</a> <!--TAB--><!--BOLD--><a name="TMrbSystem:kMrbSpecialFile">kMrbSpecialFile</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kMrbSpecialFile"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbSystem:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbSystem.html">TMrbSystem</a>.cxx
+ Purpose:        MARaBOU utilities:
+                 Some extensions to <a href="http://root.cern.ch/root/html/TSystem.html">TSystem</a> class
+ Description:    Implements extended methods for <a href="http://root.cern.ch/root/html/TSystem.html">TSystem</a>
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbSystem:TMrbSystem" href="src/TMrbSystem.cxx.html#TMrbSystem:TMrbSystem">TMrbSystem</a>() <br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbSystem:FindFile" href="src/TMrbSystem.cxx.html#TMrbSystem:FindFile">FindFile</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; PathList, const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * SearchPath,
+																							<a href="ListOfTypes.html#Bool_t">Bool_t</a> MultipleMatch) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:FindFile">TMrbSystem::FindFile</a>
+ Purpose:        Find file(s) along a search path
+ Arguments:      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; PathList  -- resulting path list
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName     -- file name, may be wild-carded
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * SearchPath   -- unix search path (:-separated)
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> MultipleMatch  -- kTRUE if multiple hits requested
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofFiles        -- number of files found
+ Exceptions:     NofFiles = -1         -- error
+                 NofFiles = 0          -- no file found
+ Description:    Returns a list of file paths for a given file name.
+                 Files will be APPENDED to list.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSystem:GetDirName" href="src/TMrbSystem.cxx.html#TMrbSystem:GetDirName">GetDirName</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; DirName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * FilePath, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ExpandWD) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:GetDirName">TMrbSystem::GetDirName</a>
+ Purpose:        Return directory part of file path
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; DirName     -- restulting dir name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * FilePath     -- full path spec
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> ExpandWD       -- if kTRUE, return wirking dir
+                                                    if plain file name
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * DirName      -- directory name (same as DirName.Data())
+ Exceptions:
+ Description:    Returns path up to (but without) last "/".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSystem:GetBaseName" href="src/TMrbSystem.cxx.html#TMrbSystem:GetBaseName">GetBaseName</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; BaseName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * FilePath) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:GetBaseName">TMrbSystem::GetBaseName</a>
+ Purpose:        Return file name part of file path
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; BaseName    -- resulting file name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * FilePath     -- full path spec
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * BaseName     -- file name part (same as BaseName.Data())
+ Exceptions:
+ Description:    Returns path behind last "/".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSystem:GetExtension" href="src/TMrbSystem.cxx.html#TMrbSystem:GetExtension">GetExtension</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Extension, const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:GetExtension">TMrbSystem::GetExtension</a>
+ Purpose:        Return extension part of file name
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Extension   -- resulting extension
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName     -- file spec
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension    -- extension part (same as Extension.Data())
+ Exceptions:
+ Description:    Returns extension (including ".")
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:CheckExtension" href="src/TMrbSystem.cxx.html#TMrbSystem:CheckExtension">CheckExtension</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:CheckExtension">TMrbSystem::CheckExtension</a>
+ Purpose:        Check if file has a given extension
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName     -- file spec
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension    -- extension
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks file for a given extension.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSystem:GetRelPath" href="src/TMrbSystem.cxx.html#TMrbSystem:GetRelPath">GetRelPath</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Path, const <a href="ListOfTypes.html#Char_t">Char_t</a> * BaseDir) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:GetRelPath">TMrbSystem::GetRelPath</a>
+ Purpose:        Get relative path name
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Path        -- full path name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * BaseDir      -- base directory
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * RelPath      -- relative path
+ Exceptions:
+ Description:    Returns path name as seen from base dir.
+                 <a href="http://root.cern.ch/root/html/TStyle.html">Default</a> base dir is current working dir.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:CheckType" href="src/TMrbSystem.cxx.html#TMrbSystem:CheckType">CheckType</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Path, EMrbFileType Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:CheckType">TMrbSystem::CheckType</a>
+ Purpose:        Check file type
+ Arguments:      const <a href="ListOfTypes.html#Char_t">Char_t</a> * Path   -- path name
+                 EMrbFileType Type     -- file type
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks file type
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:CheckAccess" href="src/TMrbSystem.cxx.html#TMrbSystem:CheckAccess">CheckAccess</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Path, EAccessMode Mode) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbSystem.html#TMrbSystem:CheckAccess">TMrbSystem::CheckAccess</a>
+ Purpose:        Check file permission
+ Arguments:      const <a href="ListOfTypes.html#Char_t">Char_t</a> * Path   -- path name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks file permission bits
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbSystem:WorkingDirectory" href="TMrbSystem.h">WorkingDirectory</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:ChangeDirectory" href="TMrbSystem.h">ChangeDirectory</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:IsRegular" href="TMrbSystem.h">IsRegular</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:IsExecutable" href="TMrbSystem.h">IsExecutable</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:IsDirectory" href="TMrbSystem.h">IsDirectory</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:IsSpecial" href="TMrbSystem.h">IsSpecial</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:Exists" href="TMrbSystem.h">Exists</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:HasReadPermission" href="TMrbSystem.h">HasReadPermission</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:HasWritePermission" href="TMrbSystem.h">HasWritePermission</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbSystem:HasExecutePermission" href="TMrbSystem.h">HasExecutePermission</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Path)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbSystem:Help" href="TMrbSystem.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSystem:Class" href="TMrbSystem.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbSystem:IsA" href="TMrbSystem.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbSystem:ShowMembers" href="TMrbSystem.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbSystem:Streamer" href="TMrbSystem.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbSystem:StreamerNVirtual" href="TMrbSystem.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMrbSystem.html">TMrbSystem</a> <a name="TMrbSystem:TMrbSystem" href="TMrbSystem.h">TMrbSystem</a>(const <a href="./TMrbSystem.html">TMrbSystem</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbSystem:~TMrbSystem" href="TMrbSystem.h">~TMrbSystem</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:47 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

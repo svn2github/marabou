@@ -1,0 +1,48 @@
+# Makefile definitions included by the top Makefile
+
+ARCH           := @architecture@
+USECONFIG      := @useconfig@
+
+EXTRA_CFLAGS   := -Iinclude @cflags
+EXTRA_CXXFLAGS := -Iinclude @cflags
+EXTRA_LDFLAGS  := @ldflags@
+
+BINDIR         := @bindir@
+LIBDIR         := @libdir@
+INCDIR         := @incdir@
+ETCDIR         := @etcdir@
+DATADIR        := @datadir@
+MACRODIR       := @macrodir@
+SRCDIR         := @srcdir@
+ICONPATH       := @iconpath@
+CINTINCDIR     := @cintincdir@
+DOCDIR         := @docdir@
+TESTDIR        := @testdir@
+TUTDIR         := @tutdir@
+
+XPMLIB         := @xpmlib@
+
+TTFLIBDIR      := @ttflibdir@
+TTFFONTDIR     := @ttffontdir@
+TTFINCDIR      := @ttfincdir@
+
+OPENGLULIB     := @openglulib@
+OPENGLLIB      := @opengllib@
+OPENGLINCDIR   := @openglincdir@
+
+MYSQLINCDIR    := @mysqlincdir@
+MYSQLLIBDIR    := @mysqllibdir@
+
+CERNLIBDIR     := @cernlibdir@
+THREAD         := @thread@
+RFIO           := @rfio@
+SRPDIR         := @srpdir@
+AFSDIR         := @afsdir@
+
+PYTHIA         := @pythialib@
+PYTHIA6        := @pythia6lib@
+VENUS          := @venuslib@
+
+INSTALL        := cp -dpR
+INSTALLDATA    := cp -dpR
+INSTALLDIR     := mkdir -p

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSQLServer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSQLServer:description">class description</a> - <a href="src/TSQLServer.cxx.html">source file</a> - <a href="TSQLServer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSQLServer" href="TSQLServer.h">TSQLServer</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:~TSQLServer">~TSQLServer</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:Close">Close</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TSQLServer.html">TSQLServer</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:Connect">Connect</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* db, const <a href="ListOfTypes.html#char">char</a>* uid, const <a href="ListOfTypes.html#char">char</a>* pw)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:CreateDataBase">CreateDataBase</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dbname)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:DropDataBase">DropDataBase</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dbname)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TSQLResult.html">TSQLResult</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:GetColumns">GetColumns</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dbname, const <a href="ListOfTypes.html#char">char</a>* table, const <a href="ListOfTypes.html#char">char</a>* wild = "0")
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TSQLResult.html">TSQLResult</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:GetDataBases">GetDataBases</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* wild = "0")
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:GetDBMS">GetDBMS</a><!--PLAIN-->() const
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:GetHost">GetHost</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:GetPort">GetPort</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TSQLResult.html">TSQLResult</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:GetTables">GetTables</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dbname, const <a href="ListOfTypes.html#char">char</a>* wild = "0")
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:IsConnected">IsConnected</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TSQLResult.html">TSQLResult</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:Query">Query</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* sql)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:Reload">Reload</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:SelectDataBase">SelectDataBase</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dbname)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSQLServer:ServerInfo">ServerInfo</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:Shutdown">Shutdown</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSQLServer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TSQLServer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSQLServer:fType">fType</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fType">type of DBMS (MySQL, Oracle, SysBase, ...)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSQLServer:fHost">fHost</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHost">host to which we are connected</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSQLServer:fDB">fDB</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDB">currently selected DB</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSQLServer:fPort">fPort</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPort">port to which we are connected</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TSQLServer:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:15 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,73 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMethod</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMethod:description">class description</a> - <a href="src/TMethod.cxx.html">source file</a> - <a href="TMethod_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMethod" href="TMethod.h">TMethod</a> : public <a href="http://root.cern.ch/root/html/TFunction.html">TFunction</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMethod:CreateSignature">CreateSignature</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a> <!--TAB--><!--BOLD--><a href="#TMethod:TMethod">TMethod</a><!--PLAIN-->(G__MethodInfo* info = 0, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl = 0)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a> <!--TAB--><!--BOLD--><a href="#TMethod:TMethod">TMethod</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>&amp;)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMethod:~TMethod">~TMethod</a><!--PLAIN-->()
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMethod:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TDataMember.html">TDataMember</a>* <!--TAB--><!--BOLD--><a href="#TMethod:FindDataMember">FindDataMember</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMethod:GetClass">GetClass</a><!--PLAIN-->() const
+<!--TAB6-->       virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TMethod:GetCommentString">GetCommentString</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TMethod:GetListOfMethodArgs">GetListOfMethodArgs</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMethod:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             EMenuItemKind <!--TAB--><!--BOLD--><a href="#TMethod:IsMenuItem">IsMenuItem</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMethod:SetMenuItem">SetMenuItem</a><!--PLAIN-->(EMenuItemKind menuItem)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMethod:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMethod:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMethod:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMethod:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a name="TMethod:fClass">fClass</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fClass">pointer to the class</a></i>
+<!--TAB6-->      EMenuItemKind <!--TAB--><!--BOLD--><a name="TMethod:fMenuItem">fMenuItem</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMenuItem">type of menuitem in context menu</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMethod:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:46 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

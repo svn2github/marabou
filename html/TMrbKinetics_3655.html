@@ -1,0 +1,314 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbKinetics_3655</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbKinetics_3655:description">class description</a> - <a href="src/TMrbKinetics_3655.cxx.html">source file</a> - <a href="TMrbKinetics_3655_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbKinetics_3655" href="TMrbKinetics_3655.h">TMrbKinetics_3655</a> : public <a href="./TMrbCamacModule.html">TMrbCamacModule</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TMrbKinetics_3655.html">TMrbKinetics_3655</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:TMrbKinetics_3655">TMrbKinetics_3655</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbKinetics_3655.html">TMrbKinetics_3655</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:TMrbKinetics_3655">TMrbKinetics_3655</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:~TMrbKinetics_3655">~TMrbKinetics_3655</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:AssertsInhibit">AssertsInhibit</a><!--PLAIN-->()
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:DontAssertInhibit">DontAssertInhibit</a><!--PLAIN-->()
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:GetFrequency">GetFrequency</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:GetInterval">GetInterval</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> InvNo)
+<!--TAB6-->                     <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:GetLamMask">GetLamMask</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:GetNofIntervals">GetNofIntervals</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:IsExtStartMode">IsExtStartMode</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:IsRecycleMode">IsRecycleMode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetExtStart">SetExtStart</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> StartFlag = kTRUE)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetFrequency">SetFrequency</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Frequency = 1000000)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetFrequency">SetFrequency</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Frequency)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetInhibit">SetInhibit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> InhClear, <a href="ListOfTypes.html#Int_t">Int_t</a> InhSet)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetIntervals">SetIntervals</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Inv1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv2 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv3 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv4 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv5 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv6 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv7 = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv8 = -1)
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetLamMask">SetLamMask</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam2 = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam3 = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam4 = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam5 = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam6 = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam7 = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam8 = kFALSE)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:SetRecycleMode">SetRecycleMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> RecycleFlag = kTRUE)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbKinetics_3655:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbKinetics_3655:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:fExtStartFlag">fExtStartFlag</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fExtStartFlag"></a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:fInhibitFlag">fInhibitFlag</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fInhibitFlag"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:fNofIntervals">fNofIntervals</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNofIntervals"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:fIntervals">fIntervals</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fIntervals"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:EMrbRegisters">TMrbKinetics_3655::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kRegCycleControl">kRegCycleControl</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kRegCycleControl"></a></i>
+<!--TAB6-->      static const <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:EMrbRegisters">TMrbKinetics_3655::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kRegInhibitControl">kRegInhibitControl</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kRegInhibitControl"></a></i>
+<!--TAB6-->      static const <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:EMrbRegisters">TMrbKinetics_3655::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kRegLamMask">kRegLamMask</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kRegLamMask"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kNofOutputs">kNofOutputs</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kNofOutputs"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kBitFrequency">kBitFrequency</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kBitFrequency"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kMaskFrequency">kMaskFrequency</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kMaskFrequency"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kBitOutput">kBitOutput</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kBitOutput"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kMaskOutput">kMaskOutput</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kMaskOutput"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kBitRecycle">kBitRecycle</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kBitRecycle"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kBitInhSet">kBitInhSet</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kBitInhSet"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kMasInhSet">kMasInhSet</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kMasInhSet"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kBitInhClear">kBitInhClear</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kBitInhClear"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbKinetics_3655:kMaskInhClear">kMaskInhClear</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kMaskInhClear"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbKinetics_3655:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbKinetics_3655.html">TMrbKinetics_3655</a>.cxx
+ Purpose:        MARaBOU configuration: Kinetics-3655 Timing Generator
+ Description:    Implements class methods to handle Kinetics-3655 modules
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbKinetics_3655:TMrbKinetics_3655" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:TMrbKinetics_3655">TMrbKinetics_3655</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition) :
+									<a href="./TMrbCamacModule.html">TMrbCamacModule</a>(ModuleName, "Kinetics_3655", ModulePosition, 0, 0, 0) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbKinetics_3655.html">TMrbKinetics_3655</a>
+ Purpose:        Create a module Kinetics-3655
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- name of camac module
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModulePosition  -- B.C.N for this module
+ Results:        --
+ Exceptions:
+ Description:    Creates a camac module of type Kinetics-3655.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:DefineRegisters" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:DefineRegisters">DefineRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:DefineRegisters">TMrbKinetics_3655::DefineRegisters</a>
+ Purpose:        Define camac registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Defines registers:
+                 cycle control, inhibit control, and lam mask.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:SetFrequency" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:SetFrequency">SetFrequency</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Frequency) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:SetFrequency">TMrbKinetics_3655::SetFrequency</a>
+ Purpose:        Define clock frequency
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Frequency     -- frequency (Hz)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets the frequency value in the cylce control reg.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:SetFrequency" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:SetFrequency">SetFrequency</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Frequency) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:SetFrequency">TMrbKinetics_3655::SetFrequency</a>
+ Purpose:        Define clock frequency
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Frequency     -- frequency
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets the frequency value in the cylce control reg.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbKinetics_3655:GetFrequency" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:GetFrequency">GetFrequency</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:GetFrequency">TMrbKinetics_3655::GetFrequency</a>
+ Purpose:        Return clock frequency
+ Arguments:      --
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Frequency   -- frequency
+ Exceptions:
+ Description:    Returns the frequency value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:SetRecycleMode" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:SetRecycleMode">SetRecycleMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> RecycleFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:SetRecycleMode">TMrbKinetics_3655::SetRecycleMode</a>
+ Purpose:        Define recycle mode
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> RecycleFlag    -- kTRUE if recycle mode on
+ Results:        --
+ Exceptions:
+ Description:    Sets the recycle bit in the cylce control reg.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:IsRecycleMode" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:IsRecycleMode">IsRecycleMode</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:GetFrequency">TMrbKinetics_3655::GetFrequency</a>
+ Purpose:        Return recycle bit
+ Arguments:      --
+ Results:        kTRUE/KFALSE
+ Exceptions:
+ Description:    Returns the recycle bit.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbKinetics_3655:SetIntervals" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:SetIntervals">SetIntervals</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Inv1, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv2, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv3, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv4,
+										<a href="ListOfTypes.html#Int_t">Int_t</a> Inv5, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv6, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv7, <a href="ListOfTypes.html#Int_t">Int_t</a> Inv8) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:SetIntervals">TMrbKinetics_3655::SetIntervals</a>
+ Purpose:        Define counting intervals
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> InvX          -- interval X
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofIntervals  -- number of active intervals
+ Exceptions:
+ Description:    Defines counting intervals 1 ... 8
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbKinetics_3655:GetInterval" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:GetInterval">GetInterval</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> InvNo) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:GetInterval">TMrbKinetics_3655::GetInterval</a>
+ Purpose:        Return counting interval
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> InvNo          -- interval number (1 ... 8)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Interval       -- setting
+ Exceptions:
+ Description:    Returns interval settings.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:SetInhibit" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:SetInhibit">SetInhibit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> InhClear, <a href="ListOfTypes.html#Int_t">Int_t</a> InhSet) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:SetInhibit">TMrbKinetics_3655::SetInhibit</a>
+ Purpose:        Define assertion of dataway inhibit
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> InhClear    -- point to clear inhibit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> InhSet      -- point to set inhibit
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Sets the inhibit control reg.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:SetLamMask" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:SetLamMask">SetLamMask</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam2, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam3, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam4,
+										<a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam5, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam6, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam7, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Lam8) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:SetLamMask">TMrbKinetics_3655::SetLamMask</a>
+ Purpose:        Define lam mask
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> LamX          -- lam X
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines lam bits 1 ... 8
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbKinetics_3655:GetLamMask" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:GetLamMask">GetLamMask</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:GetLamMask">TMrbKinetics_3655::GetLamMask</a>
+ Purpose:        Return lam bits
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> LamMask   -- lam bits
+ Exceptions:
+ Description:    Returns active lam bits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:MakeReadoutCode" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:MakeReadoutCode">TMrbKinetics_3655::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a Kinetics-3655
+ Arguments:      ofstream &amp; RdoStrm         -- file output stream
+                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of an Kinetics 3655 module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:MakeReadoutCode" href="src/TMrbKinetics_3655.cxx.html#TMrbKinetics_3655:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex,
+															<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbKinetics_3655.html#TMrbKinetics_3655:MakeReadoutCode">TMrbKinetics_3655::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a Kinetics-3655
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel            -- channel
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value                  -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of an Kinetics-3655 module.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbKinetics_3655.html">TMrbKinetics_3655</a> <a name="TMrbKinetics_3655:TMrbKinetics_3655" href="TMrbKinetics_3655.h">TMrbKinetics_3655</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModulePosition)
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbKinetics_3655:GetNofIntervals" href="TMrbKinetics_3655.h">GetNofIntervals</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:DontAssertInhibit" href="TMrbKinetics_3655.h">DontAssertInhibit</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:AssertsInhibit" href="TMrbKinetics_3655.h">AssertsInhibit</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:SetExtStart" href="TMrbKinetics_3655.h">SetExtStart</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> StartFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbKinetics_3655:IsExtStartMode" href="TMrbKinetics_3655.h">IsExtStartMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbKinetics_3655:GetMnemonic" href="TMrbKinetics_3655.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:Help" href="TMrbKinetics_3655.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbKinetics_3655:Class" href="TMrbKinetics_3655.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbKinetics_3655:IsA" href="TMrbKinetics_3655.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:ShowMembers" href="TMrbKinetics_3655.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:Streamer" href="TMrbKinetics_3655.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:StreamerNVirtual" href="TMrbKinetics_3655.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <a name="TMrbKinetics_3655:~TMrbKinetics_3655" href="TMrbKinetics_3655.h">~TMrbKinetics_3655</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:56 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

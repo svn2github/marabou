@@ -1,0 +1,158 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TF1</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TF1:description">class description</a> - <a href="src/TF1.cxx.html">source file</a> - <a href="TF1_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TF1" href="TF1.h">TF1</a> : public <a href="http://root.cern.ch/root/html/TFormula.html">TFormula</a>, public <a href="http://root.cern.ch/root/html/TAttLine.html">TAttLine</a>, public <a href="http://root.cern.ch/root/html/TAttFill.html">TAttFill</a>, public <a href="http://root.cern.ch/root/html/TAttMarker.html">TAttMarker</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a> <!--TAB--><!--BOLD--><a href="#TF1:TF1">TF1</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a> <!--TAB--><!--BOLD--><a href="#TF1:TF1">TF1</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* formula, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax = 1)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a> <!--TAB--><!--BOLD--><a href="#TF1:TF1">TF1</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> npar)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a> <!--TAB--><!--BOLD--><a href="#TF1:TF1">TF1</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#void">void</a>* fcn, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Int_t">Int_t</a> npar)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a> <!--TAB--><!--BOLD--><a href="#TF1:TF1">TF1</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Double_t">Double_t</a> (*)(<a href="ListOfTypes.html#Double_t">Double_t</a>*, <a href="ListOfTypes.html#Double_t">Double_t</a>*) fcn, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> npar = 0)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a> <!--TAB--><!--BOLD--><a href="#TF1:TF1">TF1</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>&amp; f1)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:~TF1">~TF1</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TF1:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Copy">Copy</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>&amp; f1)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:Derivative">Derivative</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a>* params = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> epsilon = 0)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TF1:DistancetoPrimitive">DistancetoPrimitive</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <!--TAB--><!--BOLD--><a href="#TF1:DrawCopy">DrawCopy</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:DrawF1">DrawF1</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* formula, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:DrawPanel">DrawPanel</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:Eval">Eval</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> z = 0)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:EvalPar">EvalPar</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x, const <a href="ListOfTypes.html#Double_t">Double_t</a>* params = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:FixParameter">FixParameter</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipar, <a href="ListOfTypes.html#Double_t">Double_t</a> value)
+<!--TAB6-->               <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetChisquare">GetChisquare</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a href="#TF1:GetHistogram">GetHistogram</a><!--PLAIN-->() const
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TMethodCall.html">TMethodCall</a>* <!--TAB--><!--BOLD--><a href="#TF1:GetMethodCall">GetMethodCall</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetNDF">GetNDF</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetNpx">GetNpx</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetNumberFitPoints">GetNumberFitPoints</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TF1:GetObjectInfo">GetObjectInfo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py) const
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TF1:GetParent">GetParent</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetParError">GetParError</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipar) const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TF1:GetParErrors">GetParErrors</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:GetParLimits">GetParLimits</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipar, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; parmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; parmax)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetProb">GetProb</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetQuantiles">GetQuantiles</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nprobSum, <a href="ListOfTypes.html#Double_t">Double_t</a>* q, const <a href="ListOfTypes.html#Double_t">Double_t</a>* probSum)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetRandom">GetRandom</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:GetRange">GetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:GetRange">GetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmax, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:GetRange">GetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; zmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmax, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymax, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; zmax)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetSave">GetSave</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetXmax">GetXmax</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:GetXmin">GetXmin</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:InitArgs">InitArgs</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x, const <a href="ListOfTypes.html#Double_t">Double_t</a>* params)
+<!--TAB6-->            static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:InitStandardFunctions">InitStandardFunctions</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> a, <a href="ListOfTypes.html#Double_t">Double_t</a> b, const <a href="ListOfTypes.html#Double_t">Double_t</a>* params = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> epsilon = 0.000001)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> ax, <a href="ListOfTypes.html#Double_t">Double_t</a> bx, <a href="ListOfTypes.html#Double_t">Double_t</a> ay, <a href="ListOfTypes.html#Double_t">Double_t</a> by, <a href="ListOfTypes.html#Double_t">Double_t</a> epsilon = 0.000001)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:Integral">Integral</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> ax, <a href="ListOfTypes.html#Double_t">Double_t</a> bx, <a href="ListOfTypes.html#Double_t">Double_t</a> ay, <a href="ListOfTypes.html#Double_t">Double_t</a> by, <a href="ListOfTypes.html#Double_t">Double_t</a> az, <a href="ListOfTypes.html#Double_t">Double_t</a> bz, <a href="ListOfTypes.html#Double_t">Double_t</a> epsilon = 0.000001)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TF1:IntegralMultiple">IntegralMultiple</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#Double_t">Double_t</a>* a, const <a href="ListOfTypes.html#Double_t">Double_t</a>* b, <a href="ListOfTypes.html#Double_t">Double_t</a> epsilon, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; relerr)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TF1:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TF1:IsInside">IsInside</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->          static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TF1:RejectedPoint">RejectedPoint</a><!--PLAIN-->()
+<!--TAB6-->            static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:RejectPoint">RejectPoint</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> reject = kTRUE)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:ReleaseParameter">ReleaseParameter</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipar)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Save">Save</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, <a href="ListOfTypes.html#Double_t">Double_t</a> zmin, <a href="ListOfTypes.html#Double_t">Double_t</a> zmax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetChisquare">SetChisquare</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> chi2)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetFunction">SetFunction</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> (*)(<a href="ListOfTypes.html#Double_t">Double_t</a>*, <a href="ListOfTypes.html#Double_t">Double_t</a>*) fcn)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetMaximum">SetMaximum</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> maximum = -1111)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetMinimum">SetMinimum</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> minimum = -1111)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetNDF">SetNDF</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ndf)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetNpx">SetNpx</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> npx = 100)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetNumberFitPoints">SetNumberFitPoints</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> npfits)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetParent">SetParent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* p = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetParError">SetParError</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipar, <a href="ListOfTypes.html#Double_t">Double_t</a> error)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetParLimits">SetParLimits</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipar, <a href="ListOfTypes.html#Double_t">Double_t</a> parmin, <a href="ListOfTypes.html#Double_t">Double_t</a> parmax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> zmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, <a href="ListOfTypes.html#Double_t">Double_t</a> zmax)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:SetSavedPoint">SetSavedPoint</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> point, <a href="ListOfTypes.html#Double_t">Double_t</a> value)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TF1:Update">Update</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TF1:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TF1:fXmin">fXmin</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fXmin">Lower bounds for the range</a></i>
+<!--TAB6-->                                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TF1:fXmax">fXmax</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fXmax">Upper bounds for the range</a></i>
+<!--TAB6-->                                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TF1:fNpx">fNpx</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNpx">Number of points used for the graphical representation</a></i>
+<!--TAB6-->                                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TF1:fType">fType</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fType">(=0 for standard functions, 1 if pointer to function)</a></i>
+<!--TAB6-->                                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TF1:fNpfits">fNpfits</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fNpfits">Number of points used in the fit</a></i>
+<!--TAB6-->                                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TF1:fNDF">fNDF</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNDF">Number of degrees of freedom in the fit</a></i>
+<!--TAB6-->                                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TF1:fNsave">fNsave</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNsave">Number of points used to fill array fSave</a></i>
+<!--TAB6-->                                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TF1:fChisquare">fChisquare</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fChisquare">Function fit chisquare</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fIntegral">fIntegral</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fIntegral">![fNpx] Integral of function binned on fNpx bins</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fParErrors">fParErrors</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fParErrors">[fNpar] Array of errors of the fNpar parameters</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fParMin">fParMin</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fParMin">[fNpar] Array of lower limits of the fNpar parameters</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fParMax">fParMax</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fParMax">[fNpar] Array of upper limits of the fNpar parameters</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fSave">fSave</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSave">[fNsave] Array of fNsave function values</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fAlpha">fAlpha</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fAlpha">!Array alpha. for each bin in x the deconvolution r of fIntegral</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fBeta">fBeta</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fBeta">!Array beta.  is approximated by x = alpha +beta*r *gamma*r**2</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TF1:fGamma">fGamma</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fGamma">!Array gamma.</a></i>
+<!--TAB6-->                                <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TF1:fParent">fParent</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fParent">!Parent object hooking this function (if one)</a></i>
+<!--TAB6-->                                    <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a name="TF1:fHistogram">fHistogram</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fHistogram">!Pointer to histogram used for visualisation</a></i>
+<!--TAB6-->                                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TF1:fMaximum">fMaximum</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fMaximum">Maximum value for plotting</a></i>
+<!--TAB6-->                                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TF1:fMinimum">fMinimum</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fMinimum">Minimum value for plotting</a></i>
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TMethodCall.html">TMethodCall</a>* <!--TAB--><!--BOLD--><a name="TF1:fMethodCall">fMethodCall</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMethodCall">!Pointer to MethodCall in case of interpreted function</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> (*)(<a href="ListOfTypes.html#Double_t">Double_t</a>*, <a href="ListOfTypes.html#Double_t">Double_t</a>*) <!--TAB--><!--BOLD--><a name="TF1:fFunction">fFunction</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fFunction">!Pointer to function</a></i>
+<!--TAB6-->                           static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TF1:fgRejectPoint">fgRejectPoint</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgRejectPoint">True if point must be rejected in a fit</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TF1:kNotDraw">kNotDraw</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNotDraw"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TF2.html">TF2</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TF1:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:16 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

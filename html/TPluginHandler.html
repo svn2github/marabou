@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TPluginHandler</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TPluginHandler:description">class description</a> - <a href="src/TPluginHandler.cxx.html">source file</a> - <a href="TPluginHandler_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TPluginHandler" href="TPluginManager.h">TPluginHandler</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TPluginHandler.html">TPluginHandler</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:TPluginHandler">TPluginHandler</a><!--PLAIN-->()
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TPluginHandler.html">TPluginHandler</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:TPluginHandler">TPluginHandler</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* base, const <a href="ListOfTypes.html#char">char</a>* regexp, const <a href="ListOfTypes.html#char">char</a>* className, const <a href="ListOfTypes.html#char">char</a>* pluginName)
+<!--TAB6-->              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:CanHandle">CanHandle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* base, const <a href="ListOfTypes.html#char">char</a>* uri)
+<!--TAB6-->         const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TPluginHandler:GetBase">GetBase</a><!--PLAIN-->() const
+<!--TAB6-->         const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TPluginHandler:GetPlugin">GetPlugin</a><!--PLAIN-->() const
+<!--TAB6-->         const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TPluginHandler:GetRegexp">GetRegexp</a><!--PLAIN-->() const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TPluginHandler.html">TPluginHandler</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:TPluginHandler">TPluginHandler</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TPluginHandler.html">TPluginHandler</a>&amp;)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:CheckPlugin">CheckPlugin</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPluginHandler:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TPluginHandler:GetClass">GetClass</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TPluginHandler:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:LoadPlugin">LoadPlugin</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPluginHandler:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TPluginHandler:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPluginHandler:fBase">fBase</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fBase">base class which will be extended by plugin</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPluginHandler:fRegexp">fRegexp</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fRegexp">regular expression which must be matched in URI</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPluginHandler:fClass">fClass</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fClass">class to be loaded from plugin library</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TPluginHandler:fPlugin">fPlugin</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPlugin">plugin library which should contain fClass</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TPluginHandler:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:08 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

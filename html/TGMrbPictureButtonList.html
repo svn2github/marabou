@@ -1,0 +1,128 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbPictureButtonList</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbPictureButtonList:description">class description</a> - <a href="src/TGMrbPictureButtonList.cxx.html">source file</a> - <a href="TGMrbPictureButtonList_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbPictureButtonList" href="TGMrbPictureButton.h">TGMrbPictureButtonList</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>, public <a href="./TGMrbButtonFrame.html">TGMrbButtonFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:TGMrbPictureButtonList">TGMrbPictureButtonList</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Label, <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* Buttons, <a href="ListOfTypes.html#Int_t">Int_t</a> NofCL, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height, <a href="./TGMrbLayout.html">TGMrbLayout</a>* FrameGC, <a href="./TGMrbLayout.html">TGMrbLayout</a>* LabelGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* ButtonGC = NULL, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions = kHorizontalFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ButtonOptions = 0)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:~TGMrbPictureButtonList">~TGMrbPictureButtonList</a><!--PLAIN-->()
+<!--TAB6-->              static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbPictureButtonList:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbPictureButtonList:Data Members">Data Members</a></h3>
+<pre>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbPictureButtonList:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/TGMrbPictureButton.cxx
+ Purpose:        MARaBOU graphic utilities: a list or group of picture buttons
+ Description:    Implements class methods to handle a frame of
+                 picture buttons.
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ Layout:
+
+/*
+<img src=gutils/TGMrbPictureButton1.gif>
+<img src=gutils/TGMrbPictureButton2.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbPictureButtonList:TGMrbPictureButtonList" href="src/TGMrbPictureButtonList.cxx.html#TGMrbPictureButtonList:TGMrbPictureButtonList">TGMrbPictureButtonList</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent,
+												const <a href="ListOfTypes.html#Char_t">Char_t</a> * Label,
+												<a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * Buttons, <a href="ListOfTypes.html#Int_t">Int_t</a> NofCL,
+												<a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * FrameGC,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC,
+												<a href="./TGMrbLayout.html">TGMrbLayout</a> * ButtonGC,
+												<a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions,
+												<a href="ListOfTypes.html#UInt_t">UInt_t</a> ButtonOptions) :
+										<a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>(Parent, Width, Height, FrameOptions, FrameGC-&gt;BG()),
+										<a href="./TGMrbButtonFrame.html">TGMrbButtonFrame</a>(Parent, Label, <a href="./TGMrbButtonFrame.html#TGMrbButtonFrame:kGMrbPictureButton">kGMrbPictureButton</a> | <a href="./TGMrbButtonFrame.html#TGMrbButtonFrame:kGMrbButtonList">kGMrbButtonList</a>,
+												Buttons, NofCL, Width, Height,
+												FrameGC, LabelGC, ButtonGC, FrameOptions, ButtonOptions) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>
+ Purpose:        Define a list of check buttons arranged in a composite frame
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent              -- parent window
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Label                 -- label text ("" means "no label")
+                 <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * Buttons        -- button names and indices
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofCL                    -- button grid CxL: number of columns/lines
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Width                    -- frame width
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Height                   -- frame height
+                 TGMrbContext * FrameGC         -- graphic context (frame)
+                 TGMrbContext * LabelGC         -- ... (label)
+                 TGMrbContext * ButtonGC        -- ... (button)
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions            -- frame options
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ButtonOptions           -- options to configure buttons
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbPictureButtonList:ProcessMessage" href="TGMrbPictureButton.h">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbPictureButtonList:Help" href="TGMrbPictureButton.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbPictureButtonList:Class" href="TGMrbPictureButton.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbPictureButtonList:IsA" href="TGMrbPictureButton.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbPictureButtonList:ShowMembers" href="TGMrbPictureButton.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbPictureButtonList:Streamer" href="TGMrbPictureButton.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbPictureButtonList:StreamerNVirtual" href="TGMrbPictureButton.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbPictureButtonList:~TGMrbPictureButtonList" href="TGMrbPictureButton.h">~TGMrbPictureButtonList</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:09 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

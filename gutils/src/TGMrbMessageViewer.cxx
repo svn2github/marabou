@@ -1,0 +1,227 @@
+//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           gutils/src/TGMrbMessageViewer.cxx
+// Purpose:        MARaBOU graphic utilities: a message viewer
+// Description:    Implements class methods to show messages
+//                 in a scrollable listbox.
+// Keywords:
+// Author:         R. Lutter
+// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:       
+// Date:           
+//
+//Begin_Html
+/*
+<img src=gutils/TGMrbMessageViewer.gif>
+*/
+//End_Html
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TEnv.h"
+#include "TGMrbLayout.h"
+#include "TGMrbMessageViewer.h"
+
+const SMrbNamedX kGMrbMsgLofActions[] =
+			{
+				{TGMrbMessageViewer::kGMrbViewerIdReset, 	"Reset",		"Reset list of messages"				},
+				{TGMrbMessageViewer::kGMrbViewerIdAll,		"All",	 	 	"Show all messages"						},
+				{TGMrbMessageViewer::kGMrbViewerIdErrors,	"Errors",		"Show errors only"						},
+				{TGMrbMessageViewer::kGMrbViewerIdAdjust,	"Adjust",		"Adjust width" 		 					},
+				{TGMrbMessageViewer::kGMrbViewerIdClose,	"Close",		"Stop message display & close window"	},
+				{0, 										NULL,			NULL									}
+			};
+
+// lifo to store objects located on heap
+#define HEAP(x)	fHeap.AddFirst((TObject *) x)
+
+ClassImp(TGMrbMessageViewer)
+
+TGMrbMessageViewer::TGMrbMessageViewer( const TGWindow * Parent,
+										const TGWindow * Main,
+										const Char_t * Title,
+										UInt_t Width, UInt_t Height,
+										TMrbLogger * MsgLog,
+										Bool_t Connect,
+										const Char_t * File) : TGTransientFrame(Parent, Main, Width, Height) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMessageViewer
+// Purpose:        Display messages in scrollable listbox
+// Arguments:      TGWindow * Parent             -- parent window
+//                 TGWindow * Main               -- main window
+//                 Char_t * Title                -- title
+//                 UInt_t Width                  -- window width
+//                 UInt_t Height                 -- window height
+//                 TMrbLogger * MsgLog           -- where to take messages from
+//                 Bool_t Connect                -- kTRUE if to be connected to logging system
+//                 Char_t * File                 -- where to read messages from
+// Results:        --
+// Exceptions:
+// Description:    Class constructor
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	const Char_t * font;
+	ULong_t black, white, gray, blue;
+
+//	Initialize colors
+	gClient->GetColorByName("black", black);
+	gClient->GetColorByName("lightblue2", blue);
+	gClient->GetColorByName("gray75", gray);
+	gClient->GetColorByName("white", white);
+
+//	Initialize graphic contexts
+	font = gEnv->GetValue("Gui.BoldFont", "-adobe-helvetica-medium-r-*-*-12-*-*-*-*-*-iso8859-1");
+	TGMrbLayout * buttonGC = new TGMrbLayout(font, black, gray);
+	HEAP(buttonGC);
+	TGMrbLayout * labelGC = new TGMrbLayout(font, black, gray);
+	HEAP(labelGC);
+	TGMrbLayout * frameGC = new TGMrbLayout(font, black, gray);
+	HEAP(frameGC);
+
+//	Initialize several lists
+	fLofActions.SetName("Action buttons");
+	fLofActions.AddNamedX(kGMrbMsgLofActions);
+
+	fTextView = new TGTextView(this, Width, Height);
+	HEAP(fTextView);
+	this->AddFrame(fTextView, new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 0, 0, 0, 0));
+	
+	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX);
+	HEAP(frameLayout);
+	frameGC->SetLH(frameLayout);
+	fAction = new TGMrbTextButtonList(this, NULL, &fLofActions, 1, Width, 10, frameGC, labelGC, buttonGC);
+	HEAP(fAction);
+	this->AddFrame(fAction, frameGC->LH());
+	fAction->Associate(this);
+
+	fWidth = Width;
+	fHeight = Height;
+
+	fEnabled = TMrbLogMessage::kMrbMsgAny;
+	fWithDate = kTRUE;
+	fMsgLog = MsgLog;
+	fLogFile = File ? File : "";
+
+	if (Connect && fMsgLog) fMsgLog->SetGUI(this);
+
+	fTextView->Resize(Width, Height - fAction->GetDefaultHeight() - 10);
+
+	Window_t wdum;
+	Int_t ax, ay;
+	gVirtualX->TranslateCoordinates(Main->GetId(), Parent->GetId(), (((TGFrame *) Main)->GetWidth() + 10), 0, ax, ay, wdum);
+	this->Move(ax, ay);
+
+	SetWindowName(Title);
+	SetIconName(Title);
+	MapSubwindows();
+	Resize(GetDefaultSize());
+	Resize(Width, Height);
+	MapWindow();
+}
+
+Int_t TGMrbMessageViewer::AddEntries(UInt_t Type, Int_t Start, Bool_t WithDate) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMessageViewer::AddEntries
+// Purpose:        Add messages to the viewer widget
+// Arguments:      UInt_t Type        -- message type
+//                 Int_t Start        -- entry to start with
+//                 Bool_t WithDate    -- show message date
+// Results:        Int_t NofMessages  -- number of messages added
+// Exceptions:     
+// Description:    Displays a number of messages from the logging system.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofMessages;
+	TObjArray lofMessages;
+	TMrbLogMessage * msg;
+	const Char_t * progName;
+	TString msgText;
+					
+	progName = fMsgLog->GetProgName();
+	fMsgLog->GetEntriesByType(lofMessages, Start, Type);
+	msg = (TMrbLogMessage *) lofMessages.First();
+	nofMessages = 0;
+	while (msg) {
+		fTextView->AddLine(msg->Get(msgText, progName, WithDate, kFALSE));
+		msg = (TMrbLogMessage *) lofMessages.After(msg);
+		nofMessages++;
+	}
+	return(nofMessages);
+}
+
+Bool_t TGMrbMessageViewer::Notify() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMessageViewer::Notify
+// Purpose:        Get notified if a new message is present
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Displays a number of messages from the logging system.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLogMessage * msg;
+	const Char_t * progName;
+	TString msgText;
+					
+	progName = fMsgLog->GetProgName();
+	msg = fMsgLog->GetLast(fEnabled);
+	if (msg) {
+		fTextView->AddLine(msg->Get(msgText, progName, fWithDate, kFALSE));
+		return(kTRUE);
+	} else return(kFALSE);
+}
+
+Bool_t TGMrbMessageViewer::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbMessageViewer::ProcessMessage
+// Purpose:        Message handler
+// Arguments:      Long_t MsgId      -- message id
+//                 Long_t ParamX     -- message parameter   
+// Results:        
+// Exceptions:     
+// Description:    Handle messages sent to TGMrbMessageViewer.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (GET_MSG(MsgId)) {
+
+		case kC_COMMAND:
+			switch (GET_SUBMSG(MsgId)) {
+				case kCM_BUTTON:
+					switch (Param1) {
+						case TGMrbMessageViewer::kGMrbViewerIdReset:
+							fTextView->Clear();
+							break;
+						case TGMrbMessageViewer::kGMrbViewerIdAll:
+							fTextView->Clear();
+							this->AddEntries();
+							break;
+						case TGMrbMessageViewer::kGMrbViewerIdErrors:
+							fTextView->Clear();
+							this->AddEntries(TMrbLogMessage::kMrbMsgError);
+							break;
+						case TGMrbMessageViewer::kGMrbViewerIdAdjust:
+							if (fTextView->ReturnLineCount() > 1) this->Resize(fTextView->ReturnLongestLineWidth(), fHeight);
+							break;
+						case TGMrbMessageViewer::kGMrbViewerIdClose:
+							fMsgLog->SetGUI(NULL);
+							delete this;
+							break;
+					}
+					break;
+
+				default:	break;
+			}
+			break;
+
+		default:	break;
+	}
+	return(kTRUE);
+}
+

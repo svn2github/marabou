@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMapRec</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMapRec:description">class description</a> - <a href="src/TMapRec.cxx.html">source file</a> - <a href="TMapRec_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMapRec" href="TMapFile.h">TMapRec</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TMapRec.html">TMapRec</a> <!--TAB--><!--BOLD--><a href="#TMapRec:TMapRec">TMapRec</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Int_t">Int_t</a> size, <a href="ListOfTypes.html#void">void</a>* buf)
+<!--TAB6-->          <a href="./TMapRec.html">TMapRec</a> <!--TAB--><!--BOLD--><a href="#TMapRec:TMapRec">TMapRec</a><!--PLAIN-->(const <a href="./TMapRec.html">TMapRec</a>&amp;)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMapRec:~TMapRec">~TMapRec</a><!--PLAIN-->()
+<!--TAB6-->            <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TMapRec:GetBuffer">GetBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--TAB6-->            <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMapRec:GetBufSize">GetBufSize</a><!--PLAIN-->() const
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TMapRec:GetClassName">GetClassName</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TMapRec:GetName">GetName</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--TAB6-->         <a href="./TMapRec.html">TMapRec</a>* <!--TAB--><!--BOLD--><a href="#TMapRec:GetNext">GetNext</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMapRec:GetObject">GetObject</a><!--PLAIN-->() const
+</pre>
+
+<h3><!--TAB2-->  <a name="TMapRec:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TMapRec:fName">fName</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fName">object name</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TMapRec:fClassName">fClassName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fClassName">class name</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMapRec:fObject">fObject</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fObject">pointer to original object</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TMapRec:fBuffer">fBuffer</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fBuffer">buffer containing object of class name</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMapRec:fBufSize">fBufSize</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fBufSize">buffer size</a></i>
+<!--TAB6-->      <a href="./TMapRec.html">TMapRec</a>* <!--TAB--><!--BOLD--><a name="TMapRec:fNext">fNext</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fNext">next MapRec in list</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMapRec:description">Class Description</a></h2>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./TMapRec.html">TMapRec</a> <a name="TMapRec:TMapRec" href="TMapFile.h">TMapRec</a>(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Int_t">Int_t</a> size, <a href="ListOfTypes.html#void">void</a>* buf)
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#char">char</a>* <a name="TMapRec:GetName" href="TMapFile.h">GetName</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#char">char</a>* <a name="TMapRec:GetClassName" href="TMapFile.h">GetClassName</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#void">void</a>* <a name="TMapRec:GetBuffer" href="TMapFile.h">GetBuffer</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMapRec:GetBufSize" href="TMapFile.h">GetBufSize</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMapRec:GetObject" href="TMapFile.h">GetObject</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TMapRec.html">TMapRec</a>* <a name="TMapRec:GetNext" href="TMapFile.h">GetNext</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> offset = 0) const
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./TMapRec.html">TMapRec</a> <a name="TMapRec:TMapRec" href="TMapFile.h">TMapRec</a>(const <a href="./TMapRec.html">TMapRec</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMapRec:~TMapRec" href="TMapFile.h">~TMapRec</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:31 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

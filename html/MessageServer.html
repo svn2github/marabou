@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>MessageServer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#MessageServer:description">class description</a> - <a href="src/MessageServer.cxx.html">source file</a> - <a href="MessageServer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="MessageServer" href="TMbsControl.h">MessageServer</a> : public <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="./MessageServer.html">MessageServer</a> <!--TAB--><!--BOLD--><a href="#MessageServer:MessageServer">MessageServer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* msgnode, <a href="ListOfTypes.html#Long_t">Long_t</a> ms, <a href="ListOfTypes.html#Bool_t">Bool_t</a> synch)
+<!--TAB6-->        <a href="./MessageServer.html">MessageServer</a> <!--TAB--><!--BOLD--><a href="#MessageServer:MessageServer">MessageServer</a><!--PLAIN-->(const <a href="./MessageServer.html">MessageServer</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#MessageServer:~MessageServer">~MessageServer</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#MessageServer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#MessageServer:GetLogLevel">GetLogLevel</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#MessageServer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#MessageServer:Notify">Notify</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#MessageServer:ReadNotify">ReadNotify</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#MessageServer:SetLogLevel">SetLogLevel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ll)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#MessageServer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#MessageServer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#MessageServer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="MessageServer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>* <!--TAB--><!--BOLD--><a name="MessageServer:fMessageSocket">fMessageSocket</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMessageSocket"></a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="MessageServer:fLogLevel">fLogLevel</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLogLevel"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="MessageServer:description">Class Description</a></h2>
+<hr>
+<!--FUNCTION--> <a name="MessageServer:MessageServer" href="src/MessageServer.cxx.html#MessageServer:MessageServer">MessageServer</a>(const <a href="ListOfTypes.html#char">char</a> *msgnode, <a href="ListOfTypes.html#Long_t">Long_t</a> ms, <a href="ListOfTypes.html#Bool_t">Bool_t</a> synch)
+              :<a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>(ms,synch)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="MessageServer:Notify" href="src/MessageServer.cxx.html#MessageServer:Notify">Notify</a>() <br>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="MessageServer:SetLogLevel" href="TMbsControl.h">SetLogLevel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ll)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="MessageServer:GetLogLevel" href="TMbsControl.h">GetLogLevel</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="MessageServer:ReadNotify" href="TMbsControl.h">ReadNotify</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="MessageServer:Class" href="TMbsControl.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="MessageServer:IsA" href="TMbsControl.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="MessageServer:ShowMembers" href="TMbsControl.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="MessageServer:Streamer" href="TMbsControl.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="MessageServer:StreamerNVirtual" href="TMbsControl.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./MessageServer.html">MessageServer</a> <a name="MessageServer:MessageServer" href="TMbsControl.h">MessageServer</a>(const <a href="./MessageServer.html">MessageServer</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="MessageServer:~MessageServer" href="TMbsControl.h">~MessageServer</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:06 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

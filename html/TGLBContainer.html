@@ -1,0 +1,87 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGLBContainer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGLBContainer:description">class description</a> - <a href="src/TGLBContainer.cxx.html">source file</a> - <a href="TGLBContainer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGLBContainer" href="TGListBox.h">TGLBContainer</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLBContainer.html">TGLBContainer</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:TGLBContainer">TGLBContainer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kSunkenFrame, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLBContainer.html">TGLBContainer</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:TGLBContainer">TGLBContainer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGLBContainer.html">TGLBContainer</a>&amp;)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:~TGLBContainer">~TGLBContainer</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:AddEntry">AddEntry</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* lbe, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* lhints)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:AddEntrySort">AddEntrySort</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* lbe, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* lhints)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:Associate">Associate</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* w)
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLBContainer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:GetMultipleSelections">GetMultipleSelections</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:GetPos">GetPos</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:GetSelected">GetSelected</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:GetSelectedEntries">GetSelectedEntries</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* selected)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* <!--TAB--><!--BOLD--><a href="#TGLBContainer:GetSelectedEntry">GetSelectedEntry</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:GetSelection">GetSelection</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:InsertEntry">InsertEntry</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* lbe, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* lhints, <a href="ListOfTypes.html#Int_t">Int_t</a> afterID)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLBContainer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:RemoveEntries">RemoveEntries</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> from_ID, <a href="ListOfTypes.html#Int_t">Int_t</a> to_ID)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:RemoveEntry">RemoveEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* <!--TAB--><!--BOLD--><a href="#TGLBContainer:Select">Select</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id, <a href="ListOfTypes.html#Bool_t">Bool_t</a> sel)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* <!--TAB--><!--BOLD--><a href="#TGLBContainer:Select">Select</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:SetListBox">SetListBox</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGListBox.html">TGListBox</a>* lb)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:SetMultipleSelections">SetMultipleSelections</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> multi)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLBContainer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGLBContainer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>* <!--TAB--><!--BOLD--><a name="TGLBContainer:fLastActive">fLastActive</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLastActive">last active listbox entry in single selection listbox</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGListBox.html">TGListBox</a>* <!--TAB--><!--BOLD--><a name="TGLBContainer:fListBox">fListBox</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fListBox">list box which contains this container</a></i>
+<!--TAB6-->      const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* <!--TAB--><!--BOLD--><a name="TGLBContainer:fMsgWindow">fMsgWindow</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMsgWindow">window handling container messages</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGLBContainer:fMultiSelect">fMultiSelect</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fMultiSelect">true if multi selection is switched on</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGLBContainer:fChangeStatus">fChangeStatus</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fChangeStatus">defines the changes (select or unselect) while the mouse</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGLBContainer:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:21 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,81 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TRef</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TRef:description">class description</a> - <a href="src/TRef.cxx.html">source file</a> - <a href="TRef_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TRef" href="TRef.h">TRef</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TRef.html">TRef</a> <!--TAB--><!--BOLD--><a href="#TRef:TRef">TRef</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TRef.html">TRef</a> <!--TAB--><!--BOLD--><a href="#TRef:TRef">TRef</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TRef.html">TRef</a> <!--TAB--><!--BOLD--><a href="#TRef:TRef">TRef</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRef.html">TRef</a>&amp; ref)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:~TRef">~TRef</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TRef:AddExec">AddExec</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRef:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TRef:GetListOfExecs">GetListOfExecs</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TRef:GetObject">GetObject</a><!--PLAIN-->() const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TProcessID.html">TProcessID</a>* <!--TAB--><!--BOLD--><a href="#TRef:GetPID">GetPID</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRef:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRef:IsValid">IsValid</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:operator=">operator=</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TRef.html">TRef</a>&amp; <!--TAB--><!--BOLD--><a href="#TRef:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRef.html">TRef</a>&amp; ref)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:SetAction">SetAction</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:SetAction">SetAction</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* parent)
+<!--TAB6-->            static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:SetObject">SetObject</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRef:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TRef:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TProcessID.html">TProcessID</a>* <!--TAB--><!--BOLD--><a name="TRef:fPID">fPID</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fPID">!Pointer to ProcessID when TRef was written</a></i>
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a name="TRef:fgExecs">fgExecs</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fgExecs">List of execs</a></i>
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TRef:fgObject">fgObject</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgObject">Pointer to object (set in Action on Demand)</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TRef:kNotComputed">kNotComputed</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNotComputed"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TRef:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:13 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

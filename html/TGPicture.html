@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGPicture</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGPicture:description">class description</a> - <a href="src/TGPicture.cxx.html">source file</a> - <a href="TGPicture_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGPicture" href="TGPicture.h">TGPicture</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>, public TRefCnt</h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a> <!--TAB--><!--BOLD--><a href="#TGPicture:TGPicture">TGPicture</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Bool_t">Bool_t</a> scaled = kFALSE)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPicture:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>*)
+<!--TAB6-->      static const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGPicture:HashName">HashName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Int_t">Int_t</a> width, <a href="ListOfTypes.html#Int_t">Int_t</a> height) const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a> <!--TAB--><!--BOLD--><a href="#TGPicture:TGPicture">TGPicture</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPicture:~TGPicture">~TGPicture</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGPicture:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPicture:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Handle_t">Handle_t</a> id, <a href="ListOfTypes.html#GContext_t">GContext_t</a> gc, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y) const
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGPicture:GetHeight">GetHeight</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a href="#TGPicture:GetMask">GetMask</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGPicture:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a href="#TGPicture:GetPicture">GetPicture</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGPicture:GetWidth">GetWidth</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGPicture:Hash">Hash</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGPicture:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGPicture:IsScaled">IsScaled</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPicture:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPicture:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGPicture:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGPicture:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGPicture:fName">fName</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fName">name of picture</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGPicture:fScaled">fScaled</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fScaled">kTRUE if picture is scaled</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGPicture:fPic">fPic</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fPic">picture pixmap</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Pixmap_t">Pixmap_t</a> <!--TAB--><!--BOLD--><a name="TGPicture:fMask">fMask</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fMask">picture mask pixmap</a></i>
+<!--TAB6-->      PictureAttributes_t <!--TAB--><!--BOLD--><a name="TGPicture:fAttributes">fAttributes</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAttributes">picture attributes</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGSelectedPicture.html">TGSelectedPicture</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGPicture:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,1228 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbConfig</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbConfig:description">class description</a> - <a href="src/TMrbConfig.cxx.html">source file</a> - <a href="TMrbConfig_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbConfig" href="TMrbConfig.h">TMrbConfig</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineVarOrWdw">DefineVarOrWdw</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* VarType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* VarProto, const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarDefs)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                          <a href="./TMrbConfig.html">TMrbConfig</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:TMrbConfig">TMrbConfig</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="./TMrbConfig.html">TMrbConfig</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:TMrbConfig">TMrbConfig</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CfgName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CfgTitle)
+<!--TAB6-->                          <a href="./TMrbConfig.html">TMrbConfig</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:TMrbConfig">TMrbConfig</a><!--PLAIN-->(const <a href="./TMrbConfig.html">TMrbConfig</a>&amp;)
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:~TMrbConfig">~TMrbConfig</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AddEvent">AddEvent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Evt)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AddModule">AddModule</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AddScaler">AddScaler</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Scaler)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AddSubevent">AddSubevent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Sevt)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AddToTagList">AddToTagList</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Int_t">Int_t</a> TagIndex)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AddUserClass">AddUserClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name)
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AssignModuleSerial">AssignModuleSerial</a><!--PLAIN-->()
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:AssignSevtSerial">AssignSevtSerial</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:CallUserMacro">CallUserMacro</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* MacroName)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:CheckModuleAddress">CheckModuleAddress</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--TAB6-->                      static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DeadTimeToBeWritten">DeadTimeToBeWritten</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineVariables">DefineVariables</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineVariables">DefineVariables</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarType, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineVariables">DefineVariables</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarType, <a href="ListOfTypes.html#Float_t">Float_t</a> Value, const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineVariables">DefineVariables</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value, const <a href="ListOfTypes.html#Char_t">Char_t</a>* VarDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineWindows">DefineWindows</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineWindows">DefineWindows</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwType, <a href="ListOfTypes.html#Int_t">Int_t</a> Xlower, <a href="ListOfTypes.html#Int_t">Int_t</a> Xupper, const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:DefineWindows">DefineWindows</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwType, <a href="ListOfTypes.html#Float_t">Float_t</a> Xlower, <a href="ListOfTypes.html#Float_t">Float_t</a> Xupper, const <a href="ListOfTypes.html#Char_t">Char_t</a>* WdwDefs)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:ExecUserMacro">ExecUserMacro</a><!--PLAIN-->(ofstream* Strm, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* CfgObject, const <a href="ListOfTypes.html#Char_t">Char_t</a>* TagWord)
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindCrate">FindCrate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> After = -1)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindEvent">FindEvent</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* EvtName)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindEvent">FindEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindModule">FindModule</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindModuleByCrate">FindModuleByCrate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindModuleByID">FindModuleByID</a><!--PLAIN-->(<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> ModuleID, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindModuleBySerial">FindModuleBySerial</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleSerial)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindModuleByType">FindModuleByType</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindParam">FindParam</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindScaler">FindScaler</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerName)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindScalerByCrate">FindScalerByCrate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindSubevent">FindSubevent</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* SevtName)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindSubevent">FindSubevent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* Class, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:FindSubevent">FindSubevent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> SevtSerial)
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetAnalyzeOptions">GetAnalyzeOptions</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetAuthor">GetAuthor</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetConfigOptions">GetConfigOptions</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetControllerType">GetControllerType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetCratePattern">GetCratePattern</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetCrateType">GetCrateType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetDeadTimeInterval">GetDeadTimeInterval</a><!--PLAIN-->()
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetDeadTimeScaler">GetDeadTimeScaler</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofDataTypes">GetLofDataTypes</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofEvents">GetLofEvents</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofModuleIDs">GetLofModuleIDs</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofModules">GetLofModules</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofModuleTypes">GetLofModuleTypes</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofScalers">GetLofScalers</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofSubevents">GetLofSubevents</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofUserIncludes">GetLofUserIncludes</a><!--PLAIN-->()
+<!--TAB6-->                         <a href="./TMrbLogger.html">TMrbLogger</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetMessageLogger">GetMessageLogger</a><!--PLAIN-->()
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetNofCrates">GetNofCrates</a><!--PLAIN-->()
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetNofModules">GetNofModules</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetRcFileOptions">GetRcFileOptions</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetReadoutOptions">GetReadoutOptions</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetTriggerStatus">GetTriggerStatus</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:HandleMultipleTriggers">HandleMultipleTriggers</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> T1 = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> T2 = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> T3 = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> T4 = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> T5 = 0)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:HasCamacModules">HasCamacModules</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:HasVMEModules">HasVMEModules</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:IncludeUserCode">IncludeUserCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options = "<a href="http://root.cern.ch/root/html/TStyle.html">Default</a>")
+<!--TAB6-->                     virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:IsVerbose">IsVerbose</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:LongParamNamesToBeUsed">LongParamNamesToBeUsed</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:MakeAnalyzeCode">MakeAnalyzeCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options = "Subevents:byName:Histograms")
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:MakeAnalyzeCode">MakeAnalyzeCode</a><!--PLAIN-->(ofstream&amp; AnaStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, <a href="ListOfTypes.html#UInt_t">UInt_t</a> VarType, <a href="./TMrbTemplate.html">TMrbTemplate</a>&amp; Template, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix = "NULL")
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:MakeAnalyzeCode">MakeAnalyzeCode</a><!--PLAIN-->(ofstream&amp; AnaStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ClassName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Extension)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:MakeConfigCode">MakeConfigCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:MakeRcFile">MakeRcFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ResourceName, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options = "byName")
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:NameNotLegal">NameNotLegal</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ObjType, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ObjName)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:NextModule">NextModule</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:NextSubevent">NextSubevent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:Print">Print</a><!--PLAIN-->(ostream&amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix)
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:PrintErrors">PrintErrors</a><!--PLAIN-->()
+<!--TAB6-->                         <a href="./TMrbConfig.html">TMrbConfig</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:ReadFromFile">ReadFromFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ConfigFile, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:SetControllerType">SetControllerType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Type)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:SetControllerType">SetControllerType</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Crate, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Type)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:SetControllerType">SetControllerType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> Type)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:SetCrateType">SetCrateType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> CrateType)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:SetGlobalAddress">SetGlobalAddress</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:SetMultiBorC">SetMultiBorC</a><!--PLAIN-->(<a href="./TMrbCNAF.html#TMrbCNAF:EMrbCNAF">TMrbCNAF::EMrbCNAF</a> MultiBorC)
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:TagToBeProcessed">TagToBeProcessed</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CodeFile, <a href="ListOfTypes.html#Int_t">Int_t</a> TagIndex)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:TimeStampToBeWritten">TimeStampToBeWritten</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:UpdateTriggerTable">UpdateTriggerTable</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger = 0)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:UseLongParamNames">UseLongParamNames</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:UserCodeToBeIncluded">UserCodeToBeIncluded</a><!--PLAIN-->()
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:Version">Version</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:WriteDeadTime">WriteDeadTime</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Scaler, <a href="ListOfTypes.html#Int_t">Int_t</a> Interval = 1000)
+<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:WriteTimeStamp">WriteTimeStamp</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:WriteToFile">WriteToFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ConfigFile, <a href="ListOfTypes.html#Option_t">Option_t</a>* Options)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbConfig:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fVerboseMode">fVerboseMode</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fVerboseMode">verbose flag</a></i>
+<!--TAB6-->        <a href="./TMrbLogger.html">TMrbLogger</a>* <!--TAB--><!--BOLD--><a name="TMrbConfig:fMessageLogger">fMessageLogger</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMessageLogger">! addr of message logger</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fNofEvents">fNofEvents</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fNofEvents">list of events</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofEvents">fLofEvents</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fLofEvents"></a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fCrateTable">fCrateTable</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fCrateTable">crate table (camac and VME)</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fControllerTable">fControllerTable</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fControllerTable">controller table (camac only)</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fNofSubevents">fNofSubevents</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fNofSubevents">list of subevents</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofSubevents">fLofSubevents</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofSubevents"></a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fNofModules">fNofModules</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fNofModules">list of modules</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofModules">fLofModules</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLofModules"></a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLongParamNames">fLongParamNames</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLongParamNames">use long param names: i.e. &lt;subevent&gt;&lt;param&gt;</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fNofScalers">fNofScalers</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fNofScalers">list of scalers</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofScalers">fLofScalers</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLofScalers"></a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fMultiBorC">fMultiBorC</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMultiBorC">multi branch? multi crate?</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fReadoutOptions">fReadoutOptions</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fReadoutOptions">options used in MakeReadoutCode()</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fAnalyzeOptions">fAnalyzeOptions</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fAnalyzeOptions">... in MakeAnalyzeCode()</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fConfigOptions">fConfigOptions</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fConfigOptions">... in MakeConfigCode()</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fRcFileOptions">fRcFileOptions</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fRcFileOptions">... in MakeRcFile()</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofUserIncludes">fLofUserIncludes</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofUserIncludes">list of user-specific files to be included</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fWriteTimeStamp">fWriteTimeStamp</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fWriteTimeStamp">kTRUE if user wants a time stamp to be added to each event</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fDeadTimeInterval">fDeadTimeInterval</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fDeadTimeInterval">number of events a new dead time event will be created</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMrbConfig:fDeadTimeScaler">fDeadTimeScaler</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fDeadTimeScaler">dead-time scaler</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fCreationDate">fCreationDate</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fCreationDate">creation date &amp; time</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fUser">fUser</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fUser">user name</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fAuthor">fAuthor</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fAuthor"></a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fTriggerMask">fTriggerMask</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTriggerMask">trigger bits defined so far</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fSingleBitTriggersOnly">fSingleBitTriggersOnly</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSingleBitTriggersOnly">triggers 1,2,4, or 8 only</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fTriggersToBeHandled">fTriggersToBeHandled</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTriggersToBeHandled">trigger patterns to be handled</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fUserMacroToBeCalled">fUserMacroToBeCalled</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fUserMacroToBeCalled">call user macro</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fUserMacro">fUserMacro</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fUserMacro">macro name</a></i>
+<!--TAB6-->         <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fUserMacroCmd">fUserMacroCmd</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fUserMacroCmd">... command</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofUserClasses">fLofUserClasses</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLofUserClasses">list of classes added by user</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofOnceOnlyTags">fLofOnceOnlyTags</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofOnceOnlyTags">list of tags already processed</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoFile">kRdoFile</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kRdoFile"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoNameLC">kRdoNameLC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kRdoNameLC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoNameUC">kRdoNameUC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kRdoNameUC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoCreationDate">kRdoCreationDate</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kRdoCreationDate"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoAuthor">kRdoAuthor</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kRdoAuthor"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoUser">kRdoUser</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kRdoUser"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoTitle">kRdoTitle</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kRdoTitle"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoSetup">kRdoSetup</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kRdoSetup"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoCamacController">kRdoCamacController</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kRdoCamacController"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefineTriggers">kRdoDefineTriggers</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRdoDefineTriggers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefinePointers">kRdoDefinePointers</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRdoDefinePointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDeviceTables">kRdoDeviceTables</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kRdoDeviceTables"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoInitPointers">kRdoInitPointers</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kRdoInitPointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoInitModules">kRdoInitModules</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRdoInitModules"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOnStartAcquisition">kRdoOnStartAcquisition</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kRdoOnStartAcquisition"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOnStopAcquisition">kRdoOnStopAcquisition</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kRdoOnStopAcquisition"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOnTriggerXX">kRdoOnTriggerXX</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRdoOnTriggerXX"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoIgnoreTriggerXX">kRdoIgnoreTriggerXX</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kRdoIgnoreTriggerXX"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoWriteSetup">kRdoWriteSetup</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRdoWriteSetup"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoIncludesAndDefs">kRdoIncludesAndDefs</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kRdoIncludesAndDefs"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoUtilities">kRdoUtilities</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRdoUtilities"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefinePrototypes">kRdoDefinePrototypes</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kRdoDefinePrototypes"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefineGlobals">kRdoDefineGlobals</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kRdoDefineGlobals"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefineGlobalsOnce">kRdoDefineGlobalsOnce</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kRdoDefineGlobalsOnce"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefineLocalVarsInit">kRdoDefineLocalVarsInit</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kRdoDefineLocalVarsInit"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoDefineLocalVarsReadout">kRdoDefineLocalVarsReadout</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kRdoDefineLocalVarsReadout"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutTag">TMrbConfig::EMrbReadoutTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoClearModule">kRdoClearModule</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRdoClearModule"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaFile">kAnaFile</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kAnaFile"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaNameLC">kAnaNameLC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kAnaNameLC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaNameUC">kAnaNameUC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kAnaNameUC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaTitle">kAnaTitle</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kAnaTitle"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaCreationDate">kAnaCreationDate</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaCreationDate"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaAuthor">kAnaAuthor</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kAnaAuthor"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUser">kAnaUser</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kAnaUser"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaHtmlMakeSetup">kAnaHtmlMakeSetup</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaHtmlMakeSetup"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaIncludesAndDefs">kAnaIncludesAndDefs</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaIncludesAndDefs"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaPragmaLinkClasses">kAnaPragmaLinkClasses</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaPragmaLinkClasses"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaClassImp">kAnaClassImp</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kAnaClassImp"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaMakeClassNames">kAnaMakeClassNames</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaMakeClassNames"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaInitializeLists">kAnaInitializeLists</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaInitializeLists"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaAddUserEnv">kAnaAddUserEnv</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaAddUserEnv"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaFindVars">kAnaFindVars</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kAnaFindVars"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventClassDef">kAnaEventClassDef</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaEventClassDef"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventClassMethods">kAnaEventClassMethods</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaEventClassMethods"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventClassInstance">kAnaEventClassInstance</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaEventClassInstance"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventDefinePointers">kAnaEventDefinePointers</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaEventDefinePointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventNameLC">kAnaEventNameLC</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kAnaEventNameLC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventNameUC">kAnaEventNameUC</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kAnaEventNameUC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventTitle">kAnaEventTitle</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaEventTitle"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventAutoSave">kAnaEventAutoSave</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaEventAutoSave"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventTrigger">kAnaEventTrigger</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaEventTrigger"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventIdEnum">kAnaEventIdEnum</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kAnaEventIdEnum"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventPrivateData">kAnaEventPrivateData</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaEventPrivateData"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventUserMethods">kAnaEventUserMethods</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaEventUserMethods"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventUserData">kAnaEventUserData</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaEventUserData"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventDispatchOverTrigger">kAnaEventDispatchOverTrigger</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kAnaEventDispatchOverTrigger"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventIgnoreTrigger">kAnaEventIgnoreTrigger</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaEventIgnoreTrigger"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventBookParams">kAnaEventBookParams</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaEventBookParams"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventBookHistograms">kAnaEventBookHistograms</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaEventBookHistograms"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventAllocHitBuffer">kAnaEventAllocHitBuffer</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaEventAllocHitBuffer"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventSetFakeMode">kAnaEventSetFakeMode</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaEventSetFakeMode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventCreateTree">kAnaEventCreateTree</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaEventCreateTree"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventAddBranches">kAnaEventAddBranches</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaEventAddBranches"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventSetScaleDown">kAnaEventSetScaleDown</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaEventSetScaleDown"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventInitializeTree">kAnaEventInitializeTree</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaEventInitializeTree"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventSetReplayMode">kAnaEventSetReplayMode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaEventSetReplayMode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventInitializeBranches">kAnaEventInitializeBranches</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kAnaEventInitializeBranches"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventSetBranchStatus">kAnaEventSetBranchStatus</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kAnaEventSetBranchStatus"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventReplayTree">kAnaEventReplayTree</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaEventReplayTree"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventFirstSubevent">kAnaEventFirstSubevent</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaEventFirstSubevent"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventBuildRootEvent">kAnaEventBuildRootEvent</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaEventBuildRootEvent"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEventAnalyze">kAnaEventAnalyze</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaEventAnalyze"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaEvtResetData">kAnaEvtResetData</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaEvtResetData"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtNameLC">kAnaSevtNameLC</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaSevtNameLC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtNameUC">kAnaSevtNameUC</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaSevtNameUC"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtTitle">kAnaSevtTitle</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kAnaSevtTitle"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtSetName">kAnaSevtSetName</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kAnaSevtSetName"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtSerial">kAnaSevtSerial</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaSevtSerial"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtSerialEnum">kAnaSevtSerialEnum</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaSevtSerialEnum"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtBitsEnum">kAnaSevtBitsEnum</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaSevtBitsEnum"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtIndicesEnum">kAnaSevtIndicesEnum</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaSevtIndicesEnum"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtClassDef">kAnaSevtClassDef</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaSevtClassDef"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtClassMethods">kAnaSevtClassMethods</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaSevtClassMethods"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtClassInstance">kAnaSevtClassInstance</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaSevtClassInstance"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtUserMethods">kAnaSevtUserMethods</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaSevtUserMethods"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtUserData">kAnaSevtUserData</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaSevtUserData"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtFriends">kAnaSevtFriends</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kAnaSevtFriends"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtCtor">kAnaSevtCtor</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kAnaSevtCtor"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtDispatchOverType">kAnaSevtDispatchOverType</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kAnaSevtDispatchOverType"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtDispatchOverSerial">kAnaSevtDispatchOverSerial</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kAnaSevtDispatchOverSerial"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtDefineAddr">kAnaSevtDefineAddr</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaSevtDefineAddr"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtPrivateData">kAnaSevtPrivateData</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaSevtPrivateData"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtPrivateHistograms">kAnaSevtPrivateHistograms</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kAnaSevtPrivateHistograms"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtFillSubevent">kAnaSevtFillSubevent</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaSevtFillSubevent"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtBookParams">kAnaSevtBookParams</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaSevtBookParams"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtBookHistograms">kAnaSevtBookHistograms</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaSevtBookHistograms"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtFillHistograms">kAnaSevtFillHistograms</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaSevtFillHistograms"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtInitializeBranch">kAnaSevtInitializeBranch</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kAnaSevtInitializeBranch"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaSevtResetData">kAnaSevtResetData</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaSevtResetData"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaModuleSerialEnum">kAnaModuleSerialEnum</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaModuleSerialEnum"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaHistoDefinePointers">kAnaHistoDefinePointers</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaHistoDefinePointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaHistoInitializeArrays">kAnaHistoInitializeArrays</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kAnaHistoInitializeArrays"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaVarDefinePointers">kAnaVarDefinePointers</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaVarDefinePointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaVarClassInstance">kAnaVarClassInstance</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaVarClassInstance"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaVarArrDefinePointers">kAnaVarArrDefinePointers</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kAnaVarArrDefinePointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaVarArrClassInstance">kAnaVarArrClassInstance</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kAnaVarArrClassInstance"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaWdwDefinePointers">kAnaWdwDefinePointers</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaWdwDefinePointers"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaWdwClassInstance">kAnaWdwClassInstance</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaWdwClassInstance"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserDefsAndProtos">kAnaUserDefsAndProtos</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kAnaUserDefsAndProtos"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserInitialize">kAnaUserInitialize</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaUserInitialize"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserReloadParams">kAnaUserReloadParams</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kAnaUserReloadParams"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserBookParams">kAnaUserBookParams</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaUserBookParams"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserBookHistograms">kAnaUserBookHistograms</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAnaUserBookHistograms"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserGlobals">kAnaUserGlobals</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kAnaUserGlobals"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserUtilities">kAnaUserUtilities</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaUserUtilities"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaUserMessages">kAnaUserMessages</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaUserMessages"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaMakeUserHeaders">kAnaMakeUserHeaders</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaMakeUserHeaders"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaMakeUserCode">kAnaMakeUserCode</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaMakeUserCode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaIncludeEvtSevtModGlobals">kAnaIncludeEvtSevtModGlobals</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kAnaIncludeEvtSevtModGlobals"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaInitializeEvtSevtMods">kAnaInitializeEvtSevtMods</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kAnaInitializeEvtSevtMods"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgFile">kCfgFile</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kCfgFile"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgNameLC">kCfgNameLC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kCfgNameLC"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgNameUC">kCfgNameUC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kCfgNameUC"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgTitle">kCfgTitle</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kCfgTitle"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgAuthor">kCfgAuthor</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kCfgAuthor"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgCreationDate">kCfgCreationDate</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kCfgCreationDate"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgCreateConfig">kCfgCreateConfig</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kCfgCreateConfig"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgDefineEvents">kCfgDefineEvents</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kCfgDefineEvents"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgDefineSubevents">kCfgDefineSubevents</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kCfgDefineSubevents"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgDefineModules">kCfgDefineModules</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCfgDefineModules"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgAssignParams">kCfgAssignParams</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kCfgAssignParams"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgConnectToEvent">kCfgConnectToEvent</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kCfgConnectToEvent"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgWriteTimeStamp">kCfgWriteTimeStamp</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kCfgWriteTimeStamp"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgWriteDeadTime">kCfgWriteDeadTime</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCfgWriteDeadTime"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgDefineVariables">kCfgDefineVariables</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kCfgDefineVariables"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgDefineWindows">kCfgDefineWindows</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCfgDefineWindows"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgDefineScalers">kCfgDefineScalers</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCfgDefineScalers"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigTag">TMrbConfig::EMrbConfigTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgMakeCode">kCfgMakeCode</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kCfgMakeCode"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcExpData">kRcExpData</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kRcExpData"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcEvtData">kRcEvtData</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kRcEvtData"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcSevtData">kRcSevtData</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kRcSevtData"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileTag">TMrbConfig::EMrbRcFileTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcModuleData">kRcModuleData</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRcModuleData"></a></i>
+<!--TAB6-->          static const <a href="./TMrbConfig.html#TMrbConfig:EMrbUserMacroTag">TMrbConfig::EMrbUserMacroTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kUmaFile">kUmaFile</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:kUmaFile"></a></i>
+<!--TAB6-->          static const <a href="./TMrbConfig.html#TMrbConfig:EMrbUserMacroTag">TMrbConfig::EMrbUserMacroTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kUmaNameLC">kUmaNameLC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kUmaNameLC"></a></i>
+<!--TAB6-->          static const <a href="./TMrbConfig.html#TMrbConfig:EMrbUserMacroTag">TMrbConfig::EMrbUserMacroTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kUmaNameUC">kUmaNameUC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kUmaNameUC"></a></i>
+<!--TAB6-->          static const <a href="./TMrbConfig.html#TMrbConfig:EMrbUserMacroTag">TMrbConfig::EMrbUserMacroTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kUmaTitle">kUmaTitle</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kUmaTitle"></a></i>
+<!--TAB6-->          static const <a href="./TMrbConfig.html#TMrbConfig:EMrbUserMacroTag">TMrbConfig::EMrbUserMacroTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kUmaAuthor">kUmaAuthor</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kUmaAuthor"></a></i>
+<!--TAB6-->          static const <a href="./TMrbConfig.html#TMrbConfig:EMrbUserMacroTag">TMrbConfig::EMrbUserMacroTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kUmaCreationDate">kUmaCreationDate</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kUmaCreationDate"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kNoOptionSpecified">kNoOptionSpecified</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kNoOptionSpecified"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutOptions">TMrbConfig::EMrbReadoutOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOptOverwrite">kRdoOptOverwrite</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kRdoOptOverwrite"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReadoutOptions">TMrbConfig::EMrbReadoutOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOptVerbose">kRdoOptVerbose</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRdoOptVerbose"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOptDefault">kRdoOptDefault</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRdoOptDefault"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptSubevents">kAnaOptSubevents</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaOptSubevents"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptParamsByName">kAnaOptParamsByName</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kAnaOptParamsByName"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptHistograms">kAnaOptHistograms</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaOptHistograms"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptLeaves">kAnaOptLeaves</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kAnaOptLeaves"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptOverwrite">kAnaOptOverwrite</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kAnaOptOverwrite"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptReplayMode">kAnaOptReplayMode</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaOptReplayMode"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeOptions">TMrbConfig::EMrbAnalyzeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptVerbose">kAnaOptVerbose</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaOptVerbose"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptDefault">kAnaOptDefault</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kAnaOptDefault"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigOptions">TMrbConfig::EMrbConfigOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgOptOverwrite">kCfgOptOverwrite</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kCfgOptOverwrite"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbConfigOptions">TMrbConfig::EMrbConfigOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgOptVerbose">kCfgOptVerbose</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kCfgOptVerbose"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgOptDefault">kCfgOptDefault</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kCfgOptDefault"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileOptions">TMrbConfig::EMrbRcFileOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcOptOverwrite">kRcOptOverwrite</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRcOptOverwrite"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileOptions">TMrbConfig::EMrbRcFileOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcOptByName">kRcOptByName</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kRcOptByName"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbRcFileOptions">TMrbConfig::EMrbRcFileOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcOptVerbose">kRcOptVerbose</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRcOptVerbose"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kRcOptDefault">kRcOptDefault</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRcOptDefault"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptGlobals">kIclOptGlobals</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kIclOptGlobals"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptInitialize">kIclOptInitialize</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kIclOptInitialize"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptReloadParams">kIclOptReloadParams</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kIclOptReloadParams"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptBookHistograms">kIclOptBookHistograms</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kIclOptBookHistograms"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptBookParams">kIclOptBookParams</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kIclOptBookParams"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptBuildRootEvent">kIclOptBuildRootEvent</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kIclOptBuildRootEvent"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptAnalyze">kIclOptAnalyze</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kIclOptAnalyze"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptUtilities">kIclOptUtilities</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kIclOptUtilities"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptDefsAndProtos">kIclOptDefsAndProtos</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kIclOptDefsAndProtos"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptHandleUserMessages">kIclOptHandleUserMessages</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kIclOptHandleUserMessages"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbIncludeOptions">TMrbConfig::EMrbIncludeOptions</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptByEventName">kIclOptByEventName</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kIclOptByEventName"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kIclOptDefault">kIclOptDefault</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kIclOptDefault"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kNofCrates">kNofCrates</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kNofCrates"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kNofControllers">kNofControllers</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kNofControllers"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kNofTriggers">kNofTriggers</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kNofTriggers"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kAutoSave">kAutoSave</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kAutoSave"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerUnused">kTriggerUnused</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kTriggerUnused"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerAssigned">kTriggerAssigned</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kTriggerAssigned"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerPattern">kTriggerPattern</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kTriggerPattern"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerReserved">kTriggerReserved</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kTriggerReserved"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerIgnored">kTriggerIgnored</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kTriggerIgnored"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerOutOfRange">kTriggerOutOfRange</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kTriggerOutOfRange"></a></i>
+<!--TAB6-->      static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReservedTriggers">TMrbConfig::EMrbReservedTriggers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerStartAcq">kTriggerStartAcq</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kTriggerStartAcq"></a></i>
+<!--TAB6-->      static const <a href="./TMrbConfig.html#TMrbConfig:EMrbReservedTriggers">TMrbConfig::EMrbReservedTriggers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kTriggerStopAcq">kTriggerStopAcq</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kTriggerStopAcq"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOptEvtDefault">kRdoOptEvtDefault</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kRdoOptEvtDefault"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptEvtDefault">kAnaOptEvtDefault</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kAnaOptEvtDefault"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgOptEvtDefault">kCfgOptEvtDefault</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCfgOptEvtDefault"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoOptSevtDefault">kRdoOptSevtDefault</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRdoOptSevtDefault"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kAnaOptSevtDefault">kAnaOptSevtDefault</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kAnaOptSevtDefault"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kCfgOptSevtDefault">kCfgOptSevtDefault</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kCfgOptSevtDefault"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleDefs">kModuleDefs</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kModuleDefs"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleInitModule">kModuleInitModule</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleInitModule"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleInitChannel">kModuleInitChannel</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleInitChannel"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleReadChannel">kModuleReadChannel</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleReadChannel"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleIncrementChannel">kModuleIncrementChannel</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kModuleIncrementChannel"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSkipChannels">kModuleSkipChannels</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kModuleSkipChannels"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleWriteSubaddr">kModuleWriteSubaddr</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kModuleWriteSubaddr"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleStoreData">kModuleStoreData</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kModuleStoreData"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleClearModule">kModuleClearModule</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleClearModule"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleReadModule">kModuleReadModule</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleReadModule"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSetupReadout">kModuleSetupReadout</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kModuleSetupReadout"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleFinishReadout">kModuleFinishReadout</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kModuleFinishReadout"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleStartAcquisition">kModuleStartAcquisition</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kModuleStartAcquisition"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleStopAcquisition">kModuleStopAcquisition</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kModuleStopAcquisition"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleStartAcquisitionGroup">kModuleStartAcquisitionGroup</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kModuleStartAcquisitionGroup"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleStopAcquisitionGroup">kModuleStopAcquisitionGroup</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kModuleStopAcquisitionGroup"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleUtilities">kModuleUtilities</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kModuleUtilities"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleDefineGlobals">kModuleDefineGlobals</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kModuleDefineGlobals"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleDefineGlobalsOnce">kModuleDefineGlobalsOnce</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kModuleDefineGlobalsOnce"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleDefineLocalVarsInit">kModuleDefineLocalVarsInit</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kModuleDefineLocalVarsInit"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleDefineLocalVarsReadout">kModuleDefineLocalVarsReadout</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kModuleDefineLocalVarsReadout"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleDefinePrototypes">kModuleDefinePrototypes</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kModuleDefinePrototypes"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbChannelStatus">TMrbConfig::EMrbChannelStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kChannelSingle">kChannelSingle</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kChannelSingle"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbChannelStatus">TMrbConfig::EMrbChannelStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kChannelArray">kChannelArray</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kChannelArray"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbChannelStatus">TMrbConfig::EMrbChannelStatus</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kChannelArrElem">kChannelArrElem</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kChannelArrElem"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbDataType">TMrbConfig::EMrbDataType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kDataChar">kDataChar</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kDataChar"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbDataType">TMrbConfig::EMrbDataType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kDataUShort">kDataUShort</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kDataUShort"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbDataType">TMrbConfig::EMrbDataType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kDataUInt">kDataUInt</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kDataUInt"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbDataType">TMrbConfig::EMrbDataType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kDataULong">kDataULong</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kDataULong"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbDataType">TMrbConfig::EMrbDataType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kDataFloat">kDataFloat</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kDataFloat"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateUnused">kCrateUnused</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kCrateUnused"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateCamac">kCrateCamac</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kCrateCamac"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateVME">kCrateVME</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kCrateVME"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kControllerUnused">kControllerUnused</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kControllerUnused"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kControllerCBV">kControllerCBV</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kControllerCBV"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kControllerCC32">kControllerCC32</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kControllerCC32"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleRaw">kModuleRaw</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kModuleRaw"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleCamac">kModuleCamac</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kModuleCamac"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleVME">kModuleVME</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kModuleVME"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleListMode">kModuleListMode</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleListMode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSingleMode">kModuleSingleMode</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleSingleMode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleScaler">kModuleScaler</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kModuleScaler"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleType">TMrbConfig::EMrbModuleType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleControl">kModuleControl</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kModuleControl"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactOther">kManufactOther</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kManufactOther"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactSilena">kManufactSilena</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kManufactSilena"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactOrtec">kManufactOrtec</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kManufactOrtec"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactLeCroy">kManufactLeCroy</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kManufactLeCroy"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactSen">kManufactSen</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kManufactSen"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactTUM">kManufactTUM</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kManufactTUM"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactNE">kManufactNE</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kManufactNE"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactCaen">kManufactCaen</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kManufactCaen"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactGanelec">kManufactGanelec</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kManufactGanelec"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactXia">kManufactXia</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kManufactXia"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactAcromag">kManufactAcromag</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kManufactAcromag"></a></i>
+<!--TAB6-->         static const <a href="./TMrbConfig.html#TMrbConfig:EMrbManufacturers">TMrbConfig::EMrbManufacturers</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kManufactKinetics">kManufactKinetics</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kManufactKinetics"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSilena4418V">kModuleSilena4418V</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleSilena4418V"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSilena4418T">kModuleSilena4418T</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleSilena4418T"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleUct8904">kModuleUct8904</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kModuleUct8904"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSen16P2047">kModuleSen16P2047</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleSen16P2047"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSilena7420Smdw">kModuleSilena7420Smdw</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kModuleSilena7420Smdw"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleLeCroy2228A">kModuleLeCroy2228A</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleLeCroy2228A"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleLeCroy4434">kModuleLeCroy4434</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleLeCroy4434"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleAdcd9701">kModuleAdcd9701</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleAdcd9701"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSen2010">kModuleSen2010</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kModuleSen2010"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleNE9041">kModuleNE9041</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kModuleNE9041"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleCaenV260">kModuleCaenV260</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleCaenV260"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleCaenV556">kModuleCaenV556</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleCaenV556"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleCaenV785">kModuleCaenV785</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleCaenV785"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleGanelec_Q1612F">kModuleGanelec_Q1612F</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kModuleGanelec_Q1612F"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleOrtec_413A">kModuleOrtec_413A</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleOrtec_413A"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleXia_DGF_4C">kModuleXia_DGF_4C</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleXia_DGF_4C"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleAcromag_IP341">kModuleAcromag_IP341</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kModuleAcromag_IP341"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleLeCroy4432">kModuleLeCroy4432</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleLeCroy4432"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleLeCroy4448">kModuleLeCroy4448</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleLeCroy4448"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleKinetics3655">kModuleKinetics3655</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kModuleKinetics3655"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleUserDefined">kModuleUserDefined</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleUserDefined"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSoftModule">kModuleSoftModule</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleSoftModule"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerCamac">kScalerCamac</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kScalerCamac"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerVME">kScalerVME</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kScalerVME"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerListMode">kScalerListMode</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kScalerListMode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerSingleMode">kScalerSingleMode</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kScalerSingleMode"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerDeadTime">kScalerDeadTime</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kScalerDeadTime"></a></i>
+<!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerExternalGate">kScalerExternalGate</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kScalerExternalGate"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerFunction">TMrbConfig::EMrbScalerFunction</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerFctInit">kScalerFctInit</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kScalerFctInit"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerFunction">TMrbConfig::EMrbScalerFunction</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerFctClear">kScalerFctClear</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kScalerFctClear"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerFunction">TMrbConfig::EMrbScalerFunction</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerFctRead">kScalerFctRead</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kScalerFctRead"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerFunction">TMrbConfig::EMrbScalerFunction</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerFctDeadTime">kScalerFctDeadTime</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kScalerFctDeadTime"></a></i>
+<!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerFunction">TMrbConfig::EMrbScalerFunction</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerFctWrite">kScalerFctWrite</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kScalerFctWrite"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kNofScalerFunctions">kNofScalerFunctions</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kNofScalerFunctions"></a></i>
+<!--TAB6-->                        static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbConfig:kRdoHeaderBit">kRdoHeaderBit</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRdoHeaderBit"></a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofDataTypes">fLofDataTypes</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fLofDataTypes">... data types</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofCrateTypes">fLofCrateTypes</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fLofCrateTypes">... crate types</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofControllerTypes">fLofControllerTypes</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fLofControllerTypes">... camac controllers</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofModuleTypes">fLofModuleTypes</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fLofModuleTypes">... module types</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofReadoutTags">fLofReadoutTags</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fLofReadoutTags">... readout tags</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofAnalyzeTags">fLofAnalyzeTags</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fLofAnalyzeTags">... analyze tags</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofConfigTags">fLofConfigTags</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fLofConfigTags">... config tags</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofRcFileTags">fLofRcFileTags</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fLofRcFileTags">... rc file tags</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofUserMacroTags">fLofUserMacroTags</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fLofUserMacroTags">... user macro tags</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fCNAFNames">fCNAFNames</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fCNAFNames">... cnaf key words</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofModuleTags">fLofModuleTags</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fLofModuleTags">... camac tags</a></i>
+<!--TAB6-->                                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:fLofModuleIDs">fLofModuleIDs</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fLofModuleIDs">... camac modules available</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbConfig:description">Class Description</a></h2>
+<pre>
+ ame:            expconf/src/<a href="./TMrbConfig.html">TMrbConfig</a>.cxx
+ Purpose:        MARaBOU configuration: base class
+ Description:    Implements class methods to define a MARaBOU configuration
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbConfig:TMrbConfig" href="src/TMrbConfig.cxx.html#TMrbConfig:TMrbConfig">TMrbConfig</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CfgName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CfgTitle) : <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>(CfgName, CfgTitle) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbConfig.html">TMrbConfig</a>
+ Purpose:        Create a MBS configuration
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CfgName   -- name of experiment
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CfgTitle  -- (opt.) title
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:UpdateTriggerTable" href="src/TMrbConfig.cxx.html#TMrbConfig:UpdateTriggerTable">UpdateTriggerTable</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:UpdateTriggerTable">TMrbConfig::UpdateTriggerTable</a>
+ Purpose:        Update trigger table
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Trigger      -- trigger number
+ Results:
+ Exceptions:
+ Description:    Inserts a new trigger into trigger table, then updates
+                 table data.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:HandleMultipleTriggers" href="src/TMrbConfig.cxx.html#TMrbConfig:HandleMultipleTriggers">HandleMultipleTriggers</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> T1, <a href="ListOfTypes.html#Int_t">Int_t</a> T2, <a href="ListOfTypes.html#Int_t">Int_t</a> T3, <a href="ListOfTypes.html#Int_t">Int_t</a> T4, <a href="ListOfTypes.html#Int_t">Int_t</a> T5) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:HandleMultipleTriggers">TMrbConfig::HandleMultipleTriggers</a>
+ Purpose:        Allow trigger patterns
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> T'n         -- triggers patterns
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    In case of single-bit triggers: allow multiple triggers
+                 to occur. Resulting code is a combination of single triggers.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindEvent" href="src/TMrbConfig.cxx.html#TMrbConfig:FindEvent">FindEvent</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindEvent">TMrbConfig::FindEvent</a>
+ Purpose:        Find an event by its trigger number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Trigger       -- trigger number
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Event     -- event address
+ Exceptions:
+ Description:    Loops thru the list of events to find specified trigger.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindSubevent" href="src/TMrbConfig.cxx.html#TMrbConfig:FindSubevent">FindSubevent</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> SevtSerial) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindSubevent">TMrbConfig::FindSubevent</a>
+ Purpose:        Find a subevent by its serial number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> SevtSerial    -- unique subevent id
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Subevent  -- subevent address
+ Exceptions:
+ Description:    Loops thru the list of subevents to find specified id.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindSubevent" href="src/TMrbConfig.cxx.html#TMrbConfig:FindSubevent">FindSubevent</a>(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a> * Class, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindSubevent">TMrbConfig::FindSubevent</a>
+ Purpose:        Find a subevent by its class
+ Arguments:      <a href="http://root.cern.ch/root/html/TClass.html">TClass</a> * Class      -- class
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After     -- subevent addr from last call
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Subevent  -- subevent address
+ Exceptions:
+ Description:    Loops thru the list of subevents to find specified class.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:CheckModuleAddress" href="src/TMrbConfig.cxx.html#TMrbConfig:CheckModuleAddress">CheckModuleAddress</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:CheckModuleAddress">TMrbConfig::CheckModuleAddress</a>
+ Purpose:        Check if module address or position is legal
+ Arguments:      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module  -- module address
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks module address or position:
+                    CAMAC:   check if B.C.N already accupied
+                    VME:     check if address within other module's segment
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindModuleByID" href="src/TMrbConfig.cxx.html#TMrbConfig:FindModuleByID">FindModuleByID</a>(<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> ModuleID, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindModuleByID">TMrbConfig::FindModuleByID</a>
+ Purpose:        Find a module by its id
+ Arguments:      EMrbModuleID ModuleID  -- module id
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After        -- search to be started after this module
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module       -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 next module having specified id
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindModuleByType" href="src/TMrbConfig.cxx.html#TMrbConfig:FindModuleByType">FindModuleByType</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindModuleByType">TMrbConfig::FindModuleByType</a>
+ Purpose:        Find a module by its type
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType        -- module type
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After          -- search to be started after this module
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module         -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 next module having specified type
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindModuleByCrate" href="src/TMrbConfig.cxx.html#TMrbConfig:FindModuleByCrate">FindModuleByCrate</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindModuleByCrate">TMrbConfig::FindModuleByCrate</a>
+ Purpose:        Find a module by crate number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate              -- crate number
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After          -- search to be started after this module
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module         -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 next module in specified crate
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindModuleBySerial" href="src/TMrbConfig.cxx.html#TMrbConfig:FindModuleBySerial">FindModuleBySerial</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleSerial) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindModuleBySerial">TMrbConfig::FindModuleBySerial</a>
+ Purpose:        Find a module by its unique serial number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleSerial       -- serial number
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module         -- module address
+ Exceptions:
+ Description:    Loops thru the list of modules to find
+                 specified serial number
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindScalerByCrate" href="src/TMrbConfig.cxx.html#TMrbConfig:FindScalerByCrate">FindScalerByCrate</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindScalerByCrate">TMrbConfig::FindScalerByCrate</a>
+ Purpose:        Find a scaler by crate number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate              -- crate number
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * After          -- search to be started after this module
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Scaler         -- scaler address
+ Exceptions:
+ Description:    Loops thru the list of scalers to find
+                 next scaler in specified crate
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:FindCrate" href="src/TMrbConfig.cxx.html#TMrbConfig:FindCrate">FindCrate</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> After) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:FindCrate">TMrbConfig::FindCrate</a>
+ Purpose:        Find next crate
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> After              -- start with crate number ...
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Crate              -- crate number or -1
+ Exceptions:
+ Description:    Loops thru table of crates to find next crate which is active
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:GetNofCrates" href="src/TMrbConfig.cxx.html#TMrbConfig:GetNofCrates">GetNofCrates</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:GetNofCrates">TMrbConfig::GetNofCrates</a>
+ Purpose:        Return number of crates in use
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofCrates         -- number of crates in use
+ Exceptions:
+ Description:    Loops thru table of crates and returns number of active crates
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetCratePattern" href="src/TMrbConfig.cxx.html#TMrbConfig:GetCratePattern">GetCratePattern</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:GetCratePattern">TMrbConfig::GetCratePattern</a>
+ Purpose:        Return number of crates as bit pattern
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> CratePattern         -- bit pattern
+ Exceptions:
+ Description:    Loops thru table of crates and returns bit pattern of active crates
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:SetControllerType" href="src/TMrbConfig.cxx.html#TMrbConfig:SetControllerType">SetControllerType</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Crate, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:SetControllerType">TMrbConfig::SetControllerType</a>
+ Purpose:        Define type of (CAMAC) controller to be used
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Crate        -- crate number (Cxx)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Type         -- controller type
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines which CAMAC controller to be used.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:SetControllerType" href="src/TMrbConfig.cxx.html#TMrbConfig:SetControllerType">SetControllerType</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:SetControllerType">TMrbConfig::SetControllerType</a>
+ Purpose:        Define type of (CAMAC) controller to be used
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate                 -- crate number (Cxx)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Type               -- controller type
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines which CAMAC controller to be used.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindParam" href="src/TMrbConfig.cxx.html#TMrbConfig:FindParam">FindParam</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:Findparam">TMrbConfig::Findparam</a>
+ Purpose:        Find a parameter thru all subevents
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ParamName   -- param name
+ Results:        <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Param      -- param/channel addr
+ Exceptions:
+ Description:    Search for a parameter name throughout the system.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:MakeReadoutCode" href="src/TMrbConfig.cxx.html#TMrbConfig:MakeReadoutCode">MakeReadoutCode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:MakeReadoutCode">TMrbConfig::MakeReadoutCode</a>
+ Purpose:        Generate user-defined code for MBS
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile         -- name of code file to be generated
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options          -- options to be used
+ Results:
+ Exceptions:
+ Description:    Opens a file for user-defined readout code. Calls write-functions for all
+                 members recursively.
+
+                 Template file should contain tags like %%TAG_NAME%%
+                 They will be expanded to real code by MakeReadoutCode and its descendants.
+
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:MakeAnalyzeCode" href="src/TMrbConfig.cxx.html#TMrbConfig:MakeAnalyzeCode">MakeAnalyzeCode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:MakeAnalyzeCode">TMrbConfig::MakeAnalyzeCode</a>
+ Purpose:        Generate user-defined code to analyze MBS data
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile         -- name of code file to be generated
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options        -- how to generate code: default "Subevents:byName:Histograms"
+                                              Subevents: event-&gt;subevent-&gt;params
+                                              byName: each param has its own name
+                                              byIndex: array of params, accessed by index
+                                              Histograms: generates histos for all params
+                                              Overwrite: overwrite existing code files
+ Results:
+ Exceptions:
+ Description:    Opens a file for user-defined analyzing code. Calls write-functions for all
+                 members recursively.
+
+                 Template file should contain tags like %%TAG_NAME%%
+                 They will be expanded to real code by MakeAnalyzeCode and its descendants.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:MakeAnalyzeCode" href="src/TMrbConfig.cxx.html#TMrbConfig:MakeAnalyzeCode">MakeAnalyzeCode</a>(ofstream &amp; AnaStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex,
+													<a href="ListOfTypes.html#UInt_t">UInt_t</a> VarType,
+													<a href="./TMrbTemplate.html">TMrbTemplate</a> &amp; Template,
+													const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:MakeAnalyzeCode">TMrbConfig::MakeAnalyzeCode</a>
+ Purpose:        Generate user-defined code for variables/windows
+ Arguments:      ofstream &amp; AnaStrm            -- where to output code
+                 EMrbAnalyzeTag TagIndex       -- tag word index
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> VarType                -- variable type
+                 <a href="./TMrbTemplate.html">TMrbTemplate</a> * Template       -- template
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix               -- prefix to select template code
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Generates code for all variables/windows in specified list
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:MakeAnalyzeCode" href="src/TMrbConfig.cxx.html#TMrbConfig:MakeAnalyzeCode">MakeAnalyzeCode</a>(ofstream &amp; AnaStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ClassName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile,
+										<a href="./TMrbConfig.html#TMrbConfig:EMrbAnalyzeTag">TMrbConfig::EMrbAnalyzeTag</a> TagIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEvent.html#TMrbEvent:MakeAnalyzeCode">TMrbEvent::MakeAnalyzeCode</a>
+ Purpose:        Generate class-specific code for user's analysis
+ Arguments:      ofstream &amp; AnaStrm          -- where to output code
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ClassName          -- class name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile           -- common code file
+                 EMrbAnalyzeTag TagIndex     -- tag word index
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Extension          -- file extension
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Generates class-specific code.
+                 Searches for following files:
+                 (1)   &lt;CodeFile&gt;.&lt;Extension&gt;.code
+                 (2)   &lt;Class&gt;_Common.&lt;Extension&gt;.code
+
+                 This method is optional and doesn't generate an error
+                 if no template file has been found.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:MakeConfigCode" href="src/TMrbConfig.cxx.html#TMrbConfig:MakeConfigCode">MakeConfigCode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:MakeConfigCode">TMrbConfig::MakeConfigCode</a>
+ Purpose:        Rebuild config file from objects in memory
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile         -- name of code file to be generated
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options          -- how to generate code: default ""
+                                              Overwrite: overwrite existing config file
+                                              Verbose: be verbose
+ Results:
+ Exceptions:
+ Description:    Opens a file for user-defined config code. Rebuilds config file from
+                 config objects in memory. Useful when reading config data from root file.
+
+                 Template file should contain tags like %%TAG_NAME%%
+                 They will be expanded to real code by MakeConfigCode and its descendants.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:MakeRcFile" href="src/TMrbConfig.cxx.html#TMrbConfig:MakeRcFile">MakeRcFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ResourceName, <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:MakeRcFile">TMrbConfig::MakeRcFile</a>
+ Purpose:        Create rc file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile         -- name of code file to be generated
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ResourceName     -- main resource
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options        -- how to generate code: default ""
+                                              Overwrite: overwrite existing config file
+                                              Verbose: be verbose
+ Results:
+ Exceptions:
+ Description:    Opens a file to store user's settings as environment data
+
+                 Template file should contain tags like %%TAG_NAME%%
+                 They will be expanded to real code by MakeRcFile.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:CallUserMacro" href="src/TMrbConfig.cxx.html#TMrbConfig:CallUserMacro">CallUserMacro</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * MacroName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:CallUserMacro">TMrbConfig::CallUserMacro</a>
+ Purpose:        Define user macro to be called
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Macroname        -- name of code file to be generated
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Looks for a file &lt;MacroName&gt; to be called when generating code.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:ExecUserMacro" href="src/TMrbConfig.cxx.html#TMrbConfig:ExecUserMacro">ExecUserMacro</a>(ofstream * Strm, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * CfgObject, const <a href="ListOfTypes.html#Char_t">Char_t</a> * TagWord) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:ExecUserMacro">TMrbConfig::ExecUserMacro</a>
+ Purpose:        Execute user macro
+ Arguments:      ofStream * Strm         -- output stream
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * CfgObject     -- config object (event, subevent, module)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * TagWord        -- tag word
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Executes user macro given by method "CallUserMacro".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:WriteDeadTime" href="src/TMrbConfig.cxx.html#TMrbConfig:WriteDeadTime">WriteDeadTime</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Scaler, <a href="ListOfTypes.html#Int_t">Int_t</a> Interval) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:WriteDeadTime">TMrbConfig::WriteDeadTime</a>
+ Purpose:        Enable dead-time output
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Scaler   -- scaler name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Interval    -- number of events a new dead time event will be created
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Enables dead-time information to be included in raw data.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:IncludeUserCode" href="src/TMrbConfig.cxx.html#TMrbConfig:IncludeUserCode">IncludeUserCode</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix, <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:IncludeUserCode">TMrbConfig::IncludeUserCode</a>
+ Purpose:        Specify user code to be included
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix             -- prefix to be prepended
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options          -- options to be used
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Specifies user-depended code parts to be included.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:AddUserClass" href="src/TMrbConfig.cxx.html#TMrbConfig:AddUserClass">AddUserClass</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:AddUserClass">TMrbConfig::AddUserClass</a>
+ Purpose:        Add a user class
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Name             -- class name
+ Results:        --
+ Exceptions:
+ Description:    Keeps track of user classes.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:AddToTagList" href="src/TMrbConfig.cxx.html#TMrbConfig:AddToTagList">AddToTagList</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Int_t">Int_t</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:AddToTagList">TMrbConfig::AddToTagList</a>
+ Purpose:        Add a tag to be processed only once
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile         -- code file
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> TagIndex            -- tag index
+ Results:        --
+ Exceptions:
+ Description:    Keeps track of once-only code files.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:TagToBeProcessed" href="src/TMrbConfig.cxx.html#TMrbConfig:TagToBeProcessed">TagToBeProcessed</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile, <a href="ListOfTypes.html#Int_t">Int_t</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:TagTobeProcessed">TMrbConfig::TagTobeProcessed</a>
+ Purpose:        Check if tag has to be processed
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * CodeFile         -- code file
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> TagIndex            -- tag index
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Searches for file in the list of once-only code files.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:Print" href="src/TMrbConfig.cxx.html#TMrbConfig:Print">Print</a>(ostream &amp; OutStrm, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:Print">TMrbConfig::Print</a>
+ Purpose:        Output current config
+ Arguments:      ofstream &amp; OutStrm   -- output stream
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix  -- prefix to be output in front of text
+ Results:        --
+ Exceptions:
+ Description:    Outputs current configuration to stdout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:PrintErrors" href="src/TMrbConfig.cxx.html#TMrbConfig:PrintErrors">PrintErrors</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:PrintErrors">TMrbConfig::PrintErrors</a>
+ Purpose:        Print error summary
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Outputs logger contents
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:Version" href="src/TMrbConfig.cxx.html#TMrbConfig:Version">Version</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:Version">TMrbConfig::Version</a>
+ Purpose:        Output version
+ Arguments:      --
+ Results:
+ Exceptions:
+ Description:    Welcome to <a href="./TMrbConfig.html">TMrbConfig</a>.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineVariables" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineVariables">DefineVariables</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineVariables">TMrbConfig::DefineVariables</a>
+ Purpose:        Defines a set of user variables
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType     -- type: I(nteger), F(loat) or S(tring)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of user variables.
+                 VarDefs may be a single variable name or a set of names,
+                 separated by blanks.
+                 To define an indexed variable (array variable) user may
+                 append the array size in [...].
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineVariables" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineVariables">DefineVariables</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineVariables">TMrbConfig::DefineVariables</a>
+ Purpose:        Defines a set of user variables
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType     -- type: I(nteger), F(loat) or S(tring)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value          -- initial value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of variables and initializes all with a given
+                 value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineVariables" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineVariables">DefineVariables</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType, <a href="ListOfTypes.html#Float_t">Float_t</a> Value, const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineVariables">TMrbConfig::DefineVariables</a>
+ Purpose:        Defines a set of user variables
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType     -- type: I(nteger), F(loat) or S(tring)
+                 <a href="ListOfTypes.html#Float_t">Float_t</a> Value        -- initial value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of variables and initializes all with a given
+                 value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineVariables" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineVariables">DefineVariables</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Value, const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineVariables">TMrbConfig::DefineVariables</a>
+ Purpose:        Defines a set of user variables
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * VarType     -- type: I(nteger), F(loat) or S(tring)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> Value         -- initial value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of variables and initializes all with a given
+                 value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineWindows" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineWindows">DefineWindows</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineWindows">TMrbConfig::DefineWindows</a>
+ Purpose:        Defines a set 1-dim windows
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwType     -- type: I(nteger) or F(loat)
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of 1-dim windows.
+                 WdwDefs may be a single window name or a set of names,
+                 separated by blanks.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineWindows" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineWindows">DefineWindows</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwType, <a href="ListOfTypes.html#Int_t">Int_t</a> Xlower, <a href="ListOfTypes.html#Int_t">Int_t</a> Xupper, const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineWindows">TMrbConfig::DefineWindows</a>
+ Purpose:        Defines a set 1-dim windows
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwType     -- type: I(nteger) or F(loat)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Xlower         -- lower limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Xupper         -- upper limit
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of 1-dim windows.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineWindows" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineWindows">DefineWindows</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwType, <a href="ListOfTypes.html#Float_t">Float_t</a> Xlower, <a href="ListOfTypes.html#Float_t">Float_t</a> Xupper, const <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineWindows">TMrbConfig::DefineWindows</a>
+ Purpose:        Defines a set 1-dim windows
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwType     -- type: I(nteger) or F(loat)
+                 <a href="ListOfTypes.html#Float_t">Float_t</a> Xlower       -- lower limit
+                 <a href="ListOfTypes.html#Float_t">Float_t</a> Xupper       -- upper limit
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * WdwDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a set of 1-dim windows.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DefineVarOrWdw" href="src/TMrbConfig.cxx.html#TMrbConfig:DefineVarOrWdw">DefineVarOrWdw</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a> * VarType, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * VarProto, const <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:DefineVarOrWdw">TMrbConfig::DefineVarOrWdw</a>
+ Purpose:        Define variables, variable arrays, and windows
+ Arguments:      <a href="./TMrbNamedX.html">TMrbNamedX</a> * VarType -- type: variable or window,
+                                               array or not,
+                                               integer, <a href="ListOfTypes.html#float">float</a>, or string
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * VarProto   -- prototype
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * VarDefs     -- definition string
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Real var/wdw definitions take place here.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbConfig.html">TMrbConfig</a>* <a name="TMrbConfig:ReadFromFile" href="src/TMrbConfig.cxx.html#TMrbConfig:ReadFromFile">ReadFromFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * RootFile,  <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:ReadFromFile">TMrbConfig::ReadFromFile</a>
+ Purpose:        Read config objects from root file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * RootFile      -- name of root file
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options       -- options
+ Results:        <a href="./TMrbConfig.html">TMrbConfig</a> * NewConfig -- points to new config read from file
+ Exceptions:     returns NULL after errors
+ Description:    Restores config from root file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:WriteToFile" href="src/TMrbConfig.cxx.html#TMrbConfig:WriteToFile">WriteToFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ConfigFile,  <a href="ListOfTypes.html#Option_t">Option_t</a> * Options) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:WriteToFile">TMrbConfig::WriteToFile</a>
+ Purpose:        Write config objects to root file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ConfigFile    -- name of config file
+                 <a href="ListOfTypes.html#Option_t">Option_t</a> * Options       -- options
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Saves any objects defined during the configuration pass.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:SetGlobalAddress" href="src/TMrbConfig.cxx.html#TMrbConfig:SetGlobalAddress">SetGlobalAddress</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:SetGlobalAddress">TMrbConfig::SetGlobalAddress</a>
+ Purpose:        Set global address gMrbConfig
+ Arguments:
+ Results:
+ Exceptions:
+ Description:    Sets global variable gMrbConfig to `this'.
+                 May be used when reading a config from file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:GetAuthor" href="src/TMrbConfig.cxx.html#TMrbConfig:GetAuthor">GetAuthor</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:GetAuthor">TMrbConfig::GetAuthor</a>
+ Purpose:        Get author's name from yp database
+ Arguments:
+ Results:
+ Exceptions:
+ Description:    Reads the author's name via yp.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:NameNotLegal" href="src/TMrbConfig.cxx.html#TMrbConfig:NameNotLegal">NameNotLegal</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ObjType, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ObjName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbConfig.html#TMrbConfig:NameNotLegal">TMrbConfig::NameNotLegal</a>
+ Purpose:        Check if name is legal within MARaBOU
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ObjType     -- type of object to be checked
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ObjName     -- name to be checked
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Checks if name is pure ascii.
+                 The only special <a href="ListOfTypes.html#char">char</a> allowed is "_" (underscore)
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                            <a href="./TMrbConfig.html">TMrbConfig</a> <a name="TMrbConfig:TMrbConfig" href="TMrbConfig.h">TMrbConfig</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* CfgName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CfgTitle)
+<!--INLINE FUNCTION--><!--TAB6-->                            <a href="./TMrbConfig.html">TMrbConfig</a> <a name="TMrbConfig:TMrbConfig" href="TMrbConfig.h">TMrbConfig</a>(const <a href="./TMrbConfig.html">TMrbConfig</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:Print" href="TMrbConfig.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:AddEvent" href="TMrbConfig.h">AddEvent</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Evt)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindEvent" href="TMrbConfig.h">FindEvent</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:AddSubevent" href="TMrbConfig.h">AddSubevent</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Sevt)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:NextSubevent" href="TMrbConfig.h">NextSubevent</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindSubevent" href="TMrbConfig.h">FindSubevent</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> SevtSerial)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:AssignSevtSerial" href="TMrbConfig.h">AssignSevtSerial</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:AddModule" href="TMrbConfig.h">AddModule</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:NextModule" href="TMrbConfig.h">NextModule</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* After = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindModule" href="TMrbConfig.h">FindModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:AssignModuleSerial" href="TMrbConfig.h">AssignModuleSerial</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:HasCamacModules" href="TMrbConfig.h">HasCamacModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:HasVMEModules" href="TMrbConfig.h">HasVMEModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:AddScaler" href="TMrbConfig.h">AddScaler</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Scaler)
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:FindScaler" href="TMrbConfig.h">FindScaler</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ScalerName)
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetReadoutOptions" href="TMrbConfig.h">GetReadoutOptions</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetAnalyzeOptions" href="TMrbConfig.h">GetAnalyzeOptions</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetConfigOptions" href="TMrbConfig.h">GetConfigOptions</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetRcFileOptions" href="TMrbConfig.h">GetRcFileOptions</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:IsVerbose" href="TMrbConfig.h">IsVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:LongParamNamesToBeUsed" href="TMrbConfig.h">LongParamNamesToBeUsed</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:UseLongParamNames" href="TMrbConfig.h">UseLongParamNames</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:WriteTimeStamp" href="TMrbConfig.h">WriteTimeStamp</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:TimeStampToBeWritten" href="TMrbConfig.h">TimeStampToBeWritten</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:DeadTimeToBeWritten" href="TMrbConfig.h">DeadTimeToBeWritten</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:GetDeadTimeInterval" href="TMrbConfig.h">GetDeadTimeInterval</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                              <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbConfig:GetDeadTimeScaler" href="TMrbConfig.h">GetDeadTimeScaler</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbConfig:UserCodeToBeIncluded" href="TMrbConfig.h">UserCodeToBeIncluded</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofUserIncludes" href="TMrbConfig.h">GetLofUserIncludes</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                           <a href="./TMrbLogger.html">TMrbLogger</a>* <a name="TMrbConfig:GetMessageLogger" href="TMrbConfig.h">GetMessageLogger</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:SetMultiBorC" href="TMrbConfig.h">SetMultiBorC</a>(<a href="./TMrbCNAF.html#TMrbCNAF:EMrbCNAF">TMrbCNAF::EMrbCNAF</a> MultiBorC)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:SetCrateType" href="TMrbConfig.h">SetCrateType</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> CrateType)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <a name="TMrbConfig:GetCrateType" href="TMrbConfig.h">GetCrateType</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:SetControllerType" href="TMrbConfig.h">SetControllerType</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> Type)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <a name="TMrbConfig:GetControllerType" href="TMrbConfig.h">GetControllerType</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TMrbConfig.html#TMrbConfig:EMrbTriggerStatus">TMrbConfig::EMrbTriggerStatus</a> <a name="TMrbConfig:GetTriggerStatus" href="TMrbConfig.h">GetTriggerStatus</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Trigger)
+<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:GetNofModules" href="TMrbConfig.h">GetNofModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofEvents" href="TMrbConfig.h">GetLofEvents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofSubevents" href="TMrbConfig.h">GetLofSubevents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofModules" href="TMrbConfig.h">GetLofModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofScalers" href="TMrbConfig.h">GetLofScalers</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofModuleIDs" href="TMrbConfig.h">GetLofModuleIDs</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofModuleTypes" href="TMrbConfig.h">GetLofModuleTypes</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbConfig:GetLofDataTypes" href="TMrbConfig.h">GetLofDataTypes</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:Help" href="TMrbConfig.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbConfig:Class" href="TMrbConfig.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbConfig:IsA" href="TMrbConfig.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:ShowMembers" href="TMrbConfig.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:Streamer" href="TMrbConfig.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:StreamerNVirtual" href="TMrbConfig.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbConfig:~TMrbConfig" href="TMrbConfig.h">~TMrbConfig</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:10 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

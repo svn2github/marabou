@@ -1,0 +1,40 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                             -->
+<!-- Author: ROOT team (rootdev@hpsalo.cern.ch)  -->
+<!--                                             -->
+<!--   Date: Thu Jul 25 14:51:18 2002            -->
+<!--                                             -->
+<head>
+<title>Index of XIADGF classes</title>
+<link rev=made href="mailto:rootdev@root.cern.ch">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rene brun, fons rademakers">
+<meta name="description" content="ROOT - An Object Oriented Framework For Large Scale Data Analysis.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+<a name="TopOfPage"></a>
+<h2>Index of XIADGF classes</h2><hr>
+<ul>
+<li><tt><a name="TMrbDGF" href="./TMrbDGF.html">TMrbDGF</a> .................... <a name="Title:TMrbDGF">[XIA DGF-4C] Base class for DGF modules</a></tt>
+<li><tt><a name="TMrbDGFData" href="./TMrbDGFData.html">TMrbDGFData</a> ................ <a name="Title:TMrbDGFData">[XIA DGF-4C] Data base common to all DGF modules</a></tt>
+<li><tt><a name="TMrbDGFEvent" href="./TMrbDGFEvent.html">TMrbDGFEvent</a> ............... <a name="Title:TMrbDGFEvent">[XIA DGF-4C] DGF's event structure</a></tt>
+<li><tt><a name="TMrbDGFEventBuffer" href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> ......... <a name="Title:TMrbDGFEventBuffer">[XIA DGF-4C] Buffer to store event data</a></tt>
+<li><tt><a name="TMrbDGFHistogramBuffer" href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a> ..... <a name="Title:TMrbDGFHistogramBuffer">[XIA DGF-4C] Buffer to store histogram data</a></tt>
+<li><tt><a name="TMrbLofDGFs" href="./TMrbLofDGFs.html">TMrbLofDGFs</a> ................ <a name="Title:TMrbLofDGFs">[XIA DGF-4C] A list of DGF modules</a></tt>
+</ul>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>Last update: Thu Jul 25 14:51:18 2002</em><br>
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.tu-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:rootdev@root.cern.ch">ROOT support</a>, or contact <a href="mailto:rootdev@root.cern.ch">the developers</a> with any questions or problems regarding ROOT.
+</address>
+</body>
+</html>

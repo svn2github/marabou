@@ -1,0 +1,216 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TUsrEvent</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TUsrEvent:description">class description</a> - <a href="src/TUsrEvent.cxx.html">source file</a> - <a href="TUsrEvent_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TUsrEvent" href="TMrbAnalyze.h">TUsrEvent</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:CalcTimeRS">CalcTimeRS</a><!--PLAIN-->()
+<!--TAB6-->       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:SetTimeStamp">SetTimeStamp</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> TimeStamp)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="./TUsrEvent.html">TUsrEvent</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:TUsrEvent">TUsrEvent</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:~TUsrEvent">~TUsrEvent</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:CalcTimeDiff">CalcTimeDiff</a><!--PLAIN-->(<a href="./TUsrEvent.html">TUsrEvent</a>* Event)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvent:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetClockNsecs">GetClockNsecs</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetClockSecs">GetClockSecs</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetNofEvents">GetNofEvents</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetScaleDown">GetScaleDown</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetTimeRS">GetTimeRS</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetTimeStamp">GetTimeStamp</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetTreeIn">GetTreeIn</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvent:GetTreeOut">GetTreeOut</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvent:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:IsFakeMode">IsFakeMode</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:IsModScaleDown">IsModScaleDown</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:IsReplayMode">IsReplayMode</a><!--PLAIN-->()
+<!--TAB6-->      const <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvent:NextSubevent">NextSubevent</a><!--PLAIN-->(const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>* BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> RawMode = kFALSE) const
+<!--TAB6-->      const <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrEvent:NextSubeventData">NextSubeventData</a><!--PLAIN-->(const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>* BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> RawMode = kFALSE) const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:NextSubeventHeader">NextSubeventHeader</a><!--PLAIN-->(const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a>* BaseAddr)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:SetFakeMode">SetFakeMode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Bool_t">Bool_t</a> FakeMode = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:SetReplayMode">SetReplayMode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReplayMode = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:SetScaleDown">SetScaleDown</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrEvent:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TUsrEvent:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TUsrEvent:fBranch">fBranch</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fBranch">! ptr to event to be used in TTree::Branch()</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a name="TUsrEvent:fTreeOut">fTreeOut</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTreeOut">tree to store data in ROOT format</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <!--TAB--><!--BOLD--><a name="TUsrEvent:fTreeIn">fTreeIn</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTreeIn">tree to read data from ROOT file</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fReplayMode">fReplayMode</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fReplayMode">kTRUE if replay mode on</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fFakeMode">fFakeMode</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fFakeMode">kTRUE if fake mode on</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fNofEntries">fNofEntries</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fNofEntries">number of entries in ROOT tree (replay mode only)</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fType">fType</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fType">event type</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fSubtype">fSubtype</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fSubtype">... subtype</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fTrigger">fTrigger</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTrigger">trigger number</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fEventNumber">fEventNumber</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEventNumber">event number provided by MBS</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fNofEvents">fNofEvents</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNofEvents">number of events collected so far</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fScaleDown">fScaleDown</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fScaleDown">individual scale down factor</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fClockRes">fClockRes</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fClockRes">clock resolution in nsecs</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fClockSecs">fClockSecs</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fClockSecs">seconds since January 1, 1970</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fClockNsecs">fClockNsecs</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fClockNsecs">nano secs of current second</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fTimeRS">fTimeRS</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTimeRS">time (ROOT style)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TUsrEvent:fLofSubevents">fLofSubevents</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofSubevents">list of subevents</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TUsrEvtStart.html">TUsrEvtStart</a>, <a href="./TUsrEvtStop.html">TUsrEvtStop</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TUsrEvent:description">Class Description</a></h2>
+<pre>
+ Name:           <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.cxx
+ Purpose:        Implement class methods for user's analysis
+ Description:    This code defines class methods for data analysis
+                 common to all user applications
+
+ Header files:   <a href="./TMrbAnalyze.html">TMrbAnalyze</a>.h     -- class definitions
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TUsrEvent:NextSubevent" href="src/TUsrEvent.cxx.html#TUsrEvent:NextSubevent">NextSubevent</a>(const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords, <a href="ListOfTypes.html#Bool_t">Bool_t</a> RawMode) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvent.html#TUsrEvent:NextSubevent">TUsrEvent::NextSubevent</a>
+ Purpose:        Get next subevent
+ Arguments:      const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr -- pointer to base of MBS data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords             -- expected number of data words
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> RawMode             -- pass data as is, don't decode
+                                               subevent structure
+ Results:        const <a href="ListOfTypes.html#UShort_t">UShort_t</a> * SevtData  -- pointer to current (unpacked) data
+ Exceptions:
+ Description:    Unpacks next subevent from current event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TUsrEvent:NextSubeventHeader" href="src/TUsrEvent.cxx.html#TUsrEvent:NextSubeventHeader">NextSubeventHeader</a>(const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvent.html#TUsrEvent:NextSubeventHeader">TUsrEvent::NextSubeventHeader</a>
+ Purpose:        Get next subevent header
+ Arguments:      const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr -- pointer to base of MBS data
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> SevtType            -- subevent type
+ Exceptions:
+ Description:    Unpacks next subevent header from current event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TUsrEvent:NextSubeventData" href="src/TUsrEvent.cxx.html#TUsrEvent:NextSubeventData">NextSubeventData</a>(const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords, <a href="ListOfTypes.html#Bool_t">Bool_t</a> RawMode) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvent.html#TUsrEvent:NextSubeventData">TUsrEvent::NextSubeventData</a>
+ Purpose:        Get next subevent
+ Arguments:      const <a href="ListOfTypes.html#MBSDataIO">MBSDataIO</a> * BaseAddr -- pointer to base of MBS data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords             -- expected number of data words
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> RawMode             -- pass data as is, don't decode
+                                               subevent structure
+ Results:        const <a href="ListOfTypes.html#UShort_t">UShort_t</a> * SevtData  -- pointer to current (unpacked) data
+ Exceptions:
+ Description:    Unpacks next subevent from current event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:CalcTimeDiff" href="src/TUsrEvent.cxx.html#TUsrEvent:CalcTimeDiff">CalcTimeDiff</a>(<a href="./TUsrEvent.html">TUsrEvent</a> * BaseEvent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvent.html#TUsrEvent:CalcTimeDiff">TUsrEvent::CalcTimeDiff</a>
+ Purpose:        Calculate time with respect to event
+ Arguments:      <a href="./TUsrEvent.html">TUsrEvent</a> * BaseEvent      -- event used as time base
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TimeDiff             -- time diff in microsecs
+ Exceptions:
+ Description:    Calculates time difference from internal secs/nsecs values.
+                 Result is given in units of 100 micro seconds so it may be
+                 used as time stamp via <a href="http://root.cern.ch/root/html/TObject.html#TObject:SetUniqueID">TObject::SetUniqueID</a>().
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:CalcTimeRS" href="src/TUsrEvent.cxx.html#TUsrEvent:CalcTimeRS">CalcTimeRS</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrEvent.html#TUsrEvent:CalcTimeRS">TUsrEvent::CalcTimeRS</a>
+ Purpose:        Calculate time in ROOT format
+ Arguments:
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> TimeRS           -- time in ROOT format
+ Exceptions:
+ Description:    Calculates time from internal values and converts it to
+                 ROOT format. Result is stored in <a href="./TUsrEvent.html#TUsrEvent:fTimeRS">fTimeRS</a>.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TUsrEvent.html">TUsrEvent</a> <a name="TUsrEvent:TUsrEvent" href="TMrbAnalyze.h">TUsrEvent</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:SetScaleDown" href="TMrbAnalyze.h">SetScaleDown</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ScaleDown)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:GetScaleDown" href="TMrbAnalyze.h">GetScaleDown</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:GetClockSecs" href="TMrbAnalyze.h">GetClockSecs</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:GetClockNsecs" href="TMrbAnalyze.h">GetClockNsecs</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:GetTimeStamp" href="TMrbAnalyze.h">GetTimeStamp</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:GetTimeRS" href="TMrbAnalyze.h">GetTimeRS</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <a name="TUsrEvent:GetTreeIn" href="TMrbAnalyze.h">GetTreeIn</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="http://root.cern.ch/root/html/TTree.html">TTree</a>* <a name="TUsrEvent:GetTreeOut" href="TMrbAnalyze.h">GetTreeOut</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:SetReplayMode" href="TMrbAnalyze.h">SetReplayMode</a>(const <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReplayMode = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrEvent:IsReplayMode" href="TMrbAnalyze.h">IsReplayMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:SetFakeMode" href="TMrbAnalyze.h">SetFakeMode</a>(const <a href="ListOfTypes.html#Bool_t">Bool_t</a> FakeMode = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrEvent:IsFakeMode" href="TMrbAnalyze.h">IsFakeMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrEvent:GetNofEvents" href="TMrbAnalyze.h">GetNofEvents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrEvent:IsModScaleDown" href="TMrbAnalyze.h">IsModScaleDown</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:Help" href="TMrbAnalyze.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:SetTimeStamp" href="TMrbAnalyze.h">SetTimeStamp</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> TimeStamp)
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrEvent:Class" href="TMrbAnalyze.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrEvent:IsA" href="TMrbAnalyze.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:ShowMembers" href="TMrbAnalyze.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:Streamer" href="TMrbAnalyze.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:StreamerNVirtual" href="TMrbAnalyze.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrEvent:~TUsrEvent" href="TMrbAnalyze.h">~TUsrEvent</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:58:39 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

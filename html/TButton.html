@@ -1,0 +1,91 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TButton</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TButton:description">class description</a> - <a href="src/TButton.cxx.html">source file</a> - <a href="TButton_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TButton" href="TButton.h">TButton</a> : public <a href="http://root.cern.ch/root/html/TPad.html">TPad</a>, public <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TButton.html">TButton</a> <!--TAB--><!--BOLD--><a href="#TButton:TButton">TButton</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TButton.html">TButton</a>&amp; org)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TButton.html">TButton</a>&amp; <!--TAB--><!--BOLD--><a href="#TButton:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TButton.html">TButton</a>&amp; rhs)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TButton.html">TButton</a> <!--TAB--><!--BOLD--><a href="#TButton:TButton">TButton</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TButton.html">TButton</a> <!--TAB--><!--BOLD--><a href="#TButton:TButton">TButton</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title, const <a href="ListOfTypes.html#char">char</a>* method, <a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:~TButton">~TButton</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TButton:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:Divide">Divide</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nx = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> ny = 1, <a href="ListOfTypes.html#Float_t">Float_t</a> xmargin = 0.01, <a href="ListOfTypes.html#Float_t">Float_t</a> ymargin = 0.01, <a href="ListOfTypes.html#Int_t">Int_t</a> color = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TButton:GetFraming">GetFraming</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TButton:GetMethod">GetMethod</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TButton:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:PaintModified">PaintModified</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:Range">Range</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x1, <a href="ListOfTypes.html#Double_t">Double_t</a> y1, <a href="ListOfTypes.html#Double_t">Double_t</a> x2, <a href="ListOfTypes.html#Double_t">Double_t</a> y2)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetBorderMode">SetBorderMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Short_t">Short_t</a> bordermode)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetFraming">SetFraming</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> f = 1)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetGrid">SetGrid</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> valuex = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> valuey = 1)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetLogx">SetLogx</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetLogy">SetLogy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> value = 1)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetMethod">SetMethod</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TButton:x3d">x3d</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+</pre>
+
+<h3><!--TAB2-->  <a name="TButton:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TButton:fFocused">fFocused</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFocused">If cursor is in...</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TButton:fFraming">fFraming</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFraming">True if you want a frame to be painted when pressed</a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TButton:fMethod">fMethod</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMethod">Method to be executed by this button</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGroupButton.html">TGroupButton</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TButton:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:11 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

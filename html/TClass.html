@@ -1,0 +1,180 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TClass</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TClass:description">class description</a> - <a href="src/TClass.cxx.html">source file</a> - <a href="TClass_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TClass" href="TClass.h">TClass</a> : public <a href="http://root.cern.ch/root/html/TDictionary.html">TDictionary</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetClassMethod">GetClassMethod</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> faddr)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetClassMethod">GetClassMethod</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* signature)
+<!--TAB6-->          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Init">Init</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Version_t">Version_t</a> cversion, const type_info* info, <a href="ListOfTypes.html#IsAFunc_t">IsAFunc_t</a> isa, <a href="ListOfTypes.html#ShowMembersFunc_t">ShowMembersFunc_t</a> showmember, const <a href="ListOfTypes.html#char">char</a>* dfil, const <a href="ListOfTypes.html#char">char</a>* ifil, <a href="ListOfTypes.html#Int_t">Int_t</a> dl, <a href="ListOfTypes.html#Int_t">Int_t</a> il)
+<!--TAB6-->          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:SetClassVersion">SetClassVersion</a><!--PLAIN-->(<a href="ListOfTypes.html#Version_t">Version_t</a> version)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a> <!--TAB--><!--BOLD--><a href="#TClass:TClass">TClass</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a> <!--TAB--><!--BOLD--><a href="#TClass:TClass">TClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a> <!--TAB--><!--BOLD--><a href="#TClass:TClass">TClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Version_t">Version_t</a> cversion, const <a href="ListOfTypes.html#char">char</a>* dfil = "0", const <a href="ListOfTypes.html#char">char</a>* ifil = "0", <a href="ListOfTypes.html#Int_t">Int_t</a> dl = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> il = 0)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a> <!--TAB--><!--BOLD--><a href="#TClass:TClass">TClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Version_t">Version_t</a> cversion, const type_info&amp; info, <a href="ListOfTypes.html#IsAFunc_t">IsAFunc_t</a> isa, <a href="ListOfTypes.html#ShowMembersFunc_t">ShowMembersFunc_t</a> showmember, const <a href="ListOfTypes.html#char">char</a>* dfil, const <a href="ListOfTypes.html#char">char</a>* ifil, <a href="ListOfTypes.html#Int_t">Int_t</a> dl, <a href="ListOfTypes.html#Int_t">Int_t</a> il)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a> <!--TAB--><!--BOLD--><a href="#TClass:TClass">TClass</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:~TClass">~TClass</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:AddImplFile">AddImplFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="ListOfTypes.html#int">int</a> line)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:AddInstance">AddInstance</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> heap = kFALSE)
+<!--TAB6-->             static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:AutoBrowse">AutoBrowse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* browser)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:BuildRealData">BuildRealData</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* pointer = 0)
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:CanIgnoreTObjectStreamer">CanIgnoreTObjectStreamer</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:Compare">Compare</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Destructor">Destructor</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* obj, <a href="ListOfTypes.html#Bool_t">Bool_t</a> dtorOnly = kFALSE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TClass:DynamicCast">DynamicCast</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* base, <a href="ListOfTypes.html#void">void</a>* obj, <a href="ListOfTypes.html#Bool_t">Bool_t</a> up = kTRUE)
+<!--TAB6-->                    <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClass:EscapeChars">EscapeChars</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* text) const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetActualClass">GetActualClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#void">void</a>* object) const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetBaseClass">GetBaseClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname)
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetBaseClass">GetBaseClass</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* base)
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetBaseClassOffset">GetBaseClassOffset</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* base)
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetBaseDataMember">GetBaseDataMember</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* datamember)
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetCheckSum">GetCheckSum</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> code = 0) const
+<!--TAB6-->            G__ClassInfo* <!--TAB--><!--BOLD--><a href="#TClass:GetClassInfo">GetClassInfo</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Version_t">Version_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetClassVersion">GetClassVersion</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TDataMember.html">TDataMember</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetDataMember">GetDataMember</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* datamember)
+<!--TAB6-->                  <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetDeclFileLine">GetDeclFileLine</a><!--PLAIN-->() const
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetDeclFileName">GetDeclFileName</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetHeapInstanceCount">GetHeapInstanceCount</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetImplFileLine">GetImplFileLine</a><!--PLAIN-->() const
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetImplFileName">GetImplFileName</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetInstanceCount">GetInstanceCount</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetListOfAllPublicDataMembers">GetListOfAllPublicDataMembers</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetListOfAllPublicMethods">GetListOfAllPublicMethods</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetListOfBases">GetListOfBases</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetListOfDataMembers">GetListOfDataMembers</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetListOfMethods">GetListOfMethods</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetListOfRealData">GetListOfRealData</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:GetMenuItems">GetMenuItems</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* listitems)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetMenuList">GetMenuList</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetMethod">GetMethod</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* params)
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetMethodAllAny">GetMethodAllAny</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method)
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetMethodAny">GetMethodAny</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method)
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetMethodWithPrototype">GetMethodWithPrototype</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* proto)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetNdata">GetNdata</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetNmethods">GetNmethods</a><!--PLAIN-->()
+<!--TAB6-->        <a href="ListOfTypes.html#ShowMembersFunc_t">ShowMembersFunc_t</a> <!--TAB--><!--BOLD--><a href="#TClass:GetShowMembersWrapper">GetShowMembersWrapper</a><!--PLAIN-->()
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetStreamerInfo">GetStreamerInfo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> version = 0)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetStreamerInfos">GetStreamerInfos</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClass:GetTitle">GetTitle</a><!--PLAIN-->() const
+<!--TAB6-->         const type_info* <!--TAB--><!--BOLD--><a href="#TClass:GetTypeInfo">GetTypeInfo</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TClass:Hash">Hash</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:IgnoreTObjectStreamer">IgnoreTObjectStreamer</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ignore = kTRUE)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:InheritsFrom">InheritsFrom</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* cl) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:InheritsFrom">InheritsFrom</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl) const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:IsCallingNew">IsCallingNew</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:IsForeign">IsForeign</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:IsLoaded">IsLoaded</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TClass:IsTObject">IsTObject</a><!--PLAIN-->() const
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClass:Load">Load</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:MakeCustomMenuList">MakeCustomMenuList</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TClass:New">New</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> defConstructor = kTRUE)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TClass:New">New</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* arena, <a href="ListOfTypes.html#Bool_t">Bool_t</a> defConstructor = kTRUE)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TClass:Property">Property</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="ListOfTypes.html#void">void</a>* pointer, <a href="ListOfTypes.html#Int_t">Int_t</a> version, <a href="ListOfTypes.html#UInt_t">UInt_t</a> start, <a href="ListOfTypes.html#UInt_t">UInt_t</a> count)
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="ListOfTypes.html#void">void</a>* pointer)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:ResetInstanceCount">ResetInstanceCount</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:ResetMenuList">ResetMenuList</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:SetStreamer">SetStreamer</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Streamer_t">Streamer_t</a> p)
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TStreamerInfo.html">TStreamerInfo</a>* <!--TAB--><!--BOLD--><a href="#TClass:SetStreamerInfo">SetStreamerInfo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> version, const <a href="ListOfTypes.html#char">char</a>* info)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:SetUnloaded">SetUnloaded</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:Size">Size</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Store">Store</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b) const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Streamer">Streamer</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* object, <a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClass:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClass:WriteBuffer">WriteBuffer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b, <a href="ListOfTypes.html#void">void</a>* pointer, const <a href="ListOfTypes.html#char">char</a>* info)
+</pre>
+
+<h3><!--TAB2-->  <a name="TClass:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TClass:fName">fName</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fName">name of class</a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* <!--TAB--><!--BOLD--><a name="TClass:fStreamerInfo">fStreamerInfo</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fStreamerInfo">Array of TStreamerInfo</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fRealData">fRealData</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fRealData">linked list for persistent members including base classes</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fBase">fBase</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fBase">linked list for base classes</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fData">fData</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fData">linked list for data members</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fMethod">fMethod</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMethod">linked list for methods</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fAllPubData">fAllPubData</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fAllPubData">all public data members (including from base classes)</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fAllPubMethod">fAllPubMethod</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAllPubMethod">all public methods (including from base classes)</a></i>
+<!--TAB6-->            const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TClass:fDeclFileName">fDeclFileName</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDeclFileName">name of class declaration file</a></i>
+<!--TAB6-->            const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a name="TClass:fImplFileName">fImplFileName</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fImplFileName">name of class implementation file</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a name="TClass:fDeclFileLine">fDeclFileLine</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDeclFileLine">line of class declaration</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Short_t">Short_t</a> <!--TAB--><!--BOLD--><a name="TClass:fImplFileLine">fImplFileLine</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fImplFileLine">line of class implementation</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TClass:fInstanceCount">fInstanceCount</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fInstanceCount">number of instances of this class</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TClass:fOnHeap">fOnHeap</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fOnHeap">number of instances on heap</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TClass:fCheckSum">fCheckSum</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCheckSum">checksum of data members and base classes</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Version_t">Version_t</a> <!--TAB--><!--BOLD--><a name="TClass:fClassVersion">fClassVersion</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fClassVersion">Class version Identifier</a></i>
+<!--TAB6-->          G__ClassInfo* <!--TAB--><!--BOLD--><a name="TClass:fClassInfo">fClassInfo</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fClassInfo">pointer to CINT class info class</a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TClass:fClassMenuList">fClassMenuList</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fClassMenuList">list of class menu items</a></i>
+<!--TAB6-->       const type_info* <!--TAB--><!--BOLD--><a name="TClass:fTypeInfo">fTypeInfo</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTypeInfo">pointer to the C++ type information.</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#ShowMembersFunc_t">ShowMembersFunc_t</a> <!--TAB--><!--BOLD--><a name="TClass:fShowMembers">fShowMembers</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fShowMembers">pointer to the class's ShowMembers function</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#IsAFunc_t">IsAFunc_t</a> <!--TAB--><!--BOLD--><a name="TClass:fIsA">fIsA</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fIsA">pointer to the class's IsA function.</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TClass:fVersionUsed">fVersionUsed</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fVersionUsed">!Indicated whether GetClassVersion has been called</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TClass:fProperty">fProperty</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fProperty">!Property</a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TClass:fInterStreamer">fInterStreamer</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fInterStreamer">!saved info to call Streamer</a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a name="TClass:fOffsetStreamer">fOffsetStreamer</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fOffsetStreamer">!saved info to call Streamer</a></i>
+<!--TAB6-->          static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TClass:fgCallingNew">fgCallingNew</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fgCallingNew">True when TClass:New is executing</a></i>
+<!--TAB6-->           static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TClass:fgClassCount">fgClassCount</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fgClassCount">provides unique id for a each class</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClass:kLoading">kLoading</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kLoading"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClass:kClassSaved">kClassSaved</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kClassSaved"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClass:kIgnoreTObjectStreamer">kIgnoreTObjectStreamer</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kIgnoreTObjectStreamer"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClass:kUnloaded">kUnloaded</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kUnloaded"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClass:kIsTObject">kIsTObject</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kIsTObject"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TClass:kIsForeign">kIsForeign</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kIsForeign"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TQClass.html">TQClass</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TClass:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:12 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

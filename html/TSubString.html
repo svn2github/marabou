@@ -1,0 +1,102 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSubString</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSubString:description">class description</a> - <a href="src/TSubString.cxx.html">source file</a> - <a href="TSubString_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSubString" href="TString.h">TSubString</a> </h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="./TSubString.html">TSubString</a> <!--TAB--><!--BOLD--><a href="#TSubString:TSubString">TSubString</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> start, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> len)
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSubString:AssertElement">AssertElement</a><!--PLAIN-->(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i) const
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSubString:SubStringError">SubStringError</a><!--PLAIN-->(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a>, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a>, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a>) const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="./TSubString.html">TSubString</a> <!--TAB--><!--BOLD--><a href="#TSubString:TSubString">TSubString</a><!--PLAIN-->(const <a href="./TSubString.html">TSubString</a>&amp; s)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSubString:~TSubString">~TSubString</a><!--PLAIN-->()
+<!--TAB6-->      const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSubString:Data">Data</a><!--PLAIN-->() const
+<!--TAB6-->           <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSubString:IsNull">IsNull</a><!--PLAIN-->() const
+<!--TAB6-->           <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> <!--TAB--><!--BOLD--><a href="#TSubString:Length">Length</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a href="#TSubString:operator!">operator!</a><!--PLAIN-->() const
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>&amp; <!--TAB--><!--BOLD--><a href="#TSubString:operator()">operator()</a><!--PLAIN-->(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i)
+<!--TAB6-->             <a href="ListOfTypes.html#char">char</a> <!--TAB--><!--BOLD--><a href="#TSubString:operator()">operator()</a><!--PLAIN-->(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i) const
+<!--TAB6-->      <a href="./TSubString.html">TSubString</a>&amp; <!--TAB--><!--BOLD--><a href="#TSubString:operator=">operator=</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s)
+<!--TAB6-->      <a href="./TSubString.html">TSubString</a>&amp; <!--TAB--><!--BOLD--><a href="#TSubString:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+<!--TAB6-->            <a href="ListOfTypes.html#char">char</a>&amp; <!--TAB--><!--BOLD--><a href="#TSubString:operator[]">operator[]</a><!--PLAIN-->(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i)
+<!--TAB6-->             <a href="ListOfTypes.html#char">char</a> <!--TAB--><!--BOLD--><a href="#TSubString:operator[]">operator[]</a><!--PLAIN-->(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i) const
+<!--TAB6-->           <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> <!--TAB--><!--BOLD--><a href="#TSubString:Start">Start</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSubString:ToLower">ToLower</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSubString:ToUpper">ToUpper</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TSubString:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a>* <!--TAB--><!--BOLD--><a name="TSubString:fStr">fStr</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStr">Referenced string</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> <!--TAB--><!--BOLD--><a name="TSubString:fBegin">fBegin</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fBegin">Index of starting character</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> <!--TAB--><!--BOLD--><a name="TSubString:fExtent">fExtent</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fExtent">Length of TSubString</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TSubString:description">Class Description</a></h2>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TSubString.html">TSubString</a> <a name="TSubString:TSubString" href="TString.h">TSubString</a>(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> start, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> len)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TSubString:SubStringError" href="TString.h">SubStringError</a>(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a>, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a>, <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a>) const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TSubString:AssertElement" href="TString.h">AssertElement</a>(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i) const
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TSubString.html">TSubString</a> <a name="TSubString:TSubString" href="TString.h">TSubString</a>(const <a href="./TSubString.html">TSubString</a>&amp; s)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TSubString.html">TSubString</a>&amp; <a name="TSubString:operator=" href="TString.h">operator=</a>(const <a href="ListOfTypes.html#char">char</a>* s)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TSubString.html">TSubString</a>&amp; <a name="TSubString:operator=" href="TString.h">operator=</a>(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#char">char</a>&amp; <a name="TSubString:operator()" href="TString.h">operator()</a>(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#char">char</a>&amp; <a name="TSubString:operator[]" href="TString.h">operator[]</a>(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#char">char</a> <a name="TSubString:operator()" href="TString.h">operator()</a>(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i) const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#char">char</a> <a name="TSubString:operator[]" href="TString.h">operator[]</a>(<a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> i) const
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#char">char</a>* <a name="TSubString:Data" href="TString.h">Data</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> <a name="TSubString:Length" href="TString.h">Length</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Ssiz_t">Ssiz_t</a> <a name="TSubString:Start" href="TString.h">Start</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TSubString:ToLower" href="TString.h">ToLower</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TSubString:ToUpper" href="TString.h">ToUpper</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TSubString:IsNull" href="TString.h">IsNull</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#int">int</a> <a name="TSubString:operator!" href="TString.h">operator!</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TSubString:~TSubString" href="TString.h">~TSubString</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:27 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

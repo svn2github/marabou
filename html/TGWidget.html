@@ -1,0 +1,83 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGWidget</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGWidget:description">class description</a> - <a href="src/TGWidget.cxx.html">source file</a> - <a href="TGWidget_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGWidget" href="TGWidget.h">TGWidget</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGWidget:ClearFlags">ClearFlags</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> flags)
+<!--TAB6-->      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGWidget:SetFlags">SetFlags</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> flags)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a> <!--TAB--><!--BOLD--><a href="#TGWidget:TGWidget">TGWidget</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a> <!--TAB--><!--BOLD--><a href="#TGWidget:TGWidget">TGWidget</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> id)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a> <!--TAB--><!--BOLD--><a href="#TGWidget:TGWidget">TGWidget</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGWidget:~TGWidget">~TGWidget</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGWidget:Associate">Associate</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* w)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGWidget:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGWidget:GetCommand">GetCommand</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGWidget:HasFocus">HasFocus</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGWidget:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGWidget:IsEnabled">IsEnabled</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGWidget:SetCommand">SetCommand</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* command)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGWidget:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGWidget:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGWidget:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGWidget:WantFocus">WantFocus</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGWidget:WidgetId">WidgetId</a><!--PLAIN-->() const
+</pre>
+
+<h3><!--TAB2-->  <a name="TGWidget:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGWidget:fWidgetId">fWidgetId</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fWidgetId">the widget id (used for event processing)</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGWidget:fWidgetFlags">fWidgetFlags</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fWidgetFlags">widget status flags (OR of EWidgetStatus)</a></i>
+<!--TAB6-->      const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* <!--TAB--><!--BOLD--><a name="TGWidget:fMsgWindow">fMsgWindow</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMsgWindow">window which handles widget events</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGWidget:fCommand">fCommand</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fCommand">command to be executed</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>, <a href="http://root.cern.ch/root/html/TGComboBox.html">TGComboBox</a>, <a href="http://root.cern.ch/root/html/TGDoubleSlider.html">TGDoubleSlider</a>, <a href="http://root.cern.ch/root/html/TGListBox.html">TGListBox</a>, <a href="http://root.cern.ch/root/html/TGListTree.html">TGListTree</a>, <a href="http://root.cern.ch/root/html/TGNumberEntry.html">TGNumberEntry</a>, <a href="http://root.cern.ch/root/html/TGScrollBar.html">TGScrollBar</a>, <a href="http://root.cern.ch/root/html/TGShutterItem.html">TGShutterItem</a>, <a href="http://root.cern.ch/root/html/TGSlider.html">TGSlider</a>, <a href="http://root.cern.ch/root/html/TGTab.html">TGTab</a>, <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>, <a href="http://root.cern.ch/root/html/TGView.html">TGView</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGWidget:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:22 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

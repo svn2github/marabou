@@ -1,0 +1,77 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSpline5</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSpline5:description">class description</a> - <a href="src/TSpline5.cxx.html">source file</a> - <a href="TSpline5_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSpline5" href="TSpline.h">TSpline5</a> : public <a href="http://root.cern.ch/root/html/TSpline.html">TSpline</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:BoundaryConditions">BoundaryConditions</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* opt, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; beg, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; end, const <a href="ListOfTypes.html#char">char</a>*&amp; cb1, const <a href="ListOfTypes.html#char">char</a>*&amp; ce1, const <a href="ListOfTypes.html#char">char</a>*&amp; cb2, const <a href="ListOfTypes.html#char">char</a>*&amp; ce2)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:BuildCoeff">BuildCoeff</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:SetBoundaries">SetBoundaries</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> b1, <a href="ListOfTypes.html#Double_t">Double_t</a> e1, <a href="ListOfTypes.html#Double_t">Double_t</a> b2, <a href="ListOfTypes.html#Double_t">Double_t</a> e2, const <a href="ListOfTypes.html#char">char</a>* cb1, const <a href="ListOfTypes.html#char">char</a>* ce1, const <a href="ListOfTypes.html#char">char</a>* cb2, const <a href="ListOfTypes.html#char">char</a>* ce2)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#char">char</a>* opt = "0", <a href="ListOfTypes.html#Double_t">Double_t</a> b1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> b2 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e2 = 0)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a>* y, <a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#char">char</a>* opt = "0", <a href="ListOfTypes.html#Double_t">Double_t</a> b1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> b2 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e2 = 0)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* func, <a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#char">char</a>* opt = "0", <a href="ListOfTypes.html#Double_t">Double_t</a> b1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> b2 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e2 = 0)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* func, <a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#char">char</a>* opt = "0", <a href="ListOfTypes.html#Double_t">Double_t</a> b1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> b2 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e2 = 0)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title, <a href="http://root.cern.ch/root/html/TGraph.html">TGraph</a>* g, const <a href="ListOfTypes.html#char">char</a>* opt = "0", <a href="ListOfTypes.html#Double_t">Double_t</a> b1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e1 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> b2 = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> e2 = 0)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a> <!--TAB--><!--BOLD--><a href="#TSpline5:TSpline5">TSpline5</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSpline5.html">TSpline5</a>&amp;)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:~TSpline5">~TSpline5</a><!--PLAIN-->()
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSpline5:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSpline5:Eval">Eval</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x) const
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:GetCoeff">GetCoeff</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; x, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; y, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; b, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; c, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; d, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; e, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; f)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:GetKnot">GetKnot</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; x, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; y) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSpline5:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->           static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpline5:Test">Test</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TSpline5:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TSplinePoly5.html">TSplinePoly5</a>* <!--TAB--><!--BOLD--><a name="TSpline5:fPoly">fPoly</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPoly">[fNp] Array of polynomial terms</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TSpline5:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:24 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

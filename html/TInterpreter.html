@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TInterpreter</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TInterpreter:description">class description</a> - <a href="src/TInterpreter.cxx.html">source file</a> - <a href="TInterpreter_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TInterpreter" href="TInterpreter.h">TInterpreter</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Execute">Execute</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* method, <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* params, <a href="ListOfTypes.html#int">int</a>* error = 0)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:~TInterpreter">~TInterpreter</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:AddIncludePath">AddIncludePath</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* path)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Calc">Calc</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* line, <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a>* error = 0)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:CheckClassInfo">CheckClassInfo</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ClearFileBusy">ClearFileBusy</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ClearStack">ClearStack</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:CreateListOfBaseClasses">CreateListOfBaseClasses</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:CreateListOfDataMembers">CreateListOfDataMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:CreateListOfMethodArgs">CreateListOfMethodArgs</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TFunction.html">TFunction</a>* m)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:CreateListOfMethods">CreateListOfMethods</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:DeleteGlobal">DeleteGlobal</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:EndOfLineAction">EndOfLineAction</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Execute">Execute</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* function, const <a href="ListOfTypes.html#char">char</a>* params, <a href="ListOfTypes.html#int">int</a>* error = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Execute">Execute</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, const <a href="ListOfTypes.html#char">char</a>* method, const <a href="ListOfTypes.html#char">char</a>* params, <a href="ListOfTypes.html#int">int</a>* error = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Execute">Execute</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="http://root.cern.ch/root/html/TMethod.html">TMethod</a>* method, <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>* params, <a href="ListOfTypes.html#int">int</a>* error = 0)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ExecuteMacro">ExecuteMacro</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a>* error = 0)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:GetExitCode">GetExitCode</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:GetIncludePath">GetIncludePath</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:GetInterfaceMethod">GetInterfaceMethod</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#char">char</a>* method, <a href="ListOfTypes.html#char">char</a>* params)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:GetInterfaceMethodWithPrototype">GetInterfaceMethodWithPrototype</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#char">char</a>* method, <a href="ListOfTypes.html#char">char</a>* proto)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:GetMore">GetMore</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:GetPrompt">GetPrompt</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:GetSharedLibs">GetSharedLibs</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:InitializeDictionaries">InitializeDictionaries</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:IsErrorMessagesEnabled">IsErrorMessagesEnabled</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:IsLoaded">IsLoaded</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:LoadMacro">LoadMacro</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a>* error = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:PrintIntro">PrintIntro</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ProcessLine">ProcessLine</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* line, <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a>* error = 0)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ProcessLineSynch">ProcessLineSynch</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* line, <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a>* error = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ResetAll">ResetAll</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ResetGlobals">ResetGlobals</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:RewindDictionary">RewindDictionary</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:SaveContext">SaveContext</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:SaveGlobalsContext">SaveGlobalsContext</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:SetClassInfo">SetClassInfo</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl, <a href="ListOfTypes.html#Bool_t">Bool_t</a> reload = kFALSE)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:SetErrorMessages">SetErrorMessages</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> enable = kTRUE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TInterpreter:TypeName">TypeName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* s) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:UpdateListOfGlobalFunctions">UpdateListOfGlobalFunctions</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:UpdateListOfGlobals">UpdateListOfGlobals</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TInterpreter:UpdateListOfTypes">UpdateListOfTypes</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TInterpreter:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a> <!--TAB--><!--BOLD--><a name="TInterpreter:kNoError">kNoError</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kNoError"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a> <!--TAB--><!--BOLD--><a name="TInterpreter:kRecoverable">kRecoverable</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kRecoverable"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a> <!--TAB--><!--BOLD--><a name="TInterpreter:kDangerous">kDangerous</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDangerous"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a> <!--TAB--><!--BOLD--><a name="TInterpreter:kFatal">kFatal</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kFatal"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TInterpreter.html#TInterpreter:EErrorCode">TInterpreter::EErrorCode</a> <!--TAB--><!--BOLD--><a name="TInterpreter:kProcessing">kProcessing</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kProcessing"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TCint.html">TCint</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TInterpreter:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGTableLayout</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGTableLayout:description">class description</a> - <a href="src/TGTableLayout.cxx.html">source file</a> - <a href="TGTableLayout_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGTableLayout" href="TGTableLayout.h">TGTableLayout</a> : public <a href="http://root.cern.ch/root/html/TGLayoutManager.html">TGLayoutManager</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:CheckSanity">CheckSanity</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:FindRowColSizes">FindRowColSizes</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:FindRowColSizesHomogeneous">FindRowColSizesHomogeneous</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:FindRowColSizesInit">FindRowColSizesInit</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:FindRowColSizesMultiplyAttached">FindRowColSizesMultiplyAttached</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:FindRowColSizesSinglyAttached">FindRowColSizesSinglyAttached</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:SetRowColResize">SetRowColResize</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> real_size, <a href="ListOfTypes.html#UInt_t">UInt_t</a> nthings, <a href="http://root.cern.ch/root/html/TGTableLayout.html#TGTableLayout:TableData">TGTableLayout::TableData</a>* thing, <a href="ListOfTypes.html#Bool_t">Bool_t</a> homogeneous)
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:SetRowColSizes">SetRowColSizes</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:SetRowColSizesInit">SetRowColSizesInit</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGTableLayout.html">TGTableLayout</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:TGTableLayout">TGTableLayout</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> nrows, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ncols, <a href="ListOfTypes.html#Bool_t">Bool_t</a> homogeneous = kFALSE, <a href="ListOfTypes.html#Int_t">Int_t</a> sep = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> hints = 0)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGTableLayout.html">TGTableLayout</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:TGTableLayout">TGTableLayout</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGTableLayout.html">TGTableLayout</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:~TGTableLayout">~TGTableLayout</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTableLayout:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTableLayout:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTableLayout:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGTableLayout:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTableLayout.html#TGTableLayout:TableData">TGTableLayout::TableData</a>* <!--TAB--><!--BOLD--><a name="TGTableLayout:fRow">fRow</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fRow">info about each row</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTableLayout.html#TGTableLayout:TableData">TGTableLayout::TableData</a>* <!--TAB--><!--BOLD--><a name="TGTableLayout:fCol">fCol</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fCol">info about each column</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TGTableLayout:fMain">fMain</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fMain">container frame</a></i>
+<!--TAB6-->                         <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TGTableLayout:fList">fList</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fList">list of frames to arrange</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayout:fHomogeneous">fHomogeneous</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHomogeneous">all cols/rows same size</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayout:fSep">fSep</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSep">interval between frames</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayout:fHints">fHints</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHints">layout hints (currently not used)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayout:fNrows">fNrows</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNrows">number of rows</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGTableLayout:fNcols">fNcols</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNcols">number of columns</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGTableLayout:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,192 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbLayout</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbLayout:description">class description</a> - <a href="src/TGMrbLayout.cxx.html">source file</a> - <a href="TGMrbLayout_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbLayout" href="TGMrbLayout.h">TGMrbLayout</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:CreateGC">CreateGC</a><!--PLAIN-->(<a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> Font, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Background)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TGMrbLayout.html">TGMrbLayout</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:TGMrbLayout">TGMrbLayout</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Font = "Gui.NormalFont", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Foreground = "black", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Background = "white", <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* Hints = NULL)
+<!--TAB6-->          <a href="./TGMrbLayout.html">TGMrbLayout</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:TGMrbLayout">TGMrbLayout</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Font, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Background, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* Hints = NULL)
+<!--TAB6-->          <a href="./TGMrbLayout.html">TGMrbLayout</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:TGMrbLayout">TGMrbLayout</a><!--PLAIN-->(const <a href="./TGMrbLayout.html">TGMrbLayout</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:~TGMrbLayout">~TGMrbLayout</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:BG">BG</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLayout:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:FG">FG</a><!--PLAIN-->()
+<!--TAB6-->         <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:Font">Font</a><!--PLAIN-->()
+<!--TAB6-->           <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:GC">GC</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLayout:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLayout:LH">LH</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetBG">SetBG</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Background)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetBG">SetBG</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> Background)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetFG">SetFG</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Foreground)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetFG">SetFG</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetFont">SetFont</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Font)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetFont">SetFont</a><!--PLAIN-->(<a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> Font)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:SetLH">SetLH</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* Hints)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLayout:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbLayout:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGMrbLayout:fGC">fGC</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fGC"></a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGMrbLayout:fFont">fFont</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFont"></a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGMrbLayout:fForeground">fForeground</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fForeground"></a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGMrbLayout:fBackground">fBackground</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fBackground"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGMrbLayout:fLayoutHints">fLayoutHints</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLayoutHints"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbLayout:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/<a href="./TGMrbLayout.html">TGMrbLayout</a>.cxx
+ Purpose:        MARaBOU utilities: Graphic context
+ Description:    Implements utilities to specify GC
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbLayout:TGMrbLayout" href="src/TGMrbLayout.cxx.html#TGMrbLayout:TGMrbLayout">TGMrbLayout</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Font, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Foreground, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Background, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a> * Hints) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbLayout.html">TGMrbLayout</a>
+ Purpose:        Graphic context within MARaBOU
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Font         -- font
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Foreground   -- foreground color
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Background   -- background color
+ Description:    A graphic context within MARaBOU
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbLayout:TGMrbLayout" href="src/TGMrbLayout.cxx.html#TGMrbLayout:TGMrbLayout">TGMrbLayout</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Font, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Background, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a> * Hints) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbLayout.html">TGMrbLayout</a>
+ Purpose:        Graphic context within MARaBOU
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Font         -- font
+                 <a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground    -- foreground color
+                 ULOng_t Background    -- background color
+ Description:    A graphic context within MARaBOU
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLayout:SetFont" href="src/TGMrbLayout.cxx.html#TGMrbLayout:SetFont">SetFont</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Font) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbLayout.html#TGMrbLayout:SetFont">TGMrbLayout::SetFont</a>
+ Purpose:        Change font in a GC
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Font      -- font name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a font.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLayout:SetFG" href="src/TGMrbLayout.cxx.html#TGMrbLayout:SetFG">SetFG</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Foreground) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbLayout.html#TGMrbLayout:SetFG">TGMrbLayout::SetFG</a>
+ Purpose:        Change foreground
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Foreground  -- foreground color
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a foreground.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLayout:SetBG" href="src/TGMrbLayout.cxx.html#TGMrbLayout:SetBG">SetBG</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Background) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbLayout.html#TGMrbLayout:SetBG">TGMrbLayout::SetBG</a>
+ Purpose:        Change background
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Background  -- background color
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines a background.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#GContext_t">GContext_t</a> <a name="TGMrbLayout:CreateGC" href="src/TGMrbLayout.cxx.html#TGMrbLayout:CreateGC">CreateGC</a>(<a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> Font, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Background) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbLayout.html#TGMrbLayout:CreateGC">TGMrbLayout::CreateGC</a>
+ Purpose:        Create a new GC
+ Arguments:      <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> Font     -- font
+                 <a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground    -- foreground
+                 <a href="ListOfTypes.html#ULong_t">ULong_t</a> Background    -- background
+ Results:        <a href="ListOfTypes.html#GContext_t">GContext_t</a> GC         -- graphic context
+ Exceptions:
+ Description:    Creates a new GC.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="ListOfTypes.html#GContext_t">GContext_t</a> <a name="TGMrbLayout:GC" href="TGMrbLayout.h">GC</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:SetFont" href="TGMrbLayout.h">SetFont</a>(<a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> Font)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <a name="TGMrbLayout:Font" href="TGMrbLayout.h">Font</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:SetFG" href="TGMrbLayout.h">SetFG</a>(<a href="ListOfTypes.html#ULong_t">ULong_t</a> Foreground)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#ULong_t">ULong_t</a> <a name="TGMrbLayout:FG" href="TGMrbLayout.h">FG</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:SetBG" href="TGMrbLayout.h">SetBG</a>(<a href="ListOfTypes.html#ULong_t">ULong_t</a> Background)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#ULong_t">ULong_t</a> <a name="TGMrbLayout:BG" href="TGMrbLayout.h">BG</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:SetLH" href="TGMrbLayout.h">SetLH</a>(<a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* Hints)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <a name="TGMrbLayout:LH" href="TGMrbLayout.h">LH</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:Help" href="TGMrbLayout.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbLayout:Class" href="TGMrbLayout.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbLayout:IsA" href="TGMrbLayout.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:ShowMembers" href="TGMrbLayout.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:Streamer" href="TGMrbLayout.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:StreamerNVirtual" href="TGMrbLayout.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="./TGMrbLayout.html">TGMrbLayout</a> <a name="TGMrbLayout:TGMrbLayout" href="TGMrbLayout.h">TGMrbLayout</a>(const <a href="./TGMrbLayout.html">TGMrbLayout</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbLayout:~TGMrbLayout" href="TGMrbLayout.h">~TGMrbLayout</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:54:30 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

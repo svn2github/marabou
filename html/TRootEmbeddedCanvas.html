@@ -1,0 +1,79 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TRootEmbeddedCanvas</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TRootEmbeddedCanvas:description">class description</a> - <a href="src/TRootEmbeddedCanvas.cxx.html">source file</a> - <a href="TRootEmbeddedCanvas_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TRootEmbeddedCanvas" href="TRootEmbeddedCanvas.h">TRootEmbeddedCanvas</a> : public <a href="http://root.cern.ch/root/html/TGCanvas.html">TGCanvas</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerButton">HandleContainerButton</a><!--PLAIN-->(Event_t* ev)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerConfigure">HandleContainerConfigure</a><!--PLAIN-->(Event_t* ev)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerCrossing">HandleContainerCrossing</a><!--PLAIN-->(Event_t* ev)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerDoubleClick">HandleContainerDoubleClick</a><!--PLAIN-->(Event_t* ev)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerExpose">HandleContainerExpose</a><!--PLAIN-->(Event_t* ev)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerKey">HandleContainerKey</a><!--PLAIN-->(Event_t* ev)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:HandleContainerMotion">HandleContainerMotion</a><!--PLAIN-->(Event_t* ev)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TRootEmbeddedCanvas.html">TRootEmbeddedCanvas</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:TRootEmbeddedCanvas">TRootEmbeddedCanvas</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kSunkenFrame|kDoubleBorder, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TRootEmbeddedCanvas.html">TRootEmbeddedCanvas</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:TRootEmbeddedCanvas">TRootEmbeddedCanvas</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRootEmbeddedCanvas.html">TRootEmbeddedCanvas</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:~TRootEmbeddedCanvas">~TRootEmbeddedCanvas</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:AdoptCanvas">AdoptCanvas</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* c)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:GetCanvas">GetCanvas</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:GetCanvasWindowId">GetCanvasWindowId</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootEmbeddedCanvas:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TRootEmbeddedCanvas:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TRootEmbeddedCanvas:fCWinId">fCWinId</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fCWinId">window id used by embedded TCanvas</a></i>
+<!--TAB6-->      TRootEmbeddedContainer* <!--TAB--><!--BOLD--><a name="TRootEmbeddedCanvas:fCanvasContainer">fCanvasContainer</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCanvasContainer">container in canvas widget</a></i>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* <!--TAB--><!--BOLD--><a name="TRootEmbeddedCanvas:fCanvas">fCanvas</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fCanvas">pointer to TCanvas</a></i>
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TRootEmbeddedCanvas:fAutoFit">fAutoFit</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fAutoFit">when true canvas container keeps same size as canvas</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TRootEmbeddedCanvas:fButton">fButton</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fButton">currently pressed button</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TRootEmbeddedCanvas:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:14 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

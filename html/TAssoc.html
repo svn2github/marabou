@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TAssoc</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TAssoc:description">class description</a> - <a href="src/TAssoc.cxx.html">source file</a> - <a href="TAssoc_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TAssoc" href="TMap.h">TAssoc</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="./TAssoc.html">TAssoc</a> <!--TAB--><!--BOLD--><a href="#TAssoc:TAssoc">TAssoc</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* key, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* value)
+<!--TAB6-->                   <a href="./TAssoc.html">TAssoc</a> <!--TAB--><!--BOLD--><a href="#TAssoc:TAssoc">TAssoc</a><!--PLAIN-->(const <a href="./TAssoc.html">TAssoc</a>&amp; a)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAssoc:~TAssoc">~TAssoc</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TAssoc:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TAssoc:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TAssoc:Hash">Hash</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TAssoc:IsEqual">IsEqual</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TAssoc:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TAssoc:Key">Key</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TAssoc:Value">Value</a><!--PLAIN-->() const
+</pre>
+
+<h3><!--TAB2-->  <a name="TAssoc:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TAssoc:fKey">fKey</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fKey"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TAssoc:fValue">fValue</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fValue"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TAssoc:description">Class Description</a></h2>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TAssoc.html">TAssoc</a> <a name="TAssoc:TAssoc" href="TMap.h">TAssoc</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* key, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* value)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TAssoc.html">TAssoc</a> <a name="TAssoc:TAssoc" href="TMap.h">TAssoc</a>(const <a href="./TAssoc.html">TAssoc</a>&amp; a)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TAssoc:IsFolder" href="TMap.h">IsFolder</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TAssoc:Browse" href="TMap.h">Browse</a>(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#char">char</a>* <a name="TAssoc:GetName" href="TMap.h">GetName</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <a name="TAssoc:Hash" href="TMap.h">Hash</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TAssoc:IsEqual" href="TMap.h">IsEqual</a>(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TAssoc:Key" href="TMap.h">Key</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TAssoc:Value" href="TMap.h">Value</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TAssoc:~TAssoc" href="TMap.h">~TAssoc</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:07 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

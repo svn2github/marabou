@@ -1,0 +1,88 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGraphAsymmErrors</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGraphAsymmErrors:description">class description</a> - <a href="src/TGraphAsymmErrors.cxx.html">source file</a> - <a href="TGraphAsymmErrors_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGraphAsymmErrors" href="TGraphAsymmErrors.h">TGraphAsymmErrors</a> : public <a href="http://root.cern.ch/root/html/TGraph.html">TGraph</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGraphAsymmErrors.html">TGraphAsymmErrors</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:TGraphAsymmErrors">TGraphAsymmErrors</a><!--PLAIN-->()
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGraphAsymmErrors.html">TGraphAsymmErrors</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:TGraphAsymmErrors">TGraphAsymmErrors</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGraphAsymmErrors.html">TGraphAsymmErrors</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:TGraphAsymmErrors">TGraphAsymmErrors</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#Float_t">Float_t</a>* x, const <a href="ListOfTypes.html#Float_t">Float_t</a>* y, const <a href="ListOfTypes.html#Float_t">Float_t</a>* exl = 0, const <a href="ListOfTypes.html#Float_t">Float_t</a>* exh = 0, const <a href="ListOfTypes.html#Float_t">Float_t</a>* eyl = 0, const <a href="ListOfTypes.html#Float_t">Float_t</a>* eyh = 0)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGraphAsymmErrors.html">TGraphAsymmErrors</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:TGraphAsymmErrors">TGraphAsymmErrors</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#Double_t">Double_t</a>* x, const <a href="ListOfTypes.html#Double_t">Double_t</a>* y, const <a href="ListOfTypes.html#Double_t">Double_t</a>* exl = 0, const <a href="ListOfTypes.html#Double_t">Double_t</a>* exh = 0, const <a href="ListOfTypes.html#Double_t">Double_t</a>* eyl = 0, const <a href="ListOfTypes.html#Double_t">Double_t</a>* eyh = 0)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGraphAsymmErrors.html">TGraphAsymmErrors</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:TGraphAsymmErrors">TGraphAsymmErrors</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGraphAsymmErrors.html">TGraphAsymmErrors</a>&amp;)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:~TGraphAsymmErrors">~TGraphAsymmErrors</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:Apply">Apply</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* f)
+<!--TAB6-->         static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:ComputeRange">ComputeRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; xmax, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; ymax)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:GetErrorX">GetErrorX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:GetErrorY">GetErrorY</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> bin) const
+<!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:GetEXhigh">GetEXhigh</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:GetEXlow">GetEXlow</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:GetEYhigh">GetEYhigh</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:GetEYlow">GetEYlow</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:InsertPoint">InsertPoint</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* chopt)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* chopt) const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:RemovePoint">RemovePoint</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:RemovePoint">RemovePoint</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ipoint)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:SetPoint">SetPoint</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:SetPointError">SetPointError</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> exl, <a href="ListOfTypes.html#Double_t">Double_t</a> exh, <a href="ListOfTypes.html#Double_t">Double_t</a> eyl, <a href="ListOfTypes.html#Double_t">Double_t</a> eyh)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:SetPointError">SetPointError</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i, <a href="ListOfTypes.html#Double_t">Double_t</a> exl, <a href="ListOfTypes.html#Double_t">Double_t</a> exh, <a href="ListOfTypes.html#Double_t">Double_t</a> eyl, <a href="ListOfTypes.html#Double_t">Double_t</a> eyh)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGraphAsymmErrors:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGraphAsymmErrors:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TGraphAsymmErrors:fEXlow">fEXlow</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEXlow">[fNpoints] array of X low errors</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TGraphAsymmErrors:fEXhigh">fEXhigh</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fEXhigh">[fNpoints] array of X high errors</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TGraphAsymmErrors:fEYlow">fEYlow</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEYlow">[fNpoints] array of Y low errors</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TGraphAsymmErrors:fEYhigh">fEYhigh</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fEYhigh">[fNpoints] array of Y high errors</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGraphAsymmErrors:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:24 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

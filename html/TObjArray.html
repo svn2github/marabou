@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TObjArray</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TObjArray:description">class description</a> - <a href="src/TObjArray.cxx.html">source file</a> - <a href="TObjArray_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TObjArray" href="TObjArray.h">TObjArray</a> : public <a href="http://root.cern.ch/root/html/TSeqCollection.html">TSeqCollection</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:BoundsOk">BoundsOk</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* where, <a href="ListOfTypes.html#Int_t">Int_t</a> at) const
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:GetAbsLast">GetAbsLast</a><!--PLAIN-->() const
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Init">Init</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> s, <a href="ListOfTypes.html#Int_t">Int_t</a> lowerBound)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:OutOfBoundsError">OutOfBoundsError</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* where, <a href="ListOfTypes.html#Int_t">Int_t</a> i) const
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a href="#TObjArray:TObjArray">TObjArray</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> s = <a href="http://root.cern.ch/root/html/TCollection.html#TCollection:kInitCapacity">TCollection::kInitCapacity</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> lowerBound = 0)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a href="#TObjArray:TObjArray">TObjArray</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; a)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:~TObjArray">~TObjArray</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddAfter">AddAfter</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* after, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddAt">AddAt</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Int_t">Int_t</a> idx)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddAtAndExpand">AddAtAndExpand</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Int_t">Int_t</a> idx)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddAtFree">AddAtFree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddBefore">AddBefore</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* before, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddFirst">AddFirst</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:AddLast">AddLast</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:After">After</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:At">At</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> idx) const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:Before">Before</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:BinarySearch">BinarySearch</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Int_t">Int_t</a> upto = kMaxInt)
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Compress">Compress</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Expand">Expand</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> newSize)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:First">First</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:GetEntries">GetEntries</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:GetEntriesFast">GetEntriesFast</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:GetLast">GetLast</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>** <!--TAB--><!--BOLD--><a href="#TObjArray:GetObjectRef">GetObjectRef</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:IndexOf">IndexOf</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:IsEmpty">IsEmpty</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:Last">Last</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TObjArray:LowerBound">LowerBound</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:MakeIterator">MakeIterator</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> dir = kIterForward) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>*&amp; <!--TAB--><!--BOLD--><a href="#TObjArray:operator[]">operator[]</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:operator[]">operator[]</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i) const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:Remove">Remove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:RemoveAt">RemoveAt</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> idx)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:SetLast">SetLast</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> last)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Sort">Sort</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> upto = kMaxInt)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TObjArray:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TObjArray:UncheckedAt">UncheckedAt</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> i) const
+</pre>
+
+<h3><!--TAB2-->  <a name="TObjArray:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>** <!--TAB--><!--BOLD--><a name="TObjArray:fCont">fCont</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCont">!Array contents</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TObjArray:fLowerBound">fLowerBound</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLowerBound">Lower bound of the array</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TObjArray:fLast">fLast</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLast">Last element in array containing an object</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>, <a href="./TMrbHistory.html">TMrbHistory</a>, <a href="./TMrbLofDGFs.html">TMrbLofDGFs</a>, <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TObjArray:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:06 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

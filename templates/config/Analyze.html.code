@@ -1,0 +1,52 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <META NAME="Generator" CONTENT="Cosmo Create 1.0.3">
+    <TITLE>%%ANALYZE_FILE%% </TITLE>
+</HEAD>
+<BODY>
+<HR>
+<CENTER><H1 ALIGN="CENTER">
+%%ANALYZE_FILE%%</H1>
+</CENTER><HR>
+<P>
+<FONT SIZE="5">Experiment: %%ANALYZE_TITLE%%</FONT></P>
+<P>
+<FONT SIZE="5">Author:<A HREF="http://www.bl.physik.uni-muenchen.de/~%%USER%%">
+%%AUTHOR%%</A></FONT></P>
+<P>
+<FONT SIZE="5">Creation date: %%CREATION_DATE%%</FONT></P>
+<HR>
+<P>
+<FONT SIZE="5">Experimental setup:</FONT></P>
+<TT>
+<UL>
+%%BeginOfCode%%
+%EVT%	 <LI>
+%EVT%	 <A HREF="HTML/$evtClassName.html">$evtClassName</A> $evtDots $evtTitle (trigger $evtTrigger)
+%EVT%	 <UL>
+%EVTE%   </UL>
+%SEVT%  	  <LI>
+%SEVT%  	  <A HREF="HTML/$sevtClassName.html">$sevtClassName</A> $sevtDots $sevtTitle
+%SEVT%  	  <UL>
+%SEVTE%       </UL>
+%MOD%			 <LI>
+%MOD%			 <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/html/$moduleClassName.html">$moduleClassName</A> $moduleDots $moduleName: $moduleTitle in $modulePosition
+%%EndOfCode%%
+%%HTML_MAKE_SETUP%%
+</UL>
+</TT>
+<HR>
+<P>
+<FONT SIZE="5">Links:</FONT></P>
+<UL>
+    <LI>
+    <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU_Index.html">MARaBOU class index</A>
+    <LI>
+    <A HREF="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">MARaBOU home page</A>
+    <LI>
+	<A HREF="http://root.cern.ch">ROOT home page</A>
+</UL>
+<HR>
+</BODY>
+</HTML>

@@ -1,0 +1,107 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbObject</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbObject:description">class description</a> - <a href="src/TGMrbObject.cxx.html">source file</a> - <a href="TGMrbObject_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbObject" href="TGMrbObject.h">TGMrbObject</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TGMrbObject.html">TGMrbObject</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:TGMrbObject">TGMrbObject</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TGMrbObject.html">TGMrbObject</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:TGMrbObject">TGMrbObject</a><!--PLAIN-->(const <a href="./TGMrbObject.html">TGMrbObject</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:~TGMrbObject">~TGMrbObject</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbObject:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbObject:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         <a href="./TGMrbLayout.html">TGMrbLayout</a>* <!--TAB--><!--BOLD--><a href="#TGMrbObject:SetupGC">SetupGC</a><!--PLAIN-->(<a href="./TGMrbLayout.html">TGMrbLayout</a>* GC, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbObject:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbObject:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="TGMrbObject:fHeap">fHeap</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHeap">store heap objects here</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TGMrbButtonFrame.html">TGMrbButtonFrame</a>, <a href="./TGMrbFileEntry.html">TGMrbFileEntry</a>, <a href="./TGMrbFileObjectCombo.html">TGMrbFileObjectCombo</a>, <a href="./TGMrbLabelCombo.html">TGMrbLabelCombo</a>, <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbObject:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/<a href="./TGMrbObject.html">TGMrbObject</a>.cxx
+ Purpose:        MARaBOU graphic utilities: common methods
+ Description:    Implements class methods common to graphic objects
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TGMrbLayout.html">TGMrbLayout</a>* <a name="TGMrbObject:SetupGC" href="src/TGMrbObject.cxx.html#TGMrbObject:SetupGC">SetupGC</a>(<a href="./TGMrbLayout.html">TGMrbLayout</a> * Layout, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbObject.html#TGMrbObject:SetupGC">TGMrbObject::SetupGC</a>
+ Purpose:        Initialize graphic context &amp; layout
+ Arguments:      <a href="./TGMrbLayout.html">TGMrbLayout</a> * Layout    -- layout &amp; graphic context
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions     -- frame orientation
+ Results:        <a href="./TGMrbLayout.html">TGMrbLayout</a> * Layout    -- (modified) layout
+ Exceptions:
+ Description:    Initializes layout specs
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbObject.html">TGMrbObject</a> <a name="TGMrbObject:TGMrbObject" href="TGMrbObject.h">TGMrbObject</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbObject.html">TGMrbObject</a> <a name="TGMrbObject:TGMrbObject" href="TGMrbObject.h">TGMrbObject</a>(const <a href="./TGMrbObject.html">TGMrbObject</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbObject:Help" href="TGMrbObject.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbObject:Class" href="TGMrbObject.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbObject:IsA" href="TGMrbObject.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbObject:ShowMembers" href="TGMrbObject.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbObject:Streamer" href="TGMrbObject.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbObject:StreamerNVirtual" href="TGMrbObject.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TGMrbObject:~TGMrbObject" href="TGMrbObject.h">~TGMrbObject</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:09 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

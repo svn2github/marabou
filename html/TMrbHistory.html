@@ -1,0 +1,167 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbHistory</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbHistory:description">class description</a> - <a href="src/TMrbHistory.cxx.html">source file</a> - <a href="TMrbHistory_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbHistory" href="TMrbHistory.h">TMrbHistory</a> : public <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TMrbHistory.html">TMrbHistory</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:TMrbHistory">TMrbHistory</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:~TMrbHistory">~TMrbHistory</a><!--PLAIN-->()
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistory:AddEntry">AddEntry</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Obj, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Command)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistory:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:Exec">Exec</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistory:GetEntry">GetEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbHistory:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:Print">Print</a><!--PLAIN-->(ostream&amp; Out)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:RemoveEntry">RemoveEntry</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:Restore">Restore</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReverseOrder = kTRUE)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbHistory:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbHistory:Data Members">Data Members</a></h3>
+<pre>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbHistory:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbHistory.html">TMrbHistory</a>.cxx
+ Purpose:        MARaBOU utilities:
+                 An (inverse) history buffer
+ Description:    Implements a history buffer
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a>* <a name="TMrbHistory:AddEntry" href="src/TMrbHistory.cxx.html#TMrbHistory:AddEntry">AddEntry</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Obj, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Command) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbHistory.html#TMrbHistory:AddEntry">TMrbHistory::AddEntry</a>
+ Purpose:        Add a new entry
+ Arguments:      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Obj         -- object issuing this command
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Command      -- command string
+ Results:        <a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a> * CmdObj   -- object wrapped around command string
+ Exceptions:
+ Description:    Adds a new entry to the history buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbHistory:GetEntry" href="src/TMrbHistory.cxx.html#TMrbHistory:GetEntry">GetEntry</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbHistory.html#TMrbHistory:GetEntry">TMrbHistory::GetEntry</a>
+ Purpose:        Return an existing entry
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index       -- entry index
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Command  -- entry contents
+ Exceptions:
+ Description:    Returns an entry.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbHistory:RemoveEntry" href="src/TMrbHistory.cxx.html#TMrbHistory:RemoveEntry">RemoveEntry</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbHistory.html#TMrbHistory:RemoveEntry">TMrbHistory::RemoveEntry</a>
+ Purpose:        Remove an existing entry
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index       -- entry index
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Removes an entry.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbHistory:Exec" href="src/TMrbHistory.cxx.html#TMrbHistory:Exec">Exec</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbHistory.html#TMrbHistory:Exec">TMrbHistory::Exec</a>
+ Purpose:        Execute command of an existing entry
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index       -- entry index
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Executes command line.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbHistory:Restore" href="src/TMrbHistory.cxx.html#TMrbHistory:Restore">Restore</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReverseOrder) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbHistory.html#TMrbHistory:Restore">TMrbHistory::Restore</a>
+ Purpose:        Execute commands of all entries
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReverseOrder   -- execute in reverse order
+ Results:        --
+ Exceptions:
+ Description:    Restores history by executing command by command.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:Print" href="src/TMrbHistory.cxx.html#TMrbHistory:Print">Print</a>(ostream &amp; Out) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbHistory.html#TMrbHistory:Print">TMrbHistory::Print</a>
+ Purpose:        Print contents of history buffer
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Prints history buffer to Out.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbHistory.html">TMrbHistory</a> <a name="TMrbHistory:TMrbHistory" href="TMrbHistory.h">TMrbHistory</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:Print" href="TMrbHistory.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:Help" href="TMrbHistory.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbHistory:Class" href="TMrbHistory.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbHistory:IsA" href="TMrbHistory.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:ShowMembers" href="TMrbHistory.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:Streamer" href="TMrbHistory.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:StreamerNVirtual" href="TMrbHistory.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbHistory:~TMrbHistory" href="TMrbHistory.h">~TMrbHistory</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:49 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

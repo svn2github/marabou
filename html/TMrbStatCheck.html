@@ -1,0 +1,109 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbStatCheck</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbStatCheck:description">class description</a> - <a href="src/TMrbStatCheck.cxx.html">source file</a> - <a href="TMrbStatCheck_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbStatCheck" href="TMrbStatistics.h">TMrbStatCheck</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        <a href="./TMrbStatCheck.html">TMrbStatCheck</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:TMrbStatCheck">TMrbStatCheck</a><!--PLAIN-->()
+<!--TAB6-->        <a href="./TMrbStatCheck.html">TMrbStatCheck</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:TMrbStatCheck">TMrbStatCheck</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>*, const <a href="ListOfTypes.html#char">char</a>*)
+<!--TAB6-->        <a href="./TMrbStatCheck.html">TMrbStatCheck</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:TMrbStatCheck">TMrbStatCheck</a><!--PLAIN-->(const <a href="./TMrbStatCheck.html">TMrbStatCheck</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:~TMrbStatCheck">~TMrbStatCheck</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:InsideMean">InsideMean</a><!--PLAIN-->(<a href="ListOfTypes.html#Stat_t">Stat_t</a> val)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:InsideSigma">InsideSigma</a><!--PLAIN-->(<a href="ListOfTypes.html#Stat_t">Stat_t</a> val)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbStatCheck:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbStatCheck:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fAnyCheck">fAnyCheck</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAnyCheck"></a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fEntriesLow">fEntriesLow</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fEntriesLow">Entries</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fSumofwLow">fSumofwLow</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fSumofwLow">Sum of Weights, contents without under/overflows</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fMeanLow">fMeanLow</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMeanLow">Mean (along X for 2 dim)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fSigmaLow">fSigmaLow</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSigmaLow">RMS (root mean squared)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fEntriesUp">fEntriesUp</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEntriesUp">Entries</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fSumofwUp">fSumofwUp</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSumofwUp">Sum of Weights, contents without under/overfUps</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fMeanUp">fMeanUp</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMeanUp">Mean (along X for 2 dim)</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbStatCheck:fSigmaUp">fSigmaUp</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fSigmaUp">RMS (root mean squared)</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbStatCheck:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbStatistics.html">TMrbStatistics</a>.cxx
+ Purpose:        MARaBOU utilities: histogram statistics
+ Description:    Implements class methods to handle histogram statistics &amp; contents
+ Keywords:
+ Author:         O. Schaile
+ Mailto:         &lt;a href=mailto:otto.schaile@physik.uni-muenchen.de&gt;O. Schaile&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbStatCheck:TMrbStatCheck" href="src/TMrbStatCheck.cxx.html#TMrbStatCheck:TMrbStatCheck">TMrbStatCheck</a>(const <a href="ListOfTypes.html#char">char</a> * name, const <a href="ListOfTypes.html#char">char</a> * title)
+               :<a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>(name, title)<br>
+<pre> <a href="./TMrbStatCheck.html">TMrbStatCheck</a> normal constructor
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbStatCheck:TMrbStatCheck" href="src/TMrbStatCheck.cxx.html#TMrbStatCheck:TMrbStatCheck">TMrbStatCheck</a>()<br>
+<pre> <a href="./TMrbStatCheck.html">TMrbStatCheck</a> default constructor
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbStatCheck:InsideMean" href="src/TMrbStatCheck.cxx.html#TMrbStatCheck:InsideMean">InsideMean</a>(<a href="ListOfTypes.html#Stat_t">Stat_t</a> val)<br>
+<hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbStatCheck:InsideSigma" href="src/TMrbStatCheck.cxx.html#TMrbStatCheck:InsideSigma">InsideSigma</a>(<a href="ListOfTypes.html#Stat_t">Stat_t</a> val)<br>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbStatCheck:Class" href="TMrbStatistics.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbStatCheck:IsA" href="TMrbStatistics.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbStatCheck:ShowMembers" href="TMrbStatistics.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbStatCheck:Streamer" href="TMrbStatistics.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbStatCheck:StreamerNVirtual" href="TMrbStatistics.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbStatCheck.html">TMrbStatCheck</a> <a name="TMrbStatCheck:TMrbStatCheck" href="TMrbStatistics.h">TMrbStatCheck</a>(const <a href="./TMrbStatCheck.html">TMrbStatCheck</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbStatCheck:~TMrbStatCheck" href="TMrbStatistics.h">~TMrbStatCheck</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:otto.schaile@physik.uni-muenchen.de>O. Schaile</a>
+<br>
+Last update: Mon Aug 26 10:57:30 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,212 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMultiDimFit</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMultiDimFit:description">class description</a> - <a href="src/TMultiDimFit.cxx.html">source file</a> - <a href="TMultiDimFit_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMultiDimFit" href="TMultiDimFit.h">TMultiDimFit</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:EvalControl">EvalControl</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a>* powers)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:EvalFactor">EvalFactor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> p, <a href="ListOfTypes.html#Double_t">Double_t</a> x)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeCandidates">MakeCandidates</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeCoefficientErrors">MakeCoefficientErrors</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeCoefficients">MakeCoefficients</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeCorrelation">MakeCorrelation</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeGramSchmidt">MakeGramSchmidt</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> function)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeNormalized">MakeNormalized</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeParameterization">MakeParameterization</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeRealCode">MakeRealCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, const <a href="ListOfTypes.html#char">char</a>* classname, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Select">Select</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a>* iv)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:TestFunction">TestFunction</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> squareResidual, <a href="ListOfTypes.html#Double_t">Double_t</a> dResidur)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:TMultiDimFit">TMultiDimFit</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:TMultiDimFit">TMultiDimFit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> dimension, <a href="http://root.cern.ch/root/html/TMultiDimFit.html#TMultiDimFit:EMDFPolyType">TMultiDimFit::EMDFPolyType</a> type = <a href="http://root.cern.ch/root/html/TMultiDimFit.html#TMultiDimFit:kMonomials">kMonomials</a>, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:TMultiDimFit">TMultiDimFit</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a>&amp;)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:~TMultiDimFit">~TMultiDimFit</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:AddRow">AddRow</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a> D, <a href="ListOfTypes.html#Double_t">Double_t</a> E = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:AddTestRow">AddTestRow</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x, <a href="ListOfTypes.html#Double_t">Double_t</a> D, <a href="ListOfTypes.html#Double_t">Double_t</a> E = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "d")
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Eval">Eval</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* x, const <a href="ListOfTypes.html#Double_t">Double_t</a>* coeff = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:FindParameterization">FindParameterization</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Fit">Fit</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetChi2">GetChi2</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetError">GetError</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetFunctionCodes">GetFunctionCodes</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetFunctions">GetFunctions</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetHistograms">GetHistograms</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxAngle">GetMaxAngle</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxFunctions">GetMaxFunctions</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxPowers">GetMaxPowers</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxQuantity">GetMaxQuantity</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxStudy">GetMaxStudy</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxTerms">GetMaxTerms</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMaxVariables">GetMaxVariables</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMeanQuantity">GetMeanQuantity</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMeanVariables">GetMeanVariables</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMinAngle">GetMinAngle</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMinQuantity">GetMinQuantity</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMinRelativeError">GetMinRelativeError</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetMinVariables">GetMinVariables</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetNCoefficients">GetNCoefficients</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetNVariables">GetNVariables</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetPowerIndex">GetPowerIndex</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetPowerLimit">GetPowerLimit</a><!--PLAIN-->() const
+<!--TAB6-->              const <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetPowers">GetPowers</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetPrecision">GetPrecision</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetQuantity">GetQuantity</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetResidualMax">GetResidualMax</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetResidualMaxRow">GetResidualMaxRow</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetResidualMin">GetResidualMin</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetResidualMinRow">GetResidualMinRow</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetResidualSumSq">GetResidualSumSq</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetRMS">GetRMS</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetSampleSize">GetSampleSize</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetSqError">GetSqError</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetSumSqAvgQuantity">GetSumSqAvgQuantity</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetSumSqQuantity">GetSumSqQuantity</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetTestError">GetTestError</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetTestPrecision">GetTestPrecision</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetTestQuantity">GetTestQuantity</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetTestSampleSize">GetTestSampleSize</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetTestSqError">GetTestSqError</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetTestVariables">GetTestVariables</a><!--PLAIN-->() const
+<!--TAB6-->           const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:GetVariables">GetVariables</a><!--PLAIN-->() const
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Instance">Instance</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMultiDimFit:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeChi2">MakeChi2</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* coeff = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeCode">MakeCode</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* functionName = "MDF", <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeHistograms">MakeHistograms</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "A")
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:MakeMethod">MakeMethod</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* className = "MDF", <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "ps") const
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMaxAngle">SetMaxAngle</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> angle = 0)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMaxFunctions">SetMaxFunctions</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMaxPowers">SetMaxPowers</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a>* powers)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMaxStudy">SetMaxStudy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMaxTerms">SetMaxTerms</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> terms)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMinAngle">SetMinAngle</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> angle = 1)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetMinRelativeError">SetMinRelativeError</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> error)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetPowerLimit">SetPowerLimit</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> limit = 1e-3)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:SetPowers">SetPowers</a><!--PLAIN-->(const <a href="ListOfTypes.html#Int_t">Int_t</a>* powers, <a href="ListOfTypes.html#Int_t">Int_t</a> terms)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMultiDimFit:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMultiDimFit:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TMultiDimFit.html">TMultiDimFit</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fgInstance">fgInstance</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgInstance">Static instance </a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fQuantity">fQuantity</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fQuantity">Training sample, dependent quantity </a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fSqError">fSqError</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fSqError">Training sample, error in quantity </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMeanQuantity">fMeanQuantity</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMeanQuantity">Mean of dependent quantity </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxQuantity">fMaxQuantity</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMaxQuantity">Max value of dependent quantity </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMinQuantity">fMinQuantity</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMinQuantity">Min value of dependent quantity </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fSumSqQuantity">fSumSqQuantity</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSumSqQuantity">SumSquare of dependent quantity </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fSumSqAvgQuantity">fSumSqAvgQuantity</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fSumSqAvgQuantity">Sum of squares away from mean</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fVariables">fVariables</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fVariables">Training sample, independent variables</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fNVariables">fNVariables</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNVariables">Number of independent variables</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMeanVariables">fMeanVariables</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fMeanVariables">mean value of independent variables</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxVariables">fMaxVariables</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMaxVariables">max value of independent variables</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMinVariables">fMinVariables</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMinVariables">min value of independent variables</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fSampleSize">fSampleSize</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSampleSize">Size of training sample</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestQuantity">fTestQuantity</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fTestQuantity">Test sample, dependent quantity  </a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestSqError">fTestSqError</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTestSqError">Test sample, Error in quantity  </a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestVariables">fTestVariables</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTestVariables">Test sample, independent variables</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestSampleSize">fTestSampleSize</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTestSampleSize">Size of test sample </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMinAngle">fMinAngle</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMinAngle">Min angle for acepting new function</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxAngle">fMaxAngle</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMaxAngle">Max angle for acepting new function</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxTerms">fMaxTerms</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMaxTerms">Max terms expected in final expr. </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMinRelativeError">fMinRelativeError</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMinRelativeError">Min relative error accepted</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxPowers">fMaxPowers</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fMaxPowers">[fNVariables] maximum powers</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fPowerLimit">fPowerLimit</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fPowerLimit">Control parameter</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fFunctions">fFunctions</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fFunctions">Functions evaluated over sample</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxFunctions">fMaxFunctions</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMaxFunctions">max number of functions </a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fFunctionCodes">fFunctionCodes</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFunctionCodes">[fMaxFunctions] acceptance code</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxStudy">fMaxStudy</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fMaxStudy">max functions to study</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fOrthFunctions">fOrthFunctions</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fOrthFunctions">As above, but orthogonalised</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fOrthFunctionNorms">fOrthFunctionNorms</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOrthFunctionNorms">Norm of the evaluated functions </a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxPowersFinal">fMaxPowersFinal</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fMaxPowersFinal">[fNVariables] maximum powers from fit;</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fPowers">fPowers</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fPowers">[fMaxFunctions*fNVariables]</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fPowerIndex">fPowerIndex</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fPowerIndex">[fMaxTerms] Index of accepted powers</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fResiduals">fResiduals</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fResiduals">Vector of the final residuals</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxResidual">fMaxResidual</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMaxResidual">Max redsidual value</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMinResidual">fMinResidual</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMinResidual">Min redsidual value</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMaxResidualRow">fMaxResidualRow</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fMaxResidualRow">Row giving max residual</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fMinResidualRow">fMinResidualRow</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fMinResidualRow">Row giving min residual</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fSumSqResidual">fSumSqResidual</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSumSqResidual">Sum of Square residuals</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fNCoefficients">fNCoefficients</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fNCoefficients">Dimension of model coefficients</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fOrthCoefficients">fOrthCoefficients</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fOrthCoefficients">The model coefficients</a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fOrthCurvatureMatrix">fOrthCurvatureMatrix</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fOrthCurvatureMatrix">Model matrix  </a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fCoefficients">fCoefficients</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fCoefficients">Vector of the final coefficients </a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fCoefficientsRMS">fCoefficientsRMS</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fCoefficientsRMS">Vector of RMS of coefficients </a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fRMS">fRMS</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fRMS">Root mean square of fit</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fChi2">fChi2</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fChi2">Chi square of fit</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fParameterisationCode">fParameterisationCode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fParameterisationCode">Exit code of parameterisation</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fError">fError</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fError">Error from parameterization</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestError">fTestError</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fTestError">Error from test</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fPrecision">fPrecision</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fPrecision">Relative precision of param</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestPrecision">fTestPrecision</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTestPrecision">Relative precision of test</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fCorrelationCoeff">fCorrelationCoeff</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fCorrelationCoeff">Multi Correlation coefficient </a></i>
+<!--TAB6-->                        <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fCorrelationMatrix">fCorrelationMatrix</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fCorrelationMatrix">Correlation matrix</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fTestCorrelationCoeff">fTestCorrelationCoeff</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTestCorrelationCoeff">Multi Correlation coefficient</a></i>
+<!--TAB6-->                          <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fHistograms">fHistograms</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fHistograms">List of histograms </a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Byte_t">Byte_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fHistogramMask">fHistogramMask</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fHistogramMask">Bit pattern of hisograms used </a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TVirtualFitter.html">TVirtualFitter</a>* <!--TAB--><!--BOLD--><a name="TMultiDimFit:fFitter">fFitter</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fFitter">! Fit object (MINUIT)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TMultiDimFit.html#TMultiDimFit:EMDFPolyType">TMultiDimFit::EMDFPolyType</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fPolyType">fPolyType</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fPolyType">Type of polynomials to use </a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fShowCorrelation">fShowCorrelation</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fShowCorrelation">print correlation matrix</a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fIsUserFunction">fIsUserFunction</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fIsUserFunction">Flag for user defined function </a></i>
+<!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:fIsVerbose">fIsVerbose</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fIsVerbose"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMultiDimFit.html#TMultiDimFit:EMDFPolyType">TMultiDimFit::EMDFPolyType</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:kMonomials">kMonomials</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kMonomials"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMultiDimFit.html#TMultiDimFit:EMDFPolyType">TMultiDimFit::EMDFPolyType</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:kChebyshev">kChebyshev</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kChebyshev"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TMultiDimFit.html#TMultiDimFit:EMDFPolyType">TMultiDimFit::EMDFPolyType</a> <!--TAB--><!--BOLD--><a name="TMultiDimFit:kLegendre">kLegendre</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kLegendre"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMultiDimFit:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:04 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

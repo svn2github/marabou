@@ -1,0 +1,99 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TTimer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TTimer:description">class description</a> - <a href="src/TTimer.cxx.html">source file</a> - <a href="TTimer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TTimer" href="TTimer.h">TTimer</a> : public <a href="http://root.cern.ch/root/html/TSysEvtHandler.html">TSysEvtHandler</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a> <!--TAB--><!--BOLD--><a href="#TTimer:TTimer">TTimer</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> milliSec, <a href="ListOfTypes.html#Bool_t">Bool_t</a> mode = kTRUE)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a> <!--TAB--><!--BOLD--><a href="#TTimer:TTimer">TTimer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Long_t">Long_t</a> milliSec, <a href="ListOfTypes.html#Bool_t">Bool_t</a> mode = kTRUE)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a> <!--TAB--><!--BOLD--><a href="#TTimer:TTimer">TTimer</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* command, <a href="ListOfTypes.html#Long_t">Long_t</a> milliSec, <a href="ListOfTypes.html#Bool_t">Bool_t</a> mode = kTRUE)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a> <!--TAB--><!--BOLD--><a href="#TTimer:TTimer">TTimer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:~TTimer">~TTimer</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Add">Add</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTimer:CheckTimer">CheckTimer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TTime.html">TTime</a>&amp; now)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TTimer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TTime.html">TTime</a> <!--TAB--><!--BOLD--><a href="#TTimer:GetAbsTime">GetAbsTime</a><!--PLAIN-->() const
+<!--TAB6-->          const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TTimer:GetCommand">GetCommand</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TTimer:GetObject">GetObject</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TTime.html">TTime</a> <!--TAB--><!--BOLD--><a href="#TTimer:GetTime">GetTime</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TTimer:GetTimerID">GetTimerID</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTimer:HasTimedOut">HasTimedOut</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TTimer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTimer:IsAsync">IsAsync</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTimer:IsSync">IsSync</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TTimer:Notify">Notify</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Remove">Remove</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:SetCommand">SetCommand</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* command)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:SetObject">SetObject</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* object)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:SetTime">SetTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> milliSec)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:SetTimerID">SetTimerID</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> id = 0)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->          static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:SingleShot">SingleShot</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> milliSec, const <a href="ListOfTypes.html#char">char</a>* receiver_class, <a href="ListOfTypes.html#void">void</a>* receiver, const <a href="ListOfTypes.html#char">char</a>* method)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Start">Start</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> milliSec = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> singleShot = kFALSE)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Stop">Stop</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:Timeout">Timeout</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:TurnOff">TurnOff</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TTimer:TurnOn">TurnOn</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TTimer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TTime.html">TTime</a> <!--TAB--><!--BOLD--><a name="TTimer:fTime">fTime</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTime">time out time in ms</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TTime.html">TTime</a> <!--TAB--><!--BOLD--><a name="TTimer:fAbsTime">fAbsTime</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAbsTime">absolute time out time in ms</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TTimer:fTimeout">fTimeout</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTimeout">true if timer has timed out</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TTimer:fSync">fSync</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fSync">true if synchrounous timer</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TTimer:fTimeID">fTimeID</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTimeID">the system ID of this timer (for WIN32)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TTimer:fObject">fObject</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fObject">object to be notified (if any)</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TTimer:fCommand">fCommand</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCommand">interpreter command to be executed</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./MessageServer.html">MessageServer</a>, <a href="http://root.cern.ch/root/html/TProcessEventTimer.html">TProcessEventTimer</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TTimer:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:28 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

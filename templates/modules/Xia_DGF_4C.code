@@ -1,0 +1,444 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Silena_4418T.code
+// @(#)Purpose:    Camac code for module Silena 4418/T
+// Description:    Contains pieces of camac code to operate a TDC of type
+//                 Silena 4418/T
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* definitions for XIA DGF-4C / Digital Gamma Finder */
+/*		param memory layout */
+#define DGF_NOF_CHANNELS			4
+#define DGF_NOF_DSP_INPUT_PARAMS	256
+#define DGF_NOF_DSP_OUTPUT_PARAMS	160
+#define DGF_NOF_DSP_INPAR_MODULE	64
+#define DGF_NOF_DSP_INPAR_CHANNEL	48
+#define DGF_INPAR_START_ADDR		0x4000
+#define DGF_OUTPAR_START_ADDR		(DGF_INPAR_START_ADDR + DGF_NOF_DSP_INPUT_PARAMS)
+/*		control & status reg */
+#define DGF_CSR_RUNENA 				(0x1 << 0)
+#define DGF_CSR_NEWRUN 				(0x1 << 1)
+#define DGF_CSR_ENALAM 				(0x1 << 3)
+#define DGF_CSR_DSP_RESET			(0x1 << 4)
+#define DGF_CSR_DSP_ERROR 			(0x1 << 12)
+#define DGF_CSR_ACTIVE 				(0x1 << 13)
+#define DGF_CSR_LAM_ACTIVE 			(0x1 << 14)
+/*		control task */
+#define DGF_CTRL_PROGRAM_DACS			0
+#define DGF_CTRL_UPDATE_FPGA			5
+#define DGF_CTRL_CALIBRATE 			3
+#define DGF_CTRL_SAMPLE_ADCS			4
+/*		run task */
+#define DGF_RUN_CONTROL				0
+#define DGF_RUN_LINEAR				0x100
+#define DGF_RUN_CIRCULAR			0x101
+#define DGF_RUN_PSA 		 		0x102
+#define DGF_RUN_SHORT				0x103
+#define DGF_RUN_MCA 				0x301
+/*		param offsets */
+#define DGF_PAR_MODNUM	 			$parModuleNumber
+#define DGF_PAR_MODCSRA 			$parModCSRA
+#define DGF_PAR_MAXEVENTS 			$parMaxEvents
+#define DGF_PAR_SYNCHWAIT			$parSynchWait
+#define DGF_PAR_INSYNCH 			$parInSynch
+#define DGF_PAR_COINCPATTERN			$parCoincPattern
+#define DGF_PAR_COINCWAIT			$parCoincWait
+#define DGF_PAR_CONTROLTASK			$parControlTask
+#define DGF_PAR_RUNTASK				$parRunTask
+#define DGF_PAR_AOUTBUFFER			$parAddrOfOutputBuffer
+#define DGF_PAR_LOUTBUFFER			$parLengthOfOutputBuffer
+#define DGF_PAR_TRACELENGTH0			$parTraceLength0
+#define DGF_PAR_CHANCSRA0			$parChanCSRA0
+
+#define DGF_PAR_REALTIMEA			$parRealTimeA
+#define DGF_PAR_REALTIMEB			$parRealTimeB
+#define DGF_PAR_REALTIMEC			$parRealTimeC
+#define DGF_PAR_RUNTIMEA			$parRunTimeA
+#define DGF_PAR_RUNTIMEB			$parRunTimeB
+#define DGF_PAR_RUNTIMEC			$parRunTimeC
+#define DGF_PAR_GSLTTIMEA			$parGSLTTimeA
+#define DGF_PAR_GSLTTIMEB			$parGSLTTimeB
+#define DGF_PAR_GSLTTIMEC			$parGSLTTimeC
+#define DGF_PAR_NUMEVENTSA			$parNumEventsA
+#define DGF_PAR_NUMEVENTSB			$parNumEventsB
+#define DGF_PAR_LIVETIMEA0			$parLiveTimeA
+#define DGF_PAR_LIVETIMEB0			$parLiveTimeB
+#define DGF_PAR_LIVETIMEC0			$parLiveTimeC
+#define DGF_PAR_FASTPEAKSA0			$parFastPeaksA
+#define DGF_PAR_FASTPEAKSB0			$parFastPeaksB
+
+/*		inline functions */
+#define DGF_WRITE_ICSR(dgf, data)	CIO_WRITE_R2B(dgf, A(8), F(17), data)
+#define DGF_READ_ICSR(dgf)		CIO_READ_R2B_16(dgf, A(8), F(1))
+#define DGF_WRITE_CSR(dgf, data)	CIO_WRITE_R2B(dgf, A(0), F(17), data)
+#define DGF_READ_CSR(dgf)		CIO_READ_R2B_16(dgf, A(0), F(1))
+#define DGF_WRITE_TSAR(dgf, addr)	CIO_WRITE_R2B(dgf, A(1), F(17), addr)
+#define DGF_READ_TSAR(dgf) 		CIO_READ_R2B_16(dgf, A(1), F(1))
+#define DGF_WRITE_WCR(dgf, data)	CIO_WRITE_R2B(dgf, A(2), F(17), data)
+#define DGF_READ_WCR(dgf)		CIO_READ_R2B_16(dgf, A(2), F(1))
+#define DGF_WRITE_PSA(dgf, offset)	CIO_WRITE_R2B(dgf, A(1), F(17), DGF_INPAR_START_ADDR + offset)
+#define DGF_READ_DSP(dgf)		CIO_READ_R2B_16(dgf, A(0), F(0))
+#define DGF_WRITE_DSP(dgf, data)	CIO_WRITE_R2B(dgf, A(0), F(16), data)
+/*		channel CSRA bits */
+#define DGF_CHANCSRA_GROUP_TRIGGER_ONLY		(0x1 << 0)
+#define DGF_CHANCSRA_INDIVIDUAL_LIFETIME		(0x1 << 1)
+#define DGF_CHANCSRA_GOOD_CHANNEL				(0x1 << 2)
+#define DGF_CHANCSRA_READ_ALWAYS				(0x1 << 3)
+#define DGF_CHANCSRA_ENABLE_TRIGGER			(0x1 << 4)
+#define DGF_CHANCSRA_TRIGGER_POSITIVE			(0x1 << 5)
+#define DGF_CHANCSRA_GFLT						(0x1 << 6)
+#define DGF_CHANCSRA_HISTOGRAM_ENERGIES		(0x1 << 7)
+#define DGF_CHANCSRA_HISTOGRAM_BASELINES		(0x1 << 8)
+#define DGF_CHANCSRA_CORRECT_BALL_DEFICIT		(0x1 << 9)
+#define DGF_CHANCSRA_COMPUTE_CFT				(0x1 << 10)
+#define DGF_CHANCSRA_BIPOLAR_SIGNALS			(0x1 << 15)
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+%A%
+%A%			f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+%R<=2.0%			dgfmod = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA);
+%R<=2.0%			dgfmod &= ~0x1L;
+%R<=2.0%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA, dgfmod);
+%B%			if (root_env_getval_b("TMrbDGF.ReloadParamsOnDaqInit", 0) == 1) dgf_reload_params($moduleNameLC, "$moduleNameLC", "$settingsPath/$moduleNameLC.par");
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODNUM, kMrbModule$moduleNameUC);
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MAXEVENTS, root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents));
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_INSYNCH, root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_COINCPATTERN, 0xFFFF);
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_SYNCHWAIT, root_env_getval_i("$moduleNameUC.SynchWait", $synchWait));
+%B%#ifdef DEBUG
+%B%			sprintf(msg, "$moduleNameLC: SYNCHWAIT=%d, INSYNCH=%d\n",
+%B%					root_env_getval_i("$moduleNameUC.SynchWait", $synchWait),
+%B%					root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
+%B%			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+%B%#endif
+%B% 			dgfAoutBuf[kMrbModule$moduleNameUC - 1] = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_AOUTBUFFER);
+%B%			for (dgfchn = 0; dgfchn < DGF_NOF_CHANNELS; dgfchn++) {
+%B% 				dgf_set_par_value($moduleNameLC, dgfchn, DGF_PAR_TRACELENGTH0, root_env_getval_i("$moduleNameUC.TraceLength", $traceLength));
+%B% 			}
+%B%			dgf_update($moduleNameLC, "$moduleNameLC");			/* re-program dacs & fpgas */
+%B%
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+%R==1.0%					/* read list mode buffer of $moduleNameLC in $modulePosition (XIA release 1.0, Jan 2001) */
+%R==1.0%					dgfCSR = DGF_READ_CSR($moduleNameLC);
+%R==1.0%					if ((dgfCSR & DGF_CSR_ACTIVE) == 0) {	/* dsp stopped? */
+%R==1.0%						dgfWC = DGF_READ_WCR($moduleNameLC); 	/* get word count */
+%R==1.0%						if (dgfWC > 0) {
+%R==1.0%							DGF_WRITE_TSAR($moduleNameLC, $moduleNameLC_bufaddr);
+%R==1.0%							RDO_SETUP($moduleNameLC, F(0), A(0)); 		/* setup camac function & subaddr */
+%R==1.0%							RDO_BLT_16(dgfWC); 		/* block xfer 16 bits, input addr stays const */
+%R==1.0%							if (dgfWC & 1) RDO_2MEM_16(0xFFFF);	/* align to 32 bits */
+%R==1.0%						}
+%R==1.0%					}
+%R>=2.0%					/* read list mode buffer of $moduleNameLC in $modulePosition (XIA release 2.0, Jul 2001) */
+%R>=2.0%					dgfCSR = DGF_READ_CSR($moduleNameLC);
+%R>=2.0%					if ((dgfCSR & DGF_CSR_ACTIVE) == 0) {	/* dsp stopped? */
+%R>=2.0%						dgf_wait();
+%R>=2.0%						dgfWC = DGF_READ_WCR($moduleNameLC); 	/* get word count */
+%R>=2.0%						if (dgfWC > 6 && dgfWC < 8192) {
+%R>=2.0%							DGF_WRITE_TSAR($moduleNameLC, dgfAoutBuf[kMrbModule$moduleNameUC - 1] + 1);
+%R>=2.0% 									/*if ((dgfTSAR = DGF_READ_TSAR(dgf)) != dgfAoutBuf[kMrbModule$moduleNameUC - 1] + 1) {
+%R>=2.0%										sprintf(msg, "Module $moduleNameLC: TSAR = %#x\n", dgfTSAR);
+%R>=2.0%										f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+%R>=2.0%									}*/
+%R>=2.0%							RDO_SETUP($moduleNameLC, F(0), A(0)); 	/* setup camac function & subaddr */
+%R>=2.0%							RDO_2MEM_16(dgfWC);						/* write word count (1st word of buffer header) */
+%R>=2.0%							RDO_BLT_16(dgfWC1); 		/* block xfer 16 bits, input addr stays const */
+%R>=2.0%							if (dgfWC & 1) RDO_2MEM_16(0xFFFF);	/* align to 32 bits */
+%R>=2.0%											if (DGF_READ_CSR(dgf) & DGF_CSR_DSP_ERROR) {
+%R>=2.0%												sprintf(msg, "Module $moduleNameLC: DSP error\n");
+%R>=2.0%												f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+%R>=2.0%											}
+%R>=2.0%						}
+%R>=2.0%					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+					DGF_READ_WCR($moduleNameLC); 	/* clear lam */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					/* resume run for $moduleNameLC in $modulePosition */
+					dgfCSR = DGF_READ_CSR($moduleNameLC);		
+					if ((dgfCSR & DGF_CSR_ACTIVE) == 0) {
+						dgf_modify_csr($moduleNameLC, DGF_CSR_NEWRUN, DGF_CSR_RUNENA); /* clear new-run bit -> resume run */
+					}
+%%EndOfCode%%
+%%FINISH_READOUT%%	
+
+%%BeginOfCode%%
+					/* start new run for $moduleNameLC in $modulePosition */
+					dgf_set_par_value($moduleNameLC, -1, DGF_PAR_RUNTASK, root_env_getval_i("$moduleNameUC.RunTask", DGF_RUN_LINEAR));
+					dgf_modify_csr($moduleNameLC, 0, DGF_CSR_NEWRUN | DGF_CSR_RUNENA | DGF_CSR_ENALAM);	/* clear histos, start run */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					/* stop run for $moduleNameLC in $modulePosition */
+					dgf_modify_csr($moduleNameLC, DGF_CSR_NEWRUN | DGF_CSR_RUNENA, 0);
+					dgf_wait_active($moduleNameLC, "$moduleNameLC", 0, 1);			/* wait for run to complete */
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+/* XIA DGF-4C: utilities section */
+void dgf_read_params(volatile unsigned long * dgf, unsigned short * params, int from, int to) {	/* read params */
+	int i;
+	DGF_WRITE_PSA(dgf, from);									/* write param start addr */
+	DGF_READ_TSAR(dgf);												/* settle down */
+	for (i = from; i <= to; i++) *params++ = DGF_READ_DSP(dgf); /* read data */
+}
+
+void dgf_write_params(volatile unsigned long * dgf, unsigned short * params) {	/* write params (input section only)*/
+	int i;
+	DGF_WRITE_PSA(dgf, 0);									/* write param start addr */
+	DGF_READ_TSAR(dgf);												/* settle down */
+	for (i = 0; i < 256; i++) DGF_WRITE_DSP(dgf, *params++);	/* write data */
+}
+
+unsigned short dgf_get_par_value(volatile unsigned long * dgf, int chn, int pidx) {	/* read param value from dsp */
+	unsigned short pval;
+	if (chn >= 0) pidx += chn * DGF_NOF_DSP_INPAR_CHANNEL; /* add channel offset if param belongs to a single channel */
+	DGF_WRITE_PSA(dgf, pidx);								/* write param start addr */
+	DGF_READ_TSAR(dgf);												/* settle down */
+	pval = DGF_READ_DSP(dgf);								/* fetch param value from dsp memory */
+	return(pval);
+}
+
+void dgf_set_par_value(volatile unsigned long * dgf, int chn, int pidx, unsigned short pval) {	/* set param value in dsp */
+	if (chn >= 0) pidx += chn * DGF_NOF_DSP_INPAR_CHANNEL; /* add channel offset if param belongs to a single channel */
+	DGF_WRITE_PSA(dgf, pidx);								/* write param start addr */
+	DGF_READ_TSAR(dgf);												/* settle down */
+	DGF_WRITE_DSP(dgf, pval);								/* write param value to dsp memory */
+}
+
+void dgf_or_par_value(volatile unsigned long * dgf, int chn, int pidx, unsigned short pval) {	/* "or" param value bits in dsp */
+	unsigned short curval;
+	if (chn >= 0) pidx += chn * DGF_NOF_DSP_INPAR_CHANNEL; /* add channel offset if param belongs to a single channel */
+	DGF_WRITE_PSA(dgf, pidx);								/* write param start addr */
+	DGF_READ_TSAR(dgf);												/* settle down */
+	curval = DGF_READ_DSP(dgf);							/* fetch current param value from dsp memory */
+	DGF_WRITE_PSA(dgf, pidx);								/* re-write param start addr */
+	DGF_READ_TSAR(dgf);												/* settle down */
+	DGF_WRITE_DSP(dgf, curval | pval);						/* write "or"ed param value to dsp memory */
+}
+
+void dgf_update(volatile unsigned long * dgf, const char * dgfName) {	/* re-program dacs & fpgas */
+	int i;
+	char msg[256];
+	unsigned int addr;
+
+#ifdef DEBUG
+	sprintf(msg, "%s: stopping pending run\n", dgfName);
+	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+#endif
+	dgf_modify_csr(dgf, DGF_CSR_RUNENA | DGF_CSR_NEWRUN | DGF_CSR_ENALAM, 0);	/* stop run, disable lam */
+	dgf_wait_active(dgf, dgfName, 0, 1);	/* wait for settling down */
+
+#ifdef DEBUG
+	sprintf(msg, "%s: reprogramming dacs\n", dgfName);
+	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+#endif
+	dgf_set_par_value(dgf, -1, DGF_PAR_RUNTASK, DGF_RUN_CONTROL);	/* exec control task */
+	dgf_set_par_value(dgf, -1, DGF_PAR_CONTROLTASK, DGF_CTRL_PROGRAM_DACS);	/* (a) reprogram dacs */
+	dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA); 	/* start run */
+	dgf_wait_active(dgf, dgfName, 0, 1);				/* wait for control task to complete */
+
+	addr = dgf_get_par_value(dgf, -1, DGF_PAR_AOUTBUFFER);	/* get buffer addr */
+	DGF_WRITE_TSAR(dgf, addr);
+	DGF_READ_TSAR(dgf);												/* settle down */
+#ifdef DEBUG
+ 	sprintf(msg, "%s: writing calibration to addr AOUTBUFFER = %#x\n", dgfName, addr);
+ 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
+#endif
+	for (i = 0; i < 1024; i++) DGF_WRITE_DSP(dgf, 0); 
+
+#ifdef DEBUG
+	sprintf(msg, "%s: updating fpga\n", dgfName);
+	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+#endif
+	dgf_set_par_value(dgf, -1, DGF_PAR_CONTROLTASK, DGF_CTRL_UPDATE_FPGA);	/* (b) update fpgas */
+	dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA); 	/* start run */
+	dgf_wait_active(dgf, dgfName, 0, 1);				/* wait for control task to complete */
+}
+
+int dgf_wait_active(volatile unsigned long * dgf, const char * dgfName, int bitState, int timeout) {
+	char msg[256];
+	unsigned int csr, csrStart;
+	time_t timeStart;
+	timeStart = time(NULL); 		/* get start time in secs */
+	csr = DGF_READ_CSR(dgf);		/* get csr contents */
+	if (csr & DGF_CSR_DSP_ERROR) {
+		sprintf(msg, "%s: DSP error\n", dgfName);
+		f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+		return(0);
+	}
+	csrStart = csr;
+	if (bitState == 0) { 				/* wait for active bit to drop */
+		while ((csr & (DGF_CSR_ACTIVE | DGF_CSR_RUNENA)) != 0) {
+			if (time(NULL) - timeStart > timeout) {
+				sprintf(msg, "%s: timeout (%d s) while waiting for RUN_ACTIVE to drop, csr = %#x (before) %#x (now)\n",
+																				dgfName, timeout, csrStart, csr);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return(0);
+			}
+			csr = DGF_READ_CSR(dgf);
+		}
+	} else {						/* wait for active bit to show up */
+		while ((csr & DGF_CSR_ACTIVE) == 0) {
+			if (time(NULL) - timeStart > timeout) {
+				sprintf(msg, "%s: timeout (%d s) while waiting for RUN_ACTIVE bit, csr = %#x (before) %#x (now)\n",
+																				dgfName, timeout, csrStart, csr);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return(0);
+			}
+			csr = DGF_READ_CSR(dgf);
+			if (csr & DGF_CSR_DSP_ERROR) {
+				sprintf(msg, "%s: DSP error\n", dgfName);
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+				return(0);
+			}
+		}
+	}
+	return(1);
+}
+
+void dgf_modify_csr(volatile unsigned long * dgf, unsigned short bits2clear, unsigned short bits2set) {
+	unsigned int csr;
+	csr = DGF_READ_CSR(dgf);
+	if (bits2clear) csr &= ~bits2clear;
+	if (bits2set) csr |= bits2set;
+	DGF_WRITE_CSR(dgf, csr);
+}
+
+void dgf_wait() {
+	double x;
+	int i;
+	x = 1.;
+	for (i = 0; i < 10000; i++) x *= 1.23456;
+}
+
+void dgf_reload_params(volatile unsigned long * dgf, const char * dgfName, const char * paramFile) {
+	char msg[256];
+	unsigned short params[256];
+	int i, n;
+	unsigned short pval;
+	int pidx;
+	TUnixEntry * e;	
+	sprintf(msg, "%s: reloading params from file %s\n", dgfName, paramFile);
+	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+	n = unix_string_read((char *) paramFile);
+	dgf_read_params(dgf, params, 0, 255);						/* read current settings */
+	for (i = 0; i < n; i++) {
+		e = unix_string_get_entry(i);
+		pidx = unix_string_getval_i(e, NULL, 0, -1);			/* get param offset (pos #0) */
+		if (pidx != -1 && pidx < 256) {
+			pval = (unsigned short) unix_string_getval_i(e, NULL, 2, 0);	/* get param value (pos #1) */
+			params[pidx] = pval;
+		}
+		DGF_WRITE_PSA(dgf, 0);									/* write param start addr */
+		DGF_READ_TSAR(dgf);
+		dgf_write_params(dgf, params);  						/* write params to dsp memory */
+	}
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+/* XIA DGF-4C: prototype declarations  */
+void dgf_reload_params(volatile unsigned long * dgf, const char * dgfName, const char * paramFile);
+void dgf_read_params(volatile unsigned long * dgf, unsigned short * params, int from, int to);
+void dgf_write_params(volatile unsigned long * dgf, unsigned short * params);
+unsigned short dgf_get_par_value(volatile unsigned long * dgf, int chn, int pidx);
+void dgf_set_par_value(volatile unsigned long * dgf, int chn, int pidx, unsigned short pval);
+void dgf_or_par_value(volatile unsigned long * dgf, int chn, int pidx, unsigned short pval);
+void dgf_update(volatile unsigned long * dgf, const char * dgfName);
+void dgf_modify_csr(volatile unsigned long * dgf, unsigned short bits2clear, unsigned short bits2set);
+int dgf_wait_active(volatile unsigned long * dgf, const char * dgfName, int bitState, int timeout);
+void dgf_wait();
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+	unsigned int dgfAoutBuf[$nofModules];
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+	int dgfchn; 		/* XIA DGF-4C:	channel number */
+	int dgfmod; 		/* XIA DGF-4C:	contents of MODCSRA */
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned int dgfCSR; 		/* XIA DGF-4C:	control & status reg */
+	unsigned int dgfTSAR; 		/* XIA DGF-4C:	transfer start addr reg */
+	int dgfWC;					/* word count */
+	int dgfMult, dgfRead; /*				multiplicity, readout-flag */
+	int dgfData, dgfLams; /*				data, lam pattern */
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

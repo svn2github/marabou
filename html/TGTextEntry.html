@@ -1,0 +1,187 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGTextEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGTextEntry:description">class description</a> - <a href="src/TGTextEntry.cxx.html">source file</a> - <a href="TGTextEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGTextEntry" href="TGTextEntry.h">TGTextEntry</a> : public <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>, public <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CopyText">CopyText</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:DoRedraw">DoRedraw</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetCharacterIndex">GetCharacterIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> xcoord)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:IsCursorOutOfFrame">IsCursorOutOfFrame</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Paste">Paste</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:PastePrimary">PastePrimary</a><!--PLAIN-->(<a href="ListOfTypes.html#Window_t">Window_t</a> wid, <a href="ListOfTypes.html#Atom_t">Atom_t</a> property, <a href="ListOfTypes.html#Bool_t">Bool_t</a> del)
+<!--TAB6-->        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:ScrollByChar">ScrollByChar</a><!--PLAIN-->()
+<!--TAB6-->        virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:UpdateOffset">UpdateOffset</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:TGTextEntry">TGTextEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="http://root.cern.ch/root/html/TGTextBuffer.html">TGTextBuffer</a>* text, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="ListOfTypes.html#GContext_t">GContext_t</a> norm = <a href="#TGTextEntry:GetDefaultGC">GetDefaultGC</a>()(), <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font = <a href="#TGTextEntry:GetDefaultFontStruct">GetDefaultFontStruct</a>(), <a href="ListOfTypes.html#UInt_t">UInt_t</a> option = kSunkenFrame|kDoubleBorder, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetWhitePixel())
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:TGTextEntry">TGTextEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, const <a href="ListOfTypes.html#char">char</a>* text, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:TGTextEntry">TGTextEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; contents, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:TGTextEntry">TGTextEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>&amp;)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:~TGTextEntry">~TGTextEntry</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:AppendText">AppendText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Backspace">Backspace</a><!--PLAIN-->()
+<!--TAB6-->                static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTextEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorLeft">CursorLeft</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mark = kFALSE, <a href="ListOfTypes.html#Int_t">Int_t</a> steps = 1)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorOutDown">CursorOutDown</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorOutLeft">CursorOutLeft</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorOutRight">CursorOutRight</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorOutUp">CursorOutUp</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorRight">CursorRight</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mark = kFALSE, <a href="ListOfTypes.html#Int_t">Int_t</a> steps = 1)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorWordBackward">CursorWordBackward</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mark = kFALSE)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:CursorWordForward">CursorWordForward</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mark = kFALSE)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Cut">Cut</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Del">Del</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Deselect">Deselect</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:DoubleClicked">DoubleClicked</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:End">End</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mark = kFALSE)
+<!--TAB6-->            ETextJustification <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetAlignment">GetAlignment</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGTextBuffer.html">TGTextBuffer</a>* <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetBuffer">GetBuffer</a><!--PLAIN-->() const
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetCursorPosition">GetCursorPosition</a><!--PLAIN-->() const
+<!--TAB6-->           static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetDefaultFontStruct">GetDefaultFontStruct</a><!--PLAIN-->()
+<!--TAB6-->            static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetDefaultGC">GetDefaultGC</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetDisplayText">GetDisplayText</a><!--PLAIN-->() const
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EEchoMode">TGTextEntry::EEchoMode</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetEchoMode">GetEchoMode</a><!--PLAIN-->() const
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EInsertMode">TGTextEntry::EInsertMode</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetInsertMode">GetInsertMode</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetMarkedText">GetMarkedText</a><!--PLAIN-->() const
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetMaxLength">GetMaxLength</a><!--PLAIN-->() const
+<!--TAB6-->                   const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGTextEntry:GetText">GetText</a><!--PLAIN-->() const
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleConfigureNotify">HandleConfigureNotify</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleCrossing">HandleCrossing</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleDoubleClick">HandleDoubleClick</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleFocusChange">HandleFocusChange</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleSelection">HandleSelection</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleSelectionRequest">HandleSelectionRequest</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->                virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HandleTimer">HandleTimer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTimer.html">TTimer</a>* t)
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:HasMarkedText">HasMarkedText</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Home">Home</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> mark = kFALSE)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Insert">Insert</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>*)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:InsertText">InsertText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text, <a href="ListOfTypes.html#Int_t">Int_t</a> pos)
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGTextEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:IsEdited">IsEdited</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:IsFrameDrawn">IsFrameDrawn</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:MarkWord">MarkWord</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> pos)
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:MaxMark">MaxMark</a><!--PLAIN-->() const
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:MinMark">MinMark</a><!--PLAIN-->() const
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:NewMark">NewMark</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> pos)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Remove">Remove</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:RemoveText">RemoveText</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> start, <a href="ListOfTypes.html#Int_t">Int_t</a> end)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:ReturnPressed">ReturnPressed</a><!--PLAIN-->()
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SelectAll">SelectAll</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetAlignment">SetAlignment</a><!--PLAIN-->(ETextJustification mode = kTextLeft)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetCursorPosition">SetCursorPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> pos)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetEchoMode">SetEchoMode</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EEchoMode">TGTextEntry::EEchoMode</a> mode = <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:kNormal">kNormal</a>)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetEdited">SetEdited</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetEnabled">SetEnabled</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetFocus">SetFocus</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetFont">SetFont</a><!--PLAIN-->(<a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> font)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetFont">SetFont</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* fontName)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetFrameDrawn">SetFrameDrawn</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> flag = kTRUE)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetInsertMode">SetInsertMode</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EInsertMode">TGTextEntry::EInsertMode</a> mode = <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:kInsert">kInsert</a>)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetMaxLength">SetMaxLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> maxlen)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetState">SetState</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> state)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetText">SetText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:SetToolTipText">SetToolTipText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text, <a href="ListOfTypes.html#Long_t">Long_t</a> delayms = 1000)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:TabPressed">TabPressed</a><!--PLAIN-->()
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGTextEntry:TextChanged">TextChanged</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text = "0")
+</pre>
+
+<h3><!--TAB2-->  <a name="TGTextEntry:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGTextBuffer.html">TGTextBuffer</a>* <!--TAB--><!--BOLD--><a name="TGTextEntry:fText">fText</a><!--PLAIN-->                          <!--TAB--><i><a name="Title:fText">text buffer</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fStartX">fStartX</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fStartX">selection begin in pixels</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fEndX">fEndX</a><!--PLAIN-->                          <!--TAB--><i><a name="Title:fEndX">selection end in pixels</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fStartIX">fStartIX</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:fStartIX">selection begin in characters</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fEndIX">fEndIX</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fEndIX">selection end in characters</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fSelectionOn">fSelectionOn</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fSelectionOn">selection status (on/off)</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fOffset">fOffset</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fOffset">start position of text (in pixels)</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fCursorX">fCursorX</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:fCursorX">cursor position in pixels</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fCursorIX">fCursorIX</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fCursorIX">cursor position in characters</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fCursorOn">fCursorOn</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fCursorOn">cursor status (on/off)</a></i>
+<!--TAB6-->                  <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fFontStruct">fFontStruct</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fFontStruct">text font</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fNormGC">fNormGC</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fNormGC">normal drawing context</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fSelGC">fSelGC</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:fSelGC"></a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#GContext_t">GContext_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fSelbackGC">fSelbackGC</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fSelbackGC">selection mode drawing contexts</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Atom_t">Atom_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fClipboard">fClipboard</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fClipboard">clipboard property</a></i>
+<!--TAB6-->                  TBlinkTimer* <!--TAB--><!--BOLD--><a name="TGTextEntry:fCurBlink">fCurBlink</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fCurBlink">cursor blink timer</a></i>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TGToolTip.html">TGToolTip</a>* <!--TAB--><!--BOLD--><a name="TGTextEntry:fTip">fTip</a><!--PLAIN-->                           <!--TAB--><i><a name="Title:fTip">associated tooltip</a></i>
+<!--TAB6-->                         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fMaxLen">fMaxLen</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fMaxLen">maximum length of text</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fDeleteGC">fDeleteGC</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fDeleteGC">if kTRUE delete the fNormGC and fSelGC</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fEdited">fEdited</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fEdited">kFALSE, if the line edit's contents have not been changed since the construction</a></i>
+<!--TAB6-->                        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fFrameDrawn">fFrameDrawn</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fFrameDrawn">kTRUE draw itself inside a two-pixel frame, kFALSE draw without any frame</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EEchoMode">TGTextEntry::EEchoMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fEchoMode">fEchoMode</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fEchoMode">echo mode (kNormal(default), kNoEcho, kPassword)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EInsertMode">TGTextEntry::EInsertMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fInsertMode">fInsertMode</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fInsertMode">text insertion mode (kInsert(default) , kReplace)</a></i>
+<!--TAB6-->            ETextJustification <!--TAB--><!--BOLD--><a name="TGTextEntry:fAlignment">fAlignment</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fAlignment">alignment mode available (kTextLeft(default), kTextRight, kTextCenterX defined in TGWidget.h)</a></i>
+<!--TAB6-->               static <a href="http://root.cern.ch/root/html/TString.html">TString</a>* <!--TAB--><!--BOLD--><a name="TGTextEntry:fgClipboardText">fgClipboardText</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fgClipboardText">application clipboard text</a></i>
+<!--TAB6-->                 static <a href="ListOfTypes.html#Atom_t">Atom_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fgClipboard">fgClipboard</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgClipboard"></a></i>
+<!--TAB6-->               static <a href="ListOfTypes.html#Cursor_t">Cursor_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fgDefaultCursor">fgDefaultCursor</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fgDefaultCursor"></a></i>
+<!--TAB6-->           static <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fgDefaultFontStruct">fgDefaultFontStruct</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgDefaultFontStruct"></a></i>
+<!--TAB6-->                   static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fgDefaultSelectedGC">fgDefaultSelectedGC</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fgDefaultSelectedGC"></a></i>
+<!--TAB6-->                   static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fgDefaultSelectedBackgroundGC">fgDefaultSelectedBackgroundGC</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultSelectedBackgroundGC"></a></i>
+<!--TAB6-->                   static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:fgDefaultGC">fgDefaultGC</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgDefaultGC"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->        static const <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EEchoMode">TGTextEntry::EEchoMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:kNormal">kNormal</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kNormal"></a></i>
+<!--TAB6-->        static const <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EEchoMode">TGTextEntry::EEchoMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:kNoEcho">kNoEcho</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kNoEcho"></a></i>
+<!--TAB6-->        static const <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EEchoMode">TGTextEntry::EEchoMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:kPassword">kPassword</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kPassword"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EInsertMode">TGTextEntry::EInsertMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:kInsert">kInsert</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kInsert"></a></i>
+<!--TAB6-->      static const <a href="http://root.cern.ch/root/html/TGTextEntry.html#TGTextEntry:EInsertMode">TGTextEntry::EInsertMode</a> <!--TAB--><!--BOLD--><a name="TGTextEntry:kReplace">kReplace</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kReplace"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TGMrbTextEntry.html">TGMrbTextEntry</a>, <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGTextEntry:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

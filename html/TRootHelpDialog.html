@@ -1,0 +1,72 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TRootHelpDialog</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TRootHelpDialog:description">class description</a> - <a href="src/TRootHelpDialog.cxx.html">source file</a> - <a href="TRootHelpDialog_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TRootHelpDialog" href="TRootHelpDialog.h">TRootHelpDialog</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TRootHelpDialog.html">TRootHelpDialog</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:TRootHelpDialog">TRootHelpDialog</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* main, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h)
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TRootHelpDialog.html">TRootHelpDialog</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:TRootHelpDialog">TRootHelpDialog</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRootHelpDialog.html">TRootHelpDialog</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:~TRootHelpDialog">~TRootHelpDialog</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:AddText">AddText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* helpText)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:Popup">Popup</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a> parm2)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:SetText">SetText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* helpText)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootHelpDialog:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TRootHelpDialog:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a>* <!--TAB--><!--BOLD--><a name="TRootHelpDialog:fView">fView</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fView">text view</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGTextButton.html">TGTextButton</a>* <!--TAB--><!--BOLD--><a name="TRootHelpDialog:fOK">fOK</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fOK">OK button</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootHelpDialog:fL1">fL1</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fL1">layout of TGTextView</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootHelpDialog:fL2">fL2</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fL2">layout of OK button</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TRootHelpDialog:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:14 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

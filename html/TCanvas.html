@@ -1,0 +1,194 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TCanvas</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TCanvas:description">class description</a> - <a href="src/TCanvas.cxx.html">source file</a> - <a href="TCanvas_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TCanvas" href="TCanvas.h">TCanvas</a> : public <a href="http://root.cern.ch/root/html/TPad.html">TPad</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a> <!--TAB--><!--BOLD--><a href="#TCanvas:TCanvas">TCanvas</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>&amp; canvas)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Build">Build</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:CopyPixmaps">CopyPixmaps</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:DrawEventStatus">DrawEventStatus</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* selected)
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>&amp; <!--TAB--><!--BOLD--><a href="#TCanvas:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>&amp; rhs)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:RunAutoExec">RunAutoExec</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Constructor">Constructor</a><!--PLAIN-->()
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Constructor">Constructor</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> form)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Constructor">Constructor</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> ww, <a href="ListOfTypes.html#Int_t">Int_t</a> wh)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Constructor">Constructor</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> wtopx, <a href="ListOfTypes.html#Int_t">Int_t</a> wtopy, <a href="ListOfTypes.html#Int_t">Int_t</a> ww, <a href="ListOfTypes.html#Int_t">Int_t</a> wh)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Destructor">Destructor</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->              <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Init">Init</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a> <!--TAB--><!--BOLD--><a href="#TCanvas:TCanvas">TCanvas</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> build = kTRUE)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a> <!--TAB--><!--BOLD--><a href="#TCanvas:TCanvas">TCanvas</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> form = 1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a> <!--TAB--><!--BOLD--><a href="#TCanvas:TCanvas">TCanvas</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> ww, <a href="ListOfTypes.html#Int_t">Int_t</a> wh)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a> <!--TAB--><!--BOLD--><a href="#TCanvas:TCanvas">TCanvas</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> wtopx, <a href="ListOfTypes.html#Int_t">Int_t</a> wtopy, <a href="ListOfTypes.html#Int_t">Int_t</a> ww, <a href="ListOfTypes.html#Int_t">Int_t</a> wh)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a> <!--TAB--><!--BOLD--><a href="#TCanvas:TCanvas">TCanvas</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, <a href="ListOfTypes.html#Int_t">Int_t</a> ww, <a href="ListOfTypes.html#Int_t">Int_t</a> wh, <a href="ListOfTypes.html#Int_t">Int_t</a> winid)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:~TCanvas">~TCanvas</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:cd">cd</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> subpadnumber = 0)
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Close">Close</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:DrawClone">DrawClone</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:DrawClonePad">DrawClonePad</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:EditorBar">EditorBar</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:EnterLeave">EnterLeave</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* prevSelPad, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* prevSelObj)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:FeedbackMode">FeedbackMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> set)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Flush">Flush</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ForceUpdate">ForceUpdate</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetAutoExec">GetAutoExec</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetCanvasID">GetCanvasID</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TCanvasImp.html">TCanvasImp</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetCanvasImp">GetCanvasImp</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetCanvasPar">GetCanvasPar</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; wtopx, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; wtopy, <a href="ListOfTypes.html#UInt_t">UInt_t</a>&amp; ww, <a href="ListOfTypes.html#UInt_t">UInt_t</a>&amp; wh)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TContextMenu.html">TContextMenu</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetContextMenu">GetContextMenu</a><!--PLAIN-->() const
+<!--TAB6-->               const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetDISPLAY">GetDISPLAY</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetDoubleBuffer">GetDoubleBuffer</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TControlBar.html">TControlBar</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetEditorBar">GetEditorBar</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetEvent">GetEvent</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetEventX">GetEventX</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetEventY">GetEventY</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetHighLightColor">GetHighLightColor</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetPadDivision">GetPadDivision</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> xdivision = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> ydivision = 1)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetPadSave">GetPadSave</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetSelected">GetSelected</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetSelectedOpt">GetSelectedOpt</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:GetSelectedPad">GetSelectedPad</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetShowEventStatus">GetShowEventStatus</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetWh">GetWh</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetWindowHeight">GetWindowHeight</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetWindowTopX">GetWindowTopX</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetWindowTopY">GetWindowTopY</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetWindowWidth">GetWindowWidth</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetWw">GetWw</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetXsizeReal">GetXsizeReal</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetXsizeUser">GetXsizeUser</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetYsizeReal">GetYsizeReal</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:GetYsizeUser">GetYsizeUser</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:HandleInput">HandleInput</a><!--PLAIN-->(EEventType button, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:HasMenuBar">HasMenuBar</a><!--PLAIN-->() const
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Iconify">Iconify</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:IsBatch">IsBatch</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:IsRetained">IsRetained</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->               static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:MakeDefCanvas">MakeDefCanvas</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:MoveOpaque">MoveOpaque</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> set = 1)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:OpaqueMoving">OpaqueMoving</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCanvas:OpaqueResizing">OpaqueResizing</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:Pick">Pick</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py, TObjLink*&amp; pickobj)
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* <!--TAB--><!--BOLD--><a href="#TCanvas:Pick">Pick</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* prevSelObj)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Picked">Picked</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* selpad, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* selected, <a href="ListOfTypes.html#Int_t">Int_t</a> event)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ProcessedEvent">ProcessedEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* selected)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Resize">Resize</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ResizeOpaque">ResizeOpaque</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> set = 1)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SaveSource">SaveSource</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetBatch">SetBatch</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> batch = kTRUE)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetCanvasSize">SetCanvasSize</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ww, <a href="ListOfTypes.html#UInt_t">UInt_t</a> wh)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetCursor">SetCursor</a><!--PLAIN-->(ECursor cursor)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetDoubleBuffer">SetDoubleBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> mode = 1)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetFixedAspectRatio">SetFixedAspectRatio</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> fixed = kTRUE)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetHighLightColor">SetHighLightColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> col)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetRetained">SetRetained</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> retained = kTRUE)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetSelected">SetSelected</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetSelectedPad">SetSelectedPad</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* pad)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetTitle">SetTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetWindowPosition">SetWindowPosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:SetWindowSize">SetWindowSize</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ww, <a href="ListOfTypes.html#UInt_t">UInt_t</a> wh)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Show">Show</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Size">Size</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> xsizeuser = 0, <a href="ListOfTypes.html#Float_t">Float_t</a> ysizeuser = 0)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ToggleAutoExec">ToggleAutoExec</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:ToggleEventStatus">ToggleEventStatus</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:Update">Update</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCanvas:UseCurrentStyle">UseCurrentStyle</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TCanvas:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TAttCanvas.html">TAttCanvas</a> <!--TAB--><!--BOLD--><a name="TCanvas:fCatt">fCatt</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fCatt">Canvas attributes</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TCanvas:fDISPLAY">fDISPLAY</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fDISPLAY">Name of destination screen</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fXsizeUser">fXsizeUser</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fXsizeUser">User specified size of canvas along X in CM</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fYsizeUser">fYsizeUser</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fYsizeUser">User specified size of canvas along Y in CM</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fXsizeReal">fXsizeReal</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fXsizeReal">Current size of canvas along X in CM</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Size_t">Size_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fYsizeReal">fYsizeReal</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fYsizeReal">Current size of canvas along Y in CM</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Color_t">Color_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fHighLightColor">fHighLightColor</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fHighLightColor">Highlight color of active pad</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fDoubleBuffer">fDoubleBuffer</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fDoubleBuffer">Double buffer flag (0=off, 1=on)</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fWindowTopX">fWindowTopX</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fWindowTopX">Top X position of window (in pixels)</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fWindowTopY">fWindowTopY</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fWindowTopY">Top Y position of window (in pixels)</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fWindowWidth">fWindowWidth</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fWindowWidth">Width of window (including borders, etc.)</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fWindowHeight">fWindowHeight</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fWindowHeight">Height of window (including menubar, borders, etc.)</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fCw">fCw</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fCw">Width of the canvas along X (pixels)</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fCh">fCh</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fCh">Height of the canvas along Y (pixels)</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fEvent">fEvent</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fEvent">!Type of current or last handled event</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fEventX">fEventX</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fEventX">!Last X mouse position in canvas</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fEventY">fEventY</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fEventY">!Last Y mouse position in canvas</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fCanvasID">fCanvasID</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fCanvasID">!Canvas identifier</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TCanvas:fSelected">fSelected</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelected">!Currently selected object</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TCanvas:fSelectedOpt">fSelectedOpt</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fSelectedOpt">!Drawing option of selected object</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* <!--TAB--><!--BOLD--><a name="TCanvas:fSelectedPad">fSelectedPad</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fSelectedPad">!Pad containing currently selected object</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TPad.html">TPad</a>* <!--TAB--><!--BOLD--><a name="TCanvas:fPadSave">fPadSave</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPadSave">!Pointer to saved pad in HandleInput</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TControlBar.html">TControlBar</a>* <!--TAB--><!--BOLD--><a name="TCanvas:fEditorBar">fEditorBar</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fEditorBar">!Editor control bar</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TCanvasImp.html">TCanvasImp</a>* <!--TAB--><!--BOLD--><a name="TCanvas:fCanvasImp">fCanvasImp</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCanvasImp">!Window system specific canvas implementation</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TContextMenu.html">TContextMenu</a>* <!--TAB--><!--BOLD--><a name="TCanvas:fContextMenu">fContextMenu</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fContextMenu">!Context menu pointer</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fBatch">fBatch</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fBatch">!True when in batchmode</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fRetained">fRetained</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fRetained">Retain structure flag</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fShowEventStatus">fShowEventStatus</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fShowEventStatus">Show event status panel</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fAutoExec">fAutoExec</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fAutoExec">To auto exec the list of pad TExecs</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fMoveOpaque">fMoveOpaque</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fMoveOpaque">Move objects in opaque mode</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fResizeOpaque">fResizeOpaque</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fResizeOpaque">Resize objects in opaque mode</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCanvas:fMenuBar">fMenuBar</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMenuBar">False if no menubar is displayed</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TDialogCanvas.html">TDialogCanvas</a>, <a href="http://root.cern.ch/root/html/TInspectCanvas.html">TInspectCanvas</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TCanvas:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:11 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

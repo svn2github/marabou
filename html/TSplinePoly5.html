@@ -1,0 +1,75 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSplinePoly5</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSplinePoly5:description">class description</a> - <a href="src/TSplinePoly5.cxx.html">source file</a> - <a href="TSplinePoly5_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSplinePoly5" href="TSpline.h">TSplinePoly5</a> : public <a href="http://root.cern.ch/root/html/TSplinePoly.html">TSplinePoly</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TSplinePoly5.html">TSplinePoly5</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:TSplinePoly5">TSplinePoly5</a><!--PLAIN-->()
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TSplinePoly5.html">TSplinePoly5</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:TSplinePoly5">TSplinePoly5</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> b, <a href="ListOfTypes.html#Double_t">Double_t</a> c, <a href="ListOfTypes.html#Double_t">Double_t</a> d, <a href="ListOfTypes.html#Double_t">Double_t</a> e, <a href="ListOfTypes.html#Double_t">Double_t</a> f)
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TSplinePoly5.html">TSplinePoly5</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:TSplinePoly5">TSplinePoly5</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSplinePoly5.html">TSplinePoly5</a>&amp;)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:~TSplinePoly5">~TSplinePoly5</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TSplinePoly5:B">B</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TSplinePoly5:C">C</a><!--PLAIN-->()
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSplinePoly5:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TSplinePoly5:D">D</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TSplinePoly5:E">E</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:Eval">Eval</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x) const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TSplinePoly5:F">F</a><!--PLAIN-->()
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSplinePoly5:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->          virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSplinePoly5:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TSplinePoly5:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSplinePoly5:fB">fB</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fB">first order expansion coefficient :  fB*1! is the first derivative at x</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSplinePoly5:fC">fC</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fC">second order expansion coefficient : fC*2! is the second derivative at x</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSplinePoly5:fD">fD</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fD">third order expansion coefficient :  fD*3! is the third derivative at x</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSplinePoly5:fE">fE</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fE">fourth order expansion coefficient : fE*4! is the fourth derivative at x</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TSplinePoly5:fF">fF</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fF">fifth order expansion coefficient :  fF*5! is the fifth derivative at x</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TSplinePoly5:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:24 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

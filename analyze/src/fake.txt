@@ -1,0 +1,20 @@
+TMrbAnalyze.h
+
+		Bool_t fFakeMode; 		// kTRUE if replay mode
+ StripAnalyze.cxx: 
+Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
+   if(rootFile = "fake.root"){
+	   fReplayMode = kTRUE;
+	   gReadout->SetReplayMode(kTRUE);
+	   fFakeMode = kTRUE;
+	   gReadout->SetFakeMode(kTRUE);
+	   return(kTRUE);
+   }  
+    
+Bool_t TUsrEvtReadout::ReplayTreeData(TMrbIOSpec * IOSpec) {
+
+	if (!fFakeMode && fTreeIn == NULL) return(kFALSE);
+   if (!fFakeMode)nofEntries = fTreeIn->GetEntries();
+
+Bool_t TMrbAnalyze::ReplayEvents(TMrbIOSpec * IOSpec) {
+	if (!fFakeMode && fRootFileIn == NULL) {

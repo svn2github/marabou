@@ -1,0 +1,111 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TClassTree</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TClassTree:description">class description</a> - <a href="src/TClassTree.cxx.html">source file</a> - <a href="TClassTree_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TClassTree" href="TClassTree.h">TClassTree</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:FindClassesUsedBy">FindClassesUsedBy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> iclass)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:FindClassesUsing">FindClassesUsing</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> iclass)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:FindClassPosition">FindClassPosition</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname, <a href="ListOfTypes.html#Float_t">Float_t</a>&amp; x, <a href="ListOfTypes.html#Float_t">Float_t</a>&amp; y)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:Init">Init</a><!--PLAIN-->()
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a>* <!--TAB--><!--BOLD--><a href="#TClassTree:Mark">Mark</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname, <a href="http://root.cern.ch/root/html/TList.html">TList</a>* los, <a href="ListOfTypes.html#Int_t">Int_t</a> abit)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:PaintClass">PaintClass</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> iclass, <a href="ListOfTypes.html#Float_t">Float_t</a> xleft, <a href="ListOfTypes.html#Float_t">Float_t</a> y)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ScanClasses">ScanClasses</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> iclass)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowCod">ShowCod</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowHas">ShowHas</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowMul">ShowMul</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowRef">ShowRef</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TClassTree.html">TClassTree</a> <!--TAB--><!--BOLD--><a href="#TClassTree:TClassTree">TClassTree</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TClassTree.html">TClassTree</a> <!--TAB--><!--BOLD--><a href="#TClassTree:TClassTree">TClassTree</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* classes)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TClassTree.html">TClassTree</a> <!--TAB--><!--BOLD--><a href="#TClassTree:TClassTree">TClassTree</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TClassTree.html">TClassTree</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:~TClassTree">~TClassTree</a><!--PLAIN-->()
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClassTree:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:Draw">Draw</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classes)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TClassTree:FindClass">FindClass</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname)
+<!--TAB6-->              const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClassTree:GetClasses">GetClasses</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TClassTree:GetSourceDir">GetSourceDir</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TClassTree:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:SaveAs">SaveAs</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:SetClasses">SetClasses</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classes, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "ID")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:SetLabelDx">SetLabelDx</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> labeldx = 0.15)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:SetSourceDir">SetSourceDir</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* dir = "src")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:SetYoffset">SetYoffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> offset = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowClassesUsedBy">ShowClassesUsedBy</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classes)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowClassesUsing">ShowClassesUsing</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classes)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowLinks">ShowLinks</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option = "HMR")
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TClassTree:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TClassTree:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TClassTree:fClasses">fClasses</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fClasses">List of classes to be drawn</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fYoffset">fYoffset</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fYoffset">offset at top of picture in per cent of pad</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fLabelDx">fLabelDx</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLabelDx">width along x of TPaveLabels in per cent of pad</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fNclasses">fNclasses</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fNclasses">current number of classes</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fShowCod">fShowCod</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fShowCod">if 1 show classes referenced by implementation</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fShowMul">fShowMul</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fShowMul">if 1 show multiple inheritance</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fShowHas">fShowHas</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fShowHas">if 1 show "has a" relationship</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TClassTree:fShowRef">fShowRef</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fShowRef">if 1 show classes relationship other than inheritance</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TClassTree:fCstatus">fCstatus</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCstatus">[fNclasses] classes status</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TClassTree:fNdata">fNdata</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fNdata">[fNclasses] Number of data members per class</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TClassTree:fParents">fParents</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fParents">[fNclasses] parent number of classes (permanent)</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TClassTree:fCparent">fCparent</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCparent">!parent number of classes (temporary)</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#char">char</a>** <!--TAB--><!--BOLD--><a name="TClassTree:fDerived">fDerived</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDerived">![fNclasses] table to indicate if i derives from j</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>** <!--TAB--><!--BOLD--><a name="TClassTree:fCpointer">fCpointer</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fCpointer">![fNclasses] pointers to the TClass objects</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a>** <!--TAB--><!--BOLD--><a name="TClassTree:fCnames">fCnames</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fCnames">![fNclasses] class names</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a>** <!--TAB--><!--BOLD--><a name="TClassTree:fCtitles">fCtitles</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCtitles">![fNclasses] class titles</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a>** <!--TAB--><!--BOLD--><a name="TClassTree:fOptions">fOptions</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fOptions">![fNclasses] List of options per class</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TClassTree:fSourceDir">fSourceDir</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSourceDir">Concatenated source directories</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TList.html">TList</a>** <!--TAB--><!--BOLD--><a name="TClassTree:fLinks">fLinks</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fLinks">![fNclasses] for each class, the list of referenced(ing) classes</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TClassTree:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:12 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

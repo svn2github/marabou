@@ -1,0 +1,114 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TVectorD</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TVectorD:description">class description</a> - <a href="src/TVectorD.cxx.html">source file</a> - <a href="TVectorD_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TVectorD" href="TVectorD.h">TVectorD</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Allocate">Allocate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> nrows, <a href="ListOfTypes.html#Int_t">Int_t</a> row_lwb = 0)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Invalidate">Invalidate</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a href="#TVectorD:TVectorD">TVectorD</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a href="#TVectorD:TVectorD">TVectorD</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a href="#TVectorD:TVectorD">TVectorD</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> upb)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a href="#TVectorD:TVectorD">TVectorD</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n, const <a href="ListOfTypes.html#Double_t">Double_t</a>* elements)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a href="#TVectorD:TVectorD">TVectorD</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> upb, const <a href="ListOfTypes.html#Double_t">Double_t</a>* elements)
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a> <!--TAB--><!--BOLD--><a href="#TVectorD:TVectorD">TVectorD</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; another)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:~TVectorD">~TVectorD</a><!--PLAIN-->()
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:Abs">Abs</a><!--PLAIN-->()
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:Apply">Apply</a><!--PLAIN-->(TElementActionD&amp; action)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:Apply">Apply</a><!--PLAIN-->(TElementPosActionD&amp; action)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TVectorD:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->            <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a href="#TVectorD:GetElements">GetElements</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:GetLwb">GetLwb</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:GetNoElements">GetNoElements</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:GetNrows">GetNrows</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:GetUpb">GetUpb</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TVectorD:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:IsValid">IsValid</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Norm1">Norm1</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Norm2Sqr">Norm2Sqr</a><!--PLAIN-->() const
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:NormInf">NormInf</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:operator!=">operator!=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val) const
+<!--TAB6-->            <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator()">operator()</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> index) const
+<!--TAB6-->            <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator()">operator()</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> index)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator*=">operator*=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator*=">operator*=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrixD.html">TMatrixD</a>&amp; a)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator+=">operator+=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator-=">operator-=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:operator&lt;">operator&lt;</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val) const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:operator&lt;=">operator&lt;=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val) const
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; source)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator=">operator=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrixDRow.html">TMatrixDRow</a>&amp; mr)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrixDColumn.html">TMatrixDColumn</a>&amp; mc)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMatrixDDiag.html">TMatrixDDiag</a>&amp; md)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:operator==">operator==</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val) const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:operator&gt;">operator&gt;</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val) const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TVectorD:operator&gt;=">operator&gt;=</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:ResizeTo">ResizeTo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> n)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:ResizeTo">ResizeTo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> lwb, <a href="ListOfTypes.html#Int_t">Int_t</a> upb)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:ResizeTo">ResizeTo</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; v)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:SetElements">SetElements</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a>* elements)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:Sqr">Sqr</a><!--PLAIN-->()
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:Sqrt">Sqrt</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TVectorD:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TVectorD.html">TVectorD</a>&amp; <!--TAB--><!--BOLD--><a href="#TVectorD:Zero">Zero</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TVectorD:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TVectorD:fNmem">fNmem</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fNmem">! number of rows in allocated memory (&gt;=fNrows)</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TVectorD:fNrows">fNrows</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNrows">number of rows</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TVectorD:fRowLwb">fRowLwb</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fRowLwb">lower bound of the row index</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a>* <!--TAB--><!--BOLD--><a name="TVectorD:fElements">fElements</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fElements">[fNrows] elements themselves</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TVectorD:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:59 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

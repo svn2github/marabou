@@ -1,0 +1,315 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbLogger</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbLogger:description">class description</a> - <a href="src/TMrbLogger.cxx.html">source file</a> - <a href="TMrbLogger_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbLogger" href="TMrbLogger.h">TMrbLogger</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="./TMrbLogger.html">TMrbLogger</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:TMrbLogger">TMrbLogger</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ProgName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LogFile = "marabou.log")
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:~TMrbLogger">~TMrbLogger</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbLogger:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Close">Close</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Disable">Disable</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Enable">Enable</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--TAB6-->          ostrstream&amp; <!--TAB--><!--BOLD--><a href="#TMrbLogger:Err">Err</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Flush">Flush</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ClassName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Color = "NULL")
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetEntries">GetEntries</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetEntriesByType">GetEntriesByType</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type = <a href="./TMrbLogMessage.html#TMrbLogMessage:kMrbMsgAny">TMrbLogMessage::kMrbMsgAny</a>)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetEntriesSinceLastCall">GetEntriesSinceLastCall</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetErrors">GetErrors</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetErrorsSinceLastCall">GetErrorsSinceLastCall</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetIndexOfLastPrinted">GetIndexOfLastPrinted</a><!--PLAIN-->()
+<!--TAB6-->      <a href="./TMrbLogMessage.html">TMrbLogMessage</a>* <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetLast">GetLast</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Option = "*")
+<!--TAB6-->      <a href="./TMrbLogMessage.html">TMrbLogMessage</a>* <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetLast">GetLast</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Type)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetMessages">GetMessages</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetMessagesSinceLastCall">GetMessagesSinceLastCall</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetProgName">GetProgName</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetWarnings">GetWarnings</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:GetWarningsSinceLastCall">GetWarningsSinceLastCall</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbLogger:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            ofstream&amp; <!--TAB--><!--BOLD--><a href="#TMrbLogger:Log">Log</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Open">Open</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* LogFile = "marabou.log", const <a href="ListOfTypes.html#Char_t">Char_t</a>* Option = "APPEND")
+<!--TAB6-->          ostrstream&amp; <!--TAB--><!--BOLD--><a href="#TMrbLogger:Out">Out</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbLogger:Prefix">Prefix</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Identifier = "*", const <a href="ListOfTypes.html#Char_t">Char_t</a>* ProgName = "NULL") const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Tail = 0, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Option = "*")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Tail, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:PrintSinceLastCall">PrintSinceLastCall</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Option = "Error")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:PrintSinceLastCall">PrintSinceLastCall</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Type)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:SetGUI">SetGUI</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* GUI)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:SetProgName">SetProgName</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ProgName)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLogger:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbLogger:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:fLogFile">fLogFile</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLogFile">name of log file on disk</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:fProgName">fProgName</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fProgName">program issuing messages</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:fPrefix">fPrefix</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fPrefix">line prefix</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:fEnabled">fEnabled</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fEnabled">one bit for each stream</a></i>
+<!--TAB6-->        ofstream* <!--TAB--><!--BOLD--><a name="TMrbLogger:fLog">fLog</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fLog">!</a></i>
+<!--TAB6-->      ostrstream* <!--TAB--><!--BOLD--><a name="TMrbLogger:fOut">fOut</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fOut">!</a></i>
+<!--TAB6-->      ostrstream* <!--TAB--><!--BOLD--><a name="TMrbLogger:fErr">fErr</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fErr">!</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:fIndexOfLastPrinted">fIndexOfLastPrinted</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fIndexOfLastPrinted">index at last printout</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:fLofMessages">fLofMessages</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fLofMessages">list of messages</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMrbLogger:fGUI">fGUI</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fGUI">! connect to GUI (class TGMrbMessageViewer)</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         static const <a href="./TMrbLogger.html#TMrbLogger:EMrbMsgRoute">TMrbLogger::EMrbMsgRoute</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:kMrbMsgCout">kMrbMsgCout</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kMrbMsgCout"></a></i>
+<!--TAB6-->         static const <a href="./TMrbLogger.html#TMrbLogger:EMrbMsgRoute">TMrbLogger::EMrbMsgRoute</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:kMrbMsgCerr">kMrbMsgCerr</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kMrbMsgCerr"></a></i>
+<!--TAB6-->         static const <a href="./TMrbLogger.html#TMrbLogger:EMrbMsgRoute">TMrbLogger::EMrbMsgRoute</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:kMrbMsgLog">kMrbMsgLog</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kMrbMsgLog"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLogger.html#TMrbLogger:EMrbMsgFileMode">TMrbLogger::EMrbMsgFileMode</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:kMrbMsgFileNew">kMrbMsgFileNew</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kMrbMsgFileNew"></a></i>
+<!--TAB6-->      static const <a href="./TMrbLogger.html#TMrbLogger:EMrbMsgFileMode">TMrbLogger::EMrbMsgFileMode</a> <!--TAB--><!--BOLD--><a name="TMrbLogger:kMrbMsgFileAppend">kMrbMsgFileAppend</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kMrbMsgFileAppend"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbLogger:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbLogger.html">TMrbLogger</a>.cxx
+ Purpose:        MARaBOU utilities:
+             MARaBOU's (error) message logger
+ Description:        Implements class methods to output/store messages
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbLogger:TMrbLogger" href="src/TMrbLogger.cxx.html#TMrbLogger:TMrbLogger">TMrbLogger</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ProgName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * LogFile) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbLogger.html">TMrbLogger</a>
+ Purpose:        MARaBOU's message logging
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> LogFile   -- name of log file
+ Description:    Initializes MARaBOU's message log system.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:SetProgName" href="src/TMrbLogger.cxx.html#TMrbLogger:SetProgName">SetProgName</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ProgName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:SetProgName">TMrbLogger::SetProgName</a>
+ Purpose:        Define program name
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ProgName      -- program name
+ Results:        --
+ Exceptions:
+ Description:    Defines the program name.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLogger:Open" href="src/TMrbLogger.cxx.html#TMrbLogger:Open">Open</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * LogFile, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:Open">TMrbLogger::Open</a>
+ Purpose:        Open log file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * LogFile      -- name of log file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Opens a file to store (error) messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLogger:Close" href="src/TMrbLogger.cxx.html#TMrbLogger:Close">Close</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:Close">TMrbLogger::Close</a>
+ Purpose:        Close log file
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Closes current log file.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLogger:Flush" href="src/TMrbLogger.cxx.html#TMrbLogger:Flush">Flush</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ClassName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Method, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Color) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:Flush">TMrbLogger::Flush</a>
+ Purpose:        Output message(s).
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ClassName    -- calling class
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Method       -- calling method
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Color        -- text color to be used
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Outputs contents of out and err strings
+                 to log file, cout, cerr, resp.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetEntriesByType" href="src/TMrbLogger.cxx.html#TMrbLogger:GetEntriesByType">GetEntriesByType</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:GetEntriesByType">TMrbLogger::GetEntriesByType</a>
+ Purpose:        Extract entries of given type
+ Arguments:      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; MsgArr    -- where to store messages
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Start           -- entry to start with
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type           -- message type
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries      -- number of entries found
+ Exceptions:
+ Description:    Extracts messages of given type.
+ Keywords:
+//////////////////////////////////////////////////////////////////////Lof
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbLogMessage.html">TMrbLogMessage</a>* <a name="TMrbLogger:GetLast" href="src/TMrbLogger.cxx.html#TMrbLogger:GetLast">GetLast</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:GetLast">TMrbLogger::GetLast</a>
+ Purpose:        Return last message
+ Arguments:      const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option      -- message type
+ Results:        <a href="./TMrbLogMessage.html">TMrbLogMessage</a> * LastMsg   -- pointer to last message
+                                               of requested type
+ Exceptions:
+ Description:    Returns last message. Mainly to be used by GUI.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbLogMessage.html">TMrbLogMessage</a>* <a name="TMrbLogger:GetLast" href="src/TMrbLogger.cxx.html#TMrbLogger:GetLast">GetLast</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:GetLast">TMrbLogger::GetLast</a>
+ Purpose:        Return last message
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type                -- message type
+ Results:        <a href="./TMrbLogMessage.html">TMrbLogMessage</a> * LastMsg   -- pointer to last message
+                                               of requested type
+ Exceptions:
+ Description:    Returns last message. Mainly to be used by GUI.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:Print" href="src/TMrbLogger.cxx.html#TMrbLogger:Print">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Tail, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:Print">TMrbLogger::Print</a>
+ Purpose:        Print messages
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Tail            -- point last 'Tail' messages only
+                 const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option -- message type
+ Results:        --
+ Exceptions:
+ Description:    Outputs (part of) message table.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:Print" href="src/TMrbLogger.cxx.html#TMrbLogger:Print">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Tail, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:Print">TMrbLogger::Print</a>
+ Purpose:        Print messages
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Tail            -- point last 'Tail' messages only
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type           -- message type
+ Results:        --
+ Exceptions:
+ Description:    Outputs (part of) message table.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:PrintSinceLastCall" href="src/TMrbLogger.cxx.html#TMrbLogger:PrintSinceLastCall">PrintSinceLastCall</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:PrintSinceLastCall">TMrbLogger::PrintSinceLastCall</a>
+ Purpose:        Print new messages since last printout
+ Arguments:      const <a href="ListOfTypes.html#Char_t">Char_t</a> * Option -- message type
+ Results:        --
+ Exceptions:
+ Description:    Outputs recently created messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:PrintSinceLastCall" href="src/TMrbLogger.cxx.html#TMrbLogger:PrintSinceLastCall">PrintSinceLastCall</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:PrintSinceLastCall">TMrbLogger::PrintSinceLastCall</a>
+ Purpose:        Print new messages since last printout
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> Type           -- message type
+ Results:        --
+ Exceptions:
+ Description:    Outputs recently created messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbLogger:Prefix" href="src/TMrbLogger.cxx.html#TMrbLogger:Prefix">Prefix</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Identifier, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ProgName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbLogger.html#TMrbLogger:Prefix">TMrbLogger::Prefix</a>
+ Purpose:        Returns line prefix
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Identifier  -- line identifier
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ProgName    -- calling program
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix      -- line prefix
+ Exceptions:
+ Description:    Formats a line prefix:
+                    "&lt;Id&gt;-[&lt;Date &amp; Time&gt;]- &lt;ProgName&gt; &lt;&gt; "
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbLogger:GetProgName" href="TMrbLogger.h">GetProgName</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetEntries" href="TMrbLogger.h">GetEntries</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetMessages" href="TMrbLogger.h">GetMessages</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetErrors" href="TMrbLogger.h">GetErrors</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetWarnings" href="TMrbLogger.h">GetWarnings</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr, <a href="ListOfTypes.html#Int_t">Int_t</a> Start = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetEntriesSinceLastCall" href="TMrbLogger.h">GetEntriesSinceLastCall</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetMessagesSinceLastCall" href="TMrbLogger.h">GetMessagesSinceLastCall</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetErrorsSinceLastCall" href="TMrbLogger.h">GetErrorsSinceLastCall</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetWarningsSinceLastCall" href="TMrbLogger.h">GetWarningsSinceLastCall</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; MsgArr)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbLogger:Enable" href="TMrbLogger.h">Enable</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbLogger:Disable" href="TMrbLogger.h">Disable</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:SetGUI" href="TMrbLogger.h">SetGUI</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* GUI)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:Reset" href="TMrbLogger.h">Reset</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbLogger:GetIndexOfLastPrinted" href="TMrbLogger.h">GetIndexOfLastPrinted</a>()
+<!--INLINE FUNCTION--><!--TAB6-->          ostrstream&amp; <a name="TMrbLogger:Out" href="TMrbLogger.h">Out</a>()
+<!--INLINE FUNCTION--><!--TAB6-->          ostrstream&amp; <a name="TMrbLogger:Err" href="TMrbLogger.h">Err</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            ofstream&amp; <a name="TMrbLogger:Log" href="TMrbLogger.h">Log</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:Help" href="TMrbLogger.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbLogger:Class" href="TMrbLogger.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbLogger:IsA" href="TMrbLogger.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:ShowMembers" href="TMrbLogger.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:Streamer" href="TMrbLogger.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:StreamerNVirtual" href="TMrbLogger.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbLogger:~TMrbLogger" href="TMrbLogger.h">~TMrbLogger</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:07 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

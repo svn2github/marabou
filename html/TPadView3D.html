@@ -1,0 +1,137 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TPadView3D</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TPadView3D:description">class description</a> - <a href="src/TPadView3D.cxx.html">source file</a> - <a href="TPadView3D_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TPadView3D" href="TPadView3D.h">TPadView3D</a> </h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="./TPadView3D.html">TPadView3D</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:TPadView3D">TPadView3D</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./TPadView3D.html">TPadView3D</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:TPadView3D">TPadView3D</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad)
+<!--TAB6-->           <a href="./TPadView3D.html">TPadView3D</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:TPadView3D">TPadView3D</a><!--PLAIN-->(const <a href="./TPadView3D.html">TPadView3D</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:~TPadView3D">~TPadView3D</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:ExecuteEvent">ExecuteEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:GetAngles">GetAngles</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_angles, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_angles) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:GetAnglesFactors">GetAnglesFactors</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* factors) const
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a href="#TPadView3D:GetPad">GetPad</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:GetRange">GetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* min, <a href="ListOfTypes.html#Double_t">Double_t</a>* max) const
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:GetScale">GetScale</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:GetShift">GetShift</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_shift, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_shift) const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PaintBeginModel">PaintBeginModel</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PaintEnd">PaintEnd</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PaintPoints3D">PaintPoints3D</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TPoints3DABC.html">TPoints3DABC</a>* points, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PaintPolyLine">PaintPolyLine</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TPolyLine3D.html">TPolyLine3D</a>* line, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PaintPolyMarker">PaintPolyMarker</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TPolyMarker3D.html">TPolyMarker3D</a>* marker, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PaintScene">PaintScene</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PopMatrix">PopMatrix</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:PushMatrix">PushMatrix</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetAngles">SetAngles</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_angles, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_angles)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetAnglesFactors">SetAnglesFactors</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* factors)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetAttNode">SetAttNode</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* node, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetLineAttr">SetLineAttr</a><!--PLAIN-->(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Int_t">Int_t</a> width, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetPad">SetPad</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad = 0)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* min, <a href="ListOfTypes.html#Double_t">Double_t</a>* max)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetScale">SetScale</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> scale)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:SetShift">SetShift</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_shift, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_shift)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:Size">Size</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> width, <a href="ListOfTypes.html#Int_t">Int_t</a> height)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:UpdateNodeMatrix">UpdateNodeMatrix</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* node, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:UpdatePosition">UpdatePosition</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z, <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* matrix, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TPadView3D:UpdateView">UpdateView</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TPadView3D:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <!--TAB--><!--BOLD--><a name="TPadView3D:fParent">fParent</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fParent">Pointer to the original TPad object</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fViewBoxMin">fViewBoxMin[3]</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fViewBoxMin">Minimum of clip box</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fViewBoxMax">fViewBoxMax[3]</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fViewBoxMax">Maximum of clip box</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fTranslate">fTranslate[3]</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTranslate">The vector to move object into the center of the scene</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fExtraTranslate">fExtraTranslate[3]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fExtraTranslate">The vector to move object with a mouse</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fAngles">fAngles[3]</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fAngles">Latitude, Longitude, Psi</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fExtraAngles">fExtraAngles[3]</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fExtraAngles">Latitude, Longitude, Psi</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fAnglFactor">fAnglFactor[3]</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fAnglFactor">Latitude, Longitude, Psi</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TPadView3D:fScale">fScale</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fScale">The scale factor to control the border of the clip box</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TPadOpenGLView.html">TPadOpenGLView</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TPadView3D:description">Class Description</a></h2>
+<br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TPadView3D.html">TPadView3D</a> <a name="TPadView3D:TPadView3D" href="TPadView3D.h">TPadView3D</a>()
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TPadView3D.html">TPadView3D</a> <a name="TPadView3D:TPadView3D" href="TPadView3D.h">TPadView3D</a>(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:ExecuteEvent" href="TPadView3D.h">ExecuteEvent</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> event, <a href="ListOfTypes.html#Int_t">Int_t</a> px, <a href="ListOfTypes.html#Int_t">Int_t</a> py)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* <a name="TPadView3D:GetPad" href="TPadView3D.h">GetPad</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:Paint" href="TPadView3D.h">Paint</a>(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:Size" href="TPadView3D.h">Size</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> width, <a href="ListOfTypes.html#Int_t">Int_t</a> height)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PaintBeginModel" href="TPadView3D.h">PaintBeginModel</a>(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PaintEnd" href="TPadView3D.h">PaintEnd</a>(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PaintScene" href="TPadView3D.h">PaintScene</a>(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PaintPolyMarker" href="TPadView3D.h">PaintPolyMarker</a>(<a href="http://root.cern.ch/root/html/TPolyMarker3D.html">TPolyMarker3D</a>* marker, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PaintPolyLine" href="TPadView3D.h">PaintPolyLine</a>(<a href="http://root.cern.ch/root/html/TPolyLine3D.html">TPolyLine3D</a>* line, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PaintPoints3D" href="TPadView3D.h">PaintPoints3D</a>(const <a href="http://root.cern.ch/root/html/TPoints3DABC.html">TPoints3DABC</a>* points, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PushMatrix" href="TPadView3D.h">PushMatrix</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:PopMatrix" href="TPadView3D.h">PopMatrix</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetAttNode" href="TPadView3D.h">SetAttNode</a>(<a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* node, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetLineAttr" href="TPadView3D.h">SetLineAttr</a>(<a href="ListOfTypes.html#Color_t">Color_t</a> color, <a href="ListOfTypes.html#Int_t">Int_t</a> width, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetPad" href="TPadView3D.h">SetPad</a>(<a href="http://root.cern.ch/root/html/TVirtualPad.html">TVirtualPad</a>* pad = 0)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:UpdateNodeMatrix" href="TPadView3D.h">UpdateNodeMatrix</a>(<a href="http://root.cern.ch/root/html/TNode.html">TNode</a>* node, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:UpdatePosition" href="TPadView3D.h">UpdatePosition</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> x, <a href="ListOfTypes.html#Double_t">Double_t</a> y, <a href="ListOfTypes.html#Double_t">Double_t</a> z, <a href="http://root.cern.ch/root/html/TRotMatrix.html">TRotMatrix</a>* matrix, <a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:UpdateView" href="TPadView3D.h">UpdateView</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:GetRange" href="TPadView3D.h">GetRange</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* min, <a href="ListOfTypes.html#Double_t">Double_t</a>* max) const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetRange" href="TPadView3D.h">SetRange</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* min, <a href="ListOfTypes.html#Double_t">Double_t</a>* max)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:GetShift" href="TPadView3D.h">GetShift</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_shift, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_shift) const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetShift" href="TPadView3D.h">SetShift</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_shift, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_shift)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:GetAngles" href="TPadView3D.h">GetAngles</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_angles, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_angles) const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetAngles" href="TPadView3D.h">SetAngles</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* main_angles, <a href="ListOfTypes.html#Double_t">Double_t</a>* extra_angles)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:GetAnglesFactors" href="TPadView3D.h">GetAnglesFactors</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* factors) const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetAnglesFactors" href="TPadView3D.h">SetAnglesFactors</a>(<a href="ListOfTypes.html#Double_t">Double_t</a>* factors)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Float_t">Float_t</a> <a name="TPadView3D:GetScale" href="TPadView3D.h">GetScale</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:SetScale" href="TPadView3D.h">SetScale</a>(<a href="ListOfTypes.html#Float_t">Float_t</a> scale)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TPadView3D.html">TPadView3D</a> <a name="TPadView3D:TPadView3D" href="TPadView3D.h">TPadView3D</a>(const <a href="./TPadView3D.html">TPadView3D</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TPadView3D:~TPadView3D" href="TPadView3D.h">~TPadView3D</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:07 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,100 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGNumberEntry</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGNumberEntry:description">class description</a> - <a href="src/TGNumberEntry.cxx.html">source file</a> - <a href="TGNumberEntry_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGNumberEntry" href="TGNumberEntry.h">TGNumberEntry</a> : public <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>, public <a href="http://root.cern.ch/root/html/TGWidget.html">TGWidget</a>, public <a href="http://root.cern.ch/root/html/TGNumberFormat.html">TGNumberFormat</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TGNumberEntry.html">TGNumberEntry</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:TGNumberEntry">TGNumberEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent, <a href="ListOfTypes.html#Double_t">Double_t</a> val = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> digitwidth = 5, <a href="ListOfTypes.html#Int_t">Int_t</a> id = -1, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> style = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNESReal">kNESReal</a>, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> attr = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNEAAnyNumber">kNEAAnyNumber</a>, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> limits = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNELNoLimits">kNELNoLimits</a>, <a href="ListOfTypes.html#Double_t">Double_t</a> min = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> max = 1)
+<!--TAB6-->                           <a href="http://root.cern.ch/root/html/TGNumberEntry.html">TGNumberEntry</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:TGNumberEntry">TGNumberEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGNumberEntry.html">TGNumberEntry</a>&amp;)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:~TGNumberEntry">~TGNumberEntry</a><!--PLAIN-->()
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:Associate">Associate</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* w)
+<!--TAB6-->                          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                               <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetButtonDown">GetButtonDown</a><!--PLAIN-->() const
+<!--TAB6-->                               <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetButtonUp">GetButtonUp</a><!--PLAIN-->() const
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetDate">GetDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; year, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; month, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; day) const
+<!--TAB6-->                         virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetHexNumber">GetHexNumber</a><!--PLAIN-->() const
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Long_t">Long_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetIntNumber">GetIntNumber</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumAttr">GetNumAttr</a><!--PLAIN-->() const
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumber">GetNumber</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumberEntry">GetNumberEntry</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumLimits">GetNumLimits</a><!--PLAIN-->() const
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumMax">GetNumMax</a><!--PLAIN-->() const
+<!--TAB6-->                        virtual <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumMin">GetNumMin</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetNumStyle">GetNumStyle</a><!--PLAIN-->() const
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:GetTime">GetTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; hour, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; min, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; sec) const
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:IncreaseNumber">IncreaseNumber</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStepSize">TGNumberFormat::EStepSize</a> step = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNSSSmall">kNSSSmall</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> sign = 1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> logstep = kFALSE)
+<!--TAB6-->                         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGNumberEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:IsLogStep">IsLogStep</a><!--PLAIN-->() const
+<!--TAB6-->                          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a> parm2)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetButtonToNum">SetButtonToNum</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> state)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetDate">SetDate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> year, <a href="ListOfTypes.html#Int_t">Int_t</a> month, <a href="ListOfTypes.html#Int_t">Int_t</a> day)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetFormat">SetFormat</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EStyle">TGNumberFormat::EStyle</a> style, <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:EAttribute">TGNumberFormat::EAttribute</a> attr = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNEAAnyNumber">kNEAAnyNumber</a>)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetHexNumber">SetHexNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> val)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetIntNumber">SetIntNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> val)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetLimits">SetLimits</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:ELimit">TGNumberFormat::ELimit</a> limits = <a href="http://root.cern.ch/root/html/TGNumberFormat.html#TGNumberFormat:kNELNoLimits">kNELNoLimits</a>, <a href="ListOfTypes.html#Double_t">Double_t</a> min = 0, <a href="ListOfTypes.html#Double_t">Double_t</a> max = 1)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetLogStep">SetLogStep</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> on = kTRUE)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetNumber">SetNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> val)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetState">SetState</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> enable = kTRUE)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetText">SetText</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* text)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:SetTime">SetTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> hour, <a href="ListOfTypes.html#Int_t">Int_t</a> min, <a href="ListOfTypes.html#Int_t">Int_t</a> sec)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGNumberEntry:ValueChanged">ValueChanged</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> val)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGNumberEntry:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGNumberEntry:fPicUp">fPicUp</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fPicUp">Up arrow</a></i>
+<!--TAB6-->      const <a href="http://root.cern.ch/root/html/TGPicture.html">TGPicture</a>* <!--TAB--><!--BOLD--><a name="TGNumberEntry:fPicDown">fPicDown</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fPicDown">Down arrow</a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGNumberEntryField.html">TGNumberEntryField</a>* <!--TAB--><!--BOLD--><a name="TGNumberEntry:fNumericEntry">fNumericEntry</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNumericEntry">Number text entry field</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a name="TGNumberEntry:fButtonUp">fButtonUp</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fButtonUp">Button for increasing value</a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a name="TGNumberEntry:fButtonDown">fButtonDown</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fButtonDown">Button for decreasing value</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGNumberEntry:fButtonToNum">fButtonToNum</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fButtonToNum">Send button messages to parent rather than number entry field</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGNumberEntry:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

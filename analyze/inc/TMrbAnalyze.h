@@ -1,0 +1,779 @@
+#ifndef __TMrbAnalyze_h__
+#define __TMrbAnalyze_h__
+
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze.h
+// Purpose:        Define base class for user's analyze process
+// Description:
+// Author:         R. Lutter
+// Revision:       
+// Date:           
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TROOT.h"
+#include "TTree.h"
+#include "TFile.h"
+#include "TKey.h"
+#include "TH1.h"
+#include "TDatime.h"
+#include "TMapFile.h"
+
+#include "TMrbTransport.h"
+#include "TMrbVar.h"
+#include "TMrbWdw.h"
+#include "TMrbLofUserVars.h"
+#include "TMrbVarWdwCommon.h"
+
+#include "TMrbLogger.h"
+
+enum				{	kMB 			=	(1024 * 1024)	};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbIOSpec
+// Purpose:        Specify i/o data
+// Description:    Describes how to process input data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbIOSpec : public TObject {
+
+	public:
+		enum EMrbInputMode		{	kInputNone			=	0,
+									kInputMBS			=	0x1,
+									kInputFile			=	0x2,
+									kInputTCP			=	kInputMBS | 0x4,
+									kInputRoot			=	kInputFile | 0x8,
+									kInputLMD			=	kInputMBS | kInputFile | 0x10,
+									kInputList			=	kInputRoot | 0x20,
+									kInputSync			=	kInputTCP | 0x40,
+									kInputAsync 		=	kInputTCP | 0x80
+								};
+
+
+		enum EMrbOutputMode 	{	kOutputNone 		=	0,
+									kOutputOpen 		=	0x1,
+									kOutputWriteTree	=	0x2,
+									kOutputClose		=	0x4
+								};
+
+		enum EMrbHistoMode	 	{	kHistoNone			=	0,
+									kHistoAdd			=	0x1,
+									kHistoSave			=	0x2,
+									kHistoClear			=	0x4,
+								};
+
+		enum EMrbParamMode		{	kParamNone			=	0,
+									kParamReload		=	0x1,
+									kParamReloadAscii	=	kParamReload | 0x2,
+									kParamLoaded		=	0x4
+								};
+
+	public:
+		TMrbIOSpec() {								// default ctor
+			fTimeStampFlag = kFALSE;
+			fInputMode = TMrbIOSpec::kInputNone;
+			fOutputMode = TMrbIOSpec::kOutputNone;
+			fParamMode = TMrbIOSpec::kParamNone;
+			fHistoMode = TMrbIOSpec::kHistoNone;
+		};
+
+		~TMrbIOSpec() {};							// default dtor
+
+		void SetInputFile(const Char_t * InputFile, EMrbInputMode InputMode = TMrbIOSpec::kInputNone) {
+			fInputFile = InputFile;
+			fInputMode = InputMode;
+		};
+		const Char_t * GetInputFile() { return(fInputFile.Data()); };
+
+		void SetOutputFile(const Char_t * OutputFile, EMrbOutputMode OutputMode = TMrbIOSpec::kOutputNone) {
+			fOutputFile = OutputFile;
+			fOutputMode = OutputMode;
+		};
+		const Char_t * GetOutputFile() { return(fOutputFile.Data()); };
+
+		void SetHistoFile(const Char_t * HistoFile, EMrbHistoMode HistoMode = TMrbIOSpec::kHistoNone) {
+			fHistoFile = HistoFile;
+			fHistoMode = HistoMode;
+		};
+		const Char_t * GetHistoFile() { return(fHistoFile.Data()); };
+
+		void SetParamFile(const Char_t * ParamFile, EMrbParamMode ParamMode = TMrbIOSpec::kParamNone) {
+			fParamFile = ParamFile;
+			fParamMode = ParamMode;
+		};
+		const Char_t * GetParamFile() { return(fParamFile.Data()); };
+
+		Bool_t SetStartStop(TString &, TString &);
+		Bool_t SetStartStop(Bool_t TstampFlag, Int_t Start, Int_t Stop) {
+			fTimeStampFlag = TstampFlag;
+			fStartEvent = Start;
+			fStopEvent = Stop;
+			return(kTRUE);
+		};
+
+		inline Int_t GetStartEvent() { return(fStartEvent); };
+		inline Int_t GetStopEvent() { return(fStopEvent); };
+
+		Bool_t CheckStartStop(TString &, Int_t &, Bool_t &);
+		void ConvertToTimeStamp(TString &, Int_t);
+
+		inline Bool_t IsTimeStampMode() { return(fTimeStampFlag); };
+		inline EMrbInputMode GetInputMode() { return(fInputMode); };
+		inline void SetInputMode(TMrbIOSpec::EMrbInputMode Mode) { fInputMode = Mode; };
+		inline EMrbOutputMode GetOutputMode() { return(fOutputMode); };
+		inline void SetOutputMode(TMrbIOSpec::EMrbOutputMode Mode) { fOutputMode = Mode; };
+		inline EMrbParamMode GetParamMode() { return(fParamMode); };
+		inline void SetParamMode(TMrbIOSpec::EMrbParamMode Mode) { fParamMode = Mode; };
+		inline EMrbHistoMode GetHistoMode() { return(fHistoMode); };
+		inline void SetHistoMode(TMrbIOSpec::EMrbHistoMode Mode) { fHistoMode = Mode; };
+
+		void Print(ostream & out = cout);				// output current settings
+
+		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbIOSpec.html&"); };
+
+	protected:
+		Bool_t fTimeStampFlag;		// kTRUE if start/stop refers to time stamp rather than event count
+		Int_t fStartEvent;  		// event number / time stamp to start with
+		Int_t fStopEvent;			// event number / time stamp to end with
+
+		EMrbInputMode fInputMode;	// MBS? TCP? File? List?
+		TString fInputFile;			// name of input file
+
+		EMrbOutputMode fOutputMode; // open? close? write tree?
+		TString fOutputFile;		// name of output file
+
+		EMrbHistoMode fHistoMode; 	// add? save?
+		TString fHistoFile; 		// name of histogram file
+
+		EMrbParamMode fParamMode;	// reload?
+		TString fParamFile; 		// name of param file
+
+	ClassDef(TMrbIOSpec, 1) 	// [Analyze] I/O specifications
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbParamListEntry
+// Purpose:        An entry in user's param list
+// Description:    Bookkeeping: Connects params to modules and histos
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbParamListEntry : public TObject {
+
+	public:
+		TMrbParamListEntry( TMrbNamedX * Module = NULL,								// ctor
+							Int_t * Address = NULL,
+							TH1 * HistoAddress = NULL) :	fModule(Module),
+															fAddress(Address),
+															fHistoAddress(HistoAddress) {};
+		virtual ~TMrbParamListEntry() {};  											// dtor
+
+		inline TMrbNamedX * GetModule() { return(fModule); };
+		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
+		inline Int_t * GetAddress() { return(fAddress); };
+		inline void SetAddress(Int_t * Address) { fAddress = Address; };
+		inline TH1 * GetHistoAddress() { return(fHistoAddress); };
+		inline void SetHistoAddress(TH1 * Address) { fHistoAddress = Address; };
+
+	protected:
+		TMrbNamedX * fModule;
+		Int_t * fAddress;
+		TH1 * fHistoAddress;
+
+	ClassDef(TMrbParamListEntry, 0) 	// [Analyze] List of params
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbHistoListEntry
+// Purpose:        An entry in user's list of histograms
+// Description:    Bookkeeping: Connects histograms to modules and params
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbHistoListEntry : public TObject {
+
+	public:
+		TMrbHistoListEntry( TMrbNamedX * Module = NULL,								// ctor
+							TMrbNamedX * Param = NULL,
+							TH1 * Address = NULL) :	fModule(Module),
+													fParam(Param),
+													fAddress(Address) {};
+		virtual ~TMrbHistoListEntry() {};  											// dtor
+
+		inline TMrbNamedX * GetModule() { return(fModule); };
+		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
+		inline TMrbNamedX * GetParam() { return(fParam); };
+		inline void SetParam(TMrbNamedX * Param) { fParam = Param; };
+		inline TH1 * GetAddress() { return(fAddress); };
+		inline void SetAddress(TH1 * Address) { fAddress = Address; };
+
+	protected:
+		TMrbNamedX * fModule;
+		TMrbNamedX * fParam;
+		TH1 * fAddress;
+
+	ClassDef(TMrbHistoListEntry, 0) 	// [Analyze] List of histograms
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleListEntry
+// Purpose:        An entry in user's module list
+// Description:    Bookkeeping: Connects modules to params & histos
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbModuleListEntry : public TObject {
+
+	public:
+		TMrbModuleListEntry(	Int_t NofParams = 0,						// ctor
+								Int_t IndexOfFirstParam = 0,
+								TMrbNamedX * FirstParam = NULL,
+								TMrbNamedX * FirstHisto = NULL) :	fNofParams(NofParams),
+																	fIndexOfFirstParam(IndexOfFirstParam),
+																	fFirstParam(FirstParam),
+																	fFirstHisto(FirstHisto) {}; 
+		virtual ~TMrbModuleListEntry() {}; 									// dtor
+
+		inline Int_t GetNofParams() { return(fNofParams); };
+		inline void SetNofParams(Int_t NofParams) { fNofParams = NofParams; };
+		inline Int_t GetIndexOfFirstParam() { return(fIndexOfFirstParam); };
+		inline void SetIndexOfFirstParam(Int_t FirstParam) { fIndexOfFirstParam = FirstParam; };
+		inline TMrbNamedX * GetFirstParam() { return(fFirstParam); };
+		inline void SetFirstParam(TMrbNamedX * FirstParam) { fFirstParam = FirstParam; };
+		inline TMrbNamedX * GetFirstHisto() { return(fFirstHisto); };
+		inline void SetFirstHisto(TMrbNamedX * FirstHisto) { fFirstHisto = FirstHisto; };
+
+	protected:
+		Int_t fNofParams;
+		Int_t fIndexOfFirstParam;
+		TMrbNamedX * fFirstParam;
+		TMrbNamedX * fFirstHisto;
+
+	ClassDef(TMrbModuleListEntry, 0) 	// [Analyze] List of modules
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHit
+// Purpose:        Class to store hit data
+// Description:    Describes a single hit.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrHit : public TObject {
+
+	public:
+		enum	{	kHitFastTrigger	=	0	};				// hit data layout
+		enum	{	kHitEnergy		=	1	};				// depending on param RUNTASK
+		enum	{	kHitXiaPSA		=	2	};
+		enum	{	kHitUserPSA		=	3	};
+		enum	{	kHitGSLTHi		=	4	};
+		enum	{	kHitGSLTMi		=	5	};
+		enum	{	kHitGSLTLo		=	6	};
+		enum	{	kHitRaw 		=	7	};
+		enum	{	kHitLast		=	kHitRaw	};
+		enum	{	kMaxHitData 	=	kHitLast + 1	};
+
+	public:
+		TUsrHit() {};
+		TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
+										UShort_t * Data, Int_t NofData);	// ctor
+		TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
+										UShort_t * EventTime,
+										UShort_t * Data, Int_t NofData);	// ctor
+		~TUsrHit() {};														// default dtor
+		
+		virtual Int_t Compare(const TObject * Hit) const; 				// hits have to be sortable in time
+		Int_t Compare(UShort_t * EventTime);
+		
+		Int_t CalcTimeDiff(UShort_t * EventTime, Bool_t AbsFlag = kFALSE);		// calculate time difference
+		Int_t CalcTimeDiff(TUsrHit * Hit, Bool_t AbsFlag = kFALSE);
+
+		void Print(ostream & Out, Bool_t PrintNames = kFALSE);		// print hit data
+		inline void Print(Bool_t PrintNames = kFALSE) { Print(cout, PrintNames); };
+		
+		inline Int_t GetEventNumber() { return(fEventNumber); };		// get data members
+		inline Int_t GetEventIndex() { return(fEventIndex); };
+		inline Int_t GetModuleNumber() { return(fModuleNumber); };
+		inline Int_t GetChannel() { return(fChannel); };
+
+		inline UShort_t * GetEventTime() { return(fEventTime); };		// get pointer to event time
+
+		inline UShort_t * GetDataAddr() { return(fData); };
+		inline UShort_t GetData(Int_t Index) { return(fData[Index]); };
+		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
+				
+		inline void SetEventNumber(Int_t EventNumber) { fEventNumber = EventNumber; };		// set data members
+		inline void SetEventIndex(Int_t EventIndex) { fEventIndex = EventIndex; };
+		inline void SetModuleNumber(Int_t ModuleNumber) { fModuleNumber = ModuleNumber; };
+		inline void SetChannel(Int_t Channel) { fChannel = Channel; };
+		inline void SetEventTime(UShort_t * EventTime) { for (Int_t i = 0; i < 3; i++) fEventTime[i] = *EventTime++; };
+		inline void SetEventTime(UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo) {
+				fEventTime[0] = BufferTimeHi;
+				fEventTime[1] = EventTimeHi;
+				fEventTime[2] = EventTimeLo;
+		};
+		inline void CopyData(UShort_t * Data, Int_t NofData) { if (Data) for (Int_t i = 0; i < NofData; i++) fData[i] = *Data++; };
+		inline void ClearData() { memset(fData, 0, kMaxHitData * sizeof(UShort_t)); };
+
+	protected:		
+		Int_t fEventNumber; 			// internal event number
+		Int_t fEventIndex; 			// event index within buffer
+		Int_t fModuleNumber;			// module serial number
+		Int_t fChannel; 				// module channel
+		UShort_t fEventTime[3];		// time stamp generated by dgf clock bus (48 bits unsigned!)
+		Int_t fNofData; 				// number of data words
+		UShort_t fData[kMaxHitData]; 	// data (fast trigger, energy, etc)
+		
+	ClassDef(TUsrHit, 1)				// [Analyze] Hit
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer
+// Purpose:        A buffer to store hit data
+// Description:    TClonesArray to store hit data.
+//                 Entries are indexed by module and channel number.
+//                 Sorting may be done according to time stamp.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrHitBuffer : public TObject {
+
+	public:
+		TUsrHitBuffer() {};
+		TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0, Int_t Offset = 0);		// ctor
+		~TUsrHitBuffer() {};										// default dtor
+
+		void Reset();										// reset hit list
+															// add a new hit		
+		TUsrHit * AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Channel, 
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
+										UShort_t * Data, Int_t NofData, Bool_t SubOffs = kTRUE);
+		TUsrHit * AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Channel, 
+										UShort_t * EventTime,
+										UShort_t * Data, Int_t NofData, Bool_t SubOffs = kTRUE);
+		Bool_t RemoveHit(TUsrHit * Hit);					// remove hit
+
+		inline const Char_t * GetName() { return(fBufName.Data()); };
+
+		inline Int_t GetNofEntries() { return(fNofEntries); };
+		inline Int_t GetNofHits() { return(fNofHits); };
+		
+		inline void SetOffset(Int_t Offset) { fOffset = Offset; };
+		inline Int_t GetOffset() { return(fOffset); };
+
+		inline void SetHighWater(Int_t HighWater) { fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater; };
+		inline Int_t GetHighWater() { return(fHighWater); };
+		Bool_t IsHighWater(Bool_t Verbose = kFALSE);
+				
+		TUsrHit * FindHit(TUsrHit & Hit, TUsrHit * After = NULL);				// search for a given hit
+		TUsrHit * At(Int_t Index) { return (TUsrHit *) fHits->At(Index); }; 	// return hit at given index
+		
+		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };			// sort entries by time
+
+		inline TClonesArray * GetCA() { return(fHits); };
+
+		void Print(ostream & Out, Int_t Begin = 0, Int_t End = -1);						// print data
+		inline void Print(Int_t Begin = 0, Int_t End = -1) { Print(cout, Begin, End); };
+		
+	protected:
+		TString fBufName;						// buffer name
+		Int_t fNofEntries;						// max number of entries
+		Int_t fNofHits; 						// current number of hits
+		Int_t fOffset;							// time stamp offset
+		Int_t fHighWater;						// high water margin
+		TClonesArray * fHits;					//-> array containing hit data
+			
+	ClassDef(TUsrHitBuffer, 1)					// [Analyze] Hit buffer
+};
+	
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze
+// Purpose:        Main class to define user's analyze methods
+// Description:    Defines methods to perform user's analysis.
+//                 (*) replay mode only
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbAnalyze : public TObject {
+
+	public:
+		enum 				{	kTimeUnitsPerSec	=	10000		};
+		enum				{	kTimeNsecsPerUnit	=	100000		};
+
+		enum				{	kBranchSplitLevel	=	99			};
+		enum				{	kBranchBufferSize	=	32000		};
+
+		enum				{	kUpdateTime 	=	8				};
+
+		enum EMrbRunStatus	{	M_ABSENT,
+								M_STARTING,
+								M_RUNNING,
+								M_PAUSING,
+								M_STOPPING,
+								M_STOPPED
+							};
+
+	public:
+		TMrbAnalyze(TMrbIOSpec * IOSpec);						// default ctor
+		~TMrbAnalyze() { fLofIOSpecs.Delete(); };				// dtor
+
+		TMrbAnalyze(const TMrbAnalyze &) {};					// dummy copy ctor
+
+		void SetScaleDown(Int_t ScaleDown = 1);					// set (global) scale-down factor
+		TH1F * UpdateRateHistory();  							// add a bin to the rate history
+		TH1F * UpdateDTimeHistory();  							// update the dead-time history
+		Bool_t TestRunStatus(); 								// wait for run flag
+		Bool_t Initialize(TMrbIOSpec *);						// user may init his objects here
+
+		Bool_t HandleUserMessage(const Char_t * ArgList); 		// handle messages to M_analyze
+
+		Bool_t OpenRootFile(const Char_t * FileName);			// open input file
+		Bool_t OpenRootFile(TMrbIOSpec * IOSpec);
+
+		Bool_t ReplayEvents(TMrbIOSpec * IOSpec);				// read events from root tree
+
+		Bool_t WriteRootTree(const Char_t * FileName); 			// open ROOT file to store raw data
+		Bool_t WriteRootTree(TMrbIOSpec * IOSpec);
+
+		inline void SetFileSize(Int_t FileSize = 0) {			// set size of output file to approx. FileSize MBs
+			fFileSize = kMB * FileSize;
+		};
+
+		Bool_t CloseRootTree(TMrbIOSpec * IOSpec = NULL); 		// close output file
+
+		inline Int_t GetScaleDown() { return(fScaleDown); };	// get current scale down
+		inline void SetRunId(Int_t RunId) { fRunId = RunId; };	// define run id
+		inline Int_t GetRunId() { return(fRunId); };				// get current run id
+		inline void SetBranchSize(Int_t BranchSize = TMrbAnalyze::kBranchBufferSize) { fBranchSize = BranchSize; };	// set buffer size for branches
+		inline void SetSplitLevel(Bool_t SplitLevel = TMrbAnalyze::kBranchSplitLevel) { fSplitLevel = SplitLevel; };	// define split level
+		inline Int_t GetBranchSize() { return(fBranchSize); }; 	// get current buffer size
+		inline Int_t GetSplitLevel() { return(fSplitLevel); };		//get split mode
+		inline void SetRunStatus(EMrbRunStatus RunStatus) { fRunStatus = RunStatus; };	// set status flag
+		inline EMrbRunStatus GetRunStatus() { return(fRunStatus); };	// get current status
+		inline Int_t IsToBeUpdated() { 				// test and reset update flag
+			Bool_t u = fUpdateFlag;
+			fUpdateFlag = 0;
+			return(u);
+		};
+		inline void SetUpdateFlag() { fUpdateFlag++; };		// set update flag
+		inline Int_t GetEventsProcessed() { return(fEventsProcessed); };	// get current event count
+		inline void SetReplayMode(Bool_t Flag = kTRUE) { fReplayMode = Flag; }; // set replay mode
+		inline Bool_t IsReplayMode() { return(fReplayMode); }; 			// get current replay mode
+		inline void IncrEventCount() { fEventsProcessed++; };				// increment event count
+		inline void ResetEventCount() { 									// reset event count
+			fEventsProcessed = 0;
+			fEventsProcPrev = 0;
+		};
+		inline Bool_t IsModScaleDown() { return((fEventsProcessed % fScaleDown) == 0); };
+
+		inline Bool_t TreeToBeWritten() { return(fWriteRootTree); };		// root data to be written?
+
+		void MarkHistogramsWithTime();								// write a time stamp to all histograms
+
+		Int_t OpenFileList(TString &, TMrbIOSpec *);				// open a list of files for replay
+		Int_t ProcessFileList();									// process entries in fLofIOSpecs
+
+		Bool_t ReloadParams(const Char_t * ParamFile);				// reload params from file
+		Bool_t ReloadParams(TMrbIOSpec * IOSpec);
+		Bool_t ReloadVarsAndWdws(const Char_t * ParamFile); 		// reload vars and wdws
+		Bool_t ReloadVarsAndWdws(TMrbIOSpec * IOSpec);
+
+		inline void AddIOSpec(TMrbIOSpec * IOSpec) { fLofIOSpecs.Add(IOSpec); };	// add an i/o spec to list
+		inline TMrbIOSpec * GetNextIOSpec(TMrbIOSpec * IOSpec) {					// get (next) i/o spec
+			if (IOSpec == NULL) return((TMrbIOSpec *) fLofIOSpecs.First());
+			else				return((TMrbIOSpec *) fLofIOSpecs.After(IOSpec));
+		};
+
+		Int_t SaveHistograms(const Char_t * Pattern, const Char_t * HistFile);		// save mmap data to histo file
+		Int_t SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec);
+
+		Int_t ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec = NULL);	// clear histos in shared memory
+
+		inline void SetMapFile(TMapFile * MapFile, Int_t Size) { 		// store mmap addr & size
+			fMapFile = MapFile;
+			fMapFileSize = Size;
+		};
+		Int_t GetSizeOfMappedObjects(TMapFile * MapFile);			// check size of objects in map file
+
+																	// bookkeeping: manage lists of modules, params, and histos
+		void InitializeLists(Int_t NofModules, Int_t NofParams);	// init lists
+		const Char_t * GetModuleName(Int_t ModuleIndex);			// get module name by index
+		const Char_t * GetModuleTitle(Int_t ModuleIndex);			// get module title by index
+		Int_t GetModuleIndex(const Char_t * ModuleName);			// get module index by name
+		const Char_t * GetParamName(Int_t ModuleIndex, Int_t RelParamIndex);	// get param name by relative index
+		const Char_t * GetParamName(Int_t AbsParamIndex);			// get param name by absolute index
+		Int_t GetParamIndex(const Char_t * ParamName, Bool_t AbsFlag = kTRUE);	// get param index by name (rel or abs)
+		Int_t GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex);			// get absolute param index
+		TH1 * GetHistoAddr(const Char_t * HistoName);				// get histogram addr by name
+		TH1 * GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get histogram addr by relative param index
+		TH1 * GetHistoAddr(Int_t AbsParamIndex);					// get histogram addr by absolute param index
+		Int_t * GetParamAddr(const Char_t * ParamName); 			// get param addr by name
+		Int_t * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index
+		Int_t * GetParamAddr(Int_t AbsParamIndex);					// get param addr by absolute param index
+		Bool_t AddModuleToList(const Char_t * ModuleName, const Char_t * ModuleTitle,
+												Int_t ModuleIndex, Int_t AbsParamIndex, Int_t NofParams);
+		Bool_t AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
+		Bool_t AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t RelParamIndex);
+
+		inline void SetDumpCount(Int_t Count) { fDumpCount = Count; };
+		inline Int_t GetDumpCount() { return(fDumpCount); };
+		Bool_t DumpData(const Char_t * Prefix, Int_t Index, const Char_t * CallingClass, const Char_t * CallingMethod,
+															const Char_t * Msg, const UShort_t * DataPtr, Int_t DataWC);
+		
+		Bool_t AddResourcesFromFile(const Char_t * ResourceFile);	// add user's resource defs to gEnv
+		const Char_t * GetResource(const Char_t * Resource);		// make up full resource name
+				
+		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag; };
+		inline Bool_t IsVerbose() { return(fVerboseMode); };
+
+		inline void SetFakeMode(Bool_t FakeMode = kTRUE) { fFakeMode = FakeMode; }; 	// fake mode
+		inline Bool_t IsFakeMode() { return(fFakeMode); };
+
+		inline TMrbNamedX * FindModule(const Char_t * ModuleName) { return(fModuleList.FindByName(ModuleName)); };
+		inline TMrbNamedX * FindParam(const Char_t * ParamName) { return(fParamList.FindByName(ParamName)); };
+		inline TMrbNamedX * FindHisto(const Char_t * HistoName) { return(fHistoList.FindByName(HistoName)); };
+		
+		void PrintLists();
+
+		void PrintStartStop();		// output start/stop time stamps
+
+		inline TMrbLogger * GetMessageLogger() { return(fMessageLogger); };
+		
+		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAnalyze.html&"); };
+
+	protected:
+		Bool_t fVerboseMode;		// kTRUE if verbose mode
+		TMrbLogger * fMessageLogger; //! addr of message logger
+			
+		Bool_t fWriteRootTree;		// kTRUE if root data are to be written
+		TFile * fRootFileOut;		// root file to store data trees
+		Int_t fFileSize;			// file size in MB
+
+		Bool_t fReplayMode; 		// kTRUE if replay mode
+		TFile * fRootFileIn;		// root file to read tree data from (replay mode only)
+
+		Bool_t fFakeMode; 			// kTRUE if fake mode
+
+		Int_t fDumpCount;			// number of data records to be dumped: 0 -> never, N -> N times, -1 -> always 
+		
+		Int_t fScaleDown;			// global scale-down factor
+		Int_t fRunId;				// current run id
+		Int_t fBranchSize;  		// buffer size for branches
+		Int_t fSplitLevel;			// split mode
+		EMrbRunStatus fRunStatus;	// kTRUE: program is to be terminated (after ^C)
+		Int_t fUpdateFlag; 			// > 0: mmap objects are to be updated
+
+		Int_t fEventsProcessed; 	// events processed so far
+		Int_t fTimeOfLastUpdate;	// update time is stored here
+		Int_t fEventsProcPrev; 		// event count of last update
+
+		TMapFile * fMapFile;		// share memory mmap file
+		Int_t fMapFileSize;			// ... size
+
+		TList fLofIOSpecs;			// list of i/o specs
+
+		TString fResourceFile;		// user's resource defs
+		TString fResourceName;
+		TString fResourceString;
+
+		TMrbLofNamedX fModuleList;	// list of modules, indexed by serial number
+		TMrbLofNamedX fParamList;	// list of params, indexed by param number
+		TMrbLofNamedX fHistoList;	// lost of histograms, indexed by param number
+
+	ClassDef(TMrbAnalyze, 1)	// [Analyze] Describe user's analysis
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent
+// Purpose:        Base class for user-defined events
+// Description:    Defines methods common to all user-specific events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrEvent : public TObject {
+
+	public:
+		TUsrEvent() {}; 							// default ctor
+		~TUsrEvent() { fLofSubevents.Delete(); };	// dtor
+
+		const UShort_t * NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE);	// get next subevent
+		UInt_t NextSubeventHeader(const MBSDataIO * BaseAddr);
+		const UShort_t * NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE);
+
+		inline void SetScaleDown(Int_t ScaleDown) { fScaleDown = ScaleDown; }; // set individual scale down
+		inline Int_t GetScaleDown() { return(fScaleDown); };	// get current scale down
+
+		inline Int_t GetClockSecs() { return(fClockSecs); };	// return event time (secs since 1-Jan-70)
+		inline Int_t GetClockNsecs() { return(fClockNsecs); };	// return event time (nanosecs of current second)
+		inline Int_t GetTimeStamp() { return(GetUniqueID()); };	// return time stamp (100 microsecs since start)
+		inline Int_t GetTimeRS() { return(fTimeRS); };			// get time (ROOT style)
+		Int_t CalcTimeDiff(TUsrEvent * Event);					// calc time diff with respect to event
+
+		inline TTree * GetTreeIn() { return(fTreeIn); }; 	// return tree addr (input)
+		inline TTree * GetTreeOut() { return(fTreeOut); }; 	// ... (output)
+
+		inline void SetReplayMode(const Bool_t ReplayMode = kTRUE) {
+			fReplayMode = (fTreeIn == NULL) ? kFALSE : ReplayMode;
+		};
+		inline Bool_t IsReplayMode() { return(fReplayMode); };
+
+		inline void SetFakeMode(const Bool_t FakeMode = kTRUE) {
+			fReplayMode = fFakeMode = FakeMode;
+		};
+		inline Bool_t IsFakeMode() { return(fFakeMode); };
+
+		inline Int_t GetNofEvents() { return(fNofEvents); };
+		inline Bool_t IsModScaleDown() { return((fNofEvents % fScaleDown) == 0); };
+
+		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvent.html&"); };
+
+	protected:
+		Int_t CalcTimeRS(); 				// convert time to ROOT style
+		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
+
+	protected:
+		TObject * fBranch;					//! ptr to event to be used in TTree::Branch()
+
+		TTree * fTreeOut;					// tree to store data in ROOT format
+		TTree * fTreeIn;					// tree to read data from ROOT file
+		Bool_t fReplayMode; 				// kTRUE if replay mode on
+		Bool_t fFakeMode; 					// kTRUE if fake mode on
+
+		Int_t fNofEntries; 					// number of entries in ROOT tree (replay mode only)
+
+		UInt_t fType;						// event type
+		UInt_t fSubtype;					// ... subtype
+		Int_t fTrigger;						// trigger number
+		Int_t fEventNumber;					// event number provided by MBS
+		Int_t fNofEvents; 					// number of events collected so far
+		Int_t fScaleDown;					// individual scale down factor
+		Int_t fClockRes;					// clock resolution in nsecs
+		Int_t fClockSecs; 					// seconds since January 1, 1970
+		Int_t fClockNsecs;  				// nano secs of current second
+		Int_t fTimeRS;						// time (ROOT style)
+
+		TObjArray fLofSubevents;			// list of subevents
+
+	ClassDef(TUsrEvent, 1)		// [Analyze] User's event structure
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvtStart
+// Purpose:        Define an event for "Start Acquisition"
+// Description:    Event assigned to trigger 14 (Start Acquisition)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrEvtStart : public TUsrEvent {
+
+	public:
+		TUsrEvtStart(); 				// ctor
+		~TUsrEvtStart() {};				// default dtor
+
+		Bool_t ExtractTimeStamp(const s_vehe *, const MBSDataIO *);
+		void Print();
+		Bool_t CreateTree();
+		Bool_t InitializeTree(TFile * RootFile);
+		inline Int_t GetTime() { return(fClockSecs); };
+
+		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStart.html&"); };
+
+	ClassDef(TUsrEvtStart, 1)		// [Analyze] Event type "START ACQUISITION"
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvtStop
+// Purpose:        Define an event for "Stop Acquisition"
+// Description:    Event assigned to trigger 15 (Stop Acquisition)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrEvtStop : public TUsrEvent {
+
+	public:
+		TUsrEvtStop();  				// ctor
+		~TUsrEvtStop() {};				// default dtor
+
+		Bool_t ExtractTimeStamp(const s_vehe *, const MBSDataIO *);
+		void Print();
+		Bool_t CreateTree();
+		Bool_t InitializeTree(TFile * RootFile);
+		inline Int_t GetTime() { return(fClockSecs); };
+
+		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStop.html&"); };
+
+	ClassDef(TUsrEvtStop, 1)		// [Analyze] Event type "STOP ACQUISITION"
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrDeadTime
+// Purpose:        Class to store dead-time data
+// Description:    Defines methods for dead-time (sub)events
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TUsrDeadTime : public TObject {
+
+	public:
+		TUsrDeadTime() {							// ctor
+			fTimeStamp = 0;
+			fTotalEvents = 0;
+			fAccuEvents = 0;
+			fScalerContents = 0;
+			fDeadTime = 0;
+		};
+
+		~TUsrDeadTime() {}; 						// default dtor
+
+		void Set(Int_t TimeStamp, Int_t TotalEvents, Int_t AccuEvents, Int_t ScalerContents);
+		inline Float_t Get() { return(fDeadTime); };			// get dead time in %
+
+		inline Int_t GetTimeStamp() { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
+		inline Int_t GetTotalEvents() { return(fTotalEvents); }; 	// get event number
+
+		virtual void Print();
+
+		inline void SetReplayMode(const Bool_t ReplayMode = kTRUE) {
+			fReplayMode = (fTreeIn == NULL) ? kFALSE : ReplayMode;
+		};
+		inline Bool_t IsReplayMode() { return(fReplayMode); };
+
+		Bool_t CreateTree();										// create tree to hold dead-time data
+		Bool_t InitializeTree(TFile * RootFile);					// initialize dead-time tree for replay
+		inline TTree * GetTreeIn() { return(fTreeIn); };
+		inline TTree * GetTreeOut() { return(fTreeOut); };
+	
+		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrDeadTime.html&"); };
+
+	protected:
+		Int_t fTimeStamp;					// time stamp (since start)
+		Int_t fTotalEvents; 				// event count
+		Int_t fAccuEvents;					// accumulated events
+		Int_t fScalerContents;				// contents of dead-tim scaler
+		Float_t fDeadTime;					// dead time (%)
+
+		Bool_t fReplayMode;
+
+		TTree * fTreeIn;					//! dead time (input)
+		TTree * fTreeOut;					//! ... (output)
+		TObject * fBranch;					//! ptr to dead-time obj to be used in TTree::Branch()
+
+	ClassDef(TUsrDeadTime, 1)		// [Analyze] Keep track of dead time
+};
+
+#endif

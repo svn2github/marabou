@@ -1,0 +1,344 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMbsEvtBuilder</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMbsEvtBuilder:description">class description</a> - <a href="src/TMbsEvtBuilder.cxx.html">source file</a> - <a href="TMbsEvtBuilder_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMbsEvtBuilder" href="TMbsEvtBuilder.h">TMbsEvtBuilder</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:TMbsEvtBuilder">TMbsEvtBuilder</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:TMbsEvtBuilder">TMbsEvtBuilder</a><!--PLAIN-->(const <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:~TMbsEvtBuilder">~TMbsEvtBuilder</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetAddr">GetAddr</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetBufferSize">GetBufferSize</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetCrate">GetCrate</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetFlushTime">GetFlushTime</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetNofBuffers">GetNofBuffers</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetNofStreams">GetNofStreams</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetType">GetType</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:GetVSBAddr">GetVSBAddr</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:RemoveSetup">RemoveSetup</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetBuffers">SetBuffers</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> NofBuffers = <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:kNofBuffersPerStream">kNofBuffersPerStream</a>, <a href="ListOfTypes.html#Int_t">Int_t</a> NofStreams = <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:kNofStreams">kNofStreams</a>)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetCrate">SetCrate</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetFlushTime">SetFlushTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Seconds)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ProcName)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetType">SetType</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ProcType)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetType">SetType</a><!--PLAIN-->(EMbsProcType ProcType)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:SetVSBAddr">SetVSBAddr</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Addr)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMbsEvtBuilder:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMbsEvtBuilder:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsEvtBuilder:fName">fName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fName">temp storage: name</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMbsEvtBuilder:fAddr">fAddr</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fAddr">... addr</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMbsEvtBuilder:kNofBuffersPerStream">kNofBuffersPerStream</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kNofBuffersPerStream"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMbsEvtBuilder:kNofStreams">kNofStreams</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kNofStreams"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMbsEvtBuilder:description">Class Description</a></h2>
+<pre>
+ Name:           mbssetup/src/<a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>.cxx
+ Purpose:        MBS setup
+ Description:    Implements class methods to define a MBS setup
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMbsEvtBuilder:TMbsEvtBuilder" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:TMbsEvtBuilder">TMbsEvtBuilder</a>() <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>
+ Purpose:        Define a MBS event builder
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Class constructor
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:RemoveSetup" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:RemoveSetup">RemoveSetup</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:RemoveSetup">TMbsEvtBuilder::RemoveSetup</a>
+ Purpose:        Remove entries from setup data base
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Remove resources "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.*".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:Reset" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:Reset">Reset</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:Reset">TMbsEvtBuilder::Reset</a>
+ Purpose:        Reset to default
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Reset resources "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.*" to default values.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsEvtBuilder:SetName" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetName">SetName</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ProcName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetName">TMbsEvtBuilder::SetName</a>
+ Purpose:        Set event builder name
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ProcName    -- name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Name".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsEvtBuilder:GetName" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetName">GetName</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetName">TMbsEvtBuilder::GetName</a>
+ Purpose:        Get event builder name
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * ProcName    -- name
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Name".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMbsEvtBuilder:GetAddr" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetAddr">GetAddr</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetAddr">TMbsEvtBuilder::GetAddr</a>
+ Purpose:        Get event builder address
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * ProcAddr    -- addr
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Address".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsEvtBuilder:SetType" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetType">SetType</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ProcType) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetType">TMbsEvtBuilder::SetType</a>
+ Purpose:        Set event builder type
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ProcType    -- processor type
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Type".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsEvtBuilder:SetType" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetType">SetType</a>(EMbsProcType ProcType) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetType">TMbsEvtBuilder::SetType</a>
+ Purpose:        Set event builder type
+ Arguments:      EMbsProcType ProcType    -- processor type
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Defines resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Type".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMbsEvtBuilder:GetType" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetType">GetType</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetType">TMbsEvtBuilder::GetType</a>
+ Purpose:        Read event builder type
+ Arguments:      --
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * ProcType
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Type".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsEvtBuilder:SetCrate" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetCrate">SetCrate</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetCrate">TMbsEvtBuilder::SetCrate</a>
+ Purpose:        Define crate number
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Crate    -- crate number
+ Results:        --
+ Exceptions:
+ Description:    Sets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Crate".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMbsEvtBuilder:GetCrate" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetCrate">GetCrate</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetCrate">TMbsEvtBuilder::GetCrate</a>
+ Purpose:        Return crate number
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Crate  -- crate number
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.Crate".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsEvtBuilder:SetFlushTime" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetFlushTime">SetFlushTime</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Seconds) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetFlushTime">TMbsEvtBuilder::SetFlushTime</a>
+ Purpose:        Define flush time
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Seconds    -- flush time in secs
+ Results:        --
+ Exceptions:
+ Description:    Sets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.FlushTime".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMbsEvtBuilder:GetFlushTime" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetFlushTime">GetFlushTime</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetFlushTime">TMbsEvtBuilder::GetFlushTime</a>
+ Purpose:        Return current flush time
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Seconds  -- flush time in seconds
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.FlushTime".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMbsEvtBuilder:SetVSBAddr" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetVSBAddr">SetVSBAddr</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Addr) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetVSBAddr">TMbsEvtBuilder::SetVSBAddr</a>
+ Purpose:        Define vsb address
+ Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> Addr    -- address
+ Results:        --
+ Exceptions:
+ Description:    Sets resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.VSBAddr".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMbsEvtBuilder:GetVSBAddr" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetVSBAddr">GetVSBAddr</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetVSBAddr">TMbsEvtBuilder::GetVSBAddr</a>
+ Purpose:        Return vsb address
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> Addr  -- address
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.VSBAddr".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:SetBuffers" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:SetBuffers">SetBuffers</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> NofBuffers, <a href="ListOfTypes.html#Int_t">Int_t</a> NofStreams) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:SetBuffers">TMbsEvtBuilder::SetBuffers</a>
+ Purpose:        Define buffer size
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize   -- buffer size
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofBuffers   -- buffers per stream
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofStreams   -- number of streams
+ Results:        --
+ Exceptions:
+ Description:    Sets resources "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.BufferSize",
+                                "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.NofBuffers",
+                 and            "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.NofStreams"
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMbsEvtBuilder:GetBufferSize" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetBufferSize">GetBufferSize</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetBufferSize">TMbsEvtBuilder::GetBufferSize</a>
+ Purpose:        Return buffer size
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize  -- buffer size
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.BufferSize".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMbsEvtBuilder:GetNofBuffers" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetNofBuffers">GetNofBuffers</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetNofBuffers">TMbsEvtBuilder::GetNofBuffers</a>
+ Purpose:        Return number of buffers
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofBuffers  -- number of buffers
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.NofBuffers".
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMbsEvtBuilder:GetNofStreams" href="src/TMbsEvtBuilder.cxx.html#TMbsEvtBuilder:GetNofStreams">GetNofStreams</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMbsEvtBuilder.html#TMbsEvtBuilder:GetNofStreams">TMbsEvtBuilder::GetNofStreams</a>
+ Purpose:        Return number of streams
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofStreams  -- number of streams
+ Exceptions:
+ Description:    Reads resource "<a href="./TMbsSetup.html">TMbsSetup</a>.EvtBuilder.NofStreams".
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:Help" href="TMbsEvtBuilder.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMbsEvtBuilder:Class" href="TMbsEvtBuilder.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMbsEvtBuilder:IsA" href="TMbsEvtBuilder.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:ShowMembers" href="TMbsEvtBuilder.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:Streamer" href="TMbsEvtBuilder.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:StreamerNVirtual" href="TMbsEvtBuilder.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a> <a name="TMbsEvtBuilder:TMbsEvtBuilder" href="TMbsEvtBuilder.h">TMbsEvtBuilder</a>(const <a href="./TMbsEvtBuilder.html">TMbsEvtBuilder</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMbsEvtBuilder:~TMbsEvtBuilder" href="TMbsEvtBuilder.h">~TMbsEvtBuilder</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:35 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

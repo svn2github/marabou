@@ -1,0 +1,565 @@
+//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// ame:            DGFMcaDisplayPanel
+// Purpose:        A GUI to control the XIA DGF-4C
+// Description:    MCA Display
+// Modules:        
+// Author:         R. Lutter
+// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:       
+// Date:           
+// URL:            
+// Keywords:       
+// Layout:
+//Begin_Html
+/*
+<img src=dgfcontrol/DGFMcaDisplayPanel.gif>
+*/
+//End_Html
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TEnv.h"
+#include "TFile.h"
+#include "TH1.h"
+
+#include "TGMsgBox.h"
+
+#include "TMrbDGFData.h"
+#include "TMrbDGFHistogramBuffer.h"
+
+#include "DGFControlData.h"
+#include "DGFMcaDisplayPanel.h"
+
+#include "SetColor.h"
+
+static Char_t * kDGFFileTypesROOT[]	=	{
+											"ROOT files",			"*.root",
+											"All files",			"*",
+											NULL,					NULL
+										};
+
+const SMrbNamedX kDGFTauButtons[] =
+			{
+				{DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, 		"Acquire histo(s)", "Start run to accumulate histograms"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos,	"Save histos",		"Save histograms to file"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayReset,			"Reset",			"Reset to default values"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayClose,			"Close",			"Close window"				},
+				{0, 															NULL,				NULL						}
+			};
+
+const SMrbNamedXShort kDGFMcaTimeScaleButtons[] =
+							{
+								{DGFMcaDisplayPanel::kDGFMcaTimeScaleSecs, 		"sec"		},
+								{DGFMcaDisplayPanel::kDGFMcaTimeScaleMins, 		"min"		},
+								{DGFMcaDisplayPanel::kDGFMcaTimeScaleHours, 		"hour" 	},
+								{0, 											NULL	}
+							};
+
+extern DGFControlData * gDGFControlData;
+extern TMrbLogger * gMrbLog;
+
+
+static TString btnText;
+
+ClassImp(DGFMcaDisplayPanel)
+
+DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, const TGWindow * MainFrame, UInt_t Width, UInt_t Height, UInt_t Options)
+														: TGTransientFrame(Window, MainFrame, Width, Height, Options) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel
+// Purpose:        DGF Viewer: Calculate tau value
+// Arguments:      TGWindow Window      -- connection to ROOT graphics
+//                 TGWindow * MainFrame -- main frame
+//                 UInt_t Width         -- window width in pixels
+//                 UInt_t Height        -- window height in pixels
+//                 UInt_t Options       -- options
+// Results:        
+// Exceptions:     
+// Description:    Implements DGF Viewer's McaDisplay
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TGMrbLayout * frameGC;
+	TGMrbLayout * groupGC;
+	TGMrbLayout * entryGC;
+	TGMrbLayout * labelGC;
+	TGMrbLayout * buttonGC;
+	TGMrbLayout * rbuttonGC;
+	TGMrbLayout * comboGC;
+
+	TObjArray * lofSpecialButtons;
+	TMrbLofNamedX gSelect[kNofModulesPerCluster];
+	TMrbLofNamedX allSelect;
+	TMrbLofNamedX lofModuleKeys;
+	
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	
+//	clear focus list
+	fFocusList.Clear();
+
+// graphic layout
+	frameGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorGold);	HEAP(frameGC);
+
+	groupGC = new TGMrbLayout(	gDGFControlData->SlantedFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorGold);	HEAP(groupGC);
+
+	comboGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorWhite);	HEAP(comboGC);
+
+	labelGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorGold);	HEAP(labelGC);
+
+	buttonGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorGray);	HEAP(buttonGC);
+
+	rbuttonGC = new TGMrbLayout(gDGFControlData->NormalFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorGold);	HEAP(rbuttonGC);
+
+	entryGC = new TGMrbLayout(	gDGFControlData->NormalFont(),
+								gDGFControlData->fColorBlack,
+								gDGFControlData->fColorWhite);	HEAP(entryGC);
+
+	lofSpecialButtons = new TObjArray();
+	HEAP(lofSpecialButtons);
+	lofSpecialButtons->Add(new TGMrbSpecialButton(0x80000000, "all", "Select ALL", 0x3fffffff, "cbutton_all.xpm"));
+	lofSpecialButtons->Add(new TGMrbSpecialButton(0x40000000, "none", "Select NONE", 0x0, "cbutton_none.xpm"));
+	
+//	create buttons to select/deselct groups of modules
+	Int_t idx = kDGFMcaDisplaySelectColumn;
+	for (Int_t i = 0; i < kNofModulesPerCluster; i++, idx += 2) {
+		gSelect[i].Delete();							// (de)select columns
+		gSelect[i].AddNamedX(idx, "cbutton_all.xpm");
+		gSelect[i].AddNamedX(idx + 1, "cbutton_none.xpm");
+	}
+	allSelect.Delete();							// (de)select all
+	allSelect.AddNamedX(kDGFMcaDisplaySelectAll, "cbutton_all.xpm");
+	allSelect.AddNamedX(kDGFMcaDisplaySelectNone, "cbutton_none.xpm");
+		
+//	Initialize several lists
+	fMcaActions.SetName("Actions");
+	fMcaActions.AddNamedX(kDGFTauButtons);
+
+	fLofChannels.SetName("DGF channels");
+	fLofChannels.AddNamedX(kDGFChannelNumbers);
+	fLofChannels.SetPatternMode();
+
+	fMcaTimeScaleButtons.SetName("Time scale");
+	fMcaTimeScaleButtons.AddNamedX(kDGFMcaTimeScaleButtons);
+	fMcaTimeScaleButtons.SetPatternMode();
+
+	this->ChangeBackground(gDGFControlData->fColorGold);
+
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	gDGFControlData->SetLH(groupGC, frameGC, dgfFrameLayout);
+	HEAP(dgfFrameLayout);
+
+// modules
+	fModules = new TGGroupFrame(this, "Modules", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fModules);
+	this->AddFrame(fModules, groupGC->LH());
+
+	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
+							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), 1, 
+							DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+							frameGC, labelGC, buttonGC, lofSpecialButtons);
+		HEAP(fCluster[cl]);
+		fModules->AddFrame(fCluster[cl], buttonGC->LH());
+		fCluster[cl]->SetState(~gDGFControlData->GetPatInUse(cl) & 0xFFFF, kButtonDisabled);
+		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+	}
+	
+	fGroupFrame = new TGHorizontalFrame(fModules, DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight,
+													kChildFrame, frameGC->BG());
+	HEAP(fGroupFrame);
+	fModules->AddFrame(fGroupFrame, frameGC->LH());
+	
+	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+							DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+							frameGC, labelGC, buttonGC);
+		HEAP(fGroupSelect[i]);
+		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
+		fGroupSelect[i]->Associate(this);
+	}
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+							DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+							frameGC, labelGC, buttonGC);
+	HEAP(fAllSelect);
+	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
+																			frameGC->LH()->GetPadRight(),
+																			frameGC->LH()->GetPadTop(),
+																			frameGC->LH()->GetPadBottom()));
+	fAllSelect->Associate(this);
+			
+	fHFrame = new TGHorizontalFrame(this, DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight,
+													kChildFrame, frameGC->BG());
+	HEAP(fHFrame);
+	this->AddFrame(fHFrame, frameGC->LH());
+
+	fSelectChannel = new TGMrbCheckButtonGroup(fHFrame,  "Channel(s)", &fLofChannels, 1,
+												groupGC, buttonGC, lofSpecialButtons);
+	HEAP(fSelectChannel);
+ 	fSelectChannel->SetState(kDGFChannelMask, kButtonDown);
+	fHFrame->AddFrame(fSelectChannel, frameGC->LH());
+
+// accu settings
+	TGLayoutHints * traceLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
+	gDGFControlData->SetLH(groupGC, frameGC, traceLayout);
+	HEAP(traceLayout);
+	fAccuFrame = new TGGroupFrame(fHFrame, "Accu Settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fAccuFrame);
+	fHFrame->AddFrame(fAccuFrame, frameGC->LH());
+
+	TGLayoutHints * teLayout = new TGLayoutHints(kLHintsTop, 1, 1, 1, 1);
+	entryGC->SetLH(teLayout);
+	HEAP(teLayout);
+	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, "Run time",
+																200, kDGFMcaDisplayRunTime,
+																DGFMcaDisplayPanel::kLEWidth,
+																DGFMcaDisplayPanel::kLEHeight,
+																DGFMcaDisplayPanel::kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fRunTimeEntry);
+	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
+	fRunTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fRunTimeEntry->GetEntry()->SetText("10");
+	fRunTimeEntry->SetRange(1, 1000);
+	fRunTimeEntry->SetIncrement(1);
+	fRunTimeEntry->AddToFocusList(&fFocusList);
+	fRunTimeEntry->Associate(this);
+
+//	frameGC->SetLH(teLayout);
+	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons, 1, 
+													DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+													frameGC, labelGC, rbuttonGC);
+	HEAP(fTimeScale);
+	fAccuFrame->AddFrame(fTimeScale, frameGC->LH());
+	fTimeScale->SetState(DGFMcaDisplayPanel::kDGFMcaTimeScaleSecs, kButtonDown);
+
+//	buttons
+	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
+	buttonGC->SetLH(btnLayout);
+	HEAP(btnLayout);
+	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fMcaActions, 2, groupGC, buttonGC);
+	HEAP(fButtonFrame);
+	this->AddFrame(fButtonFrame, buttonGC->LH());
+	fButtonFrame->Associate(this);
+
+//	no accu running
+	fIsRunning = kFALSE;
+	
+// test mode on?
+	if (gDGFControlData->IsOffline()) {
+		fButtonFrame->SetState(DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, kButtonDisabled);
+		fButtonFrame->SetState(DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos, kButtonDisabled);
+	}
+	
+// initialize "save" button
+	fMcaFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesROOT;
+	fMcaFileInfo.fIniDir = StrDup(gDGFControlData->fDataPath);
+
+	this->ResetValues();
+
+//	key bindings
+	fKeyBindings.SetParent(this);
+	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
+	
+	Window_t wdum;
+	Int_t ax, ay;
+	gVirtualX->TranslateCoordinates(MainFrame->GetId(), this->GetParent()->GetId(),
+								(((TGFrame *) MainFrame)->GetWidth() + 10), 0,
+								ax, ay, wdum);
+	Move(ax, ay);
+
+	SetWindowName("DGFControl: McaDisplayPanel");
+
+	MapSubwindows();
+
+	Resize(GetDefaultSize());
+	Resize(Width, Height);
+
+	MapWindow();
+}
+
+Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::ProcessMessage
+// Purpose:        Message handler for the instrument panel
+// Arguments:      Long_t MsgId      -- message id
+//                 Long_t ParamX     -- message parameter   
+// Results:        
+// Exceptions:     
+// Description:    Handle messages sent to DGFMcaDisplayPanel.
+//                 E.g. all menu button messages.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString intStr;
+	TMrbString dblStr;
+
+	switch (GET_MSG(MsgId)) {
+
+		case kC_COMMAND:
+			switch (GET_SUBMSG(MsgId)) {
+				case kCM_BUTTON:
+					if (Param1 < kDGFMcaDisplaySelectColumn) {
+						switch (Param1) {
+							case kDGFMcaDisplayAcquire:
+								if (fIsRunning) {
+									this->SetRunning(kFALSE);
+									new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting histogram acquisition", kMBIconExclamation);
+								} else {
+									this->AcquireHistos();
+								}
+								break;
+							case kDGFMcaDisplaySaveHistos:
+								{
+									new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fMcaFileInfo);
+									if (fMcaFileInfo.fFilename != NULL && *fMcaFileInfo.fFilename != '\0') this->SaveHistos(fMcaFileInfo.fFilename);
+								}
+								break;
+							case kDGFMcaDisplayReset:
+								break;
+							case kDGFMcaDisplayClose:
+								this->CloseWindow();
+								break;
+							case kDGFMcaDisplaySelectAll:
+								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
+								}
+								break;
+							case kDGFMcaDisplaySelectNone:
+								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
+									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonUp);
+								break;							
+						}
+					} else {
+						Param1 -= kDGFMcaDisplaySelectColumn;
+						Bool_t select = ((Param1 & 1) == 0);
+						UInt_t bit = 0x1 << (Param1 >> 1);
+						for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+							if (gDGFControlData->GetPatInUse(cl) & bit) {
+								if (select) fCluster[cl]->SetState(bit, kButtonDown);
+								else		fCluster[cl]->SetState(bit, kButtonUp);
+							}
+						}
+					}
+
+					break;
+			}
+			break;
+
+		case kC_TEXTENTRY:
+			switch (GET_SUBMSG(MsgId)) {
+				case kTE_ENTER:
+					this->Update(Param1);
+					break;
+				case kTE_TAB:
+					this->Update(Param1);
+					this->MoveFocus(Param1);
+					break;
+			}
+			break;
+			
+		case kC_KEY:
+			switch (Param1) {
+				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
+					this->CloseWindow();
+					break;
+			}
+			break;
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::AcquireHistos() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::AcquireHistos
+// Purpose:        Start accumulation
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Starts accumulation of histograms
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbDGFHistogramBuffer histoBuffer;
+	DGFModule * dgfModule;
+	TMrbDGF * dgf;
+	Int_t modNo, cl;
+	Int_t nofModules, nofHistos, nofWords;
+	TMrbString intStr;
+	Int_t accuTime;
+	TString timeScale;
+	UInt_t chnPattern;
+	Int_t chn;
+										
+	timeScale = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive())->GetName();
+	intStr = fRunTimeEntry->GetEntry()->GetText();
+	intStr.ToInteger(accuTime);
+
+	chnPattern = fSelectChannel->GetActive();
+	if (chnPattern == 0) {
+		gMrbLog->Err()	<< "No channels selected" << endl;
+		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one channel", kMBIconStop);
+		return(kFALSE);
+	}
+
+	dgfModule = gDGFControlData->FirstModule();
+	nofModules = 0;
+	nofHistos = 0;
+	while (dgfModule) {
+		cl = nofModules / kNofModulesPerCluster;
+		modNo = nofModules - cl * kNofModulesPerCluster;
+		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
+			dgf = dgfModule->GetAddr();
+			chnPattern = fSelectChannel->GetActive();
+			for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+				if (chnPattern & (1 << chn)) dgf->SetGoodChannel(chn);
+			}
+			histoBuffer.Reset();
+			histoBuffer.SetModule(dgf);
+			UInt_t chnPattern = fSelectChannel->GetActive() >> 12;
+			if (dgf->AccuHistograms(accuTime, timeScale.Data(), chnPattern)) {
+				nofWords = dgf->ReadHistogramBuffer(histoBuffer, chnPattern);
+				if (nofWords > 0) {
+					histoBuffer.Print();
+					TMrbString fn = dgf->GetName();
+					fn += ".mca.root";
+					histoBuffer.Save(fn.Data());
+					nofHistos++;
+				} else {
+					gMrbLog->Err()	<< "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+										<< ": Histogram buffer is empty" << endl;
+					gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+				}
+			}
+			nofModules++;
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+	}				
+	if (nofModules == 0) {
+		gMrbLog->Err()	<< "No modules selected" << endl;
+		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No modules selected", kMBIconExclamation);
+		return(kFALSE);
+	} else if (nofHistos == 0) {
+		gMrbLog->Err()	<< "No histograms at all" << endl;
+		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::Update(Int_t EntryId) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::Update
+// Purpose:        Update program state on X events
+// Arguments:      Int_t EntryId      -- entry id
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Updates variables on X events and starts action.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString intStr, dblStr;
+
+	switch (EntryId) {
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::ResetValues() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::ResetValues
+// Purpose:        Clear values in tau display panel
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Clears entry fields in tau display panel.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fRunTimeEntry->GetEntry()->SetText("10");
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::SaveHistos(const Char_t * FileName, Int_t ModuleId, UInt_t ChannelPattern) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::RemoveTrace
+// Purpose:        Remove root file containing trace data
+// Arguments:      const Char_t * FileName   -- file name
+//                 Int_t ModuleId            -- module id
+//                 UInt_t ChannelPattern     -- pattern of active channels
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	return(kTRUE);
+}
+	
+void DGFMcaDisplayPanel::MoveFocus(Int_t EntryId) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::MoveFocus
+// Purpose:        Move focus to next entry field
+// Arguments:      Int_t EntryId     -- entry id
+// Results:        --
+// Exceptions:     
+// Description:    Moves focus to next entry field in ring buffer.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+}
+
+void DGFMcaDisplayPanel::SetRunning(Bool_t RunFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::SetRunning
+// Purpose:        Reflect run status
+// Arguments:      Bool_t RunFlag     -- run status
+// Results:        --
+// Exceptions:     
+// Description:    
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TGTextButton * btn;
+		
+	TMrbDGF * dgf;
+		
+	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+
+	nx = fMcaActions.FindByIndex(kDGFMcaDisplayAcquire);
+	btn = (TGTextButton *) fButtonFrame->GetButton(kDGFMcaDisplayAcquire);
+
+	if (RunFlag) {
+		btnText = "Stop acquisition";
+		btn->SetText(btnText);
+		btn->ChangeBackground(gDGFControlData->fColorRed);
+		fIsRunning = kTRUE;
+	} else {
+		btnText = nx->GetName();
+		btn->SetText(btnText);
+		btn->ChangeBackground(gDGFControlData->fColorGray);
+		fIsRunning = kFALSE;
+	}
+	btn->Layout();
+}

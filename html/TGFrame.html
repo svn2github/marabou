@@ -1,0 +1,150 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGFrame</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGFrame:description">class description</a> - <a href="src/TGFrame.cxx.html">source file</a> - <a href="TGFrame_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGFrame" href="TGFrame.h">TGFrame</a> : public <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>, public <a href="http://root.cern.ch/root/html/TQObject.html">TQObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:DoRedraw">DoRedraw</a><!--PLAIN-->()
+<!--TAB6-->      static <a href="ListOfTypes.html#Time_t">Time_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetLastClick">GetLastClick</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a href="#TGFrame:GetSender">GetSender</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a> <!--TAB--><!--BOLD--><a href="#TGFrame:TGFrame">TGFrame</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = 0, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = <a href="#TGFrame:GetDefaultFrameBackground">GetDefaultFrameBackground</a>())
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a> <!--TAB--><!--BOLD--><a href="#TGFrame:TGFrame">TGFrame</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGClient.html">TGClient</a>* c, <a href="ListOfTypes.html#Window_t">Window_t</a> id, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* parent = 0)
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a> <!--TAB--><!--BOLD--><a href="#TGFrame:TGFrame">TGFrame</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGFrame.html">TGFrame</a>&amp;)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:~TGFrame">~TGFrame</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:Activate">Activate</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> a)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:AddInput">AddInput</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> emask)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:ChangeBackground">ChangeBackground</a><!--PLAIN-->(<a href="ListOfTypes.html#ULong_t">ULong_t</a> back)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:ChangeOptions">ChangeOptions</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> options)
+<!--TAB6-->               static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGFrame:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:DrawBorder">DrawBorder</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:DrawCopy">DrawCopy</a><!--PLAIN-->(<a href="ListOfTypes.html#Handle_t">Handle_t</a> id, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetBackground">GetBackground</a><!--PLAIN-->() const
+<!--TAB6-->           static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGFrame:GetBckgndGC">GetBckgndGC</a><!--PLAIN-->() const
+<!--TAB6-->           static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGFrame:GetBlackGC">GetBlackGC</a><!--PLAIN-->() const
+<!--TAB6-->               static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetBlackPixel">GetBlackPixel</a><!--PLAIN-->()
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetBorderWidth">GetBorderWidth</a><!--PLAIN-->() const
+<!--TAB6-->               static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetDefaultFrameBackground">GetDefaultFrameBackground</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetDefaultHeight">GetDefaultHeight</a><!--PLAIN-->() const
+<!--TAB6-->               static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetDefaultSelectedBackground">GetDefaultSelectedBackground</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetDefaultSize">GetDefaultSize</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetDefaultWidth">GetDefaultWidth</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetEventMask">GetEventMask</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetHeight">GetHeight</a><!--PLAIN-->() const
+<!--TAB6-->           static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGFrame:GetHilightGC">GetHilightGC</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* <!--TAB--><!--BOLD--><a href="#TGFrame:GetMainFrame">GetMainFrame</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetOptions">GetOptions</a><!--PLAIN-->() const
+<!--TAB6-->           static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGFrame:GetShadowGC">GetShadowGC</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetSize">GetSize</a><!--PLAIN-->() const
+<!--TAB6-->           static const <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a>&amp; <!--TAB--><!--BOLD--><a href="#TGFrame:GetWhiteGC">GetWhiteGC</a><!--PLAIN-->() const
+<!--TAB6-->               static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetWhitePixel">GetWhitePixel</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetWidth">GetWidth</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetX">GetX</a><!--PLAIN-->() const
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:GetY">GetY</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleButton">HandleButton</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleClientMessage">HandleClientMessage</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleColormapChange">HandleColormapChange</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleConfigureNotify">HandleConfigureNotify</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleCrossing">HandleCrossing</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleDoubleClick">HandleDoubleClick</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleEvent">HandleEvent</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleFocusChange">HandleFocusChange</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleKey">HandleKey</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleMotion">HandleMotion</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleSelection">HandleSelection</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleSelectionClear">HandleSelectionClear</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:HandleSelectionRequest">HandleSelectionRequest</a><!--PLAIN-->(Event_t*)
+<!--TAB6-->              virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGFrame:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:IsActive">IsActive</a><!--PLAIN-->() const
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:Layout">Layout</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:MapSubwindows">MapSubwindows</a><!--PLAIN-->()
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:Move">Move</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:MoveResize">MoveResize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:ProcessedEvent">ProcessedEvent</a><!--PLAIN-->(Event_t* event)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGFrame:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a>, <a href="ListOfTypes.html#Long_t">Long_t</a>, <a href="ListOfTypes.html#Long_t">Long_t</a>)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:RemoveInput">RemoveInput</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> emask)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:Resize">Resize</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:Resize">Resize</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> size)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:SendMessage">SendMessage</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* w, <a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a> parm2)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:SetHeight">SetHeight</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> h)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:SetSize">SetSize</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a>&amp; s)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:SetWidth">SetWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> w)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGFrame:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGFrame:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fX">fX</a><!--PLAIN-->                           <!--TAB--><i><a name="Title:fX">frame x position</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fY">fY</a><!--PLAIN-->                           <!--TAB--><i><a name="Title:fY">frame y position</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fWidth">fWidth</a><!--PLAIN-->                       <!--TAB--><i><a name="Title:fWidth">frame width</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fHeight">fHeight</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:fHeight">frame height</a></i>
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fBorderWidth">fBorderWidth</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fBorderWidth">frame border width</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fOptions">fOptions</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:fOptions">frame options</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fBackground">fBackground</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fBackground">frame background color</a></i>
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fEventMask">fEventMask</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fEventMask">currenty active event mask</a></i>
+<!--TAB6-->       static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgDefaultFrameBackground">fgDefaultFrameBackground</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fgDefaultFrameBackground"></a></i>
+<!--TAB6-->       static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgDefaultSelectedBackground">fgDefaultSelectedBackground</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgDefaultSelectedBackground"></a></i>
+<!--TAB6-->       static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgWhitePixel">fgWhitePixel</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgWhitePixel"></a></i>
+<!--TAB6-->       static <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgBlackPixel">fgBlackPixel</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgBlackPixel"></a></i>
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgBlackGC">fgBlackGC</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgBlackGC"></a></i>
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgWhiteGC">fgWhiteGC</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fgWhiteGC"></a></i>
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgHilightGC">fgHilightGC</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fgHilightGC"></a></i>
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgShadowGC">fgShadowGC</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fgShadowGC"></a></i>
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TGGC.html">TGGC</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgBckgndGC">fgBckgndGC</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:fgBckgndGC"></a></i>
+<!--TAB6-->        static <a href="ListOfTypes.html#Time_t">Time_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgLastClick">fgLastClick</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fgLastClick"></a></i>
+<!--TAB6-->        static <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgLastButton">fgLastButton</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fgLastButton"></a></i>
+<!--TAB6-->         static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgDbx">fgDbx</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fgDbx"></a></i>
+<!--TAB6-->         static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgDby">fgDby</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fgDby"></a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#Window_t">Window_t</a> <!--TAB--><!--BOLD--><a name="TGFrame:fgDbw">fgDbw</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:fgDbw"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>, <a href="http://root.cern.ch/root/html/TGCanvas.html">TGCanvas</a>, <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>, <a href="http://root.cern.ch/root/html/TGDoubleSlider.html">TGDoubleSlider</a>, <a href="http://root.cern.ch/root/html/TGHorizontal3DLine.html">TGHorizontal3DLine</a>, <a href="http://root.cern.ch/root/html/TGIcon.html">TGIcon</a>, <a href="http://root.cern.ch/root/html/TGLBEntry.html">TGLBEntry</a>, <a href="http://root.cern.ch/root/html/TGLVEntry.html">TGLVEntry</a>, <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>, <a href="http://root.cern.ch/root/html/TGListTree.html">TGListTree</a>, <a href="http://root.cern.ch/root/html/TGMenuTitle.html">TGMenuTitle</a>, <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>, <a href="http://root.cern.ch/root/html/TGProgressBar.html">TGProgressBar</a>, <a href="http://root.cern.ch/root/html/TGScrollBar.html">TGScrollBar</a>, <a href="http://root.cern.ch/root/html/TGScrollBarElement.html">TGScrollBarElement</a>, <a href="http://root.cern.ch/root/html/TGSlider.html">TGSlider</a>, <a href="http://root.cern.ch/root/html/TGSplitter.html">TGSplitter</a>, <a href="http://root.cern.ch/root/html/TGStatusBar.html">TGStatusBar</a>, <a href="http://root.cern.ch/root/html/TGTabElement.html">TGTabElement</a>, <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>, <a href="http://root.cern.ch/root/html/TGVertical3DLine.html">TGVertical3DLine</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGFrame:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:20 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,298 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Caen_V.code
+// @(#)Purpose:    VME code for adc CAEN V785
+// Description:    Contains pieces of code to operate an adc CAEN V785
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME ADC CAEN V785 */
+#define $mnemoUC_R_OUTPUT						0x0
+#define $mnemoUC_R_FIRMWARE						0x1000
+#define $mnemoUC_R_GEOADDR						0x1002
+#define $mnemoUC_R_BITSET1						0x1006
+#define $mnemoUC_R_BITCLEAR1					0x1008
+#define $mnemoUC_R_STATUS1						0x100E
+#define $mnemoUC_R_CONTROL1						0x1010
+#define $mnemoUC_R_ADDR_HIGH					0x1012
+#define $mnemoUC_R_ADDR_LOW						0x1014
+#define $mnemoUC_R_EVT_TRIG						0x1020
+#define $mnemoUC_R_STATUS2						0x1022
+#define $mnemoUC_R_EVT_CNT_LOW					0x1024
+#define $mnemoUC_R_EVT_CNT_HIGH 				0x1026
+#define $mnemoUC_R_INCR_EVT						0x1028
+#define $mnemoUC_R_INCR_OFFS					0x102A
+#define $mnemoUC_R_BITSET2						0x1032
+#define $mnemoUC_R_BITCLEAR2					0x1034
+#define $mnemoUC_R_CRATE_SEL					0x103C
+#define $mnemoUC_R_TEST_EVT_WRITE				0x103E
+#define $mnemoUC_R_EVT_CNT_RESET				0x1040
+#define $mnemoUC_R_THRESH 						0x1080
+#define $mnemoUC_R_ROM	 						0x8000
+
+#define $mnemoUC_B_BITSET1_SEL_ADDR_INTERN 		(0x1 << 4)
+#define $mnemoUC_B_CONTROL1_PROG_RESET_MODULE	(0x1 << 4)
+#define $mnemoUC_B_BITSET2_OFFLINE				(0x1 << 1)
+#define $mnemoUC_B_BITSET2_OVER_RANGE_DIS		(0x1 << 3)
+#define $mnemoUC_B_BITSET2_LOW_THRESH_DIS		(0x1 << 4)
+#define $mnemoUC_B_BITSET2_SLIDE_ENA			(0x1 << 7)
+#define $mnemoUC_B_BITSET2_AUTO_INCR_ENA 		(0x1 << 11)
+#define $mnemoUC_B_BITSET2_EMPTY_PROG_ENA		(0x1 << 12)
+#define $mnemoUC_B_BITSET2_ALL_TRIG_ENA			(0x1 << 14)
+#define $mnemoUC_B_STATUS2_BUFFER_EMPTY			(0x1 << 1)
+#define $mnemoUC_B_THRESH_KILL_CHANNEL 			(0x1 << 8)
+
+#define $mnemoUC_D_HDR							0x2000000
+#define $mnemoUC_D_DATA							0x0000000
+#define $mnemoUC_D_EOB							0x4000000
+#define $mnemoUC_D_INVALID						0x6000000
+#define $mnemoUC_D_IDMASK						0x7000000
+
+#define $mnemoUC_A_OUTPUT(module)			((unsigned int *) (module + $mnemoUC_R_OUTPUT))
+#define $mnemoUC_A_FIRMWARE(module) 		((unsigned short *) (module + $mnemoUC_R_FIRMWARE))
+#define $mnemoUC_A_GEOADDR(module)			((unsigned short *) (module + $mnemoUC_R_GEOADDR))
+#define $mnemoUC_A_BITSET1(module)			((unsigned short *) (module + $mnemoUC_R_BITSET1))
+#define $mnemoUC_A_BITCLEAR1(module)		((unsigned short *) (module + $mnemoUC_R_BITCLEAR1))
+#define $mnemoUC_A_STATUS1(module)			((unsigned short *) (module + $mnemoUC_R_STATUS1))
+#define $mnemoUC_A_CONTROL1(module) 		((unsigned short *) (module + $mnemoUC_R_CONTROL1))
+#define $mnemoUC_A_ADDR_HIGH(module) 		((unsigned short *) (module + $mnemoUC_R_ADDR_HIGH))
+#define $mnemoUC_A_ADDR_LOW(module)			((unsigned short *) (module + $mnemoUC_R_ADDR_LOW))
+#define $mnemoUC_A_EVT_TRIG(module)			((unsigned short *) (module + $mnemoUC_R_EVT_TRIG))
+#define $mnemoUC_A_STATUS2(module)			((unsigned short *) (module + $mnemoUC_R_STATUS2))
+#define $mnemoUC_A_EVT_CNT_LOW(module)		((unsigned short *) (module + $mnemoUC_R_EVT_CNT_LOW))
+#define $mnemoUC_A_EVT_CNT_HIGH(module) 	((unsigned short *) (module + $mnemoUC_R_EVT_CNT_HIGH))
+#define $mnemoUC_A_INCR_EVT(module)			((unsigned short *) (module + $mnemoUC_R_INCR_EVT))
+#define $mnemoUC_A_INCR_OFFS(module) 		((unsigned short *) (module + $mnemoUC_R_INCR_OFFS))
+#define $mnemoUC_A_BITSET2(module)			((unsigned short *) (module + $mnemoUC_R_BITSET2))
+#define $mnemoUC_A_BITCLEAR2(module)		((unsigned short *) (module + $mnemoUC_R_BITCLEAR2))
+#define $mnemoUC_A_CRATE_SEL(module) 		((unsigned short *) (module + $mnemoUC_R_CRATE_SEL))
+#define $mnemoUC_A_TEST_EVT_WRITE(module)	((unsigned short *) (module + $mnemoUC_R_TEST_EVT_WRITE))
+#define $mnemoUC_A_EVT_CNT_RESET(module)	((unsigned short *) (module + $mnemoUC_R_EVT_CNT_RESET))
+#define $mnemoUC_A_THRESH(module)			((unsigned short *) (module + $mnemoUC_R_THRESH))
+#define $mnemoUC_A_ROM(module)				((unsigned short *) (module + $mnemoUC_R_ROM))
+
+#define $mnemoUC_SET_THRESHOLD(module,chn,data) 	*($mnemoUC_A_THRESH(module) + chn) = data
+
+#define $mnemoUC_AUTO_INCR_ON(module)	*$mnemoUC_A_BITSET2(module) = $mnemoUC_B_BITSET2_AUTO_INCR_ENA
+#define $mnemoUC_AUTO_INCR_OFF(module)	*$mnemoUC_A_BITCLEAR2(module) = $mnemoUC_B_BITSET2_AUTO_INCR_ENA
+
+#define $mnemoUC_ZERO_SUPPR_ON(module)	*$mnemoUC_A_BITCLEAR2(module) = $mnemoUC_B_BITSET2_LOW_THRESH_DIS
+#define $mnemoUC_ZERO_SUPPR_OFF(module)	*$mnemoUC_A_BITSET2(module) = $mnemoUC_B_BITSET2_LOW_THRESH_DIS
+
+#define $mnemoUC_OVER_RANGE_CHECK_ON(module)	*$mnemoUC_A_BITCLEAR2(module) = $mnemoUC_B_BITSET2_OVER_RANGE_DIS
+#define $mnemoUC_OVER_RANGE_CHECK_OFF(module)	*$mnemoUC_A_BITSET2(module) = $mnemoUC_B_BITSET2_OVER_RANGE_DIS
+
+#define $mnemoUC_SET_KILL_BIT(module,chn)	*($mnemoUC_A_THRESH(module) + chn) = $mnemoUC_B_THRESH_KILL_CHANNEL
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					$moduleNameOutput = $mnemoUC_A_OUTPUT($moduleName);
+					$moduleNameFirmWare = $mnemoUC_A_FIRMWARE($moduleName);
+					$moduleNameGeoAddr = $mnemoUC_A_GEOADDR($moduleName);
+					$moduleNameBitSet1 = $mnemoUC_A_BITSET1($moduleName);
+					$moduleNameBitClear1 = $mnemoUC_A_BITCLEAR1($moduleName);
+					$moduleNameStatus1 = $mnemoUC_A_STATUS1($moduleName);
+					$moduleNameControl1 = $mnemoUC_A_CONTROL1($moduleName);
+					$moduleNameAddrHigh = $mnemoUC_A_ADDR_HIGH($moduleName);
+					$moduleNameAddrLow = $mnemoUC_A_ADDR_LOW($moduleName);
+					$moduleNameEvtTrig = $mnemoUC_A_EVT_TRIG($moduleName);
+					$moduleNameStatus2 = $mnemoUC_A_STATUS2($moduleName);
+					$moduleNameEvtCntLow = $mnemoUC_A_EVT_CNT_LOW($moduleName);
+					$moduleNameEvtCntHigh = $mnemoUC_A_EVT_CNT_HIGH($moduleName);
+					$moduleNameIncrEvt = $mnemoUC_A_INCR_EVT($moduleName);
+					$moduleNameIncrOffs = $mnemoUC_A_INCR_OFFS($moduleName);
+					$moduleNameBitSet2 = $mnemoUC_A_BITSET2($moduleName);
+					$moduleNameBitClear2 = $mnemoUC_A_BITCLEAR2($moduleName);
+					$moduleNameCrateSel = $mnemoUC_A_CRATE_SEL($moduleName);
+					$moduleNameTestEvtWrite = $mnemoUC_A_TEST_EVT_WRITE($moduleName);
+					$moduleNameEvtCntReset = $mnemoUC_A_EVT_CNT_RESET($moduleName);
+					$moduleNameThresh = $mnemoUC_A_THRESH($moduleName);
+					$moduleNameROM = $mnemoUC_A_ROM($moduleName);
+					$mnemoLC_module_info($moduleNameROM);
+					$mnemoUC_AUTO_INCR_ON($moduleName);
+					$mnemoUC_ZERO_SUPPR_ON($moduleName);
+					$mnemoUC_OVER_RANGE_CHECK_ON($moduleName);
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+%U%					$mnemoUC_SET_THRESHOLD($moduleName, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
+%N%					$mnemoUC_SET_KILL_BIT($moduleName, $chnNo);	/* de-avtivate chnName:$chnNo */
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+					if ((*$mnemoUC_A_STATUS2($moduleName) & $mnemoUC_B_STATUS2_BUFFER_EMPTY) == 0) {
+						$mnemoLC_rdoinp = $mnemoUC_A_OUTPUT($moduleName);
+						$mnemoLC_hdr = *$mnemoLC_rdoinp;
+						$mnemoLC_id = $mnemoLC_hdr & $mnemoUC_D_IDMASK;
+						$mnemoLC_wc = ($mnemoLC_hdr >> 8) & 0x3F;
+						if ($mnemoLC_id != $mnemoUC_D_HDR) {
+							sprintf(msg, "$moduleName: Not a header - %#lx\n", $mnemoLC_hdr);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						} else if ($mnemoLC_wc > 32) {
+							sprintf(msg, "$moduleName: Illegal word count - %#lx\n", $mnemoLC_wc);
+							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+						} else {
+							for (;$mnemoLC_wc--;) {
+								$mnemoLC_data = *$mnemoLC_rdoinp;
+								$mnemoLC_id = $mnemoLC_data & $mnemoUC_D_IDMASK;
+								if ($mnemoLC_id != $mnemoUC_D_DATA) {
+									sprintf(msg, "$moduleName: Not a data word - %#lx\n", $mnemoLC_data);
+									f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+									break;
+								}
+								$mnemoLC_chn = ($mnemoLC_data >> 16) & 0x3F;
+								$mnemoLC_data &= 0x3FFF;
+								RDO_2MEM_16($mnemoLC_chn);					/* write addr */
+								RDO_2MEM_16($mnemoLC_data);					/* write data */
+							}
+							$mnemoLC_hdr = *$mnemoLC_rdoinp;
+							$mnemoLC_id = ($mnemoLC_hdr & $mnemoUC_D_IDMASK);
+							if ($mnemoLC_id != $mnemoUC_D_EOB) {
+								sprintf(msg, "$moduleName: Illegal end of block - %#lx\n", $mnemoLC_id);
+								f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+							}
+						}
+					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info(volatile unsigned short * firmWare) {
+	unsigned short boardId, revision;
+	unsigned short serialMSB, serialLSB;
+	int serial;
+	char str[256];
+	
+	boardId = *(firmWare + 0x3A / sizeof(unsigned short)) & 0xFF;
+	revision = *(firmWare + 0x4E / sizeof(unsigned short)) & 0xFF;
+	serialMSB = *(firmWare + 0xF02 / sizeof(unsigned short)) & 0xFF;
+	serialLSB = *(firmWare + 0xF06 / sizeof(unsigned short)) & 0xFF;
+	serial = (int) (serialMSB << 16) + (int) serialLSB;
+	sprintf(str, "  CAEN module info: type V785, serial# %d, board id %#x, revision %#x\n", serial, boardId, revision);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void $mnemoLC_module_info(volatile unsigned short * firmWare);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+/* global vars for VME ADC CAEN V785 */
+static volatile unsigned int * $moduleNameOutput;
+static volatile unsigned short * $moduleNameFirmWare;
+static volatile unsigned short * $moduleNameGeoAddr;
+static volatile unsigned short * $moduleNameBitSet1;
+static volatile unsigned short * $moduleNameBitClear1;
+static volatile unsigned short * $moduleNameStatus1;
+static volatile unsigned short * $moduleNameControl1;
+static volatile unsigned short * $moduleNameAddrHigh;
+static volatile unsigned short * $moduleNameAddrLow;
+static volatile unsigned short * $moduleNameEvtTrig;
+static volatile unsigned short * $moduleNameStatus2;
+static volatile unsigned short * $moduleNameEvtCntLow;
+static volatile unsigned short * $moduleNameEvtCntHigh;
+static volatile unsigned short * $moduleNameIncrEvt;
+static volatile unsigned short * $moduleNameIncrOffs;
+static volatile unsigned short * $moduleNameBitSet2;
+static volatile unsigned short * $moduleNameBitClear2;
+static volatile unsigned short * $moduleNameCrateSel;
+static volatile unsigned short * $moduleNameTestEvtWrite;
+static volatile unsigned short * $moduleNameEvtCntReset;
+static volatile unsigned short * $moduleNameThresh;
+static volatile unsigned short * $moduleNameROM;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned int * $mnemoLC_rdoinp;
+	int $mnemoLC_wc;
+	unsigned int $mnemoLC_hdr, $mnemoLC_data, $mnemoLC_id, $mnemoLC_chn;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

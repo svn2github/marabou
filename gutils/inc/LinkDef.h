@@ -1,0 +1,40 @@
+#ifdef __CINT__
+#pragma link off all globals;
+#pragma link off all classes;
+#pragma link off all functions;
+
+#pragma link C++ class TGMrbLayout;
+#pragma link C++ class TGMrbFocusList;
+#pragma link C++ class TGMrbLofKeyBindings;
+#pragma link C++ class TGMrbObject;
+#pragma link C++ class TGMrbButtonFrame;
+#pragma link C++ class TGMrbSpecialButton;
+#pragma link C++ class TGMrbTextButtonList;
+#pragma link C++ class TGMrbTextButtonGroup;
+#pragma link C++ class TGMrbRadioButtonList;
+#pragma link C++ class TGMrbRadioButtonGroup;
+#pragma link C++ class TGMrbCheckButtonList;
+#pragma link C++ class TGMrbCheckButtonGroup;
+#pragma link C++ class TGMrbPictureButtonList;
+#pragma link C++ class TGMrbPictureButtonGroup;
+#pragma link C++ class TGMrbTextEntry;
+#pragma link C++ class TGMrbLabelEntry;
+#pragma link C++ class TGMrbLabelCombo;
+#pragma link C++ class TGMrbFileEntry;
+#pragma link C++ class TGMrbFileObjectCombo;
+#pragma link C++ class TGMrbTableFrame;
+#pragma link C++ class TGMrbTableOfInts;
+#pragma link C++ class TGMrbTableOfDoubles;
+#pragma link C++ class TGMrbMacroFrame;
+#pragma link C++ class TGMrbMacroEdit;
+#pragma link C++ class TGMrbMacroArg;
+#pragma link C++ class TGMrbMacroList;
+#pragma link C++ class TGMrbMacroBrowserMain;
+#pragma link C++ class TGMrbMacroBrowserVertical;
+#pragma link C++ class TGMrbMacroBrowserGroup;
+#pragma link C++ class TGMrbMacroBrowserPopup;
+#pragma link C++ class TGMrbMacroBrowserTransient;
+#pragma link C++ class TGMrbInputDialog;
+#pragma link C++ class TGMrbHelpWindow;
+#pragma link C++ class TGMrbMessageViewer;
+#endif

@@ -1,0 +1,449 @@
+//__________________________________________________[C++ CLASS IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%ANALYZE_FILE%%.cxx
+// Purpose:        Implement user-specific class methods
+// Description:    %%ANALYZE_TITLE%%
+//
+// Header files:   %%ANALYZE_FILE%%.h     -- class definitions
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+static char sccsid[]	=	"%W%";
+
+#include "TEnv.h"
+
+// class definitions
+#include "%%ANALYZE_FILE%%.h"
+
+// common index declarations for analysis and readout
+#include "%%ANALYZE_NAME_UC%%CommonIndices.h"
+
+#include "SetColor.h"
+
+#include <pthread.h>  // pthread header file
+
+// implement class defs
+%%BeginOfCode%%
+ClassImp($className)
+%%EndOfCode%%
+%%IMPLEMENT_CLASSES%%
+
+%%BeginOfCode%%
+%B%// definitions & prototypes supplied by user
+%I%#include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_DEFS_AND_PROTOS%%
+
+// global objects
+#include "%%ANALYZE_FILE%%Globals.h"
+
+%%BeginOfCode%%
+%B%// globals supplied by user
+%I%#include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_GLOBALS%%
+
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+extern pthread_mutex_t global_data_mutex;		// global pthread mutex to protect TMapped data
+
+extern TMrbLogger * gMrbLog;					// MARaBOU's logging mechanism
+
+extern TMrbTransport * gMrbTransport;			// base class for MBS transport
+extern TMrbAnalyze * gMrbAnalyze;				// base class for user's analysis
+
+extern TUsrEvtStart * gStartEvent;				// start + stop events
+extern TUsrEvtStop * gStopEvent;
+extern TUsrDeadTime * gDeadTime;				// dead-time data
+
+extern TMrbLofUserVars * gMrbLofUserVars;		// list of user vars/wdws
+
+static Bool_t verboseMode;						// verbosity flag;
+
+static Bool_t dumpIt = kFALSE;					// kTRUE - dump records
+static Int_t recNo = 0;
+
+Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::Initialize
+// Purpose:        Instantiate user objects, initialize values
+// Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Instantiates events, histgrams, windows etc. and
+//                 initializes values.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	verboseMode = (Bool_t) gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
+
+%%BeginOfCode%%
+// add user's environment defs from file $rcFile
+	Bool_t fileOk = this->AddResourcesFromFile("$rcFile");
+	if (verboseMode && fileOk) {
+		gMrbLog->Out()	<< "Reading user's environment defs from file $rcFile" << endl;
+		gMrbLog->Flush(this->ClassName(), "Initialize", setblue);
+	}
+%%EndOfCode%%
+%%ADD_USER_ENV%%
+
+// initialize histogram arrays
+%%BeginOfCode%%
+%N% 	memset(h$prefix$paramNameUC, 0, $indexRange * sizeof(TH1 *));	// $sevtNameLC.$paramNameLC
+%A% 	memset(h$sevtNameUCArray, 0, $nofParams * sizeof(TH1 *));	// $sevtNameLC
+%%EndOfCode%%
+%%HISTO_INIT_ARRAYS%%
+
+%%BeginOfCode%%
+%B%// initialize user lists: modules, params & histos
+%B% 	gMrbAnalyze->InitializeLists($nofModules, $nofParams);
+%ML%	gMrbAnalyze->AddModuleToList("$moduleNameLC", "$moduleTitle", kMrbModule$moduleNameUC, $paramIndex, $nofParams);
+%%EndOfCode%%
+%%INITIALIZE_LISTS%%
+
+%%BeginOfCode%%
+%C%// instantiate user's event classes and book histograms
+%C%	if (g$evtNameUC == NULL) {		// event $evtNameLC, trigger $trigNo
+%C%		g$evtNameUC = new TUsrEvt$evtNameUC();
+%C% 		Bool_t err = g$evtNameUC->IsZombie();
+%C% 		if (!err) {
+%C%			err |= !g$evtNameUC->BookParams();
+%C%			err |= !g$evtNameUC->BookHistograms();
+%HB%			err |= !g$evtNameUC->AllocHitBuffers();
+%E% 		}
+%E% 		if (err) {
+%E% 			gMrbLog->Err()	<< "Something went wrong while creating event $evtNameLC" << endl;
+%E% 			gMrbLog->Flush(this->ClassName(), "Initialize");
+%E% 		}
+%E%	}
+%%EndOfCode%%
+%%EVT_CLASS_INSTANCE%%
+
+%%BeginOfCode%%
+// instantiate windows
+	if ($varName == NULL) $varName = new $className("$varName", $varLower, $varUpper);
+%%EndOfCode%%
+%%WDW_CLASS_INSTANCE%%
+
+%%INITIALIZE_EVT_SEVT_MODS%%
+
+%%BeginOfCode%%
+%B%// user-specific code to book histograms
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_BOOK_HISTOGRAMS%%
+
+%%BeginOfCode%%
+%B%// book histograms defined by user
+%UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
+%UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%%EndOfCode%%
+%%HISTO_BOOK_USER_DEFINED%%
+
+%%BeginOfCode%%
+%B%// user-specific code to initialize objects and/or variables
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_INITIALIZE%%
+
+	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::HandleUserMessage(const Char_t * UserArgs){
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::HandleUserMessage
+// Purpose:        Execute a user message
+// Arguments:      Char_t * UserArgs
+// Results:        kTRUE/kFALSE
+// Description:    Called by message handler.
+//                 Format of argument string depends on user's definitions
+//                 and has to be decoded according to his requirements.
+// Exceptions:     
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t sts = kFALSE;
+
+%%BeginOfCode%%
+%B%// user-defined message handler
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%HANDLE_USER_MESSAGES%%
+
+	return(sts);
+};
+
+Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::ReloadParams
+// Purpose:        Reload parameters from file
+// Arguments:      TMrbIOSpec * IOSpec   -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Description:    Reloads params (vars, wdws, functions etc.) from root file
+// Exceptions:     
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%B%// user-specific code to reload parameters
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_RELOAD_PARAMS%%
+
+	return(this->ReloadVarsAndWdws(IOSpec));
+};
+
+Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::WriteRootTree
+// Purpose:        Open a file to write raw data to tree
+// Arguments:      TMrbIOSpec * IOSpec   -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Opens a ROOT file and creates trees.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString rootFile;
+
+	if ((IOSpec->GetOutputMode() & TMrbIOSpec::kOutputOpen) == 0) return(kTRUE);
+
+	if (fWriteRootTree) {
+		gMrbLog->Err()	<< "ROOT file already open - " << fRootFileOut->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
+		return(kFALSE);
+	}
+
+	rootFile = IOSpec->GetOutputFile();
+
+	if (verboseMode) {
+		gMrbLog->Out()	<< "Opening ROOT file \"" << rootFile << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
+	}
+
+	fRootFileOut = new TFile(rootFile.Data(), "RECREATE", "%%ANALYZE_TITLE%%");
+	fRootFileOut->SetCompressionLevel(1);
+	fWriteRootTree = kTRUE;
+
+// create ROOT trees for each event
+%%BeginOfCode%%
+	g$evtNameUC->CreateTree();
+%%EndOfCode%%
+%%EVT_CREATE_TREE%%
+
+// create trees for start/stop info
+	gStartEvent->CreateTree();
+	gStopEvent->CreateTree();
+
+// create tree to hold dead-time data
+	gDeadTime->CreateTree();
+
+	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::OpenRootFile
+// Purpose:        Open a file to replay tree data
+// Arguments:      TMrbIOSpec * IOSpec    -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Opens a ROOT file for input.
+//                 Replay mode only.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString rootFile;
+
+	if ((IOSpec->GetInputMode() & TMrbIOSpec::kInputRoot) == 0) return(kTRUE);
+
+	if (fRootFileIn != NULL) {
+		gMrbLog->Err()	<< "ROOT file already open - " << fRootFileIn->GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+		return(kFALSE);
+	}
+
+	rootFile = IOSpec->GetInputFile();
+
+	if (rootFile.CompareTo("fake.root") == 0) {
+		this->SetFakeMode();
+// set fake mode for all trees
+%%BeginOfCode%%
+		g$evtNameUC->SetFakeMode();
+%%EndOfCode%%
+%%EVT_SET_FAKE_MODE%%
+		if (verboseMode) {
+			gMrbLog->Out()	<< "Running in FAKE mode" << endl;
+			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+		}
+	} else {
+		gSystem->ExpandPathName(rootFile);
+		if(gSystem->AccessPathName(rootFile, kFileExists)){
+			gMrbLog->Err()	<< "No such file - " << rootFile << endl;
+			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+			return(kFALSE);
+		} else {
+			if (verboseMode) {
+				gMrbLog->Out()	<< "Opening ROOT file \"" << rootFile << "\"" << endl;
+				gMrbLog->Flush(this->ClassName(), "OpenRootFile");
+			}
+		}
+		fRootFileIn = new TFile(rootFile.Data(), "READ");
+
+// initialize ROOT trees
+%%BeginOfCode%%
+		g$evtNameUC->InitializeTree(fRootFileIn);
+%%EndOfCode%%
+%%EVT_INITIALIZE_TREE%%
+
+// initialize trees containing start/stop information
+		gStartEvent->InitializeTree(fRootFileIn);
+		gStopEvent->InitializeTree(fRootFileIn);
+
+// initialize dead-time tree
+		gDeadTime->InitializeTree(fRootFileIn);
+
+// turn on replay mode
+		fReplayMode = kTRUE;
+%%BeginOfCode%%
+		g$evtNameUC->SetReplayMode(kTRUE);
+%%EndOfCode%%
+%%EVT_SET_REPLAY_MODE%%
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::ReplayEvents(TMrbIOSpec * IOSpec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::ReplayEvents
+// Purpose:        Read data from ROOT file
+// Arguments:      TMrbIOSpec * IOSpec  -- i/o specifications
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Replays event data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t sts;
+
+	if (!this->IsFakeMode()) {
+		if (fRootFileIn == NULL) {
+			gMrbLog->Err()	<< "No ROOT file open" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReplayEvents");
+			return(kFALSE);
+		}
+
+// output start/stop time stamps
+		this->PrintStartStop();
+	}
+
+// replay tree data for each event with replay mode turned-on
+	sts = kTRUE;
+%%BeginOfCode%%
+	if (g$evtNameUC->IsReplayMode()) {
+		if (!g$evtNameUC->ReplayTreeData(IOSpec)) sts = kFALSE;
+	}
+%%EndOfCode%%
+%%EVT_REPLAY_TREE%%
+
+	return(sts);
+}
+
+void TMrbAnalyze::SetScaleDown(Int_t ScaleDown) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::SetScaleDown
+// Purpose:        Set a scale-down value common to all events
+// Arguments:      Int_t ScaleDown    -- scale-down factor
+// Results:        
+// Exceptions:     
+// Description:    Defines a global scale-down factor valid for all events.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fScaleDown = ScaleDown;
+
+// set scale down individually for each event
+%%BeginOfCode%%
+	g$evtNameUC->SetScaleDown(ScaleDown);
+%%EndOfCode%%
+%%EVT_SET_SCALEDOWN%%
+}
+
+%%SEVT_CLASS_METHODS%%					include user-specific SUBEVENT methods here
+
+%%EVT_CLASS_METHODS%%					include user-specific EVENT methods here
+
+Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTransport::ProcessEvent
+// Purpose:        Process event data
+// Arguments:      s_vehe * EventData  -- pointer to event data (including header)
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    This is the event filling function.
+//                 User will be called by methods BuildEvent() or Analyze().
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	const MBSDataIO * BaseAddr; 		// base addr of MBS data
+	UInt_t sts;
+
+	if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);		// run is stopped (maybe after pausing)
+
+	BaseAddr = GetMbsBase();			// fetch base addr
+
+	switch (EventData->i_trigger) {		// dispatch according to trigger number
+%%BeginOfCode%%
+%B%		case kMrbTrigger$evtNameUC:		// event $evtNameLC, trigger $trigNo
+%B%			pthread_mutex_lock(&global_data_mutex);
+%B%			g$evtNameUC->FillEvent(EventData, BaseAddr);
+%ANA%			sts = g$evtNameUC->Analyze();
+%BEV%			sts = g$evtNameUC->BuildEvent();
+%E%			pthread_mutex_unlock(&global_data_mutex);
+%E%			return(sts);
+%%EndOfCode%%
+%%EVT_DISPATCH_OVER_TRIGGER%%
+
+%%BeginOfCode%%
+%C%		case $trigNo:					// ignore trigger $trigNo
+%E%			return(kTRUE);
+%%EndOfCode%%
+%%EVT_IGNORE_TRIGGER%%
+
+		case kMrbTriggerStartAcquisition:					// start acquisition (trigger 14)
+			gStartEvent->ExtractTimeStamp(EventData, BaseAddr);
+			gStartEvent->Print();
+			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STARTING);
+			return(kTRUE);
+
+		case kMrbTriggerStopAcquisition:					// stop acquisition (trigger 15)
+			gStopEvent->ExtractTimeStamp(EventData, BaseAddr);
+			gStopEvent->Print();
+			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
+			return(kFALSE);
+
+		default:
+			gMrbLog->Err()	<< "Illegal trigger number - #" << EventData->i_trigger << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessEvent");
+			return(kFALSE);
+	}
+	return(kTRUE);
+}					
+
+%%BeginOfCode%%
+%B%// user-specific utility functions
+%I%#	include "$iclFile"
+%%EndOfCode%%
+%%INCLUDE_USER_UTILITIES%%

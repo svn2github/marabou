@@ -1,0 +1,145 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Uct_8904.code
+// @(#)Purpose:    Camac code for module UCT 8904
+// Description:    Contains pieces of camac code to operate an
+//                 Universal Counter/Timer UCT 8904 (N. Franz, TUM)
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+					$mnemoLC_init($moduleName, $extGate);	/* init scaler $moduleName in $modulePosition */
+					f_ut_send_msg("m_read_meb", "Initializing scaler $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					if ($extGate) f_ut_send_msg("m_read_meb", "Scaler $moduleName in $modulePosition: external gate ENABLED\n", ERR__MSG_INFO, MASK__PRTT);
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+					$mnemoLC_init($moduleName, $extGate);	/* clear scaler $moduleName */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_2MEM_32($mnemoLC_read($moduleName, 1));	/* read $moduleName:$chnName */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					RDO_2MEM_32($mnemoLC_read($moduleName, 1));	/* read $moduleName:$chnName */
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+					$mnemoLC_init($moduleName, $extGate);	/* clear scaler $moduleName */
+					CIO_CTRL_R2B($moduleName, F(26), A(5)); /* start scaler $moduleName */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(24), A(5));	/* stop scaler $moduleName */
+					sprintf(msg, "Scaler $moduleName: contents = %ld\n", $mnemoLC_read($moduleName, 0));
+					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+int $mnemoLC_init(volatile unsigned long * uct, int xgate) {	/* initialize uct scaler */
+	CIO_CTRL_R2B(uct, F(9), A(15));						/* clear status */
+	CIO_CTRL_R2B(uct, F(xgate ? 26 : 24), A(11));		/* enable/disable external gate */
+	CIO_CTRL_R2B(uct, F(2), A(2));						/* read & clear MSB */
+	CIO_CTRL_R2B(uct, F(2), A(3));						/* ... LSB and clear scaler */
+	return(1);
+}
+
+unsigned long $mnemoLC_read(volatile unsigned long * uct, int clear) { /* read contents (and clear module) */
+	unsigned long int lsb, msb, data;
+	unsigned int fct;
+	fct = (clear == 0) ? F(0) : F(2);	/* read and clear? */
+	msb = CIO_READ_R2B(uct, fct, A(2));	/* read MSB */
+	lsb = CIO_READ_R2B(uct, fct, A(3));	/* read LSB and clear scaler */
+	data = (((msb & 0xffffL) << 16) & 0xffff0000L) | (lsb & 0xffffL);
+	return(data);
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+int $mnemoLC_init(); 			/* initialize scaler UCT_8904 */
+unsigned long $mnemoLC_read();	/* read scaler contents */
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

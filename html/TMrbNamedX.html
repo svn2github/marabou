@@ -1,0 +1,145 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbNamedX</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbNamedX:description">class description</a> - <a href="src/TMrbNamedX.cxx.html">source file</a> - <a href="TMrbNamedX_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbNamedX" href="TMrbNamedX.h">TMrbNamedX</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:TMrbNamedX">TMrbNamedX</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:TMrbNamedX">TMrbNamedX</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ShortName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LongName = "NULL", <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Obj = NULL)
+<!--TAB6-->           <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:TMrbNamedX">TMrbNamedX</a><!--PLAIN-->(const <a href="./TMrbNamedX.html">TMrbNamedX</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:~TMrbNamedX">~TMrbNamedX</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:AssignObject">AssignObject</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Obj)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbNamedX:GetAssignedObject">GetAssignedObject</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbNamedX:GetFullName">GetFullName</a><!--PLAIN-->(<a href="./TMrbString.html">TMrbString</a>&amp; FullName, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 10, <a href="ListOfTypes.html#Bool_t">Bool_t</a> IndexFlag = kFALSE) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:GetIndex">GetIndex</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:HasTitle">HasTitle</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbNamedX:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Print">Print</a><!--PLAIN-->(ostream&amp; Out, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 10, <a href="ListOfTypes.html#Bool_t">Bool_t</a> CrFlag = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Base)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Print">Print</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ShortName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LongName = "NULL")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Set">Set</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>* NamedX)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbNamedX:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbNamedX:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbNamedX:fHasTitle">fHasTitle</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fHasTitle"></a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbNamedX:fIndex">fIndex</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fIndex"></a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMrbNamedX:fObject">fObject</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fObject"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="./TGMrbSpecialButton.html">TGMrbSpecialButton</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbNamedX:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/<a href="./TMrbNamedX.html">TMrbNamedX</a>.cxx
+ Purpose:        MARaBOU utilities:
+             A <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> having an index and an opt. object assigned
+ Description:        Implements class methods to manage indexed <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a> objects
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbNamedX:GetFullName" href="src/TMrbNamedX.cxx.html#TMrbNamedX:GetFullName">GetFullName</a>(<a href="./TMrbString.html">TMrbString</a> &amp; FullName, <a href="ListOfTypes.html#Int_t">Int_t</a> Base, <a href="ListOfTypes.html#Bool_t">Bool_t</a> IndexFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbNamedX.html#TMrbNamedX:GetFullName">TMrbNamedX::GetFullName</a>
+ Purpose:        Return full index name
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; FullName  -- resulting string
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base          -- numerical base
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> IndexFlag    -- append index?
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * FullName   -- index name
+ Exceptions:
+ Description:    Returns a string representing the full index name:
+                      Name[: Title][ (Index)]
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Print" href="src/TMrbNamedX.cxx.html#TMrbNamedX:Print">Print</a>(ostream &amp; Out, <a href="ListOfTypes.html#Int_t">Int_t</a> Base, <a href="ListOfTypes.html#Bool_t">Bool_t</a> CrFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbNamedX.html#TMrbNamedX:Print">TMrbNamedX::Print</a>
+ Purpose:        Print key data
+ Arguments:      ostream &amp; Out   -- where to send it
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Base      -- numerical base
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> CrFlag   -- append &lt;cr&gt; (=endl) if kTRUE
+ Results:        --
+ Exceptions:
+ Description:    Outputs index data to ostream.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TMrbNamedX.html">TMrbNamedX</a> <a name="TMrbNamedX:TMrbNamedX" href="TMrbNamedX.h">TMrbNamedX</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TMrbNamedX.html">TMrbNamedX</a> <a name="TMrbNamedX:TMrbNamedX" href="TMrbNamedX.h">TMrbNamedX</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ShortName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LongName = "NULL", <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Obj = NULL)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbNamedX:GetIndex" href="TMrbNamedX.h">GetIndex</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:AssignObject" href="TMrbNamedX.h">AssignObject</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Obj)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <a name="TMrbNamedX:GetAssignedObject" href="TMrbNamedX.h">GetAssignedObject</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Set" href="TMrbNamedX.h">Set</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ShortName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LongName = "NULL")
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Set" href="TMrbNamedX.h">Set</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a>* NamedX)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbNamedX:HasTitle" href="TMrbNamedX.h">HasTitle</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Print" href="TMrbNamedX.h">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Base)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Print" href="TMrbNamedX.h">Print</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Help" href="TMrbNamedX.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbNamedX:Class" href="TMrbNamedX.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbNamedX:IsA" href="TMrbNamedX.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:ShowMembers" href="TMrbNamedX.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:Streamer" href="TMrbNamedX.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:StreamerNVirtual" href="TMrbNamedX.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->         <a href="./TMrbNamedX.html">TMrbNamedX</a> <a name="TMrbNamedX:TMrbNamedX" href="TMrbNamedX.h">TMrbNamedX</a>(const <a href="./TMrbNamedX.html">TMrbNamedX</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbNamedX:~TMrbNamedX" href="TMrbNamedX.h">~TMrbNamedX</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

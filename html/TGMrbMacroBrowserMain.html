@@ -1,0 +1,185 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbMacroBrowserMain</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbMacroBrowserMain:description">class description</a> - <a href="src/TGMrbMacroBrowserMain.cxx.html">source file</a> - <a href="TGMrbMacroBrowserMain_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbMacroBrowserMain" href="TGMrbMacroBrowser.h">TGMrbMacroBrowserMain</a> : public <a href="http://root.cern.ch/root/html/TGMainFrame.html">TGMainFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:PopupMessageViewer">PopupMessageViewer</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:TGMrbMacroBrowserMain">TGMrbMacroBrowserMain</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* LofMacros, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height)
+<!--TAB6-->      <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:TGMrbMacroBrowserMain">TGMrbMacroBrowserMain</a><!--PLAIN-->(const <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a>&amp; f)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:~TGMrbMacroBrowserMain">~TGMrbMacroBrowserMain</a><!--PLAIN-->()
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:GetLofMacros">GetLofMacros</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroBrowserMain:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbMacroBrowserMain:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fHeap">fHeap</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fHeap"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fMenuFile">fMenuFile</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMenuFile"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fMenuView">fMenuView</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMenuView"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fMenuHelp">fMenuHelp</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fMenuHelp"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGMenuBar.html">TGMenuBar</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fMenuBar">fMenuBar</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMenuBar"></a></i>
+<!--TAB6-->             <a href="./TGMrbLayout.html">TGMrbLayout</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fFrameGC">fFrameGC</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fFrameGC"></a></i>
+<!--TAB6-->             <a href="./TGMrbLayout.html">TGMrbLayout</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fButtonGC">fButtonGC</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fButtonGC"></a></i>
+<!--TAB6-->           <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fLofMacros">fLofMacros</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLofMacros"></a></i>
+<!--TAB6-->          <a href="./TGMrbMacroList.html">TGMrbMacroList</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fMacroList">fMacroList</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMacroList"></a></i>
+<!--TAB6-->      <a href="./TGMrbMessageViewer.html">TGMrbMessageViewer</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fMsgViewer">fMsgViewer</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMsgViewer"></a></i>
+<!--TAB6-->      <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:fKeyBindings">fKeyBindings</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fKeyBindings"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:EGMrbMacroMainId">TGMrbMacroBrowserMain::EGMrbMacroMainId</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:kGMrbMacroMenuFileNew">kGMrbMacroMenuFileNew</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kGMrbMacroMenuFileNew"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:EGMrbMacroMainId">TGMrbMacroBrowserMain::EGMrbMacroMainId</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:kGMrbMacroMenuFileOpen">kGMrbMacroMenuFileOpen</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kGMrbMacroMenuFileOpen"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:EGMrbMacroMainId">TGMrbMacroBrowserMain::EGMrbMacroMainId</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:kGMrbMacroMenuFileExit">kGMrbMacroMenuFileExit</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kGMrbMacroMenuFileExit"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:EGMrbMacroMainId">TGMrbMacroBrowserMain::EGMrbMacroMainId</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:kGMrbMacroMenuViewErrors">kGMrbMacroMenuViewErrors</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kGMrbMacroMenuViewErrors"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:EGMrbMacroMainId">TGMrbMacroBrowserMain::EGMrbMacroMainId</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:kGMrbMacroMenuHelpContents">kGMrbMacroMenuHelpContents</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kGMrbMacroMenuHelpContents"></a></i>
+<!--TAB6-->      static const <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:EGMrbMacroMainId">TGMrbMacroBrowserMain::EGMrbMacroMainId</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroBrowserMain:kGMrbMacroMenuHelpAbout">kGMrbMacroMenuHelpAbout</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kGMrbMacroMenuHelpAbout"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbMacroBrowserMain:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/TGMrbMacroBrowser.cxx
+ Purpose:        MARaBOU graphic utilities: browser to manage root macros
+ Description:    Implements class methods to browse &amp; execute root macros
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ Layout:
+
+/*
+<img src=gutils/TGMrbMacroBrowser.gif>
+*/
+
+ Generated Code:
+
+/*
+<img src=gutils/TGMrbMacroBrowserCode.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbMacroBrowserMain:TGMrbMacroBrowserMain" href="src/TGMrbMacroBrowserMain.cxx.html#TGMrbMacroBrowserMain:TGMrbMacroBrowserMain">TGMrbMacroBrowserMain</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent, <a href="./TMrbLofMacros.html">TMrbLofMacros</a> * LofMacros,
+										<a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height) : <a href="http://root.cern.ch/root/html/TGMainFrame.html">TGMainFrame</a>(Parent, Width, Height) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a>
+ Purpose:        Browse &amp; execute root macros in a main frame
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent               -- parent window
+                 <a href="./TMrbLofMacros.html">TMrbLofMacros</a> * LofMacros       -- list of macros to be managed
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width                    -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height                   -- window height in pixels
+ Results:
+ Exceptions:
+ Description:    Displays &amp; executes root macros in a main frame.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbMacroBrowserMain:ProcessMessage" href="src/TGMrbMacroBrowserMain.cxx.html#TGMrbMacroBrowserMain:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:ProcessMessage">TGMrbMacroBrowserMain::ProcessMessage</a>
+ Purpose:        Message handler
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a>.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:CloseWindow" href="src/TGMrbMacroBrowserMain.cxx.html#TGMrbMacroBrowserMain:CloseWindow">CloseWindow</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:CloseWindow">TGMrbMacroBrowserMain::CloseWindow</a>
+ Purpose:        Close window and terminate application
+ Arguments:
+ Results:
+ Exceptions:
+ Description:    Got close message for this MainFrame.
+                 Calls parent's <a href="#TGMrbMacroBrowserMain:CloseWindow">CloseWindow</a>()
+                 (which destroys the window) and terminates the application.
+                 The close message is generated by the window manager when
+                 its close window menu item is selected.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:PopupMessageViewer" href="src/TGMrbMacroBrowserMain.cxx.html#TGMrbMacroBrowserMain:PopupMessageViewer">PopupMessageViewer</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMacroBrowserMain.html#TGMrbMacroBrowserMain:PopupMessageViewer">TGMrbMacroBrowserMain::PopupMessageViewer</a>
+ Purpose:        Create a message viewer window
+ Arguments:
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a> <a name="TGMrbMacroBrowserMain:TGMrbMacroBrowserMain" href="TGMrbMacroBrowser.h">TGMrbMacroBrowserMain</a>(const <a href="./TGMrbMacroBrowserMain.html">TGMrbMacroBrowserMain</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* <a name="TGMrbMacroBrowserMain:GetLofMacros" href="TGMrbMacroBrowser.h">GetLofMacros</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbMacroBrowserMain:HandleKey" href="TGMrbMacroBrowser.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:Help" href="TGMrbMacroBrowser.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbMacroBrowserMain:Class" href="TGMrbMacroBrowser.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbMacroBrowserMain:IsA" href="TGMrbMacroBrowser.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:ShowMembers" href="TGMrbMacroBrowser.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:Streamer" href="TGMrbMacroBrowser.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:StreamerNVirtual" href="TGMrbMacroBrowser.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroBrowserMain:~TGMrbMacroBrowserMain" href="TGMrbMacroBrowser.h">~TGMrbMacroBrowserMain</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:54:43 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

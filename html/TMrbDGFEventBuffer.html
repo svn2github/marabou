@@ -1,0 +1,308 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbDGFEventBuffer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbDGFEventBuffer:description">class description</a> - <a href="src/TMrbDGFEventBuffer.cxx.html">source file</a> - <a href="TMrbDGFEventBuffer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbDGFEventBuffer" href="TMrbDGFEventBuffer.h">TMrbDGFEventBuffer</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>, public <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:TMrbDGFEventBuffer">TMrbDGFEventBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* BufferName = "dgfEbuf", <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module = NULL, <a href="ListOfTypes.html#Int_t">Int_t</a> Index = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Event0 = -1)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:~TMrbDGFEventBuffer">~TMrbDGFEventBuffer</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:CalcTau">CalcTau</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> GlobalEventNo, <a href="ListOfTypes.html#Double_t">Double_t</a> A0, <a href="ListOfTypes.html#Double_t">Double_t</a> A1, <a href="ListOfTypes.html#Double_t">Double_t</a> A2, <a href="ListOfTypes.html#Int_t">Int_t</a> From = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> To = 0, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Verbose = kTRUE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt = kTRUE)
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:FillHistogram">FillHistogram</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt = kTRUE)
+<!--TAB6-->                    <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Fit">Fit</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetChannel">GetChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Data)
+<!--TAB6-->                 <a href="ListOfTypes.html#UInt_t">UInt_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetDAddr">GetDAddr</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetGlobalEventNo">GetGlobalEventNo</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetGlobalIndex">GetGlobalIndex</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetHitPattern">GetHitPattern</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber)
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetNofChannels">GetNofChannels</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber)
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetNofEvents">GetNofEvents</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetNofWords">GetNofWords</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetNofWords">GetNofWords</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->                <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetTau">GetTau</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->                  <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:GetTraceError">GetTraceError</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Histogram">Histogram</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:MakeIndex">MakeIndex</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber = -1)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SaveTraces">SaveTraces</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* TraceFile = "NULL", <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SetGlobalEventNo">SetGlobalEventNo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNo)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SetGlobalIndex">SetGlobalIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SetModule">SetModule</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SetTraceError">SetTraceError</a><!--PLAIN-->(<a href="ListOfTypes.html#Stat_t">Stat_t</a> Error)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbDGFEventBuffer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fModule">fModule</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fModule">! ptr to dgf module</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fNofWords">fNofWords</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNofWords">number of words in this buffer</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fNofEvents">fNofEvents</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fNofEvents">number of events in this buffer</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Stat_t">Stat_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fTraceError">fTraceError</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTraceError">error to be applied to trace data</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fEventIndex">fEventIndex</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEventIndex">event index</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fHistogram">fHistogram</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fHistogram">! histogram</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fTauFit">fTauFit</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTauFit">! tau fit;</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fGlobIndex">fGlobIndex</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fGlobIndex">global buffer index</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:fGlobEventNo">fGlobEventNo</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fGlobEventNo">global event number</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFBufferHeader">TMrbDGFEventBuffer::EMrbDGFBufferHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kBufNofWords">kBufNofWords</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kBufNofWords"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFBufferHeader">TMrbDGFEventBuffer::EMrbDGFBufferHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kModNumber">kModNumber</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModNumber"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFBufferHeader">TMrbDGFEventBuffer::EMrbDGFBufferHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kFormat">kFormat</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kFormat"></a></i>
+<!--TAB6-->      static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFBufferHeader">TMrbDGFEventBuffer::EMrbDGFBufferHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kRunStartTime">kRunStartTime</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kRunStartTime"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kBufHeaderLength">kBufHeaderLength</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kBufHeaderLength"></a></i>
+<!--TAB6-->       static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFEventHeader">TMrbDGFEventBuffer::EMrbDGFEventHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kHitPattern">kHitPattern</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kHitPattern"></a></i>
+<!--TAB6-->       static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFEventHeader">TMrbDGFEventBuffer::EMrbDGFEventHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kEventTime">kEventTime</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kEventTime"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kEventHeaderLength">kEventHeaderLength</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kEventHeaderLength"></a></i>
+<!--TAB6-->        static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFChanHeader">TMrbDGFEventBuffer::EMrbDGFChanHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kChanNofWords">kChanNofWords</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kChanNofWords"></a></i>
+<!--TAB6-->        static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFChanHeader">TMrbDGFEventBuffer::EMrbDGFChanHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kFastTrigger">kFastTrigger</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kFastTrigger"></a></i>
+<!--TAB6-->        static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFChanHeader">TMrbDGFEventBuffer::EMrbDGFChanHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kEnergy">kEnergy</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kEnergy"></a></i>
+<!--TAB6-->        static const <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:EMrbDGFChanHeader">TMrbDGFEventBuffer::EMrbDGFChanHeader</a> <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kConstFractTriggerTime">kConstFractTriggerTime</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kConstFractTriggerTime"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kChanHeaderLength">kChanHeaderLength</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kChanHeaderLength"></a></i>
+<!--TAB6-->                               static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGFEventBuffer:kTotalHeaderLength">kTotalHeaderLength</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kTotalHeaderLength"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbDGFEventBuffer:description">Class Description</a></h2>
+<pre>
+ Name:           xiadgf/src/<a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>.cxx
+ Purpose:        Methods to operate a module XIA DGF-4C
+ Description:    Implements class methods for module XIA DGF-4C
+ Header files:   <a href="./TMrbDGF.html">TMrbDGF</a>.h          -- class defs
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbDGFEventBuffer:TMrbDGFEventBuffer" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:TMrbDGFEventBuffer">TMrbDGFEventBuffer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * BufferName, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Module, <a href="ListOfTypes.html#Int_t">Int_t</a> Index, <a href="ListOfTypes.html#Int_t">Int_t</a> Event0) :
+																		<a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>(BufferName, "DGF-4C Event Buffer") <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>
+ Purpose:        DGF's list mode buffer
+ Description:    Describes the list mode buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:Reset" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:Reset">Reset</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:Reset">TMrbDGFEventBuffer::Reset</a>
+ Purpose:        Reset to initial values
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Resets event buffer
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:MakeIndex" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:MakeIndex">MakeIndex</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:MakeIndex">TMrbDGFEventBuffer::MakeIndex</a>
+ Purpose:        Analyze buffer data
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Analyzes buffer data: number of events, indices etc.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetNofChannels" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:GetNofChannels">GetNofChannels</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:GetNofChannels">TMrbDGFEventBuffer::GetNofChannels</a>
+ Purpose:        Return number of active channels
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels    -- number of active channels
+ Exceptions:
+ Description:    Returns the number of active channels for a given event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbDGFEventBuffer:GetHitPattern" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:GetHitPattern">GetHitPattern</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:GetHitPattern">TMrbDGFEventBuffer::GetHitPattern</a>
+ Purpose:        Return pattern of active channels
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> HitPattern    -- pattern
+ Exceptions:
+ Description:    Returns the pattern of active channels.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetChannel" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:GetChannel">GetChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:GetChannel">TMrbDGFEventBuffer::GetChannel</a>
+ Purpose:        Return data for a given channel
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+                 <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Data       -- where to store channel data
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords       -- number of words
+ Exceptions:
+ Description:    Returns data of a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetNofWords" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:GetNofWords">GetNofWords</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:GetNofWords">TMrbDGFEventBuffer::GetNofWords</a>
+ Purpose:        Return number of data words for a channel
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords       -- number of words
+ Exceptions:
+ Description:    Returns number of words for a given channel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbDGFEventBuffer:CalcTau" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:CalcTau">CalcTau</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> GlobalEventNo,
+								<a href="ListOfTypes.html#Double_t">Double_t</a> A0, <a href="ListOfTypes.html#Double_t">Double_t</a> A1, <a href="ListOfTypes.html#Double_t">Double_t</a> A2, <a href="ListOfTypes.html#Int_t">Int_t</a> From, <a href="ListOfTypes.html#Int_t">Int_t</a> To,
+								<a href="ListOfTypes.html#Bool_t">Bool_t</a> Verbose, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:CalcTau">TMrbDGFEventBuffer::CalcTau</a>
+ Purpose:        Calculate tau value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> GlobalEventNo  -- global event number
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> A0          -- start value for a(0)
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> A1          -- start value for a(1)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> From           -- fit region, lower limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> To             -- fit region, upper limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Verbose        -- verbose mode?
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt        -- draw histo + fit
+ Results:        <a href="ListOfTypes.html#Double_t">Double_t</a> Tau         -- tau value
+ Exceptions:
+ Description:    Performs a fit on trace data
+                     f(x) = a(0) + a(1) * exp(a(2) * x)
+                 then calculates tau
+                     tau = 1 / (40 * a(2))
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbDGFEventBuffer:GetTau" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:GetTau">GetTau</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:GetTau">TMrbDGFEventBuffer::GetTau</a>
+ Purpose:        Recall calculated tau value
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+ Results:        <a href="ListOfTypes.html#Double_t">Double_t</a> Tau         -- tau value
+ Exceptions:
+ Description:    Returns tau value
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <a name="TMrbDGFEventBuffer:FillHistogram" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:FillHistogram">FillHistogram</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:FillHistogram">TMrbDGFEventBuffer::FillHistogram</a>
+ Purpose:        Fill a histogram with trace data
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> DrawIt        -- draw histogram
+ Results:        <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a> * Histogram     -- address of internal histogram
+ Exceptions:
+ Description:    Fills a histogram with event (trace) data and draws it.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFEventBuffer:SaveTraces" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:SaveTraces">SaveTraces</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * TraceFile, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:SaveTraces">TMrbDGFEventBuffer::SaveTraces</a>
+ Purpose:        Save trace data to root file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * TraceFile   -- file name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber    -- event number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Channel        -- channel number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords       -- number of words
+ Exceptions:
+ Description:    Saves trace data as histograms in root format.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:Print" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:Print">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:Print">TMrbDGFEventBuffer::Print</a>
+ Purpose:        Print buffer headers
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- event number
+ Results:        --
+ Exceptions:
+ Description:    Outputs buffer / event / channel headers.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetNofEvents" href="TMrbDGFEventBuffer.h">GetNofEvents</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetGlobalIndex" href="TMrbDGFEventBuffer.h">GetGlobalIndex</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:SetGlobalIndex" href="TMrbDGFEventBuffer.h">SetGlobalIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetGlobalEventNo" href="TMrbDGFEventBuffer.h">GetGlobalEventNo</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:SetGlobalEventNo" href="TMrbDGFEventBuffer.h">SetGlobalEventNo</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNo)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetNofWords" href="TMrbDGFEventBuffer.h">GetNofWords</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="ListOfTypes.html#UInt_t">UInt_t</a>* <a name="TMrbDGFEventBuffer:GetDAddr" href="TMrbDGFEventBuffer.h">GetDAddr</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:SetTraceError" href="TMrbDGFEventBuffer.h">SetTraceError</a>(<a href="ListOfTypes.html#Stat_t">Stat_t</a> Error)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Stat_t">Stat_t</a> <a name="TMrbDGFEventBuffer:GetTraceError" href="TMrbDGFEventBuffer.h">GetTraceError</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:SetModule" href="TMrbDGFEventBuffer.h">SetModule</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <a name="TMrbDGFEventBuffer:Histogram" href="TMrbDGFEventBuffer.h">Histogram</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <a name="TMrbDGFEventBuffer:Fit" href="TMrbDGFEventBuffer.h">Fit</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbDGFEventBuffer:Class" href="TMrbDGFEventBuffer.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbDGFEventBuffer:IsA" href="TMrbDGFEventBuffer.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:ShowMembers" href="TMrbDGFEventBuffer.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:Streamer" href="TMrbDGFEventBuffer.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:StreamerNVirtual" href="TMrbDGFEventBuffer.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:~TMrbDGFEventBuffer" href="TMrbDGFEventBuffer.h">~TMrbDGFEventBuffer</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:56:30 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,76 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TFree</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TFree:description">class description</a> - <a href="src/TFree.cxx.html">source file</a> - <a href="TFree_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TFree" href="TFree.h">TFree</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TFree.html">TFree</a> <!--TAB--><!--BOLD--><a href="#TFree:TFree">TFree</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TFree.html">TFree</a> <!--TAB--><!--BOLD--><a href="#TFree:TFree">TFree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* lfree, <a href="ListOfTypes.html#Seek_t">Seek_t</a> first, <a href="ListOfTypes.html#Seek_t">Seek_t</a> last)
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TFree.html">TFree</a> <!--TAB--><!--BOLD--><a href="#TFree:TFree">TFree</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TFree.html">TFree</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:~TFree">~TFree</a><!--PLAIN-->()
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TFree.html">TFree</a>* <!--TAB--><!--BOLD--><a href="#TFree:AddFree">AddFree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* lfree, <a href="ListOfTypes.html#Seek_t">Seek_t</a> first, <a href="ListOfTypes.html#Seek_t">Seek_t</a> last)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TFree:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:FillBuffer">FillBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>*&amp; buffer)
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TFree.html">TFree</a>* <!--TAB--><!--BOLD--><a href="#TFree:GetBestFree">GetBestFree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* lfree, <a href="ListOfTypes.html#Int_t">Int_t</a> nbytes)
+<!--TAB6-->               <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a href="#TFree:GetFirst">GetFirst</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a href="#TFree:GetLast">GetLast</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TFree:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>*&amp; buffer)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:SetFirst">SetFirst</a><!--PLAIN-->(<a href="ListOfTypes.html#Seek_t">Seek_t</a> first)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:SetLast">SetLast</a><!--PLAIN-->(<a href="ListOfTypes.html#Seek_t">Seek_t</a> last)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TFree:Sizeof">Sizeof</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TFree:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TFree:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a name="TFree:fFirst">fFirst</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFirst">First free word of segment</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a name="TFree:fLast">fLast</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLast">Last free word of segment</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TFree:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:17 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

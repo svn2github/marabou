@@ -1,0 +1,86 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSpectrum</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSpectrum:description">class description</a> - <a href="src/TSpectrum.cxx.html">source file</a> - <a href="TSpectrum_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSpectrum" href="TSpectrum.h">TSpectrum</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TSpectrum.html">TSpectrum</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:TSpectrum">TSpectrum</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TSpectrum.html">TSpectrum</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:TSpectrum">TSpectrum</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> maxpositions, <a href="ListOfTypes.html#Float_t">Float_t</a> resolution = 1)
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TSpectrum.html">TSpectrum</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:TSpectrum">TSpectrum</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSpectrum.html">TSpectrum</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:~TSpectrum">~TSpectrum</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:Background">Background</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* hist, <a href="ListOfTypes.html#int">int</a> niter, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "goff") const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:Background1">Background1</a><!--PLAIN-->(<a href="ListOfTypes.html#float">float</a>* spectrum, <a href="ListOfTypes.html#int">int</a> size, <a href="ListOfTypes.html#int">int</a> niter) const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:Background2">Background2</a><!--PLAIN-->(<a href="ListOfTypes.html#float">float</a>** spectrum, <a href="ListOfTypes.html#int">int</a> sizex, <a href="ListOfTypes.html#int">int</a> sizey, <a href="ListOfTypes.html#int">int</a> niter) const
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:Deconvolution1">Deconvolution1</a><!--PLAIN-->(<a href="ListOfTypes.html#float">float</a>* source, <a href="ListOfTypes.html#float">float</a>* resp, <a href="ListOfTypes.html#int">int</a> size, <a href="ListOfTypes.html#int">int</a> niter) const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:Deconvolution2">Deconvolution2</a><!--PLAIN-->(<a href="ListOfTypes.html#float">float</a>** source, <a href="ListOfTypes.html#float">float</a>** resp, <a href="ListOfTypes.html#int">int</a> sizex, <a href="ListOfTypes.html#int">int</a> sizey, <a href="ListOfTypes.html#int">int</a> niter) const
+<!--TAB6-->             virtual <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:GetHistogram">GetHistogram</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:GetNPeaks">GetNPeaks</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:GetPositionX">GetPositionX</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:GetPositionY">GetPositionY</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSpectrum:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->              virtual <a href="ListOfTypes.html#int">int</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:PeakEvaluate">PeakEvaluate</a><!--PLAIN-->(<a href="ListOfTypes.html#double">double</a>* temp, <a href="ListOfTypes.html#int">int</a> size, <a href="ListOfTypes.html#int">int</a> xmax, <a href="ListOfTypes.html#double">double</a> xmin)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:Search">Search</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* hist, <a href="ListOfTypes.html#Double_t">Double_t</a> sigma, <a href="ListOfTypes.html#Option_t">Option_t</a>* option = "goff")
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:Search1">Search1</a><!--PLAIN-->(<a href="ListOfTypes.html#float">float</a>* spectrum, <a href="ListOfTypes.html#int">int</a> size, <a href="ListOfTypes.html#double">double</a> sigma)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:Search2">Search2</a><!--PLAIN-->(<a href="ListOfTypes.html#float">float</a>** source, <a href="ListOfTypes.html#int">int</a> sizex, <a href="ListOfTypes.html#int">int</a> sizey, <a href="ListOfTypes.html#double">double</a> sigma)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:SetResolution">SetResolution</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> resolution = 1)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSpectrum:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TSpectrum:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSpectrum:fMaxPeaks">fMaxPeaks</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMaxPeaks">Maximum number of peaks to be found</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSpectrum:fNPeaks">fNPeaks</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fNPeaks">number of peaks found</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a name="TSpectrum:fPosition">fPosition</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fPosition">!array of current peak positions</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a name="TSpectrum:fPositionX">fPositionX</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fPositionX">!X position of peaks</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Float_t">Float_t</a>* <!--TAB--><!--BOLD--><a name="TSpectrum:fPositionY">fPositionY</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fPositionY">!Y position of peaks</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TSpectrum:fResolution">fResolution</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fResolution">resolution of the neighboring peaks</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TH1.html">TH1</a>* <!--TAB--><!--BOLD--><a name="TSpectrum:fHistogram">fHistogram</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fHistogram">resulting histogram</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TSpectrum:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:24 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

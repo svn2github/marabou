@@ -1,0 +1,84 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSelector</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSelector:description">class description</a> - <a href="src/TSelector.cxx.html">source file</a> - <a href="TSelector_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSelector" href="TSelector.h">TSelector</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a> <!--TAB--><!--BOLD--><a href="#TSelector:TSelector">TSelector</a><!--PLAIN-->()
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a> <!--TAB--><!--BOLD--><a href="#TSelector:TSelector">TSelector</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:~TSelector">~TSelector</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:Begin">Begin</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTree.html">TTree</a>*)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSelector:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSelector:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a href="#TSelector:GetOutputList">GetOutputList</a><!--PLAIN-->() const
+<!--TAB6-->        static <a href="http://root.cern.ch/root/html/TSelector.html">TSelector</a>* <!--TAB--><!--BOLD--><a href="#TSelector:GetSelector">GetSelector</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* filename)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:Init">Init</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TTree.html">TTree</a>*)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSelector:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSelector:Notify">Notify</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSelector:Process">Process</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> entry)
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSelector:ProcessCut">ProcessCut</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> entry)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:ProcessFill">ProcessFill</a><!--PLAIN-->(<a href="ListOfTypes.html#int">int</a> entry)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:SetInputList">SetInputList</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TList.html">TList</a>* input)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:SetObject">SetObject</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:SetOption">SetOption</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSelector:Terminate">Terminate</a><!--PLAIN-->()
+</pre>
+
+<h3><!--TAB2-->  <a name="TSelector:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSelector:fOption">fOption</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fOption">option given to TTree::Process</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a name="TSelector:fObject">fObject</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fObject">current object if processing object (vs. TTree)</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TSelector:fInput">fInput</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fInput">list of objects available during processing (on PROOF)</a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TSelector:fOutput">fOutput</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fOutput">list of objects created during processing (on PROOF)</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TSelectorCint.html">TSelectorCint</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TSelector:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:15 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

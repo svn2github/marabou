@@ -1,0 +1,136 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbVarS</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbVarS:description">class description</a> - <a href="src/TMrbVarS.cxx.html">source file</a> - <a href="TMrbVarS_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbVarS" href="TMrbVar.h">TMrbVarS</a> : public <a href="./TMrbVariable.html">TMrbVariable</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="./TMrbVarS.html">TMrbVarS</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:TMrbVarS">TMrbVarS</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TMrbVarS.html">TMrbVarS</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:TMrbVarS">TMrbVarS</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value)
+<!--TAB6-->             <a href="./TMrbVarS.html">TMrbVarS</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:TMrbVarS">TMrbVarS</a><!--PLAIN-->(const <a href="./TMrbVarS.html">TMrbVarS</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:~TMrbVarS">~TMrbVarS</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbVarS:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbVarS:Get">Get</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:Initialize">Initialize</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsEQ">IsEQ</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsGE">IsGE</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsGT">IsGT</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsLE">IsLE</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsLT">IsLT</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:IsNE">IsNE</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Option)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:Set">Set</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbVarS:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbVarS:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbVarS:fValue">fValue</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fValue">current value</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbVarS:fInitValue">fInitValue</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fInitValue">initial value</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbVarS:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/TMrbVariables.cxx
+ Purpose:        MARaBOU utilities: Provide user-defined variables and windows
+ Description:    Implements class methods to handle variables and 1-dim windows
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbVarS:TMrbVarS" href="src/TMrbVarS.cxx.html#TMrbVarS:TMrbVarS">TMrbVarS</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Value) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbVarS.html">TMrbVarS</a>
+ Purpose:        Define a string variable
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Name           -- name of variable
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Value          -- initial value
+ Results:
+ Exceptions:
+ Description:    Creates a variable with a string value.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:Print" href="src/TMrbVarS.cxx.html#TMrbVarS:Print">Print</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Option) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbVarS.html#TMrbVarS:Print">TMrbVarS::Print</a>
+ Purpose:        Print current value
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Option   -- option
+ Results:
+ Exceptions:
+ Description:    Outputs current value to cout.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TMrbVarS.html">TMrbVarS</a> <a name="TMrbVarS:TMrbVarS" href="TMrbVar.h">TMrbVarS</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:Set" href="TMrbVar.h">Set</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value)
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbVarS:Get" href="TMrbVar.h">Get</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVarS:IsEQ" href="TMrbVar.h">IsEQ</a>(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVarS:IsNE" href="TMrbVar.h">IsNE</a>(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVarS:IsLT" href="TMrbVar.h">IsLT</a>(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVarS:IsLE" href="TMrbVar.h">IsLE</a>(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVarS:IsGT" href="TMrbVar.h">IsGT</a>(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbVarS:IsGE" href="TMrbVar.h">IsGE</a>(<a href="ListOfTypes.html#Char_t">Char_t</a>* X)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:Initialize" href="TMrbVar.h">Initialize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:Help" href="TMrbVar.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbVarS:Class" href="TMrbVar.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbVarS:IsA" href="TMrbVar.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:ShowMembers" href="TMrbVar.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:Streamer" href="TMrbVar.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:StreamerNVirtual" href="TMrbVar.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TMrbVarS.html">TMrbVarS</a> <a name="TMrbVarS:TMrbVarS" href="TMrbVar.h">TMrbVarS</a>(const <a href="./TMrbVarS.html">TMrbVarS</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbVarS:~TMrbVarS" href="TMrbVar.h">~TMrbVarS</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:57:57 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,140 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Sen_2010.code
+// @(#)Purpose:    Camac code for module SEN 2010
+// Description:    Contains pieces of camac code to operate
+//                 the pattern unit SEN 2010
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName in $modulePosition */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module */
+					CIO_CTRL_R2B($moduleName, F(9), A(1));
+					CIO_WRITE_R2B($moduleName, F(16), A(1), 0L);
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+%N%					data = CIO_READ_R2B($moduleName, F(2), A($subAddr));	/* read $moduleName:$chnName */
+%N%					RDO_2MEM_16(data & 0xfff);
+%H%					CIO_WRITE_R2B($moduleName, F(16), A(0), 0L);	/* mark data received */
+%H%		 			data = 0;								/* check if next data ready */
+%HQ%		 			while (data == 0) {
+%HQ%						CIO_CTRL_R2B($moduleName, F(8), A(15)); 		/* test lam */
+%HQ% 						data = CIO_READ_R2B(cam_sreg_C$crateNo, F(27), A(0)) & 0x2;	/* read status */
+%HQ% 					}
+%HL%					CIO_WRITE_R2B($moduleName, F(16), A(0), 0L);	/* mark data received */
+%HL%					CIO_CTRL_R2B($moduleName, F(8), A(15));
+%HL%		            for($mnemoLC_loop = 0; $mnemoLC_loop < 200; $mnemoLC_loop ++) $mnemoLC_dummy++; 	/* wait for next data word */
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module $moduleName */
+					CIO_CTRL_R2B($moduleName, F(9), A(1));
+					CIO_WRITE_R2B($moduleName, F(16), A(1), 0L);
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					CIO_WRITE_R2B($moduleName, F(16), A(1), 0L); 		/* reset module $moduleName */
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(26), A(0)); 		/* enable LAM */
+					CIO_CTRL_R2B($moduleName, F(26), A(1));
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(24), A(0)); 		/* disable LAM */
+					CIO_CTRL_R2B($moduleName, F(24), A(1));
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	int $mnemoLC_loop, $mnemoLC_dummy;		/* local vars used by $moduleTitle */
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

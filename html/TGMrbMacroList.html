@@ -1,0 +1,142 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbMacroList</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbMacroList:description">class description</a> - <a href="src/TGMrbMacroList.cxx.html">source file</a> - <a href="TGMrbMacroList_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbMacroList" href="TGMrbMacroBrowser.h">TGMrbMacroList</a> : public <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="./TGMrbMacroList.html">TGMrbMacroList</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:TGMrbMacroList">TGMrbMacroList</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* MacroList, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="./TGMrbLayout.html">TGMrbLayout</a>* FrameGC, <a href="./TGMrbLayout.html">TGMrbLayout</a>* ButtonGC, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions = kChildFrame|kVerticalFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ButtonOptions = kRaisedFrame|kDoubleBorder)
+<!--TAB6-->       <a href="./TGMrbMacroList.html">TGMrbMacroList</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:TGMrbMacroList">TGMrbMacroList</a><!--PLAIN-->(const <a href="./TGMrbMacroList.html">TGMrbMacroList</a>&amp; f)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:~TGMrbMacroList">~TGMrbMacroList</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbMacroList:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbMacroList:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroList:fHeap">fHeap</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fHeap"></a></i>
+<!--TAB6-->      <a href="./TGMrbTextButtonList.html">TGMrbTextButtonList</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroList:fButtonList">fButtonList</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fButtonList"></a></i>
+<!--TAB6-->            <a href="./TMrbLofMacros.html">TMrbLofMacros</a>* <!--TAB--><!--BOLD--><a name="TGMrbMacroList:fLofMacros">fLofMacros</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLofMacros"></a></i>
+<!--TAB6-->             <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TGMrbMacroList:fLofButtons">fLofButtons</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofButtons"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbMacroList:description">Class Description</a></h2>
+<pre>
+ Name:           gutils/src/TGMrbMacroBrowser.cxx
+ Purpose:        MARaBOU graphic utilities: browser to manage root macros
+ Description:    Implements class methods to browse &amp; execute root macros
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ Layout:
+
+/*
+<img src=gutils/TGMrbMacroBrowser.gif>
+*/
+
+ Generated Code:
+
+/*
+<img src=gutils/TGMrbMacroBrowserCode.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="TGMrbMacroList:TGMrbMacroList" href="src/TGMrbMacroList.cxx.html#TGMrbMacroList:TGMrbMacroList">TGMrbMacroList</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent, <a href="./TMrbLofMacros.html">TMrbLofMacros</a> * LofMacros, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height,
+														<a href="./TGMrbLayout.html">TGMrbLayout</a> * FrameGC, <a href="./TGMrbLayout.html">TGMrbLayout</a> * ButtonGC,
+														<a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ButtonOptions) :
+											<a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>(Parent, Width, Height, FrameOptions) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TGMrbMacroList.html">TGMrbMacroList</a>
+ Purpose:        A text button list containing one button per macro
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * Parent               -- parent window
+                 <a href="./TMrbLofMacros.html">TMrbLofMacros</a> * LofMacros       -- list of macros to be managed
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width                    -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height                   -- window height in pixels
+                 <a href="./TGMrbLayout.html">TGMrbLayout</a> * FrameGC           -- frame layout
+                 <a href="./TGMrbLayout.html">TGMrbLayout</a> * ButtonGC          -- button layout
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions             -- frame options
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ButtonOptions            -- button options
+ Results:
+ Exceptions:
+ Description:    Displays a list of buttons, one per macro.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbMacroList:ProcessMessage" href="src/TGMrbMacroList.cxx.html#TGMrbMacroList:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TGMrbMacroList.html#TGMrbMacroList:ProcessMessage">TGMrbMacroList::ProcessMessage</a>
+ Purpose:        Message handler
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./TGMrbMacroList.html">TGMrbMacroList</a>.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbMacroList.html">TGMrbMacroList</a> <a name="TGMrbMacroList:TGMrbMacroList" href="TGMrbMacroBrowser.h">TGMrbMacroList</a>(const <a href="./TGMrbMacroList.html">TGMrbMacroList</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroList:CloseWindow" href="TGMrbMacroBrowser.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroList:Help" href="TGMrbMacroBrowser.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbMacroList:Class" href="TGMrbMacroBrowser.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbMacroList:IsA" href="TGMrbMacroBrowser.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroList:ShowMembers" href="TGMrbMacroBrowser.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroList:Streamer" href="TGMrbMacroBrowser.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroList:StreamerNVirtual" href="TGMrbMacroBrowser.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbMacroList:~TGMrbMacroList" href="TGMrbMacroBrowser.h">~TGMrbMacroList</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:08 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

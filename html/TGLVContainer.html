@@ -1,0 +1,85 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGLVContainer</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGLVContainer:description">class description</a> - <a href="src/TGLVContainer.cxx.html">source file</a> - <a href="TGLVContainer_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGLVContainer" href="TGListView.h">TGLVContainer</a> : public <a href="http://root.cern.ch/root/html/TGContainer.html">TGContainer</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:ActivateItem">ActivateItem</a><!--PLAIN-->(<a href="./TGFrameElement.html">TGFrameElement</a>* el)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGLVContainer.html">TGLVContainer</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:TGLVContainer">TGLVContainer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* p, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h, <a href="ListOfTypes.html#UInt_t">UInt_t</a> options = kSunkenFrame, <a href="ListOfTypes.html#ULong_t">ULong_t</a> back = GetDefaultFrameBackground())
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGLVContainer.html">TGLVContainer</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:TGLVContainer">TGLVContainer</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGLVContainer.html">TGLVContainer</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:~TGLVContainer">~TGLVContainer</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:AddItem">AddItem</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGLVEntry.html">TGLVEntry</a>* item)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLVContainer:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGListView.html">TGListView</a>* <!--TAB--><!--BOLD--><a href="#TGLVContainer:GetListView">GetListView</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TGDimension.html">TGDimension</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:GetMaxItemSize">GetMaxItemSize</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:GetMaxSubnameWidth">GetMaxSubnameWidth</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> idx) const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:GetViewMode">GetViewMode</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGLVContainer:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:RemoveItemWithData">RemoveItemWithData</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* userData)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:SetColumns">SetColumns</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>* cpos, <a href="ListOfTypes.html#Int_t">Int_t</a>* jmode)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:SetListView">SetListView</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGListView.html">TGListView</a>* lv)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:SetViewMode">SetViewMode</a><!--PLAIN-->(EListViewMode ViewMode)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGLVContainer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGLVContainer:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGLVContainer:fItemLayout">fItemLayout</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fItemLayout">item layout hints</a></i>
+<!--TAB6-->       EListViewMode <!--TAB--><!--BOLD--><a name="TGLVContainer:fViewMode">fViewMode</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fViewMode">list view viewing mode</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TGLVContainer:fCpos">fCpos</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCpos">position of sub names</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a>* <!--TAB--><!--BOLD--><a name="TGLVContainer:fJmode">fJmode</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fJmode">alignment of sub names</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGListView.html">TGListView</a>* <!--TAB--><!--BOLD--><a name="TGLVContainer:fListView">fListView</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fListView">listview which contains this container</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGLVEntry.html">TGLVEntry</a>* <!--TAB--><!--BOLD--><a name="TGLVContainer:fLastActive">fLastActive</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLastActive">last active item</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TGFileContainer.html">TGFileContainer</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TGLVContainer:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:21 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

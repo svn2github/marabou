@@ -1,0 +1,193 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbWindowF</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbWindowF:description">class description</a> - <a href="src/TMrbWindowF.cxx.html">source file</a> - <a href="TMrbWindowF_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbWindowF" href="TMrbWdw.h">TMrbWindowF</a> : public <a href="./TMrbWindow.html">TMrbWindow</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->          <a href="./TMrbWindowF.html">TMrbWindowF</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:TMrbWindowF">TMrbWindowF</a><!--PLAIN-->()
+<!--TAB6-->          <a href="./TMrbWindowF.html">TMrbWindowF</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:TMrbWindowF">TMrbWindowF</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Double_t">Double_t</a> Xlower = 0., <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper = 0.)
+<!--TAB6-->          <a href="./TMrbWindowF.html">TMrbWindowF</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:TMrbWindowF">TMrbWindowF</a><!--PLAIN-->(const <a href="./TMrbWindowF.html">TMrbWindowF</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:~TMrbWindowF">~TMrbWindowF</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Clip">Clip</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Value)
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:GetLowerLimit">GetLowerLimit</a><!--PLAIN-->()
+<!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:GetUpperLimit">GetUpperLimit</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Initialize">Initialize</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbWindowF:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:IsInside">IsInside</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> X)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:PaintLine">PaintLine</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a>, <a href="ListOfTypes.html#Double_t">Double_t</a>, <a href="ListOfTypes.html#Double_t">Double_t</a>, <a href="ListOfTypes.html#Double_t">Double_t</a>)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* Option) const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlow, <a href="ListOfTypes.html#Double_t">Double_t</a> Xup)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:SetLowerLimit">SetLowerLimit</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlow)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:SetRange">SetRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:SetUpperLimit">SetUpperLimit</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> Xup)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbWindowF:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbWindowF:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMrbWindowF:fXlower">fXlower</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fXlower">current limits</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMrbWindowF:fXupper">fXupper</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fXupper"></a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMrbWindowF:fLowerInit">fLowerInit</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLowerInit">initial limits</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMrbWindowF:fUpperInit">fUpperInit</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fUpperInit"></a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMrbWindowF:fLowerRange">fLowerRange</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLowerRange">range</a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TMrbWindowF:fUpperRange">fUpperRange</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fUpperRange"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbWindowF:description">Class Description</a></h2>
+<pre>
+ Name:           utils/src/TMrbWindows.cxx
+ Purpose:        MARaBOU utilities: Provide user-defined variables and windows
+ Description:    Implements class methods to handle variables and 1-dim windows
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbWindowF:TMrbWindowF" href="src/TMrbWindowF.cxx.html#TMrbWindowF:TMrbWindowF">TMrbWindowF</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, <a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper) : <a href="./TMrbWindow.html">TMrbWindow</a>(Xlower, Xupper) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbWindowF.html">TMrbWindowF</a>
+ Purpose:        Define a <a href="ListOfTypes.html#float">float</a> window
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Name           -- name of window
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> * Xlower        -- initial lower limit
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> * Xupper        -- initial upper limit
+ Results:
+ Exceptions:
+ Description:    Creates a window with <a href="ListOfTypes.html#float">float</a> limits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:Print" href="src/TMrbWindowF.cxx.html#TMrbWindowF:Print">Print</a>(<a href="ListOfTypes.html#Option_t">Option_t</a> * Option) const <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindowF.html#TMrbWindowF:Print">TMrbWindowF::Print</a>
+ Purpose:        Print current window limits
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Option  -- option
+ Results:
+ Exceptions:
+ Description:    Outputs window limits to cout.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:SetLowerLimit" href="src/TMrbWindowF.cxx.html#TMrbWindowF:SetLowerLimit">SetLowerLimit</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindowF.html#TMrbWindowF:SetLowerLimit">TMrbWindowF::SetLowerLimit</a>
+ Purpose:        Set lower limit of this window
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> Xlower   -- lower limit
+ Results:
+ Exceptions:
+ Description:    Sets lower limit.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:SetUpperLimit" href="src/TMrbWindowF.cxx.html#TMrbWindowF:SetUpperLimit">SetUpperLimit</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Xupper) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindowF.html#TMrbWindowF:SetUpperLimit">TMrbWindowF::SetUpperLimit</a>
+ Purpose:        Set upper limit of this window
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper   -- upper limit
+ Results:
+ Exceptions:
+ Description:    Sets upper limit.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:Set" href="src/TMrbWindowF.cxx.html#TMrbWindowF:Set">Set</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindowF.html#TMrbWindowF:Set">TMrbWindowF::Set</a>
+ Purpose:        Set both limits of this window
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Xlower    -- limit
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Xupper    -- upper limit
+ Results:
+ Exceptions:
+ Description:    Sets both limits.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:PaintLine" href="src/TMrbWindowF.cxx.html#TMrbWindowF:PaintLine">PaintLine</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Ylower, 
+                            <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper, <a href="ListOfTypes.html#Double_t">Double_t</a> Yupper) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbWindowF.html#TMrbWindowF:PaintLine">TMrbWindowF::PaintLine</a>
+ Purpose:        Draw window with new coordinates
+ Arguments:      <a href="ListOfTypes.html#Double_t">Double_t</a> Xlower      -- lower edge
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Ylower      -- (discarded)
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper      -- upper edge
+                 <a href="ListOfTypes.html#Double_t">Double_t</a> Yupper      -- (discarded)
+ Results:
+ Exceptions:
+ Description:    Draws window with new coordinates.
+                 Values Ylower/Yupper will be set to 1/4 pad height.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbWindowF.html">TMrbWindowF</a> <a name="TMrbWindowF:TMrbWindowF" href="TMrbWdw.h">TMrbWindowF</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Double_t">Double_t</a> Xlower = 0., <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper = 0.)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbWindowF:Clip" href="TMrbWdw.h">Clip</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Value)
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbWindowF:GetLowerLimit" href="TMrbWdw.h">GetLowerLimit</a>()
+<!--INLINE FUNCTION--><!--TAB6-->           <a href="ListOfTypes.html#Double_t">Double_t</a> <a name="TMrbWindowF:GetUpperLimit" href="TMrbWdw.h">GetUpperLimit</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbWindowF:IsInside" href="TMrbWdw.h">IsInside</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> X)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:Initialize" href="TMrbWdw.h">Initialize</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:SetRange" href="TMrbWdw.h">SetRange</a>(<a href="ListOfTypes.html#Double_t">Double_t</a> Xlower, <a href="ListOfTypes.html#Double_t">Double_t</a> Xupper)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:Help" href="TMrbWdw.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbWindowF:Class" href="TMrbWdw.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbWindowF:IsA" href="TMrbWdw.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:ShowMembers" href="TMrbWdw.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:Streamer" href="TMrbWdw.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:StreamerNVirtual" href="TMrbWdw.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbWindowF.html">TMrbWindowF</a> <a name="TMrbWindowF:TMrbWindowF" href="TMrbWdw.h">TMrbWindowF</a>(const <a href="./TMrbWindowF.html">TMrbWindowF</a>&amp;)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbWindowF:~TMrbWindowF" href="TMrbWdw.h">~TMrbWindowF</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:58:01 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

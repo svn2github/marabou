@@ -1,0 +1,122 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TRootBrowser</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TRootBrowser:description">class description</a> - <a href="src/TRootBrowser.cxx.html">source file</a> - <a href="TRootBrowser_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TRootBrowser" href="TRootBrowser.h">TRootBrowser</a> : public <a href="http://root.cern.ch/root/html/TGMainFrame.html">TGMainFrame</a>, public <a href="http://root.cern.ch/root/html/TBrowserImp.html">TBrowserImp</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:Chdir">Chdir</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGListTreeItem.html">TGListTreeItem</a>* item)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:CreateBrowser">CreateBrowser</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:DisplayDirectory">DisplayDirectory</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:DisplayTotal">DisplayTotal</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> total, <a href="ListOfTypes.html#Int_t">Int_t</a> selected)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:IconBoxAction">IconBoxAction</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ListTreeHighlight">ListTreeHighlight</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGListTreeItem.html">TGListTreeItem</a>* item)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:SetSortMode">SetSortMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> new_mode)
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:SetViewMode">SetViewMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> new_mode, <a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TRootBrowser.html">TRootBrowser</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:TRootBrowser">TRootBrowser</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TRootBrowser.html">TRootBrowser</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:TRootBrowser">TRootBrowser</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TRootBrowser.html">TRootBrowser</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:TRootBrowser">TRootBrowser</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRootBrowser.html">TRootBrowser</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:~TRootBrowser">~TRootBrowser</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* name = "0")
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:AddToBox">AddToBox</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:AddToTree">AddToTree</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:BrowseObj">BrowseObj</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootBrowser:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ExecuteDefaultAction">ExecuteDefaultAction</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:Iconify">Iconify</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootBrowser:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> msg, <a href="ListOfTypes.html#Long_t">Long_t</a> parm1, <a href="ListOfTypes.html#Long_t">Long_t</a> parm2)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:Refresh">Refresh</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> force = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ResizeBrowser">ResizeBrowser</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:SetDefaults">SetDefaults</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* iconStyle = "0", const <a href="ListOfTypes.html#char">char</a>* sortBy = "0")
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:Show">Show</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ShowStatusBar">ShowStatusBar</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> show = kTRUE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:ShowToolBar">ShowToolBar</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> show = kTRUE)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootBrowser:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TRootBrowser:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGHorizontal3DLine.html">TGHorizontal3DLine</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fToolBarSep">fToolBarSep</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fToolBarSep"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGToolBar.html">TGToolBar</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fToolBar">fToolBar</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fToolBar"></a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGButton.html">TGButton</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fToolBarButton">fToolBarButton[7]</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fToolBarButton">same size as gToolBarData[]</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGFSComboBox.html">TGFSComboBox</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fFSComboBox">fFSComboBox</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fFSComboBox"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGStatusBar.html">TGStatusBar</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fStatusBar">fStatusBar</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fStatusBar"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fV1">fV1</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fV1"></a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fV2">fV2</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fV2"></a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fLbl1">fLbl1</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fLbl1"></a></i>
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fLbl2">fLbl2</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fLbl2"></a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fHf">fHf</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fHf"></a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fTreeHdr">fTreeHdr</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTreeHdr"></a></i>
+<!--TAB6-->        <a href="http://root.cern.ch/root/html/TGCompositeFrame.html">TGCompositeFrame</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fListHdr">fListHdr</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fListHdr"></a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGListView.html">TGListView</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fListView">fListView</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fListView"></a></i>
+<!--TAB6-->            TRootIconBox* <!--TAB--><!--BOLD--><a name="TRootBrowser:fIconBox">fIconBox</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fIconBox"></a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGCanvas.html">TGCanvas</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fTreeView">fTreeView</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTreeView"></a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGListTree.html">TGListTree</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fLt">fLt</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fLt"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fMenuBarLayout">fMenuBarLayout</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMenuBarLayout"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fMenuBarItemLayout">fMenuBarItemLayout</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMenuBarItemLayout"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fMenuBarHelpLayout">fMenuBarHelpLayout</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMenuBarHelpLayout"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fComboLayout">fComboLayout</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fComboLayout"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fBarLayout">fBarLayout</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fBarLayout"></a></i>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TGMenuBar.html">TGMenuBar</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fMenuBar">fMenuBar</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fMenuBar"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fFileMenu">fFileMenu</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fFileMenu"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fViewMenu">fViewMenu</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fViewMenu"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fOptionMenu">fOptionMenu</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fOptionMenu"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fHelpMenu">fHelpMenu</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fHelpMenu"></a></i>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TGPopupMenu.html">TGPopupMenu</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fSortMenu">fSortMenu</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSortMenu"></a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TList.html">TList</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fWidgets">fWidgets</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fWidgets"></a></i>
+<!--TAB6-->                     <a href="ListOfTypes.html#char">char</a> <!--TAB--><!--BOLD--><a name="TRootBrowser:fCurrentDir">fCurrentDir[1024]</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fCurrentDir"></a></i>
+<!--TAB6-->                 <a href="ListOfTypes.html#Cursor_t">Cursor_t</a> <!--TAB--><!--BOLD--><a name="TRootBrowser:fWaitCursor">fWaitCursor</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fWaitCursor">busy cursor</a></i>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TGListTreeItem.html">TGListTreeItem</a>* <!--TAB--><!--BOLD--><a name="TRootBrowser:fListLevel">fListLevel</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fListLevel">current TGListTree level</a></i>
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TRootBrowser:fTreeLock">fTreeLock</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTreeLock">true when we want to lock TGListTree</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TRootBrowser:fViewMode">fViewMode</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fViewMode">current IconBox view mode</a></i>
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TRootBrowser:fSortMode">fSortMode</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSortMode">current IconBox sort mode</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TRootBrowser:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:14 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

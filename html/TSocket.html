@@ -1,0 +1,113 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TSocket</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TSocket:description">class description</a> - <a href="src/TSocket.cxx.html">source file</a> - <a href="TSocket_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TSocket" href="TSocket.h">TSocket</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Option_t">Option_t</a>* <!--TAB--><!--BOLD--><a href="#TSocket:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>&amp;)
+<!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:SetDescriptor">SetDescriptor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> desc)
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a> address, const <a href="ListOfTypes.html#char">char</a>* service, <a href="ListOfTypes.html#Int_t">Int_t</a> tcpwindowsize = -1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a> address, <a href="ListOfTypes.html#Int_t">Int_t</a> port, <a href="ListOfTypes.html#Int_t">Int_t</a> tcpwindowsize = -1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* host, const <a href="ListOfTypes.html#char">char</a>* service, <a href="ListOfTypes.html#Int_t">Int_t</a> tcpwindowsize = -1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* host, <a href="ListOfTypes.html#Int_t">Int_t</a> port, <a href="ListOfTypes.html#Int_t">Int_t</a> tcpwindowsize = -1)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> descriptor)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a> <!--TAB--><!--BOLD--><a href="#TSocket:TSocket">TSocket</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>&amp; s)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:~TSocket">~TSocket</a><!--PLAIN-->()
+<!--TAB6-->            static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSocket:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:Close">Close</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* opt)
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetBytesRecv">GetBytesRecv</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetBytesSent">GetBytesSent</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetDescriptor">GetDescriptor</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetErrorCode">GetErrorCode</a><!--PLAIN-->() const
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetInetAddress">GetInetAddress</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetLocalInetAddress">GetLocalInetAddress</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetLocalPort">GetLocalPort</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetOption">GetOption</a><!--PLAIN-->(ESockOptions opt, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; val)
+<!--TAB6-->                     <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetPort">GetPort</a><!--PLAIN-->() const
+<!--TAB6-->               const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TSocket:GetService">GetService</a><!--PLAIN-->() const
+<!--TAB6-->             static <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetSocketBytesRecv">GetSocketBytesRecv</a><!--PLAIN-->()
+<!--TAB6-->             static <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:GetSocketBytesSent">GetSocketBytesSent</a><!--PLAIN-->()
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TSocket:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:IsValid">IsValid</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Recv">Recv</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMessage.html">TMessage</a>*&amp; mess)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Recv">Recv</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; status, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; kind)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Recv">Recv</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* mess, <a href="ListOfTypes.html#Int_t">Int_t</a> max)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Recv">Recv</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* mess, <a href="ListOfTypes.html#Int_t">Int_t</a> max, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; kind)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:RecvRaw">RecvRaw</a><!--PLAIN-->(<a href="ListOfTypes.html#void">void</a>* buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> length, ESendRecvOptions opt = kDefault)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Send">Send</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TMessage.html">TMessage</a>&amp; mess)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Send">Send</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> kind)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Send">Send</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> status, <a href="ListOfTypes.html#Int_t">Int_t</a> kind)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:Send">Send</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* mess, <a href="ListOfTypes.html#Int_t">Int_t</a> kind = kMESS_STRING)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:SendObject">SendObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj, <a href="ListOfTypes.html#Int_t">Int_t</a> kind = kMESS_OBJECT)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:SendRaw">SendRaw</a><!--PLAIN-->(const <a href="ListOfTypes.html#void">void</a>* buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> length, ESendRecvOptions opt = kDefault)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TSocket:SetOption">SetOption</a><!--PLAIN-->(ESockOptions opt, <a href="ListOfTypes.html#Int_t">Int_t</a> val)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TSocket:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TSocket:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TSocket:fBytesSent">fBytesSent</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fBytesSent">total bytes sent using this socket</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TSocket:fBytesRecv">fBytesRecv</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fBytesRecv">total bytes received over this socket</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TSocket:fgBytesSent">fgBytesSent</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgBytesSent">total bytes sent by all socket objects</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TSocket:fgBytesRecv">fgBytesRecv</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgBytesRecv">total bytes received by all socket objects</a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TSocket:fSocket">fSocket</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fSocket">socket descriptor</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TSocket:fService">fService</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fService">name of service (matches remote port #)</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a> <!--TAB--><!--BOLD--><a name="TSocket:fAddress">fAddress</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fAddress">remote internet address and port #</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TInetAddress.html">TInetAddress</a> <!--TAB--><!--BOLD--><a name="TSocket:fLocalAddress">fLocalAddress</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLocalAddress">local internet address and port #</a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/TPSocket.html">TPSocket</a>, <a href="http://root.cern.ch/root/html/TServerSocket.html">TServerSocket</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TSocket:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:24 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGaxis</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGaxis:description">class description</a> - <a href="src/TGaxis.cxx.html">source file</a> - <a href="TGaxis_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGaxis" href="TGaxis.h">TGaxis</a> : public <a href="http://root.cern.ch/root/html/TLine.html">TLine</a>, public <a href="http://root.cern.ch/root/html/TAttText.html">TAttText</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGaxis.html">TGaxis</a> <!--TAB--><!--BOLD--><a href="#TGaxis:TGaxis">TGaxis</a><!--PLAIN-->()
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGaxis.html">TGaxis</a> <!--TAB--><!--BOLD--><a href="#TGaxis:TGaxis">TGaxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, <a href="ListOfTypes.html#Double_t">Double_t</a> wmin, <a href="ListOfTypes.html#Double_t">Double_t</a> wmax, <a href="ListOfTypes.html#Int_t">Int_t</a> ndiv = 510, <a href="ListOfTypes.html#Option_t">Option_t</a>* chopt, <a href="ListOfTypes.html#Double_t">Double_t</a> gridlength = 0)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGaxis.html">TGaxis</a> <!--TAB--><!--BOLD--><a href="#TGaxis:TGaxis">TGaxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, const <a href="ListOfTypes.html#char">char</a>* funcname, <a href="ListOfTypes.html#Int_t">Int_t</a> ndiv = 510, <a href="ListOfTypes.html#Option_t">Option_t</a>* chopt, <a href="ListOfTypes.html#Double_t">Double_t</a> gridlength = 0)
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGaxis.html">TGaxis</a> <!--TAB--><!--BOLD--><a href="#TGaxis:TGaxis">TGaxis</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGaxis.html">TGaxis</a>&amp;)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:~TGaxis">~TGaxis</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:AdjustBinSize">AdjustBinSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> A1, <a href="ListOfTypes.html#Double_t">Double_t</a> A2, <a href="ListOfTypes.html#Int_t">Int_t</a> nold, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; BinLow, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; BinHigh, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; nbins, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; BinWidth)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:CenterTitle">CenterTitle</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> center = kTRUE)
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGaxis:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:DrawAxis">DrawAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, <a href="ListOfTypes.html#Double_t">Double_t</a> wmin, <a href="ListOfTypes.html#Double_t">Double_t</a> wmax, <a href="ListOfTypes.html#Int_t">Int_t</a> ndiv = 510, <a href="ListOfTypes.html#Option_t">Option_t</a>* chopt, <a href="ListOfTypes.html#Double_t">Double_t</a> gridlength = 0)
+<!--TAB6-->                     <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <!--TAB--><!--BOLD--><a href="#TGaxis:GetFunction">GetFunction</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetGridLength">GetGridLength</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetLabelColor">GetLabelColor</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetLabelFont">GetLabelFont</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetLabelOffset">GetLabelOffset</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetLabelSize">GetLabelSize</a><!--PLAIN-->() const
+<!--TAB6-->             static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetMaxDigits">GetMaxDigits</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGaxis:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetNdiv">GetNdiv</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGaxis:GetOption">GetOption</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetTickSize">GetTickSize</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TGaxis:GetTitle">GetTitle</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetTitleOffset">GetTitleOffset</a><!--PLAIN-->() const
+<!--TAB6-->                  <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetTitleSize">GetTitleSize</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetWmax">GetWmax</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TGaxis:GetWmin">GetWmin</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:ImportAxisAttributes">ImportAxisAttributes</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>* axis)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGaxis:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:LabelsLimits">LabelsLimits</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* label, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; first, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; last)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* chopt)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:PaintAxis">PaintAxis</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> xmin, <a href="ListOfTypes.html#Double_t">Double_t</a> ymin, <a href="ListOfTypes.html#Double_t">Double_t</a> xmax, <a href="ListOfTypes.html#Double_t">Double_t</a> ymax, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; wmin, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; wmax, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; ndiv, <a href="ListOfTypes.html#Option_t">Option_t</a>* chopt, <a href="ListOfTypes.html#Double_t">Double_t</a> gridlength = 0)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:Rotate">Rotate</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> X, <a href="ListOfTypes.html#Double_t">Double_t</a> Y, <a href="ListOfTypes.html#Double_t">Double_t</a> CFI, <a href="ListOfTypes.html#Double_t">Double_t</a> SFI, <a href="ListOfTypes.html#Double_t">Double_t</a> XT, <a href="ListOfTypes.html#Double_t">Double_t</a> YT, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; U, <a href="ListOfTypes.html#Double_t">Double_t</a>&amp; V)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SavePrimitive">SavePrimitive</a><!--PLAIN-->(ofstream&amp; out, <a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetFunction">SetFunction</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* funcname)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetGridLength">SetGridLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> gridlength)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetLabelColor">SetLabelColor</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> labelcolor)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetLabelFont">SetLabelFont</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> labelfont)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetLabelOffset">SetLabelOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> labeloffset)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetLabelSize">SetLabelSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> labelsize)
+<!--TAB6-->              static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetMaxDigits">SetMaxDigits</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> maxd = 5)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetNoExponent">SetNoExponent</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> noExponent = kTRUE)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetOption">SetOption</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetTickSize">SetTickSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> ticksize)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetTimeFormat">SetTimeFormat</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* tformat)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetTitle">SetTitle</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetTitleOffset">SetTitleOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> titleoffset = 1)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetTitleSize">SetTitleSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Float_t">Float_t</a> titlesize)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetWmax">SetWmax</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> wmax)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:SetWmin">SetWmin</a><!--PLAIN-->(<a href="ListOfTypes.html#Double_t">Double_t</a> wmin)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGaxis:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGaxis:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fWmin">fWmin</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fWmin">Lowest value on the axis</a></i>
+<!--TAB6-->          <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fWmax">fWmax</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fWmax">Highest value on the axis</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fGridLength">fGridLength</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fGridLength">Length of the grid in NDC</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fTickSize">fTickSize</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fTickSize">Size of primary tick mark in NDC</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fLabelOffset">fLabelOffset</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fLabelOffset">Offset of label wrt axis</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fLabelSize">fLabelSize</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLabelSize">Size of labels in NDC</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fTitleOffset">fTitleOffset</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTitleOffset">Offset of title wrt axis</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Float_t">Float_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fTitleSize">fTitleSize</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTitleSize">Size of title in NDC</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fNdiv">fNdiv</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNdiv">Number of divisions</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fLabelColor">fLabelColor</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fLabelColor">Color for labels</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fLabelFont">fLabelFont</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLabelFont">Font for labels</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGaxis:fChopt">fChopt</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fChopt">Axis options</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGaxis:fName">fName</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fName">axis name</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGaxis:fTitle">fTitle</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTitle">axis title</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGaxis:fTimeFormat">fTimeFormat</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTimeFormat">Time format, ex: 09/12/99 12:34:00</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TGaxis:fFunctionName">fFunctionName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFunctionName">name of mapping function pointed by fFunction</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <!--TAB--><!--BOLD--><a name="TGaxis:fFunction">fFunction</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fFunction">!Pointer to function computing axis values</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TAxis.html">TAxis</a>* <!--TAB--><!--BOLD--><a name="TGaxis:fAxis">fAxis</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fAxis">!pointer to original TAxis axis (if any)</a></i>
+<!--TAB6-->      static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TGaxis:fgMaxDigits">fgMaxDigits</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fgMaxDigits">!Number of digits above which the 10&gt;N notation is used</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGaxis:kCenterTitle">kCenterTitle</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kCenterTitle"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGaxis:kRotateTitle">kRotateTitle</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kRotateTitle"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TGaxis:kNoExponent">kNoExponent</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kNoExponent"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGaxis:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:55:23 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,90 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TGMrbHelpWindow</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TGMrbHelpWindow:description">class description</a> - <a href="src/TGMrbHelpWindow.cxx.html">source file</a> - <a href="TGMrbHelpWindow_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TGMrbHelpWindow" href="TGMrbHelpWindow.h">TGMrbHelpWindow</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./TGMrbHelpWindow.html">TGMrbHelpWindow</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:TGMrbHelpWindow">TGMrbHelpWindow</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* main, const <a href="ListOfTypes.html#char">char</a>* title, const <a href="ListOfTypes.html#char">char</a>* helpText, <a href="ListOfTypes.html#UInt_t">UInt_t</a> w, <a href="ListOfTypes.html#UInt_t">UInt_t</a> h)
+<!--TAB6-->      <a href="./TGMrbHelpWindow.html">TGMrbHelpWindow</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:TGMrbHelpWindow">TGMrbHelpWindow</a><!--PLAIN-->(const <a href="./TGMrbHelpWindow.html">TGMrbHelpWindow</a>&amp;)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:~TGMrbHelpWindow">~TGMrbHelpWindow</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbHelpWindow:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TGMrbHelpWindow:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGTextView.html">TGTextView</a>* <!--TAB--><!--BOLD--><a name="TGMrbHelpWindow:fView">fView</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fView">text view</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* <!--TAB--><!--BOLD--><a name="TGMrbHelpWindow:fL1">fL1</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fL1">layout of TGTextView</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TGMrbHelpWindow:description">Class Description</a></h2>
+<hr>
+<!--FUNCTION-->  <a name="TGMrbHelpWindow:TGMrbHelpWindow" href="src/TGMrbHelpWindow.cxx.html#TGMrbHelpWindow:TGMrbHelpWindow">TGMrbHelpWindow</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> *main,
+    const <a href="ListOfTypes.html#char">char</a> *title, const <a href="ListOfTypes.html#char">char</a> *helpText, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height) :
+    <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="http://root.cern.ch/root/html/TGClient.html">gClient</a>-&gt;<a href="http://root.cern.ch/root/html/TGClient.html#TGClient:GetRoot">GetRoot</a>(), main, width, height)
+<br>
+<hr>
+<!--FUNCTION-->  <a name="TGMrbHelpWindow:~TGMrbHelpWindow" href="src/TGMrbHelpWindow.cxx.html#TGMrbHelpWindow:~TGMrbHelpWindow">~TGMrbHelpWindow</a>()
+<br>
+<pre> Delete help text dialog.
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TGMrbHelpWindow:CloseWindow" href="src/TGMrbHelpWindow.cxx.html#TGMrbHelpWindow:CloseWindow">CloseWindow</a>()
+<br>
+<pre> Called when closed via window manager action.
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbHelpWindow:Class" href="TGMrbHelpWindow.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbHelpWindow:IsA" href="TGMrbHelpWindow.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbHelpWindow:ShowMembers" href="TGMrbHelpWindow.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbHelpWindow:Streamer" href="TGMrbHelpWindow.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="ListOfTypes.html#void">void</a> <a name="TGMrbHelpWindow:StreamerNVirtual" href="TGMrbHelpWindow.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbHelpWindow.html">TGMrbHelpWindow</a> <a name="TGMrbHelpWindow:TGMrbHelpWindow" href="TGMrbHelpWindow.h">TGMrbHelpWindow</a>(const <a href="./TGMrbHelpWindow.html">TGMrbHelpWindow</a>&amp;)
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:27 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,70 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TRootGuiFactory</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TRootGuiFactory:description">class description</a> - <a href="src/TRootGuiFactory.cxx.html">source file</a> - <a href="TRootGuiFactory_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TRootGuiFactory" href="TRootGuiFactory.h">TRootGuiFactory</a> : public <a href="http://root.cern.ch/root/html/TGuiFactory.html">TGuiFactory</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TRootGuiFactory.html">TRootGuiFactory</a> <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:TRootGuiFactory">TRootGuiFactory</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "Root", const <a href="ListOfTypes.html#char">char</a>* title = "ROOT GUI Factory")
+<!--TAB6-->               <a href="http://root.cern.ch/root/html/TRootGuiFactory.html">TRootGuiFactory</a> <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:TRootGuiFactory">TRootGuiFactory</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRootGuiFactory.html">TRootGuiFactory</a>&amp;)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:~TRootGuiFactory">~TRootGuiFactory</a><!--PLAIN-->()
+<!--TAB6-->                static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TApplicationImp.html">TApplicationImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateApplicationImp">CreateApplicationImp</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* classname, <a href="ListOfTypes.html#int">int</a>* argc, <a href="ListOfTypes.html#char">char</a>** argv)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TBrowserImp.html">TBrowserImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateBrowserImp">CreateBrowserImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TBrowserImp.html">TBrowserImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateBrowserImp">CreateBrowserImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TCanvasImp.html">TCanvasImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateCanvasImp">CreateCanvasImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* c, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->           virtual <a href="http://root.cern.ch/root/html/TCanvasImp.html">TCanvasImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateCanvasImp">CreateCanvasImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCanvas.html">TCanvas</a>* c, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y, <a href="ListOfTypes.html#UInt_t">UInt_t</a> width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> height)
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TContextMenuImp.html">TContextMenuImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateContextMenuImp">CreateContextMenuImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TContextMenu.html">TContextMenu</a>* c, const <a href="ListOfTypes.html#char">char</a>* name, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TControlBarImp.html">TControlBarImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateControlBarImp">CreateControlBarImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TControlBar.html">TControlBar</a>* c, const <a href="ListOfTypes.html#char">char</a>* title)
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TControlBarImp.html">TControlBarImp</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:CreateControlBarImp">CreateControlBarImp</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TControlBar.html">TControlBar</a>* c, const <a href="ListOfTypes.html#char">char</a>* title, <a href="ListOfTypes.html#Int_t">Int_t</a> x, <a href="ListOfTypes.html#Int_t">Int_t</a> y)
+<!--TAB6-->               virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                  virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                          <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TRootGuiFactory:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TRootGuiFactory:Data Members">Data Members</a></h3>
+<pre>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TRootGuiFactory:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:14 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

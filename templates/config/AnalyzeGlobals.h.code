@@ -1,0 +1,80 @@
+//___________________________________________________________[C++ HEADER FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%ANALYZE_FILE%%Globals.h
+// Purpose:        Header file to define global pointers
+// Description:    %%ANALYZE_TITLE%%
+//
+//                 This file contains most of user-defined pointers
+//                 such as pointers to events, histograms, windows etc.
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TH1.h"
+#include "TH2.h"
+
+#include "TMrbVar.h"
+#include "TMrbWdw.h"
+#include "TMrbVarWdwCommon.h"
+
+//_______________________________________________________________[GLOBAL DEFS]
+//////////////////////////////////////////////////////////////////////////////
+// Purpose:        Define pointers to event classes
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+static TUsrEvt$evtNameUC * g$evtNameUC = NULL;	// event $evtNameLC, trigger $trigNo
+%%EndOfCode%%
+%%EVT_DEFINE_POINTERS%%
+
+//_______________________________________________________________[GLOBAL DEFS]
+//////////////////////////////////////////////////////////////////////////////
+// Purpose:        Define global instances of user's variables/windows
+// Comment:        TMrbVariableX and TMrbVarArrayX are defined as
+//                 STATIC objects so they can be addressed DIRECTLY
+//                 TMrbWindowX objects are defined by pointers to the heap.
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+static $className $varName("$varName", $varInit);
+%%EndOfCode%%
+%%VAR_CLASS_INSTANCE%%
+
+%%BeginOfCode%%
+static $className $varName("$varName", $varSize, $varInit);
+%%EndOfCode%%
+%%VARARR_CLASS_INSTANCE%%
+
+%%BeginOfCode%%
+static $className * $varName = NULL;
+%%EndOfCode%%
+%%WDW_DEFINE_POINTERS%%
+
+//_______________________________________________________________[GLOBAL DEFS]
+//////////////////////////////////////////////////////////////////////////////
+// Purpose:        Define pointers to histograms for (sub)events
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%SN%static TH1F * h$paramNameUC = NULL; 	// $sevtNameLC.$paramNameLC
+%XN%static TH1F * h$paramNameUC[$indexRange]; 	// $sevtNameLC.$paramNameLC
+%SP%static TH1F * h$prefix$paramNameUC = NULL; 	// $evtNameLC: $sevtNameLC.$paramNameLC
+%XP%static TH1F * h$prefix$paramNameUC[$indexRange]; 	// $evtNameLC: $sevtNameLC.$paramNameLC
+%AN%static TH1F * h$paramNameUC = NULL; 	// $sevtNameLC.$paramNameLC
+%ANX%static TH1F * h$sevtNameUCArray[$nofParams]; 	// array of ptrs to hists for subevent $sevtNameLC
+%AP%static TH1F * h$prefix$paramNameUC = NULL; 	// $evtNameLC: $sevtNameLC.$paramNameLC
+%APX%static TH1F * h$sevtNameUCArray[$nofParams]; 	// $evtNameLC: array of ptrs to hists for subevent $sevtNameLC
+%UDH%
+%UDH%//_______________________________________________________________[GLOBAL DEFS]
+%UDH%//////////////////////////////////////////////////////////////////////////////
+%UDH%// Purpose:        Define pointers to histograms booked by user
+%UDH%//////////////////////////////////////////////////////////////////////////////
+%UDH%
+%UDBH%static $hType * $hName = NULL;
+%%EndOfCode%%
+%%HISTO_DEFINE_POINTERS%%
+

@@ -1,0 +1,326 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFInstrumentPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFInstrumentPanel:description">class description</a> - <a href="src/DGFInstrumentPanel.cxx.html">source file</a> - <a href="DGFInstrumentPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFInstrumentPanel" href="DGFInstrumentPanel.h">DGFInstrumentPanel</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:CopyModuleSettings">CopyModuleSettings</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:InitializeValues">InitializeValues</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kFALSE)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:MoveFocus">MoveFocus</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:ReadDSP">ReadDSP</a><!--PLAIN-->(<a href="./DGFModule.html">DGFModule</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:UpdateValue">UpdateValue</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleId, <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:WriteDSP">WriteDSP</a><!--PLAIN-->(<a href="./DGFModule.html">DGFModule</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:DGFInstrumentPanel">DGFInstrumentPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
+<!--TAB6-->      <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:DGFInstrumentPanel">DGFInstrumentPanel</a><!--PLAIN-->(const <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a>&amp; f)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:~DGFInstrumentPanel">~DGFInstrumentPanel</a><!--PLAIN-->()
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFInstrumentPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFInstrumentPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fHeap">fHeap</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fSelectFrame">fSelectFrame</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fSelectFrame">select</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelCombo.html">TGMrbLabelCombo</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fSelectModule">fSelectModule</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSelectModule">module</a></i>
+<!--TAB6-->      <a href="./TGMrbRadioButtonList.html">TGMrbRadioButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fSelectChannel">fSelectChannel</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fSelectChannel">channel</a></i>
+<!--TAB6-->         <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fInstrFrame">fInstrFrame</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fInstrFrame">horiz frame containing 2 rows</a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fLeftFrame">fLeftFrame</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fLeftFrame">left row</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fFilterFrame">fFilterFrame</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fFilterFrame">filter</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fEnergyFilterFrame">fEnergyFilterFrame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fEnergyFilterFrame">energy</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fEnergyPeakTimeEntry">fEnergyPeakTimeEntry</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fEnergyPeakTimeEntry">peak time</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fEnergyGapTimeEntry">fEnergyGapTimeEntry</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fEnergyGapTimeEntry">gap time</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fEnergyAveragingEntry">fEnergyAveragingEntry</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fEnergyAveragingEntry">average</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fEnergyTauEntry">fEnergyTauEntry</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fEnergyTauEntry">tau value</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTriggerFilterFrame">fTriggerFilterFrame</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fTriggerFilterFrame">trigger</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTriggerPeakTimeEntry">fTriggerPeakTimeEntry</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fTriggerPeakTimeEntry">peak time</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTriggerGapTimeEntry">fTriggerGapTimeEntry</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTriggerGapTimeEntry">gap time</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTriggerThresholdEntry">fTriggerThresholdEntry</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTriggerThresholdEntry">threshold</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTraceFrame">fTraceFrame</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fTraceFrame">trace</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTraceLengthDelayFrame">fTraceLengthDelayFrame</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fTraceLengthDelayFrame">length &amp; delay</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTraceLengthEntry">fTraceLengthEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fTraceLengthEntry">length</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTraceDelayEntry">fTraceDelayEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fTraceDelayEntry">delay</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTracePSAFrame">fTracePSAFrame</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTracePSAFrame">psa</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTracePSAOffsetEntry">fTracePSAOffsetEntry</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTracePSAOffsetEntry">offset</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fTracePSALengthEntry">fTracePSALengthEntry</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTracePSALengthEntry">length</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fStatRegFrame">fStatRegFrame</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fStatRegFrame">status regs</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fStatRegEntryFrame">fStatRegEntryFrame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fStatRegEntryFrame"></a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fStatRegModCSRAEntry">fStatRegModCSRAEntry</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStatRegModCSRAEntry">module csra</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fModCSRAEditButton">fModCSRAEditButton</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fModCSRAEditButton"></a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fStatRegModICSREntry">fStatRegModICSREntry</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStatRegModICSREntry">switchbus</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fModICSREditButton">fModICSREditButton</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fModICSREditButton"></a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fStatRegChanCSRAEntry">fStatRegChanCSRAEntry</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fStatRegChanCSRAEntry">channel csra</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fChanCSRAEditButton">fChanCSRAEditButton</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fChanCSRAEditButton"></a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fStatCoincPatternEntry">fStatCoincPatternEntry</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fStatCoincPatternEntry">coinc pattern</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fCoincPatternEditButton">fCoincPatternEditButton</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fCoincPatternEditButton"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGVerticalFrame.html">TGVerticalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fRightFrame">fRightFrame</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fRightFrame">right row</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACFrame">fDACFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fDACFrame">DAC</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACGainFrame">fDACGainFrame</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fDACGainFrame">gain</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACGainEntry">fDACGainEntry</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fDACGainEntry">DAC</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACGainEntryButton">fDACGainEntryButton</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fDACGainEntryButton"></a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACVVEntry">fDACVVEntry</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fDACVVEntry">V/V</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACVVEntryButton">fDACVVEntryButton</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fDACVVEntryButton"></a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACOffsetFrame">fDACOffsetFrame</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fDACOffsetFrame">offset</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACOffsetEntry">fDACOffsetEntry</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fDACOffsetEntry">DAC</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACOffsetEntryButton">fDACOffsetEntryButton</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDACOffsetEntryButton"></a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACVoltEntry">fDACVoltEntry</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fDACVoltEntry">Volt</a></i>
+<!--TAB6-->                <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACVoltEntryButton">fDACVoltEntryButton</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fDACVoltEntryButton"></a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fCFDFrame">fCFDFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fCFDFrame">CFD</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fCFDFractionFrame">fCFDFractionFrame</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCFDFractionFrame">fraction</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fCFDFractionEntry">fCFDFractionEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCFDFractionEntry"></a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCAFrame">fMCAFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fMCAFrame">MCA</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCAEnergyFrame">fMCAEnergyFrame</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMCAEnergyFrame">energy</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCAEnergyEntry">fMCAEnergyEntry</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMCAEnergyEntry">energy</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCAEnergyBinsEntry">fMCAEnergyBinsEntry</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMCAEnergyBinsEntry">combine bins</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCABaselineFrame">fMCABaselineFrame</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fMCABaselineFrame">baseline</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCABaselineDCEntry">fMCABaselineDCEntry</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fMCABaselineDCEntry">DC</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fMCABaselineBinsEntry">fMCABaselineBinsEntry</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fMCABaselineBinsEntry">combine bins</a></i>
+<!--TAB6-->      <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fModuleButtonFrame">fModuleButtonFrame</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fModuleButtonFrame">buttons</a></i>
+<!--TAB6-->                   <a href="http://root.cern.ch/root/html/TGLabel.html">TGLabel</a>* <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDummyLabel">fDummyLabel</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fDummyLabel"></a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fLofModuleKeys">fLofModuleKeys</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofModuleKeys">! ... key list</a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fLofChannels">fLofChannels</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLofChannels">! channel numbers</a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fInstrChnActions">fInstrChnActions</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fInstrChnActions">list of actions</a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fInstrModuleActions">fInstrModuleActions</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fInstrModuleActions"></a></i>
+<!--TAB6-->             <a href="./TGMrbFocusList.html">TGMrbFocusList</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fFocusList">fFocusList</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fFocusList"></a></i>
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACGainEntryActive">fDACGainEntryActive</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fDACGainEntryActive">kTRUE if dac input, kFALSE if V/V input</a></i>
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fDACOffsetEntryActive">fDACOffsetEntryActive</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fDACOffsetEntryActive">kTRUE if dac input, kFALSE if Volt input</a></i>
+<!--TAB6-->        <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrSelectModule">kDGFInstrSelectModule</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kDGFInstrSelectModule"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrEnergyPeakTimeEntry">kDGFInstrEnergyPeakTimeEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFInstrEnergyPeakTimeEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrEnergyGapTimeEntry">kDGFInstrEnergyGapTimeEntry</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFInstrEnergyGapTimeEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrEnergyAveragingEntry">kDGFInstrEnergyAveragingEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFInstrEnergyAveragingEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrEnergyTauEntry">kDGFInstrEnergyTauEntry</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kDGFInstrEnergyTauEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTriggerPeakTimeEntry">kDGFInstrTriggerPeakTimeEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFInstrTriggerPeakTimeEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTriggerGapTimeEntry">kDGFInstrTriggerGapTimeEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFInstrTriggerGapTimeEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTriggerThresholdEntry">kDGFInstrTriggerThresholdEntry</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFInstrTriggerThresholdEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTraceLengthEntry">kDGFInstrTraceLengthEntry</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kDGFInstrTraceLengthEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTraceDelayEntry">kDGFInstrTraceDelayEntry</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kDGFInstrTraceDelayEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTracePSAOffsetEntry">kDGFInstrTracePSAOffsetEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFInstrTracePSAOffsetEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrTracePSALengthEntry">kDGFInstrTracePSALengthEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFInstrTracePSALengthEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatRegModCSRAEntry">kDGFInstrStatRegModCSRAEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFInstrStatRegModCSRAEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatRegModCSRAEditButton">kDGFInstrStatRegModCSRAEditButton</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFInstrStatRegModCSRAEditButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatRegModICSREntry">kDGFInstrStatRegModICSREntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFInstrStatRegModICSREntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatRegModICSREditButton">kDGFInstrStatRegModICSREditButton</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFInstrStatRegModICSREditButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatRegChanCSRAEntry">kDGFInstrStatRegChanCSRAEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFInstrStatRegChanCSRAEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatRegChanCSRAEditButton">kDGFInstrStatRegChanCSRAEditButton</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kDGFInstrStatRegChanCSRAEditButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatCoincPatternEntry">kDGFInstrStatCoincPatternEntry</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFInstrStatCoincPatternEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrStatCoincPatternEditButton">kDGFInstrStatCoincPatternEditButton</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFInstrStatCoincPatternEditButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACGainEntry">kDGFInstrDACGainEntry</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kDGFInstrDACGainEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACGainEntryButton">kDGFInstrDACGainEntryButton</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFInstrDACGainEntryButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACVVEntry">kDGFInstrDACVVEntry</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kDGFInstrDACVVEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACVVEntryButton">kDGFInstrDACVVEntryButton</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kDGFInstrDACVVEntryButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACOffsetEntry">kDGFInstrDACOffsetEntry</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kDGFInstrDACOffsetEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACOffsetEntryButton">kDGFInstrDACOffsetEntryButton</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFInstrDACOffsetEntryButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACVoltEntry">kDGFInstrDACVoltEntry</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kDGFInstrDACVoltEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrDACVoltEntryButton">kDGFInstrDACVoltEntryButton</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFInstrDACVoltEntryButton"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrCFDFractionEntry">kDGFInstrCFDFractionEntry</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kDGFInstrCFDFractionEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrMCAEnergyEntry">kDGFInstrMCAEnergyEntry</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kDGFInstrMCAEnergyEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrMCAEnergyBinsEntry">kDGFInstrMCAEnergyBinsEntry</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFInstrMCAEnergyBinsEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrMCABaselineDCEntry">kDGFInstrMCABaselineDCEntry</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFInstrMCABaselineDCEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrMCABaselineBinsEntry">kDGFInstrMCABaselineBinsEntry</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFInstrMCABaselineBinsEntry"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrButtonApplyChanges">kDGFInstrButtonApplyChanges</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFInstrButtonApplyChanges"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrButtonCopy">kDGFInstrButtonCopy</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kDGFInstrButtonCopy"></a></i>
+<!--TAB6-->      static const <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:EDGFInstrCmdId">DGFInstrumentPanel::EDGFInstrCmdId</a> <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kDGFInstrButtonClose">kDGFInstrButtonClose</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kDGFInstrButtonClose"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->                          <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kVFrameWidth">kVFrameWidth</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:kVFrameWidth"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kVFrameHeight">kVFrameHeight</a><!--PLAIN-->                        <!--TAB--><i><a name="Title:kVFrameHeight"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                             <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->                          <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                            <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                          static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFInstrumentPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->                         <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFInstrumentPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Instrument Panel
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFInstrumentPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFInstrumentPanel:DGFInstrumentPanel" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:DGFInstrumentPanel">DGFInstrumentPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options)
+														: <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, MainFrame, Width, Height, Options) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a>
+ Purpose:        DGF Viewer: Instrument Panel
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame -- main frame
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options       -- options
+ Results:
+ Exceptions:
+ Description:    Implements DGF Viewer's Instrument Panel
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:ProcessMessage" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:ProcessMessage">DGFInstrumentPanel::ProcessMessage</a>
+ Purpose:        Message handler for the instrument panel
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:InitializeValues" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:InitializeValues">InitializeValues</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:InitializeValues">DGFInstrumentPanel::InitializeValues</a>
+ Purpose:        Setup values in instrument panel
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP   -- read params from DSP
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Fills entry fields in instr panel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:ReadDSP" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:ReadDSP">ReadDSP</a>(<a href="./DGFModule.html">DGFModule</a> * Module, <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:ReadDSP">DGFInstrumentPanel::ReadDSP</a>
+ Purpose:        Read param data from DSP
+ Arguments:      <a href="./DGFModule.html">DGFModule</a> * Module -- module
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId    -- channel id
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Reads param data from DSP.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:WriteDSP" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:WriteDSP">WriteDSP</a>(<a href="./DGFModule.html">DGFModule</a> * Module, <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:WriteDSP">DGFInstrumentPanel::WriteDSP</a>
+ Purpose:        Update DSP
+ Arguments:      <a href="./DGFModule.html">DGFModule</a> * Module     -- module
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId        -- channel id
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Calculates corrections for given module &amp; channel
+                 and updates DSP.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:CopyModuleSettings" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:CopyModuleSettings">CopyModuleSettings</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:CopyModuleSettings">DGFInstrumentPanel::CopyModuleSettings</a>
+ Purpose:        Copy module settings
+ Arguments:
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Copies module settings from current module to neighbours.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:UpdateValue" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:UpdateValue">UpdateValue</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleId, <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:UpdateValue">DGFInstrumentPanel::UpdateValue</a>
+ Purpose:        Pass entry data to dgf module
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId      -- entry id
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleId     -- module id
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelId    -- channel id
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Update a dgf value whenever entry data change.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFInstrumentPanel:MoveFocus" href="src/DGFInstrumentPanel.cxx.html#DGFInstrumentPanel:MoveFocus">MoveFocus</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFInstrumentPanel.html#DGFInstrumentPanel:MoveFocus">DGFInstrumentPanel::MoveFocus</a>
+ Purpose:        Move focus to next entry field
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId     -- entry id
+ Results:        --
+ Exceptions:
+ Description:    Moves focus to next entry field in ring buffer.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a> <a name="DGFInstrumentPanel:DGFInstrumentPanel" href="DGFInstrumentPanel.h">DGFInstrumentPanel</a>(const <a href="./DGFInstrumentPanel.html">DGFInstrumentPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFInstrumentPanel:CloseWindow" href="DGFInstrumentPanel.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFInstrumentPanel:HandleKey" href="DGFInstrumentPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFInstrumentPanel:Class" href="DGFInstrumentPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFInstrumentPanel:IsA" href="DGFInstrumentPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFInstrumentPanel:ShowMembers" href="DGFInstrumentPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFInstrumentPanel:Streamer" href="DGFInstrumentPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFInstrumentPanel:StreamerNVirtual" href="DGFInstrumentPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFInstrumentPanel:~DGFInstrumentPanel" href="DGFInstrumentPanel.h">~DGFInstrumentPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:51 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,82 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TNetFile</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TNetFile:description">class description</a> - <a href="src/TNetFile.cxx.html">source file</a> - <a href="TNetFile_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TNetFile" href="TNetFile.h">TNetFile</a> : public <a href="http://root.cern.ch/root/html/TFile.html">TFile</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TNetFile.html">TNetFile</a> <!--TAB--><!--BOLD--><a href="#TNetFile:TNetFile">TNetFile</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Init">Init</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> create)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:PrintError">PrintError</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* where, <a href="ListOfTypes.html#Int_t">Int_t</a> err)
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Recv">Recv</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; status, EMessageTypes&amp; kind)
+<!--TAB6-->      virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNetFile:SysStat">SysStat</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> fd, <a href="ListOfTypes.html#Long_t">Long_t</a>* id, <a href="ListOfTypes.html#Long_t">Long_t</a>* size, <a href="ListOfTypes.html#Long_t">Long_t</a>* flags, <a href="ListOfTypes.html#Long_t">Long_t</a>* modtime)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             <a href="http://root.cern.ch/root/html/TNetFile.html">TNetFile</a> <!--TAB--><!--BOLD--><a href="#TNetFile:TNetFile">TNetFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* url, <a href="ListOfTypes.html#Option_t">Option_t</a>* option, const <a href="ListOfTypes.html#char">char</a>* ftitle, <a href="ListOfTypes.html#Int_t">Int_t</a> compress = 1, <a href="ListOfTypes.html#Int_t">Int_t</a> netopt = 0)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:~TNetFile">~TNetFile</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TNetFile:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Close">Close</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Flush">Flush</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TNetFile:GetErrorCode">GetErrorCode</a><!--PLAIN-->() const
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TNetFile:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TNetFile:IsOpen">IsOpen</a><!--PLAIN-->() const
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TNetFile:ReadBuffer">ReadBuffer</a><!--PLAIN-->(<a href="ListOfTypes.html#char">char</a>* buf, <a href="ListOfTypes.html#Int_t">Int_t</a> len)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Seek">Seek</a><!--PLAIN-->(<a href="ListOfTypes.html#Seek_t">Seek_t</a> offset, <a href="http://root.cern.ch/root/html/TFile.html#TFile:ERelativeTo">TFile::ERelativeTo</a> pos = <a href="http://root.cern.ch/root/html/TFile.html#TFile:kBeg">kBeg</a>)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TNetFile:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TNetFile:WriteBuffer">WriteBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* buf, <a href="ListOfTypes.html#Int_t">Int_t</a> len)
+</pre>
+
+<h3><!--TAB2-->  <a name="TNetFile:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->          <a href="http://root.cern.ch/root/html/TUrl.html">TUrl</a> <!--TAB--><!--BOLD--><a name="TNetFile:fUrl">fUrl</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fUrl">URL of file</a></i>
+<!--TAB6-->       <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TNetFile:fUser">fUser</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fUser">remote user name</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Seek_t">Seek_t</a> <!--TAB--><!--BOLD--><a name="TNetFile:fOffset">fOffset</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fOffset">seek offset</a></i>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TSocket.html">TSocket</a>* <!--TAB--><!--BOLD--><a name="TNetFile:fSocket">fSocket</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fSocket">connection to rootd server</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TNetFile:fProtocol">fProtocol</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fProtocol">rootd protocol level</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TNetFile:fErrorCode">fErrorCode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fErrorCode">error code returned by rootd (matching gRootdErrStr)</a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TNetFile:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:58:05 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,247 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFMcaDisplayPanel</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFMcaDisplayPanel:description">class description</a> - <a href="src/DGFMcaDisplayPanel.cxx.html">source file</a> - <a href="DGFMcaDisplayPanel_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFMcaDisplayPanel" href="DGFMcaDisplayPanel.h">DGFMcaDisplayPanel</a> : public <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:AcquireHistos">AcquireHistos</a><!--PLAIN-->()
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:MoveFocus">MoveFocus</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:ResetValues">ResetValues</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:SaveHistos">SaveHistos</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleId = -1, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern = 0xf)
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:SetRunning">SetRunning</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> RunFlag)
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:Update">Update</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:DGFMcaDisplayPanel">DGFMcaDisplayPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
+<!--TAB6-->      <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:DGFMcaDisplayPanel">DGFMcaDisplayPanel</a><!--PLAIN-->(const <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a>&amp; f)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:~DGFMcaDisplayPanel">~DGFMcaDisplayPanel</a><!--PLAIN-->()
+<!--TAB6-->          static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:CloseWindow">CloseWindow</a><!--PLAIN-->()
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->          virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:ProcessMessage">ProcessMessage</a><!--PLAIN-->(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFMcaDisplayPanel:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFMcaDisplayPanel:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fHeap">fHeap</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fHeap">! list of objects created on heap</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fSelectFrame">fSelectFrame</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSelectFrame">select</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelCombo.html">TGMrbLabelCombo</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fSelectModule">fSelectModule</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelectModule">module</a></i>
+<!--TAB6-->      <a href="./TGMrbCheckButtonList.html">TGMrbCheckButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fSelectChannel">fSelectChannel</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fSelectChannel">channel</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fAccuFrame">fAccuFrame</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fAccuFrame">accu</a></i>
+<!--TAB6-->           <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fRunTimeEntry">fRunTimeEntry</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fRunTimeEntry">runtime</a></i>
+<!--TAB6-->      <a href="./TGMrbRadioButtonList.html">TGMrbRadioButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fTimeScale">fTimeScale</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fTimeScale">time scale</a></i>
+<!--TAB6-->      <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fButtonFrame">fButtonFrame</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fButtonFrame"></a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fLofModuleKeys">fLofModuleKeys</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fLofModuleKeys">! ... key list</a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fLofChannels">fLofChannels</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fLofChannels">! channel numbers</a></i>
+<!--TAB6-->                 <a href="./TGFileInfo.html">TGFileInfo</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fMcaFileInfo">fMcaFileInfo</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fMcaFileInfo">!</a></i>
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fIsRunning">fIsRunning</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fIsRunning">kTRUE if trace acquisition running</a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fMcaTimeScaleButtons">fMcaTimeScaleButtons</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fMcaTimeScaleButtons"></a></i>
+<!--TAB6-->              <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fMcaActions">fMcaActions</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fMcaActions"></a></i>
+<!--TAB6-->             <a href="./TGMrbFocusList.html">TGMrbFocusList</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fFocusList">fFocusList</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fFocusList"></a></i>
+<!--TAB6-->        <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaSelectModule">kDGFMcaSelectModule</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDGFMcaSelectModule"></a></i>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaRunTime">kDGFMcaRunTime</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kDGFMcaRunTime"></a></i>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaTimeScale">kDGFMcaTimeScale</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFMcaTimeScale"></a></i>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaButtonAcquire">kDGFMcaButtonAcquire</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFMcaButtonAcquire"></a></i>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaButtonSaveHistos">kDGFMcaButtonSaveHistos</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFMcaButtonSaveHistos"></a></i>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaButtonReset">kDGFMcaButtonReset</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFMcaButtonReset"></a></i>
+<!--TAB6-->            static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFTauCmdId">DGFMcaDisplayPanel::EDGFTauCmdId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaButtonClose">kDGFMcaButtonClose</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFMcaButtonClose"></a></i>
+<!--TAB6-->      static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFMcaTimeScaleId">DGFMcaDisplayPanel::EDGFMcaTimeScaleId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaTimeScaleSecs">kDGFMcaTimeScaleSecs</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFMcaTimeScaleSecs"></a></i>
+<!--TAB6-->      static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFMcaTimeScaleId">DGFMcaDisplayPanel::EDGFMcaTimeScaleId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaTimeScaleMins">kDGFMcaTimeScaleMins</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFMcaTimeScaleMins"></a></i>
+<!--TAB6-->      static const <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:EDGFMcaTimeScaleId">DGFMcaDisplayPanel::EDGFMcaTimeScaleId</a> <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kDGFMcaTimeScaleHours">kDGFMcaTimeScaleHours</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFMcaTimeScaleHours"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kFrameWidth">kFrameWidth</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kFrameWidth"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kFrameHeight">kFrameHeight</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kFrameHeight"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kLEWidth">kLEWidth</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kLEWidth"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kEntryWidth">kEntryWidth</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kEntryWidth"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kFileEntryWidth">kFileEntryWidth</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kFileEntryWidth"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kLEHeight">kLEHeight</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kLEHeight"></a></i>
+<!--TAB6-->                              static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="DGFMcaDisplayPanel:kButtonWidth">kButtonWidth</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kButtonWidth"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFMcaDisplayPanel:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    MCA Display
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+ Layout:
+
+/*
+<img src=dgfcontrol/DGFMcaDisplayPanel.gif>
+*/
+
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFMcaDisplayPanel:DGFMcaDisplayPanel" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:DGFMcaDisplayPanel">DGFMcaDisplayPanel</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * <a href="ListOfTypes.html#Window">Window</a>, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options)
+														: <a href="http://root.cern.ch/root/html/TGTransientFrame.html">TGTransientFrame</a>(<a href="ListOfTypes.html#Window">Window</a>, MainFrame, Width, Height, Options) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a>
+ Purpose:        DGF Viewer: Calculate tau value
+ Arguments:      <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> <a href="ListOfTypes.html#Window">Window</a>      -- connection to ROOT graphics
+                 <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a> * MainFrame -- main frame
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width         -- window width in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height        -- window height in pixels
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options       -- options
+ Results:
+ Exceptions:
+ Description:    Implements DGF Viewer's McaDisplay
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFMcaDisplayPanel:ProcessMessage" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:ProcessMessage">ProcessMessage</a>(<a href="ListOfTypes.html#Long_t">Long_t</a> MsgId, <a href="ListOfTypes.html#Long_t">Long_t</a> Param1, <a href="ListOfTypes.html#Long_t">Long_t</a> Param2) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:ProcessMessage">DGFMcaDisplayPanel::ProcessMessage</a>
+ Purpose:        Message handler for the instrument panel
+ Arguments:      <a href="ListOfTypes.html#Long_t">Long_t</a> MsgId      -- message id
+                 <a href="ListOfTypes.html#Long_t">Long_t</a> ParamX     -- message parameter
+ Results:
+ Exceptions:
+ Description:    Handle messages sent to <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a>.
+                 E.g. all menu button messages.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFMcaDisplayPanel:AcquireHistos" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:AcquireHistos">AcquireHistos</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:AcquireHistos">DGFMcaDisplayPanel::AcquireHistos</a>
+ Purpose:        Start accumulation
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Starts accumulation of histograms
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFMcaDisplayPanel:Update" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:Update">Update</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:Update">DGFMcaDisplayPanel::Update</a>
+ Purpose:        Update program state on X events
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId      -- entry id
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Updates variables on X events and starts action.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFMcaDisplayPanel:ResetValues" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:ResetValues">ResetValues</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:ResetValues">DGFMcaDisplayPanel::ResetValues</a>
+ Purpose:        Clear values in tau display panel
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Clears entry fields in tau display panel.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFMcaDisplayPanel:SaveHistos" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:SaveHistos">SaveHistos</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleId, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:RemoveTrace">DGFMcaDisplayPanel::RemoveTrace</a>
+ Purpose:        Remove root file containing trace data
+ Arguments:      const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName   -- file name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleId            -- module id
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern     -- pattern of active channels
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:MoveFocus" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:MoveFocus">MoveFocus</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:MoveFocus">DGFMcaDisplayPanel::MoveFocus</a>
+ Purpose:        Move focus to next entry field
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId     -- entry id
+ Results:        --
+ Exceptions:
+ Description:    Moves focus to next entry field in ring buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:SetRunning" href="src/DGFMcaDisplayPanel.cxx.html#DGFMcaDisplayPanel:SetRunning">SetRunning</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> RunFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFMcaDisplayPanel.html#DGFMcaDisplayPanel:SetRunning">DGFMcaDisplayPanel::SetRunning</a>
+ Purpose:        Reflect run status
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> RunFlag     -- run status
+ Results:        --
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a> <a name="DGFMcaDisplayPanel:DGFMcaDisplayPanel" href="DGFMcaDisplayPanel.h">DGFMcaDisplayPanel</a>(const <a href="./DGFMcaDisplayPanel.html">DGFMcaDisplayPanel</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:CloseWindow" href="DGFMcaDisplayPanel.h">CloseWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                    <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFMcaDisplayPanel:HandleKey" href="DGFMcaDisplayPanel.h">HandleKey</a>(Event_t* Event)
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFMcaDisplayPanel:Class" href="DGFMcaDisplayPanel.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                   <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFMcaDisplayPanel:IsA" href="DGFMcaDisplayPanel.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:ShowMembers" href="DGFMcaDisplayPanel.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:Streamer" href="DGFMcaDisplayPanel.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:StreamerNVirtual" href="DGFMcaDisplayPanel.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                      <a href="ListOfTypes.html#void">void</a> <a name="DGFMcaDisplayPanel:~DGFMcaDisplayPanel" href="DGFMcaDisplayPanel.h">~DGFMcaDisplayPanel</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:52 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,163 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbCaen_V260</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbCaen_V260:description">class description</a> - <a href="src/TMrbCaen_V260.cxx.html">source file</a> - <a href="TMrbCaen_V260_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbCaen_V260" href="TMrbCaen_V260.h">TMrbCaen_V260</a> : public <a href="./TMrbVMEScaler.html">TMrbVMEScaler</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="./TMrbCaen_V260.html">TMrbCaen_V260</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:TMrbCaen_V260">TMrbCaen_V260</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbCaen_V260.html">TMrbCaen_V260</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:TMrbCaen_V260">TMrbCaen_V260</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:~TMrbCaen_V260">~TMrbCaen_V260</a><!--PLAIN-->()
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V260:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbCaen_V260:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                  static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kSegSize">kSegSize</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kSegSize"></a></i>
+<!--TAB6-->                  static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kAddrMod">kAddrMod</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kAddrMod"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsChannel0">kOffsChannel0</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kOffsChannel0"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsClear">kOffsClear</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kOffsClear"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsInhibit">kOffsInhibit</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kOffsInhibit"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsEnable">kOffsEnable</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kOffsEnable"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsIncrement">kOffsIncrement</a><!--PLAIN-->   <!--TAB--><i><a name="Title:kOffsIncrement"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsModuleType">kOffsModuleType</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kOffsModuleType"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V260.html#TMrbCaen_V260:EMrbOffsets">TMrbCaen_V260::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V260:kOffsVersion">kOffsVersion</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kOffsVersion"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbCaen_V260:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbCaen_V260.html">TMrbCaen_V260</a>.cxx
+ Purpose:        MARaBOU configuration: CAEN modules
+ Description:    Implements class methods to handle a CAEN scaler type V260
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbCaen_V260:TMrbCaen_V260" href="src/TMrbCaen_V260.cxx.html#TMrbCaen_V260:TMrbCaen_V260">TMrbCaen_V260</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr) :
+									<a href="./TMrbVMEScaler.html">TMrbVMEScaler</a>(ModuleName, "Caen_V260", BaseAddr,
+																<a href="./TMrbCaen_V260.html#TMrbCaen_V260:kAddrMod">TMrbCaen_V260::kAddrMod</a>,
+																<a href="./TMrbCaen_V260.html#TMrbCaen_V260:kSegSize">TMrbCaen_V260::kSegSize</a>,
+																1, 16, 1 &lt;&lt; 24) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbCaen_V260.html">TMrbCaen_V260</a>
+ Purpose:        Create a scaler of type Caen V260
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- name of camac module
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr          -- base addr
+ Results:        --
+ Exceptions:
+ Description:    Creates a vme scaler of type CAEN V260.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V260:DefineRegisters" href="src/TMrbCaen_V260.cxx.html#TMrbCaen_V260:DefineRegisters">DefineRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V260.html#TMrbCaen_V260:DefineRegisters">TMrbCaen_V260::DefineRegisters</a>
+ Purpose:        Define camac registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:    Defines status, common threshold, lower &amp; upper thresholds, and offset.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V260:MakeReadoutCode" href="src/TMrbCaen_V260.cxx.html#TMrbCaen_V260:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V260.html#TMrbCaen_V260:MakeReadoutCode">TMrbCaen_V260::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a caen scaler
+ Arguments:      ofstream &amp; RdoStrm         -- file output stream
+                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a caen v260 scaler module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V260:MakeReadoutCode" href="src/TMrbCaen_V260.cxx.html#TMrbCaen_V260:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex,
+															<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V260.html#TMrbCaen_V260:MakeReadoutCode">TMrbCaen_V260::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a caen scaler
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel            -- channel
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value                  -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a caen v260 scaler module.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbCaen_V260.html">TMrbCaen_V260</a> <a name="TMrbCaen_V260:TMrbCaen_V260" href="TMrbCaen_V260.h">TMrbCaen_V260</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr)
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbCaen_V260:GetMnemonic" href="TMrbCaen_V260.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V260:Help" href="TMrbCaen_V260.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCaen_V260:Class" href="TMrbCaen_V260.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCaen_V260:IsA" href="TMrbCaen_V260.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V260:ShowMembers" href="TMrbCaen_V260.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V260:Streamer" href="TMrbCaen_V260.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V260:StreamerNVirtual" href="TMrbCaen_V260.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V260:~TMrbCaen_V260" href="TMrbCaen_V260.h">~TMrbCaen_V260</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:55:57 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,119 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TCollection</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TCollection:description">class description</a> - <a href="src/TCollection.cxx.html">source file</a> - <a href="TCollection_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TCollection" href="TCollection.h">TCollection</a> : public <a href="http://root.cern.ch/root/html/TObject.html">TObject</a></h2>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>&amp;)
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:~TCollection">~TCollection</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Add">Add</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:AddAll">AddAll</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* col)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:AddVector">AddVector</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj1)
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:AssertClass">AssertClass</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* cl) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Browse">Browse</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBrowser.html">TBrowser</a>* b)
+<!--TAB6-->                    <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:Capacity">Capacity</a><!--PLAIN-->() const
+<!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TCollection:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Clear">Clear</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:Contains">Contains</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:Contains">Contains</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Delete">Delete</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Draw">Draw</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Dump">Dump</a><!--PLAIN-->() const
+<!--TAB6-->              static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:EmptyGarbageCollection">EmptyGarbageCollection</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCollection:FindObject">FindObject</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCollection:FindObject">FindObject</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->              static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:GarbageCollect">GarbageCollect</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* <!--TAB--><!--BOLD--><a href="#TCollection:GetCurrentCollection">GetCurrentCollection</a><!--PLAIN-->()
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#char">char</a>* <!--TAB--><!--BOLD--><a href="#TCollection:GetName">GetName</a><!--PLAIN-->() const
+<!--TAB6-->        virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>** <!--TAB--><!--BOLD--><a href="#TCollection:GetObjectRef">GetObjectRef</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:GetSize">GetSize</a><!--PLAIN-->() const
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:GrowBy">GrowBy</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> delta) const
+<!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TCollection:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:IsArgNull">IsArgNull</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* where, const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj) const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:IsEmpty">IsEmpty</a><!--PLAIN-->() const
+<!--TAB6-->           virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:IsFolder">IsFolder</a><!--PLAIN-->() const
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:IsOwner">IsOwner</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:ls">ls</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>* <!--TAB--><!--BOLD--><a href="#TCollection:MakeIterator">MakeIterator</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> dir = kIterForward) const
+<!--TAB6-->       virtual <a href="http://root.cern.ch/root/html/TIterator.html">TIterator</a>* <!--TAB--><!--BOLD--><a href="#TCollection:MakeReverseIterator">MakeReverseIterator</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCollection:operator()">operator()</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Paint">Paint</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Option_t">Option_t</a>* option) const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:RecursiveRemove">RecursiveRemove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TCollection:Remove">Remove</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* obj)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:RemoveAll">RemoveAll</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* col)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:RemoveAll">RemoveAll</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:SetCurrentCollection">SetCurrentCollection</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:SetName">SetName</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:SetOwner">SetOwner</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> enable = kTRUE)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->              static <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:StartGarbageCollection">StartGarbageCollection</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TCollection:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->            virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TCollection:Write">Write</a><!--PLAIN-->(const <a href="ListOfTypes.html#char">char</a>* name = "0", <a href="ListOfTypes.html#Int_t">Int_t</a> option = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> bufsize = 0)
+</pre>
+
+<h3><!--TAB2-->  <a name="TCollection:Data Members">Data Members</a></h3>
+<pre>
+<!--TAB4-->    <b>private:</b><br>
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TCollection.html">TCollection</a>* <!--TAB--><!--BOLD--><a name="TCollection:fgCurrentCollection">fgCurrentCollection</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgCurrentCollection">used by macro ForEach</a></i>
+<!--TAB6-->      static <a href="http://root.cern.ch/root/html/TObjectTable.html">TObjectTable</a>* <!--TAB--><!--BOLD--><a name="TCollection:fgGarbageCollection">fgGarbageCollection</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fgGarbageCollection">used by garbage collector</a></i>
+<!--TAB6-->             static <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TCollection:fgEmptyingGarbage">fgEmptyingGarbage</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fgEmptyingGarbage">used by garbage collector</a></i>
+<!--TAB6-->              static <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCollection:fgGarbageStack">fgGarbageStack</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fgGarbageStack">used by garbage collector</a></i>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TCollection:fName">fName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fName">name of the collection</a></i>
+<!--TAB6-->        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TCollection:fSize">fSize</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSize">number of elements in collection</a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TCollection:kIsOwner">kIsOwner</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kIsOwner"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TCollection:kInitCapacity">kInitCapacity</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kInitCapacity"></a></i>
+<!--TAB6-->      static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TCollection:kInitHashTableCapacity">kInitHashTableCapacity</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kInitHashTableCapacity"></a></i>
+</pre>
+<!--END-->
+<br><hr>
+<!--SEE ALSO--><h2>See also</h2><dl><dd>
+<a href="http://root.cern.ch/root/html/THashTable.html">THashTable</a>, <a href="http://root.cern.ch/root/html/TMap.html">TMap</a>, <a href="http://root.cern.ch/root/html/TSeqCollection.html">TSeqCollection</a></dl>
+<hr>
+<!--DESCRIPTION--><h2><a name="TCollection:description">Class Description</a></h2>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author: 
+<br>
+Last update: Mon Aug 26 10:54:13 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

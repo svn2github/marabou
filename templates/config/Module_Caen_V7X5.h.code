@@ -1,0 +1,24 @@
+%%BeginOfCode%%
+#ifndef __CaenDefs__
+#define __CaenDefs__
+// definitions for CAEN V785/V775 modules
+
+#define CAEN_V7X5_SH_WC							8
+#define CAEN_V7X5_SH_CHN						16
+
+#define CAEN_V7X5_D_HDR							0x02000000
+#define CAEN_V7X5_D_DATA						0x00000000
+#define CAEN_V7X5_D_EOB							0x04000000
+#define CAEN_V7X5_D_INVALID						0x06000000
+
+#define CAEN_V7X5_M_MSERIAL						0xFF
+#define CAEN_V7X5_M_WC							0x3F
+#define CAEN_V7X5_M_CHN							0xFF
+#define CAEN_V7X5_M_ID							0x07000000
+#define CAEN_V7X5_M_HDR							0x07FFFFFF
+#define CAEN_V7X5_M_DATA 						0x07FFFFFF
+#define CAEN_V7X5_M_ADCDATA	 					0x00000FFF
+#endif
+
+%%EndOfCode%%
+%%INCLUDES_AND_DEFS_ANALYZE%%

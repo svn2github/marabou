@@ -1,0 +1,459 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>DGFControlData</h1>
+<hr width=300>
+<!--SDL--><em><a href="#DGFControlData:description">class description</a> - <a href="src/DGFControlData.cxx.html">source file</a> - <a href="DGFControlData_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="DGFControlData" href="DGFControlData.h">DGFControlData</a> : public <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a></h2>
+<pre>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->       <a href="./DGFControlData.html">DGFControlData</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:DGFControlData">DGFControlData</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./DGFControlData.html">DGFControlData</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:DGFControlData">DGFControlData</a><!--PLAIN-->(const <a href="./DGFControlData.html">DGFControlData</a>&amp; f)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:~DGFControlData">~DGFControlData</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:BoldFont">BoldFont</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:CheckIfStarted">CheckIfStarted</a><!--PLAIN-->()
+<!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:CopyKeyList">CopyKeyList</a><!--PLAIN-->(<a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* KeyList, <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> NofClusters = -1, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayMode = kTRUE)
+<!--TAB6-->       <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:CopyKeyList">CopyKeyList</a><!--PLAIN-->(<a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* KeyList, <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Pattern, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ClearFlag = kFALSE)
+<!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:FirstModule">FirstModule</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetChannel">GetChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ChannelIndex)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetChannelIndex">GetChannelIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->         HistPresent* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetHistPresent">GetHistPresent</a><!--PLAIN-->()
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetHost">GetHost</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetIndex">GetIndex</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetIndex">GetIndex</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; ModuleNumber)
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetKey">GetKey</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->          <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetKey">GetKey</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; ModuleNumber)
+<!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetModule">GetModule</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetModule">GetModule</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> GlobIndex)
+<!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetModule">GetModule</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> ModNo)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetNofClusters">GetNofClusters</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetNofModules">GetNofModules</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetPatEnabled">GetPatEnabled</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster)
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetPatInUse">GetPatInUse</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetResource">GetResource</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetResource">GetResource</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedChannel">GetSelectedChannel</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedChannelIndex">GetSelectedChannelIndex</a><!--PLAIN-->()
+<!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedModule">GetSelectedModule</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedModuleIndex">GetSelectedModuleIndex</a><!--PLAIN-->()
+<!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:IsOffline">IsOffline</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:IsVerbose">IsVerbose</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:ModuleIndex">ModuleIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> ModNo)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:ModuleInUse">ModuleInUse</a><!--PLAIN-->(<a href="./DGFModule.html">DGFModule</a>* Module)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:ModuleInUse">ModuleInUse</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:NextModule">NextModule</a><!--PLAIN-->(<a href="./DGFModule.html">DGFModule</a>* Last)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:NormalFont">NormalFont</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetLH">SetLH</a><!--PLAIN-->(<a href="./TGMrbLayout.html">TGMrbLayout</a>* Layout1, <a href="./TGMrbLayout.html">TGMrbLayout</a>* Layout2, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* Hints)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetPatInUse">SetPatInUse</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Pattern)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetSelectedChannel">SetSelectedChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetSelectedChannelIndex">SetSelectedChannelIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ChannelIndex)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetSelectedModule">SetSelectedModule</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetSelectedModule">SetSelectedModule</a><!--PLAIN-->(<a href="./DGFModule.html">DGFModule</a>* Module)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetSelectedModuleIndex">SetSelectedModuleIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleIndex)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:SetupModuleList">SetupModuleList</a><!--PLAIN-->()
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:SlantedFont">SlantedFont</a><!--PLAIN-->() const
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="DGFControlData:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fHeap">fHeap</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:fHeap">!</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fStatus">fStatus</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fStatus">status bits</a></i>
+<!--TAB6-->           <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDeltaT">fDeltaT</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:fDeltaT">time granularity</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fCAMACHost">fCAMACHost</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fCAMACHost">default camac host</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDefaultCrate">fDefaultCrate</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fDefaultCrate">default crate number</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fNofClusters">fNofClusters</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fNofClusters">number of clusters</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fNofModules">fNofModules</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fNofModules">number of DGF modules</a></i>
+<!--TAB6-->              <a href="http://root.cern.ch/root/html/TList.html">TList</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLofModules">fLofModules</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fLofModules">list of modules</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLofModuleKeys">fLofModuleKeys[20]</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fLofModuleKeys">! ... key list</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fPatEnabled">fPatEnabled[20]</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fPatEnabled">pattern of modules enabled</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fPatInUse">fPatInUse[20]</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fPatInUse">pattern of modules in use</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLofChannels">fLofChannels</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLofChannels">! channel numbers</a></i>
+<!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLofClusters">fLofClusters</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLofClusters">clusters: name, serial, color</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSelectedModule">fSelectedModule</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSelectedModule">index of module currently selected</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSelectedChannel">fSelectedChannel</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelectedChannel">index of channel currently selected</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLoadPath">fLoadPath</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fLoadPath">where to load DSP/FPGA code from</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDSPCodeFile">fDSPCodeFile</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDSPCodeFile">... DSP code</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDSPParamsFile">fDSPParamsFile</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDSPParamsFile">... param table</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSystemFPGAConfigFile">fSystemFPGAConfigFile</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fSystemFPGAConfigFile">... FPGA config (system)</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fFippiFPGAConfigFile">fFippiFPGAConfigFile[2]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFippiFPGAConfigFile">...             (fippi, rev D,E)</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDataPath">fDataPath</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fDataPath">where to read user's setup files from</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSettingsFile">fSettingsFile</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fSettingsFile">... param settings</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fRunDataFile">fRunDataFile</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fRunDataFile">... run data</a></i>
+<!--TAB6-->       HistPresent* <!--TAB--><!--BOLD--><a name="DGFControlData:fHistPresent">fHistPresent</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fHistPresent">! the famous histogram presenter</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fNormalFont">fNormalFont</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fNormalFont">gui fonts</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fBoldFont">fBoldFont</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fBoldFont"></a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSlantedFont">fSlantedFont</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fSlantedFont"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorBlack">fColorBlack</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fColorBlack">gui colors</a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorWhite">fColorWhite</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fColorWhite"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorGray">fColorGray</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fColorGray"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorBlue">fColorBlue</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fColorBlue"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorDarkBlue">fColorDarkBlue</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fColorDarkBlue"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorGold">fColorGold</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fColorGold"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorGreen">fColorGreen</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fColorGreen"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorYellow">fColorYellow</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fColorYellow"></a></i>
+<!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorRed">fColorRed</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fColorRed"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFVerboseMode">kDGFVerboseMode</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFVerboseMode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFDebugMode">kDGFDebugMode</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFDebugMode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFModNumGlobal">kDGFModNumGlobal</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFModNumGlobal"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFOfflineMode">kDGFOfflineMode</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFOfflineMode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFSimulStartStop">kDGFSimulStartStop</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFSimulStartStop"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFSyncClocks">kDGFSyncClocks</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDGFSyncClocks"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFNewCode">kDGFNewCode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFNewCode"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="DGFControlData:description">Class Description</a></h2>
+<pre>
+ ame:            <a href="./DGFControlData.html">DGFControlData</a>
+ Purpose:        A GUI to control the XIA DGF-4C
+ Description:    Common Database
+ Modules:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+ URL:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--> <a name="DGFControlData:DGFControlData" href="src/DGFControlData.cxx.html#DGFControlData:DGFControlData">DGFControlData</a>() : <a href="http://root.cern.ch/root/html/TNamed.html">TNamed</a>("<a href="./DGFControlData.html">DGFControlData</a>", "<a href="./DGFControlData.html">DGFControlData</a>") <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./DGFControlData.html">DGFControlData</a>
+ Purpose:        Common data base
+ Arguments:      --
+ Results:
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:CheckIfStarted" href="src/DGFControlData.cxx.html#DGFControlData:CheckIfStarted">CheckIfStarted</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           CheckIfStarted
+ Purpose:        Check if dgf modules allocated &amp; connected
+ Arguments:      --
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Loops thru table of dgfs to see if modules allocated
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:SetupModuleList" href="src/DGFControlData.cxx.html#DGFControlData:SetupModuleList">SetupModuleList</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:SetupModuleList">DGFControlData::SetupModuleList</a>()
+ Purpose:        Create module list and key list
+ Arguments:      --
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofModules   -- number of dgf modules
+ Exceptions:
+ Description:    Decodes env file and fills module list and key list
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:GetResource" href="src/DGFControlData.cxx.html#DGFControlData:GetResource">GetResource</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetResource">DGFControlData::GetResource</a>
+ Purpose:        Get resource from environment
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Result   -- where to put resulting value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix    -- prefix "DGFControl.XXX"
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Serial       -- serial number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Name      -- name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource  -- resource name
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Result    -- resource value
+ Exceptions:
+ Description:    Reads an ascii resource value from ROOT's environment.
+                 Resource name is either
+                        &lt;Prefix&gt;.&lt;Serial&gt;.&lt;Resource&gt;
+                 or     &lt;Prefix&gt;.&lt;Name&gt;.&lt;Resource&gt;
+                 Example: To get the address of module #1 with name "xyz"
+                          it looks for "DGFControl.Module.1.Address"
+                          and for      "DGFControl.Module.Xyz.Address"
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetResource" href="src/DGFControlData.cxx.html#DGFControlData:GetResource">GetResource</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetResource">DGFControlData::GetResource</a>
+ Purpose:        Get resource from environment
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Result     -- where to put resulting value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix    -- prefix "DGFControl.XXX"
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Serial       -- serial number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Name      -- name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource  -- resource name
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Result       -- resource value
+ Exceptions:
+ Description:    Reads an integer resource value from ROOT's environment.
+                 Resource name is either
+                        &lt;Prefix&gt;.&lt;Serial&gt;.&lt;Resource&gt;
+                 or     &lt;Prefix&gt;.&lt;Name&gt;.&lt;Resource&gt;
+                 Example: To get the address of module #1 with name "xyz"
+                          it looks for "DGFControl.Module.1.Address"
+                          and for      "DGFControl.Module.Xyz.Address"
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./DGFModule.html">DGFModule</a>* <a name="DGFControlData:GetModule" href="src/DGFControlData.cxx.html#DGFControlData:GetModule">GetModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetModule">DGFControlData::GetModule</a>
+ Purpose:        Get module by name
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName    -- module name
+ Results:        <a href="./DGFModule.html">DGFModule</a> * Module     -- module defs
+ Exceptions:
+ Description:    Finds module by its name.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./DGFModule.html">DGFModule</a>* <a name="DGFControlData:GetModule" href="src/DGFControlData.cxx.html#DGFControlData:GetModule">GetModule</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> GlobIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetModule">DGFControlData::GetModule</a>
+ Purpose:        Get module by its global index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> GlobIndex        -- global module index
+ Results:        <a href="./DGFModule.html">DGFModule</a> * Module     -- module defs
+ Exceptions:
+ Description:    Finds module by its index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./DGFModule.html">DGFModule</a>* <a name="DGFControlData:GetModule" href="src/DGFControlData.cxx.html#DGFControlData:GetModule">GetModule</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> ModNo) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetModule">DGFControlData::GetModule</a>
+ Purpose:        Get module by index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster          -- cluster number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> ModNo            -- module number within cluster
+ Results:        <a href="./DGFModule.html">DGFModule</a> * Module     -- module defs
+ Exceptions:
+ Description:    Finds module by its index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetChannel" href="src/DGFControlData.cxx.html#DGFControlData:GetChannel">GetChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ChannelIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetChannel">DGFControlData::GetChannel</a>
+ Purpose:        Get module by index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelIndex     -- channel index
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
+ Exceptions:
+ Description:    Finds module by its index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetChannelIndex" href="src/DGFControlData.cxx.html#DGFControlData:GetChannelIndex">GetChannelIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetChannelIndex">DGFControlData::GetChannelIndex</a>
+ Purpose:        Convert channel number to channel index
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> ChannelIndex     -- channel index
+ Exceptions:
+ Description:    Finds module by its index.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="DGFControlData:GetKey" href="src/DGFControlData.cxx.html#DGFControlData:GetKey">GetKey</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetKey">DGFControlData::GetKey</a>
+ Purpose:        Get module key
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName    -- module name
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * ModuleKey -- key
+ Exceptions:
+ Description:    Returns the module key (index, name, title, object)
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="DGFControlData:GetIndex" href="src/DGFControlData.cxx.html#DGFControlData:GetIndex">GetIndex</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetIndex">DGFControlData::GetIndex</a>
+ Purpose:        Get module index
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName    -- module name
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleIndex     -- index
+ Exceptions:
+ Description:    Returns the module index
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="DGFControlData:GetKey" href="src/DGFControlData.cxx.html#DGFControlData:GetKey">GetKey</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; ModuleNumber) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetKey">DGFControlData::GetKey</a>
+ Purpose:        Get module index
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName    -- module name
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * ModuleKey -- key
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Cluster        -- cluster number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; ModuleNumber   -- module number
+ Exceptions:
+ Description:    Returns module key, cluster number, and module number
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="DGFControlData:GetIndex" href="src/DGFControlData.cxx.html#DGFControlData:GetIndex">GetIndex</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; ModuleNumber) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetIndex">DGFControlData::GetIndex</a>
+ Purpose:        Get module index
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName    -- module name
+ Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> Index           -- module index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; Cluster        -- cluster number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; ModuleNumber   -- module number
+ Exceptions:
+ Description:    Returns the module index
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:ModuleInUse" href="src/DGFControlData.cxx.html#DGFControlData:ModuleInUse">ModuleInUse</a>(<a href="./DGFModule.html">DGFModule</a> * Module) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:ModuleInUse">DGFControlData::ModuleInUse</a>
+ Purpose:        Check if module in use
+ Arguments:      <a href="./DGFModule.html">DGFModule</a> * Module     -- module
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Tests if module is active &amp; selected.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:ModuleInUse" href="src/DGFControlData.cxx.html#DGFControlData:ModuleInUse">ModuleInUse</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:ModuleInUse">DGFControlData::ModuleInUse</a>
+ Purpose:        Check if module in use
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName     -- module name
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Tests if module is active &amp; selected.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetSelectedModule" href="src/DGFControlData.cxx.html#DGFControlData:SetSelectedModule">SetSelectedModule</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:SetSelectedModule">DGFControlData::SetSelectedModule</a>
+ Purpose:        Set module selection
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName     -- module name
+ Results:        --
+ Exceptions:
+ Description:    Defines given module to be 'selected'.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="DGFControlData:CopyKeyList" href="src/DGFControlData.cxx.html#DGFControlData:CopyKeyList">CopyKeyList</a>(<a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * KeyList, <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> NofClusters, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayMode) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:CopyKeyList">DGFControlData::CopyKeyList</a>
+ Purpose:        Copy part of key list
+ Arguments:      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * KeyList    -- where to put the copy to
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster              -- cluster index
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofClusters          -- number of clusters to be copied
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> ArrayMode           -- kTRUE if KeyList points to an array
+                                               of <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> objects
+ Results:        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * KeyList
+ Exceptions:
+ Description:    Copies key list for a given cluster.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="DGFControlData:CopyKeyList" href="src/DGFControlData.cxx.html#DGFControlData:CopyKeyList">CopyKeyList</a>(<a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * KeyList, <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Pattern, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ClearFlag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:CopyKeyList">DGFControlData::CopyKeyList</a>
+ Purpose:        Copy part of key list
+ Arguments:      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * KeyList    -- where to put the copy to
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Cluster              -- cluster index
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Pattern             -- pattern to be matched
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> ClearFlag           -- clear list
+ Results:        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> * KeyList
+ Exceptions:
+ Description:    Copies key list for a given cluster.
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./DGFControlData.html">DGFControlData</a> <a name="DGFControlData:DGFControlData" href="DGFControlData.h">DGFControlData</a>(const <a href="./DGFControlData.html">DGFControlData</a>&amp; f)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetNofModules" href="DGFControlData.h">GetNofModules</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetNofClusters" href="DGFControlData.h">GetNofClusters</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./DGFModule.html">DGFModule</a>* <a name="DGFControlData:FirstModule" href="DGFControlData.h">FirstModule</a>()
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./DGFModule.html">DGFModule</a>* <a name="DGFControlData:NextModule" href="DGFControlData.h">NextModule</a>(<a href="./DGFModule.html">DGFModule</a>* Last)
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:GetHost" href="DGFControlData.h">GetHost</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="DGFControlData:ModuleIndex" href="DGFControlData.h">ModuleIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> ModNo)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="DGFControlData:GetPatEnabled" href="DGFControlData.h">GetPatEnabled</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="DGFControlData:GetPatInUse" href="DGFControlData.h">GetPatInUse</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetPatInUse" href="DGFControlData.h">SetPatInUse</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Pattern)
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./DGFModule.html">DGFModule</a>* <a name="DGFControlData:GetSelectedModule" href="DGFControlData.h">GetSelectedModule</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetSelectedModuleIndex" href="DGFControlData.h">GetSelectedModuleIndex</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetSelectedModuleIndex" href="DGFControlData.h">SetSelectedModuleIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleIndex)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetSelectedModule" href="DGFControlData.h">SetSelectedModule</a>(<a href="./DGFModule.html">DGFModule</a>* Module)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetSelectedChannel" href="DGFControlData.h">GetSelectedChannel</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="DGFControlData:GetSelectedChannelIndex" href="DGFControlData.h">GetSelectedChannelIndex</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetSelectedChannel" href="DGFControlData.h">SetSelectedChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetSelectedChannelIndex" href="DGFControlData.h">SetSelectedChannelIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ChannelIndex)
+<!--INLINE FUNCTION--><!--TAB6-->          HistPresent* <a name="DGFControlData:GetHistPresent" href="DGFControlData.h">GetHistPresent</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:IsOffline" href="DGFControlData.h">IsOffline</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:IsVerbose" href="DGFControlData.h">IsVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:NormalFont" href="DGFControlData.h">NormalFont</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:BoldFont" href="DGFControlData.h">BoldFont</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:SlantedFont" href="DGFControlData.h">SlantedFont</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:SetLH" href="DGFControlData.h">SetLH</a>(<a href="./TGMrbLayout.html">TGMrbLayout</a>* Layout1, <a href="./TGMrbLayout.html">TGMrbLayout</a>* Layout2, <a href="http://root.cern.ch/root/html/TGLayoutHints.html">TGLayoutHints</a>* Hints)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFControlData:Class" href="DGFControlData.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="DGFControlData:IsA" href="DGFControlData.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:ShowMembers" href="DGFControlData.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:Streamer" href="DGFControlData.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:StreamerNVirtual" href="DGFControlData.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="DGFControlData:~DGFControlData" href="DGFControlData.h">~DGFControlData</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Mon Aug 26 10:53:45 2002
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>
