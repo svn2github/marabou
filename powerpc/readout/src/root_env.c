@@ -29,18 +29,19 @@ typedef struct {
 	char prog[ENV_L_STR];
 	char name[ENV_L_STR];
 	char value[ENV_L_STR];
+	void * next;
 } TEnvEntry;
 
 /*______________________________________________________________[C PROTOTYPES]
 ////////////////////////////////////////////////////////////////////////////*/
-int root_env_read(const char * FileName, int Append);
+int root_env_read(const char * FileName);
 int root_env_getval_i(const char * ResourceName, int DefaultValue);
 int root_env_getval_x(const char * ResourceName, int DefaultValue);
 double root_env_getval_f(const char * ResourceName, double DefaultValue);
 const char * root_env_getval_s(const char * ResourceName, const char * DefaultValue);
 int root_env_getval_b(const char * ResourceName, int DefaultValue);
+void root_env_print();
 
-static FILE * _env_open(const char * FileName, int Append);
 static TEnvEntry * _env_find_resource(const char * ResourceName);
 static void _env_decode_name(TEnvEntry * Entry, const char * ResourceName);
 
@@ -50,16 +51,16 @@ char * calloc(int, int);
 
 /*___________________________________________________________________[GLOBALS]
 ////////////////////////////////////////////////////////////////////////////*/
-static TEnvEntry * lofEntries = NULL;
+static TEnvEntry * firstEntry = NULL;
+static TEnvEntry * lastEntry = NULL;
 static int nofEntries = 0;
 
-int root_env_read(const char * FileName, int Append) {
+int root_env_read(const char * FileName) {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           root_env_read
 // Purpose:        Read ROOT's environment file
 // Arguments:      char * FileName     -- file name
-//                 int Append          -- append entries if 1
 // Results:        int nofEntries      -- number of entries
 // Exceptions:     returns -1 after errors
 // Description:    Opens environment file and decodes entries.
@@ -70,30 +71,32 @@ int root_env_read(const char * FileName, int Append) {
 	char * sp;
 	FILE * fp;
 	TEnvEntry * entry;
+
 	char line[ENV_L_STR];
-			
-	fp = _env_open(FileName, Append);	
+
+	fp = fopen(FileName, "r");
 	if (fp == NULL) return(-1);
 	
-	entry = lofEntries;
-	n = 0;
-	for (i = 0; i < nofEntries; i++) {
-		memset(entry, 0, sizeof(TEnvEntry));
-		if (fgets(line, ENV_L_STR - 1, fp) == NULL) break;
+	while (fgets(line, ENV_L_STR - 1, fp) != NULL) {
 		if (line[0] == '#') continue;
 		line[strlen(line) - 1] = '\0';
 		sp = strchr(line, ':');
 		if (sp == NULL) continue;
 		*sp = '\0';
+		entry = _env_find_resource(line);
+		if (entry == NULL) {
+			entry = (TEnvEntry *) calloc(1, sizeof(TEnvEntry)); 
+			if (lastEntry) lastEntry->next = entry;
+			lastEntry = entry;
+			if (firstEntry == NULL) firstEntry = entry;
+			_env_decode_name(entry, line);
+			nofEntries++;		
+		}
 		sp++;
 		while (*sp && isspace(*sp)) sp++;
 		if (*sp != '#') strncpy(entry->value, sp, ENV_L_STR - 1);		
-		_env_decode_name(entry, line);		
-		entry++;
-		n++;
 	}
 	fclose(fp);
-	nofEntries = n;
 	return(nofEntries);
 }
 
@@ -192,55 +195,37 @@ int root_env_getval_b(const char * ResourceName, int DefaultValue) {
 	if (strcmp(ep->value, "true") == 0 || strcmp(ep->value, "TRUE") == 0) return(1); else return(0);
 }
 
-FILE * _env_open(const char * FileName, int Append) {
+void root_env_print() {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           _env_open
-// Purpose:        Open environment file
-// Arguments:      char * FileName         -- file name
-//                 int Append              -- 1 if new entries should be appendeds
-// Results:        FILE * FilePtr          -- file ptr
-// Exceptions:     returns NULL after errors
-// Description:    Opens environment file and counts lines.
+// Name:           _env_print
+// Purpose:        Print environment
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Outputs environment settings to stdout.
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
-	int n;
-	char line[ENV_L_STR];
-	FILE * fp;
-	TEnvEntry * newLofEntries;
-			
-	fp = fopen(FileName, "r");
-	if (fp == NULL) return(NULL);
-	n = 0;
-	while (1) {
-		if (fgets(line, ENV_L_STR - 1, fp) == NULL) break;
-		if (line[0] != '#') n++;
+	TEnvEntry * entry;
+	char str[3 * ENV_L_STR];
+
+	entry = firstEntry;
+	if (entry) {
+		printf("%-50s%-15s\n", "Resource", "Value");
+		printf("-------------------------------------------------------------------------------------\n");
 	}
-	fclose(fp);
-	fp = fopen(FileName, "r");
-	
-	if (nofEntries > 0) {
-		if (Append == 1) {
-			newLofEntries = (TEnvEntry *) calloc(n + nofEntries, sizeof(TEnvEntry));
-			memcpy(newLofEntries, lofEntries, nofEntries * sizeof(TEnvEntry));
-			lofEntries = newLofEntries;
-			nofEntries += n;
-		} else if (n <= nofEntries) {
-			memset(lofEntries, 0, nofEntries * sizeof(TEnvEntry));
-		} else {
-			free(lofEntries);
-			nofEntries = 0;
-		}
+	while (entry) {
+		strcpy(str, entry->system);
+		strcat(str, ".");
+		strcat(str, entry->prog);
+		strcat(str, ".");
+		strcat(str, entry->name);
+		strcat(str, ":");
+		printf("%-50s%-15s\n", str, entry->value);
+		entry = (TEnvEntry *) entry->next;
 	}
-	
-	if (nofEntries == 0) {		
-		lofEntries = (TEnvEntry *) calloc(n, sizeof(TEnvEntry));
-		if (lofEntries == NULL) return(NULL);
-		nofEntries = n;
-	}
-	
-	return(fp);
+	printf("\n[%d entries]\n\n", nofEntries);
 }
 
 TEnvEntry * _env_find_resource(const char * ResourceName) {
@@ -257,17 +242,18 @@ TEnvEntry * _env_find_resource(const char * ResourceName) {
 
 	int i;
 	TEnvEntry e;
-	TEnvEntry * ep;
+	TEnvEntry * entry;
 	
 	_env_decode_name(&e, ResourceName);
 	
-	ep = lofEntries;
-	for (i = 0; i < nofEntries; i++, ep++) {
-		if (strcmp(e.name, ep->name) == 0) {
-			if (ep->prog[0] == '*' || e.prog[0] == '*' || strcmp(e.prog, ep->prog) == 0) {
-				if (ep->system[0] == '*' || e.system[0] == '*' || strcmp(e.system, ep->system) == 0) return(ep);
+	entry = firstEntry;
+	while (entry) {
+		if (strcmp(e.name, entry->name) == 0) {
+			if (entry->prog[0] == '*' || e.prog[0] == '*' || strcmp(e.prog, entry->prog) == 0) {
+				if (entry->system[0] == '*' || e.system[0] == '*' || strcmp(e.system, entry->system) == 0) return(entry);
 			}
 		}
+		entry = (TEnvEntry *) entry->next;
 	}
 	return(NULL);
 }		

@@ -74,7 +74,7 @@ static long dt_scaler_contents;	/* contents of dead-time scaler */
 %%DEFINE_PROTOTYPES%%
 
 /* access to ROOT-style environment files */
-int root_env_read(char * file, int append);
+int root_env_read(char * file);
 int root_env_getval_i(char * resource, int ivalue);
 double root_env_getval_f(char * resource, double dvalue);
 const char * root_env_getval_s(char * resource, char * svalue);
@@ -223,8 +223,8 @@ int f_user_init (unsigned char  bh_crate_nr,
 
 %%BeginOfCode%%
 %B%
-%B% 	root_env_read(".rootrc", 0);			/* read ROOT's environment file */
-%B% 	root_env_read("$envFile", 1);			/* and experiment's configuration data */
+%B% 	root_env_read(".rootrc");				/* read ROOT's environment file */
+%B% 	root_env_read("$envFile");				/* and experiment's configuration data */
 %B%
 %B% 	switch (bh_crate_nr) {
 %CB% 		case $crateNo:						/* init modules in crate C$crateNo ($crateType) */
