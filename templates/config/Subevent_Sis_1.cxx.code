@@ -1,0 +1,331 @@
+%%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:           TUsrSevt$sevtNameUC::FillSubevent
+%B%// Purpose:        Fill local instance of subevent $sevtNameLC with MBS data
+%B%// Arguments:      const UShort_t * SevtData   -- pointer to subevent data
+%B%//                 Int_t SevtWC                -- word count
+%B%//                 Int_t TimeStamp             -- time since last start
+%B%//                                                in units of 100 microsecs
+%B%// Results:        kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Assigns MBS data to corresponding data members
+%B%//                 of subevent $sevtNameLC.
+%B%//                 Special version for SIS 3XXX modules.
+%B%//                 Data format:
+%B%//                     SIS 3801     |31.....24|23.....0|  scaler
+%B%//                                  |   chn   |  data  |
+%B%//                     SIS 3600     |31...............0|  pattern unit
+%B%//                                  |       data       |
+%B%// Keywords:       
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+%C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+%C%
+%C%	recNo++;						// count this record	
+%C%	Int_t wordsProcessed = 0; 			// words processed so far
+%C% 	UShort_t * dataPtr = (UShort_t *) SevtData;
+%C%	while (SevtWC > 0) {									// subevent may contain several modules
+%C%		UShort_t header = *dataPtr++; 							// header word
+%C%		if ((header & kMrbSevt_10_12_B_Header) == 0) {
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, SevtWC);
+%C%			cerr	<< setred
+%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%					<< SevtWC << " (relWC = " << wordsProcessed
+%C%					<< ") : Wrong header - 0x" << setbase(16) << header << setbase(10)
+%C%					<< setblack << endl;
+%C%			return(kTRUE);
+%C%		}
+%C%		Int_t wc = *dataPtr++; 							// word count
+%C% 		Int_t wcs = wc;
+%C%		if (wc <= 0) {
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
+%C%			cerr	<< setred
+%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
+%C%					<< setblack << endl;
+%C%			return(kTRUE);
+%C%		}
+%C%		Int_t moduleNumber = header & kMrbSevt_10_12_M_ModuleNumber;	// extract module number
+%C% 		if (moduleNumber <= 0) {
+%C% 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
+%C% 			cerr	<< setred
+%C% 					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C% 					<< SevtWC << " (relWC = " << wordsProcessed
+%C% 					<< ") : Wrong module number - " << moduleNumber
+%C% 					<< setblack << endl;
+%C%				return(kTRUE);
+%C% 		}
+%C% 		Int_t moduleID = (header >> kMrbSevt_10_12_SH_ModuleId) & kMrbSevt_10_12_M_ModuleId;
+%C% 		Bool_t sis3801 = (moduleID == (kMrbModIdSis_3801 & kMrbSevt_10_12_M_ModuleId));
+%C% 		Int_t chn;
+%C%			Int_t * paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, 0); // SIS 3600: 1 channel only
+%C% 		wc -= 2;				// count for header words
+%C%		for (; wc; wc-=2) { 		// 2 words per channel
+%C% 			Int_t data = (*dataPtr++) << 16;				// channel
+%C% 			data |= *dataPtr++;						// data
+%C% 			if (sis3801) {
+%C% 				chn = (data >> 24) & 0xFF;			// SIS 3801: chn number in bits 31..24
+%C% 				data &= 0xFFFFFF;					// 24 bit data
+%C% 				paramAddr = (Int_t *) gMrbAnalyze->GetParamAddr(moduleNumber, chn); // SIS 3801: calc param addr
+%C% 			}
+%C%			if (paramAddr) {
+%C%				*paramAddr = data;	// assign data value to param
+%C%			} else {
+%C%				gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, SevtWC);
+%C%				if (gMrbAnalyze->GetModuleName(moduleNumber)) {
+%C% 					cerr	<< setred
+%C%							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%							<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - "
+%C%							<< gMrbAnalyze->GetModuleName(moduleNumber) << " (chn " << chn << ")"
+%C%							<< setblack << endl;
+%C% 				} else {
+%C% 					cerr	<< setred
+%C%							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%							<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - module serial "
+%C%							<< moduleNumber << " (chn " << chn << ")"
+%C%							<< setblack << endl;
+%C% 				}
+%C%				return(kTRUE);
+%C% 			}
+%C% 		}
+%C%		SevtWC -= wcs;
+%C%		wordsProcessed += wcs;
+%C% 	}
+%C% 	return(kTRUE);
+%E%}			
+//- dummy prefixes, never used
+%VR%
+%SS%
+%AL%
+%XS%
+%XI%
+%MD%
+%%EndOfCode%%
+%%SEVT_FILL_SUBEVENT%%
+
+%%BeginOfCode%%
+%BN%Bool_t TUsrSevt$sevtNameUC::BookHistograms() {
+%BN%//________________________________________________________________[C++ METHOD]
+%BN%//////////////////////////////////////////////////////////////////////////////
+%BN%// Name:           TUsrSevt$sevtNameUC::BookHistograms
+%BN%// Purpose:        Define histograms for subevent $sevtNameLC
+%BN%// Arguments:      
+%BN%// Results:        kTRUE/kFALSE
+%BN%// Exceptions:     
+%BN%// Description:    Instantiates histograms for subevent $sevtNameLC.
+%BN%//                 Each histogram will be booked only once.
+%BN%// Keywords:       
+%BN%//////////////////////////////////////////////////////////////////////////////
+%BN%
+%BP%Bool_t TUsrSevt$sevtNameUC::Book$evtNameUCHistograms() {
+%BP%//________________________________________________________________[C++ METHOD]
+%BP%//////////////////////////////////////////////////////////////////////////////
+%BP%// Name:           TUsrSevt$sevtNameUC::Book$evtNameUCHistograms
+%BP%// Purpose:        Define private histograms for event $evtNameLC
+%BP%// Arguments:      
+%BP%// Results:        kTRUE/kFALSE
+%BP%// Exceptions:     
+%BP%// Description:    Instantiates private histograms for subevent $sevtNameLC
+%BP%//                 when used within event $evtNameLC.
+%BP%//                 Each histogram will be booked only once.
+%BP%// Keywords:       
+%BP%//////////////////////////////////////////////////////////////////////////////
+%BP%
+%S%	if (h$prefix$paramNameUC == NULL) {
+%S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
+%S% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
+%S% 	}
+%X%	for (Int_t i = 0; i < $indexRange; i++) {
+%X% 		if (h$prefix$paramNameUC[i] == NULL) {
+%X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
+%X% 			TMrbString hTitle = "$sevtNameLC.$paramNameLC"; hTitle += i;
+%X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, 0.0, $hUpperLim.0);
+%X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%X% 		}
+%X% 	}
+%A%	if (h$prefix$paramNameUC == NULL) {
+%A% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
+%A% 			h$prefix$sevtNameUCArray.AddAt(h$prefix$paramNameUC, k$paramNameUC);
+%A% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
+%A% 	}
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_BOOK_HISTOGRAMS%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::BookParams() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name: 		  TUsrSevt$sevtNameUC::BookParams
+%B%// Purpose:  	  Fill param list for subevent $sevtNameLC
+%B%// Arguments:	  
+%B%// Results:  	  kTRUE/kFALSE
+%B%// Exceptions:	  
+%B%// Description:    Generates entries in the list of params.
+%B%// Keywords: 	  
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
+%X%	for (Int_t i = 0; i < $indexRange; i++) {
+%X% 		TMrbString pName = "$paramNameLC"; pName += i;
+%X% 		if (gMrbAnalyze->FindParam(pName.Data()) == NULL) gMrbAnalyze->AddParamToList(pName.Data(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%X% 	}
+%A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_BOOK_PARAMS%%
+
+%%BeginOfCode%%
+%BN%Bool_t TUsrSevt$sevtNameUC::FillHistograms() {
+%BN%//________________________________________________________________[C++ METHOD]
+%BN%//////////////////////////////////////////////////////////////////////////////
+%BN%// Name:           TUsrSevt$sevtNameUC::FillHistograms
+%BN%// Purpose:        Accumulate histograms for subevent $sevtNameLC
+%BN%// Arguments:      
+%BN%// Results:        kTRUE/kFALSE
+%BN%// Exceptions:     
+%BN%// Description:    Performs add-one to histograms.
+%BN%// Keywords:       
+%BN%//////////////////////////////////////////////////////////////////////////////
+%BN%
+%BN%// add-one to histograms
+%BP%Bool_t TUsrSevt$sevtNameUC::Fill$evtNameUCHistograms() {
+%BP%//________________________________________________________________[C++ METHOD]
+%BP%//////////////////////////////////////////////////////////////////////////////
+%BP%// Name:           TUsrSevt$sevtNameUC::Fill$evtNameUCHistograms
+%BP%// Purpose:        Accumulate private histograms for event $evtNameLC
+%BP%// Arguments:      
+%BP%// Results:        kTRUE/kFALSE
+%BP%// Exceptions:     
+%BP%// Description:    Performs add-one to histograms.
+%BP%// Keywords:       
+%BP%//////////////////////////////////////////////////////////////////////////////
+%BP%
+%BP%
+%BP%// add-one to histograms
+%S%	h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC);
+%X%	for (Int_t i = 0; i < $indexRange; i++) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i]);
+%A%	for (Int_t i = k$firstParam; i <= k$lastParam; i++) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i]);
+%PS%	if ($paramNameLC > 0) h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC);
+%PX%	for (Int_t i = 0; i < $indexRange; i++) {
+%PX%		if ($paramNameLC[i] > 0) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i]);
+%PX%	}
+%PA%	for (Int_t i = k$firstParam; i <= k$lastParam; i++) {
+%PA%		if (fData[i] > 0) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i]);
+%PA%	}
+%E%
+%E%	gMrbAnalyze->SetUpdateFlag(); 		// activate update handler
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%SEVT_FILL_HISTOGRAMS%%
+
+Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt%%SEVT_NAME_UC%%::AddBranch
+// Purpose:        Create a branch for subevent %%SEVT_NAME_LC%%
+// Arguments:      TTree * Tree      -- pointer to parent's tree struct
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Calls method TTree::Branch for this subevent.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bufSize;
+	Int_t splitMode;
+
+	if (gMrbAnalyze->TreeToBeWritten()) {
+		bufSize = gMrbAnalyze->GetBranchSize();
+		splitMode = gMrbAnalyze->GetSplitLevel();
+		if (verboseMode) {
+			cout	<< this->ClassName() << "::AddBranch(): adding branch \"%%SEVT_NAME_LC%%\" to tree \""
+					<< Tree->GetName() << "\" (bufsiz="
+					<< bufSize
+					<< ", split=" << splitMode << ")"
+					<< endl;
+		}
+		fMyAddr = (TObject *) this; 		// we need a '**' ref to this object
+		Tree->Branch( 	"%%SEVT_NAME_LC%%", this->ClassName(),
+						&fMyAddr,
+						bufSize,
+						splitMode);
+	}
+	return(kTRUE);
+}
+
+%%BeginOfCode%%
+%LVB%Bool_t TUsrSevt$sevtNameUC::InitializeBranch(TTree * Tree) {
+%LVB%//________________________________________________________________[C++ METHOD]
+%LVB%//////////////////////////////////////////////////////////////////////////////
+%LVB%// Name:           TUsrSevt$sevtNameUC::InitializeBranch
+%LVB%// Purpose:        Initialize branch addresses for subevent $sevtNameLC
+%LVB%// Arguments:      TTree * Tree      -- pointer to parent's tree struct
+%LVB%// Results:        kTRUE/kFALSE
+%LVB%// Exceptions:     
+%LVB%// Description:    Set branch addresses for ALL data members (leaves)
+%LVB%//                 of subevent $sevtNameLC.
+%LVB%//                 >> Replay mode only <<
+%LVB%// Keywords:       
+%LVB%//////////////////////////////////////////////////////////////////////////////
+%LVB%
+%LVB%	Int_t i;
+%LVB%
+%LVB%	Tree->GetEntry(0);						// dummy statement to activate branches (?)
+%LVB%
+%LVS%	Tree->SetBranchAddress("$prefix$paramNameLC", &$paramNameLC);	// $sevtNameLC.$paramNameLC
+%LVX%	Tree->SetBranchAddress("$prefix$paramNameLC[$indexRange]", $paramNameLC);	// $sevtNameLC.$paramNameLC
+%LVA%	Tree->SetBranchAddress("pData[$nofParams]", fData);
+%LVE%	Tree->SetBranchAddress("fTimeStamp", &fTimeStamp);		// (sub)event's time stamp
+%LVE%
+%LVE%	return(kTRUE);
+%LVE%}
+%BR%Bool_t TUsrSevt$sevtNameUC::InitializeBranch(TTree * Tree) {
+%BR%//________________________________________________________________[C++ METHOD]
+%BR%//////////////////////////////////////////////////////////////////////////////
+%BR%// Name:           TUsrSevt$sevtNameUC::InitializeBranch
+%BR%// Purpose:        Initialize branch addresses for subevent $sevtNameLC
+%BR%// Arguments:      TTree * Tree      -- pointer to parent's tree struct
+%BR%// Results:        kTRUE/kFALSE
+%BR%// Exceptions:     
+%BR%// Description:    Set branch address for subevent $sevtNameLC.
+%BR%//                 Subevent will be fetched from tree AS A WHOLE.
+%BR%//                 >> Replay mode only <<
+%BR%// Keywords:       
+%BR%//////////////////////////////////////////////////////////////////////////////
+%BR%
+%BR%	fBranch = Tree->GetBranch("$sevtNameLC");
+%BR%	fMyAddr = this;
+%BR%	fBranch->SetAddress(&fMyAddr);
+%BR%
+%BR%	return(kTRUE);
+%BR%}
+%%EndOfCode%%
+%%SEVT_INITIALIZE_BRANCH%%
+
+void TUsrSevt%%SEVT_NAME_UC%%::Reset(Int_t InitValue) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrSevt%%SEVT_NAME_UC%%::Reset
+// Purpose:        Reset subevent data
+// Arguments:      Int_t InitValue    -- initialization value
+// Results:        --
+// Exceptions:     
+// Description:    Initializes subevent data with given value.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%S%	$paramNameLC = InitValue;	// $sevtNameLC.$paramNameLC
+%X%	for (Int_t i = 0; i < $indexRange; i++) $paramNameLC[i] = InitValue;	// $sevtNameLC.$paramNameLC
+%A%	for (Int_t i = k$firstParam; i <= k$lastParam; i++) fData[i] = InitValue;
+%%EndOfCode%%
+%%SEVT_RESET_DATA%%
+}

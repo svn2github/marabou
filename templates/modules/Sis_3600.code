@@ -1,0 +1,200 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       Sis_3600.code
+// @(#)Purpose:    VME code for pattern unit SIS 3600
+// Description:    Contains pieces of code to operate a pattern unit SIS 3600
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME scaler SIS 3600 */
+#define SIS_3600_R_STATUS			0x0L
+#define SIS_3600_R_IDENT			0x4L
+#define SIS_3600_R_FAST_CLEAR		0x8L
+#define SIS_3600_R_PULSE_FREQ		0xcL
+#define SIS_3600_R_WRITE_FIFO		0x10L
+#define SIS_3600_R_CLEAR_FIFO		0x20L
+#define SIS_3600_R_NEXT_CLOCK		0x24L
+#define SIS_3600_R_CLOCK_ENABLE		0x28L
+#define SIS_3600_R_CLOCK_DISBALE	0x2cL
+#define SIS_3600_R_FCLEAR_ENABLE	0x50L
+#define SIS_3600_R_FCLEAR_DISABLE	0x54L
+#define SIS_3600_R_RESET			0x60L
+#define SIS_3600_R_TEST_PULSE		0x68L
+#define SIS_3600_R_READ_FIFO		0x100L
+
+#define SIS_3600_B_FIFO_EMPTY		(0x1 << 8)
+#define SIS_3600_B_FIFO_HALF_FULL	(0x1 << 10)
+#define SIS_3600_B_FIFO_FULL		(0x1 << 12)
+
+#define SIS_3600_CS_B_ENA_EXT_NEXT		(0x1 << 16)
+
+#define SIS_3600_A_STATUS(module)			((unsigned long *) (module + SIS_3600_R_STATUS))
+#define SIS_3600_A_IDENT(module)		((unsigned long *) (module + SIS_3600_R_IDENT))
+#define SIS_3600_A_FAST_CLEAR(module) 	((unsigned long *) (module + SIS_3600_R_FAST_CLEAR))
+#define SIS_3600_A_PULSE_FREQ(module) 	((unsigned long *) (module + SIS_3600_R_PULSE_FREQ))
+#define SIS_3600_A_WRITE_FIFO(module)		((unsigned long *) (module + SIS_3600_R_WRITE_FIFO))
+#define SIS_3600_A_CLEAR_FIFO(module)		((unsigned long *) (module + SIS_3600_R_CLEAR_FIFO))
+#define SIS_3600_A_NEXT_CLOCK(module)		((unsigned long *) (module + SIS_3600_R_NEXT_CLOCK))
+#define SIS_3600_A_CLOCK_ENABLE(module) 	((unsigned long *) (module + SIS_3600_R_CLOCK_ENABLE))
+#define SIS_3600_A_CLOCK_DISBALE(module)		((unsigned long *) (module + SIS_3600_R_CLOCK_DISBALE))
+#define SIS_3600_A_FCLEAR_ENABLE(module)		((unsigned long *) (module + SIS_3600_R_FCLEAR_ENABLE))
+#define SIS_3600_A_FCLEAR_DISABLE(module)		((unsigned long *) (module + SIS_3600_R_FCLEAR_DISABLE))
+#define SIS_3600_A_RESET(module)		((unsigned long *) (module + SIS_3600_R_RESET))
+#define SIS_3600_A_TEST_PULSE(module)		((unsigned long *) (module + SIS_3600_R_TEST_PULSE))
+#define SIS_3600_A_READ_FIFO(module)		((unsigned long *) (module + SIS_3600_R_READ_FIFO))
+
+#define SIS_3600_READ_STATUS(module)			*SIS_3600_A_STATUS(module)
+#define SIS_3600_WRITE_FCLEAR_WINDOW(module, w)		*SIS_3600_A_FAST_CLEAR(module) = w;
+#define SIS_3600_SET_CTRL_BIT(module, b)		*SIS_3600_A_STATUS(module) |= b
+#define SIS_3600_RESET(module)					*SIS_3600_A_RESET(module) = 0
+#define SIS_3600_CLEAR_FIFO(module)				*SIS_3600_A_CLEAR_FIFO(module) = 0
+#define SIS_3600_ENABLE_NEXT_CLOCK(module)		*SIS_3600_A_CLOCK_ENABLE(module) = 0
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					SIS_3600_RESET($moduleName);
+					SIS_3600_CLEAR_FIFO($moduleName);
+					SIS_3600_SET_CTRL_BIT($moduleName, SIS_3600_CS_B_ENA_EXT_NEXT);
+					sis_3600_module_info($moduleName);
+
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+%SH%					$mnemoLC_sts = SIS_3600_READ_STATUS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
+%SH%					if (($mnemoLC_sts & SIS_3600_B_FIFO_EMPTY) == 0) {
+%SH%						rdoinp = SIS_3600_A_READ_FIFO($moduleName);
+%SH%						RDO_BLT_32(32);
+%SH%					} else {
+%SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
+%SH%						evt.out32 += 32;
+%SH%					}
+%MH%					rdoinp = SIS_3600_A_READ_FIFO($moduleName); 	/* scaler $moduleName runs in multi-hit mode */
+%MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
+%MH%						$mnemoLC_sts = SIS_3600_READ_STATUS($moduleName);
+%MH%						if (($mnemoLC_sts & SIS_3600_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
+%MH%						else break;
+%MH%					}
+%MH%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * 32;
+%MH%					if ($mnemoLC_hit > 0) {
+%MH%						memset(evt.out32, 0, $mnemoLC_hit * sizeof(unsigned long));
+%MH%						evt.out32 += $mnemoLC_hit;
+%MH%					}
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+					SIS_3600_ENABLE_NEXT_CLOCK($moduleName);
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void sis_3600_module_info(volatile unsigned char * module) {
+	char str[128];
+	unsigned long ident;
+	unsigned short modId;
+	unsigned short version;
+	ident = *SIS_3600_A_IDENT(module);
+	modId = (ident >> 16) & 0xFFFF;
+	version = (ident >> 12) & 0xF;
+	sprintf(str, "  SIS module info: id %#x, version %x", modId, version);
+	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
+}
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void sis_3600_module_info(volatile unsigned char * module);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned long $mnemoLC_sts;
+	int $mnemoLC_hit;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

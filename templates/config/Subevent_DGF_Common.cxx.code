@@ -1,0 +1,120 @@
+%%BeginOfCode%%
+Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		   TMrbSubevent_DGF::FillSubevent
+// Purpose: 	   Decode DGF data read from MBS (MAXEVENTS > 1)
+// Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
+//  			   Int_t SevtWC 			   -- word count
+//  			   Int_t TimeStamp  		   -- time since last start
+//  											  in units of 100 microsecs
+// Results: 	   kTRUE/kFALSE
+// Exceptions:     
+// Description:    Assigns MBS data to corresponding data members.
+//  			   Special version to be used for data from XIA DGF-4C modules.
+// Keywords:	   
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+
+	this->GetHitBuffer()->Reset();			// clear hit buffer
+
+	Char_t * dataPtr = (Char_t *) SevtData;
+	recNo++;								// count this record
+	Int_t origSevtWC = SevtWC;				// save original subevent wc
+ 
+	Int_t wordsProcessed = 0;				 // words processed so far
+	Int_t nofWordsPerChn;
+	while (SevtWC) {									 // subevent may contain several dgf buffers
+		DgfEventBufferHeader * bufHdr = (DgfEventBufferHeader *) dataPtr; 	 // points to start of buffer
+		Int_t bufWC = bufHdr->nofWords;  					 // buffer length
+		UInt_t runTask = bufHdr->formatDescr & 0x3;		// 0x100, 0x101, 0x200, 0x201 --> variable channel size
+		if (runTask == 2) nofWordsPerChn = 4;		// 0x102, 0x202 --> 4 words per chn	
+		else if (runTask == 3) nofWordsPerChn = 2;	// 0x103, 0x203 --> 2 words per chn
+		Int_t wc = bufWC;
+		if (bufWC <= 0) {
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong bufWC", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong buffer WC - " << bufWC
+					<< setblack << endl;
+			return(kTRUE);
+		}  				 // reject neg buffer wcs
+		if (wc >= (sizeof(DgfEventBufferHeader) + sizeof(DgfEventHeader)) / sizeof(Short_t)) {  // ignore header fragments
+			Int_t moduleNumber = bufHdr->moduleNumber;		 // module number
+			dataPtr += sizeof(DgfEventBufferHeader);	 // points to start of 1st event
+			wc -= sizeof(DgfEventBufferHeader) / sizeof(Short_t);
+			Int_t eventsProcessed = 0;						// events processed for this module so far
+			while (wc) {								 // dgf buffer may contain several events
+				DgfEventHeader * evtHdr = (DgfEventHeader *) dataPtr;	 // points to event header
+				UInt_t hitPattern = evtHdr->hitPattern;		 // get hit pattern
+				if (hitPattern & 0xFFFFFFF0) {
+					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong hit pattern", SevtData, SevtWC);
+					cerr	<< setred
+							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+							<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong hit pattern - 0x"
+							<< setbase(16) << hitPattern << setbase(10)
+							<< setblack << endl;
+					return(kTRUE);
+				}
+				dataPtr += sizeof(DgfEventHeader); 	 // points to start of 1st channel
+				wc -= sizeof(DgfEventHeader) / sizeof(Short_t);
+				for (Int_t chn = 0; chn < kDgfNofChannels; chn++) {   // up to 4 channels
+					if (hitPattern == 0) break;		 // no more hits in this event
+					if (hitPattern & 1) {  			 // channel fired?
+						if (runTask <= 1) {
+							nofWordsPerChn = *((UShort_t *) dataPtr);
+							dataPtr += sizeof(UShort_t);
+							if (nofWordsPerChn <= 0 || nofWordsPerChn > kDgfMaxNofChannelWords) {
+								gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong channel wc", SevtData, SevtWC);
+								cerr	<< setred
+										<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+										<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong channel wc - 0x"
+										<< setbase(16) << nofWordsPerChn << setbase(10)
+										<< setblack << endl;
+								return(kTRUE);
+							}
+							nofWordsPerChn--;
+							wc--;
+						}
+						DgfEventChannelHeader * chnHdr = (DgfEventChannelHeader *) dataPtr;
+						this->GetHitBuffer()->AddHit(	eventsProcessed,
+																moduleNumber,
+																chn,
+																bufHdr->startTime[0],
+																evtHdr->eventTime[0],
+																chnHdr->fastTriggerTime,
+																&chnHdr->fastTriggerTime,
+																nofWordsPerChn);
+						dataPtr += nofWordsPerChn * sizeof(Short_t);
+						wc -= nofWordsPerChn;		 // continue with next channel
+					}
+					hitPattern >>= 1;
+				}
+				eventsProcessed++;
+			}
+		} else  dataPtr += bufWC * sizeof(Short_t);	 // skip over buffer fragment
+		SevtWC -= bufWC;								 // remaining subevent data
+		wordsProcessed += bufWC;
+		if (bufWC & 1) {								 // dgf buffers are aligned to 32 bit (even number of shorts)
+			dataPtr += sizeof(Short_t);				 // word count is odd -> skip over filler
+			SevtWC--;
+			wordsProcessed++;
+		}  				 
+	}
+	return(kTRUE);
+}			 
+%%EndOfCode%%
+%%SEVT_CLASS_METHODS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INITIALIZE_EVT_SEVT_MODS%%
+
