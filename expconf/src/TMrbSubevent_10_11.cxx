@@ -171,7 +171,12 @@ Bool_t TMrbSubevent_10_11::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 			}
 
 			Template.InitializeCode("%SE%");
-			Template.Substitute("$sevtName", this->GetName());
+			Template.Substitute("$sevtNameLC", this->GetName());
+			Template.Substitute("$sevtNameUC", sevtName.Data());
+			Template.Substitute("$sevtType", (Int_t) fSevtType);
+			Template.Substitute("$sevtSubtype", (Int_t) fSevtSubtype);
+			Template.Substitute("$sevtSerial", fSerial);
+			Template.Substitute("$crateNo", this->GetCrate());
 			Template.WriteCode(RdoStrm);
 			break;
 

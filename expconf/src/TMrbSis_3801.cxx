@@ -76,7 +76,7 @@ TMrbSis_3801::TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fDataType = gMrbConfig->GetLofDataTypes()->FindByIndex(TMrbConfig::kDataUInt);
 				fNofShortsPerChannel = 2;
 				fFifoDepth = FifoDepth; 		// fifo depth per channel
-
+				fBlockReadout = kTRUE;			// module has block readout
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers
 				gDirectory->Append(this);
@@ -142,7 +142,6 @@ Bool_t TMrbSis_3801::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleClearModule:
-		case TMrbConfig::kModuleReadModule:
 		case TMrbConfig::kModuleFinishReadout:
 		case TMrbConfig::kModuleStartAcquisition:
 		case TMrbConfig::kModuleStopAcquisition:
@@ -156,6 +155,14 @@ Bool_t TMrbSis_3801::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			fCodeTemplates.InitializeCode();
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$nofParams", this->GetNofChannelsUsed());
+			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
+			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.WriteCode(RdoStrm);
+			break;
+		case TMrbConfig::kModuleReadModule:
+			fCodeTemplates.InitializeCode(fFifoDepth > 1 ? "%MH%" : "%SH%");
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.Substitute("$fifoDepth", fFifoDepth);
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.WriteCode(RdoStrm);

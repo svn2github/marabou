@@ -79,14 +79,25 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-					rdoinp = SIS_3801_A_READ_FIFO($moduleName);
-					sisSts = SIS_3801_READ_STATUS($moduleName);
-					if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) {
-						RDO_BLT_32(32);
-#ifdef DEBUG
-						f_ut_send_msg("m_read_meb", "scaler data ok", ERR__MSG_INFO, MASK__PRTT);
-#endif
-					}
+%SH%					sisSts = SIS_3801_READ_STATUS($moduleName);
+%SH%					if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) {
+%SH%						rdoinp = SIS_3801_A_READ_FIFO($moduleName);
+%SH%						RDO_BLT_32(32);
+%SH%					} else {
+%SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
+%SH%						evt.out32 += 32;
+%SH%					}
+%MH%					rdoinp = SIS_3801_A_READ_FIFO($moduleName);
+%MH%					for (sisHit = 0; sisHit < $fifoDepth; sisHit++) {
+%MH%						sisSts = SIS_3801_READ_STATUS($moduleName);
+%MH%						if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
+%MH%						else break;
+%MH%					}
+%MH%					sisHit = ($fifoDepth - sisHit) * 32;
+%MH%					if (sisHit > 0) {
+%MH%						memset(evt.out32, 0, sisHit * sizeof(unsigned long));
+%MH%						evt.out32 += sisHit;
+%MH%					}
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -183,5 +194,6 @@ void sis_3801_module_info(volatile unsigned char * module);
 
 %%BeginOfCode%%
 	unsigned long sisSts;
+	int sisHit;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%
