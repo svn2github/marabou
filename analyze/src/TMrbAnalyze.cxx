@@ -1971,6 +1971,134 @@ Int_t TMrbAnalyze::GetModuleIndex(const Char_t * ModuleName) const {
 	}
 }
 
+void TMrbModuleListEntry::ResetChannelHits(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleListEntry::ResetChannelHits
+// Purpose:        Reset module hits
+// Arguments:      Int_t Channel           -- channel number
+// Results:        --
+// Exceptions:     
+// Description:    Resets hit counter for given channel.
+//                 Resets all channels if channel == -1.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Channel == -1) {
+		fNofChannelHits.Reset(0);
+	} else {
+		fNofChannelHits[Channel] = 0;
+	}
+}
+
+void TMrbModuleListEntry::IncrChannelHits(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleListEntry::IncrHits
+// Purpose:        Increment module hits
+// Arguments:      Int_t Channel           -- channel number
+// Results:        --
+// Exceptions:     
+// Description:    Increments hit counter for given channel.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fNofChannelHits[Channel]++;
+}
+
+Int_t TMrbModuleListEntry::GetChannelHits(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbModuleListEntry::GetHits
+// Purpose:        Return module hits
+// Arguments:      Int_t Channel           -- channel number
+// Results:        Int_t HitCount          -- hit counter
+// Exceptions:     
+// Description:    Returns hit counter for given channel.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	return(fNofChannelHits[Channel]);
+}
+
+TMrbModuleListEntry * TMrbAnalyze::GetModuleListEntry(Int_t ModuleIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetModuleListEntry
+// Purpose:        Get module list entry by module index
+// Arguments:      Int_t ModuleIndex                 -- module index
+// Results:        TMrbModuleListEntry * ListEntry   -- entry
+// Exceptions:     
+// Description:    Searches for a module with specified index.
+//                 Returns entry in module list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetModuleName");
+		return(NULL);
+	}
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No module with index = " << ModuleIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "GetModuleName");
+		return(NULL);
+	}
+	return((TMrbModuleListEntry *) nx->GetAssignedObject());
+}
+
+TMrbModuleListEntry * TMrbAnalyze::GetModuleListEntry(const Char_t * ModuleName) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyzeListEntry::GetModuleListEntry
+// Purpose:        Get module list entry by module name
+// Arguments:      const Char_t * ModuleName         -- module name
+// Results:        TMrbModuleListEntry * ListEntry   -- entry
+// Exceptions:     
+// Description:    Searches for a module with specified name.
+//                 Returns entry in module list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	nx = fModuleList.FindByName(ModuleName);
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such module - " << ModuleName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetModuleIndex");
+		return(NULL);
+	} else {
+		return((TMrbModuleListEntry *) nx->GetAssignedObject());
+	}
+}
+
+void TMrbAnalyze::ResetModuleHits(Int_t StartIndex, Int_t StopIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           ResetModuleHits
+// Purpose:        Clear module hit counters
+// Arguments:      Int_t StartIndex     -- start index
+//                 Int_t StopIndex      -- stop index
+// Results:        --
+// Exceptions:     
+// Description:    Reset hit counters for modules within given index limits in list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t allModules = (StartIndex == 0 && StopIndex == 0);
+	for (Int_t i = 0; i < fModuleList.GetEntries(); i++) {
+		TMrbNamedX * nx = (TMrbNamedX *) fModuleList[i];
+		if (nx) {
+			if (allModules || (nx->GetIndex() >= StartIndex && nx->GetIndex() <= StopIndex)) {
+				((TMrbModuleListEntry *) nx->GetAssignedObject())->ResetAllHits();
+			}
+		}
+	}
+}
+
 const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

@@ -286,11 +286,17 @@ class TMrbModuleListEntry : public TObject {
 								Int_t TimeOffeset = 0,
 								TMrbNamedX * FirstParam = NULL,
 								TMrbNamedX * FirstHisto = NULL,
-								TMrbNamedX * FirstSingle = NULL) :	fNofParams(NofParams),
-																	fIndexOfFirstParam(IndexOfFirstParam),
-																	fFirstParam(FirstParam),
-																	fFirstHisto(FirstHisto),
-																	fFirstSingle(FirstSingle) {}; 
+								TMrbNamedX * FirstSingle = NULL) :
+										fNofParams(NofParams),
+										fIndexOfFirstParam(IndexOfFirstParam),
+										fFirstParam(FirstParam),
+										fFirstHisto(FirstHisto),
+										fFirstSingle(FirstSingle) {
+											fNofEventHits = 0;
+											fNofChannelHits.Set(NofParams);
+											fNofChannelHits.Reset();
+										};
+
 		virtual ~TMrbModuleListEntry() {}; 									// dtor
 
 		inline Int_t GetNofParams() const { return(fNofParams); };
@@ -309,10 +315,20 @@ class TMrbModuleListEntry : public TObject {
 			else				fFirstHisto = FirstHisto;
 		};
 
+		void ResetChannelHits(Int_t Channel = -1);
+		inline void ResetEventHits() { fNofEventHits = 0; };
+		inline void ResetAllHits() { fNofEventHits = 0; fNofChannelHits.Reset(); };
+		inline void IncrEventHits() { fNofEventHits++; };
+		void IncrChannelHits(Int_t Channel);
+		inline Int_t GetEventHits() { return(fNofEventHits); };
+		Int_t GetChannelHits(Int_t Channel);
+
 	protected:
 		Int_t fNofParams;
 		Int_t fIndexOfFirstParam;
 		Int_t fTimeOffset;
+		Int_t fNofEventHits;
+		TArrayI fNofChannelHits;
 		TMrbNamedX * fFirstParam;
 		TMrbNamedX * fFirstHisto;
 		TMrbNamedX * fFirstSingle;
@@ -522,9 +538,6 @@ class TUsrHBX : public TObject {
 		TUsrHit * FindEvent(Int_t EventNumber); 							// find an event
 		TUsrHit * FindNextEvent();											// find first hit of next event
 
-		inline void SetAssigned(Bool_t Flag = kTRUE) { fIsAssigned = Flag; };
-		inline Bool_t IsAssigned() { return(fIsAssigned); };
-
 		inline Bool_t AtEnd() const { return(fCurIndex >= this->GetNofHits()); }; // kTRUE if at end of buffer
 
 		Bool_t HitInWindow(TUsrHit * Hit0) const; 								// check if hit in time window
@@ -541,7 +554,6 @@ class TUsrHBX : public TObject {
 		Bool_t fResetDone;						// kTRUE after ResetIndex()
 		Int_t fCurIndex;						// current index in buffer
 		Int_t fWindow;							// time stamp window
-		Bool_t fIsAssigned;						// assigned to an event
 		TUsrHitBuffer * fHitBuffer; 			//! hit buffer address
 		TClonesArray * fHits;					//! access to hit array
 			
@@ -682,6 +694,10 @@ class TMrbAnalyze : public TObject {
 												Int_t NofParams, Int_t TimeOffset = 0);
 		Bool_t AddParamToList(const Char_t * ParamName, TObject * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 		Bool_t AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t RelParamIndex);
+
+		TMrbModuleListEntry * GetModuleListEntry(Int_t ModuleIndex) const;
+		TMrbModuleListEntry * GetModuleListEntry(const Char_t * ModuleName) const;
+		void ResetModuleHits(Int_t StartIndex = 0, Int_t StopIndex = 0);
 
 		Int_t ReadCalibrationFromFile(const Char_t * CalibrationFile);		// read calibration data from file
 		Bool_t AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
