@@ -215,7 +215,8 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventPrivateData,			"EVT_PRIVATE_DATA"				},
 								{TMrbConfig::kAnaEventUserMethods,			"EVT_USER_METHODS"				},
 								{TMrbConfig::kAnaEventUserData,				"EVT_USER_DATA"					},
-								{TMrbConfig::kAnaEventActivateEventBuilder, "EVT_ACTIVATE_EVENT_BUILDER"	},								{TMrbConfig::kAnaEventDispatchOverTrigger,	"EVT_DISPATCH_OVER_TRIGGER" 	},
+								{TMrbConfig::kAnaEventActivateEventBuilder, "EVT_ACTIVATE_EVENT_BUILDER"	},
+								{TMrbConfig::kAnaEventDispatchOverTrigger,	"EVT_DISPATCH_OVER_TRIGGER" 	},
 								{TMrbConfig::kAnaEventIgnoreTrigger,		"EVT_IGNORE_TRIGGER"			},
 								{TMrbConfig::kAnaEventSetFakeMode,			"EVT_SET_FAKE_MODE"				},
 								{TMrbConfig::kAnaEventCreateTree,			"EVT_CREATE_TREE"				},
@@ -567,10 +568,10 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		TDatime dt; 											// creation date
 		fCreationDate = dt.AsString();
 
-		fLofEvents.SetObject("Events", "List of events"); 		// named TLists
-		fLofSubevents.SetObject("Subevents", "List of subevents");
-		fLofModules.SetObject("Modules", "List of modules");
-		fLofScalers.SetObject("Scalers", "List of scalers");
+		fLofEvents.SetName("List of events");
+		fLofSubevents.SetName("List of subevents");
+		fLofModules.SetName("List of modules");
+		fLofScalers.SetName("List of scalers");
 
 		UpdateTriggerTable();									// initialize trigger table								
 
@@ -2465,6 +2466,37 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 
 					case TMrbConfig::kAnaHistoFillArrays:
+						if (fLofSubevents.First()) {
+							TMrbSubevent * sevt = (TMrbSubevent *) fLofSubevents.First();
+							while (sevt) {
+								if (sevt->HistosToBeAllocated() && sevt->IsInArrayMode()) {
+									TString listName = sevt->GetName();
+									listName += ".histlist";
+									ofstream list(listName.Data(), ios::out);
+									if (!list.good()) {
+										gMrbLog->Err() << gSystem->GetError() << " - " << listName << endl;
+										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+									} else {
+										TMrbModuleChannel * param = (TMrbModuleChannel *) sevt->GetLofParams()->First();
+										while (param) {
+											TString paramName = param->GetName();
+											paramName(0,1).ToUpper();
+											paramName.Prepend("h");
+											list << paramName << endl;
+											param = (TMrbModuleChannel *) sevt->GetLofParams()->After(param);
+										}
+										list.close();
+										if (verboseMode) {
+											gMrbLog->Out()  << "Creating histo list file - " << listName
+															<< " (" << sevt->GetNofParams() << " entries)"
+															<< endl;
+											gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+										}
+									}
+								}
+								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+							}
+						}
 						if (fLofHistoArrays.First()) {
 							anaTmpl.InitializeCode("%B%");
 							anaTmpl.WriteCode(anaStrm);

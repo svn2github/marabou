@@ -72,7 +72,7 @@ Int_t TUsrEvt%%EVT_NAME_UC%%::SetupLofSubevents() {
 
 	fLofSubevents.Clear();
 %%BeginOfCode%%
-	this->AddSubevent(&$sevtNameLC, (Int_t) kMrbSevt$sevtNameUC);	// subevent $sevtNameLC: $sevtTitle
+	this->AddSubevent(&$sevtNameLC, (Int_t) kMrbSevt$sevtNameUC);	// subevent $sevtNameLC: $sevtTitle, id=$sevtSerial
 %%EndOfCode%%
 %%EVT_SETUP_SEVT_LIST%%
 

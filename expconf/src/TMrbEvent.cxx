@@ -528,6 +528,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 						anaTmpl.Substitute("$evtNameUC", evtNameUC);
 						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.Substitute("$sevtSerial", sevt->GetSerial());
 						anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
 						anaTmpl.WriteCode(ana);
 						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
@@ -700,6 +701,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 							anaTmpl.InitializeCode();
 							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+							anaTmpl.Substitute("$sevtSerial", sevt->GetSerial());
 							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
 							anaTmpl.Substitute("$sevtType", (Int_t) sevt->GetType());
 							anaTmpl.Substitute("$sevtSubtype", (Int_t) sevt->GetSubtype());

@@ -642,10 +642,10 @@ class TMrbConfig : public TNamed {
 		inline Int_t GetNofModules() { return(fNofModules); };
 		Int_t GetNofModules(const Char_t * Pattern);
 		
-		inline TMrbLofNamedX * GetLofEvents() { return(&fLofEvents); };		// get address of ...
-		inline TMrbLofNamedX * GetLofSubevents() { return(&fLofSubevents); };
-		inline TMrbLofNamedX * GetLofModules() { return(&fLofModules); };
-		inline TMrbLofNamedX * GetLofScalers() { return(&fLofScalers); };
+		inline TObjArray * GetLofEvents() { return(&fLofEvents); };		// get address of ...
+		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
+		inline TObjArray * GetLofModules() { return(&fLofModules); };
+		inline TObjArray * GetLofScalers() { return(&fLofScalers); };
 		inline TMrbLofNamedX * GetLofModuleIDs() { return(&fLofModuleIDs); };
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
@@ -691,21 +691,21 @@ class TMrbConfig : public TNamed {
 		TMrbLogger * fMessageLogger;		//! addr of message logger
 			
 		Int_t fNofEvents;					// list of events
-		TMrbLofNamedX fLofEvents;
+		TObjArray fLofEvents;
 
 		TArrayI fCrateTable;				// crate table (camac and VME)
 		TArrayI fControllerTable;			// controller table (camac only)
 
 		Int_t fNofSubevents;				// list of subevents
-		TMrbLofNamedX fLofSubevents;
+		TObjArray fLofSubevents;
 
 		Int_t fNofModules;					// list of modules
-		TMrbLofNamedX fLofModules;
+		TObjArray fLofModules;
 
 		Bool_t fLongParamNames; 			// use long param names: i.e. <subevent><param>
 
 		Int_t fNofScalers;					// list of scalers
-		TMrbLofNamedX fLofScalers;
+		TObjArray fLofScalers;
 
 		UInt_t fMultiBorC;					// multi branch? multi crate?
 

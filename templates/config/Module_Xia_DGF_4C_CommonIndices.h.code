@@ -51,8 +51,16 @@ enum EMrbDgfParamOffsets	{
 								kMrbDgfParFastPeaksA3		=	$parFastPeaksA3,
 								kMrbDgfParFastPeaksB3		=	$parFastPeaksB3,
 
-								kMrbDgfParStatFirst			=	kMrbDgfParRealTimeA,
-								kMrbDgfParStatLast			=	kMrbDgfParFastPeaksB3
+								kMrbDgfStatFirstPar			=	kMrbDgfParRealTimeA,
+								kMrbDgfStatLastPar			=	kMrbDgfParFastPeaksB3,
+
+								kMrbDgfStatHdrMagic 		=	0,
+								kMrbDgfStatHdrWC	 		=	1,
+								kMrbDgfStatHdrSevtIdx 		=	2,
+								kMrbDgfStatHdrDgfIdx		=	3,
+
+								kMrbDgfStatMagicWord		=	0x2525,
+								kMrbDgfStatEOBWord			=	0x5252
 							};
 %%EndOfCode%%
 %%MODULE_SPECIAL_ENUM%%

@@ -1,8 +1,8 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSubevent_Data_S.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,91]
-// Description:    Implements class methods to handle [10,91] subevents
+// Purpose:        MARaBOU configuration: subevents of type [10,64]
+// Description:    Implements class methods to handle [10,64] subevents
 //                 See manual "GOOSY Buffer Structures" for a description
 // Keywords:
 // Author:         R. Lutter
@@ -38,14 +38,14 @@ TMrbSubevent_Data_S::TMrbSubevent_Data_S(const Char_t * SevtName, const Char_t *
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Data_S
-// Purpose:        Create a subevent type [10,91]
+// Purpose:        Create a subevent type [10,64]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t NofWords          -- number of data words (16 bit)
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,91] -
+// Description:    Create a new subevent of type [10,64] -
 //                 plain integer data (16 bit).
 //
 //                 Data format as given by the producer (MBS):
@@ -65,7 +65,7 @@ TMrbSubevent_Data_S::TMrbSubevent_Data_S(const Char_t * SevtName, const Char_t *
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,91]: chn + data");
+		if (*SevtTitle == '\0') SetTitle("Subevent [10,64]: UShort_t (16 bit) data");
 		fSevtType = 10; 	 			// set subevent type & subtype
 		fSevtSubtype = 64;
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
@@ -80,7 +80,7 @@ Bool_t TMrbSubevent_Data_S::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Data_S::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,91]
+// Purpose:        Write a piece of code for subevent [10,64]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template
