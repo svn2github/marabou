@@ -130,6 +130,12 @@ Bool_t is2dim(TH1 * hist)
    return hist->InheritsFrom("TH2");
 };
 
+//----------------------------------------------------------------------- 
+
+Bool_t is3dim(TH1 * hist)
+{
+   return hist->InheritsFrom("TH3");
+};
 //____________________________________________________________________________
 
 Bool_t is_a_list(TObject * obj)

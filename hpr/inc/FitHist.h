@@ -109,9 +109,10 @@ public:
    void SaveDefaults(Bool_t recalculate = kTRUE);
    void RestoreDefaults();
    void DisplayHist(TH1*, Int_t, Int_t, Int_t, Int_t);  // display hists
-   void DrawHist();                      // 
+//   void DrawHist();                      // 
    void Draw1Dim();                      // 
    void Draw2Dim();                      // 
+   void Draw3Dim();                      // 
    void DrawColors();                      // 
    const Char_t * GetCanvasName(){return fCname.Data();};             // 
    HTRootCanvas* GetMyCanvas(){return mycanvas;};  

@@ -563,7 +563,8 @@ void FitHist::DrawTopAxis() {
    cHist->cd();
    Axis_t blow = (Axis_t)(fSelHist->GetXaxis()->GetFirst() - 1);
    Axis_t bup  = (Axis_t)(fSelHist->GetXaxis()->GetLast());
-   naxis = new TGaxis(x1, y1, x2, y2,blow, bup, ndiv, "-");
+   naxis = new TGaxis(x1, y1, x2, y2,blow, bup, ndiv, "-W");
+   naxis->SetGridLength(-0.8);
    naxis->SetLabelOffset(loff);
    naxis->SetLabelSize(lsize);
    naxis->Paint();
@@ -620,15 +621,11 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 //   Axis_t xl = 0, xu = 0, yl = 0, yu = 0, xrl=0, xru=0, yrl=0, yru=0;
 //   Int_t  xbinl = 0, xbinu = 0, ybinl = 0, ybinu = 0;
 
-   if (is2dim(hist)) {
+   if (is3dim(hist)) {
       fSelPad->cd();
-/*
-      if (fLogz) {
-         cHist->SetLogz();
-         if (hp && hp->fLogScaleMin > 0)
-            hist->SetMinimum(hp->fLogScaleMin);
-      }
-*/
+      Draw3Dim();
+   } else if (is2dim(hist)) {
+      fSelPad->cd();
       Draw2Dim();
       if (hp && hp->fAutoExec_2 ) {
    		TString cmd("((HistPresent*)gROOT->FindObject(\""); 
@@ -743,6 +740,8 @@ void FitHist::Entire()
    if (is2dim(fSelHist)) {
       fSelHist->GetYaxis()->SetRange(1, fSelHist->GetNbinsY());
       Draw2Dim();
+   } else if (is3dim(fSelHist)){
+      Draw3Dim();
    } else {
       Draw1Dim();
    }
@@ -2333,8 +2332,11 @@ void FitHist::ExpandProject(Int_t what)
    cHist->cd();
    if (is2dim(fSelHist))
       Draw2Dim();
+   else if (is3dim(fSelHist))
+      Draw3Dim();
    else
       Draw1Dim();
+
    ClearMarks();
    cHist->Update();
 }
@@ -2368,13 +2370,20 @@ void FitHist::ExecDefMacro()
 }
 
 //____________________________________________________________________________
+//
+//void FitHist::DrawHist() {
+ //   if (is2dim(fSelHist)) Draw2Dim(); 
+//    else                  Draw1Dim(); 
 
-void FitHist::DrawHist() {
-    if (is2dim(fSelHist)) Draw2Dim(); 
-    else                  Draw1Dim(); 
+//    delete this; 
+//};  
+//____________________________________________________________________________
 
-    delete this; 
-};  
+void FitHist::Draw3Dim()
+{
+   TString drawopt;
+   fSelHist->Draw(drawopt);
+}
 //____________________________________________________________________________
 
 void FitHist::Draw1Dim()
@@ -2449,29 +2458,6 @@ void FitHist::Draw1Dim()
       TExec * exec = new TExec("exec", cmd.Data());
       exec->Draw();
       cHist->Update();
-/*
-      TGaxis *naxis;
-      Axis_t x1, y1, x2, y2;
-      Float_t loff = 0.0;
-      Float_t lsize;
-      Int_t ndiv;
-
-      x1 = cHist->GetFrame()->GetX1();
-      x2 = cHist->GetFrame()->GetX2();
-      y1 = cHist->GetFrame()->GetY2();
-      y2 = y1;
-      ndiv = fSelHist->GetXaxis()->GetNdivisions();
-      lsize = fSelHist->GetXaxis()->GetLabelSize();
-      cHist->cd();
-      Axis_t blow = (Axis_t)(fSelHist->GetXaxis()->GetFirst() - 1);
-      Axis_t bup  = (Axis_t)(fSelHist->GetXaxis()->GetLast() - 1);
-      naxis = new TGaxis(x1, y1, x2, y2, blow, bup, ndiv, "-");
-      naxis->SetLabelOffset(loff);
-      naxis->SetLabelSize(lsize);
-      naxis->Draw();
-      cHist->Modified(kTRUE);
-      cHist->Update();
-*/
    }
 }
 
