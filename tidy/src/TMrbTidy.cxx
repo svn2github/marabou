@@ -1,0 +1,1036 @@
+//__________________________________________________[C++IMPLEMENTATION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidy
+// Purpose:        MARaBOU utilities: tidy interface
+// Description:    Implements class methods to interface the tidy library
+// Keywords:
+// Author:         R. Lutter
+// Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:       $Id: TMrbTidy.cxx,v 1.1 2004-11-16 15:12:18 rudi Exp $       
+// Date:           
+//////////////////////////////////////////////////////////////////////////////
+
+namespace std {} using namespace std;
+
+#include <iostream>
+#include <iomanip>
+
+#include "TROOT.h"
+#include "TObjString.h"
+#include "SetColor.h"
+#include "TMrbTidy.h"
+#include "TMrbTidyCommon.h"
+#include "TMrbLogger.h"
+
+ClassImp(TMrbTidyDoc)
+ClassImp(TMrbTidyOption)
+ClassImp(TMrbTidyNode)
+ClassImp(TMrbTidyAttr)
+
+extern TMrbLogger * gMrbLog;			// global access to logging system
+
+TMrbTidyDoc::TMrbTidyDoc() : TNamed("TidyDoc", "Tidy document") {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc
+// Purpose:        Create a tidy document
+// Arguments:      --
+// Description:    Ctor to instantiate a tidy document
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	this->Reset();
+	fHandle = tidyCreate();
+	cout << this->ClassName() << ": " << setbase(16) << this << " handle=" << fHandle << setbase(10) << endl;
+	tidySetErrorBuffer(fHandle, &fErrorBuffer);
+}
+		
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName) : TNamed(DocName, "Tidy document") {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc
+// Purpose:        Create a tidy document
+// Arguments:      Char_t * DocName       -- name of document
+// Description:    Ctor to instantiate a tidy document
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	this->Reset();
+	fHandle = tidyCreate();
+	this->InitErrorBuffer();					// init error buffer
+}		
+		
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, const Char_t * DocFile, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc
+// Purpose:        Create a tidy document
+// Arguments:      Char_t * DocName       -- name of document
+//                 Char_t * DocFile       -- file containing document
+//                 Bool_t Repair          -- clean and repair
+//                 Char_t * CfgFile       -- Tidy's config file
+// Description:    Ctor to instantiate a tidy document
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	this->Reset();								// reset
+	fHandle = tidyCreate(); 					// init tidy system
+	this->InitErrorBuffer();					// init error buffer
+	if (!this->LoadConfig(CfgFile)) this->MakeZombie();	// load config
+	if (!this->IsZombie()) {
+		this->ReadOptions();					// read options
+		this->SetOption(TidyXhtmlOut, kTRUE);	// convert to xhtml
+		if (!this->ParseFile(DocFile, Repair)) this->MakeZombie();	// parse file
+	}
+}		
+		
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, istream & Stream, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc
+// Purpose:        Create a tidy document
+// Arguments:      Char_t * DocName       -- name of document
+//                 istream & Stream       -- stream to read from
+//                 Bool_t Repair          -- clean and repair
+//                 Char_t * CfgFile       -- Tidy's config file
+// Description:    Ctor to instantiate a tidy document
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	this->Reset();								// reset
+	fHandle = tidyCreate(); 					// init tidy system
+	this->InitErrorBuffer();					// init error buffer
+	if (!this->LoadConfig(CfgFile)) this->MakeZombie();	// load config
+	if (!this->IsZombie()) {
+		this->ReadOptions();					// read options
+		this->SetOption(TidyXhtmlOut, kTRUE);	// convert to xhtml
+		TString tidyBuffer;
+		tidyBuffer.ReadFile(Stream);			// read data to buffer
+		this->ParseBuffer(tidyBuffer, Repair);	// parse buffer
+	}
+}		
+		
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, TString & Buffer, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc
+// Purpose:        Create a tidy document
+// Arguments:      Char_t * DocName       -- name of document
+//                 TString & Buffer       -- buffer containing html data
+//                 Bool_t Repair          -- clean and repair
+//                 Char_t * CfgFile       -- Tidy's config file
+// Description:    Ctor to instantiate a tidy document
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+	this->Reset();								// reset
+	fHandle = tidyCreate(); 					// init tidy system
+	this->InitErrorBuffer();					// init error buffer
+	if (!this->LoadConfig(CfgFile)) this->MakeZombie();	// load config
+	if (!this->IsZombie()) {
+		this->ReadOptions();					// read options
+		this->SetOption(TidyXhtmlOut, kTRUE);	// convert to xhtml
+		this->ParseBuffer(Buffer, Repair);		// parse buffer
+	}
+}		
+
+TMrbTidyOption::TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyOption OptHandle, TObject * Doc)
+																		: TMrbNamedX((Int_t) OptId, OptName) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyOption
+// Purpose:        A tidy option
+// Arguments:      TidyOptionId OptId  	  -- option id
+//                 Char_t * OptName       -- name
+//                 TidyOption OptHandle   -- ptr to tidy struct
+//                 TObject * Doc          -- link to document
+// Description:    Ctor to instantiate a tidy option
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fType = TidyString;
+	fHandle = OptHandle;
+	fTidyDoc = Doc;
+	fType = tidyOptGetType(OptHandle);
+}
+
+TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TObject * Doc)
+																		: TMrbNamedX((Int_t) NodeId, NodeName) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode
+// Purpose:        A tidy node
+// Arguments:      TidyTagId NodeId  	  -- node id
+//                 Char_t * NodeName      -- name
+//                 TMrbTidyNode * Parent  -- link to parent node
+//                 TidyOption NodeHandle  -- ptr to tidy struct
+//                 TObject * Doc          -- link to document
+// Description:    Ctor to instantiate a tidy node
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fHandle = NodeHandle;
+	fTreeLevel = 0;
+	fParent = Parent;
+	fTidyDoc = Doc;
+	fLofChilds.Delete();
+	fLofChilds.SetName("Child Nodes");
+	fLofAttr.Delete();
+	fLofAttr.SetName("Node Attributes");
+	this->ReadAttr();
+}
+
+TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TObject * Node) : TMrbNamedX((Int_t) AttrId, AttrName) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyAttr
+// Purpose:        A tidy attribute
+// Arguments:      TidyAttrId AttrId  	  -- attr id
+//                 Char_t * AttrName      -- name
+//                 TMrbTidyNode * Node    -- node attr belongs to
+// Description:    Ctor to instantiate a tidy attribute
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fHandle = NULL;
+	fValue.Resize(0);
+	fTidyDoc = NULL;
+	this->AssignObject(Node);
+}
+
+void TMrbTidyDoc::Reset(Bool_t Release) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::Reset
+// Purpose:        Reset
+// Arguments:      Bool_t Release  -- kTRUE -> release
+// Results:        --
+// Exceptions:
+// Description:    Resets to initial values
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Release && fHandle) tidyRelease(fHandle);	// free tidy allocs
+	fRepair = kFALSE;								// don't run reapir step
+	fDocFile.Resize(0); 							// no doc file
+	fCfgFile.Resize(0); 							// no config
+	if (Release && fTidyRoot) {						// delete document tree
+		fTidyRoot->DeleteTree();
+		delete fTidyRoot;
+	}
+	fTidyRoot = NULL;								// no html data present
+	fTidyHtml = NULL;
+	fTidyHead = NULL;
+	fTidyBody = NULL;
+	fLofOptions.Delete();							// empty list of options
+	fLofOptions.SetName("Tidy Options");
+}
+
+void TMrbTidyDoc::InitErrorBuffer() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::InitErrorBuffer
+// Purpose:        Initialize tidy's error buffer
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Resets internal error buffer
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	memset(&fErrorBuffer, 0, sizeof(TidyBuffer));
+	if (fHandle) tidySetErrorBuffer(fHandle, &fErrorBuffer);
+}
+
+Bool_t TMrbTidyDoc::LoadConfig(const Char_t * CfgFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::LoadConfig
+// Purpose:        Load Tidy's config file
+// Arguments:      Char_t * CfgFile    -- config file
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads config data from file (via tidyLoadConfig())
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fCfgFile.Resize(0); 							// no config
+	if (CfgFile) {
+		if (gSystem->AccessPathName(CfgFile)) { 	// check if file exists
+			gMrbLog->Err()	<< "Can't access config file - " << CfgFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadConfig");
+			return(kFALSE);
+		}
+		fCfgFile = CfgFile;
+		tidyLoadConfig(fHandle, (Char_t *) CfgFile);			// load config data
+	}
+	return(kTRUE);
+}
+
+Int_t TMrbTidyDoc::ReadOptions() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::ReadOptions
+// Purpose:        Read tidy options
+// Arguments:      --
+// Results:        Int_t NofOptions   -- number of options read
+// Exceptions:
+// Description:    Reads options via tidyGetOptionsList()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofOptions.Delete();				// clear option list
+	TidyIterator itOpt = tidyGetOptionList(fHandle);	// iterate over tidy's option list
+	while (itOpt)
+	{
+  		TidyOption optHandle = tidyGetNextOption(fHandle, &itOpt);	// get handle to tidy option
+		TMrbTidyOption * opt = new TMrbTidyOption(tidyOptGetId(fHandle), tidyOptGetName(fHandle), optHandle, this);
+		fLofOptions.Add(opt);			// add to list
+  	}
+	return(fLofOptions.GetEntriesFast());
+}
+
+Bool_t TMrbTidyDoc::ParseFile(const Char_t * DocFile, Bool_t Repair) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::ParseFile
+// Purpose:        Parse html data from file
+// Arguments:      Char_t * DocFile     -- html document to be processed
+//                 Bool_t Repair        -- kTRUE if tidy's repair mechanism has to be called
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Processes html data from file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fDocFile.Resize(0); 							// no document
+	if (gSystem->AccessPathName(DocFile)) { 		// check if file exists
+		gMrbLog->Err()	<< "Can't access document file - " << DocFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ParseFile");
+		return(kFALSE);
+	}
+	ifstream docStrm(DocFile, ios::in); 			// try to open file
+	if (!docStrm.good()) {							// some error
+		gMrbLog->Err() << gSystem->GetError() << " - " << DocFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ParseFile");
+		return(kFALSE);
+	}
+	fDocFile = DocFile;
+	TString tidyBuffer; 							// fill buffer
+	tidyBuffer.ReadFile(docStrm);					// from file
+	docStrm.close();
+	return(this->ParseBuffer(tidyBuffer.Data(), Repair));	// parse buffer
+}
+
+Bool_t TMrbTidyDoc::ParseBuffer(const Char_t * Buffer, Bool_t Repair) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::ParseBuffer
+// Purpose:        Parse html data from buffer
+// Arguments:      Char_t * Buffer      -- buffer with html data
+//                 Bool_t Repair        -- kTRUE if tidy's repair mechanism has to be called
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Processes html data.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->HasNodes()) {					// document tree has to be empty
+		gMrbLog->Err() << "Document tree already filled - can't proceed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ParseBuffer");
+		return(kFALSE);
+	}
+
+	tidyParseString(fHandle, (Char_t *) Buffer);			// parse html data
+	fRepair = Repair;
+	if (Repair) tidyCleanAndRepair(fHandle);				// try to repair things
+	TidyNode node = tidyGetRoot(fHandle);
+	fTidyRoot = new TMrbTidyNode(tidyNodeGetId(node), "root", NULL, node, this);
+	fTidyRoot->SetType(TidyNode_Root);
+	fTidyRoot->FillTree();
+	fTidyHtml = (TMrbTidyNode *) fTidyRoot->GetLofChilds()->FindByIndex((Int_t) TidyTag_HTML);
+	if (fTidyHtml) {
+		fTidyHead = (TMrbTidyNode *) fTidyHtml->GetLofChilds()->FindByIndex((Int_t) TidyTag_HEAD);
+		fTidyBody = (TMrbTidyNode *) fTidyHtml->GetLofChilds()->FindByIndex((Int_t) TidyTag_BODY);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbTidyDoc::CleanAndRepair() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::CleanAndRepair
+// Purpose:        Start tidy's repair mechanism
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Repair inconsistencies via tidyCleanAndRepair().
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok;
+	if (this->HasNodes()) {
+		tidyCleanAndRepair(fHandle);
+		fRepair = kTRUE;
+		ok = kTRUE;
+	} else {
+		gMrbLog->Err() << "Document tree is empty - can't proceed" << endl;
+		gMrbLog->Flush(this->ClassName(), "CleanAndRepair");
+		ok = kFALSE;
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyDoc::RunDiagnostics() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::RunDiagnostics
+// Purpose:        Perform tidy's diagnostic step
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Runs diagnostics via tidyRunDiagnostics().
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok;
+	if (this->IsRepaired()) {
+		if (this->HasNodes()) {
+			tidyRunDiagnostics(fHandle);
+			ok = kTRUE;
+		} else {
+			gMrbLog->Err() << "Document tree is empty - can't proceed" << endl;
+			gMrbLog->Flush(this->ClassName(), "RunDiagnostics");
+			ok = kFALSE;
+		}
+	} else {
+		gMrbLog->Err() << "Can't perform diagnostics step - call method \"CleanAndRepair()\" first" << endl;
+		gMrbLog->Flush(this->ClassName(), "RunDiagnostics");
+		ok = kFALSE;
+	}
+	return(ok);
+}
+
+const Char_t * TMrbTidyNode::GetText(TString & Buffer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::GetText()
+// Purpose:        Get text from node
+// Arguments:      TString & Buffer  -- where to store text
+// Results:        Char_t * BufPtr   -- pointer to text
+// Exceptions:
+// Description:    Reads text portion from node.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Buffer.Resize(0);			// cleanup
+	if (this->HasText()) {		// is there any text in this node?
+		TidyBuffer buf;
+		tidyNodeGetText(fTidyDoc, fHandle, &buf);	// fetch it
+		Buffer = buf.bp;		// fill buffer
+	}
+	return(Buffer.Data());
+}
+
+void TMrbTidyNode::FillTree() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::FillTree()
+// Purpose:        Fill document tree
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Fills document tree recursively.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofChilds.Delete();
+	for (TidyNode child = tidyGetChild(fHandle); child; child = tidyGetNext(child)) {
+		const Char_t * nName = tidyNodeGetName(child);
+		TidyNodeType ty = tidyNodeGetType(child);
+		TString nodeName;
+		if (nName == NULL) {
+			if (ty == TidyNode_Text)			nodeName = "text";
+			else if (ty == TidyNode_Comment)	nodeName = "comment";
+			else nodeName = "n.a";
+		} else {
+			nodeName = nName;
+		}
+		TMrbTidyNode * node = new TMrbTidyNode(tidyNodeGetId(child), nodeName, this, child, this->GetTidyDoc());
+		node->SetType(tidyNodeGetType(child));
+		node->SetTreeLevelFromParent();
+		node->FillTree();
+		fLofChilds.Add(node);
+	}
+}
+
+void TMrbTidyNode::DeleteTree() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::DeleteTree()
+// Purpose:        Delete document tree
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Removes any nodes from document tree.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
+	while (node) {
+		node->DeleteTree();
+		node = (TMrbTidyNode *) fLofChilds.After(node);
+	}
+	fLofChilds.Delete();
+}
+
+Int_t TMrbTidyNode::ReadAttr() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:          TMrbTidyNode::ReadAttr
+// Purpose:        Read tidy attributes
+// Arguments:      --
+// Results:        Int_t NofAttr   -- number of attributes read
+// Exceptions:
+// Description:    Reads node attributes via tidyAttrFirst()/Next()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofAttr.Delete();				// clear option list
+	TidyAttr attrHandle;
+	for (attrHandle = tidyAttrFirst(fHandle); attrHandle; attrHandle = tidyAttrNext(attrHandle)) {
+		TMrbTidyAttr * attr = new TMrbTidyAttr(tidyAttrGetId(attrHandle), tidyAttrName(attrHandle), this);
+		fLofAttr.Add(attr);				// add to list
+		attr->SetValue(tidyAttrValue(attrHandle));	// get value
+		attr->SetHandle(attrHandle);			// connect to tidy attr
+  	}
+	return(fLofAttr.GetEntriesFast());
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyOption::GetValue()/SetValue()
+// Purpose:        Get/set tidy options
+// Description:    Interface to tidyOptGetXXX()/tidyOptSetXXX()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t TMrbTidyOption::GetDefault(TString & String) {
+	if (fType == TidyString) String = tidyOptGetDefault(fHandle);
+	return(fType == TidyString);
+};
+
+Bool_t TMrbTidyOption::GetDefault(Int_t & Value) {
+	if (fType == TidyInteger) Value = tidyOptGetDefaultInt(fHandle);
+	return(fType == TidyInteger);
+};
+
+Bool_t TMrbTidyOption::GetDefault(Bool_t & Flag) {
+	if (fType == TidyBoolean) Flag = tidyOptGetDefaultBool(fHandle);
+	return(fType == TidyBoolean);
+};
+
+Bool_t TMrbTidyOption::GetValue(TString & String) {
+	if (fType == TidyString) String = tidyOptGetValue(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex());
+	return(fType == TidyString);
+};
+
+Bool_t TMrbTidyOption::GetValue(Int_t & Value) {
+	if (fType == TidyInteger) Value = tidyOptGetInt(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex());
+	return(fType == TidyInteger);
+};
+
+Bool_t TMrbTidyOption::GetValue(Bool_t & Flag) {
+	if (fType == TidyBoolean) Flag = tidyOptGetBool(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex());
+	return(fType == TidyBoolean);
+};
+
+Bool_t TMrbTidyOption::SetValue(Char_t * String) {
+	if (fType == TidyString) tidyOptSetValue(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex(), String);
+	return(fType == TidyString);
+};
+
+Bool_t TMrbTidyOption::SetValue(Int_t Value) {
+	if (fType == TidyInteger) tidyOptSetInt(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex(), Value);
+	return(fType == TidyInteger);
+};
+
+Bool_t TMrbTidyOption::SetValue(Bool_t Flag) {
+	if (fType == TidyBoolean) tidyOptSetBool(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex(), Flag);
+	return(fType == TidyBoolean);
+};
+
+void TMrbTidyOption::Reset()  { tidyOptResetToDefault(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex()); };
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::IsXXX()
+// Purpose:        Query node type
+// Description:    Interface to tidyNodeIsXXX()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t TMrbTidyNode::IsText() { return(tidyNodeIsText(fHandle)); };
+Bool_t TMrbTidyNode::IsProp() { return(tidyNodeIsProp(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)); };
+Bool_t TMrbTidyNode::IsHeader() { return(tidyNodeIsHeader(fHandle)); };
+Bool_t TMrbTidyNode::HasText() { return(tidyNodeHasText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)); };
+Bool_t TMrbTidyNode::IsHTML() { return(tidyNodeIsHTML(fHandle)); };
+Bool_t TMrbTidyNode::IsHEAD() { return(tidyNodeIsHEAD(fHandle)); };
+Bool_t TMrbTidyNode::IsTITLE() { return(tidyNodeIsTITLE(fHandle)); };
+Bool_t TMrbTidyNode::IsBASE() { return(tidyNodeIsBASE(fHandle)); };
+Bool_t TMrbTidyNode::IsMETA() { return(tidyNodeIsMETA(fHandle)); };
+Bool_t TMrbTidyNode::IsBODY() { return(tidyNodeIsBODY(fHandle)); };
+Bool_t TMrbTidyNode::IsFRAMESET() { return(tidyNodeIsFRAMESET(fHandle)); };
+Bool_t TMrbTidyNode::IsFRAME() { return(tidyNodeIsFRAME(fHandle)); };
+Bool_t TMrbTidyNode::IsIFRAME() { return(tidyNodeIsIFRAME(fHandle)); };
+Bool_t TMrbTidyNode::IsNOFRAMES() { return(tidyNodeIsNOFRAMES(fHandle)); };
+Bool_t TMrbTidyNode::IsHR() { return(tidyNodeIsHR(fHandle)); };
+Bool_t TMrbTidyNode::IsH1() { return(tidyNodeIsH1(fHandle)); };
+Bool_t TMrbTidyNode::IsH2() { return(tidyNodeIsH2(fHandle)); };
+Bool_t TMrbTidyNode::IsPRE() { return(tidyNodeIsPRE(fHandle)); };
+Bool_t TMrbTidyNode::IsLISTING() { return(tidyNodeIsLISTING(fHandle)); };
+Bool_t TMrbTidyNode::IsP() { return(tidyNodeIsP(fHandle)); };
+Bool_t TMrbTidyNode::IsUL() { return(tidyNodeIsUL(fHandle)); };
+Bool_t TMrbTidyNode::IsOL() { return(tidyNodeIsOL(fHandle)); };
+Bool_t TMrbTidyNode::IsDL() { return(tidyNodeIsDL(fHandle)); };
+Bool_t TMrbTidyNode::IsDIR() { return(tidyNodeIsDIR(fHandle)); };
+Bool_t TMrbTidyNode::IsLI() { return(tidyNodeIsLI(fHandle)); };
+Bool_t TMrbTidyNode::IsDT() { return(tidyNodeIsDT(fHandle)); };
+Bool_t TMrbTidyNode::IsDD() { return(tidyNodeIsDD(fHandle)); };
+Bool_t TMrbTidyNode::IsTABLE() { return(tidyNodeIsTABLE(fHandle)); };
+Bool_t TMrbTidyNode::IsCAPTION() { return(tidyNodeIsCAPTION(fHandle)); };
+Bool_t TMrbTidyNode::IsTD() { return(tidyNodeIsTD(fHandle)); };
+Bool_t TMrbTidyNode::IsTH() { return(tidyNodeIsTH(fHandle)); };
+Bool_t TMrbTidyNode::IsTR() { return(tidyNodeIsTR(fHandle)); };
+Bool_t TMrbTidyNode::IsCOL() { return(tidyNodeIsCOL(fHandle)); };
+Bool_t TMrbTidyNode::IsCOLGROUP() { return(tidyNodeIsCOLGROUP(fHandle)); };
+Bool_t TMrbTidyNode::IsBR() { return(tidyNodeIsBR(fHandle)); };
+Bool_t TMrbTidyNode::IsAA() { return(tidyNodeIsA(fHandle)); };
+Bool_t TMrbTidyNode::IsLINK() { return(tidyNodeIsLINK(fHandle)); };
+Bool_t TMrbTidyNode::IsB() { return(tidyNodeIsB(fHandle)); };
+Bool_t TMrbTidyNode::IsI() { return(tidyNodeIsI(fHandle)); };
+Bool_t TMrbTidyNode::IsSTRONG() { return(tidyNodeIsSTRONG(fHandle)); };
+Bool_t TMrbTidyNode::IsEM() { return(tidyNodeIsEM(fHandle)); };
+Bool_t TMrbTidyNode::IsBIG() { return(tidyNodeIsBIG(fHandle)); };
+Bool_t TMrbTidyNode::IsSMALL() { return(tidyNodeIsSMALL(fHandle)); };
+Bool_t TMrbTidyNode::IsPARAM() { return(tidyNodeIsPARAM(fHandle)); };
+Bool_t TMrbTidyNode::IsOPTION() { return(tidyNodeIsOPTION(fHandle)); };
+Bool_t TMrbTidyNode::IsOPTGROUP() { return(tidyNodeIsOPTGROUP(fHandle)); };
+Bool_t TMrbTidyNode::IsIMG() { return(tidyNodeIsIMG(fHandle)); };
+Bool_t TMrbTidyNode::IsMAP() { return(tidyNodeIsMAP(fHandle)); };
+Bool_t TMrbTidyNode::IsAREA() { return(tidyNodeIsAREA(fHandle)); };
+Bool_t TMrbTidyNode::IsNOBR() { return(tidyNodeIsNOBR(fHandle)); };
+Bool_t TMrbTidyNode::IsWBR() { return(tidyNodeIsWBR(fHandle)); };
+Bool_t TMrbTidyNode::IsFONT() { return(tidyNodeIsFONT(fHandle)); };
+Bool_t TMrbTidyNode::IsLAYER() { return(tidyNodeIsLAYER(fHandle)); };
+Bool_t TMrbTidyNode::IsSPACER() { return(tidyNodeIsSPACER(fHandle)); };
+Bool_t TMrbTidyNode::IsCENTER() { return(tidyNodeIsCENTER(fHandle)); };
+Bool_t TMrbTidyNode::IsSTYLE() { return(tidyNodeIsSTYLE(fHandle)); };
+Bool_t TMrbTidyNode::IsSCRIPT() { return(tidyNodeIsSCRIPT(fHandle)); };
+Bool_t TMrbTidyNode::IsNOSCRIPT() { return(tidyNodeIsNOSCRIPT(fHandle)); };
+Bool_t TMrbTidyNode::IsFORM() { return(tidyNodeIsFORM(fHandle)); };
+Bool_t TMrbTidyNode::IsTEXTAREA() { return(tidyNodeIsTEXTAREA(fHandle)); };
+Bool_t TMrbTidyNode::IsBLOCKQUOTE() { return(tidyNodeIsBLOCKQUOTE(fHandle)); };
+Bool_t TMrbTidyNode::IsAPPLET() { return(tidyNodeIsAPPLET(fHandle)); };
+Bool_t TMrbTidyNode::IsOBJECT() { return(tidyNodeIsOBJECT(fHandle)); };
+Bool_t TMrbTidyNode::IsDIV() { return(tidyNodeIsDIV(fHandle)); };
+Bool_t TMrbTidyNode::IsSPAN() { return(tidyNodeIsSPAN(fHandle)); };
+Bool_t TMrbTidyNode::IsINPUT() { return(tidyNodeIsINPUT(fHandle)); };
+Bool_t TMrbTidyNode::IsQ() { return(tidyNodeIsQ(fHandle)); };
+Bool_t TMrbTidyNode::IsLABEL() { return(tidyNodeIsLABEL(fHandle)); };
+Bool_t TMrbTidyNode::IsH3() { return(tidyNodeIsH3(fHandle)); };
+Bool_t TMrbTidyNode::IsH4() { return(tidyNodeIsH4(fHandle)); };
+Bool_t TMrbTidyNode::IsH5() { return(tidyNodeIsH5(fHandle)); };
+Bool_t TMrbTidyNode::IsH6() { return(tidyNodeIsH6(fHandle)); };
+Bool_t TMrbTidyNode::IsADDRESS() { return(tidyNodeIsADDRESS(fHandle)); };
+Bool_t TMrbTidyNode::IsXMP() { return(tidyNodeIsXMP(fHandle)); };
+Bool_t TMrbTidyNode::IsSELECT() { return(tidyNodeIsSELECT(fHandle)); };
+Bool_t TMrbTidyNode::IsBLINK() { return(tidyNodeIsBLINK(fHandle)); };
+Bool_t TMrbTidyNode::IsMARQUEE() { return(tidyNodeIsMARQUEE(fHandle)); };
+Bool_t TMrbTidyNode::IsEMBED() { return(tidyNodeIsEMBED(fHandle)); };
+Bool_t TMrbTidyNode::IsBASEFONT() { return(tidyNodeIsBASEFONT(fHandle)); };
+Bool_t TMrbTidyNode::IsISINDEX() { return(tidyNodeIsISINDEX(fHandle)); };
+Bool_t TMrbTidyNode::IsS() { return(tidyNodeIsS(fHandle)); };
+Bool_t TMrbTidyNode::IsSTRIKE() { return(tidyNodeIsSTRIKE(fHandle)); };
+Bool_t TMrbTidyNode::IsU() { return(tidyNodeIsU(fHandle)); };
+Bool_t TMrbTidyNode::IsMENU() { return(tidyNodeIsMENU(fHandle)); };
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::GetAttrXXX()
+// Purpose:        Query node attributes
+// Description:    Interface to tidyAttrGetXXX()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+TMrbTidyAttr * TMrbTidyNode::GetAttrHREF() { return(this->GetAttribute(TidyAttr_HREF)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrSRC() { return(this->GetAttribute(TidyAttr_SRC)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrID() { return(this->GetAttribute(TidyAttr_ID)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrNAME() { return(this->GetAttribute(TidyAttr_NAME)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrSUMMARY() { return(this->GetAttribute(TidyAttr_SUMMARY)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrALT() { return(this->GetAttribute(TidyAttr_ALT)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrLONGDESC() { return(this->GetAttribute(TidyAttr_LONGDESC)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrUSEMAP() { return(this->GetAttribute(TidyAttr_USEMAP)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrISMAP() { return(this->GetAttribute(TidyAttr_ISMAP)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrLANGUAGE() { return(this->GetAttribute(TidyAttr_LANGUAGE)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrTYPE() { return(this->GetAttribute(TidyAttr_TYPE)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrVALUE() { return(this->GetAttribute(TidyAttr_VALUE)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrCONTENT() { return(this->GetAttribute(TidyAttr_CONTENT)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrTITLE() { return(this->GetAttribute(TidyAttr_TITLE)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrXMLNS() { return(this->GetAttribute(TidyAttr_XMLNS)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrDATAFLD() { return(this->GetAttribute(TidyAttr_DATAFLD)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrWIDTH() { return(this->GetAttribute(TidyAttr_WIDTH)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrHEIGHT() { return(this->GetAttribute(TidyAttr_HEIGHT)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrFOR() { return(this->GetAttribute(TidyAttr_FOR)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrSELECTED() { return(this->GetAttribute(TidyAttr_SELECTED)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrCHECKED() { return(this->GetAttribute(TidyAttr_CHECKED)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrLANG() { return(this->GetAttribute(TidyAttr_LANG)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrTARGET() { return(this->GetAttribute(TidyAttr_TARGET)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrHTTP_EQUIV() { return(this->GetAttribute(TidyAttr_HTTP_EQUIV)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrREL() { return(this->GetAttribute(TidyAttr_REL)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnMOUSEMOVE() { return(this->GetAttribute(TidyAttr_OnMOUSEMOVE)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnMOUSEDOWN() { return(this->GetAttribute(TidyAttr_OnMOUSEDOWN)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnMOUSEUP() { return(this->GetAttribute(TidyAttr_OnMOUSEUP)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnCLICK() { return(this->GetAttribute(TidyAttr_OnCLICK)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnMOUSEOVER() { return(this->GetAttribute(TidyAttr_OnMOUSEOVER)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnMOUSEOUT() { return(this->GetAttribute(TidyAttr_OnMOUSEOUT)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnKEYDOWN() { return(this->GetAttribute(TidyAttr_OnKEYDOWN)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnKEYUP() { return(this->GetAttribute(TidyAttr_OnKEYUP)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnKEYPRESS() { return(this->GetAttribute(TidyAttr_OnKEYPRESS)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnFOCUS() { return(this->GetAttribute(TidyAttr_OnFOCUS)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrOnBLUR() { return(this->GetAttribute(TidyAttr_OnBLUR)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrBGCOLOR() { return(this->GetAttribute(TidyAttr_BGCOLOR)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrLINK() { return(this->GetAttribute(TidyAttr_LINK)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrALINK() { return(this->GetAttribute(TidyAttr_ALINK)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrVLINK() { return(this->GetAttribute(TidyAttr_VLINK)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrTEXT() { return(this->GetAttribute(TidyAttr_TEXT)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrSTYLE() { return(this->GetAttribute(TidyAttr_STYLE)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrABBR() { return(this->GetAttribute(TidyAttr_ABBR)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrCOLSPAN() { return(this->GetAttribute(TidyAttr_COLSPAN)); };
+TMrbTidyAttr * TMrbTidyNode::GetAttrROWSPAN() { return(this->GetAttribute(TidyAttr_ROWSPAN)); };
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyAttr::IsXXX()
+// Purpose:        Query attribute type
+// Description:    Interface to tidyAttrIsXXX()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t TMrbTidyAttr::IsEvent() { return(tidyAttrIsEvent(fHandle)); };
+Bool_t TMrbTidyAttr::IsProp() { return(tidyAttrIsProp(fHandle)); };
+Bool_t TMrbTidyAttr::IsHREF() { return(tidyAttrIsHREF(fHandle)); };
+Bool_t TMrbTidyAttr::IsSRC() { return(tidyAttrIsSRC(fHandle)); };
+Bool_t TMrbTidyAttr::IsID() { return(tidyAttrIsID(fHandle)); };
+Bool_t TMrbTidyAttr::IsNAME() { return(tidyAttrIsNAME(fHandle)); };
+Bool_t TMrbTidyAttr::IsSUMMARY() { return(tidyAttrIsSUMMARY(fHandle)); };
+Bool_t TMrbTidyAttr::IsALT() { return(tidyAttrIsALT(fHandle)); };
+Bool_t TMrbTidyAttr::IsLONGDESC() { return(tidyAttrIsLONGDESC(fHandle)); };
+Bool_t TMrbTidyAttr::IsUSEMAP() { return(tidyAttrIsUSEMAP(fHandle)); };
+Bool_t TMrbTidyAttr::IsISMAP() { return(tidyAttrIsISMAP(fHandle)); };
+Bool_t TMrbTidyAttr::IsLANGUAGE() { return(tidyAttrIsLANGUAGE(fHandle)); };
+Bool_t TMrbTidyAttr::IsTYPE() { return(tidyAttrIsTYPE(fHandle)); };
+Bool_t TMrbTidyAttr::IsVALUE() { return(tidyAttrIsVALUE(fHandle)); };
+Bool_t TMrbTidyAttr::IsCONTENT() { return(tidyAttrIsCONTENT(fHandle)); };
+Bool_t TMrbTidyAttr::IsTITLE() { return(tidyAttrIsTITLE(fHandle)); };
+Bool_t TMrbTidyAttr::IsXMLNS() { return(tidyAttrIsXMLNS(fHandle)); };
+Bool_t TMrbTidyAttr::IsDATAFLD() { return(tidyAttrIsDATAFLD(fHandle)); };
+Bool_t TMrbTidyAttr::IsWIDTH() { return(tidyAttrIsWIDTH(fHandle)); };
+Bool_t TMrbTidyAttr::IsHEIGHT() { return(tidyAttrIsHEIGHT(fHandle)); };
+Bool_t TMrbTidyAttr::IsFOR() { return(tidyAttrIsFOR(fHandle)); };
+Bool_t TMrbTidyAttr::IsSELECTED() { return(tidyAttrIsSELECTED(fHandle)); };
+Bool_t TMrbTidyAttr::IsCHECKED() { return(tidyAttrIsCHECKED(fHandle)); };
+Bool_t TMrbTidyAttr::IsLANG() { return(tidyAttrIsLANG(fHandle)); };
+Bool_t TMrbTidyAttr::IsTARGET() { return(tidyAttrIsTARGET(fHandle)); };
+Bool_t TMrbTidyAttr::IsHTTP_EQUIV() { return(tidyAttrIsHTTP_EQUIV(fHandle)); };
+Bool_t TMrbTidyAttr::IsREL() { return(tidyAttrIsREL(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnMOUSEMOVE() { return(tidyAttrIsOnMOUSEMOVE(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnMOUSEDOWN() { return(tidyAttrIsOnMOUSEDOWN(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnMOUSEUP() { return(tidyAttrIsOnMOUSEUP(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnCLICK() { return(tidyAttrIsOnCLICK(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnMOUSEOVER() { return(tidyAttrIsOnMOUSEOVER(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnMOUSEOUT() { return(tidyAttrIsOnMOUSEOUT(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnKEYDOWN() { return(tidyAttrIsOnKEYDOWN(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnKEYUP() { return(tidyAttrIsOnKEYUP(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnKEYPRESS() { return(tidyAttrIsOnKEYPRESS(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnFOCUS() { return(tidyAttrIsOnFOCUS(fHandle)); };
+Bool_t TMrbTidyAttr::IsOnBLUR() { return(tidyAttrIsOnBLUR(fHandle)); };
+Bool_t TMrbTidyAttr::IsBGCOLOR() { return(tidyAttrIsBGCOLOR(fHandle)); };
+Bool_t TMrbTidyAttr::IsLINK() { return(tidyAttrIsLINK(fHandle)); };
+Bool_t TMrbTidyAttr::IsALINK() { return(tidyAttrIsALINK(fHandle)); };
+Bool_t TMrbTidyAttr::IsVLINK() { return(tidyAttrIsVLINK(fHandle)); };
+Bool_t TMrbTidyAttr::IsTEXT() { return(tidyAttrIsTEXT(fHandle)); };
+Bool_t TMrbTidyAttr::IsSTYLE() { return(tidyAttrIsSTYLE(fHandle)); };
+Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
+Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
+Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
+
+void TMrbTidyNode::PrintTree(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::PrintTree
+// Purpose:        Print data recursively
+// Arguments:      ostream & Out    -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Prints node data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->Print();
+	TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
+	while (node) {
+		node->PrintTree();
+		node = (TMrbTidyNode *) fLofChilds.After(node);
+	}
+}
+
+void TMrbTidyNode::Print(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Print
+// Purpose:        Print data
+// Arguments:      ostream & Out    -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Prints node data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX lofNodeTypes;
+	lofNodeTypes.AddNamedX(kMrbTidyNodeTypes);
+	TMrbLofNamedX lofTagIds;
+	lofTagIds.AddNamedX(kMrbTidyTagIds);
+
+	printf("[%2d] ", fTreeLevel);
+	for (Int_t lev = 0; lev < fTreeLevel; lev++) printf(".");
+	TString parentName = fParent ? fParent->GetName() : "root";
+	TMrbNamedX * ty = (TMrbNamedX *) lofNodeTypes.FindByIndex((Int_t) this->GetType());
+	TString tyStr;
+	if (ty) tyStr = Form("%s(%d)", ty->GetName(), ty->GetIndex()); else tyStr = this->GetType();
+	TMrbNamedX * tag = (TMrbNamedX *) lofTagIds.FindByIndex(this->GetIndex());
+	TString tagStr;
+	if (tag) tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex()); else tagStr = this->GetIndex();
+	printf(" node %s: type=%s tagid=%s parent=%s",
+								this->GetName(),
+								tyStr.Data(),
+								tagStr.Data(),
+								parentName.Data());
+	if (tidyNodeHasText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)) {
+		TidyBuffer text = {'\0'};
+		tidyNodeGetText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle, &text);
+		TString str;
+		char *bp = text.bp;
+		for (Int_t i = 0; i < (Int_t) strlen(text.bp); i++, bp++) {
+			if (*bp == '\n')	str += "<cr>";
+			else				str += *bp;
+		}
+		printf(" text='%s'", str.Data());
+	}
+	TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
+	while (a) {
+		printf(" %s=%s", a->GetName(), a->GetValue());
+		a = (TMrbTidyAttr *) fLofAttr.After(a);
+	}
+	printf("\n");
+}
+
+TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, const Char_t * NodeAttributes, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Find
+// Purpose:        Find a specified node
+// Arguments:      Char_t * NodeName         -- name
+//                 Char_t * NodeAttributes   -- attributes
+//                 Bool_t Recursive          -- kTRUE if to be searched recursively
+// Results:        TMrbTidyNode * Node       -- resulting node
+// Exceptions:
+// Description:    Searches for a specified node
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray lofAttr;
+	TMrbTidyNode * node;
+	this->DecodeAttrString(lofAttr, NodeAttributes);
+	if (Recursive) {
+		TString nodeName = NodeName;
+		node = this->GetFirst();
+		while (node) {
+			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(lofAttr)) return(node);
+			TMrbTidyNode * child = node->Find(NodeName, lofAttr, kTRUE);
+			if (child) return(child);
+			node = this->GetNext(node);
+		}
+	} else {
+		node = (TMrbTidyNode *) fLofChilds.FindByName(NodeName);
+		if (node != NULL && node->CompareAttributes(lofAttr)) return(node);
+	}
+	return(NULL);
+}
+
+TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, TObjArray & LofAttr, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Find
+// Purpose:        Find a specified node
+// Arguments:      Char_t * NodeName         -- name
+//                 TObjArray & LofAttr       -- attributes
+//                 Bool_t Recursive          -- kTRUE if to be searched recursively
+// Results:        TMrbTidyNode * Node       -- resulting node
+// Exceptions:
+// Description:    Searches for a specified node
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbTidyNode * node;
+	if (Recursive) {
+		TString nodeName = NodeName;
+		node = this->GetFirst();
+		while (node) {
+			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(LofAttr)) return(node);
+			TMrbTidyNode * child = node->Find(NodeName, LofAttr, kTRUE);
+			if (child) return(child);
+			node = this->GetNext(node);
+		}
+	} else {
+		node = (TMrbTidyNode *) fLofChilds.FindByName(NodeName);
+		if (node != NULL && node->CompareAttributes(LofAttr)) return(node);
+	}
+	return(NULL);
+}
+
+Int_t TMrbTidyNode::Find(TObjArray & LofNodes, const Char_t * NodeName, const Char_t * NodeAttributes, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Find
+// Purpose:        Find a specified node
+// Arguments:      TObjArray & LofNodes      -- list of nodes
+//                 Char_t * NodeName         -- name
+//                 Char_t * NodeAttributes   -- attributes
+//                 Bool_t Recursive          -- kTRUE if to be searched recursively
+// Results:        Int_t NofNodes            -- number of nodes found
+// Exceptions:
+// Description:    Searches for a specified node
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray lofAttr;
+	TMrbTidyNode * node;
+	this->DecodeAttrString(lofAttr, NodeAttributes);
+	if (Recursive) {
+		TString nodeName = NodeName;
+		node = this->GetFirst();
+		while (node) {
+			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(lofAttr)) LofNodes.Add(node);
+			node->Find(LofNodes, NodeName, lofAttr, kTRUE);
+			node = this->GetNext(node);
+		}
+	} else {
+		node = (TMrbTidyNode *) fLofChilds.FindByName(NodeName);
+		if (node != NULL && node->CompareAttributes(lofAttr)) LofNodes.Add(node);
+	}
+	return(LofNodes.GetEntriesFast());
+}
+
+Int_t TMrbTidyNode::Find(TObjArray & LofNodes, const Char_t * NodeName,  TObjArray & LofAttr, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Find
+// Purpose:        Find a specified node
+// Arguments:      TObjArray & LofNodes      -- list of nodes
+//                 Char_t * NodeName         -- name
+//                 TObjArray & LofAttr       -- attributes
+//                 Bool_t Recursive          -- kTRUE if to be searched recursively
+// Results:        Int_t NofNodes            -- number of nodes found
+// Exceptions:
+// Description:    Searches for a specified node
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbTidyNode * node;
+	if (Recursive) {
+		TString nodeName = NodeName;
+		node = this->GetFirst();
+		while (node) {
+			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(LofAttr)) LofNodes.Add(node);
+			node->Find(LofNodes, NodeName, LofAttr, kTRUE);
+			node = this->GetNext(node);
+		}
+	} else {
+		node = (TMrbTidyNode *) fLofChilds.FindByName(NodeName);
+		if (node != NULL && node->CompareAttributes(LofAttr)) LofNodes.Add(node);
+	}
+	return(LofNodes.GetEntriesFast());
+}
+
+Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAttributes) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::DecodeAttrString
+// Purpose:        Decode string of attributes
+// Arguments:      TObjArray & LofAttr       -- attributes
+//                 Char_t * NodeAttributes   -- string of attributes
+// Results:        Int_t NofAttr             -- number of attributes found
+// Exceptions:
+// Description:    Decodes a string of attributes.
+//                 Format: "attr1=val1 attr2=val2 ..."
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray attrArr;
+
+	LofAttr.Delete();
+	attrArr.Delete();
+	if (NodeAttributes != NULL) {
+		TMrbString str = NodeAttributes;
+		for (Int_t i = 0; i < str.Split(attrArr, " "); i++) {
+			TString attr = ((TObjString *) attrArr[i])->GetString();
+			attr = attr.Strip(TString::kBoth);
+			if (attr.Length() > 0) {
+				Int_t n = attr.Index("=", 0);
+				if (n <= 0) {
+					gMrbLog->Err() << "Syntax error in attr string - " << attr << " (ignored)" << endl;
+					gMrbLog->Flush(this->ClassName(), "DecodeAttrString");
+					continue;
+				}
+				TString attrVal = attr(n + 1, attr.Length() - n - 1);
+				attr.Resize(n);
+				LofAttr.Add(new TNamed(attr.Data(), attrVal.Data()));
+			}
+		}
+	}
+	return(LofAttr.GetEntriesFast());
+}
+
+Bool_t TMrbTidyNode::CompareAttributes(TObjArray & LofAttr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::DecodeAttrString
+// Purpose:        Compare attributes
+// Arguments:      TObjArray & LofAttr       -- attributes
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Compares attributes in list with node attributes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	for (Int_t i = 0; i < LofAttr.GetEntriesFast(); i++) {
+		TNamed * attrStr = (TNamed *) LofAttr[i];
+		TString attrName = attrStr->GetName();
+		TString attrVal	= attrStr->GetTitle();
+		if (attrName.CompareTo("parent") == 0) {
+			TString parentName = fParent ? fParent->GetName() : "root";
+			if (attrVal.CompareTo(parentName.Data()) != 0) return(kFALSE);
+		} else {
+			TMrbTidyAttr * attr = (TMrbTidyAttr *) fLofAttr.FindByName(attrName.Data());
+			if (attr == NULL) return(kFALSE);
+			if (attrVal.CompareTo(attr->GetValue()) != 0) return(kFALSE);
+		}
+	}
+	return(kTRUE);
+}
