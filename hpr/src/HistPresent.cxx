@@ -1022,7 +1022,15 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * bp)
    TMrbStatistics * st = 0;
    TRegexp rname("\\.root");
    TRegexp mname("\\.map");
-   if (sname.Index(rname) > 0) {
+
+   if (sname == "Socket") {
+      if (!fComSocket) return;
+      st = getstat(fComSocket);
+      if (!st) {
+         WarnBox(" cant get stat(fComSocket)");
+         return;
+      }
+   } else if (sname.Index(rname) > 0) {
       sname(rname) = "";      
       TFile * rfile =0;
       rfile = new TFile(fname);

@@ -206,6 +206,7 @@ public:
    void  ProjectY();
    void  ProjectBoth();
    void  ProjectF();                   // project along a function 
+   void  Transpose();
    void OutputStat();
 //   void ListFunctions();
    void WriteFunctions();

@@ -577,11 +577,13 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
 
    if (is2dim(hist)) {
       fSelPad->cd();
+/*
       if (fLogz) {
          cHist->SetLogz();
          if (hp && hp->fLogScaleMin > 0)
             hist->SetMinimum(hp->fLogScaleMin);
       }
+*/
       Draw2Dim();
       if (hp && hp->fAutoExec_2 ) {
    		TString cmd("((HistPresent*)gROOT->FindObject(\""); 
@@ -984,7 +986,7 @@ void FitHist::SetUserContours()
       } else {
 //    assume colorindeces 51 - 100 ( rainbow colors)
          Int_t colind = Int_t( (i + 1)* (50 / (Float_t)ncont)) + 50;
-         cout << "colind " << colind<< endl;
+//         cout << "colind " << colind<< endl;
          TColor * col = GetColorByInd(colind);
          if (col) (*colors)[i] = col->GetPixel();
       }
@@ -1888,6 +1890,37 @@ void FitHist::ProjectF()
 
 //____________________________________________________________________________________ 
 
+// Transpsoe 2dim histograms
+
+void FitHist::Transpose()
+{
+   if (!is2dim(fSelHist)) {
+      WarnBox("Only 2dim hist can be transposed");
+      return;
+   }
+   TH2F *h2 = (TH2F *)fOrigHist;
+   TString hname(h2->GetName());
+   hname += "_transp";
+   TAxis *xa = h2->GetXaxis();
+   TAxis *ya = h2->GetYaxis();
+   TH2F *h2_transp = new TH2F(hname, h2->GetTitle(),
+                              ya->GetNbins(), ya->GetXmin(), ya->GetXmax(),
+                              xa->GetNbins(), xa->GetXmin(), xa->GetXmax());
+   for (Int_t ix = 0; ix <= xa->GetNbins(); ix++) {
+      for (Int_t iy = 0; iy <= ya->GetNbins(); iy++) {
+         h2_transp->SetCellContent(iy, ix, h2->GetCellContent(ix, iy));
+         h2_transp->SetCellError  (iy, ix, h2->GetCellError  (ix, iy));
+      }
+   }
+   h2_transp->SetEntries(h2->GetEntries());
+   h2_transp->GetXaxis()->SetTitle(h2->GetYaxis()->GetTitle());
+   h2_transp->GetYaxis()->SetTitle(h2->GetXaxis()->GetTitle());
+   fSelHist = h2_transp;
+   cHist->cd();
+   Draw2Dim();
+}
+//____________________________________________________________________________________ 
+
 // Show expanded part of histograms
 
 void FitHist::ExpandProject(Int_t what)
@@ -2341,6 +2374,7 @@ void FitHist::Draw1Dim()
 void FitHist::Draw2Dim()
 {
    cHist->cd();
+   SetLogz(cHist->GetLogz());
    if (hp->GetShowStatBox()) {
       gStyle->SetOptStat(hp->GetOptStat());
       gStyle->SetStatFont(hp->fStatFont);
@@ -2454,7 +2488,7 @@ void FitHist::SetLogz(Int_t state)
       if(state > 0)
          fSelHist->SetMinimum(hp->fLogScaleMin);
       else        
-         fSelHist->SetMinimum(fSelHist->GetBinContent(fSelHist->GetMinimumBin()));
+         fSelHist->SetMinimum(fSelHist->GetBinContent(fSelHist->GetMinimumBin())+ 0.001);
    }
    cHist->SetLogz(state);
    SaveDefaults();

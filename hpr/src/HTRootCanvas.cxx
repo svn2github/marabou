@@ -130,6 +130,7 @@ enum ERootCanvasCommands {
 //   kFHSetDrawMode,
 //   kFHSetLabAtt,
    kFHLogY,
+   kFHTranspose,
    kFHProjectX,
    kFHProjectY,
    kFHProjectF,
@@ -425,6 +426,7 @@ void HTRootCanvas::CreateCanvas(const char *name)
       	if(is2dim)fViewMenu->AddEntry("ProjectY",    kFHProjectY   );
       	if(is2dim)fViewMenu->AddEntry("ProjectBoth", kFHProjectB   );
       	if(is2dim)fViewMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
+      	if(is2dim)fViewMenu->AddEntry("Transpose",   kFHTranspose  );
       	fViewMenu->AddEntry("Superimpose", kFHSuperimpose);
       	if(!is2dim)fViewMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
       	fViewMenu->AddEntry("Show in same Range",    kFHGetRange   );
@@ -1317,6 +1319,9 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      oFitHist->SaveDefaults();
                      oFitHist->GetCanvas()->Modified(kTRUE);
                      oFitHist->GetCanvas()->Update();
+                     break;
+                  case kFHTranspose:
+                     oFitHist->Transpose(); 
                      break;
                   case kFHProjectX:
                      oFitHist->ProjectX(); 
