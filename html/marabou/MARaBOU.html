@@ -231,6 +231,9 @@ and C.Broude</H3></CENTER>
                     <A HREF="TMrbSis_3801.html">TMrbSis_3801</A>: 
                     Buffered scaler, 32 chn @ 32 bit
                     <LI>
+                    <A HREF="TMrbLeCroy_1176.html">TMrbLeCroy_1176</A>: 
+                    Multi-hit, multi-event TDC, 16 chn @ 16 bit
+                    <LI>
                     <A HREF="TMrbAcromag_IP341.html">TMrbAcromag_IP341</A>: 
                     Sampling ADC type Acromag-9660/IP341, 4 x 16 chn @ 14 bit
                     <LI>
@@ -448,6 +451,9 @@ and C.Broude</H3></CENTER>
             <A HREF="TGMrbFileObjectList.html">TGMrbFileObjectList</A>,: a 
             labelled file entry and a combo/list box containing ROOT objects from selected file
             <LI>
+            <A HREF="TGMrbProgressBar.html">TGMrbProgressBar</A>: a 
+            transient frame showing a <A HREF="TGProgressBar.html">TGProgressBar</A>
+            <LI>
             <A HREF="TGMrbTableFrame.html">TGMrbTableFrame</A>: a 
             matrix of text entries 
             <LI>
@@ -483,7 +489,7 @@ and C.Broude</H3></CENTER>
             control a DDA0816 DAC device 
             <LI>
             <A HREF="dgfcontrol/DGFControl.html">DGFControl</A>: a GUI to control 
-            a XIA DGF-4G Digital Gamma Finder
+            a XIA DGF-4C Digital Gamma Finder
             <LI>
             <A HREF="gutils/MacroBrowser.html">MacroBrowser</A>: a GUI to 
             execute ROOT macros<BR>
@@ -496,19 +502,35 @@ and C.Broude</H3></CENTER>
         </UL>
      </UL>
     <LI>
-    <A HREF="marabou-3.10.02.tgz"><FONT SIZE="4">Download MARaBOU for 
-    ROOT 3.10.02</FONT></A><FONT SIZE="4"> </FONT>(Feb-2004) 
+    <A HREF="marabou-4.00.06.tgz"><FONT SIZE="4">Download MARaBOU for 
+    ROOT 4.00.06</FONT></A><FONT SIZE="4"> </FONT>(Jul-2004) 
 	(<A HREF="howTo/Marabou/HowToInstall.html">HowTo</A>)
      <LI>
     <A HREF="ChangeLog.html"><FONT SIZE="4">MARaBOU Release Notes
-    </FONT></A><FONT SIZE="4"> </FONT>(Feb-2004) 
+    </FONT></A><FONT SIZE="4"> </FONT>(Jul-2004) 
     <LI>
     <A HREF="marabou-html.tgz"><FONT SIZE="4">Download MARaBOU HTML files 
-    </FONT></A><FONT SIZE="4"> </FONT>(Feb-2004) 
+    </FONT></A><FONT SIZE="4"> </FONT>(Jul-2004) 
+    <LI>
+    To download MARaBOU from CVS repository:
+	<UL>
+		<LI>
+		login as user <b>mbuser</b>, password <b>marabou</b><br>
+		<pre>cvs -d :pserver:mbuser@cvs.mll-muenchen.de:/home/cvs/marabou login</pre>
+		<LI>
+		if it is first time you access MARaBOU's cvs server type<br>
+		<pre>cvs -d :pserver:cvs.mll-muenchen.de:/home/cvs/marabou checkout marabou</pre>
+		<LI>
+		to look for changes<br>
+		<pre>cvs -n update 2>/dev/null | grep '^[MPUC]'</pre>
+		<LI>
+		to update an existing MARaBOU installation type<br>
+		<pre>cvs update</pre>
+	</UL>
      
 </UL>
 <P>
 (<A HREF="mailto:MARaBOU@Physik.Uni-Muenchen.DE"><I>MARaBOU</I></A><I>, 
-Last Update 10-Feb-2004, <A HREF="mailto:Rudi.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</A>) </I></P>
+Last Update 20-Jul-2004, <A HREF="mailto:Rudi.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</A>) </I></P>
 </BODY>
 </HTML>
