@@ -1,0 +1,59 @@
+%%BeginOfCode%%
+// DGF param offsets
+enum EMrbDgfParamOffsets	{
+								kMrbDgfParModNum			=	$parModuleNumber,
+								kMrbDgfParModCSRA			=	$parModCSRA,
+								kMrbDgfParMaxEvents			=	$parMaxEvents,
+								kMrbDgfParSynchWait			=	$parSynchWait,
+								kMrbDgfParInSynch			=	$parInSynch,
+								kMrbDgfParCoincPattern		=	$parCoincPattern,
+								kMrbDgfParCoincWait			=	$parCoincWait,
+								kMrbDgfParControlTask		=	$parControlTask,
+								kMrbDgfParRunTask			=	$parRunTask,
+								kMrbDgfParAoutBuffer		=	$parAddrOfOutputBuffer,
+								kMrbDgfParLoutBuffer		=	$parLengthOfOutputBuffer,
+								kMrbDgfParTraceLength0		=	$parTraceLength0,
+								kMrbDgfParChanCSRA0			=	$parChanCSRA0,
+
+								kMrbDgfParRealTimeA			=	$parRealTimeA,
+								kMrbDgfParRealTimeB			=	$parRealTimeB,
+								kMrbDgfParRealTimeC			=	$parRealTimeC,
+								kMrbDgfParRunTimeA			=	$parRunTimeA,
+								kMrbDgfParRunTimeB			=	$parRunTimeB,
+								kMrbDgfParRunTimeC			=	$parRunTimeC,
+								kMrbDgfParGSLTTimeA			=	$parGSLTTimeA,
+								kMrbDgfParGSLTTimeB			=	$parGSLTTimeB,
+								kMrbDgfParGSLTTimeC			=	$parGSLTTimeC,
+								kMrbDgfParNumEventsA		=	$parNumEventsA,
+								kMrbDgfParNumEventsB		=	$parNumEventsB,
+
+								kMrbDgfParLiveTimeA0		=	$parLiveTimeA0,
+								kMrbDgfParLiveTimeB0		=	$parLiveTimeB0,
+								kMrbDgfParLiveTimeC0		=	$parLiveTimeC0,
+								kMrbDgfParFastPeaksA0		=	$parFastPeaksA0,
+								kMrbDgfParFastPeaksB0		=	$parFastPeaksB0,
+
+								kMrbDgfParLiveTimeA1		=	$parLiveTimeA1,
+								kMrbDgfParLiveTimeB1		=	$parLiveTimeB1,
+								kMrbDgfParLiveTimeC1		=	$parLiveTimeC1,
+								kMrbDgfParFastPeaksA1		=	$parFastPeaksA1,
+								kMrbDgfParFastPeaksB1		=	$parFastPeaksB1,
+
+								kMrbDgfParLiveTimeA2		=	$parLiveTimeA2,
+								kMrbDgfParLiveTimeB2		=	$parLiveTimeB2,
+								kMrbDgfParLiveTimeC2		=	$parLiveTimeC2,
+								kMrbDgfParFastPeaksA2		=	$parFastPeaksA2,
+								kMrbDgfParFastPeaksB2		=	$parFastPeaksB2,
+
+								kMrbDgfParLiveTimeA3		=	$parLiveTimeA3,
+								kMrbDgfParLiveTimeB3		=	$parLiveTimeB3,
+								kMrbDgfParLiveTimeC3		=	$parLiveTimeC3,
+								kMrbDgfParFastPeaksA3		=	$parFastPeaksA3,
+								kMrbDgfParFastPeaksB3		=	$parFastPeaksB3,
+
+								kMrbDgfParStatFirst			=	kMrbDgfParRealTimeA,
+								kMrbDgfParStatLast			=	kMrbDgfParFastPeaksB3
+							};
+%%EndOfCode%%
+%%MODULE_SPECIAL_ENUM%%
+

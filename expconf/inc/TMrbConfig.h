@@ -169,6 +169,7 @@ class TMrbConfig : public TNamed {
 									kAnaSevtInitializeBranch,
 									kAnaSevtResetData,
 									kAnaModuleSerialEnum,
+									kAnaModuleSpecialEnum,
 									kAnaHistoDefinePointers,
 									kAnaHistoInitializeArrays,
 									kAnaHistoBookUserDefined,

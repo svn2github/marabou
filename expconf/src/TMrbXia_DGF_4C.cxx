@@ -142,8 +142,6 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * px;
-
 	TString mnemoLC, mnemoUC;
 	TString moduleNameUC;
 	TString sPath, seg;	
@@ -170,64 +168,6 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
-			px = this->FindParam("MODNUM");
-			fCodeTemplates.Substitute("$parModuleNumber", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("MODCSRA");
-			fCodeTemplates.Substitute("$parModCSRA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("MAXEVENTS");
-			fCodeTemplates.Substitute("$parMaxEvents", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("SYNCHWAIT");
-			fCodeTemplates.Substitute("$parSynchWait", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("INSYNCH");
-			fCodeTemplates.Substitute("$parInSynch", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("RUNTASK");
-			fCodeTemplates.Substitute("$parRunTask", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("COINCPATTERN");
-			fCodeTemplates.Substitute("$parCoincPattern", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("COINCWAIT");
-			fCodeTemplates.Substitute("$parCoincWait", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("CONTROLTASK");
-			fCodeTemplates.Substitute("$parControlTask", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("AOUTBUFFER");
-			fCodeTemplates.Substitute("$parAddrOfOutputBuffer", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("LOUTBUFFER");
-			fCodeTemplates.Substitute("$parLengthOfOutputBuffer", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("TRACELENGTH0");
-			fCodeTemplates.Substitute("$parTraceLength0", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("CHANCSRA0");
-			fCodeTemplates.Substitute("$parChanCSRA0", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("REALTIMEA");
-			fCodeTemplates.Substitute("$parRealTimeA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("REALTIMEB");
-			fCodeTemplates.Substitute("$parRealTimeB", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("REALTIMEC");
-			fCodeTemplates.Substitute("$parRealTimeC", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("RUNTIMEA");
-			fCodeTemplates.Substitute("$parRunTimeA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("RUNTIMEB");
-			fCodeTemplates.Substitute("$parRunTimeB", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("RUNTIMEC");
-			fCodeTemplates.Substitute("$parRunTimeC", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("GSLTTIMEA");
-			fCodeTemplates.Substitute("$parGSLTTimeA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("GSLTTIMEB");
-			fCodeTemplates.Substitute("$parGSLTTimeB", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("GSLTTIMEC");
-			fCodeTemplates.Substitute("$parGSLTTimeC", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("NUMEVENTSA");
-			fCodeTemplates.Substitute("$parNumEventsA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("NUMEVENTSB");
-			fCodeTemplates.Substitute("$parNumEventsB", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("LIVETIMEA0");
-			fCodeTemplates.Substitute("$parLiveTimeA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("LIVETIMEB0");
-			fCodeTemplates.Substitute("$parLiveTimeB", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("LIVETIMEC0");
-			fCodeTemplates.Substitute("$parLiveTimeC", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("FASTPEAKSA0");
-			fCodeTemplates.Substitute("$parFastPeaksA", (px) ? px->GetIndex() : 0);
-			px = this->FindParam("FASTPEAKSB0");
-			fCodeTemplates.Substitute("$parFastPeaksB", (px) ? px->GetIndex() : 0);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleInitModule:
@@ -493,6 +433,224 @@ TMrbNamedX * TMrbXia_DGF_4C::FindParam(Int_t Channel, const Char_t * ParamName) 
 	paramName = ParamName;
 	paramName += Channel;
 	return(this->FindParam(paramName.Data()));
+}
+
+Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTag TagIndex, const Char_t * Extension) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbXia_DGF_4C::MakeAnalyzeCode
+// Purpose:        Write a piece of code for data analysis
+// Arguments:      ofstream & AnaStrm       -- file output stream
+//                 EMrbAnalyzeTag TagIndex  -- index of tag word from template file
+//                 Char_t * Extension       -- file extensions to be appended (.h or .cxx)
+// Results:
+// Exceptions:
+// Description:    Writes code needed for data analysis.
+//                 Searches for following files:
+//                      (1)  if module has private code
+//                      (1a)    Module_<Name>.<Extension>.code
+//                      (1b)    <PrivateCodeFile>.<Extension>.code
+//                      (1c)    Module_<Class>.<Extension>.code
+//                      (2)  standard:
+//                              Module.<Extension>.code
+//
+//                 This method is optional and doesn't generate an error
+//                 if no template file has been found.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString mnemoLC, mnemoUC;
+	TString moduleNameLC, moduleNameUC;
+
+	Char_t * fp;
+	TString templatePath;
+	TString anaTemplateFile;
+
+	TString className;
+	TString tf;
+	const Char_t * pcf;
+
+	TString line;
+	TMrbTemplate anaTmpl;
+	TMrbNamedX * analyzeTag;
+	
+	TMrbNamedX * px;
+
+	mnemoLC = this->GetMnemonic();
+	mnemoUC = mnemoLC;
+	mnemoUC.ToUpper();
+
+	moduleNameLC = this->GetName();
+	moduleNameUC = moduleNameLC;
+	moduleNameUC.ToUpper();
+
+	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
+
+	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
+	gSystem->ExpandPathName(templatePath);
+
+	className = this->ClassName();
+	className.ReplaceAll("TMrb", "");
+	className(0,1).ToUpper();
+
+	TString ext = Extension;
+	if (ext(0) != '.') ext.Prepend("_");
+
+	fp = NULL;
+	if (this->HasPrivateCode()) {
+		tf = "Module_";
+		tf += moduleNameUC;
+		tf += ext.Data();
+		tf += ".code";
+		fp = gSystem->Which(templatePath.Data(), tf.Data());
+		if (fp == NULL) {
+			pcf = this->GetPrivateCodeFile();
+			if (pcf != NULL) {
+				tf = pcf;
+				tf += ext.Data();
+				tf += ".code";
+				fp = gSystem->Which(templatePath.Data(), tf.Data());
+			}
+			if (fp == NULL) {
+				tf = "Module_";
+				tf += className;
+				tf += ext.Data();
+				tf += ".code";
+				fp = gSystem->Which(templatePath.Data(), tf.Data());
+			}
+		}
+	}
+	if (fp == NULL) {
+		tf = "Module";
+		tf += ext.Data();
+		tf += ".code";
+		fp = gSystem->Which(templatePath.Data(), tf.Data());
+	}
+	if (fp == NULL) return(kTRUE);
+	
+	if (verboseMode) {
+		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fp << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+	}
+	
+	anaTemplateFile = fp;
+
+	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
+
+	for (;;) {
+		analyzeTag = anaTmpl.Next(line);
+		if (anaTmpl.IsEof()) break;
+		if (anaTmpl.IsError()) continue;
+		if (anaTmpl.Status() & TMrbTemplate::kNoTag) {
+			if (line.Index("//-") != 0) AnaStrm << line << endl;
+		} else if (TagIndex == analyzeTag->GetIndex()) {
+			if (!gMrbConfig->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
+				switch (TagIndex) {
+					case TMrbConfig::kAnaIncludesAndDefs:
+						anaTmpl.InitializeCode();
+						anaTmpl.Substitute("$moduleName", this->GetName());
+						anaTmpl.Substitute("$moduleTitle", this->GetName());
+						anaTmpl.Substitute("$mnemoLC", mnemoLC);
+						anaTmpl.Substitute("$mnemoUC", mnemoUC);
+						anaTmpl.WriteCode(AnaStrm);
+						return(kTRUE);
+					case TMrbConfig::kAnaModuleSpecialEnum:
+						anaTmpl.InitializeCode();
+						px = this->FindParam("MODNUM");
+						anaTmpl.Substitute("$parModuleNumber", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("MODCSRA");
+						anaTmpl.Substitute("$parModCSRA", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("MAXEVENTS");
+						anaTmpl.Substitute("$parMaxEvents", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("SYNCHWAIT");
+						anaTmpl.Substitute("$parSynchWait", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("INSYNCH");
+						anaTmpl.Substitute("$parInSynch", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("RUNTASK");
+						anaTmpl.Substitute("$parRunTask", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("COINCPATTERN");
+						anaTmpl.Substitute("$parCoincPattern", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("COINCWAIT");
+						anaTmpl.Substitute("$parCoincWait", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("CONTROLTASK");
+						anaTmpl.Substitute("$parControlTask", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("AOUTBUFFER");
+						anaTmpl.Substitute("$parAddrOfOutputBuffer", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LOUTBUFFER");
+						anaTmpl.Substitute("$parLengthOfOutputBuffer", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("TRACELENGTH0");
+						anaTmpl.Substitute("$parTraceLength0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("CHANCSRA0");
+						anaTmpl.Substitute("$parChanCSRA0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("REALTIMEA");
+						anaTmpl.Substitute("$parRealTimeA", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("REALTIMEB");
+						anaTmpl.Substitute("$parRealTimeB", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("REALTIMEC");
+						anaTmpl.Substitute("$parRealTimeC", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("RUNTIMEA");
+						anaTmpl.Substitute("$parRunTimeA", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("RUNTIMEB");
+						anaTmpl.Substitute("$parRunTimeB", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("RUNTIMEC");
+						anaTmpl.Substitute("$parRunTimeC", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("GSLTTIMEA");
+						anaTmpl.Substitute("$parGSLTTimeA", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("GSLTTIMEB");
+						anaTmpl.Substitute("$parGSLTTimeB", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("GSLTTIMEC");
+						anaTmpl.Substitute("$parGSLTTimeC", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("NUMEVENTSA");
+						anaTmpl.Substitute("$parNumEventsA", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("NUMEVENTSB");
+						anaTmpl.Substitute("$parNumEventsB", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEA0");
+						anaTmpl.Substitute("$parLiveTimeA0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEB0");
+						anaTmpl.Substitute("$parLiveTimeB0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEC0");
+						anaTmpl.Substitute("$parLiveTimeC0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSA0");
+						anaTmpl.Substitute("$parFastPeaksA0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSB0");
+						anaTmpl.Substitute("$parFastPeaksB0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEA1");
+						anaTmpl.Substitute("$parLiveTimeA1", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEB1");
+						anaTmpl.Substitute("$parLiveTimeB1", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEC1");
+						anaTmpl.Substitute("$parLiveTimeC1", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSA1");
+						anaTmpl.Substitute("$parFastPeaksA1", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSB1");
+						anaTmpl.Substitute("$parFastPeaksB1", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEA2");
+						anaTmpl.Substitute("$parLiveTimeA2", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEB2");
+						anaTmpl.Substitute("$parLiveTimeB2", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEC2");
+						anaTmpl.Substitute("$parLiveTimeC2", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSA2");
+						anaTmpl.Substitute("$parFastPeaksA2", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSB2");
+						anaTmpl.Substitute("$parFastPeaksB2", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEA3");
+						anaTmpl.Substitute("$parLiveTimeA3", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEB3");
+						anaTmpl.Substitute("$parLiveTimeB3", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("LIVETIMEC3");
+						anaTmpl.Substitute("$parLiveTimeC3", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSA3");
+						anaTmpl.Substitute("$parFastPeaksA3", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("FASTPEAKSB3");
+						anaTmpl.Substitute("$parFastPeaksB3", (px) ? px->GetIndex() : 0);
+						anaTmpl.WriteCode(AnaStrm);
+						return(kTRUE);
+				}
+			}
+		}
+	}
+	return(kFALSE);
 }
 
 Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag TagIndex, const Char_t * ResourceName) {

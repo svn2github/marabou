@@ -147,16 +147,14 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %B%// book histograms defined by user
 %UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
-%UDA1%	if ($hName == NULL) {
-%UDA1%		$hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
-%UDA1%		$hArrayName.Add($hName);
-%UDA1%	}
-%UDA2%	if ($hName == NULL) {
-%UDA2%		$hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
-%UDA2%		$hArrayName.Add($hName);
-%UDA2%	}
 %%EndOfCode%%
 %%HISTO_BOOK_USER_DEFINED%%
+
+%%BeginOfCode%%
+%B%// fill histograms arrays
+%FHA%	if ($hArrayName.FindObject("$hName") == NULL) $hArrayName.Add($hName);
+%%EndOfCode%%
+%%HISTO_FILL_ARRAYS%%
 
 %%BeginOfCode%%
 // user-specific code to initialize objects and/or variables

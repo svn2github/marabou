@@ -526,25 +526,28 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	className.ReplaceAll("TMrb", "");
 	className(0,1).ToUpper();
 
+	TString ext = Extension;
+	if (ext(0) != '.') ext.Prepend("_");
+
 	fp = NULL;
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
-		tf += Extension;
+		tf += ext.Data();
 		tf += ".code";
 		fp = gSystem->Which(templatePath.Data(), tf.Data());
 		if (fp == NULL) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
-				tf += Extension;
+				tf += ext.Data();
 				tf += ".code";
 				fp = gSystem->Which(templatePath.Data(), tf.Data());
 			}
 			if (fp == NULL) {
 				tf = "Module_";
 				tf += className;
-				tf += Extension;
+				tf += ext.Data();
 				tf += ".code";
 				fp = gSystem->Which(templatePath.Data(), tf.Data());
 			}
@@ -552,7 +555,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	}
 	if (fp == NULL) {
 		tf = "Module";
-		tf += Extension;
+		tf += ext.Data();
 		tf += ".code";
 		fp = gSystem->Which(templatePath.Data(), tf.Data());
 	}

@@ -57,4 +57,7 @@ enum EMrbModuleSerial {
 %%EndOfCode%%
 %%MODULE_SERIAL_ENUM%%
 					};
+
+%%MODULE_SPECIAL_ENUM%%
+
 #endif

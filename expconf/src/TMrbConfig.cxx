@@ -263,6 +263,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtInitializeBranch,		"SEVT_INITIALIZE_BRANCH"		},
 								{TMrbConfig::kAnaSevtResetData,				"SEVT_RESET_DATA"				},
 								{TMrbConfig::kAnaModuleSerialEnum,			"MODULE_SERIAL_ENUM"			},
+								{TMrbConfig::kAnaModuleSpecialEnum,			"MODULE_SPECIAL_ENUM"			},
 								{TMrbConfig::kAnaHistoDefinePointers,		"HISTO_DEFINE_POINTERS" 		},
 								{TMrbConfig::kAnaHistoInitializeArrays, 	"HISTO_INIT_ARRAYS" 			},
 								{TMrbConfig::kAnaHistoBookUserDefined,	 	"HISTO_BOOK_USER_DEFINED"		},
@@ -1721,7 +1722,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kRdoIncludesAndDefs:
 						{
 							module = (TMrbModule *) fLofModules.First();
-							TList onceOnly;
+							TObjArray onceOnly;
 							while (module) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeReadoutCode(rdoStrm, kModuleDefs);
@@ -2021,24 +2022,20 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.WriteCode(anaStrm);
 								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
-							TList onceOnly;
 							TObjString * ucl = (TObjString *) fLofUserClasses.First();
 							while (ucl) {
-								if (onceOnly.FindObject(ucl->GetName()) == NULL) {
-									anaTmpl.InitializeCode();
-									anaTmpl.Substitute("$className", ucl->GetName());
-									anaTmpl.WriteCode(anaStrm);
-								}
-								onceOnly.Add(new TObjString(ucl->GetName()));
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$className", ucl->GetName());
+								anaTmpl.WriteCode(anaStrm);
 								ucl = (TObjString *) fLofUserClasses.After(ucl);
 							}   
-							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kAnaIncludesAndDefs:
+					case TMrbConfig::kAnaModuleSpecialEnum:
 						{
 							module = (TMrbModule *) fLofModules.First();
-							TList onceOnly;
+							TObjArray onceOnly;
 							while (module) {
 								if (onceOnly.FindObject(module->ClassName()) == NULL) {
 									module->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
@@ -3956,7 +3953,7 @@ void TMrbConfig::AddUserClass(const Char_t * Name) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fLofUserClasses.Add(new TObjString(Name));
+	if (fLofUserClasses.FindObject(Name) == 0) fLofUserClasses.Add(new TObjString(Name));
 }
 
 void TMrbConfig::AddToTagList(const Char_t * CodeFile, Int_t TagIndex) {

@@ -40,37 +40,7 @@
 #define DGF_RUN_PSA 		 		0x102
 #define DGF_RUN_SHORT				0x103
 #define DGF_RUN_MCA 				0x301
-/*		param offsets */
-#define DGF_PAR_MODNUM	 			$parModuleNumber
-#define DGF_PAR_MODCSRA 			$parModCSRA
-#define DGF_PAR_MAXEVENTS 			$parMaxEvents
-#define DGF_PAR_SYNCHWAIT			$parSynchWait
-#define DGF_PAR_INSYNCH 			$parInSynch
-#define DGF_PAR_COINCPATTERN			$parCoincPattern
-#define DGF_PAR_COINCWAIT			$parCoincWait
-#define DGF_PAR_CONTROLTASK			$parControlTask
-#define DGF_PAR_RUNTASK				$parRunTask
-#define DGF_PAR_AOUTBUFFER			$parAddrOfOutputBuffer
-#define DGF_PAR_LOUTBUFFER			$parLengthOfOutputBuffer
-#define DGF_PAR_TRACELENGTH0			$parTraceLength0
-#define DGF_PAR_CHANCSRA0			$parChanCSRA0
 
-#define DGF_PAR_REALTIMEA			$parRealTimeA
-#define DGF_PAR_REALTIMEB			$parRealTimeB
-#define DGF_PAR_REALTIMEC			$parRealTimeC
-#define DGF_PAR_RUNTIMEA			$parRunTimeA
-#define DGF_PAR_RUNTIMEB			$parRunTimeB
-#define DGF_PAR_RUNTIMEC			$parRunTimeC
-#define DGF_PAR_GSLTTIMEA			$parGSLTTimeA
-#define DGF_PAR_GSLTTIMEB			$parGSLTTimeB
-#define DGF_PAR_GSLTTIMEC			$parGSLTTimeC
-#define DGF_PAR_NUMEVENTSA			$parNumEventsA
-#define DGF_PAR_NUMEVENTSB			$parNumEventsB
-#define DGF_PAR_LIVETIMEA0			$parLiveTimeA
-#define DGF_PAR_LIVETIMEB0			$parLiveTimeB
-#define DGF_PAR_LIVETIMEC0			$parLiveTimeC
-#define DGF_PAR_FASTPEAKSA0			$parFastPeaksA
-#define DGF_PAR_FASTPEAKSB0			$parFastPeaksB
 /* cc32 controller functions */
 #define CC32_ADR_AUTO_READ			0x0c
 #define CC32_BIT_AUTO_READ			(0x1 << 12)
@@ -107,16 +77,16 @@
 %%BeginOfCode%%
 %A%
 %A%			f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-%R<=2.0%			dgfmod = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA);
+%R<=2.0%			dgfmod = dgf_get_par_value($moduleNameLC, -1, kMrbDgfParModCSRA);
 %R<=2.0%			dgfmod &= ~0x1L;
-%R<=2.0%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA, dgfmod);
+%R<=2.0%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParModCSRA, dgfmod);
 %B%			DGF_READ_WCR($moduleNameLC);
 %B%			if (root_env_getval_b("TMrbDGF.ReloadParamsOnDaqInit", 0) == 1) dgf_reload_params($moduleNameLC, "$moduleNameLC", "$settingsPath/$moduleNameLC.par");
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODNUM, kMrbModule$moduleNameUC);
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MAXEVENTS, root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents));
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_INSYNCH, root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_COINCPATTERN, 0xFFFF);
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_SYNCHWAIT, root_env_getval_i("$moduleNameUC.SynchWait", $synchWait));
+%B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParModNum, kMrbModule$moduleNameUC);
+%B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParMaxEvents, root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents));
+%B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParInSynch, root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
+%B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParCoincPattern, 0xFFFF);
+%B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParSynchWait, root_env_getval_i("$moduleNameUC.SynchWait", $synchWait));
 %B%#ifdef DEBUG
 %B%			sprintf(msg, "$moduleNameLC: MAXEVENTS=%d, SYNCHWAIT=%d, INSYNCH=%d\n",
 %B%					root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents),
@@ -124,9 +94,9 @@
 %B%					root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
 %B%			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 %B%#endif
-%B% 			dgfAoutBuf[kMrbModule$moduleNameUC - 1] = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_AOUTBUFFER);
+%B% 			dgfAoutBuf[kMrbModule$moduleNameUC - 1] = dgf_get_par_value($moduleNameLC, -1, kMrbDgfParAoutBuffer);
 %B%			for (dgfchn = 0; dgfchn < DGF_NOF_CHANNELS; dgfchn++) {
-%B% 				dgf_set_par_value($moduleNameLC, dgfchn, DGF_PAR_TRACELENGTH0, root_env_getval_i("$moduleNameUC.TraceLength", $traceLength));
+%B% 				dgf_set_par_value($moduleNameLC, dgfchn, kMrbDgfParTraceLength0, root_env_getval_i("$moduleNameUC.TraceLength", $traceLength));
 %B% 			}
 %B%			dgf_update($moduleNameLC, "$moduleNameLC");			/* re-program dacs & fpgas */
 %B%
@@ -220,7 +190,7 @@
 
 %%BeginOfCode%%
 					/* start new run for $moduleNameLC in $modulePosition */
-					dgf_set_par_value($moduleNameLC, -1, DGF_PAR_RUNTASK, root_env_getval_i("$moduleNameUC.RunTask", DGF_RUN_LINEAR));
+					dgf_set_par_value($moduleNameLC, -1, kMrbDgfParRunTask, root_env_getval_i("$moduleNameUC.RunTask", DGF_RUN_LINEAR));
 					DGF_READ_WCR($moduleNameLC);
 					dgf_modify_csr($moduleNameLC, 0, DGF_CSR_NEWRUN | DGF_CSR_RUNENA | DGF_CSR_ENALAM);	/* clear histos, start run */
 #ifdef DEBUG
@@ -307,12 +277,12 @@ void dgf_update(volatile unsigned long * dgf, const char * dgfName) {	/* re-prog
 	sprintf(msg, "%s: reprogramming dacs\n", dgfName);
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 #endif
-	dgf_set_par_value(dgf, -1, DGF_PAR_RUNTASK, DGF_RUN_CONTROL);	/* exec control task */
-	dgf_set_par_value(dgf, -1, DGF_PAR_CONTROLTASK, DGF_CTRL_PROGRAM_DACS);	/* (a) reprogram dacs */
+	dgf_set_par_value(dgf, -1, kMrbDgfParRunTask, DGF_RUN_CONTROL);	/* exec control task */
+	dgf_set_par_value(dgf, -1, kMrbDgfParControlTask, DGF_CTRL_PROGRAM_DACS);	/* (a) reprogram dacs */
 	dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA); 	/* start run */
 	dgf_wait_active(dgf, dgfName, 0, 1);				/* wait for control task to complete */
 
-	addr = dgf_get_par_value(dgf, -1, DGF_PAR_AOUTBUFFER);	/* get buffer addr */
+	addr = dgf_get_par_value(dgf, -1, kMrbDgfParAoutBuffer);	/* get buffer addr */
 	DGF_WRITE_TSAR(dgf, addr);
 	DGF_READ_TSAR(dgf);												/* settle down */
 #ifdef DEBUG
@@ -325,7 +295,7 @@ void dgf_update(volatile unsigned long * dgf, const char * dgfName) {	/* re-prog
 	sprintf(msg, "%s: updating fpga\n", dgfName);
 	f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 #endif
-	dgf_set_par_value(dgf, -1, DGF_PAR_CONTROLTASK, DGF_CTRL_UPDATE_FPGA);	/* (b) update fpgas */
+	dgf_set_par_value(dgf, -1, kMrbDgfParControlTask, DGF_CTRL_UPDATE_FPGA);	/* (b) update fpgas */
 	dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA); 	/* start run */
 	dgf_wait_active(dgf, dgfName, 0, 1);				/* wait for control task to complete */
 }
