@@ -20,6 +20,6 @@
 %NAM%$resource.Module.$moduleNameUC.SwitchBusTerm:	$switchBusTerm
 %NAM%$resource.Module.$moduleNameUC.SynchWait:		$synchWait
 %NAM%$resource.Module.$moduleNameUC.InSynch:		$inSynch
-%NAM%$resource.Module.$moduleNameUC.ActivateUserPSA:	 	$activatePSA
+%NAM%$resource.Module.$moduleNameUC.ActivateUserPSACode:	 	$activatePSA
 %%EndOfCode%%
 %%MODULE_DATA%%
