@@ -396,6 +396,7 @@ public:
 
 		inline UShort_t GetEnergy() const { return(fData[kHitEnergy]); };
 		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
+		inline Double_t GetCalEnergy() const;
 
 		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
 				

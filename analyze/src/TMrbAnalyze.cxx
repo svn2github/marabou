@@ -3282,6 +3282,23 @@ Int_t TUsrHit::Compare(long long ChannelTime) const {
 	else					return(t > ChannelTime ? 1 : -1);
 }
 
+Double_t TUsrHit::GetCalEnergy() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHit::GetCalEnergy
+// Purpose:        Return energy calibrated
+// Arguments:      --
+// Results:        Double_t energy   -- calibrated energy value
+// Exceptions:
+// Description:    
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t gain, offset;
+	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
+	return(fData[kHitEnergy] * gain + offset);
+}
+
 void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
