@@ -359,12 +359,18 @@ class TUsrHit : public TObject {
 		enum	{	kHitLast		=	kHitRaw	};
 		enum	{	kMaxHitData 	=	kHitLast + 1	};
 
-		enum	{	kHitPSA1	=	2	};					// martin lauer's PSA array
-		enum	{	kHitPSA2	=	3	};
-		enum	{	kHitPSA3	=	4	};
-		enum	{	kHitPSA4	=	5	};
-		enum	{	kHitPSA5	=	6	};
-		enum	{	kHitPSA6	=	7	};
+		enum	{	kHitPSA1		=	2	};					// martin lauer's PSA array
+		enum	{	kHitPSA_T0		=	kHitPSA1	};
+		enum	{	kHitPSA2		=	3	};
+		enum	{	kHitPSA_Tslope	=	kHitPSA2	};
+		enum	{	kHitPSA3		=	4	};
+		enum	{	kHitPSA_Qmax	=	kHitPSA3	};
+		enum	{	kHitPSA4		=	5	};
+		enum	{	kHitPSA_Tqmax	=	kHitPSA4	};
+		enum	{	kHitPSA5		=	6	};
+		enum	{	kHitPSA_Error	=	kHitPSA5	};
+		enum	{	kHitPSA6		=	7	};
+		enum	{	kHitPSA_T90		=	kHitPSA6	};
 
 public:
 		TUsrHit() {};
