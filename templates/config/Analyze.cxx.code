@@ -49,7 +49,7 @@
 %%BeginOfCode%%
 ClassImp($className)
 %%EndOfCode%%
-%%IMPLEMENT_CLASSES%%
+%%IMPLEMENT_CLASSES%%INCLUDE_USER
 
 extern pthread_mutex_t global_data_mutex;		// global pthread mutex to protect TMapped data
 
@@ -159,9 +159,9 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 
 %%BeginOfCode%%
 // user-specific method to initialize objects and/or variables
-	this->$initialize(IOSpec);
+	this->$initialize(IOSpec, kTRUE);
 %%EndOfCode%%
-%%INCLUDE_USER_INITIALIZE%%
+%%INCLUDE_USER_INITIALIZE_BEFORE_HB%%
 
 %%BeginOfCode%%
 %B%// book histograms defined by user
@@ -179,6 +179,12 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %FHA%	if ($hArrayName.FindObject("$hName") == NULL) $hArrayName.Add($hName);
 %%EndOfCode%%
 %%HISTO_FILL_ARRAYS%%
+
+%%BeginOfCode%%
+// user-specific method to initialize objects and/or variables
+	this->$initialize(IOSpec, kFALSE);
+%%EndOfCode%%
+%%INCLUDE_USER_INITIALIZE_AFTER_HB%%
 
 	return(kTRUE);
 }
@@ -525,8 +531,8 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 }					
 
 %%BeginOfCode%%
-// dummy methods if user extensions are not active
-Bool_t TMrbAnalyze::InitializeUserCode(TMrbIOSpec * IOSpec) { return(kFALSE); };
+// dummy methods if user extensions are not activated
+Bool_t TMrbAnalyze::InitializeUserCode(TMrbIOSpec * IOSpec, Bool_t BeforeHB) { return(kFALSE); };
 %%EndOfCode%%
 %%INCLUDE_DUMMY_METHODS%%
 

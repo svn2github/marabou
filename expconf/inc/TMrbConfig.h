@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.52 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.53 2004-10-13 07:59:29 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,8 @@ class TMrbConfig : public TNamed {
 									kAnaWdwDefinePointers,
 									kAnaWdwClassInstance,
 									kAnaWdwAdjustPointers,
-									kAnaUserInitialize,
+									kAnaUserInitializeBeforeHB,
+									kAnaUserInitializeAfterHB,
 									kAnaUserReloadParams,
 									kAnaUserBookParams,
 									kAnaUserBookHistograms,

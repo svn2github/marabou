@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.79 2004-09-28 13:47:32 rudi Exp $       $Id: TMrbConfig.cxx,v 1.79 2004-09-28 13:47:32 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.80 2004-10-13 07:59:29 rudi Exp $       $Id: TMrbConfig.cxx,v 1.80 2004-10-13 07:59:29 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -292,7 +292,8 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaWdwDefinePointers, 		"WDW_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaWdwClassInstance,			"WDW_CLASS_INSTANCE"			},
 								{TMrbConfig::kAnaWdwAdjustPointers, 		"WDW_ADJUST_POINTERS"			},
-								{TMrbConfig::kAnaUserInitialize,			"INCLUDE_USER_INITIALIZE"		},
+								{TMrbConfig::kAnaUserInitializeBeforeHB,	"INCLUDE_USER_INITIALIZE_BEFORE_HB"	},
+								{TMrbConfig::kAnaUserInitializeAfterHB, 	"INCLUDE_USER_INITIALIZE_AFTER_HB"	},
 								{TMrbConfig::kAnaUserBookParams,			"INCLUDE_USER_BOOK_PARAMS"		},
 								{TMrbConfig::kAnaUserBookHistograms,		"INCLUDE_USER_BOOK_HISTOGRAMS"	},
 								{TMrbConfig::kAnaUserGlobals,				"INCLUDE_USER_GLOBALS"			},
@@ -2390,7 +2391,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaFindVars:
 						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kVarOrWindow, anaTmpl);
 						break;
-					case TMrbConfig::kAnaUserInitialize:
+					case TMrbConfig::kAnaUserInitializeBeforeHB:
+						if (fLofUserHistograms.First() == NULL) break;
+					case TMrbConfig::kAnaUserInitializeAfterHB:
 						if (this->UserCodeToBeIncluded()) {
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t udc = kFALSE;
