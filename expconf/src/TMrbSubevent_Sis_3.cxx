@@ -69,7 +69,7 @@ TMrbSubevent_Sis_3::TMrbSubevent_Sis_3(const Char_t * SevtName, const Char_t * S
 //                 |                ...                  |
 //                 |                ...                  |
 //                 |-------------------------------------|
-//                 |  1st module, last active chn, MSW   |id &
+//                 |  1st module, last active chn, MSW   |
 //                 |-------------------------------------|
 //                 |        last active chn, LSW         |
 //                 |=====================================|
