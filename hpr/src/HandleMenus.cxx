@@ -220,6 +220,9 @@ enum ERootCanvasCommands {
    kFH_CASCADE2_U,
    kFH_Portrait,
    kFH_Landscape,
+   kFH_WritePrim,
+   kFH_GetPrim,
+   kFH_DrawHist,
    kFH_SetGrid,
    kFH_UseGrid,
    kFH_DrawGrid,  
@@ -445,6 +448,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      fHCanvas->Modified();
                      fHCanvas->Update();
                      break;
+                  case kOptionRefresh:
+                     fHCanvas->Paint();
+                     fHCanvas->Update();
+                     break;
                   case kFH_SetGrid:
                      {
                     TArrayD values(2);
@@ -480,6 +487,17 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
                   case kFH_RemoveGrid:
                         fHCanvas->RemoveGrid();
+                     break;
+
+                  case kFH_DrawHist:
+                        fHCanvas->DrawHist();
+                     break;
+                  case kFH_WritePrim:
+                        fHCanvas->WritePrimitives();
+                     break;
+
+                  case kFH_GetPrim:
+                        fHCanvas->GetPrimitives();
                      break;
 
                   case    kFH_Portrait:
@@ -1436,9 +1454,15 @@ void HandleMenus::BuildMenus()
    }
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-   	fEditMenu->AddEntry("&Graphics Editor",        kEditEditor);
-   	fEditMenu->AddEntry("Clear &Pad",              kEditClearPad);
-   	fEditMenu->AddEntry("&Clear Canvas",           kEditClearCanvas);
+   	fEditMenu->AddEntry("Graphics Editor",        kEditEditor);
+   	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
+   	fEditMenu->AddEntry("Write objects to file",  kFH_WritePrim);
+   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
+     
+      fEditMenu->AddSeparator();
+   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
+   	fEditMenu->AddEntry("Clear Canvas",           kEditClearCanvas);
+      fEditMenu->AddEntry("Refresh",                kOptionRefresh);
 
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);

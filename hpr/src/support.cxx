@@ -1486,12 +1486,13 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
    Bool_t fok = kFALSE;
    TEnv env(".rootrc");         // inspect ROOT's environment
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
-//   if (defname.Length() <= 0) {
-//      WarnBox("Setting defaults dir/name to defaults/Last");
-//      defname = "defaults/Last";
-//      env.SetValue("HistPresent.LastSettingsName", defname.Data());
-//   }    
-   env.SaveLevel(kEnvUser);
+   if (env.Lookup("HistPresent.LastSettingsName") == NULL) {
+      cout << "Setting defaults dir/name to: " << defname.Data() << endl;
+      env.SetValue("HistPresent.LastSettingsName", defname.Data());
+      env.SaveLevel(kEnvUser);
+   } else {  
+      defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
+   }
    fok = kTRUE;
    Int_t lslash = defname.Last('/');
    if (lslash > 0) {
@@ -1678,22 +1679,24 @@ Bool_t fixnames(TFile * * infile, Bool_t checkonly)
 }
 //______________________________________________________________________________________
 
-TPolyLine * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color) 
+TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color) 
 {
    Int_t nbins = binh - binl + 1;
    cout << "PaintArea " << binl << " " << binh << endl;
-   TPolyLine * pl  = new TPolyLine(2 * nbins + 3);
+   TGraph * pl  = new TGraph(2 * nbins + 3);
    Int_t ip = 0;
    for (Int_t bin = binl; bin <= binh; bin++) {
       pl->SetPoint(ip, h->GetBinLowEdge(bin), h->GetBinContent(bin));
-      pl->SetPoint(ip + 1 , h->GetBinLowEdge(bin) + h->GetBinWidth(bin), h->GetBinContent(bin));
+      pl->SetPoint(ip + 1 , h->GetBinLowEdge(bin) + h->GetBinWidth(bin), 
+                            h->GetBinContent(bin));
       ip += 2;
    }
-   pl->SetPoint(ip, (pl->GetX())[ip-1], h->GetMinimum());
-   pl->SetPoint(ip+1, (pl->GetX())[0],  h->GetMinimum());   
+   Axis_t ymin = h->GetYaxis()->GetXmin();
+   pl->SetPoint(ip, (pl->GetX())[ip-1], ymin);
+   pl->SetPoint(ip+1, (pl->GetX())[0],  ymin);   
    pl->SetPoint(ip+2, (pl->GetX())[0],  (pl->GetY())[1]);   
    pl->SetFillColor(color);
-   pl->SetOption("F");
+   pl->SetFillStyle(1001);
    return pl;
 }
 //______________________________________________________________________________________

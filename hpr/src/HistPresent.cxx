@@ -676,6 +676,7 @@ Should we create a new file with corrected names?", maincanvas)) {
       maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
       maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, rfile, "HTCanvas"),      maxkey);
       maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
       maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
       maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
@@ -2222,34 +2223,6 @@ void HistPresent::ShowGraph(const char* fname, const char* name, const char* bp)
    if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________
-// Show Canvas
-  
-void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp)
-{
-   TCanvas *c;
-   if (strstr(fname,".root")) {
-      if (fRootFile) fRootFile->Close();
-      fRootFile=new TFile(fname);
-      c = (TCanvas*)fRootFile->Get(name);
-      TList * l = c->GetListOfPrimitives();
-      TIter next(l);
-      TObject * obj;
-      TH1* h;
-      while ( (obj = (TObject*)next()) ) {
-         if (obj->InheritsFrom(TH1::Class())) {
-            h = (TH1*)obj;
-            h->SetDirectory(gROOT);
-         }
-      }
-   } else {
-      c=(TCanvas*)gROOT->FindObject(name);
-   }
-//  gROOT->ls();
-   if (c) c->Draw();   
-   else WarnBox("Function not found");
-   if (fRootFile) fRootFile->Close();
-}
-//________________________________________________________________________________________
 // set rebin val 
   
 void HistPresent::SetRebinValue(Int_t val) 
@@ -3541,6 +3514,7 @@ void HistPresent::WarnBox(const char *message)
 
 void HistPresent::DinA4Page(Int_t form)
 {
+   gROOT->SetStyle("Plain");
    HTCanvas *c1; 
    if (form == 1) {
       c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
@@ -3551,8 +3525,72 @@ void HistPresent::DinA4Page(Int_t form)
                   800,40,  712, 1050, this);
       c1->Range(0, 0, 210, 210. * TMath::Sqrt(2.));
    }
+   c1->SetRightMargin(0);
+   c1->SetLeftMargin(0);
+   c1->SetBottomMargin(0);
+   c1->SetTopMargin(0);
    c1->SetGrid(10, 10);
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
+}
+//________________________________________________________________________________________
+// Show Canvas
+  
+void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp)
+{
+   HTCanvas *c;
+   if (strstr(fname,".root")) {
+      if (fRootFile) fRootFile->Close();
+      fRootFile=new TFile(fname);
+      c = (HTCanvas*)fRootFile->Get(name);
+   } else {
+      c=(HTCanvas*)gROOT->FindObject(name);
+   }
+   if (c) {
+      TString tempname(c->GetName());
+      c->SetName("abcxyz");
+      HTCanvas * c1 = new HTCanvas(tempname.Data(), c->GetTitle(),
+                         c->GetWindowTopX(), c->GetWindowTopY(),
+                         c->GetWindowWidth(), c->GetWindowHeight(), this);
+      Double_t x1, y1, x2, y2;
+      c->GetRange(x1, y1, x2, y2);
+      c1->Range(x1, y1, x2, y2);
+      TList * l = c->GetListOfPrimitives();
+      TList * l1 = c1->GetListOfPrimitives();
+      TIter next(l);
+      TObject * obj;
+      TH1* h;
+      while ( (obj = (TObject*)next()) ) {
+         if (obj->InheritsFrom(TH1::Class())) {
+            h = (TH1*)obj;
+            h->SetDirectory(gROOT);
+            cout << obj->GetName() << endl;
+         } else {
+   
+            cout << obj->GetName() << endl;
+//            obj->Dump();
+            if (obj->InheritsFrom("TPad")){
+               TPad * newp = (TPad * )obj->Clone();
+               newp->SetCanvas(c1);
+               l1->Add(newp);
+//               newp->Dump();
+            } else
+              l1->Add(obj);
+         }
+      }
+      delete c;
+//      c1->SetName(tempname.Data());
+
+   	c1->SetRightMargin(0);
+   	c1->SetLeftMargin(0);
+   	c1->SetBottomMargin(0);
+   	c1->SetTopMargin(0);
+   	c1->SetGrid(10, 10);
+   	c1->Modified(kTRUE);
+   	c1->Update();
+   	c1->SetEditable(kTRUE);
+
+   }
+   if (fRootFile) fRootFile->Close();
 }

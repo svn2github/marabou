@@ -35,13 +35,13 @@ class HTCanvas : public TCanvas {
 friend class HandleMenus;
 
 private:
-   HistPresent    * fHistPresent; 
-   FitHist        * fFitHist;
-   TList          * fHistList;
-   TGraph         * fGraph;
-   HTimer         * fTimer;
-   TRootCanvas    * fRootCanvas;
-   HandleMenus * fHandleMenus;
+   HistPresent    * fHistPresent;   //! dont stream
+   FitHist        * fFitHist;       //! dont stream
+   TList          * fHistList;      //! dont stream
+   TGraph         * fGraph;         //! dont stream
+   HTimer         * fTimer;         //! dont stream
+   TRootCanvas    * fRootCanvas;    //! dont stream
+   HandleMenus    * fHandleMenus;      //! dont stream
    Double_t       fGridX;
    Double_t       fGridY;
    Bool_t         fUseGrid;
@@ -74,8 +74,11 @@ public:
    Bool_t  GetUseGrid() {return fUseGrid;};
    void    DrawGrid();
    void    RemoveGrid();
+   void    DrawHist();
+   void    WritePrimitives();
+   void    GetPrimitives();
 
-   ClassDef(HTCanvas,0)  //Graphics canvas
+   ClassDef(HTCanvas,1)  //Graphics canvas
 };
 
 #endif

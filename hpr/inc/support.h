@@ -98,7 +98,7 @@ TGraph * FindGraph(HTCanvas * c);
 void WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
 void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
 Bool_t fixnames(TFile * * infile, Bool_t checkonly);
-TPolyLine * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color); 
+TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color); 
 Int_t getcol();
 
 inline void nothing();

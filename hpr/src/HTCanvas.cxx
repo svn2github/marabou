@@ -27,6 +27,7 @@
 #include "HTimer.h"
 #include "SetColor.h"
 #include "TMrbHelpBrowser.h" 
+#include "TGMrbInputDialog.h"
 #include "EditMarker.h"
 
 //class TContextMenu;
@@ -39,7 +40,16 @@ ClassImp(HTCanvas)
 //ClassImp(HandleMenus)
 
 //____________________________________________________________________________
-HTCanvas::HTCanvas():TCanvas(){};
+HTCanvas::HTCanvas():TCanvas()
+{
+   fHistPresent= NULL; 
+   fFitHist= NULL;     
+   fHistList= NULL;    
+   fGraph= NULL;       
+   fTimer= NULL;       
+   fRootCanvas= NULL;  
+   fHandleMenus= NULL;  
+};
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr, FitHist * fh,
@@ -303,7 +313,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
-      if(fUseGrid){
+      if(fUseGrid && !(fSelected->IsA() == TPad::Class())){
 //         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
          if(fGridX !=0){
             x = gPad->AbsPixeltoX(px);
@@ -340,7 +350,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
-         if(fUseGrid){
+         if(fUseGrid && !(fSelected->IsA() == TPad::Class())){
             if(fGridX !=0){
                x = gPad->AbsPixeltoX(px);
                n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
@@ -799,6 +809,76 @@ void HTCanvas::RemoveGrid()
    }
    Update();
 }
+//______________________________________________________________________________
 
+void HTCanvas::DrawHist()
+{
+   if (!fHistPresent) return;
+   TPad * selected = (TPad *)gROOT->GetSelectedPad();
+   if (selected) {
+//      cout << selected << endl;
+      GetListOfPrimitives()->ls();
+ //     cout << GetListOfPrimitives()->FindObject("newpad") << endl;
+      if (GetListOfPrimitives()->Contains(selected)) {
+         if (fHistPresent->fSelectHist->GetSize() != 1) {
+            cout << "select exactly 1 histogram" << endl;
+            return;
+         } else {
+            TH1* hist = fHistPresent->GetSelHistAt(0);
+            if (hist) {
+               hist->Print();
+               selected->cd();
+               hist->Draw();
+               TString drawopt;
+               if (hist->GetDimension() == 1) {
+                  if (fHistPresent->fShowContour)
+                     drawopt = "";
+                  if (fHistPresent->fShowErrors)
+                     drawopt += "e1";
+                  if (fHistPresent->fFill1Dim) {
+                     hist->SetFillStyle(1001);
+                     hist->SetFillColor(fHistPresent->f1DimFillColor);
+                  } else
+                     hist->SetFillStyle(0);
+               } else if (hist->GetDimension() == 2) {
+                  drawopt = fHistPresent->fDrawOpt2Dim->Data();
+               }
+               hist->SetOption(drawopt.Data());
+               hist->SetDrawOption(drawopt.Data());
+               selected->Modified();
+            }
+         }
+      } else {
+         cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
+      } 
+   } else {
+         cout << "No Pad selected" << endl;
+   } 
+   Update();
+}
 
+//______________________________________________________________________________
 
+void HTCanvas::WritePrimitives()
+{
+   Bool_t ok;
+//   TString name = "drawing";
+   TString name = GetName();
+   name += "_canvas";
+   name =
+       GetString("Save Function List with name", name.Data(), &ok,
+                 (TGWindow*)fRootCanvas);
+   if (!ok)
+      return;
+   if (OpenWorkFile(fRootCanvas)) {
+      RemoveGrid();
+      Write(name.Data());
+ //     GetListOfPrimitives()->Write(name.Data(), 1);
+      CloseWorkFile();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::GetPrimitives()
+{
+}

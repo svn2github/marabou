@@ -196,7 +196,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
    
    RestoreDefaults();   
-   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
+//   cout << "FitMacroName " << fFitMacroName.Data()<< endl;
 
    fTemplateMacro = "TwoGaus";
    fLiveStat1dim = env.GetValue("HistPresent.LiveStat1dim", 0);
@@ -1732,18 +1732,18 @@ Int_t FitHist::GetMarks(TH1 * hist)
       TAxis *xaxis = hist->GetXaxis();
       Int_t first = xaxis->GetFirst();
       Int_t last = xaxis->GetLast();
-      xmin = xaxis->GetBinLowEdge(first);
-      xmax = xaxis->GetBinUpEdge(last);
-//      xmin = xaxis->GetBinLowEdge(first) + 0.5 * xaxis->GetBinWidth(first);
-//      xmax = xaxis->GetBinUpEdge(last)   - 0.5 * xaxis->GetBinWidth(last);
+//      xmin = xaxis->GetBinLowEdge(first);
+//      xmax = xaxis->GetBinUpEdge(last);
+      xmin = xaxis->GetBinLowEdge(first) + 0.5 * xaxis->GetBinWidth(first);
+      xmax = xaxis->GetBinUpEdge(last)   - 0.5 * xaxis->GetBinWidth(last);
       if (is2dim(hist)) {
          TAxis *yaxis = hist->GetYaxis();
          first = yaxis->GetFirst();
          last = yaxis->GetLast();
-         ymin = yaxis->GetBinLowEdge(first);
-         ymax = yaxis->GetBinUpEdge(last);
-//         ymin = yaxis->GetBinLowEdge(first) + 0.5 * yaxis->GetBinWidth(first);
-//         ymax = yaxis->GetBinUpEdge(last)   - 0.5 * yaxis->GetBinWidth(last);
+//         ymin = yaxis->GetBinLowEdge(first);
+ //        ymax = yaxis->GetBinUpEdge(last);
+         ymin = yaxis->GetBinLowEdge(first) + 0.5 * yaxis->GetBinWidth(first);
+         ymax = yaxis->GetBinUpEdge(last)   - 0.5 * yaxis->GetBinWidth(last);
       }
    } else {
       cout << "Null pointer to hist" << endl;
@@ -2015,7 +2015,7 @@ void FitHist::GetLimits()
       inp = fSelHist->GetXaxis()->FindBin(p->GetX());
 //      inp = XBinNumber(fSelHist, p->GetX());
       if (inp > 0) {
- //        cout << "p->GetX() " << p->GetX()<<  " xbin " << inp << endl;
+//         cout << "p->GetX() " << p->GetX()<<  " xbin " << inp << endl;
          if (fBinX_1 <= 0) {
             fBinX_1 = inp;
             fX_1 = p->GetX();
@@ -2432,6 +2432,8 @@ void FitHist::ExpandProject(Int_t what)
    }
    TString expname;
    GetLimits();
+//   cout << "fBinX_1,2 " << fBinX_1 << " " << fBinX_2 << endl;         
+//   cout << "fBinY_1,2 " << fBinY_1 << " " << fBinY_2 << endl;         
 //  1-dim case
    if (!is2dim(fSelHist)) {
       Double_t x = 0, cont = 0;
@@ -2440,7 +2442,6 @@ void FitHist::ExpandProject(Int_t what)
       Double_t sumx2 = 0;
       Double_t mean;
       Double_t sigma;
-//      cout << "fBinX_1,2 " << fBinX_1 << " " << fBinX_2 << endl;         
 //     get values in expanded hist      
       TAxis *xaxis_new = fSelHist->GetXaxis();
       Axis_t bw = xaxis_new->GetBinWidth(fBinX_1);
@@ -2552,7 +2553,7 @@ void FitHist::ExpandProject(Int_t what)
             pname += fSerialPf;
             fSerialPf++;
          } else {
-            pname += "_ProjX";
+            pname += "_ProjY";
             pname += fSerialPf;
             fSerialPy++;
          }
@@ -3005,7 +3006,7 @@ void FitHist::UpdateDrawOptions()
    SetSelectedPad();
    TString drawopt;
    if (hp->fShowContour)
-      drawopt = "";
+      drawopt = "hist";
    if (hp->fShowErrors)
       drawopt += "e1";
    if (hp->fFill1Dim) {
@@ -3013,6 +3014,7 @@ void FitHist::UpdateDrawOptions()
       fSelHist->SetFillColor(hp->f1DimFillColor);
    } else
       fSelHist->SetFillStyle(0);
+//   cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
    fSelHist->SetOption(drawopt.Data());
    fSelHist->SetDrawOption(drawopt.Data());
 }
@@ -3027,10 +3029,11 @@ void FitHist::ColorMarked()
    GetLimits();
    Int_t color = getcol();
    if (color <= 0) return;
-   TPolyLine * pl = PaintArea(fSelHist, fBinX_1, fBinX_2, color);
+   TGraph * pl = PaintArea(fSelHist, fBinX_1, fBinX_2, color);
    if (pl) {
-      pl->Draw();
-      fSelHist->GetListOfFunctions()->Add(pl);
+      cHist->cd();
+      pl->Draw("LF");
+      fSelHist->GetListOfFunctions()->Add(pl, "LF");
    }
    cHist->Modified();
    cHist->Update();
