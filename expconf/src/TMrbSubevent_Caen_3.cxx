@@ -52,15 +52,18 @@ TMrbSubevent_Caen_3::TMrbSubevent_Caen_3(const Char_t * SevtName, const Char_t *
 //                 -  up to MAXEVENTS events per module
 //                 -  several modules per buffer
 //
-//                 15               8|7                  0
-//                 |=================|===================|
-//                 |  module number  |      channel      |
-//                 |-------------------------------------|
-//                 |                data                 |
-//                 15====================================0
+//                 31---------------16|15------8|7---------0
+//                 |                  |    wc   | modser#  | header
+//                 |==================|====================|
+//                 |     channel      |        data        | channel data
+//                 |------------------|---------|----------|
+//                 |        ...       |        ...         |
+//                 |==================|====================|
+//                 |         |         event count         | trailer
+//                 31======================================0
 //
 //                 Data storage by the consumer (ROOT):
-//                 -  data stored in a TClonesArray, channel by channel
+//                 -  data stored in a TClonesArray/TUsrHit, channel by channel
 //                 -  each channel entry marked with event time
 //
 // Keywords:

@@ -51,12 +51,15 @@ TMrbSubevent_Caen_1::TMrbSubevent_Caen_1(const Char_t * SevtName, const Char_t *
 //                 -  several modules per buffer
 //                 -  only 1 event per module (MAXEVENTS=1)
 //
-//                 15               8|7                  0
-//                 |=================|===================|
-//                 |  module number  |      channel      |
-//                 |-------------------------------------|
-//                 |                data                 |
-//                 15====================================0
+//                 31---------------16|15------8|7---------0
+//                 |                  |    wc   | modser#  | header
+//                 |==================|====================|
+//                 |     channel      |        data        | channel data
+//                 |------------------|---------|----------|
+//                 |        ...       |        ...         |
+//                 |==================|====================|
+//                 |         |         event count         | trailer
+//                 31======================================0
 //
 //                 Data storage by the consumer (ROOT):
 //                 -  stored in a fixed-length vector, indexed by channel number
