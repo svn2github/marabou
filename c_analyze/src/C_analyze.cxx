@@ -1482,7 +1482,7 @@ Bool_t FhMainFrame::CheckParams()
       Int_t error = chkquota(fname, fHardHWM, fWarnHWM, fVerbLevel);
       if(error == -1)ok = kFALSE;
       if(error == -2)WarnBox("Filespace/quota low, watch out", this);
-      if(error == -4)WarnBox("Could not check quota, watch out", this);
+//      if(error == -4)WarnBox("Could not check quota, watch out", this);
 
       fname1 = fTbFile->GetString();
       fname = fname.Strip(TString::kBoth);
@@ -3242,8 +3242,8 @@ void FhMainFrame::Runloop(){
      }
      if ( hnew ) {
         htemp  = hrate;
-        hrate  = hnew;
-        hdeadt = hnew;
+        if (fShowRate) { hrate  = hnew; hdeadt = NULL; }
+        else           { hdeadt = hnew; hrate  = NULL; }
      } else {
         htemp = 0;
      }
