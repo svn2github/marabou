@@ -1672,9 +1672,9 @@ Bool_t TUsrDeadTime::InitializeTree(TFile * RootFile) {
 
 	obj = RootFile->Get("DeadTime");
 	if (obj == NULL) {
-		gMrbLog->Err()	<< "Tree \"DeadTime\" not found in ROOT file " << RootFile->GetName() << endl;
+		gMrbLog->Wrn()	<< "Tree \"DeadTime\" not found in ROOT file " << RootFile->GetName() << endl;
 		gMrbLog->Flush();
-		gMrbLog->Err()	<< "WARNING - probably NO DEAD TIME info written to this file" << endl;
+		gMrbLog->Wrn()	<< "Probably NO DEAD TIME info written to this file" << endl;
 		gMrbLog->Flush(this->ClassName(), "InitializeTree");
 		return(kFALSE);
 	}

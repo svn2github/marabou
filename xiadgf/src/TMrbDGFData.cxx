@@ -366,7 +366,6 @@ Int_t TMrbDGFData::ReadFPGACodeAscii(EMrbFPGAType FPGAType, const Char_t * CodeF
 	UInt_t data;
 	UShort_t *dp;
 	TString dataPath;
-	Char_t * fp;
 	TString codeFile;
 	TString hexDigits;
 	Bool_t hStart, hEnd;
@@ -574,7 +573,6 @@ Int_t TMrbDGFData::ReadDSPCodeBinary(const Char_t * CodeFile, Bool_t Forced) {
 	ifstream dsp;
 	Int_t size;
 	TString dataPath;
-	Char_t * fp;
 	TString codeFile;
 	Int_t byte0, byte1, byte2, byte3;
 	
@@ -667,7 +665,6 @@ Int_t TMrbDGFData::ReadDSPCodeAscii(const Char_t * CodeFile, Bool_t Forced) {
 	Int_t data;
 	ifstream dsp;
 	TString dataPath;
-	Char_t * fp;
 	TString codeFile;
 	TMrbString line;
 	TString c;
@@ -782,7 +779,6 @@ Int_t TMrbDGFData::ReadNameTable(const Char_t * ParamFile, Bool_t Forced) {
 	ifstream param;
 	Int_t nofParams;
 	TString dataPath;
-	Char_t * fp;
 	TString paramFile;
 	TString pLine;
 

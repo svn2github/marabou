@@ -313,7 +313,8 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	Bool_t selectFlag;
 	Int_t nofWords;
 	TString hTitle;
-	Int_t nofModules, nofTraces;
+	Int_t nofModules;
+	Int_t nofTraces = 0;
 	ofstream hl;
 	UInt_t chnPattern;
 	Int_t xwait;

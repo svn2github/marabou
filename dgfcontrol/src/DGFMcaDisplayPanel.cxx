@@ -366,7 +366,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
 	intStr = fRunTimeEntry->GetEntry()->GetText();
 	intStr.ToInteger(accuTime);
-	Int_t waitInv;
+	Int_t waitInv = 0;
 	switch (tp->GetIndex()) {
 		case kDGFMcaTimeScaleSecs:	waitInv = 1; break;
 		case kDGFMcaTimeScaleMins:	waitInv = 60; break;

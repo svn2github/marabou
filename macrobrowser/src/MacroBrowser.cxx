@@ -33,8 +33,8 @@
 
 int main(int argc, char **argv)
 {
-	TApplication * theApp;
-	TRint * theRint;
+	TApplication * theApp = NULL;
+	TRint * theRint = NULL;
 	Bool_t useRint;
 
 	useRint = gEnv->GetValue("MacroBrowser.UseRint", kFALSE);

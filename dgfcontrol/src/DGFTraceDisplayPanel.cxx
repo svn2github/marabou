@@ -403,7 +403,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 	intStr = fTraceLength->GetEntry()->GetText();
 	intStr.ToInteger(traceLength);
 
-	Int_t tLength;
+	Int_t tLength = 0;
 	switch (nofChannels) {
 		case 1: tLength = 8000; break;
 		case 2: tLength = 4000; break;

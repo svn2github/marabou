@@ -418,7 +418,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 	TMrbNamedX * tp = fTauFitTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
 	intStr = fRunTimeEntry->GetEntry()->GetText();
 	intStr.ToInteger(accuTime);
-	Int_t waitInv;
+	Int_t waitInv = 0;
 	switch (tp->GetIndex()) {
 		case kDGFTauFitTimeScaleSecs:	waitInv = 1; break;
 		case kDGFTauFitTimeScaleMins:	waitInv = 60; break;

@@ -229,7 +229,7 @@ Bool_t TMrbString::Increment(Int_t Increment, Int_t Base) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t intVal;
-	Bool_t basePrefix;
+	Bool_t basePrefix = kFALSE;
 
 	if (Base == 0) Base = fBase;
 	if (!this->CheckBase(Base, "Increment")) return(-1);
@@ -405,7 +405,7 @@ Int_t TMrbString::Split(TObjArray & LofSubStrings, const Char_t * Separator, Boo
 	TString sepStr;
 	Int_t nstr, sepl, lng;
 	TString subStr;
-	Char_t whiteSpace;
+	Char_t whiteSpace = ' ';
 	TMrbString tmpStr;
 	TMrbString * sp;
 

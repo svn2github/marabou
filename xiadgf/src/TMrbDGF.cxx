@@ -412,13 +412,13 @@ Bool_t TMrbDGF::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t sts;
-	Int_t size;
-	UShort_t * dp;
+	Int_t size = 0;
+	UShort_t * dp = NULL;
 	TMrbDGFData::EMrbDGFRevision rev;
 
 	TString sysfip;
-	UInt_t csrBits;
-	Int_t subAddr;
+	UInt_t csrBits = 0;
+	Int_t subAddr = 0;
 	TString cnaf;
 
 	TArrayI cData;
@@ -735,7 +735,7 @@ Bool_t TMrbDGF::DownloadDSPCode(Int_t Retry, Bool_t TriedOnce) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t size;
+	Int_t size = 0;
 	Bool_t downloadFailed;
 	Int_t retriesNeeded;
 	TArrayI cData;
@@ -1050,7 +1050,7 @@ Bool_t TMrbDGF::ReadParamMemory(Int_t FromParam, Int_t ToParam) {
 
 	Int_t nofParams;
 	Int_t startAddr;
-	Int_t idx;
+	Int_t idx = 0;
 	Int_t i;
 	TArrayI cData;
 

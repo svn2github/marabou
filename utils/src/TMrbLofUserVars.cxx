@@ -337,7 +337,7 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 	Int_t ilow, iup;
 	Double_t flow, fup;
 	TString str, boolStr;
-	Bool_t boolVal;
+	Bool_t boolVal = kFALSE;
 	Int_t one;
 	UInt_t vtype;
 	UInt_t varType;

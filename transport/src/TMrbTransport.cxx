@@ -215,7 +215,7 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 	Int_t nofEventsProcessed;
 	Int_t nofErrors;
 	Int_t abortOnError;
-	UInt_t eventType;
+	UInt_t eventType = 0;
 
 	ClearError();
 

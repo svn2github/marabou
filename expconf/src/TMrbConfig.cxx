@@ -1459,7 +1459,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kRdoCamacController:
 						contrType = this->GetControllerType(1);
 						if (contrType == TMrbConfig::kControllerUnused) {
-							gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+							gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 							gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 							contrType = TMrbConfig::kControllerCBV;
 						}
@@ -1520,7 +1520,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1653,7 +1653,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									iniTag = "%CB";
 									Int_t cc = this->GetControllerType(crate);
 									if (cc == TMrbConfig::kControllerUnused) {
-										gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+										gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 										gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 										cc = TMrbConfig::kControllerCBV;
 									}
@@ -1673,7 +1673,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CE";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1735,7 +1735,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CB";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1760,7 +1760,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CE";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1793,7 +1793,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CB";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Err()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -4145,14 +4145,14 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 			TString cplusIncludePath = gSystem->Getenv("CPLUS_INCLUDE_PATH");
 			TString mrbInclude = gSystem->ExpandPathName("$MARABOU/include");
 			if (!cplusIncludePath.Contains(mrbInclude.Data())) {
-				gMrbLog->Err()	<< mrbInclude << " is missing in your environment" << endl;
+				gMrbLog->Wrn()	<< mrbInclude << " is missing in your environment" << endl;
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
-				gMrbLog->Err()	<< endl
+				gMrbLog->Wrn()	<< endl
 								<< "                      Execute command" << endl
 								<< "                      ==> "
 								<< setblue
 								<< "export CPLUS_INCLUDE_PATH=$MARABOU/include:$CPLUS_INCLUDE_PATH" << endl
-								<< setred
+								<< setmagenta
 								<< "                      or add it to your profile permanently" << endl;
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 				return(kFALSE);
@@ -4650,16 +4650,16 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 	TString ldLibraryPath = gSystem->Getenv("LD_LIBRARY_PATH");
 	TString libPath = gSystem->ExpandPathName(userPath.Data());
 	if (!ldLibraryPath.Contains(libPath.Data())) {
-		gMrbLog->Err()	<< libPath << " is missing in your library path" << endl;
+		gMrbLog->Wrn()	<< libPath << " is missing in your library path" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
-		gMrbLog->Err()	<< endl
+		gMrbLog->Wrn()	<< endl
 						<< "                      Execute command" << endl
 						<< "                      ==> "
 						<< setblue
 						<< "export LD_LIBRARY_PATH="
 						<< libPath
 						<< ":$LD_LIBRARY_PATH" << endl
-						<< setred
+						<< setmagenta
 						<< "                      or add it to your profile permanently" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	}
@@ -4889,12 +4889,12 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 				userClass = userClass.Strip(TString::kBoth);
 				if (UserDefinedEvent) {
 					if (classOk) {
-						gMrbLog->Err()	<< "[" << userFile << "] More than one class def - class \"" << userClass << "\" not used as event class" << endl;
+						gMrbLog->Wrn()	<< "[" << userFile << "] More than one class def - class \"" << userClass << "\" not used as event class" << endl;
 						gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 						continue;
 					}
 					if (uevtName.CompareTo(userClass.Data()) != 0) {
-						gMrbLog->Err()	<< "[" << userFile << "] Class name \"" << userClass
+						gMrbLog->Wrn()	<< "[" << userFile << "] Class name \"" << userClass
 										<< "\" different from file name - not used as event class" << endl;
 						gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 						continue;
@@ -5105,8 +5105,15 @@ Int_t TMrbConfig::PrintErrors() const {
 		cerr	<< setred << endl
 				<< "ERROR(S) while processing config script:" << endl;
 		gMrbLog->Print(0, "Error");
-		cerr	<< setblack << endl;
 	}
+	TObjArray wrn;
+	Int_t nofWarnings = gMrbLog->GetWarnings(wrn);
+	if (nofWarnings > 0) {
+		cerr	<< setmagenta << endl
+				<< "WARNING(S) while processing config script:" << endl;
+		gMrbLog->Print(0, "Warning");
+	}
+	if (nofErrors || nofWarnings) cerr	<< setblack << endl;
 	return(nofErrors);
 }
 
