@@ -3820,25 +3820,27 @@ void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) {
 	}
 }
 
-void TMrbConfig::PrintErrors() {
+Int_t TMrbConfig::PrintErrors() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::PrintErrors
 // Purpose:        Print error summary
 // Arguments:      --
-// Results:        --
+// Results:        Int_t NofErrors   -- number of errors
 // Exceptions:
 // Description:    Outputs logger contents
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TObjArray err;
-	if (gMrbLog->GetErrors(err) > 0) {
+	Int_t nofErrors = gMrbLog->GetErrors(err);
+	if (nofErrors > 0) {
 		cerr	<< setred << endl
 				<< "ERROR(S) while processing config script:" << endl;
 		gMrbLog->Print(0, "Error");
 		cerr	<< setblack << endl;
 	}
+	return(nofErrors);
 }
 
 void TMrbConfig::Version() {
