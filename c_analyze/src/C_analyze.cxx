@@ -3337,19 +3337,54 @@ void FhMainFrame::Runloop(){
      } else {
         htemp = 0;
      }
-     if ( hrate ) {
+//     if ( hrate ) {
 //        hrate->Print();
 //         show dead time history
-        if(!fShowRate && hdeadt){
-            hdeadt->SetFillColor(kMagenta);
-            hdeadt->SetLabelSize(0.1,"X");
-            hdeadt->SetLabelSize(0.1,"Y");
-            hdeadt->SetNdivisions(505,"Y");
+     if(!fShowRate && hdeadt){
+         hdeadt->SetFillColor(kMagenta);
+         hdeadt->SetLabelSize(0.1,"X");
+         hdeadt->SetLabelSize(0.1,"Y");
+         hdeadt->SetNdivisions(505,"Y");
+         TPaveText *title = (TPaveText*)c1->GetPrimitive("title");
+         Float_t titH = 0.15;
+         Float_t titW = 0.4;
+         Float_t titX1= 0.05;
+         Float_t titY1= 0.9;
+         if(title){
+            titX1 = title->GetX1NDC();
+            titW =  title->GetX2NDC() - titX1;
+            titY1 = title->GetY1NDC();
+            titH  = title->GetY2NDC() - titY1;
+         }
+         gROOT->ForceStyle(); 
+         gStyle->SetTitleX(titX1);
+         gStyle->SetTitleY(titY1 + titH);
+         gStyle->SetTitleH(titH);
+         gStyle->SetTitleW(titW);
+         gStyle->SetOptStat(0);
+         hdeadt->Draw();
+         gPad->SetTicks(0,2);
+         c1->Modified();
+         c1->Update();
+      }
+      if(hrate){
+         Int_t total = (Int_t)hrate->GetEntries();
+         fNev->SetText(new TGString(Form("%d", total))); 
+         gClient->NeedRedraw(fNev);
+
+         c1->cd();
+         if(fShowRate){
+            hrate->SetFillColor(kRed);
+            hrate->SetLabelSize(0.1,"X");
+            hrate->SetLabelSize(0.1,"Y");
+            hrate->SetNdivisions(505,"Y"); 
+//               hrate->Draw();
+//               c1->Modified();
             TPaveText *title = (TPaveText*)c1->GetPrimitive("title");
             Float_t titH = 0.15;
-            Float_t titW = 0.4;
-            Float_t titX1= 0.05;
-            Float_t titY1= 0.9;
+            Float_t titW = 0.35;
+            Float_t titX1= 0.02;
+            Float_t titY1= 0.85;
             if(title){
                titX1 = title->GetX1NDC();
                titW =  title->GetX2NDC() - titX1;
@@ -3361,121 +3396,86 @@ void FhMainFrame::Runloop(){
             gStyle->SetTitleY(titY1 + titH);
             gStyle->SetTitleH(titH);
             gStyle->SetTitleW(titW);
+//               cout << " titX1 "<< titX1 << " titW " << titW 
+//                    << " titY1 "<< titY1 << " titH " << titH
+//               << endl;
             gStyle->SetOptStat(0);
-            hdeadt->Draw();
+            hrate->Draw();
             gPad->SetTicks(0,2);
             c1->Modified();
             c1->Update();
          }
-         if(hrate){
-            Int_t total = (Int_t)hrate->GetEntries();
-            fNev->SetText(new TGString(Form("%d", total))); 
-            gClient->NeedRedraw(fNev);
-
-            c1->cd();
-            if(fShowRate){
-               hrate->SetFillColor(kRed);
-               hrate->SetLabelSize(0.1,"X");
-               hrate->SetLabelSize(0.1,"Y");
-               hrate->SetNdivisions(505,"Y"); 
-//               hrate->Draw();
-//               c1->Modified();
-               TPaveText *title = (TPaveText*)c1->GetPrimitive("title");
-               Float_t titH = 0.15;
-               Float_t titW = 0.35;
-               Float_t titX1= 0.02;
-               Float_t titY1= 0.85;
-               if(title){
-                  titX1 = title->GetX1NDC();
-                  titW =  title->GetX2NDC() - titX1;
-                  titY1 = title->GetY1NDC();
-                  titH  = title->GetY2NDC() - titY1;
-               }
-               gROOT->ForceStyle(); 
-               gStyle->SetTitleX(titX1);
-               gStyle->SetTitleY(titY1 + titH);
-               gStyle->SetTitleH(titH);
-               gStyle->SetTitleW(titW);
-//               cout << " titX1 "<< titX1 << " titW " << titW 
-//                    << " titY1 "<< titY1 << " titH " << titH
-//               << endl;
-               gStyle->SetOptStat(0);
-               hrate->Draw();
-               gPad->SetTicks(0,2);
-               c1->Modified();
-               c1->Update();
-            }
-            if (htemp) {delete htemp; htemp = 0;}
-            hnew = 0;
+         if (htemp) {delete htemp; htemp = 0;}
+         hnew = 0;
 
 //
-            Float_t etime = fStopwatch->RealTime();
-            if(total == 0) etime = 0;      //wait for first events to arrive
-            if(fM_Status == M_RUNNING){
+         Float_t etime = fStopwatch->RealTime();
+         if(total == 0) etime = 0;      //wait for first events to arrive
+         if(fM_Status == M_RUNNING){
 //                  Float_t etime = fStopwatch->RealTime();
-               fTotal_livetime += etime;
-               Int_t isec = (Int_t)fTotal_livetime;
-               fRunTime->SetText(new TGString(Form("%d",isec))); 
-               gClient->NeedRedraw(fRunTime);
-               if(fTotal_livetime > 0){
-                  Float_t avg_rate = 0;
-                  Int_t avg_bins = hrate->GetNbinsX();
-                  if(fAverage <= 0 || fAverage >= avg_bins){
-                     avg_rate =  (Float_t)total/fTotal_livetime;
-                  } else {
-                     Float_t sum = 0;
-                     Float_t binsum = 0;
-                     for(Int_t i = avg_bins - fAverage+1; i <= avg_bins; i++){
-                        sum += hrate->GetBinContent(i);
-                        if(sum>0) binsum++; // skip trailing 0's
-                     }                        
-                     if(binsum >0)avg_rate = sum / binsum;
-                  }
-                  fRate->SetText(new TGString(Form("%d",(Int_t)avg_rate))); 
-                  gClient->NeedRedraw(fRate);
-//                same for deadtime if available
-                  if(hdeadt){
-                     avg_rate = 0;
-                     avg_bins = hdeadt->GetNbinsX();
-                     Int_t startbin = avg_bins - fAverage + 1;
-                     if(startbin < 0)startbin = 1;
-                     Float_t binsum = 0;
-                     Float_t sum = 0;
-                     
-                     for(Int_t i = startbin; i <= avg_bins; i++){
-                        sum += hdeadt->GetBinContent(i); 
-                        if(sum>0) binsum++; // skip trailing 0's
-                     }
-                     if(binsum >0)avg_rate = sum /binsum;
-                     fDeadTime->SetText(new TGString(Form("%d",avg_rate))); 
-                     gClient->NeedRedraw(fDeadTime);
-                  }
+            fTotal_livetime += etime;
+            Int_t isec = (Int_t)fTotal_livetime;
+            fRunTime->SetText(new TGString(Form("%d",isec))); 
+            gClient->NeedRedraw(fRunTime);
+            if(fTotal_livetime > 0){
+               Float_t avg_rate = 0;
+               Int_t avg_bins = hrate->GetNbinsX();
+               if(fAverage <= 0 || fAverage >= avg_bins){
+                  avg_rate =  (Float_t)total/fTotal_livetime;
+               } else {
+                  Float_t sum = 0;
+                  Float_t binsum = 0;
+                  for(Int_t i = avg_bins - fAverage+1; i <= avg_bins; i++){
+                     sum += hrate->GetBinContent(i);
+                     if(sum>0) binsum++; // skip trailing 0's
+                  }                        
+                  if(binsum >0)avg_rate = sum / binsum;
                }
-               fTotal_time_elapsed += etime;
-               fTotal_time_no_event +=  etime;
-               fStopwatch->Reset();
-               fStopwatch->Start();
+               fRate->SetText(new TGString(Form("%d",(Int_t)avg_rate))); 
+               gClient->NeedRedraw(fRate);
+//                same for deadtime if available
+               if(hdeadt){
+                  avg_rate = 0;
+                  avg_bins = hdeadt->GetNbinsX();
+                  Int_t startbin = avg_bins - fAverage + 1;
+                  if(startbin < 0)startbin = 1;
+                  Float_t binsum = 0;
+                  Float_t sum = 0;
+
+                  for(Int_t i = startbin; i <= avg_bins; i++){
+                     sum += hdeadt->GetBinContent(i); 
+                     if(sum>0) binsum++; // skip trailing 0's
+                  }
+                  if(binsum >0)avg_rate = sum /binsum;
+                  fDeadTime->SetText(new TGString(Form("%d",avg_rate))); 
+                  gClient->NeedRedraw(fDeadTime);
+               }
+            }
+            fTotal_time_elapsed += etime;
+            fTotal_time_no_event +=  etime;
+            fStopwatch->Reset();
+            fStopwatch->Start();
 //                  fStopwatch->Continue();
 //                  cout << "#### time" << etime << endl;
 
-               if(fTotal_time_no_event > fMax_time_no_event){
-                  fTotal_time_no_event = 0;
-                  if(total <= fEvents_before){
+            if(fTotal_time_no_event > fMax_time_no_event){
+               fTotal_time_no_event = 0;
+               if(total <= fEvents_before){
 //                        cout << total << " " << fEvents_before << endl;
-                     cout << setred << bell << 
-                     "No events last " << fTotal_time_elapsed << " seconds"<< endl; 
-                     if(!CheckHostsUp() && *fInputSource == "TcpIp")
-                        cout << "Seems a Lynx processor died"<< endl;
-                     cout << setblack;
-                  } else {
+                  cout << setred << bell << 
+                  "No events last " << fTotal_time_elapsed << " seconds"<< endl; 
+                  if(!CheckHostsUp() && *fInputSource == "TcpIp")
+                     cout << "Seems a Lynx processor died"<< endl;
+                  cout << setblack;
+               } else {
 //                        fTotal_time_no_event = 0;
-                     fTotal_time_elapsed  = 0;
-                  }
-               fEvents_before = total;
+                  fTotal_time_elapsed  = 0;
                }
+            fEvents_before = total;
             }
          }
       }
+//      }
       if(fWasStarted && fM_Status != M_RUNNING && fM_Status != M_PAUSING){
          cout << "fWasStarted = 0; " << endl;
          fWasStarted = 0;
