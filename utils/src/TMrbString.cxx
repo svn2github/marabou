@@ -431,6 +431,9 @@ Int_t TMrbString::Split(TObjArray & LofSubStrings, const Char_t * Separator, Boo
 			if (RemoveWhiteSpace) subStr = subStr.Strip(TString::kBoth, whiteSpace);
 			LofSubStrings.Add(new TObjString(subStr.Data()));
 			nstr++;
+		} else {
+			LofSubStrings.Add(new TObjString(" "));
+			nstr++;
 		}
 		if (n2 == -1) break;
 		n1 = n2 + sepl;
