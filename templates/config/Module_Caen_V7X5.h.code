@@ -22,6 +22,8 @@
 #define CAEN_V7X5_B_OVERFLOW	 				(0x1 << 12)
 #define CAEN_V7X5_B_UNDERTHRESH 				(0x1 << 13)
 
+#define CAEN_V7X5_N_MAXEVENTS					32
+
 #endif
 
 %%EndOfCode%%

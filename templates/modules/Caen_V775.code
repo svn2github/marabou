@@ -69,6 +69,8 @@
 #define CAEN_V775_B_OVERFLOW	 				(0x1 << 12)
 #define CAEN_V775_B_UNDERTHRESH 				(0x1 << 13)
 
+#define CAEN_V775_N_MAXEVENTS					32
+
 #define CAEN_V775_A_OUTPUT(module)			((unsigned int *) (module + CAEN_V775_R_OUTPUT))
 #define CAEN_V775_A_FIRMWARE(module) 		((unsigned short *) (module + CAEN_V775_R_FIRMWARE))
 #define CAEN_V775_A_GEOADDR(module)			((unsigned short *) (module + CAEN_V775_R_GEOADDR))
