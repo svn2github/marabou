@@ -2436,14 +2436,15 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 	return(nofParams);
 }
 
-Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
+Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFile, Bool_t UpdateDSP) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::LoadPsaParams
 // Purpose:        Read PSA params from file
-// Arguments:      Char_t * ParamFile   -- file name
-//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
-// Results:        Int_t NofParams      -- number of params read
+// Arguments:      Char_t * ParamFile    -- file name
+//                 Char_t * AltParamFile -- alternative param file
+//                 Bool_t UpdateDSP      -- kTRUE if DSP is to be updated
+// Results:        Int_t NofParams       -- number of params read
 // Exceptions:
 // Description:    Reads a set PSA values from file.
 // Keywords:
@@ -2477,8 +2478,15 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 	paramFile = ParamFile;
 	if (uxSys.CheckExtension(paramFile.Data(), ".psa")) {
 		pf.open(paramFile, ios::in);
-		if (!pf.good()) return(-1);
-
+		if (!pf.good()) {
+			if (*AltParamFile != '\0') {
+				paramFile = AltParamFile;
+				pf.open(paramFile, ios::in);
+				if (!pf.good()) return(-1); 	// give up if none of these files exist
+			} else {
+				return(-1);
+			}
+		}
 		line = 0;
 		nofParams = 0;
 		Int_t pOffset0 = -1;
