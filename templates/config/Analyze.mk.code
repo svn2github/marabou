@@ -76,6 +76,11 @@ $(AFILE)Dict.cxx: $(USER_HDRS) $(AFILE).cxx
 $(AFILE)Dict.o:	$(AFILE)Dict.cxx
 			$(CXX) $(CXXFLAGS) $(AFILE)Dict.cxx
 
+%%BeginOfCode%%
+$userObj:	$(USER_HDRS) $userDir$userCode
+			$(CXX) $(CXXFLAGS) -o $userObj $userDir$userCode
+
+%%EndOfCode%%
 %%MAKE_USER_RULES%%
 
 doc:		$(AFILE).cxx

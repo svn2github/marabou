@@ -2317,13 +2317,16 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							Bool_t first = kTRUE;
 							while (icl) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
+									TString iclPath = icl->GetTitle();
 									if (first) {
-										anaStrm << "\t" << icl->GetTitle() << "/" << icl->GetName();
+										anaStrm << "\t";
 										first = kFALSE;
 									} else {
 										anaStrm << " \\" << endl;
-										anaStrm << "\t\t\t\t" << icl->GetTitle() << "/" << icl->GetName();
+										anaStrm << "\t\t\t\t";
 									}
+									if (iclPath.Length() > 0) anaStrm << icl->GetTitle() << "/";
+									anaStrm << icl->GetName();
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
@@ -2338,11 +2341,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									TString iclName = icl->GetName();
 									iclName.ReplaceAll(".cxx", ".o");
 									if (first) {
-										anaStrm << "\t" << icl->GetTitle() << "/" << iclName;
+										anaStrm << "\t" << iclName;
 										first = kFALSE;
 									} else {
 										anaStrm << " \\" << endl;
-										anaStrm << "\t\t\t\t" << icl->GetTitle() << "/" << iclName;
+										anaStrm << "\t\t\t\t" << iclName;
 									}
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
@@ -2373,11 +2376,16 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							while (icl) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
+									TString iclPath = icl->GetTitle();
+									if (iclPath.Length() > 0) iclPath += "/";
+									TString srcName = icl->GetName();
 									TString objName = icl->GetName();
 									objName.ReplaceAll(".cxx", ".o");
-									anaStrm << objName << ":\t$(USER_HDRS) "
-											<< icl->GetTitle() << "/" << icl->GetName()
-											<< endl << endl;
+									anaTmpl.InitializeCode();
+									anaTmpl.Substitute("$userObj", objName);
+									anaTmpl.Substitute("$userDir", (iclPath.Length() > 0) ? iclPath : "");
+									anaTmpl.Substitute("$userCode", srcName);
+									anaTmpl.WriteCode(anaStrm);
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
