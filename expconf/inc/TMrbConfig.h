@@ -66,6 +66,7 @@ class TMrbConfig : public TNamed {
 	public:
 		enum EMrbReadoutTag 	{	kRdoPath			=	1,			// readout tags
 									kRdoFile,
+									kRdoDebug,
 									kRdoNameLC,
 									kRdoNameUC,
 									kRdoCreationDate,
