@@ -158,7 +158,7 @@
 
 %%BeginOfCode%%
 %U%					CAEN_V775_SET_THRESHOLD($moduleName, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
-%N%					CAEN_V775_SET_KILL_BIT($moduleName, $chnNo);	/* de-avtivate chnName:$chnNo */
+%N%					CAEN_V775_SET_KILL_BIT($moduleName, $chnNo);	/* de-activate chnName:$chnNo */
 %%EndOfCode%%
 %%INIT_CHANNEL%%
 
