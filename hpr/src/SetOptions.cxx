@@ -263,6 +263,8 @@ void HistPresent::RestoreOptions()
        atof(env.GetValue("HistPresent.AutoUpdateDelay", "2"));
    fPeakMwidth = env.GetValue("HistPresent.fPeakMwidth", 11);
    fPeakThreshold = env.GetValue("HistPresent.fPeakThreshold", 3.);
+   fLiveStat1dim= env.GetValue("HistPresent.LiveStat1dim", 0);
+   fLiveStat2dim= env.GetValue("HistPresent.LiveStat2dim", 0);
    fLiveGauss = env.GetValue("HistPresent.LiveGauss", 0);
    fLiveBG = env.GetValue("HistPresent.LiveBG", 0);
 
@@ -422,6 +424,8 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.AutoUpdateDelay", fAutoUpdateDelay);
    env.SetValue("HistPresent.fPeakMwidth", fPeakMwidth);
    env.SetValue("HistPresent.fPeakThreshold", fPeakThreshold);
+   env.SetValue("HistPresent.LiveStat1dim", fLiveStat1dim);
+   env.SetValue("HistPresent.LiveStat2dim", fLiveStat2dim);
    env.SetValue("HistPresent.LiveGauss", fLiveGauss);
    env.SetValue("HistPresent.LiveBG", fLiveBG);
 
@@ -432,14 +436,15 @@ void HistPresent::SaveOptions()
 
 void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 6;
+   Int_t nopt = 7;
    enum e_opt { e_contour, e_filled, e_errors, e_axisattop,
-                e_livegauss, e_livebg };
+                e_livestat, e_livegauss,e_livebg };
    const char *opt[] = {
       "Show contour",
       "Fill histogram",
       "Show error bars",
       "Extra Xaxis (channels) at top",
+      "Show live statbox when dragging mouse",
       "Do live Gauss fit",
       "Use linear background in live fit"
    };
@@ -456,6 +461,8 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
       else if (i == e_errors && fShowErrors)
          flags[i] = 1;
       else if (i == e_axisattop && fDrawAxisAtTop)
+         flags[i] = 1;
+      else if (i == e_livestat && fLiveStat1dim)
          flags[i] = 1;
       else if (i == e_livegauss && fLiveGauss)
          flags[i] = 1;
@@ -476,6 +483,7 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
    fFill1Dim = 0;
    fShowErrors = 0;
    fDrawAxisAtTop = 0;
+   fLiveStat1dim = 0;
    fLiveGauss = 0;
    fLiveBG = 0;
    for (Int_t i = 0; i < nopt; i++) {
@@ -488,6 +496,8 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
             fFill1Dim = 1;
          else if (i == e_axisattop)
             fDrawAxisAtTop = 1;
+         else if (i == e_livestat) 
+           fLiveStat1dim = 1;
          else if (i == e_livegauss) 
            fLiveGauss = 1;
          else if (i == e_livebg) 
@@ -515,12 +525,12 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 //_______________________________________________________________________
 void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 {
-   const Int_t nopt = 23;
+   const Int_t nopt = 24;
    enum drawopt2 { e_scat, e_box, e_cont0, e_contz, e_cont1, e_cont2,
           e_cont3,
       e_col, e_colz, e_lego1, e_lego2, e_lego3,
       e_surf1, e_surf2, e_surf3, e_surf4, e_text,
-      e_arr, e_fb, e_bb
+      e_arr, e_livestat, e_fb, e_bb
    };
    const char *drawopt2[] =
        { "scat", "box", "cont0", "contz", "cont1", "cont2", "cont3",
@@ -547,6 +557,7 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       "Surface, Gourand shading",
       "Numbers",
       "Arrows indicating gradient",
+      "Show live statbox when dragging mouse",
       "Dont show back box",
       "Dont show front box",
       "Monochrome levels, highest=white",
@@ -568,21 +579,24 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       flags[nopt - 2] = 1;
    else if (f2DimColorPalette->Contains("MONO"))
       flags[nopt - 3] = 1;
+   flags[nopt - 6] = fLiveStat2dim;
    Int_t retval;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
    						  "How to show a 2dim hist",
    						  itemwidth, 1, nopt,
    						  svalues, 0, 0, &flags,
-   						  nopt - 5);
+   						  nopt - 6);
    if (retval < 0) {
 //      cout << "canceled" << endl;
       return;
    }
-   for (Int_t i = 0; i < nopt - 3; i++) {
+   for (Int_t i = 0; i < nopt - 6; i++) {
       if (flags[i] != 0)
          *fDrawOpt2Dim = drawopt2[i];
    }
+   fLiveStat2dim = flags[nopt - 6];
+
    if (flags[nopt - 5] != 0)
       *fDrawOpt2Dim += "BB";
    if (flags[nopt - 4] != 0)

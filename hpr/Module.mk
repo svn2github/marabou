@@ -34,6 +34,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
                $(HPRDIRI)/HTRootGuiFactory.h
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
+HPRDEP      += $(MODDIRS)/main.d
 
 HPREXE      := bin/HistPresent
 HPRLIB       := $(LPATH)/libHpr.so

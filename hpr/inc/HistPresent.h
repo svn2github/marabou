@@ -135,10 +135,10 @@ protected:
    Int_t fNofColorLevels;
    Int_t * fPalette;
 
-   Int_t fNofGreyLevels;
+   Int_t   fNofGreyLevels;
    Int_t * fGreyPalette;
    Int_t * fGreyPaletteInv;
-   Int_t fMaxListEntries;
+   Int_t   fMaxListEntries;
    TString * fHelpDir;
    Bool_t  fAutoExec_1;
    Bool_t  fAutoExec_2;
@@ -149,6 +149,8 @@ protected:
    Double_t fAutoUpdateDelay;
    Double_t fPeakThreshold;
    Int_t    fPeakMwidth;
+   Int_t    fLiveStat1dim;
+   Int_t    fLiveStat2dim;
    Int_t    fLiveGauss;
    Int_t    fLiveBG;
 

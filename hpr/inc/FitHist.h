@@ -103,8 +103,10 @@ private:
    Double_t fLinBgSlope;
    HTCanvas * fCutPanel;
    TableOfLabels * fTofLabels;
-   Bool_t fLiveGauss;
-   Bool_t fLiveBG;
+   Int_t fLiveStat1dim;
+   Int_t fLiveStat2dim;
+   Int_t fLiveGauss;
+   Int_t fLiveBG;
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5, 

@@ -193,6 +193,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
    fTemplateMacro = "TwoGaus";
+   fLiveStat1dim = env.GetValue("HistPresent.LiveStat1dim", 0);
+   fLiveStat2dim = env.GetValue("HistPresent.LiveStat2dim", 0);
+   fLiveGauss = env.GetValue("HistPresent.LiveGauss", 0);
+   fLiveBG    = env.GetValue("HistPresent.LiveBG", 0);
    fFirstUse = 1;
    fSerialPx = 0;
    fSerialPy = 0;
@@ -531,8 +535,6 @@ void FitHist::handle_mouse()
 
    static Bool_t is2dim = kFALSE;
    static Bool_t first_fit = kFALSE;
-   static Int_t LiveGauss = 0;
-   static Int_t LiveBG = 0;
    static TH1 * hist = 0;
    static Int_t npar = 0;
    static TLine * lowedge = 0;
@@ -612,11 +614,8 @@ void FitHist::handle_mouse()
             cont = hist->GetBinContent(startbinX);
             gconst = cont * bwidth / TMath::Sqrt(2*TMath::Pi() * esigma);
             center = hist->GetBinCenter(startbinX);
-            TEnv env(".rootrc");
-            LiveGauss = env.GetValue("HistPresent.LiveGauss", 0);
-            LiveBG    = env.GetValue("HistPresent.LiveBG", 0);
-            if (LiveGauss) {
-               if (LiveBG) {
+            if (fLiveGauss) {
+               if (fLiveBG) {
                   gFitFunc = new TF1("fitfunc", "pol1+gaus(2)");
                   npar = 5;
                   if (nrows != 6) {delete fTofLabels; fTofLabels = 0;}
@@ -661,8 +660,8 @@ void FitHist::handle_mouse()
                        + hist->GetBinWidth(startbinX))));
                values.Add(new TObjString(Form("%9.3f", cont)));
                values.Add(new TObjString(Form("%9.3f", cont)));
-                if (LiveGauss) {
-                   if (LiveBG) {
+                if (fLiveGauss) {
+                   if (fLiveBG) {
                       rowlabels.Add(new TObjString("Background: const, slope"));
                       values.Add(new TObjString("no fit done yet"));
                    }
@@ -736,10 +735,10 @@ void FitHist::handle_mouse()
             fTofLabels->SetLabelText(0,1,Form("%d, %9.3f", binXup, XupEdge ));
             fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
             fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
-            if (LiveGauss &&  (binXup - binXlow - npar) > 0) {
+            if (fLiveGauss &&  (binXup - binXlow - npar) > 0) {
                Int_t ndf = binXup - binXlow - npar;
                if (first_fit) chi2 = gFitFunc->GetChisquare();
-               if (LiveBG) {
+               if (fLiveBG) {
                   if (!first_fit                    ||
                       gFitFunc->GetParameter(2) < 0 ||
                       gFitFunc->GetParameter(4) < 0 ||
@@ -779,7 +778,7 @@ void FitHist::handle_mouse()
                gFitFunc->Draw("same");
                gPad->Update();
                gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
-               if (LiveBG) { 
+               if (fLiveBG) { 
                   sigma = gFitFunc->GetParameter(4);
                   gconst = gFitFunc->GetParameter(2) * 
                               TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
@@ -897,12 +896,13 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    cHist->SetEditable(kTRUE);
 
    hist->SetDirectory(gROOT);
-   //  fRootFile->Close();   
-   TString cmd("((FitHist*)gROOT->FindObject(\""); 
-   cmd += GetName();
-   cmd += "\"))->handle_mouse()";
+   if ( (is2dim(hist) && fLiveStat2dim) || (!is2dim(hist) && fLiveStat1dim) ){  
+      TString cmd("((FitHist*)gROOT->FindObject(\""); 
+      cmd += GetName();
+      cmd += "\"))->handle_mouse()";
  //  cout << "cmd: " << cmd << endl;
-   cHist->AddExec("handle_mouse", cmd.Data());
+      cHist->AddExec("handle_mouse", cmd.Data());
+   }
    gDirectory = gROOT;
    fSelPad = cHist;
    fSelPad->cd();
@@ -2525,11 +2525,11 @@ void FitHist::ExpandProject(Int_t what)
             bothratio = 0.8;
          cHist->SetTopMargin(1 - bothratio);
          cHist->SetRightMargin(1 - bothratio);
-         Double_t xmin = xa->GetXmin();
-         Double_t xmax = xa->GetXmax();
+         Double_t xmin = xa->GetBinLowEdge(xa->GetFirst());
+         Double_t xmax = xa->GetBinUpEdge(xa->GetLast());
          Double_t dx = (xmax - xmin) / (Double_t) projHistX->GetNbinsX();
-         Double_t ymin = ya->GetXmin();
-         Double_t ymax = ya->GetXmax();
+         Double_t ymin = ya->GetBinLowEdge(ya->GetFirst());
+         Double_t ymax = ya->GetBinUpEdge(ya->GetLast());
          Double_t y0 = ymax + 0.005 * (ymax - ymin);
          Double_t y1 = ymin + 0.9 * (ymax - ymin) / bothratio;
 //         cout << "ymax " << ymax << " ymin " << ymin<< " y1 " << y1<< endl;
@@ -2571,10 +2571,10 @@ void FitHist::ExpandProject(Int_t what)
          naxis->SetLabelSize(0.02);
          naxis->Draw();
 
-         xmin = xa->GetXmin();
-         xmax = xa->GetXmax();
-         ymin = ya->GetXmin();
-         ymax = ya->GetXmax();
+//         xmin = xa->GetXmin();
+//         xmax = xa->GetXmax();
+//         ymin = ya->GetXmin();
+//         ymax = ya->GetXmax();
          Double_t dy = (ymax - ymin) / (Double_t) projHistY->GetNbinsX();
          Double_t x0 = xmax + 0.005 * (xmax - xmin);
          Double_t x1 = xmin + 0.9 * (xmax - xmin) / bothratio;
