@@ -108,6 +108,7 @@ public:
    void    ReadGObjects();
    void    ShowGallery();
    void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
+   void    Latex2Root();
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

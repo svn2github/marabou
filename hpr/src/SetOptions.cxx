@@ -486,7 +486,31 @@ void HistPresent::RestoreOptions()
    fArcLineStyle     = env.GetValue("HistPresent.ArcLineStyle" , 1);
    fArcLineWidth     = env.GetValue("HistPresent.ArcLineWidth" , 2);
 
-   fForceStyle     = env.GetValue("HistPresent.ForceStyle",      1);
+   fEditUsXlow   = env.GetValue("HistPresent.EditUsXlow",    550);
+   fEditUsYlow   = env.GetValue("HistPresent.EditUsYlow",    5  );
+   fEditUsXwidth = env.GetValue("HistPresent.EditUsXwidth",  500);
+   fEditUsYwidth = env.GetValue("HistPresent.EditUsYwidth",  524);
+   fEditUsXRange = env.GetValue("HistPresent.EditUsXRange",  100);
+//  numbers below are for 1600 x 1200 screens
+   Int_t  screen_x, screen_y;
+   UInt_t wwu, whu;
+   gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(),
+            	  screen_x, screen_y, wwu, whu);
+   Float_t fac = (Float_t)wwu / 1600.;
+
+   fEditLsXlow   = env.GetValue("HistPresent.EditLsXlow",   (Int_t)(fac * 350.));
+   fEditLsYlow   = env.GetValue("HistPresent.EditLsYlow",   5   );
+   fEditLsXwidth = env.GetValue("HistPresent.EditLsXwidth", (Int_t)(fac * 1004.));
+   fEditLsYwidth = env.GetValue("HistPresent.EditLsYwidth", (Int_t)(fac * 745.) + 24);
+   fEditLsXRange = env.GetValue("HistPresent.EditLsXRange", 260 );
+
+   fEditPoXlow   = env.GetValue("HistPresent.EditPoXlow",   (Int_t)(fac * 550.));
+   fEditPoYlow   = env.GetValue("HistPresent.EditPoYlow",   5   );
+   fEditPoXwidth = env.GetValue("HistPresent.EditPoXwidth", (Int_t)(fac * 690.));
+   fEditPoYwidth = env.GetValue("HistPresent.EditPoYwidth", (Int_t)(fac * 1028.) + 24);
+   fEditPoXRange = env.GetValue("HistPresent.EditPoXRange", 180 );
+
+   fForceStyle     = env.GetValue("HistPresent.ForceStyle",    0);
 
    TString defdir(gSystem->Getenv("MARABOU"));
    defdir += "/doc/hpr";
@@ -758,6 +782,24 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.ArcLineColor" ,fArcLineColor);
    env.SetValue("HistPresent.ArcLineStyle" ,fArcLineStyle);
    env.SetValue("HistPresent.ArcLineWidth" ,fArcLineWidth);
+
+   env.SetValue("HistPresent.EditUsXlow",   fEditUsXlow  );
+   env.SetValue("HistPresent.EditUsYlow",   fEditUsYlow  );
+   env.SetValue("HistPresent.EditUsXwidth", fEditUsXwidth);
+   env.SetValue("HistPresent.EditUsYwidth", fEditUsYwidth);
+   env.SetValue("HistPresent.EditUsXRange", fEditUsXRange);
+
+   env.SetValue("HistPresent.EditLsXlow",   fEditLsXlow  );
+   env.SetValue("HistPresent.EditLsYlow",   fEditLsYlow  );
+   env.SetValue("HistPresent.EditLsXwidth", fEditLsXwidth);
+   env.SetValue("HistPresent.EditLsYwidth", fEditLsYwidth);
+   env.SetValue("HistPresent.EditLsXRange", fEditLsXRange);
+
+   env.SetValue("HistPresent.EditPoXlow",   fEditPoXlow  );
+   env.SetValue("HistPresent.EditPoYlow",   fEditPoYlow  );
+   env.SetValue("HistPresent.EditPoXwidth", fEditPoXwidth);
+   env.SetValue("HistPresent.EditPoYwidth", fEditPoYwidth);
+   env.SetValue("HistPresent.EditPoXRange", fEditPoXRange);
 
    env.SetValue("HistPresent.ForceStyle",      fForceStyle     );
  

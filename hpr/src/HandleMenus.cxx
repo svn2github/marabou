@@ -240,11 +240,13 @@ enum ERootCanvasCommands {
    kFH_CASCADE2_8,
    kFH_CASCADE2_U,
    kFH_Portrait,
+   kFH_UserEdit,
    kFH_Landscape,
    kFH_WritePrim,
    kFH_GetPrim,
    kFH_DrawHist,
    kFH_InsertImage,
+   kFH_InsertLatex,
    kFH_SetGrid,
    kFH_UseGrid,
    kFH_DrawGrid,  
@@ -598,6 +600,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                         fHCanvas->DrawHist();
                      break;
 
+                  case kFH_InsertLatex:
+                        fHCanvas->Latex2Root();
+                     break;
                   case kFH_InsertImage:
                         fHCanvas->InsertImage();
                      break;
@@ -653,6 +658,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case    kFH_Landscape:
                      if(fHistPresent)
                         fHistPresent->DinA4Page(1);                       
+                     break;
+                  case    kFH_UserEdit:
+                     if(fHistPresent)
+                        fHistPresent->DinA4Page(2);                    
                      break;
 
                   // Handle View menu items...
@@ -1440,8 +1449,9 @@ void HandleMenus::BuildMenus()
 //   fFileMenu->AddEntry("&Print...",           kFilePrint);
       fFileMenu->AddSeparator();
       fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
-      fFileMenu->AddEntry("Open DinA4 canvas (portrait)",    kFH_Portrait);
-      fFileMenu->AddEntry("Open DinA4 canvas (landscape)",   kFH_Landscape);
+      fFileMenu->AddEntry("Open Edit canvas (A4 portrait)",    kFH_Portrait);
+      fFileMenu->AddEntry("Open Edit canvas (A4 landscape)",   kFH_Landscape);
+      fFileMenu->AddEntry("Open Edit canvas (user defined)",   kFH_UserEdit);
    } else {
       fFileMenu->AddSeparator();
     	fFileMenu->AddEntry("Write objects to file",  kFH_WritePrim);
@@ -1703,9 +1713,12 @@ void HandleMenus::BuildMenus()
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
 //   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
-   	fEditMenu->AddEntry("Draw image (gif, jpg) into selected pad", kFH_InsertImage);
-   	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
+      fEditMenu->AddSeparator();
+
+   	fEditMenu->AddEntry("Draw image (gif, jpg) into selected pad", kFH_InsertImage);
+   	fEditMenu->AddEntry("Draw selected histogram into selected pad",  kFH_DrawHist);
+   	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatex);
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
 //   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
@@ -1727,11 +1740,11 @@ void HandleMenus::BuildMenus()
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
    	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
-   	fEditMenu->AddEntry("Put Objects On Grid",     kFH_PutObjectsOnGrid);
+   	fEditMenu->AddEntry("Align objects at grid",     kFH_PutObjectsOnGrid);
       if (fHCanvas->GetUseEditGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
       else                      fEditMenu->UnCheckEntry(kFH_UseGrid);
 //      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
-   	fEditMenu->AddEntry("Draw visible grid",           kFH_DrawGridVis);
+   	fEditMenu->AddEntry("Draw visible grid",        kFH_DrawGridVis);
    	fEditMenu->AddEntry("Draw real grid",           kFH_DrawGrid  );
    	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
    	fEditMenu->AddEntry("Make EnclosingCut visible", kFH_SetVisEnclosingCut);

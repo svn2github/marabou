@@ -320,8 +320,26 @@ protected:
    Int_t      fArcLineStyle;
    Int_t      fArcLineWidth;
  
-   Int_t         fForceStyle;  
-                       
+   Int_t      fForceStyle;  
+
+   Int_t      fEditUsXlow  ;  
+   Int_t      fEditUsYlow  ; 
+   Int_t      fEditUsXwidth;
+   Int_t      fEditUsYwidth;
+   Double_t   fEditUsXRange; 
+
+   Int_t      fEditLsXlow  ;  
+   Int_t      fEditLsYlow  ; 
+   Int_t      fEditLsXwidth;
+   Int_t      fEditLsYwidth;
+   Double_t   fEditLsXRange; 
+
+   Int_t      fEditPoXlow  ;  
+   Int_t      fEditPoYlow  ; 
+   Int_t      fEditPoXwidth;
+   Int_t      fEditPoYwidth;
+   Double_t   fEditPoXRange; 
+                   
     Float_t fXXXXX;
 
 public:

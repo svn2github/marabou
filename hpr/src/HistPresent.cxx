@@ -3180,42 +3180,130 @@ Int_t NofEditorPages()
 void HistPresent::DinA4Page(Int_t form)
 {
 //   gROOT->SetStyle("Plain");
+/*
    if (NofEditorPages() > 0) {
       WarnBox("Currently only 1 open EditorPage allowed");
       cout << "Currently only 1 open EditorPage allowed" << endl;
       return;
    }
+*/
    HTCanvas *c1 = NULL; 
    TString name("page_");
-   Bool_t ok;
+//   Bool_t ok;
    fPageNumber++;
    name += fPageNumber;
-   GetString("Name of page", name.Data(), &ok, GetMyCanvas());
-   if (!ok) return;
+
+//   GetString("Name of page", name.Data(), &ok, GetMyCanvas());
+
+   Int_t Xlow, Ylow, Xwidth, Ywidth;
 
    Double_t xmin = 0;
-   Double_t xmax = 0;
+   Double_t XRange = 0;
    Double_t ymin = 0;
-   Double_t ymax = 0;
+   Double_t YRange = 0;
+   if (form == 2) {          // user
+      Xlow   = fEditUsXlow  ;
+      Ylow   = fEditUsYlow  ;
+      Xwidth = fEditUsXwidth;
+      Ywidth = fEditUsYwidth;
+      XRange = fEditUsXRange;
 
-   if (form == 1) {
-      c1= new HTCanvas(name.Data(), name.Data(),
-                  350,5,1004, 759, this, NULL, NULL, NULL, 
-                  HTCanvas::kIsAEditorPage);
-      xmax = 260;
-   } else if (form == 0) {
-      c1= new HTCanvas(name.Data(), name.Data(),
-                  550,5,  690, 1052, this, NULL, NULL, NULL, 
-                  HTCanvas::kIsAEditorPage);
-      xmax = 180;
+   } else if (form == 1) {          // landscape
+      Xlow   = fEditLsXlow  ;
+      Ylow   = fEditLsYlow  ;
+      Xwidth = fEditLsXwidth;
+      Ywidth = fEditLsYwidth;
+      XRange = fEditLsXRange;
+   } else if (form == 0) {   // portrait
+      Xlow   = fEditPoXlow  ;
+      Ylow   = fEditPoYlow  ;
+      Xwidth = fEditPoXwidth;
+      Ywidth = fEditPoYwidth;
+      XRange = fEditPoXRange;
+   } 
+   TMrbString temp;
+   TOrdCollection *row_lab = new TOrdCollection(); 
+   TOrdCollection *values  = new TOrdCollection();
+   row_lab->Add(new TObjString("Name of page"));
+   row_lab->Add(new TObjString("X Position"));
+   row_lab->Add(new TObjString("Y Position"));
+   row_lab->Add(new TObjString("X Width"));
+   row_lab->Add(new TObjString("Y Width"));
+   row_lab->Add(new TObjString("X Range"));
+   values->Add(new TObjString(name.Data()));
+   values->Add(new TObjString(Form("%d", Xlow )));
+   values->Add(new TObjString(Form("%d", Ylow )));
+   values->Add(new TObjString(Form("%d", Xwidth )));
+   values->Add(new TObjString(Form("%d", Ywidth )));
+   values->Add(new TObjString(Form("%lf", XRange )));
+   Int_t ret,  itemwidth=120, nrows = values->GetSize(); 
+tryagain:
+   new TGMrbTableFrame(GetMyCanvas(), &ret, "", 
+                        itemwidth, 1, nrows, values,
+                        0, row_lab, 0, 0, 0);
+   if (ret < 0) {
+      return;
    }
+   name = ((TObjString*)values->At(0))->GetString();
+   temp = ((TObjString*)values->At(1))->GetString();
+   if (!temp.ToInteger(Xlow)) {
+      cout << "Illegal integer: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(2))->GetString();
+   if (!temp.ToInteger(Ylow)) {
+      cout << "Illegal integer: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(3))->GetString();
+   if (!temp.ToInteger(Xwidth)) {
+      cout << "Illegal integer: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(4))->GetString();
+   if (!temp.ToInteger(Ywidth)) {
+      cout << "Illegal integer: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(5))->GetString();
+   if (!temp.ToDouble(XRange)) {
+      cout << "Illegal double: " << temp << endl;
+      goto tryagain;      
+   }   
+
+   if (form == 2) {          // user
+      fEditUsXlow   = Xlow  ;
+      fEditUsYlow   = Ylow  ;
+      fEditUsXwidth = Xwidth;
+      fEditUsYwidth = Ywidth;
+      fEditUsXRange = XRange;
+
+   } else if (form == 1) {          // landscape
+      fEditLsXlow   = Xlow  ;
+      fEditLsYlow   = Ylow  ;
+      fEditLsXwidth = Xwidth;
+      fEditLsYwidth = Ywidth;
+      fEditLsXRange = XRange;
+   } else if (form == 0) {   // portrait
+      fEditPoXlow   = Xlow  ;
+      fEditPoYlow   = Ylow  ;
+      fEditPoXwidth = Xwidth;
+      fEditPoYwidth = Ywidth;
+      fEditPoXRange = XRange;
+   } 
+
+   c1= new HTCanvas(name.Data(), name.Data(),
+                  Xlow, Ylow, Xwidth, Ywidth, this, NULL, NULL, NULL, 
+                  HTCanvas::kIsAEditorPage);
+
    //compute the pad range to get a fix aspect ratio
    Double_t w = gPad->GetWw()*gPad->GetAbsWNDC();
    Double_t h = gPad->GetWh()*gPad->GetAbsHNDC();
-   ymax = xmax*h/w;
-   cout << "xmax, ymax " << xmax << " " << ymax << endl;
+   YRange = XRange*h/w;
+
+   cout << "XRange, YRange " << XRange << " " << YRange << endl;
    c1->SetFixedAspectRatio();
-   c1->Range(xmin,ymin,xmax,ymax); 
+   c1->Range(xmin,ymin,XRange,YRange); 
 
    GetCanvasList()->Add(c1);
 	c1->SetRightMargin(0);
@@ -3247,13 +3335,14 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
       c->Draw();
       return;
    }
+/*
    if (NofEditorPages() > 0) {
       WarnBox("Currently only 1 open EditorPage allowed");
       cout << "Currently only 1 open EditorPage allowed" << endl;
       if (fRootFile) fRootFile->Close();
       return;
    }
-
+*/
    TString new_name(c->GetName());
    if (new_name == "dina4page") {
       new_name = "page_";

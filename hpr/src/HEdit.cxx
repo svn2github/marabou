@@ -5,20 +5,23 @@
 #include "TCurlyLine.h"
 #include "TEllipse.h"
 #include "TEnv.h"
+#include "TRegexp.h"
 #include "TImage.h"
 #include "TAttImage.h"
+#include "TContextMenu.h"
 
 #include "HistPresent.h"
 #include "support.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
-#include "TContextMenu.h"
+
 #include "TGMrbInputDialog.h"
 #include "TMrbString.h"
 #include "TGMrbTableFrame.h"
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
 #include "HprImage.h"
+#include <fstream>
 
 //______________________________________________________________________________
 Bool_t SloppyInside(TCutG * cut, Double_t x, Double_t y)
@@ -1003,4 +1006,161 @@ void HTCanvas::DeleteObjects()
       }
    }   
    if (cut) delete cut;  
+}
+//______________________________________________________________________________
+
+void HTCanvas::Latex2Root()
+{
+const Char_t helpText[] =
+"Text alignment convention: \n\
+13     23    33 \n\
+\n\
+12     22    32 \n\
+\n\
+11     21    31";
+
+  
+ 
+// this tries to translate standard Latex into ROOTs
+// latex like formular processor TLatex format
+
+   TOrdCollection *row_lab = new TOrdCollection(); 
+   TOrdCollection *values  = new TOrdCollection();
+   row_lab->Add(new TObjString("File Name with Latex"));
+   row_lab->Add(new TObjString("X Position"));
+   row_lab->Add(new TObjString("Y Position"));
+   row_lab->Add(new TObjString("Line spacing"));
+   row_lab->Add(new TObjString("Text alignment (see Help)"));
+   static Double_t x0 = 20;
+   static Double_t y0 = 250;
+   static Double_t dy = 10;
+   static Int_t align = 11; // lower left
+   TMrbString temp;
+   static TString fname = "latex.txt";
+   values->Add(new TObjString(fname.Data()));
+   values->Add(new TObjString(Form("%lf", x0)));
+   values->Add(new TObjString(Form("%lf", y0)));
+   values->Add(new TObjString(Form("%lf", dy)));
+   values->Add(new TObjString(Form("%d",  align)));
+
+   Int_t ret,  itemwidth=120, nrows = values->GetSize(); 
+tryagain:
+   new TGMrbTableFrame((TGWindow*)fRootCanvas, &ret, "", 
+                        itemwidth, 1, nrows, values,
+                        0, row_lab, 0, 0, helpText);
+   if (ret < 0) {
+      return;
+   }
+   fname = ((TObjString*)values->At(0))->GetString();
+
+   temp = ((TObjString*)values->At(1))->GetString();
+   if (!temp.ToDouble(x0)) {
+      cout << "Illegal double: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(2))->GetString();
+   if (!temp.ToDouble(y0)) {
+      cout << "Illegal double: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(3))->GetString();
+   if (!temp.ToDouble(dy)) {
+      cout << "Illegal double: " << temp << endl;
+      goto tryagain;      
+   }
+   temp = ((TObjString*)values->At(4))->GetString();
+   if (!temp.ToInteger(align)) {
+      cout << "Illegal integer: " << temp << endl;
+      goto tryagain;      
+   }
+   ifstream infile(fname);
+ 
+   TString line;
+   TString cmd; 
+   Int_t ind;
+   TString rep; 
+   TLatex  * latex;
+   Double_t xt = x0;
+   Double_t yt = y0;
+
+   while(1) {
+// read lines, concatinate lines ending with 
+      line.ReadLine(infile);
+      if (infile.eof()) {
+	      infile.close();
+         if (cmd.Length() > 0) {
+            cout << "Warning: Files ends with \\" << endl;
+            cout << cmd << endl;
+         }
+	      break;
+      }
+      line = line.Strip(TString::kBoth);
+      cmd = cmd + line;
+      if (cmd.EndsWith("\\")) {
+         cmd(cmd.Length()-1) = ' ';
+         continue;
+      }
+//      cout << cmd << endl;
+//    remove latex's $ (mathstyle), replace \ by #
+      Int_t sind = 0;
+      while (cmd.Index("$") >=0) cmd.Remove(cmd.Index("$"));
+      while (cmd.Index("\\") >=0) cmd(cmd.Index("\\")) = '#';
+      TRegexp oper("[-+*/=]");
+//    make sure super / sub scripts are enclosed in {}
+      TRegexp supsub("[_^]");
+ //     cout << "Before supsub: " << cmd << endl;
+      while (cmd.Index(supsub, sind) >=0) {
+         ind = 1 + cmd.Index(supsub, sind);
+         char c = cmd[ind];
+         sind = ind + 1;
+         if (c != '{') {
+            rep = "{";
+            rep += c;
+            rep += "}";
+            cmd.Replace(ind, 1, rep);
+            sind += 2;
+         }
+//         cout << cmd << endl;
+      }
+//      cout << "Before oper: " << cmd << endl;
+//   add space around operators 
+      sind = 0;
+      while (cmd.Index(oper, sind) >=0) {
+         ind = 1 + cmd.Index(oper, sind);
+         char c = cmd[ind];
+//         cout << "ind " << ind << endl;
+         sind = ind + 2;
+         if (c != ' ' && c!= '{' && c!= '}') {
+            
+            cmd.Insert(ind," ");
+            sind += 1;
+         }
+         c = cmd[ind - 2];
+         if (c != ' ' && c!= '{' && c!= '}') { 
+            cmd.Insert(ind-1," ");
+            sind += 1;
+         }
+  //        cout << cmd << endl;
+      }
+//   remove not used \cos etc,
+//   replace overline by bar
+
+      TRegexp re_cos("#cos");
+      TRegexp re_sin("#sin");
+      TRegexp re_tan("#tan");
+      TRegexp re_ovl("#overline");
+      while (cmd.Index(re_cos) >= 0)cmd(re_cos) = "cos";
+      while (cmd.Index(re_sin) >= 0)cmd(re_sin) = "sin";
+      while (cmd.Index(re_tan) >= 0)cmd(re_tan) = "tan";
+      while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
+//      cout << "Final:     " << cmd << endl;
+      latex = new TLatex(xt, yt, cmd.Data());
+      latex->SetTextAlign(align);
+      latex->Draw();
+      yt -= dy;
+//      outfile << cmd << endl;
+      cmd.Resize(0);
+   }
+   Modified();
+   Update();
 }
