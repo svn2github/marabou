@@ -43,6 +43,10 @@
 // TMbsSetup.Readout1.TriggerModule.FastClearTime 20     TMbsTriggerModule GetFastClearTime, SetFastClearTime
 // TMbsSetup.Readout1.CratesToBeRead         0,1         TMbsReadoutProc   GetCratesToBeRead, SetCratesToBeRead
 // TMbsSetup.Readout1.Controller             CBV(5)      TMbsReadoutProc   GetController, SetController
+// TMbsSetup.Readout1.RemoteMemoryBase       0xd0380000  TMbsReadoutProc
+// TMbsSetup.Readout1.RemoteMemoryLength     0x00200000  TMbsReadoutProc
+// TMbsSetup.Readout1.RemoteCamacBase        0xd0380000  TMbsReadoutProc
+// TMbsSetup.Readout1.RemoteCamacLength      0x00200000  TMbsReadoutProc
 // TMbsSetup.Readout1.PipeBase               0xd0000000  TMbsReadoutProc   GetPipeBase, SetPipeBase
 // TMbsSetup.Readout1.VSBAddr                0xf0000000  TMbsReadoutProc   GetVSBAddr, SetVSBAddr
 // TMbsSetup.Readout1.SevtSize               2048        TMbsReadoutProc   GetSevtSize, SetSevtSize
@@ -466,9 +470,13 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 
 	nofErrors = 0;
 
-	installPath = this->GetHomeDir();
-	installPath += "/";
-	installPath += this->GetPath();
+	installPath = this->GetPath();
+	if (!installPath.BeginsWith("/")) {
+		installPath = this->GetHomeDir();
+		installPath += "/";
+		installPath += this->GetPath();
+	}
+	
 	fpath = templatePath;
 	fpath += "/";
 	fpath += this->EvtBuilder()->GetType()->GetName();
@@ -586,9 +594,12 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	TString tcshrc = ".tcshrc";
 	this->ExpandFile(0, templatePath, tcshrc, installPath);
 
-	nodelistFile = this->GetHomeDir();
-	nodelistFile += "/";
-	nodelistFile += this->GetPath();
+	nodelistFile = this->GetPath();
+	if (!nodelistFile.BeginsWith("/")) {
+		nodelistFile = this->GetHomeDir();
+		nodelistFile += "/";
+		nodelistFile += this->GetPath();
+	}
 	nodelistFile += "/node_list.txt";
 	cout	<< this->ClassName() << "::MakeSetupFiles(): Creating node list " << nodelistFile << " ..."
 			<< endl;
@@ -777,6 +788,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 	TArrayI arrayData(16);
 
 	nofReadouts = this->GetNofReadouts();
+	
 	mbsPath = this->GetPath();
 	if (!mbsPath.BeginsWith("/")) {
 		mbsPath = this->GetHomeDir();
@@ -814,6 +826,17 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 			if (line.Index("//-") != 0) stp << line << endl;
 		} else {
 			switch (tagIdx = setupTag->GetIndex()) {
+				case kSetAuthor:
+					{
+						stp << stpTmpl.Encode(line, gSystem->Getenv("USER")) << endl;
+					}
+					break;
+				case kSetDate:
+					{
+						TDatime dt;
+						stp << stpTmpl.Encode(line, dt.AsString()) << endl;
+					}
+					break;
 				case kSetHostName:
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$hostName", this->EvtBuilder()->GetProcName());
@@ -951,9 +974,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 1; i < n; i++) {
+						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							arrayData[crate] = memBase;
+							if (crate != 0) arrayData[crate] = memBase;
 							memBase += memLength;
 						}
 						stpTmpl.InitializeCode();
@@ -982,9 +1005,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 1; i < n; i++) {
+						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							arrayData[crate] = memLength;
+							if (crate != 0) arrayData[crate] = memLength;
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemMemoryLength", this->EncodeArray(arrayData, kNofCrates, 16));
@@ -1008,9 +1031,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 1; i < n; i++) {
+						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							arrayData[crate] = memBase;
+							if (crate != 0) arrayData[crate] = memBase;
 							memBase += memLength;
 						}
 						stpTmpl.InitializeCode();
@@ -1039,9 +1062,9 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
-						for (i = 1; i < n; i++) {
+						for (i = 0; i < n; i++) {
 							crate = lofCrates[i];
-							arrayData[crate] = memLength;
+							if (crate != 0) arrayData[crate] = memLength;
 						}
 						stpTmpl.InitializeCode();
 						stpTmpl.Substitute("$rdoRemCamacLength", this->EncodeArray(arrayData, kNofCrates, 16));
@@ -1137,10 +1160,15 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							break;
 						case kTriggerModuleVME:
 							k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
-							if (k->GetIndex() == kTriggerModeInterrupt) {
-								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Interrupt");
-								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeInterrupt);
+							if (k->GetIndex() == kTriggerModeLocalInterrupt) {
+								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Local interrupt");
+								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeLocalInterrupt);
 								stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
+								stpTmpl.Substitute("$trigBase", "0x0");
+							} else if (k->GetIndex() == kTriggerModeVsbInterrupt) {
+								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / VSB interrupt");
+								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeVsbInterrupt);
+								stpTmpl.Substitute("$trigType", 0);
 								stpTmpl.Substitute("$trigBase", "0x0");
 							} else {
 								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Polling");
@@ -1194,7 +1222,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetIrqMode:
 					k = this->ReadoutProc(ProcID)->TriggerModule()->GetTriggerMode();
-					if (k->GetIndex() == kTriggerModeInterrupt) mode = "enable"; else mode = "disable";
+					if (k->GetIndex() == kTriggerModeVsbInterrupt) mode = "enable"; else mode = "disable";
 					stpTmpl.InitializeCode();
 					stpTmpl.Substitute("$irqMode", mode);
 					stpTmpl.WriteCode(stp);

@@ -46,11 +46,14 @@ enum EMbsTriggerModuleType	{ 	kTriggerModuleUndefined =	0,			// trigger modules
 								kTriggerModuleVME		=	2
 							};
 
-enum EMbsTriggerMode		{ 	kTriggerModeInterrupt	=	0,			// trigger modes
-								kTriggerModePolling 	=	3
+enum EMbsTriggerMode		{ 	kTriggerModeLocalInterrupt	=	0,			// trigger modes
+ 					kTriggerModeVsbInterrupt	=	2,
+					kTriggerModePolling 		=	3
 							};
 
 enum EMbsSetupTags			{	kSetHostName				=	1,
+						kSetDate,
+						kSetAuthor,
 								kSetRdoNames,
 								kSetHostFlag,
 								kSetSetupPath,
@@ -126,14 +129,17 @@ const SMrbNamedXShort kMbsLofTriggerModules[] = 	// list of legal trigger module
 
 const SMrbNamedXShort kMbsLofTriggerModes[] =		// list of legal trigger modes
 							{
-								{kTriggerModeInterrupt, "INTERRUPT" },
-								{kTriggerModePolling,	"POLLING"	},
-								{0, 					NULL		}
+								{kTriggerModeLocalInterrupt,	"LOCAL-INT"	},
+								{kTriggerModeVsbInterrupt,	"INTERRUPT"	},
+								{kTriggerModePolling,		"POLLING"	},
+								{0, 				NULL		}
 							};
 
 const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 							{
 								{kSetHostName,			"SET_HOST_NAME" 			},
+								{kSetAuthor,			"AUTHOR" 				},
+								{kSetDate,			"DATE" 					},
 								{kSetRdoNames,			"SET_RDO_NAMES" 			},
 								{kSetHostFlag,			"SET_HOST_FLAG" 			},
 								{kSetSetupPath, 		"SET_SETUP_PATH"			},
