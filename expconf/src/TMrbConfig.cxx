@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.87 2004-12-07 14:37:22 rudi Exp $       $Id: TMrbConfig.cxx,v 1.87 2004-12-07 14:37:22 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.88 2004-12-08 14:32:15 rudi Exp $       $Id: TMrbConfig.cxx,v 1.88 2004-12-08 14:32:15 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -480,6 +480,7 @@ const SMrbNamedXShort kMrbIncludeOptions[] =
 								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"		},
 								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"			},
 								{TMrbConfig::kIclOptProcessEvent,			"PROCESSEVENT"			},
+								{TMrbConfig::kIclOptProcessEvent,			"ANALYZE"				},
 								{TMrbConfig::kIclOptHandleMessages,			"HANDLEMESSAGES"		},
 								{0, 										NULL					}
 							};
@@ -4533,7 +4534,7 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 								iclOpts |= TMrbConfig::kIclOptHandleMessages;
 								lofMethods->AddNamedX(TMrbConfig::kIclOptHandleMessages, method.Data(), line.Data());
 							} else {
-								gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
+								gMrbLog->Err()  << "User code file " << ptPath << " (line " << lineNo
 											<< "): Syntax error -" << endl
 											<< "                               Unknown method " << method << "\"" << endl;
 								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
@@ -4566,11 +4567,21 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 											lofMethods->AddNamedX(icl->GetIndex(), method.Data(), line.Data());
 											Int_t n1 = line.Index("%%", 0);
 											Int_t n2 = line.Index("%%", n1 + 2);
+											TString keyWord = line(n1, n2 + 2);
+											TString keyWordUC = keyWord;
+											keyWordUC.ToUpper();
 											if (verboseMode) {
-												gMrbLog->Out()  << "Adding method " << method << " (key word " << line(n1, n2 + 2) << ")" << endl;
+												gMrbLog->Out()  << "Adding method " << method << " (key word " << keyWord << ")" << endl;
 												gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
 											}
 											line.Remove(n1, n2 - n1 + 2);
+											if (keyWordUC.CompareTo("%%ANALYZE%%") == 0) {
+												gMrbLog->Wrn()  << "User code file " << ptPath << " (line " << lineNo
+																<< "): Warning -" << endl
+																<< "                               key word \"" << keyWord
+																<< "\" is obsolete - should be replaced by %%ProcessEvent%%" << endl;
+												gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+											}
 											knownMethod = kTRUE;
 											break;
 										}
@@ -4581,7 +4592,7 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 									Int_t n1;
 									Int_t n2;
 									if ((n1 = line.Index("%%", 0)) >= 0 && (n2 = line.Index("%%", n1 + 2)) > 0) {
-										gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
+										gMrbLog->Err()  << "User code file " << ptPath << " (line " << lineNo
 														<< "): Syntax error -" << endl
 														<< "                               Unknown key word \"" << line(n1, n2 + 2) << "\"" << endl;
 										gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
@@ -4595,7 +4606,7 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 									}
 								}
 							} else {
-								gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
+								gMrbLog->Err()  << "User code file " << ptPath << " (line " << lineNo
 												<< "): Syntax error -" << endl
 												<< "                               Wrong scope operator \"" << scope
 												<< "::\" (should be \"TUsrEvt<EventName>::\")" << endl;
@@ -4612,7 +4623,7 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 								nx = (TMrbNamedX *) fLofUserClasses.After(nx);
 							}
 							if (!isUserClass) {
-								gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
+								gMrbLog->Err()  << "User code file " << ptPath << " (line " << lineNo
 												<< "): Syntax error -" << endl
 												<< "                               Unknown scope operator \"" << scope << "\"" << endl;
 								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
