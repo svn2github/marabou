@@ -219,12 +219,22 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    TString s;
    while((objs = (TObjString *) next())) {
       s = objs->String();
-      fTEItem = new TGTextEntry(fTableFrame, fTBItem = new TGTextBuffer(100));
-      fWidgets->Add(fTEItem);
-      fEntries->Add(fTEItem);
-      fTBItem->AddText(0, (const char  *) s);
-      fTEItem->Resize(itemwidth, fTEItem->GetDefaultHeight());
-      fTableFrame->AddFrame(fTEItem, lo1);
+      if (s.BeginsWith("CheckButton")) {
+         fFlagButton = new TGCheckButton(fTableFrame, new TGHotString(""), i);
+         if (s.EndsWith("Down")) fFlagButton->SetState(kButtonDown);
+         else                    fFlagButton->SetState(kButtonUp);
+         fFlagButton->Resize(itemwidth, fFlagButton->GetDefaultHeight());
+         fWidgets->Add(fFlagButton);
+         fEntries->Add(fFlagButton);
+         fTableFrame->AddFrame(fFlagButton, lo4);
+      } else {
+         fTEItem = new TGTextEntry(fTableFrame, fTBItem = new TGTextBuffer(100));
+         fWidgets->Add(fTEItem);
+         fEntries->Add(fTEItem);
+         fTBItem->AddText(0, (const char  *) s);
+         fTEItem->Resize(itemwidth, fTEItem->GetDefaultHeight());
+         fTableFrame->AddFrame(fTEItem, lo1);
+      }
       i++;
    }
 
@@ -465,8 +475,16 @@ void TGMrbTableFrame::StoreValues(){
    Int_t i=0;
    while((objs = (TObjString*)next())){
        fTEItem=(TGTextEntry*)nextent();
-       const char * te = fTEItem->GetBuffer()->GetString();
-       objs->SetString((char *)te); 
+       if (fTEItem->InheritsFrom("TGCheckButton")) {
+          fFlagButton = (TGCheckButton*)fTEItem;
+          if (fFlagButton->GetState() == kButtonDown)
+             objs->SetString("CheckButton_Down"); 
+          else
+             objs->SetString("CheckButton_Up");
+       } else { 
+          const char * te = fTEItem->GetBuffer()->GetString();
+          objs->SetString((char *)te);
+       } 
        i++; 
    }
 //   cout << "StoreValues(), fColorSelect " << fColorSelect << endl;

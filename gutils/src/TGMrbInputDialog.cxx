@@ -338,7 +338,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    whi = wh;
    Int_t wi = width;
    Int_t hi = height;
-//  make sure its inside physical sceen
+//  make sure its inside physical screen
    if      (ax < 0)    ax = 10;
    else if (ax + wi > wwi)  ax = wwi - wi - 5;
    if      (ay + hi/2 < 0) ay =  hi/2 + 5;
@@ -506,9 +506,11 @@ void TGMrbInputDialog::SaveList()
 //_______________________________________________________________________________________
 
 const char *GetString(const char *Prompt, const char *DefVal, Bool_t * Ok,
-                      TGWindow *Win,  const char *YNPrompt, Bool_t * YesNo,
+                      TGWindow *Win,  
+                      const char *YNPrompt, Bool_t * YesNo,
                       const char *HelpText, 
-                      const char *YNPrompt1, Bool_t * YesNo1, const char *FileName, TList * Complist)
+                      const char *YNPrompt1, Bool_t * YesNo1, 
+                      const char *FileName, TList * Complist)
 {
    // Prompt for string. The typed in string is returned.
 
