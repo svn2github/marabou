@@ -60,8 +60,11 @@
 #define CAEN_V785_M_CHN							0xFF
 #define CAEN_V785_M_ID							0x07000000
 #define CAEN_V785_M_HDR							0x07FFFFFF
-#define CAEN_V785_M_DATA							0x07FFFFFF
+#define CAEN_V785_M_DATA						0x07FFFFFF
 #define CAEN_V785_M_ADCDATA						0x00000FFF
+
+#define CAEN_V785_B_OVERFLOW	 				(0x1 << 12)
+#define CAEN_V785_B_UNDERTHRESH 				(0x1 << 13)
 
 #define CAEN_V785_A_OUTPUT(module)			((unsigned int *) (module + CAEN_V785_R_OUTPUT))
 #define CAEN_V785_A_FIRMWARE(module) 		((unsigned short *) (module + CAEN_V785_R_FIRMWARE))
@@ -134,6 +137,7 @@
 %%BeginOfCode%%
 %U%					CAEN_V785_SET_THRESHOLD($moduleName, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
 %N%					CAEN_V785_SET_KILL_BIT($moduleName, $chnNo);	/* de-avtivate chnName:$chnNo */
+%F% 				caen_v785_set_thresh($moduleName, "$threshFile");
 %%EndOfCode%%
 %%INIT_CHANNEL%%
 

@@ -18,6 +18,10 @@
 #define CAEN_V7X5_M_HDR							0x07FFFFFF
 #define CAEN_V7X5_M_DATA 						0x07FFFFFF
 #define CAEN_V7X5_M_ADCDATA	 					0x00000FFF
+
+#define CAEN_V7X5_B_OVERFLOW	 				(0x1 << 12)
+#define CAEN_V7X5_B_UNDERTHRESH 				(0x1 << 13)
+
 #endif
 
 %%EndOfCode%%
