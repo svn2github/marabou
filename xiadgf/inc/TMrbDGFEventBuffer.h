@@ -111,6 +111,8 @@ class TMrbDGFEventBuffer : public TNamed, public TArrayI {
 		Bool_t SaveTraces(const Char_t * TraceFile = NULL,
 			Int_t EventNumber = -1, Int_t Channel = -1);							// save trace data
 
+		const Char_t * BufferTime2Ascii(TString & TimeString, UShort_t * TimeArray) const;	// convert 48 bit time to ascii
+
 		void MakeIndex();															// analyze buffer data
 
 	protected:

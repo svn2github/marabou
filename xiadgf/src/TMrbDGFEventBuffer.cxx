@@ -30,8 +30,6 @@ namespace std {} using namespace std;
 #include "TMrbDGFEvent.h"
 #include "TMrbDGFEventBuffer.h"
 
-#include "n2ll.h"
-
 #include "SetColor.h"
 
 extern TMrbDGFData * gMrbDGFdata;				// common data base for all DGF modules
@@ -567,7 +565,7 @@ void TMrbDGFEventBuffer::Print(ostream & OutStrm, Int_t EventNumber, const Char_
 						<< " Module number               : " << fArray[TMrbDGFEventBuffer::kModNumber] << endl
 						<< " Format descriptor           : 0x"
 						<< setbase(16) << fArray[TMrbDGFEventBuffer::kFormat] << setbase(10) << endl
-						<< " Run start time              : " << ushort2ll48(evtTime)
+						<< " Run start time              : " << this->BufferTime2Ascii(timStr, evtTime)
 						<< setbase(16) << " (0x" << fArray[TMrbDGFEventBuffer::kRunStartTime]
 						<< " 0x" << fArray[TMrbDGFEventBuffer::kRunStartTime + 1]
 						<< " 0x" << fArray[TMrbDGFEventBuffer::kRunStartTime + 2]
@@ -595,7 +593,7 @@ void TMrbDGFEventBuffer::Print(ostream & OutStrm, Int_t EventNumber, const Char_
 		else					OutStrm	<< " Event # " << EventNumber << " (local), "
 											<< (EventNumber - fGlobEventNo) << " (global)" << endl;
 		OutStrm	<< "..........................................................................................." << endl
-					<< " Event time                  : " << ushort2ll48(evtTime)
+					<< " Event time                  : " << this->BufferTime2Ascii(timStr, evtTime)
 					<< setbase(16) << " ([0x" << fArray[TMrbDGFEventBuffer::kRunStartTime]
 					<< "] 0x" << fArray[TMrbDGFEventBuffer::kBufHeaderLength + TMrbDGFEventBuffer::kEventTime]
 					<< " 0x" << fArray[TMrbDGFEventBuffer::kBufHeaderLength + TMrbDGFEventBuffer::kEventTime + 1]
@@ -664,3 +662,21 @@ Bool_t TMrbDGFEventBuffer::PrintToFile(const Char_t * FileName, const Char_t * M
 	return(kTRUE);
 }
 	
+const Char_t * TMrbDGFEventBuffer::BufferTime2Ascii(TString & TimeString, UShort_t * TimeArray) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFEventBuffer::BufferTime2Ascii
+// Purpose:        Convert 48-bit time to ascii
+// Arguments:      TString & TimeString  -- where to store event time
+//                 UShort_t * TimeArray  -- original 48 bit time
+// Results:        Char_t * TimeString   -- same as arg#1
+// Exceptions:
+// Description:    Converts a 48-bit event time to ascii.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TimeString = Form("%18lld", TimeArray);
+	TimeString = TimeString.Strip(TString::kBoth);
+	return(TimeString.Data());
+}
+
