@@ -1,7 +1,7 @@
 TMbsSetup.Info.File:	mbssetup_default
 TMbsSetup.Info.Title: 	Default MBS Setup Data
 TMbsSetup.Info.Created: 	Fri Sep  3 13:18:14 1999
-TMbsSetup.Info.Modified:	Fri Sep  3 13:18:46 1999
+TMbsSetup.Info.Modified:	Mon Mar 15 10:13:00 2004
 TMbsSetup.TemplatePath: 						$MARABOU/templates/mbssetup
 TMbsSetup.HomeDir:
 TMbsSetup.Path:
@@ -29,6 +29,10 @@ TMbsSetup.Readout1.TriggerModule.ConvTime:		500
 TMbsSetup.Readout1.TriggerModule.FastClearTime:	20
 TMbsSetup.Readout1.CratesToBeRead:				1
 TMbsSetup.Readout1.Controller:					CBV(5)
+TMbsSetup.Readout1.RemoteMemoryBase:			0xd0380000
+TMbsSetup.Readout1.RemoteMemoryLength:			0x00200000
+TMbsSetup.Readout1.RemoteCamacBase: 			0xd0380000
+TMbsSetup.Readout1.RemoteCamacLength:			0x00200000
 TMbsSetup.Readout1.PipeBase:					0xd0000000
 TMbsSetup.Readout1.VSBAddr:						0xf0000000
 TMbsSetup.Readout1.SevtSize:					2048
