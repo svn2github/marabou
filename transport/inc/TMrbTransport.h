@@ -96,7 +96,9 @@ class TMrbTransport : public TNamed {
 
 		inline const MBSDataIO * GetMbsBase() { return(fMBSDataIO); };	// return base addr
 
-		Bool_t OpenLMDFile(const Char_t * LMDFile); 		// write original data to lmd file (GSI format)
+		Bool_t OpenMEDFile(const Char_t * MEDFile); 		// write data as MBS event data
+		Bool_t CloseMEDFile();		
+		Bool_t OpenLMDFile(const Char_t * LMDFile); 		// write data to lmd file (GSI format)
 		Bool_t CloseLMDFile();		
 															// show data (default: S=subevents)
 		Bool_t Show(const Char_t * BufElemKey = "Subevents", const Char_t * Output = NULL);

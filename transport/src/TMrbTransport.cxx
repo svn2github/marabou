@@ -616,15 +616,69 @@ Bool_t TMrbTransport::SetDumpInterval(Int_t NofRecs) {
 	return(sts);
 }
 
+Bool_t TMrbTransport::OpenMEDFile(const Char_t * MEDFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTransport::OpenMEDFile
+// Purpose:        Open MED file 
+// Arguments:      Char_t * MEDFile    -- file name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Opens a file to write data as MBS events.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t sts;
+
+	ClearError();
+
+	sts = mbs_open_med(MEDFile);
+	if (sts) {
+		gMrbLog->Out()	<< this->ClassName() << "::OpenLMDFile(): Writing MBS event data to file " << MEDFile << endl;
+		gMrbLog->Flush(this->ClassName(), "OpenMEDFile", setblue);
+	} else {
+		PrintMbsIoError("OpenMEDFile");
+		SetError();
+	}
+	return(sts);
+}
+
+Bool_t TMrbTransport::CloseMEDFile() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTransport::CloseMEDFile
+// Purpose:        Close MED file 
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Closes MED file which is currently open
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t sts;
+
+	ClearError();
+
+	sts = mbs_close_med();
+	if (sts) {
+		gMrbLog->Out()	<< this->ClassName() << "::CloseMEDFile(): MED file closed" << endl;
+		gMrbLog->Flush(this->ClassName(), "CloseLMDFile", setblue);
+	} else {
+		PrintMbsIoError("CloseLMDFile");
+		SetError();
+	}
+	return(sts);
+}
+
 Bool_t TMrbTransport::OpenLMDFile(const Char_t * LMDFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTransport::OpenLMDFile
 // Purpose:        Open LMD file 
-// Arguments:      Char_t * LogFile    -- log file
+// Arguments:      Char_t * LMDFile    -- lmd file
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Opens a file to dump original LMD data.
+// Description:    Opens a file to write original LMD data.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -634,7 +688,7 @@ Bool_t TMrbTransport::OpenLMDFile(const Char_t * LMDFile) {
 
 	sts = mbs_open_lmd(LMDFile);
 	if (sts) {
-		gMrbLog->Out()	<< this->ClassName() << "::OpenLMDFile():Dumping LMD data to file " << LMDFile << endl;
+		gMrbLog->Out()	<< this->ClassName() << "::OpenLMDFile(): Writing LMD data to file " << LMDFile << endl;
 		gMrbLog->Flush(this->ClassName(), "OpenLMDFile", setblue);
 	} else {
 		PrintMbsIoError("OpenLMDFile");
