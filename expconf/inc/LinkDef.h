@@ -28,10 +28,12 @@
 #pragma link C++ class TMrbSubevent_10_14;
 #pragma link C++ class TMrbSubevent_DGF_1;
 #pragma link C++ class TMrbSubevent_DGF_2;
+#pragma link C++ class TMrbSubevent_DGF_3;
 #pragma link C++ class TMrbSubevent_Silena_1;
 #pragma link C++ class TMrbSubevent_Silena_2;
 #pragma link C++ class TMrbSubevent_Caen_1;
 #pragma link C++ class TMrbSubevent_Caen_2;
+#pragma link C++ class TMrbSubevent_Caen_3;
 #pragma link C++ class TMrbSubeventRaw;
 #pragma link C++ class TMrbSubevent_Data_S;
 #pragma link C++ class TMrbSubevent_Data_I;
