@@ -3133,35 +3133,28 @@ Int_t TUsrHit::Compare(const TObject * Hit) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	long long t1, t2;
-	t1 = ushort2ll48(((TUsrHit *) this)->GetChannelTime());
-	t2 = ushort2ll48(((TUsrHit *) Hit)->GetChannelTime());
-	if (t1 == t2) {
-		return(0);
-	} else {
-		return(t1 > t2 ? 1 : -1);
-	}
+	t1 = ((TUsrHit *) this)->GetChannelTime();
+	t2 = ((TUsrHit *) Hit)->GetChannelTime();
+	if (t1 == t2)	return(0);
+	else			return(t1 > t2 ? 1 : -1);
 }
 
-Int_t TUsrHit::Compare(UShort_t * ChannelTime) {
+Int_t TUsrHit::Compare(long long ChannelTime) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Compare
 // Purpose:        Compare time stamps
-// Arguments:      UShort_t * ChannelTime   -- channel time
+// Arguments:      long long ChannelTime   -- channel time
 // Results:        -1 / 0 / 1
 // Exceptions:
 // Description:    Compares event time with given value.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	long long t1, t2;
-	t1 = ushort2ll48(((TUsrHit *) this)->GetChannelTime());
-	t2 = ushort2ll48(ChannelTime);
-	if (t1 == t2) {
-		return(0);
-	} else {
-		return(t1 > t2 ? 1 : -1);
-	}
+	long long t;
+	t = ((TUsrHit *) this)->GetChannelTime();
+	if (t == ChannelTime)	return(0);
+	else					return(t > ChannelTime ? 1 : -1);
 }
 
 void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
@@ -3205,7 +3198,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 						moduleName.Data(),
 						fEventNumber,
 						paramName.Data(),
-						ushort2ll48(fChannelTime),
+						fChannelTime,
 						fData[kHitEnergy]);
 	} else {
 		Out << Form("      %13d%13d%13d%13d%18lld%13d\n",
@@ -3213,7 +3206,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 						fModuleNumber,
 						fEventNumber,
 						fChannel,
-						ushort2ll48(fChannelTime),
+						fChannelTime,
 						fData[kHitEnergy]);
 	}
 }
@@ -3230,7 +3223,7 @@ const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TimeString = Form("%18lld", ushort2ll48(fChannelTime));
+	TimeString = Form("%18lld", fChannelTime);
 	TimeString = TimeString.Strip(TString::kBoth);
 	return(TimeString.Data());
 }
@@ -3586,8 +3579,8 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 	if (curIndex >= this->GetNofHits()) return(kFALSE);
 
 	hit = (TUsrHit *) fHits->At(curIndex);
-	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber()))
-						- (ushort2ll48(Hit0->GetChannelTime()) - gMrbAnalyze->GetTimeOffset(Hit0->GetModuleNumber()));
+	long long tDiff =	(hit->GetChannelTime() - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber()))
+						- (Hit0->GetChannelTime() - gMrbAnalyze->GetTimeOffset(Hit0->GetModuleNumber()));
 	if (tDiff < 0) tDiff = -tDiff;
 	return(tDiff <= (long long) fWindow);
 }		
