@@ -27,7 +27,7 @@ void TMrbWindow2D::Streamer(TBuffer &R__b)
    } else {
       R__b.WriteVersion(TMrbWindow2D::IsA());
       TCutG::Streamer(R__b);
-      cout << "TMrbWindow2D TCutG streamer, writing" << endl;
+//      cout << "TMrbWindow2D TCutG streamer, writing" << endl;
 //      TGraph::Streamer(R__b);
 //      fVarX.Streamer(R__b);
 //      fVarY.Streamer(R__b);

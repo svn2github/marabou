@@ -39,7 +39,7 @@ INCLUDEFILES += $(DGFCDEP)
 
 ##### extra libs needed #####
 GLIBS         = $(ROOTGLIBS)
-ODGFCLIBS      := -L$(LPATH) -lN2ll -lTMrbDGF -lTMrbEsone -lEsoneClient \
+ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lEsoneClient \
                  -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser
 
 ##### local rules #####
