@@ -20,9 +20,9 @@ include config/Makefile.$(ARCH)
 
 ##### Modules to build #####
 
-MODULES       = build utils gutils \
+MODULES       = build utils gutils tidy tidylib \
 				expconf analyze \
-                helpbrowser hpr c_analyze \
+                helpbrowser hpr c_analyze macrobrowser \
 				camcli esone mbssetup mbsio transport \
 				xiadgf dgfcontrol \
 				polar snake
@@ -348,6 +348,7 @@ showbuild:
 	@echo "AFSDIR             = $(AFSDIR)"
 	@echo ""
 	@echo "INSTALL            = $(INSTALL)"
+	@echo "INSTALLDIR         = $(INSTALLDIR)"
 	@echo "MAKEDEP            = $(MAKEDEP)"
 	@echo "MAKELIB            = $(MAKELIB)"
 	@echo "MAKEDIST           = $(MAKEDIST)"

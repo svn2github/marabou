@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.3 2004-11-17 11:34:19 marabou Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.4 2004-11-17 12:35:47 marabou Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -357,7 +357,7 @@ void TMrbTidyDoc::PrintOptions(ostream & Out) {
 		if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
 		Out 	<< ": list of TIDY options" << endl
 				<< "-------------------------------------------------------------------------" << endl
-				<< " Id" << setw(30) << "Name" << setw(10) << "Value" << endl
+				<< " Id" << setw(30) << "Name" << setw(10) << "Value" << setw(10) << "Default" << endl
 				<< "-------------------------------------------------------------------------" << endl;
 		TMrbTidyOption * opt = (TMrbTidyOption *) fLofOptions.First();
 		while (opt) {
@@ -597,24 +597,27 @@ void TMrbTidyOption::Print(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Out << setw(3) << this->GetIndex() << setw(30) << this->GetName() << setw(10);
+	Out << setw(3) << this->GetIndex() << setw(30) << this->GetName();
 	switch (fType) {
 		case TidyString:
 			{
-				TString optVal;
-				if (this->GetValue(optVal)) Out << optVal << endl; else Out << "???";
+				TString optVal, optDef;
+				this->GetDefault(optDef);
+				if (this->GetValue(optVal)) Out << setw(10) << optVal << setw(10) << optDef << endl; else Out << "???" << endl;
 			}
 			break;
 		case TidyInteger:
 			{
-				Int_t optVal;
-				if (this->GetValue(optVal)) Out << optVal << endl; else Out << "???";
+				Int_t optVal, optDef;
+				this->GetDefault(optDef);
+				if (this->GetValue(optVal)) Out << setw(10) << optVal << setw(10) << optDef << endl; else Out << "???" << endl;
 			}
 			break;
 		case TidyBoolean:
 			{
-				Bool_t optVal;
-				if (this->GetValue(optVal)) Out << (optVal ? "TRUE" : "FALSE") << endl; else Out << "???";
+				Bool_t optVal, optDef;
+				this->GetDefault(optDef);
+				if (this->GetValue(optVal)) Out << setw(10) << (optVal ? "TRUE" : "FALSE") << setw(10) << (optDef ? "TRUE" : "FALSE") << endl; else Out << "???" << endl;
 			}
 			break;
 	}
