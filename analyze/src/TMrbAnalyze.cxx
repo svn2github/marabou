@@ -24,6 +24,7 @@
 #include "TRegexp.h"
 #include "TOrdCollection.h"
 #include "TObjString.h"
+#include "TRandom.h"
 
 #include "TMrbAnalyze.h"
 #include "mbsio_protos.h"
@@ -3312,12 +3313,12 @@ Int_t TUsrHit::Compare(long long ChannelTime) const {
 	else					return(t > ChannelTime ? 1 : -1);
 }
 
-Double_t TUsrHit::GetCalEnergy() const {
+Double_t TUsrHit::GetCalEnergy(Bool_t Randomize) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::GetCalEnergy
 // Purpose:        Return energy calibrated
-// Arguments:      --
+// Arguments:      Bool_t Randomize  -- add random number if kTRUE
 // Results:        Double_t energy   -- calibrated energy value
 // Exceptions:
 // Description:    
@@ -3326,7 +3327,9 @@ Double_t TUsrHit::GetCalEnergy() const {
 
 	Double_t gain, offset;
 	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
-	return(fData[kHitEnergy] * gain + offset);
+	Double_t e = fData[kHitEnergy];
+	if (Randomize) e += gRandom->Rndm() - 0.5;
+	return(e * gain + offset);
 }
 
 void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
