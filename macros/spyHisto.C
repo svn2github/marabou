@@ -8,6 +8,7 @@
 #include "TH1F.h"
 #include "TSystem.h"
 #include "TMrbString.h"
+#include "SetColor.h"
 
 class SpyTimer : public TTimer {
 
@@ -42,7 +43,7 @@ class SpyTimer : public TTimer {
 				fSock->Close("force");
 			}
 		};
-		void Alarm();
+		void Alarm(Int_t Duration = 500);
 
 	public:
 		TSocket * fSock;
@@ -62,7 +63,7 @@ class SpyTimer : public TTimer {
 	ClassDef(SpyTimer, 0)
 };
 
-SpyTimer::SpyTimer(Long_t ms, Bool_t synch): TTimer(ms, synch){
+SpyTimer::SpyTimer(Long_t MilliSecs, Bool_t SynchFlag): TTimer(MilliSecs, SynchFlag){
 	gSystem->AddTimer(this);
 	fSock = NULL;
 	fCanvas = NULL;
@@ -85,7 +86,13 @@ Bool_t SpyTimer::Notify() {
 
 	TString mess("M_client gethist ");
 	mess += fHistName;
-	fSock->Send(mess);          // send message
+	Int_t lmsg = fSock->Send(mess);
+	if (lmsg == -1) {          // send message
+		cerr	<< setred << "spyHisto.C: Connection lost." << setblack << endl;
+		for (Int_t i = 0; i < 5; i++) this->Alarm(500);
+		this->Stop();
+		return(kFALSE);
+	} else if (lmsg == 0) return(kTRUE);
 
 	while ((fSock->Recv(*&message))) // receive next message
 	{
@@ -102,6 +109,7 @@ Bool_t SpyTimer::Notify() {
 			}
 			fCanvas->cd(1);
 			fHist = (TH1F *) message->ReadObject(message->GetClass());
+			if (fHist == NULL) return(kFALSE);
 			if (fLowerBin != -1) fHist->GetXaxis()->SetRange(fLowerBin, fUpperBin);
 			fHist->Draw();
 			fCanvas->cd(2);
@@ -142,7 +150,7 @@ Bool_t SpyTimer::Notify() {
 	return(kTRUE);
 }
 
-void SpyTimer::Alarm() {
+void SpyTimer::Alarm(Int_t Duration) {
 	const char bell[] = "\007";
 	Int_t a;
 	if (fAlarm == 0) {
@@ -153,7 +161,7 @@ void SpyTimer::Alarm() {
 		fAlarm = 0;
 	}
 	Int_t loadness = 100;
-	Int_t duration = 600;
+	Int_t duration = Duration;
 	TMrbString cmd;
 	cmd = "xset b ";
 	cmd += loadness;
@@ -173,13 +181,13 @@ void help() {
 	cout 	<< "        spyHisto(HistoName, Refresh, Host, Socket)" << endl << endl;
 	cout	<< "        HistoName       Name of histogram to be spyed on" << endl;
 	cout	<< "        Refresh         Spy interval in secs (default: 5)" << endl;
-	cout	<< "        Port            Socket to listen to (default: 9090)" << endl;
+	cout	<< "        Socket          Socket to listen to (default: 9090)" << endl;
 	cout	<< "        Host            Host where M_analyze is running (default: localhost)" << endl << endl;
 	cout	<< "Commands:" << endl;
 	cout	<< "        spy(ll, ul)     Set spy window to [ll,ul] (default: entire histogram)" << endl;
 	cout	<< "        alarm(n)        Set alarm to n count/s (default: 0)" << endl;
 	cout	<< "        stop()          Stop timer" << endl;
-	cout	<< "        start()         Start timer" << endl;
+	cout	<< "        start(n)        Start timer, set spy interval to n (default: previous value)" << endl;
 	cout	<< "        bye()           Close connection and exit (don't use \".q\"!)" << endl << endl;
 }
 
@@ -194,15 +202,41 @@ void spyHisto(	const Char_t * HistoName,
 {
 	TMessage * message;
 
+	enum	{	kTimeout	= 10	};
+
 	cout << "[spyHist.C: Spy on a histogram and monitor counting rate. Type help() for help]" << endl;
 
 // Open connection to server
 	TSocket * sock = new TSocket(HostName, TcpPort);
 
 // Wait till we get the start message
-	while (sock->Recv(*&message) <= 0) gSystem->Sleep(500);
+	Bool_t connect = kFALSE;
+	if (sock->Recv(*&message) <= 0) {
+		cout << "spyHisto.C: Trying to connect to M_analyze @ " << HostName << ":" << TcpPort << " - wait " << flush;
+		for (Int_t i = 0; i < kTimeout; i++) {
+			sleep(1);
+			if (sock->Recv(*&message) > 0) {
+				connect = kTRUE;
+				break;
+			} else {
+				cout << "." << flush;
+			}
+		}
+		if (connect) {
+			cout << " done." << endl;
+		} else {
+			cout << setred << " timed out. Try again." << setblack << endl;
+			return;
+		}
+	} else {
+		cout << setblue << "[spyHisto.C: Connected to M_analyze @ " << HostName << ":" << TcpPort << "]" << setblack << endl;
+	}
 
-	spyTimer = new SpyTimer(Refresh * 1000, kTRUE);
+	if (spyTimer == NULL) {
+		spyTimer = new SpyTimer(Refresh * 1000, kTRUE);
+	} else {
+		spyTimer->ResetHist();
+	}
 	spyTimer->SetSock(sock);
 	spyTimer->SetHist(HistoName);
 	spyTimer->Start(-1, kTRUE);
@@ -218,18 +252,26 @@ void spy(Int_t LowerSpy, Int_t UpperSpy) {
 };
 
 void stop() {
-	if (spyTimer) spyTimer->Stop();
-	cout << "[Spy timer STOPPED]" << endl;
+	if (spyTimer) {
+		spyTimer->Stop();
+		cout << "[Spy timer STOPPED]" << endl;
+	}
 }
 
 void start() {
 	if (spyTimer) {
 		spyTimer->ResetHist();
 		spyTimer->Start(-1, kTRUE);
+		cout << "[Spy timer STARTED]" << endl;
 	}
-	cout << "[Spy timer STARTED]" << endl;
 }
 
 void alarm(Double_t Thresh = 0) { if (spyTimer) spyTimer->SetAlarm(Thresh); };
 
-void bye() { if (spyTimer) spyTimer->Close(); gSystem->Exit(0); };
+void bye() {
+	if (spyTimer) {
+		spyTimer->Close();
+		cout << "[spyHisto.C: Exit]" << endl;
+		gSystem->Exit(0);
+	}
+};
