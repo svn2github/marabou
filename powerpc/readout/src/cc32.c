@@ -43,15 +43,7 @@ int main(int argc, char *argv[]) {
 	}
 	nofCrates = atoi(argv[1]);
 
-	if (argc == 3) {
-		addr = (unsigned long *) strtol(argv[2], (char **)NULL, 16);
-	} else {
-		addr = (unsigned long *) 0xee550000;
-	}
-	
-	printf("cc32: nofCrates=%d, baseAddr=%#lx\n", nofCrates, addr);
-	
-	cc32_init(addr, nofCrates);
+	cc32_init((unsigned long *) 0x550000, nofCrates);
 	for (i = 1; i <= nofCrates; i++) {
 		sr = CC32_SET_BASE(C(i), N(0));
 		srval = CC32_READ_R2B(sr, F(0), A(0));
