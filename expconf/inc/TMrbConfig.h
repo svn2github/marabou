@@ -196,6 +196,7 @@ class TMrbConfig : public TNamed {
 									kAnaMakeUserHeaders,
 									kAnaMakeUserCode,
 									kAnaMakeUserRules,
+									kAnaMakeLibNew,
 									kAnaIncludeEvtSevtModGlobals,
 									kAnaInitializeEvtSevtMods
 								};
@@ -620,6 +621,8 @@ class TMrbConfig : public TNamed {
 
 		void SetGlobalAddress();							// set global address gMrbConfig
 
+		inline void UseMapFile(Bool_t MapFlag = kTRUE) { fUseMapFile = MapFlag; };
+
 		inline void  SetMultiBorC(TMrbCNAF::EMrbCNAF MultiBorC) { 	// store multi branch/crate status
 			fMultiBorC |= MultiBorC;
 		};
@@ -729,6 +732,8 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofModules;
 
 		Bool_t fLongParamNames; 			// use long param names: i.e. <subevent><param>
+
+		Bool_t fUseMapFile; 				// kTRUE if TMap should be used
 
 		Int_t fNofScalers;					// list of scalers
 		TObjArray fLofScalers;

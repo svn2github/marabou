@@ -289,6 +289,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaMakeUserHeaders,			"MAKE_USER_HEADERS" 			},
 								{TMrbConfig::kAnaMakeUserCode,				"MAKE_USER_CODE"	 			},
 								{TMrbConfig::kAnaMakeUserRules,				"MAKE_USER_RULES"	 			},
+								{TMrbConfig::kAnaMakeLibNew,				"MAKE_LIBNEW"		 			},
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
 								{0, 										NULL							}
@@ -511,6 +512,8 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofModules.Delete();
 
 		fLongParamNames = kFALSE;	// we use param names w/o subevent prefix
+
+		fUseMapFile = kTRUE;		// use TMap normally
 
 		fDeadTimeScaler = NULL; 	// no dead-time scaler
 		fDeadTimeInterval = 0;
@@ -2309,6 +2312,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 						}
 						break;
+					case TMrbConfig::kAnaMakeLibNew:
+						anaStrm << anaTmpl.Encode(line, fUseMapFile ? "--new" : "") << endl;
+						break;						
 					case TMrbConfig::kAnaEventClassInstance:
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
@@ -5060,13 +5066,16 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	TArrayI c(5);
 	c.Reset(-1);
 	Int_t n = 0;
+	EMrbControllerType ctrlType = kControllerUnused;
 	for (Int_t bit = 0; bit < 5; bit++) {
 		if (cratePattern & (1 << bit)) {
 			c[n] = bit;
+			if (ctrlType == kControllerUnused) ctrlType = this->GetControllerType(bit);
 			n++;
 		}
 	}
 	mbsSetup->SetNofReadouts(1);
+	mbsSetup->ReadoutProc(0)->SetController((EMbsControllerType) ctrlType);
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
 
 	if (fSevtSize > 0) {
