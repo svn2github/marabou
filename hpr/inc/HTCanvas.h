@@ -42,9 +42,15 @@ private:
    HTimer         * fTimer;         //! dont stream
    TRootCanvas    * fRootCanvas;    //! dont stream
    HandleMenus    * fHandleMenus;      //! dont stream
+   TList          * fGObjectGroups;      // compound graphic objects
+   
    Double_t       fGridX;
    Double_t       fGridY;
    Bool_t         fUseGrid;
+   Double_t       fMouseX;
+   Double_t       fMouseY;
+   Bool_t         fGetMouse;
+
    void Build();
 //
 public:
@@ -77,6 +83,11 @@ public:
    void    DrawHist();
    void    WritePrimitives();
    void    GetPrimitives();
+   Int_t   ExtractGObjects();
+   void    InsertGObjects();
+   void    WriteGObjects();
+   void    ReadGObjects();
+   
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

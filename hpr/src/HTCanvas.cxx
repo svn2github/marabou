@@ -12,6 +12,8 @@
 #include "TH1.h"
 #include "TList.h"
 #include "TMarker.h"
+#include "TArrow.h"
+#include "TEllipse.h"
 #include "TMath.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
@@ -25,6 +27,7 @@
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbInputDialog.h"
 #include "EditMarker.h"
+#include "GroupOfGObjects.h"
 
 const Size_t kDefaultCanvasSize   = 20;
 
@@ -33,13 +36,14 @@ ClassImp(HTCanvas)
 //____________________________________________________________________________
 HTCanvas::HTCanvas():TCanvas()
 {
-   fHistPresent= NULL; 
-   fFitHist= NULL;     
-   fHistList= NULL;    
-   fGraph= NULL;       
-   fTimer= NULL;       
-   fRootCanvas= NULL;  
-   fHandleMenus= NULL;  
+   fHistPresent = NULL; 
+   fFitHist = NULL;     
+   fHistList = NULL;    
+   fGraph = NULL;       
+   fTimer = NULL;       
+   fRootCanvas = NULL;  
+   fHandleMenus = NULL;  
+   fGObjectGroups = NULL; 
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -102,9 +106,10 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    }
    SetName(name);
    SetTitle(title); // requires fCanvasImp set
-   fTimer = 0;
+   fTimer = NULL;
    fGridX = 0;
    fGridY = 0;
+   fGObjectGroups = NULL; 
    fUseGrid = kFALSE;
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
@@ -355,6 +360,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             }
 //         cout << "x y grid " << x << " " << y << endl;
       }
+   
+      if (fGetMouse) {
+         fMouseX = gPad->AbsPixeltoX(px);
+         fMouseY = gPad->AbsPixeltoY(py);
+         fGetMouse = kFALSE;
+      }
+
 
 //OS end
 
@@ -882,119 +894,4 @@ void HTCanvas::SetLog(Int_t state)
 {
     fHandleMenus->SetLog(state);
 
-}
-//______________________________________________________________________________
-
-void HTCanvas::SetGrid(Double_t x, Double_t y)
-{
-   fGridX = x; 
-   fGridY = y;
-   SetUseGrid(kTRUE);
-   DrawGrid();
-}
-//______________________________________________________________________________
-
-void HTCanvas::DrawGrid()
-{
-   if (fGridX <= 0 || fGridY <= 0) return;
-   Double_t xl, yl, xh, yh;
-   GetRange(xl, yl, xh, yh);
-
-   Double_t x = xl;
-   Double_t y;
-   EditMarker * em;
-   while (x <= xh) {
-      y = yl;   
-      while (y <= yh) {
-         em = new EditMarker(x, y, 1);
-         em->Draw();
-         y += fGridY;
-      }
-      x += fGridX;
-   }
-   Update();
-}
-//______________________________________________________________________________
-
-void HTCanvas::RemoveGrid()
-{
-   TIter next(GetListOfPrimitives());
-   TObject * obj;
-   while ( (obj = next()) ) {
-      if (obj->GetUniqueID() == 0xaffec0c0) delete obj;
-   }
-   Update();
-}
-//______________________________________________________________________________
-
-void HTCanvas::DrawHist()
-{
-   if (!fHistPresent) return;
-   TPad * selected = (TPad *)gROOT->GetSelectedPad();
-   if (selected) {
-//      cout << selected << endl;
-//      GetListOfPrimitives()->ls();
- //     cout << GetListOfPrimitives()->FindObject("newpad") << endl;
-      if (GetListOfPrimitives()->Contains(selected)) {
-         if (fHistPresent->fSelectHist->GetSize() != 1) {
-            cout << "select exactly 1 histogram" << endl;
-            return;
-         } else {
-            TH1* hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
-            if (hist) {
-//               hist->Print();
-               selected->cd();
-               hist->Draw();
-               TString drawopt;
-               if (hist->GetDimension() == 1) {
-                  if (fHistPresent->fShowContour)
-                     drawopt = "";
-                  if (fHistPresent->fShowErrors)
-                     drawopt += "e1";
-                  if (fHistPresent->fFill1Dim) {
-                     hist->SetFillStyle(1001);
-                     hist->SetFillColor(fHistPresent->f1DimFillColor);
-                  } else
-                     hist->SetFillStyle(0);
-               } else if (hist->GetDimension() == 2) {
-                  drawopt = fHistPresent->fDrawOpt2Dim->Data();
-               }
-               hist->SetOption(drawopt.Data());
-               hist->SetDrawOption(drawopt.Data());
-               selected->Modified();
-            }
-         }
-      } else {
-         cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
-      } 
-   } else {
-         cout << "No Pad selected" << endl;
-   } 
-   Update();
-}
-
-//______________________________________________________________________________
-
-void HTCanvas::WritePrimitives()
-{
-   Bool_t ok;
-//   TString name = "drawing";
-   TString name = GetName();
-   name += "_pict";
-   name =
-       GetString("Save picture with name", name.Data(), &ok,
-                 (TGWindow*)fRootCanvas);
-   if (!ok)
-      return;
-   if (OpenWorkFile(fRootCanvas)) {
-      RemoveGrid();
-      Write(name.Data());
- //     GetListOfPrimitives()->Write(name.Data(), 1);
-      CloseWorkFile();
-   }
-}
-//______________________________________________________________________________
-
-void HTCanvas::GetPrimitives()
-{
 }

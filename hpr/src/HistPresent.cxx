@@ -1023,7 +1023,7 @@ Should we create a new file with corrected names?", maincanvas)) {
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
             cmd = fname;
-            cmd = cmd + "\",\"" + title.Data() + "\")";
+            cmd = cmd + "\",\"" + dir + "\",\"" + title.Data() + "\")";
             sel = cmd;
             cmd.Prepend("mypres->ShowTree(\"");
             sel.Resize(0);;
@@ -1382,14 +1382,15 @@ void HistPresent::ShowInOneCanvas(const char *bp)
 //________________________________________________________________________________________
 // Show Tree 
   
-void HistPresent::ShowTree(const char* fname, const char* tname, const char* bp)
+void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname, const char* bp)
 {
   static Int_t ycanvas=5;
 //  const Int_t MAXLEAF=33;
   if (fRootFile) fRootFile->Close();
   fRootFile=new TFile(fname);
   fRootFile->ls();
-  TTree *tree = (TTree*)fRootFile->Get(tname);
+  if (strlen(dir) > 0) fRootFile->cd(dir);
+  TTree *tree = (TTree*)gDirectory->Get(tname);
    TObjArray *leaves = tree->GetListOfLeaves();
    Int_t nleaves = leaves->GetEntriesFast();
    if (nleaves <=0) {
@@ -1431,13 +1432,13 @@ void HistPresent::ShowTree(const char* fname, const char* tname, const char* bp)
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
    cmd = "mypres->ShowLeaf(\"";
-   cmd = cmd + fname + "\",\"" + tname  + "\",\"\")";
+   cmd = cmd + fname + "\",\"" + dir + "\",\"" + tname + "\",\"\")";
    nam = "Show leafs";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, empty));
 
    TString cmd_base("mypres->ShowLeaf(\"");
    TString sel_base("mypres->SelectLeaf(\"");
-   cmd_base = cmd_base + fname + "\",\"" + tname + "\",\"";
+   cmd_base = cmd_base + fname + "\",\"" + dir + "\",\"" + tname + "\",\"";
    for (l=0;l<nleaves;l++) {
       TLeaf *leaf = (TLeaf*)leaves->UncheckedAt(l);
       TBranch *branch = leaf->GetBranch();
@@ -1708,7 +1709,7 @@ void HistPresent::DefineGraphCut(const char* bp)
 }
 //________________________________________________________________________________________
 
-void HistPresent::ShowLeaf( const char* fname, const char* tname,
+void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tname,
                             const char* leafname, const char* bp)
 {
 
@@ -1835,9 +1836,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
 
    if (fRootFile) fRootFile->Close();
    fRootFile=new TFile(fname);
-   TTree *tree = (TTree*)fRootFile->Get(tname);
+   if (strlen(dir) > 0) fRootFile->cd(dir);
+   TTree *tree = (TTree*)gDirectory->Get(tname);
 
-   gDirectory=gROOT;
+   gDirectory = gROOT;
 
    TEnv * env = 0;
    Bool_t limits_defined = kFALSE;
@@ -1890,13 +1892,29 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
    if (find_limits) limits_defined = kFALSE;
 
    if (find_limits || fAlwaysNewLimits) {
+      
       for(Int_t i = 0; i < nent; i++) {
          TString bname;
          bname = lname[i];
          Int_t ib = bname.Index('[');
          if (ib > 0)bname.Resize(ib);
-         vmin[i] = tree->GetMinimum(bname);
-         vmax[i] = tree->GetMaximum(bname);
+         Int_t ne = tree->Draw(bname.Data(),"","goff"); // to evaluate min, max
+         cout << "N(tree->Draw()): " << ne << endl; 
+         vmin[i] = tree->GetMinimum(bname.Data());
+         vmax[i] = tree->GetMaximum(bname.Data());
+         cout 	<< "tname: " << tree->GetName() << " bname: " << bname << " min: " 
+              << tree->GetMinimum(bname) << endl;
+         if (vmin[i]> 1.e30 || vmin[i] < -1.e30) {
+            cout << "WARNING: unreasonable Min: " <<  vmin[i] << endl;
+            vmin[i] = -10000;
+         }
+
+         if (vmax[i] > 1.e30 || vmax[i] < -1.e30) {
+            cout << "WARNING unreasonable Max: " <<  vmax[i] << endl;
+            vmax[i] = 10000;
+         } else {
+            vmax[i] += TMath::Max (1., (vmax[i] - vmin[i]) / 100.);
+         }
          nbin[i] = 100;
       }
    }
@@ -3809,23 +3827,18 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
          if (obj->InheritsFrom(TH1::Class())) {
             h = (TH1*)obj;
             h->SetDirectory(gROOT);
-//            cout << obj->GetName() << endl;
          } else {
-   
-//            cout << obj->GetName() << endl;
-//            obj->Dump();
             if (obj->InheritsFrom("TPad")){
                TPad * newp = (TPad * )obj->Clone();
                newp->SetCanvas(c1);
                l1->Add(newp);
-//               newp->Dump();
-            } else
-              l1->Add(obj);
+            } else {
+               obj->ResetBit(kCanDelete);
+               l1->Add(obj);
+            }
          }
       }
       delete c;
-//      c1->SetName(tempname.Data());
-
    	c1->SetRightMargin(0);
    	c1->SetLeftMargin(0);
    	c1->SetBottomMargin(0);

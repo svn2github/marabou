@@ -236,6 +236,8 @@ enum ERootCanvasCommands {
    kFH_UseGrid,
    kFH_DrawGrid,  
    kFH_RemoveGrid,
+   kFH_ExtractGObjects,
+   kFH_InsertGObjects,
    kOptionPad,
    kOptionGeneral,
    kOptionFeynman,
@@ -539,7 +541,12 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFH_GetPrim:
                         fHCanvas->GetPrimitives();
                      break;
-
+                  case kFH_InsertGObjects:
+                       fHCanvas->InsertGObjects();
+                     break;
+                  case kFH_ExtractGObjects:
+                       fHCanvas->ExtractGObjects();
+                     break;
                   case    kFH_Portrait:
                      if(fHistPresent)
                         fHistPresent->DinA4Page(0);                    
@@ -1556,6 +1563,8 @@ void HandleMenus::BuildMenus()
 //   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write objects to file",  kFH_WritePrim);
+   	fEditMenu->AddEntry("Extracts objects as macro",  kFH_ExtractGObjects);
+   	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
 //   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
      
 //   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
