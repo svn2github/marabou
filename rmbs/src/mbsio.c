@@ -805,7 +805,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	} else if (mbs->evtno == 1 && bh->h_begin == 1) {
 		mbs->evtpt = mbs->bufpt + sizeof(s_bufhe);
 		eh = (s_evhe *) mbs->evtpt;
-		bto_get_long(&evl, &eh->l_dlen, 1, bo);
+		bto_get_int32(&evl, &eh->l_dlen, 1, bo);
 		mbs->evtpt += evl * sizeof(unsigned short) + sizeof(s_evhe);
 		mbs->evtno++;
 	} else {
@@ -818,9 +818,9 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 
 	if (mbs->evtno == bh->l_evt && bh->h_end == 1) {
 		evl = bh->l_free[1];
-		bto_get_long(&frag1, &eh->l_dlen, 1, bo);
+		bto_get_int32(&frag1, &eh->l_dlen, 1, bo);
 	} else {
-		bto_get_long(&evl, &eh->l_dlen, 1, bo);
+		bto_get_int32(&evl, &eh->l_dlen, 1, bo);
 		frag1 = evl;
 	}
 
@@ -839,7 +839,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	memcpy(mbs->evt_data, mbs->evtpt, frag1);
 
 	eh = (s_evhe *) mbs->evt_data;
-	bto_get_long(&etype, &eh->i_subtype, 1, bo);
+	bto_get_int32(&etype, &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 	etype = (mbs->evttype)->type;
@@ -875,7 +875,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		mbs->evtpt = mbs->bufpt + sizeof(s_bufhe);
 		mbs->evtno = 1;
 		eh = (s_evhe *) mbs->evtpt;
-		bto_get_long(&frag2, &eh->l_dlen, 1, bo);
+		bto_get_int32(&frag2, &eh->l_dlen, 1, bo);
 		frag2 *= sizeof(unsigned short);
 
 		memcpy(mbs->evt_data + frag1, mbs->evtpt + sizeof(s_evhe), frag2);
@@ -919,7 +919,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 
 	if (med_out) {
 		eh = eHdr;
-		bto_get_long(&eh->l_dlen, &evlsv, 1, bo);
+		bto_get_int32(&eh->l_dlen, &evlsv, 1, bo);
 		ehs = sizeof(s_vehe);
 		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
@@ -975,7 +975,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	total += bytes_read;
 
 	eh = eHdr;
-	bto_get_long(&evl, &eh->l_dlen, 1, bo);
+	bto_get_int32(&evl, &eh->l_dlen, 1, bo);
 
 	evl = evl * sizeof(unsigned short) + sizeof(s_evhe);
 
@@ -1001,7 +1001,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	total += bytes_read;
 
 	eh = (s_evhe *) mbs->evt_data;
-	bto_get_long(&etype, &eh->i_subtype, 1, bo);
+	bto_get_int32(&etype, &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 
@@ -1176,7 +1176,7 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 		sstp = (mbs->sevt_otype >> 16) & 0xffff;
 		stp = mbs->sevt_otype & 0xffff;
 		sprintf(loc_errbuf,
-		"?EVTERR-[mbs_next_sevent]- %s (buf %d, evt %d, sevt %d): Not a legal subevent type - [%d, %d]",
+		"?EVTERR-[mbs_next_sdata]- %s (buf %d, evt %d, sevt %d): Not a legal subevent type - [%d, %d]",
 					mbs->device, mbs->cur_bufno, mbs->evtno, mbs->sevtno, stp, sstp);
 		_mbs_output_error();
 	}
@@ -2101,7 +2101,7 @@ unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
 	wc2 = wc * 2;
 	mbs->sevt_wc = wc2;
 	dp = mbs->sevtpt + sizeof(s_veshe);
-	bto_get_long(dp, dp, wc, mbs->byte_order);
+	bto_get_int32(dp, dp, wc, mbs->byte_order);
 
 	if (wc2 <= mbs->sevtsiz) {
 		if (mbs->sevt_data == NULL) mbs->sevt_data = calloc(wc, sizeof(unsigned short));
@@ -2241,10 +2241,10 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	bo_tag = bh->l_free[0];
 	if (bo_tag == 0 && mbs->nof_buffers == 1) {
 		byte_order = BYTE_ORDER_1_TO_1;
-		bto_get_long(&btype, &bh->i_subtype, 1, byte_order);
+		bto_get_int32(&btype, &bh->i_subtype, 1, byte_order);
 		if (btype != MBS_BTYPE_HEADER) {
 			byte_order = BYTE_ORDER_REV;
-			bto_get_long(&btype, &bh->i_subtype, 1, byte_order);
+			bto_get_int32(&btype, &bh->i_subtype, 1, byte_order);
 			if (btype != MBS_BTYPE_HEADER) {
 				sprintf(loc_errbuf,
 "?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#lx",
@@ -2257,7 +2257,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	} else if (bo_tag == 1) {
 		byte_order = BYTE_ORDER_1_TO_1;
 	} else {
-		bto_get_long(&bo_tag, &bh->l_free[0], 1, BYTE_ORDER_REV);
+		bto_get_int32(&bo_tag, &bh->l_free[0], 1, BYTE_ORDER_REV);
 		if (bo_tag == 1) {
 			byte_order = BYTE_ORDER_REV;
 		} else {
@@ -2272,7 +2272,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 
 	mbs->byte_order = byte_order;
 
-	bto_get_long(&btype, &bh->i_subtype, 1, byte_order);
+	bto_get_int32(&btype, &bh->i_subtype, 1, byte_order);
 	mbs->buftype = _mbs_check_type(btype, mbs->buftype, buffer_types);
 	btype = (mbs->buftype)->type;
 	if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ABORT) {
@@ -2425,7 +2425,7 @@ void _mbs_copy_fheader(MBSDataIO *mbs) {
 		ipnt = bto_get_string(fh->filhe_run, ipnt, 66, bo);
 		ipnt = bto_get_short(&fh->filhe_exp_l, ipnt, 1, bo);
 		ipnt = bto_get_string(fh->filhe_exp, ipnt, 66, bo);
-		ipnt = bto_get_long(&fh->filhe_lines, ipnt, 1, bo);
+		ipnt = bto_get_int32(&fh->filhe_lines, ipnt, 1, bo);
 		cmt = fh->s_strings;
 		for (i = 0; i < fh->filhe_lines; i++, cmt++) {
 			ipnt = bto_get_short(&cmt->string_l, ipnt, 1, bo);
@@ -2455,11 +2455,11 @@ void _mbs_convert_bheader(MBSDataIO *mbs) {
 
 	bh = (s_bufhe *) (mbs->poolpt)->data;
 
-	ipnt = bto_get_long(&bh->l_dlen, &bh->l_dlen, 1, bo);
+	ipnt = bto_get_int32(&bh->l_dlen, &bh->l_dlen, 1, bo);
 	ipnt = bto_get_short(&bh->i_subtype, ipnt, 2, bo);
 	ipnt = bto_get_short(&bh->h_begin, ipnt, 1, bo);
 	ipnt = bto_get_short(&bh->i_used, ipnt, 1, bo);
-	ipnt = bto_get_long(&bh->l_buf, ipnt, 9, bo);
+	ipnt = bto_get_int32(&bh->l_buf, ipnt, 9, bo);
 }
 
 void _mbs_convert_eheader(MBSDataIO *mbs) {
@@ -2483,10 +2483,10 @@ void _mbs_convert_eheader(MBSDataIO *mbs) {
 
 	eh = (s_vehe *) mbs->evt_data;
 
-	ipnt = bto_get_long(&eh->l_dlen, &eh->l_dlen, 1, bo);
+	ipnt = bto_get_int32(&eh->l_dlen, &eh->l_dlen, 1, bo);
 	ipnt = bto_get_short(&eh->i_subtype, ipnt, 2, bo);
 	ipnt = bto_get_short(&eh->i_trigger, ipnt, 2, bo);
-	ipnt = bto_get_long(&eh->l_count, ipnt, 1, bo);
+	ipnt = bto_get_int32(&eh->l_count, ipnt, 1, bo);
 }
 
 void _mbs_convert_sheader(MBSDataIO *mbs) {
@@ -2510,7 +2510,7 @@ void _mbs_convert_sheader(MBSDataIO *mbs) {
 
 	seh = (s_veshe *) mbs->sevtpt;
 
-	ipnt = bto_get_long(&seh->l_dlen, &seh->l_dlen, 1, bo);
+	ipnt = bto_get_int32(&seh->l_dlen, &seh->l_dlen, 1, bo);
 	ipnt = bto_get_short(&seh->i_subtype, ipnt, 2, bo);
 	ipnt = bto_get_short(&seh->h_control, ipnt, 2, bo);
 	mbs->sevt_otype = (seh->i_subtype << 16) | seh->i_type;
@@ -2699,7 +2699,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	if (infoWord == 1) {
 		info->is_swapped = FALSE;
 	} else {
-		bto_get_long(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
 		if (swInfoWord == 1) {
 			info->is_swapped = TRUE;
 		} else {
@@ -2711,7 +2711,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
-		bto_get_long(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_size = swInfoWord;
 	} else {
 		info->buf_size = infoWord;
@@ -2719,7 +2719,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
-		bto_get_long(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_p_stream = swInfoWord;
 	} else {
 		info->buf_p_stream = infoWord;
@@ -2727,7 +2727,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
-		bto_get_long(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
 		info->nof_streams = swInfoWord;
 	} else {
 		info->nof_streams = infoWord;

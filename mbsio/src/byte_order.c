@@ -28,9 +28,9 @@ static char sccs_id[] = "%W%";
 /*BIBLIOTHEKSFUNKTION*********************************************************
 NAME
 	bto_get_short
-	bto_get_long
+	bto_get_int32
 	bto_get_string
-	bto_put_long
+	bto_put_int32
 AUTOR
 	R. Lutter
 FUNKTION
@@ -42,7 +42,7 @@ AUFRUF
 	int cnt;
 	int bytord;
 
-.	char *bto_get_long(out, in, cnt, bytord)
+.	char *bto_get_int32(out, in, cnt, bytord)
 	long *out;
 	char *in;
 	int cnt;
@@ -54,7 +54,7 @@ AUFRUF
 	int cnt;
 	int bytord;
 
-.	char *bto_put_long(out, in, cnt, bytord)
+.	char *bto_put_int32(out, in, cnt, bytord)
 	long *out;
 	char *in;
 	int cnt;
@@ -118,9 +118,9 @@ int bytord;
 	}
 }
 
-char *bto_get_long(out, in, cnt, bytord)
+char *bto_get_int32(out, in, cnt, bytord)
 
-long *out;
+int *out;
 char *in;
 int cnt;
 int bytord;
@@ -128,7 +128,7 @@ int bytord;
 {
 	register int i;
 	union x {
-		long l;
+		int l;
 		char b[4];
 	} x;
 
@@ -224,9 +224,9 @@ int bytord;
 	}
 }
 
-char *bto_put_long(out, in, cnt, bytord)
+char *bto_put_int32(out, in, cnt, bytord)
 
-long *out;
+int *out;
 char *in;
 int cnt;
 int bytord;
@@ -234,7 +234,7 @@ int bytord;
 {
 	register int i;
 	union x {
-		long l;
+		int l;
 		char b[4];
 	} x;
 
