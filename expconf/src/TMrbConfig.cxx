@@ -4281,6 +4281,24 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 		return(kFALSE);
 	}
 
+	TString ldLibraryPath = gSystem->Getenv("LD_LIBRARY_PATH");
+	TString libPath = gSystem->ExpandPathName(userPath.Data());
+	if (!ldLibraryPath.Contains(libPath.Data())) {
+		gMrbLog->Err()	<< libPath << " is missing in your library path" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+		gMrbLog->Err()	<< endl
+						<< "                      Execute command" << endl
+						<< "                      ==> "
+						<< setblue
+						<< "export LD_LIBRARY_PATH="
+						<< libPath
+						<< ":$LD_LIBRARY_PATH" << endl
+						<< setred
+						<< "                      or add it to your profile permanently" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+		return(kFALSE);
+	}
+
 	TString libSo = userLib;
 	userLib = userLib(3, userLib.Length() - 6);
 
