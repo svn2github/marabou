@@ -440,15 +440,14 @@ class TUsrHitBuffer : public TObject {
    		fHits = NULL;
 
  //  		fHits = new TClonesArray("TUsrHit", fNofEntries);
-   		cout << "ctor TUsrHitBuffer, no new TClonesArray: " << this << endl;
-		};
-		~TUsrHitBuffer() {
-         cout << "~~~~~~dtor TUsrHitBuffer " << this << endl;
-         if (fHits) delete fHits;
-      };										// default dtor
+};
 
-		inline void SetName(const Char_t * BufferName) { };
-		inline const Char_t * GetName() const { return "xxxx"; };
+		virtual ~TUsrHitBuffer() {
+			if (fHits) delete fHits;
+		};										// default dtor
+
+		inline void SetName(const Char_t * BufferName) { fBufName = BufferName; };
+		inline const Char_t * GetName() const { return fBufName.Data(); };
 
 		Int_t AllocClonesArray(Int_t NofEntries, Int_t HighWater);	// allocate TClonesArray to store hits
 
@@ -480,7 +479,7 @@ class TUsrHitBuffer : public TObject {
 		inline void Print(Int_t Begin = 0, Int_t End = -1) const { Print(cout, Begin, End); };
 		
 	protected:
-//		TString fBufName;						// buffer name
+		TString fBufName;						// buffer name
 		Int_t fNofEntries;				   // max number of entries
 		Int_t fNofHits; 						// current number of hits
 		Int_t fOffset;							// [obsolete, for compatibility reasons only]

@@ -3241,7 +3241,6 @@ Int_t TUsrHitBuffer::AllocClonesArray(Int_t NofEntries, Int_t HighWater) {
 	fOffset = 0;		// no longer in use -> see class TUsrHBX
 	fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater;
 	fHits = new TClonesArray("TUsrHit", NofEntries);
-   cout << "AllocClonesArray, NofEntries: " << NofEntries << endl;
 	this->Reset();
 	return(fNofEntries);
 }
