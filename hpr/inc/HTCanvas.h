@@ -19,6 +19,7 @@
 #include "TGMenu.h"
 #include "TGStatusBar.h"
 #include "TRootCanvas.h"
+#include "HprEditCommands.h"
 
 #include <iostream>
 
@@ -41,7 +42,8 @@ private:
    TGraph         * fGraph;         //! dont stream
    HTimer         * fTimer;         //! dont stream
    TRootCanvas    * fRootCanvas;    //! dont stream
-   HandleMenus    * fHandleMenus;      //! dont stream
+   HandleMenus    * fHandleMenus;   //! dont stream
+   HprEditCommands * fEditCommands; //! dont stream
    TList          * fGObjectGroups;      // compound graphic objects
    
    Double_t       fEditGridX;
@@ -54,6 +56,8 @@ private:
    Double_t       fMouseY;
    Bool_t         fGetMouse;
    Bool_t         fCommonRotate;
+   UInt_t         fOrigWw;
+   UInt_t         fOrigWh;
 
    void Build();
 //
@@ -80,6 +84,7 @@ public:
    void ClearFitHist(){fFitHist = 0;};
    void ClearHistPresent(){fHistPresent = 0;};
    void SetLog(Int_t state);
+   void     InitEditCommands();
    Double_t GetEditGridX() {return fEditGridX;};
    Double_t GetEditGridY() {return fEditGridY;};
    Double_t GetVisibleGridX() {return fVisibleGridX;};
@@ -97,8 +102,8 @@ public:
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
-   void    DrawHist();
-   void    DrawGraph();
+   void    InsertHist();
+   void    InsertGraph();
    void    InsertImage();
    void    InsertAxis();
    void    WritePrimitives();
@@ -111,6 +116,12 @@ public:
    void    ShowGallery();
    void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
    void    Latex2Root(Bool_t);
+   void    Latex2RootF(){Latex2Root(kTRUE);};
+   void    Latex2RootK(){Latex2Root(kFALSE);};
+   TPad*   GetEmptyPad();
+   void    ZoomIn();
+   void    ZoomOut();
+   void    UnZoom();
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

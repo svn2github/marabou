@@ -29,7 +29,7 @@ namespace std {} using namespace std;
 //_______________________________________________________________________________
 
 enum att_types {kAttDefault, kAttColor, kAttAlign, kAttLineS, kAttFont, 
-                kAttArrow, kAttCheckB, kAttMarker, kAttFillS};
+                kAttArrow, kAttCheckB, kAttMarker, kAttFillS, kAttRadioB};
 
 
 void AddObjString(Int_t val, TList * list, Int_t type = 0); 

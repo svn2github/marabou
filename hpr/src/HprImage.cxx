@@ -1,11 +1,8 @@
 #include "TPad.h"
 #include "TSystem.h"
 #include <fstream>
-#include <iostream>
 
 #include "HprImage.h"
-
-namespace std {} using namespace std;
 
 ClassImp(HprImage)
 //_________________________________________________________________________
@@ -13,8 +10,8 @@ ClassImp(HprImage)
 // This class puts a file into a TNamed object, this allows 
 // the contents of tke file to written to a root file and retrieved by name
 //_________________________________________________________________________
-HprImage::HprImage(const Char_t * fname) :
-         TNamed(gSystem->BaseName(fname), "") {
+HprImage::HprImage(const Char_t * fname, TPad * pad) :
+          TNamed(gSystem->BaseName(fname), ""), fPad(pad){
 
    Long_t id, size, flags, modtime;
 //   cout << "norm ctor HprImage: " << fname << endl;
@@ -39,11 +36,38 @@ HprImage::HprImage(const Char_t * fname) :
       fIsGood = kTRUE;
       gPad->Modified(kTRUE);
    }
+//   fPad = pad;
+   gROOT->GetListOfCleanups()->Add(this);
+};
+//______________________________________________
+
+HprImage::~HprImage()
+{
+//   if (fPad) {  
+//      delete fPad;
+//   }
+   fPad = 0;
+   if(fBuffer)delete fBuffer;
+   fBuffer = 0; 
+};
+//______________________________________________
+
+void HprImage:: RecursiveRemove(TObject * obj) {
+//   cout << "HprImage::RecursiveRemove: " 
+//        << this << " " << fPad << " " << fImage << " " << obj <<  endl;
+   if (obj == fImage) {
+      gROOT->GetListOfCleanups()->Remove(this);
+      if (fPad) {
+        fPad->GetListOfPrimitives()->Remove(this);
+        fPad->GetListOfPrimitives()->Delete("slow");
+      }
+//      cout << "HprImage::RecursiveRemove: delete this " <<  endl;
+      delete this;
+   }
 };
 //_________________________________________________________________________
 
 Int_t HprImage::ToFile(const Char_t * fname){
-//______________________________________________
 
 // Write buffer contents to a file with name fname
 //   cout << "HprImage::ToFile(): " << fname << endl;

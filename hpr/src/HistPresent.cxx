@@ -1912,7 +1912,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
 //  Bool_t ok;
 
    TString fname = obj->String();
-	cout << "GetSelHistAt |" << fname << "|" << endl;
+//	cout << "GetSelHistAt |" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
    if (pp <= 0) {cout << "No file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
@@ -1937,7 +1937,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
 		newname += "_";
 		newname += hname.Data();
 	   hist = (TH1*)gROOT->GetList()->FindObject(newname);
-      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
+//      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
 	}
 //   if (hist) hist->Print();
    if (hist && (fname == "Memory" || try_memory)) return hist;
@@ -3367,8 +3367,8 @@ tryagain:
    Double_t h = gPad->GetWh()*gPad->GetAbsHNDC();
    YRange = XRange*h/w;
 
-   cout << "XRange, YRange " << XRange << " " << YRange << endl;
-   c1->SetFixedAspectRatio();
+//   cout << "XRange, YRange " << XRange << " " << YRange << endl;
+//   c1->SetFixedAspectRatio();
    c1->Range(xmin,ymin,XRange,YRange); 
 
    GetCanvasList()->Add(c1);

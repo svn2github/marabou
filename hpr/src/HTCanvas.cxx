@@ -113,6 +113,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fEditGridY = 0;
    fVisibleGridX = 0;
    fVisibleGridY = 0;
+   fEditCommands = NULL;
    fGObjectGroups = NULL; 
    fUseEditGrid = kFALSE;
    fCommonRotate= kFALSE;
@@ -127,8 +128,10 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    if (temp == 0) fUseEditGrid = kFALSE;
    else  fUseEditGrid = kTRUE;
    
-   if (flag & HTCanvas::kIsAEditorPage) SetBit(HTCanvas::kIsAEditorPage);
-   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);         
+   if (flag & HTCanvas::kIsAEditorPage) {
+      SetBit(HTCanvas::kIsAEditorPage);
+   }
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
   fHandleMenus->BuildMenus(); 
 //   ToggleEventStatus();
@@ -141,6 +144,9 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    // Popup canvas
    fCanvasImp->Show();
    SetWindowSize(ww , wh );
+   if (TestBit(kIsAEditorPage)) InitEditCommands();        
+   fOrigWw = GetWw();
+   fOrigWh = GetWh();
 
 //   if(fHistPresent && fFitHist)fHistPresent->GetCanvasList()->Add(this);
 //   cout << "ctor HTCanvas: " << this << " " << name << endl;
@@ -151,7 +157,7 @@ HTCanvas::~HTCanvas()
 //   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
    if ((TVirtualPadEditor::GetPadEditor(kFALSE) != 0))
       TVirtualPadEditor::Terminate();
-
+   if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;
       fHandleMenus = 0;

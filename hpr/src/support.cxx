@@ -47,6 +47,10 @@ void AddObjString(Int_t val, TList * list, Int_t type)
       s+= "CheckButton_";
       if (val == 0) s += "Up";
       else          s += "Down";
+   } else if (type == kAttRadioB) {
+      s+= "RadioButton_";
+      if (val == 0) s += "Up";
+      else          s += "Down";
    } else {
       if (type == kAttColor) {
          s+= "ColorSelect_";        
@@ -108,7 +112,7 @@ Int_t GetInt(TList * list, Int_t pos)
    Bool_t iscol = kFALSE;
    Bool_t isfont = kFALSE;
    s = ((TObjString*)list->At(pos))->GetString();
-   if (s.BeginsWith("CheckButton_")) {
+   if (s.BeginsWith("CheckButton_") || s.BeginsWith("RadioButton_")) {
       if (s.EndsWith("Down")) val = 1;
       else                    val = 0;
    } else {

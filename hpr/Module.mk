@@ -31,9 +31,10 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
   					$(HPRDIRI)/FhPeak.h \
 					$(HPRDIRI)/FhContour.h \
                $(HPRDIRI)/FhRegion.h \
-               $(HPRDIRI)/GroupOfGObjects.h \
                $(HPRDIRI)/HprImage.h \
- 					$(HPRDIRI)/EditMarker.h 
+               $(HPRDIRI)/GroupOfGObjects.h \
+ 					$(HPRDIRI)/EditMarker.h \
+ 					$(HPRDIRI)/HprEditCommands.h 
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d
@@ -64,7 +65,8 @@ $(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
 		@echo "OHPRLIBS: $(OHPRLIBS)"
 #		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(MRBLIBS) $(GLIBS) \
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(GLIBS)  -lGed \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) \
+            $(ROOTSYS)/lib/libGed.so $(GLIBS) \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)

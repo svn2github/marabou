@@ -108,6 +108,62 @@ void SetAllTextSizes(TList *list, Double_t size, Bool_t abs)
 }
 //______________________________________________________________________________
 
+void HTCanvas::InitEditCommands()
+{
+   Int_t win_width = 160;
+   TList * labels = new TList;
+   TList * methods = new TList;
+
+   labels->Add(new TObjString("Insert image (gif, jpg"));
+   labels->Add(new TObjString("Insert histogram "));
+   labels->Add(new TObjString("Insert graph"));
+   labels->Add(new TObjString("Insert text (Latex) from file"));
+   labels->Add(new TObjString("Text (Latex) from keyboard"));
+   labels->Add(new TObjString("Insert compound object"));
+   labels->Add(new TObjString("Draw an axis"));
+   labels->Add(new TObjString("Zoom In"));
+   labels->Add(new TObjString("Zoom Out"));
+   labels->Add(new TObjString("UnZoom"));
+
+   methods->Add(new TObjString("InsertImage()"));
+   methods->Add(new TObjString("InsertHist()"));
+   methods->Add(new TObjString("InsertGraph()"));
+   methods->Add(new TObjString("Latex2RootF()"));
+   methods->Add(new TObjString("Latex2RootK()"));
+   methods->Add(new TObjString("InsertGObjects()"));
+   methods->Add(new TObjString("InsertAxis()"));
+   methods->Add(new TObjString("ZoomIn()"));
+   methods->Add(new TObjString("ZoomOut()"));
+   methods->Add(new TObjString("UnZoom()"));
+   fEditCommands = 
+   new HprEditCommands(fRootCanvas, win_width, this, this->ClassName(),
+                       labels, methods);
+}
+//______________________________________________________________________________
+
+void HTCanvas::ZoomIn()
+{
+   SetCanvasSize(GetWw() << 1, GetWh() << 1);
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::ZoomOut()
+{
+   if (GetWw() > fOrigWw) {
+      SetCanvasSize(GetWw() >> 1, GetWh() >> 1);
+      Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::UnZoom()
+{
+      SetCanvasSize(fOrigWw, fOrigWh);
+      Update();
+}
+//______________________________________________________________________________
+
 Double_t HTCanvas::PutOnGridX(Double_t x)
 {
    if (fEditGridX ==  0) return x;
@@ -199,68 +255,149 @@ void HTCanvas::SetVisibilityOfEnclosingCuts(Bool_t visible)
 }
 //______________________________________________________________________________
 
-void HTCanvas::DrawHist()
+void HTCanvas::InsertHist()
 {
    if (!fHistPresent) return;
-   TPad * selected = (TPad *)gROOT->GetSelectedPad();
-   if (selected) {
-      if (GetListOfPrimitives()->Contains(selected)) {
-         if (fHistPresent->fSelectHist->GetSize() != 1) {
-            cout << "select exactly 1 histogram" << endl;
+   TPad* pad = GetEmptyPad();
+   if (pad) {
+     gROOT->SetSelectedPad(pad);
+   } else {
+      cout << "Please create a new Pad in this Canvas" << endl;
+      return;
+   }   
+//      if (GetListOfPrimitives()->Contains(selected)) {
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   static TString fname;
+   static TString gname;
+   TString drawopt;
+
+   row_lab->Add(new TObjString("Name of ROOT file"));
+   row_lab->Add(new TObjString("Name of Histogram"));
+   row_lab->Add(new TObjString("Select hist from Filelist"));
+   row_lab->Add(new TObjString("Scale factor for labels titles etc."));
+   row_lab->Add(new TObjString("Drawing option"));
+   
+   static Int_t select_from_list = 1;
+   static Double_t scale = 1;
+ 
+   AddObjString(fname.Data(), values);
+   AddObjString(gname.Data(), values);
+   AddObjString(select_from_list, values, kAttCheckB);
+   AddObjString(scale, values);
+   AddObjString(drawopt.Data(), values);
+   
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+
+   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+   
+   fname    = GetText(values,   vp++);
+   gname    = GetText(values,   vp++);
+   select_from_list = GetInt(values,   vp++);
+   scale    = GetDouble(values,   vp++);
+   drawopt  = GetText(values,   vp++);
+   TH1* hist = 0;
+   
+   if (select_from_list > 0) {
+      if (!fHistPresent) {
+         cout << "No HistPresent" << endl;
+         return;
+      }
+      if (fHistPresent->fSelectHist->GetSize() != 1) {
+         cout << "Please select exactly 1 histogram" << endl;
+         return;
+      } else {
+         hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
+      }
+   } else {
+      if (fname.Length() > 0 && gname.Length()) {
+         TFile * rfile = new TFile(fname.Data());
+         if (!rfile->IsOpen()) {
+            cout << "Cant open file: " << fname.Data() << endl;
+            return;
+         }
+         hist = (TH1*)rfile->Get(gname.Data());
+         if (!hist) {
+            cout << "Cant find graph: " << gname.Data() << endl;
             return;
          } else {
-            TH1* hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
-            if (hist) {
-//               hist->Print();
-               selected->cd();
-               hist->Draw();
-               TString drawopt;
-               if (hist->GetDimension() == 1) {
-                  if (fHistPresent->fShowContour)
-                     drawopt = "";
-                  if (fHistPresent->fShowErrors)
-                     drawopt += "e1";
-                  if (fHistPresent->fFill1Dim) {
-                     hist->SetFillStyle(1001);
-                     hist->SetFillColor(fHistPresent->f1DimFillColor);
-                  } else
-                     hist->SetFillStyle(0);
-               } else if (hist->GetDimension() == 2) {
-                  drawopt = fHistPresent->fDrawOpt2Dim->Data();
-               }
-               hist->SetOption(drawopt.Data());
-               hist->SetDrawOption(drawopt.Data());
-               selected->Modified();
-            }
+            hist->SetDirectory(gROOT);
          }
-      } else {
-         cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
-      } 
-   } else {
-         cout << "No Pad selected" << endl;
-   } 
-   Update();
-}
-
-//______________________________________________________________________________
-
-void HTCanvas::DrawGraph()
-{
-//   if (!fHistPresent) return;
-   TIter next(this->GetListOfPrimitives());
-   TObject * obj;
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom("TPad")) {
-         TPad* pad = (TPad*)obj;
-         cout << "Pad: " << obj->GetName() << endl;
-         pad->cd(0);
-         gROOT->SetSelectedPad(pad);
-//         ((TPad*)obj)->SetFillStyle(4050);
       }
    }
-   TPad * selected = (TPad *)gROOT->GetSelectedPad();
-   if (!selected) {
-      cout << "Please create a Pad in this Canvas" << endl;
+   if (!hist) return;
+   TString hn = hist->GetName();
+   if (hn.Index(";") > 0) { 
+      hn.Resize(hn.Index(";"));
+      hist->SetName(hn);
+   }
+   pad->cd();
+   if (TMath::Abs(scale -1) > 0.0001) {
+      TAxis * a = hist->GetXaxis();
+      if (a) {
+         a->SetLabelSize( scale * a->GetLabelSize());
+         a->SetTickLength( scale * a->GetTickLength());
+      }
+      a = hist->GetYaxis();
+      if (a) {
+         a->SetLabelSize( scale * a->GetLabelSize());
+         a->SetTickLength( scale * a->GetTickLength());
+      }
+   }
+   hist->Draw(drawopt.Data());
+   if (fHistPresent && drawopt.Length() == 0) {
+      if (hist->GetDimension() == 1) {
+         if (fHistPresent->fShowContour)
+            drawopt = "";
+         if (fHistPresent->fShowErrors)
+            drawopt += "e1";
+         if (fHistPresent->fFill1Dim) {
+            hist->SetFillStyle(1001);
+            hist->SetFillColor(fHistPresent->f1DimFillColor);
+         } else
+            hist->SetFillStyle(0);
+      } else if (hist->GetDimension() == 2) {
+         drawopt = fHistPresent->fDrawOpt2Dim->Data();
+      }
+      hist->SetOption(drawopt.Data());
+      hist->SetDrawOption(drawopt.Data());
+      pad->Modified();
+   }
+   Update();
+}
+//______________________________________________________________________________
+
+TPad*  HTCanvas::GetEmptyPad()
+{
+   TIter next(this->GetListOfPrimitives());
+   TObject * obj;
+   TPad* pad  = NULL;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TPad")) {
+         pad = (TPad*)obj;
+         if (pad->GetListOfPrimitives()->GetSize() == 0) {
+//            cout << "Pad: " << obj->GetName() << endl;
+            pad->cd(0);
+            gROOT->SetSelectedPad(pad);
+            return pad;
+         }
+      }
+   }
+   return NULL;
+}
+//______________________________________________________________________________
+
+void HTCanvas::InsertGraph()
+{
+   TPad* pad = GetEmptyPad();
+   if (pad) {
+     gROOT->SetSelectedPad(pad);
+   } else {
+      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
 //      if (GetListOfPrimitives()->Contains(selected)) {
@@ -330,7 +467,7 @@ void HTCanvas::DrawGraph()
    if (!graph) return;
 
 //   graph->Print();
-   selected->cd();
+   pad->cd();
    if (TMath::Abs(scale -1) > 0.0001) {
       TAxis * a = graph->GetXaxis();
       if (a) {
@@ -344,7 +481,7 @@ void HTCanvas::DrawGraph()
       }
    }
    graph->Draw(goption.Data());
-   selected->Modified();
+   pad->Modified();
    Update();
 }
 
@@ -352,47 +489,93 @@ void HTCanvas::DrawGraph()
 
 void HTCanvas::InsertImage()
 {
-   TPad * pad = (TPad *)gROOT->GetSelectedPad();
-   cout << "this, pad: " << this << " " << pad << endl;
-   if (pad && GetListOfPrimitives()->Contains(pad)) {
-      Bool_t ok;
-      TString name = "picture.jpg";
-      name =
-         GetString("Picture name", name.Data(), &ok,
-                 (TGWindow*)fRootCanvas);
-      if (!ok) return;
+   TPad* pad = GetEmptyPad();
+   if (pad) {
+     gROOT->SetSelectedPad(pad);
+   } else {
+      cout << "Please create a new Pad in this Canvas" << endl;
+      return;
+   }   
+   const char hist_file[] = {"images_hist.txt"};
+   Bool_t ok;
+   TString name = "picture.jpg";
+   Int_t itemwidth = 320;
+   TList complist;
+
+   const char *fname;
+   void* dirp=gSystem->OpenDirectory(".");
+   TRegexp dotGif = "\\.gif$";   
+   TRegexp dotJpg = "\\.jpg$"; 
+   while ( (fname=gSystem->GetDirEntry(dirp)) ) {
+      TString sname(fname);
+      if (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0) {
+         cout << fname << endl;
+         complist.Add(new TObjString(fname));
+      }
+   }
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+
+   row_lab->Add(new TObjString("Preserve defined height"));
+   row_lab->Add(new TObjString("Preserve defined width"));
+   row_lab->Add(new TObjString("Preserve width and height"));
+   
+   static Int_t fix_h = 0;
+   static Int_t fix_w = 1;
+   static Int_t fix_wh = 0;
+ 
+   AddObjString(fix_h, values, kAttRadioB);
+   AddObjString(fix_w, values, kAttRadioB);
+   AddObjString(fix_wh, values,kAttRadioB);
+
+    ok = GetStringExt("Picture name", &name, itemwidth, fRootCanvas,
+                   hist_file, &complist, row_lab, values);
+   if (!ok) return;
 
 //      TImage *img = TImage::Open(name.Data());
-      HprImage * hprimg = new HprImage(name.Data());
-      TImage *img = hprimg->GetImage();
-      if (!img) {
-         cout << "Could not create an image... exit" << endl;
-         return;
-      }
-
-      cout << "InsertImage(): " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
-           <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
-      Double_t img_width = (Double_t )img->GetWidth();
-      Double_t img_height = (Double_t )img->GetHeight();
-      cout << "Image size, X,Y: " << img_width
-                           << " " << img_height << endl;
-      Double_t aspect_ratio = img_height * this->GetXsizeReal() 
-                            / (img_width* this->GetYsizeReal());
-
-      pad->SetPad(pad->GetXlowNDC(),pad->GetYlowNDC(),
-                  pad->GetXlowNDC() + pad->GetWNDC(),
-                  pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
-
-      pad->SetTopMargin(.02);
-      pad->SetBottomMargin(0.02);
-      pad->SetLeftMargin(0.02);
-      pad->SetRightMargin(0.02);
-      hprimg->Draw("xxx");
-//      hprimg->Paint();
-      Update();
-   } else {
-      cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
+   HprImage * hprimg = new HprImage(name.Data(), pad);
+   TImage *img = hprimg->GetImage();
+   if (!img) {
+      cout << "Could not create an image... exit" << endl;
+      return;
    }
+   Int_t vp = 0;
+   
+   fix_h = GetInt(values,   vp++);
+   fix_w = GetInt(values,   vp++);
+   fix_wh = GetInt(values,  vp++);
+
+   cout << "InsertImage(): " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
+        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
+   Double_t img_width = (Double_t )img->GetWidth();
+   Double_t img_height = (Double_t )img->GetHeight();
+   cout << "Image size, X,Y: " << img_width
+                        << " " << img_height << endl;
+//   Double_t aspect_ratio = img_height * this->GetXsizeReal() 
+//                         / (img_width* this->GetYsizeReal());
+   Double_t aspect_ratio = img_height  / img_width;
+
+   if (fix_w) {  
+      pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
+                  pad->GetXlowNDC() + pad->GetWNDC(),
+                  pad->GetYlowNDC() + pad->GetHNDC() * aspect_ratio);
+   cout << "InsertImage()fix_w: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
+        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
+   } else if (fix_h) {  
+      pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
+                  pad->GetXlowNDC() + pad->GetWNDC() / aspect_ratio,
+                  pad->GetYlowNDC() + pad->GetHNDC());
+   cout << "InsertImage()fix_h: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
+        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
+   }
+
+   pad->SetTopMargin(.02);
+   pad->SetBottomMargin(0.02);
+   pad->SetLeftMargin(0.02);
+   pad->SetRightMargin(0.02);
+   hprimg->Draw("xxx");
+//      hprimg->Paint();
+   Update();
 }
 
 //______________________________________________________________________________
@@ -431,7 +614,7 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
    }
    static Int_t serNr = 1;
    Bool_t ok;
-   TString name = "p";
+   TString name = "pict_";
    name += serNr;
    serNr++;
 tryagain:
@@ -1330,7 +1513,7 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    Bool_t ok; 
    Int_t itemwidth = 320;
 
-   ok = GetStringExt("Get Params", tpointer, itemwidth, fRootCanvas,
+   ok = GetStringExt("Text (latex) string", tpointer, itemwidth, fRootCanvas,
                       history, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;

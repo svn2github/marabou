@@ -282,9 +282,16 @@ static const char *gOpenTypes[] = { "ROOT files",   "*.root",
 
 static const char *gSaveAsTypes[] = { "PostScript",   "*.ps",
                                       "Encapsulated PostScript", "*.eps",
-                                      "Gif files",    "*.gif",
-                                      "Macro files",  "*.C",
+                                      "PDF",          "*.pdf",
+                                      "SVG",          "*.svg",
+                                      "GIF",          "*.gif",
+                                      "ROOT macros",  "*.C",
                                       "ROOT files",   "*.root",
+                                      "XML",          "*.xml",
+                                      "PNG",          "*.png",
+                                      "XPM",          "*.xpm",
+                                      "JPEG",         "*.jpg",
+                                      "TIFF",         "*.tiff",
                                       "All files",    "*",
                                       0,              0 };
 
@@ -356,20 +363,46 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFileSaveAs:
                      {
+                        static TString dir(".");
+                        static Int_t typeidx = 0;
                         TGFileInfo fi;
-                        fi.fFileTypes = (const char **) gSaveAsTypes;
-                        new TGFileDialog(fRootCanvas->GetParent(), fRootCanvas, kFDSave,&fi);
+                        fi.fFileTypes   = gSaveAsTypes;
+                        fi.fIniDir      = StrDup(dir);
+                        fi.fFileTypeIdx = typeidx;
+                        new TGFileDialog(fClient->GetDefaultRoot(), fRootCanvas, kFDSave, &fi);
                         if (!fi.fFilename) return kTRUE;
-                        if (strstr(fi.fFilename, ".root") ||
-                            strstr(fi.fFilename, ".ps")   ||
-                            strstr(fi.fFilename, ".eps")  ||
-                            strstr(fi.fFilename, ".gif"))
-                           fHCanvas->SaveAs(fi.fFilename);
-                        else if (strstr(fi.fFilename, ".C"))
-                           fHCanvas->SaveSource(fi.fFilename);
-                        else
-                           Warning("ProcessMessage", "file cannot be save with this extension (%s)", fi.fFilename);
-                        delete [] fi.fFilename;
+                        Bool_t  appendedType = kFALSE;
+                        TString fn = fi.fFilename;
+                        TString ft = fi.fFileTypes[fi.fFileTypeIdx+1];
+                        dir     = fi.fIniDir;
+                        typeidx = fi.fFileTypeIdx;
+again:
+                        if (fn.EndsWith(".root") ||
+                            fn.EndsWith(".ps")   ||
+                            fn.EndsWith(".eps")  ||
+                            fn.EndsWith(".pdf")  ||
+                            fn.EndsWith(".svg")  ||
+                            fn.EndsWith(".gif")  ||
+                            fn.EndsWith(".xml")  ||
+                            fn.EndsWith(".xpm")  ||
+                            fn.EndsWith(".jpg")  ||
+                            fn.EndsWith(".png")  ||
+                            fn.EndsWith(".tiff")) {
+                           fHCanvas->RemoveEditGrid();
+                           gSystem->Sleep(60); // give X server time to refresh
+                           fHCanvas->SaveAs(fn);
+                        } else if (fn.EndsWith(".C"))
+                           fHCanvas->SaveSource(fn);
+                        else {
+                           if (!appendedType) {
+                              if (ft.Index(".") != kNPOS) {
+                                 fn += ft(ft.Index("."), ft.Length());
+                                 appendedType = kTRUE;
+                                 goto again;
+                              }
+                           }
+                           Warning("ProcessMessage", "file %s cannot be saved with this extension", fi.fFilename);
+                        }
                      }
                      break;
                   case kFileSaveAsRoot:
@@ -600,10 +633,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
 
                   case kFH_DrawHist:
-                        fHCanvas->DrawHist();
+                        fHCanvas->InsertHist();
                      break;
                   case kFH_DrawGraph:
-                        fHCanvas->DrawGraph();
+                        fHCanvas->InsertGraph();
                      break;
 
                   case kFH_InsertLatex:
@@ -626,7 +659,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                         fHCanvas->GetPrimitives();
                      break;
                   case kFH_InsertGObjects:
-                       fHCanvas->InsertGObjects(NULL);
+                       fHCanvas->InsertGObjects();
                      break;
                   case kFH_InsertGObjectsG:
                      {
@@ -1437,7 +1470,7 @@ void HandleMenus::BuildMenus()
    fFileMenu->AddEntry("Picture_to_Printer (as it is)",  kFHCanvas2LP);
    fFileMenu->AddEntry("Picture_to_PS-File (white bg)",  kFHPictToPSplain);
    fFileMenu->AddEntry("Picture_to_PS-File (as it is)",  kFHPictToPS);
-//   fFileMenu->AddEntry("Save As canvas.ps",   kFileSaveAsPS);
+   fFileMenu->AddEntry("Save As....",   kFileSaveAs);
    fFileMenu->AddEntry("Save As .eps",  kFileSaveAsEPS);
    fFileMenu->AddEntry("Save As .pdf",  kFileSaveAsPDF);
    fFileMenu->AddEntry("Save As .gif",  kFileSaveAsGIF);

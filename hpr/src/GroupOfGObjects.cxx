@@ -292,7 +292,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          b->SetY2(yt);
 
       } else {
-         cout << clone->ClassName() << " not yet implemented" << endl;
+//         cout << clone->ClassName() << " not yet implemented" << endl;
          clone = 0;
       }
       if (clone) {
