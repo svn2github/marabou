@@ -134,7 +134,7 @@
 %SHS%					$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
 %SHS%					if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) {
 %SHS%						RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO);
-%SHS%						for (i = 0; i < $nofChannels; i++) RDO_C2M_32();
+%SHS%						RDO_BLT_32($nofChannels);
 %SHS%					} else {
 %SHS%						memset(evt.out32, 0, (32 - $nofChannels) * sizeof(unsigned long));
 %SHS%						evt.out32 += (32 - $nofChannels);
@@ -153,8 +153,8 @@
 %MHS%					RDO_SETUP_VME($moduleName, SIS_3820_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
 %MHS%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MHS%						$mnemoLC_sts = SIS_3820_READ_IRQS($moduleName);
-%MHS%						if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) == 0) break;
-%MHS%						for (i = 0; i < $nofChannels; i++) RDO_C2M_32();
+%MHS%						if (($mnemoLC_sts & SIS_3820_IRQ_B_FIFO_THRESH) != 0) RDO_BLT_32($nofChannels);
+%MHS%						else break;
 %MHS%					}
 %MHS%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * (32 - $nofChannels);
 %MHS%					if ($mnemoLC_hit > 0) {
