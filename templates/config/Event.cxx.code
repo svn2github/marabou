@@ -206,7 +206,6 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 	Int_t nofEntries, nofEvents, nofBytes, nbytes;
 	Int_t startEvent, stopEvent;
 	TString startTime, stopTime;
-	Int_t i;
 	TMrbAnalyze::EMrbRunStatus rsts;
 	Int_t timeStamp;
 
@@ -243,7 +242,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 				}
 			}
 
-			for (i = 0; i < nofEntries; i++) {
+			for (Int_t i = 0; i < nofEntries; i++) {
 				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
 				pthread_mutex_lock(&global_data_mutex);
 				if (!this->IsFakeMode()) nbytes = fTreeIn->GetEvent(i);
@@ -304,7 +303,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 				}
 			}
 
-			for (i = startEvent; i <= stopEvent; i++) {
+			for (Int_t i = startEvent; i <= stopEvent; i++) {
 				if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);
 				pthread_mutex_lock(&global_data_mutex);
 				if (!this->IsFakeMode()) nofBytes += fTreeIn->GetEvent(i);

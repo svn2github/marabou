@@ -55,6 +55,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 
 	TMrbModule * module;
 	TMrbNamedX * id;
+	TString pos;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	

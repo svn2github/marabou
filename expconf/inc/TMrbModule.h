@@ -104,6 +104,8 @@ class TMrbModule : public TNamed {
 
 		virtual inline const Char_t * GetMnemonic() const { return("unknown"); }; 	// module mnemonic (usually 3 to 4 char code)
 
+		inline const Char_t * GetPosition() const { return(fPosition.Data()); };
+
 		inline Int_t GetCrate() const { return(fCrate); };							// return crate number
 		inline Int_t GetSerial() const { return(fSerial); };  	 					// return unique module id
 
@@ -167,6 +169,8 @@ class TMrbModule : public TNamed {
 		Int_t fNofShortsPerChannel; 			// number of 16 bit words per channel
 
 		Int_t fCrate;							// crate number
+
+		TMrbString fPosition;					// crate & addr
 
 		Int_t fRange;							// number of data points
 		Int_t fPointsPerBin;					// points per bin

@@ -36,6 +36,8 @@ void TMrbCamacScaler::Print(ostream & OutStrm, const Char_t * Prefix) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	TString pos;
+
 	OutStrm << endl;
 	OutStrm << Prefix << "Scaler Definition:" << endl;
 	OutStrm << Prefix << "   Name          : " << this->GetName() << endl;

@@ -103,6 +103,7 @@ Bool_t TMrbUct_8904::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 //////////////////////////////////////////////////////////////////////////////
 
 	TString mnemoLC, mnemoUC;
+	TString pos;
 
 	mnemoLC = this->GetMnemonic();
 	mnemoUC = mnemoLC;

@@ -46,8 +46,8 @@ class TMrbCamacChannel : public TMrbModuleChannel {
 
 		~TMrbCamacChannel() {};					// default dtor
 
-		inline const Char_t * GetPosition() const { 	// get B.C.N data
-			TString ca; return(fCNAF.Int2Ascii(ca, kTRUE));
+		inline const Char_t * GetPosition(TString & Position) const { 	// get B.C.N data
+			return(fCNAF.Int2Ascii(Position, kTRUE));
 		};
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacChannel.html&"); };

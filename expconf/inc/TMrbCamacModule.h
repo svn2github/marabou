@@ -49,10 +49,6 @@ class TMrbCamacModule : public TMrbModule {
 
 		~TMrbCamacModule() {};								// default dtor
 
-		inline const Char_t * GetPosition() const {				// get B.C.N data
-			TString ca; return(fCNAF.Int2Ascii(ca, kTRUE));
-		};
-
 		inline Int_t GetCNAF(TMrbCNAF::EMrbCNAF cnaf) const {		// get single cnaf member
 			return(fCNAF.Get(cnaf));
 		};

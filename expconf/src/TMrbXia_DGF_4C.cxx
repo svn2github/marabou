@@ -148,6 +148,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 	TString mnemoLC, mnemoUC;
 	TString moduleNameUC;
 	TString sPath, seg;	
+	TString pos;
 	
 	if (!fCodeTemplates.FindCode(TagIndex)) {
 		gMrbLog->Err()	<< "No code loaded for tag "

@@ -821,6 +821,7 @@ Bool_t TMrbConfig::CheckModuleAddress(TObject * Module) const {
 
 	TMrbCamacModule * camac;
 	TMrbVMEModule * vme;
+	TString pos;
 
 	UInt_t mType;
 	TString cnaf;
@@ -1223,6 +1224,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	TString rdoTemplateFile;
 	TMrbString iniTag;
 	TString prefix;
+
+	TString pos;
 		
 	ofstream rdoStrm;
 
@@ -3807,6 +3810,7 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbCamacScaler * sca;
+	TString pos;
 
 	if (this->DeadTimeToBeWritten()) {
 		cout	<< setred

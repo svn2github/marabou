@@ -83,6 +83,8 @@ TMrbCamacModule::TMrbCamacModule(const Char_t * ModuleName, const Char_t * Modul
 				gMrbConfig->SetMultiBorC(TMrbCNAF::kCnafCrate);
 			}
 
+			fCNAF.Int2Ascii(fPosition, kTRUE);			// module position
+
 			cType = gMrbConfig->GetCrateType(fCrate);
 			if (cType == TMrbConfig::kCrateUnused || cType == TMrbConfig::kCrateCamac) {
 				gMrbConfig->SetCrateType(fCrate, TMrbConfig::kCrateCamac);			// mark camac crate active

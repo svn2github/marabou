@@ -168,8 +168,6 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %LVB%// Keywords:       
 %LVB%//////////////////////////////////////////////////////////////////////////////
 %LVB%
-%LVB%	Int_t i;
-%LVB%
 %LVB%	Tree->GetEntry(0);						// dummy statement to activate branches (?)
 %LVB%
 %LVS%	Tree->SetBranchAddress("$prefix$paramNameLC", &$paramNameLC);	// $sevtNameLC.$paramNameLC

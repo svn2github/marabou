@@ -276,6 +276,7 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, const Char_t * ArgValue)
 	}
 
 	code = (TObjString *) fExpansionBuffer.First();
+	Int_t n = 0;
 	while (code) {
 		code->String().ReplaceAll(ArgName, ArgValue);
 		code = (TObjString *) fExpansionBuffer.After((TObject *) code);

@@ -87,8 +87,6 @@
 %BN%// Keywords:       
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%
-%BN%	Int_t i;
-%BN%
 %BN%// add-one to histograms
 %BP%Bool_t TUsrSevt$sevtNameUC::Fill$evtNameUCHistograms() {
 %BP%//________________________________________________________________[C++ METHOD]
@@ -169,8 +167,6 @@ Bool_t TUsrSevt%%SEVT_NAME_UC%%::AddBranch(TTree * Tree) {
 %LVB%//                 >> Replay mode only <<
 %LVB%// Keywords:       
 %LVB%//////////////////////////////////////////////////////////////////////////////
-%LVB%
-%LVB%	Int_t i;
 %LVB%
 %LVB%	Tree->GetEntry(0);						// dummy statement to activate branches (?)
 %LVB%

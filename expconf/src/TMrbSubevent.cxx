@@ -261,6 +261,8 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 
 	TMrbConfig::EMrbChannelStatus chnStatus;
 
+	TString pos;
+
 	softModFlag = kFALSE;
 	
 	if (ModuleName != NULL) {

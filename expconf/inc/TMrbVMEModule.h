@@ -54,8 +54,6 @@ class TMrbVMEModule : public TMrbModule {
 		inline Int_t GetSegmentSize() const { return(fSegmentSize); };		// segment size
 		inline Int_t GetAddrModifier() const { return(fAddrModifier); };		// addr modifier
 
-		inline const Char_t * GetPosition() const { return(fPosition.Data()); }; 	// crate & addr
-
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, 		// generate readout code
 												TMrbTemplate & Template, const Char_t * Prefix = NULL);
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
@@ -72,8 +70,6 @@ class TMrbVMEModule : public TMrbModule {
 		UInt_t fAddrModifier;				// address modifier
 
 		Int_t fSegmentSize; 				// segment size
-
-		TMrbString fPosition;				// crate & addr
 
 	ClassDef(TMrbVMEModule, 1)		// [Config] Base class for VME modules
 };	
