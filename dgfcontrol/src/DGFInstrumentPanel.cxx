@@ -1240,7 +1240,7 @@ Bool_t DGFInstrumentPanel::ShowModuleSettings() {
 	dgfModule->GetAddr()->PrintParamsToFile(tmpFile.Data());
 	TString cmd;
 	if (editor.CompareTo("nedit") == 0) cmd = "nedit -read ";
-	else								cmd = "xterm -geom 130x80 -sb -e view ";
+	else								cmd = "xterm -geom 100x35 +sb -e view ";
 	cmd += tmpFile;
 	gSystem->Exec(cmd.Data());
 	return(kTRUE);
