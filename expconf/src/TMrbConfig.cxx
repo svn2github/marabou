@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.81 2004-11-05 12:25:26 marabou Exp $       $Id: TMrbConfig.cxx,v 1.81 2004-11-05 12:25:26 marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.82 2004-11-26 09:16:18 marabou Exp $       $Id: TMrbConfig.cxx,v 1.82 2004-11-26 09:16:18 marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -6286,6 +6286,14 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 		mbsSetup->GetEnv()->ReadFile(".mbssetup-localdefs", kEnvChange);
 		gMrbLog->Out() << "[.mbssetup: Merging local defs from file \".mbssetup-localdefs\"]" << endl;
 		gMrbLog->Flush("", "", setblue);
+	}
+
+	TString procType = gEnv->GetValue("TMbsSetup.ProcType", "");
+	if (procType.Length() > 0) {
+		mbsSetup->EvtBuilder()->SetType(procType.Data());
+		mbsSetup->ReadoutProc(0)->SetType(procType.Data());
+		gMrbLog->Out() << "Setting MBS proc type to \"" << procType << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup", setblue);
 	}
 
 	UInt_t cratePattern = this->GetCratePattern();

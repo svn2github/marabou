@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3820        -- 32 chn 32 bit VME scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3820.h,v 1.1 2004-11-05 12:26:50 marabou Exp $       
+// Revision:       $Id: TMrbSis_3820.h,v 1.2 2004-11-26 09:16:18 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -38,8 +38,8 @@ namespace std {} using namespace std;
 class TMrbSis_3820 : public TMrbVMEScaler {
 
 	public:
-		enum				{	kSegSize		=	0x200	};
-		enum				{	kAddrMod		=	0x39	};
+		enum				{	kSegSize		=	0x800000	};
+		enum				{	kAddrMod		=	0x09		};
 
 		enum EMrbOffsets	{};
 
