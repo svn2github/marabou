@@ -1073,7 +1073,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
    if (!gSystem->AccessPathName(histoFile.Data())) {
 	   gSystem->Unlink(histoFile.Data());
 	}
-	gSystem->Symlink(histoFileVersioned.Data(), histoFile.Data());
+	gSystem->Symlink(gSystem->BaseName(histoFileVersioned.Data()), histoFile.Data());
 	if (fHistFileVersion > 1) {
 	   TString oldfile(histoFile.Data());
 		oldfile += ".";
