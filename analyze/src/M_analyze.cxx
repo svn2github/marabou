@@ -182,8 +182,6 @@ int main(int argc, char **argv) {
 // Purpose:        Analyze MARaBOU data
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbIOSpec::EMrbOutputFormat oFormat = TMrbIOSpec::kFormatNone;
-
 	void exit_from_analyze(int);
 
 	if(argc <= 2) {
@@ -352,11 +350,10 @@ int main(int argc, char **argv) {
 
 	if (output_file.CompareTo("none") == 0)	output_mode = TMrbIOSpec::kOutputNone;
 	else {
-		output_mode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteTree | TMrbIOSpec::kOutputClose);
-		oFormat = TMrbIOSpec::kFormatNone;
-		if (output_file.Index(rxroot, 0) > 0) oFormat = TMrbIOSpec::kFormatRoot;
-		else if (output_file.Index(rxmed, 0) > 0) oFormat = TMrbIOSpec::kFormatMED;
-		else if (output_file.Index(rxlmd, 0) > 0) oFormat = TMrbIOSpec::kFormatLMD;
+		output_mode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputClose);
+		if (output_file.Index(rxroot, 0) > 0) output_mode = (TMrbIOSpec::EMrbOutputMode) (output_mode | TMrbIOSpec::kOutputWriteRootTree);
+		else if (output_file.Index(rxmed, 0) > 0) output_mode = (TMrbIOSpec::EMrbOutputMode) (output_mode | TMrbIOSpec::kOutputWriteMEDFormat);
+		else if (output_file.Index(rxlmd, 0) > 0) output_mode = (TMrbIOSpec::EMrbOutputMode) (output_mode | TMrbIOSpec::kOutputWriteLMDFormat);
 		else {
 			cerr << setred << "M_analyze: Wrong output format - " << output_file << setblack << endl;
 			exit(1);
@@ -560,7 +557,7 @@ int main(int argc, char **argv) {
 	if ( verboseMode ) gROOT->ls();
 
 //	input from MBS: tcp or lmd
-	if ((input_mode & TMrbIOSpec::kInputMBS) == TMrbIOSpec::kInputMBS) {
+	if ((input_mode & TMrbIOSpec::kInputMBS) != 0) {
 		if ( verboseMode ) cout	<< "M_analyze: Connecting to MBS - data source is " << data_source
 								<< " (input type \"" << input_type << "\")"
 								<< endl;
@@ -580,14 +577,14 @@ int main(int argc, char **argv) {
 			u_analyze->SetFileSize(file_size);
 
 			if ((input_mode & TMrbIOSpec::kInputMBS) != 0) {
-				if (oFormat == TMrbIOSpec::kFormatMED) {
+				if (output_mode & TMrbIOSpec::kOutputWriteMEDFormat) {
 					if (!gMrbTransport->OpenMEDFile(output_file)) exit(1);
-				} else if (oFormat == TMrbIOSpec::kFormatLMD) {
+				} else if (output_mode & TMrbIOSpec::kOutputWriteLMDFormat) {
 					if (!gMrbTransport->OpenLMDFile(output_file)) exit(1);
-				} else if (oFormat == TMrbIOSpec::kFormatRoot) {
+				} else if (output_mode & TMrbIOSpec::kOutputWriteRootTree) {
 					if (u_analyze->WriteRootTree(ioSpec)) exit(1);
 				}
-			} else if (oFormat == TMrbIOSpec::kFormatRoot) {
+			} else if (output_mode & TMrbIOSpec::kOutputWriteRootTree) {
 				if (u_analyze->WriteRootTree(ioSpec)) exit(1);
 			} else {
 				cerr << setred << "M_analyze: Wrong output format - " << output_file << setblack << endl;
@@ -647,8 +644,8 @@ int main(int argc, char **argv) {
 			}
 			gMrbTransport->Close();
 			gMrbTransport->FreeBuffers();
-			if (oFormat == TMrbIOSpec::kFormatMED) gMrbTransport->CloseMEDFile();
-			if (oFormat == TMrbIOSpec::kFormatLMD) gMrbTransport->CloseLMDFile();
+			if (output_mode & TMrbIOSpec::kOutputWriteMEDFormat) gMrbTransport->CloseMEDFile();
+			if (output_mode & TMrbIOSpec::kOutputWriteLMDFormat) gMrbTransport->CloseLMDFile();
 		}
 //      cout << " u_analyze->SaveHistograms(*, ioSpec);" << endl;
    	ioSpec->SetHistoFile(histo_file.Data(), histo_mode);
@@ -877,9 +874,8 @@ void * msg_handler(void * dummy) {
       if(mess->What() == kMESS_STRING){
          char str[300];
          mess->ReadString(str, 250);
-			if ( verboseMode ) cout << 
-           "M_analyze::msg_handler(): Read from client: " << str << endl;
- //        no_of_parameters= M.parse(str, parms);
+//			if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
+//        no_of_parameters= M.parse(str, parms);
          TString  smess = str; smess = smess.Strip(TString::kBoth);
          if(smess(0,9) != "M_client "){               
             cerr << setred
