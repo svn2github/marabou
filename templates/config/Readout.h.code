@@ -12,6 +12,12 @@
 // Keywords:       
 ////////////////////////////////////////////////////////////////////////////*/
 
+%%BeginOfCode%%
+%DB%#define $dName
+%DV%#define $dName	$dVal
+%%EndOfCode%%
+%%USER_DEFINED_DEFINES%%
+
 #define UXS_N_VALS	5
 #define UXS_L_STR	128
 

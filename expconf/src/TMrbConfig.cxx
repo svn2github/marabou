@@ -156,6 +156,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoDefineLocalVarsInit,	"DEFINE_LOCAL_VARS_INIT" 	},
 								{TMrbConfig::kRdoDefineLocalVarsReadout,"DEFINE_LOCAL_VARS_READOUT" },
 								{TMrbConfig::kRdoDefinePrototypes,		"DEFINE_PROTOTYPES" 		},
+								{TMrbConfig::kRdoUserDefinedDefines,	"USER_DEFINED_DEFINES" 	 	},
 								{0, 									NULL						}
 							};
 							
@@ -293,6 +294,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaUsingNameSpace ,			"USING_NAMESPACE"	 			},
 								{TMrbConfig::kAnaUserDefinedGlobals,		"USER_DEFINED_GLOBALS"	 		},
 								{TMrbConfig::kAnaUserDefinedEnums,			"USER_DEFINED_ENUMS" 	 		},
+								{TMrbConfig::kAnaUserDefinedDefines,		"USER_DEFINED_DEFINES" 	 		},
 								{TMrbConfig::kAnaMakeUserCxxFlags,			"MAKE_USER_CXXFLAGS" 			},
 								{TMrbConfig::kAnaMakeUserHeaders,			"MAKE_USER_HEADERS" 			},
 								{TMrbConfig::kAnaMakeUserCode,				"MAKE_USER_CODE"	 			},
@@ -579,6 +581,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofGlobals.Delete();
 		fLofGlobals.SetName("Global Vars");
+
+		fLofDefines.Delete();
+		fLofDefines.SetName("#define");
 
 		this->GetAuthor();		 								// author's name
 
@@ -1862,6 +1867,28 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							onceOnly.Delete();
 						}
 						break;
+					case TMrbConfig::kRdoUserDefinedDefines:
+						{
+							TMrbNamedX * nx = (TMrbNamedX *) fLofDefines.First();
+							while (nx) {
+								TString dName = nx->GetName();
+								TString dMode = nx->GetTitle();
+								if (dMode.CompareTo("Bool_t") == 0) {
+									if ((Bool_t) nx->GetIndex()) {
+										rdoTmpl.InitializeCode("%DB%");
+										rdoTmpl.Substitute("$dName", dName.Data());
+										rdoTmpl.WriteCode(rdoStrm);
+									}
+								} else if (dMode.CompareTo("Int_t") == 0) {
+									rdoTmpl.InitializeCode("%DV%");
+									rdoTmpl.Substitute("$dName", dName.Data());
+									rdoTmpl.Substitute("$dVal", nx->GetIndex());
+									rdoTmpl.WriteCode(rdoStrm);
+								}
+								nx = (TMrbNamedX *) fLofDefines.After(nx);
+							}
+						}
+						break;
 				}
 			}
 		}	
@@ -2249,6 +2276,28 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									}
 								}
 								nx = (TMrbNamedX *) fLofGlobals.After(nx);
+							}
+						}
+						break;
+					case TMrbConfig::kAnaUserDefinedDefines:
+						{
+							TMrbNamedX * nx = (TMrbNamedX *) fLofDefines.First();
+							while (nx) {
+								TString dName = nx->GetName();
+								TString dMode = nx->GetTitle();
+								if (dMode.CompareTo("Bool_t") == 0) {
+									if ((Bool_t) nx->GetIndex()) {
+										anaTmpl.InitializeCode("%DB%");
+										anaTmpl.Substitute("$dName", dName.Data());
+										anaTmpl.WriteCode(anaStrm);
+									}
+								} else if (dMode.CompareTo("Int_t") == 0) {
+									anaTmpl.InitializeCode("%DV%");
+									anaTmpl.Substitute("$dName", dName.Data());
+									anaTmpl.Substitute("$dVal", nx->GetIndex());
+									anaTmpl.WriteCode(anaStrm);
+								}
+								nx = (TMrbNamedX *) fLofDefines.After(nx);
 							}
 						}
 						break;
@@ -6016,6 +6065,44 @@ const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) const {
 	TString * str = (TString *) nx->GetAssignedObject();
 	return(str->Data());
 };
+
+void TMrbConfig::MakeDefined(const Char_t * Name, Int_t Value) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeDefined
+// Purpose:        Provide a #define
+// Arguments:      Char_t * Name     -- variable name
+//                 Int_t Value       -- value
+// Results:        --
+// Exceptions:
+// Description:    Issues a #define statement.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString dName = Name;
+	if (!dName.BeginsWith("_")) dName.Prepend("_");
+	if (!dName.EndsWith("_")) dName += "_";
+	fLofDefines.AddNamedX(new TMrbNamedX(Value, dName.Data(), "Int_t"));
+}
+
+void TMrbConfig::MakeDefined(const Char_t * Name, Bool_t Defined) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::MakeDefined
+// Purpose:        Provide a #define
+// Arguments:      Char_t * Name     -- variable name
+//                 Bool_t Defined    -- kTRUE/kFALSE
+// Results:        --
+// Exceptions:
+// Description:    Issues a #define statement.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString dName = Name;
+	if (!dName.BeginsWith("_")) dName.Prepend("_");
+	if (!dName.EndsWith("_")) dName += "_";
+	fLofDefines.AddNamedX(new TMrbNamedX((Int_t) Defined, dName.Data(), "Bool_t"));
+}
 
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {
 //________________________________________________________________[C++ METHOD]

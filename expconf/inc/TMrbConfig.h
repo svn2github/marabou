@@ -97,6 +97,7 @@ class TMrbConfig : public TNamed {
 									kRdoDefineGlobalsOnce,
 									kRdoDefineLocalVarsInit,
 									kRdoDefineLocalVarsReadout,
+									kRdoUserDefinedDefines,
 									kRdoClearModule
 								};
 						
@@ -200,6 +201,7 @@ class TMrbConfig : public TNamed {
 									kAnaUsingNameSpace,
 									kAnaUserDefinedGlobals,
 									kAnaUserDefinedEnums,
+									kAnaUserDefinedDefines,
 									kAnaMakeUserCxxFlags,
 									kAnaMakeUserHeaders,
 									kAnaMakeUserCode,
@@ -733,6 +735,9 @@ class TMrbConfig : public TNamed {
 		Bool_t GetGlobB(const Char_t * Name) const;
 		const Char_t * GetGlobStr(const Char_t * Name) const;
 
+		void MakeDefined(const Char_t * Name, Int_t Value);
+		void MakeDefined(const Char_t * Name, Bool_t Defined = kTRUE);
+
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
 
 	public: 									// public lists of key words:
@@ -750,6 +755,8 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofModuleIDs;			//! ... camac modules available
 		TMrbLofNamedX fLofHistoTypes;			//! ... histogram types
 		TMrbLofNamedX fLofGlobals;				//! list of global vars
+		TMrbLofNamedX fLofDefines;				//! list of #define statements
+
 	protected:
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
 		Bool_t WriteUtilityProtos();

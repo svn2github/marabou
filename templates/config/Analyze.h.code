@@ -14,6 +14,12 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+%%BeginOfCode%%
+%DB%#define $dName
+%DV%#define $dName	$dVal
+%%EndOfCode%%
+%%USER_DEFINED_DEFINES%%
+
 #include <time.h>
 
 #include "TEnv.h"
