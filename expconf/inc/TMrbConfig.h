@@ -607,9 +607,10 @@ class TMrbConfig : public TNamed {
 		Bool_t DefineVariables(const Char_t * VarType, Float_t Value, const Char_t * VarDefs);
 		Bool_t DefineVariables(const Char_t * VarType, const Char_t * Value, const Char_t * VarDefs);
 
-		Bool_t DefineWindows(const Char_t * WdwType, const Char_t * WdwDefs);	 	// define 1-dim windows
+		Bool_t DefineWindows(const Char_t * WdwType, const Char_t * WdwDefs);	 	// define windows
 		Bool_t DefineWindows(const Char_t * WdwType, Int_t Xlower, Int_t Xupper, const Char_t * WdwDefs);
-		Bool_t DefineWindows(const Char_t * WdwType, Float_t Xlower, Float_t Xupper, const Char_t * WdwDefs);
+		Bool_t DefineWindows(const Char_t * WdwType, Double_t Xlower, Double_t Xupper, const Char_t * WdwDefs);
+		Bool_t DefineWindows(const Char_t * WdwType, Int_t Npoints, Double_t * X, Double_t * Y, const Char_t * WdwDefs);
 
 		inline Bool_t LongParamNamesToBeUsed() const { return(fLongParamNames); };	// long names to guarantee uniqueness?
 		inline void UseLongParamNames(Bool_t Flag = kTRUE) { fLongParamNames = Flag; };
@@ -758,8 +759,9 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
 
 	protected:
-		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
+		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs, Bool_t Instantiate);	// common part of var/wdw definition
 		Bool_t WriteUtilityProtos();
+		Bool_t CheckConfig();
 		
 	protected:
 		Bool_t fVerboseMode;				// verbose flag
@@ -818,6 +820,8 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
 		
+		Bool_t fConfigChecked;				// kTRUE if consistency check done
+
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	
 
