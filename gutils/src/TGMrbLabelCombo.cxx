@@ -178,6 +178,7 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							}
 							fCombo->Select(nx->GetIndex());
 							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
+							break;
 						case TGMrbLabelCombo::kGMrbComboButtonUp:
 							idx = fCombo->GetSelected();
 							nx = fEntries.FindByIndex(idx);
