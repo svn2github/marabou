@@ -23,15 +23,15 @@ HPRO        := $(filter-out $(HPRMAINO),$(HPROM))
 
 
 HPRDH			:= $(HPRDIRI)/HTCanvas.h \
- 					$(HPRDIRI)/HTRootCanvas.h \
+ 					$(HPRDIRI)/HandleMenus.h \
  					$(HPRDIRI)/FitHist.h \
  					$(HPRDIRI)/HistPresent.h \
- 					$(HPRDIRI)/FhPeak.h \
- 					$(HPRDIRI)/FhContour.h \
+ 					$(HPRDIRI)/TMrbArrayD.h \
+ 					$(HPRDIRI)/TMrbArrayF.h \
+  					$(HPRDIRI)/FhPeak.h \
+					$(HPRDIRI)/FhContour.h \
                $(HPRDIRI)/FhRegion.h \
- 					$(HPRDIRI)/EditMarker.h \
-               $(HPRDIRI)/HTCanvasImp.h \
-               $(HPRDIRI)/HTRootGuiFactory.h
+ 					$(HPRDIRI)/EditMarker.h 
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)
 HPRDEP      += $(MODDIRS)/main.d

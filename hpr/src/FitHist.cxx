@@ -62,6 +62,7 @@
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbNamedArray.h"
+#include "TMrbArrayD.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -72,7 +73,7 @@ Double_t gTailSide;             // in fit with tail determines side: 1 left(low)
 Float_t gBinW;
 
 enum dowhat { expand, projectx, projecty, statonly, projectf,
-       projectboth };
+       projectboth , profilex, profiley};
 
 ClassImp(FitHist)
 //_______________________________________________________________________________
@@ -121,7 +122,8 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fLogy = 0;
    fLogz = 0;
    fUserContourLevels = 0;
-   datebox = 0;
+//   datebox = 0;
+   fExpInd = 0;
    fSelHist = hist;
    fCalHist = NULL;
    fCalFitHist = NULL;
@@ -201,7 +203,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fSerialPy = 0;
    fSerialPf = 0;
    func_numb = 0;
-   cut_numb = 0;
+   fCutNumber = 0;
    wdw_numb = 0;
 //   fCallMinos = kFALSE;
 //   fKeepParameters = kFALSE;
@@ -257,7 +259,8 @@ FitHist::~FitHist()
    if (fCalFunc) delete fCalFunc;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||
        cHist->TestBit(0xf0000000)) {
-      cout << "~FitHist: Canvas is deleted" << endl;
+      cout << "~FitHist: " << this << " Canvas : " << cHist << " is deleted" << endl;
+
       cHist = 0;
    }
 
@@ -279,8 +282,8 @@ FitHist::~FitHist()
       delete peaks;
    if (fCmdLine)
       delete fCmdLine;
-   if (datebox)
-      delete datebox;
+//   if (datebox)
+ //     delete datebox;
    gROOT->Reset();
 };
 //________________________________________________________________
@@ -544,6 +547,13 @@ void FitHist::handle_mouse()
    Int_t event = gPad->GetEvent();
    TObject *select = gPad->GetSelected();
    if (!select) return;
+   if (event == kButton1Up) {
+      if (gROOT->FindObject("CUTG")) {
+         UpdateCut();
+         return;
+      }
+   }
+   
 //  check if lin / log scale changed
    if (hp && hp->fRememberZoom) {
    	if (gPad->GetLogx() !=  fLogx ||
@@ -552,7 +562,7 @@ void FitHist::handle_mouse()
       	 fLogx = gPad->GetLogx();
       	 fLogy = gPad->GetLogy();
       	 fLogz = gPad->GetLogz();
-      	 if      (fDimension == 1) mycanvas->SetLog(fLogy);
+      	 if      (fDimension == 1) cHist->SetLog(fLogy);
       	 else if (fDimension == 2) SetLogz(fLogz);
       	 SaveDefaults();
    	}
@@ -581,8 +591,16 @@ void FitHist::handle_mouse()
             cout << "No histogram found" << endl;
             return;
          }
+         TString sopt = hist->GetOption();
+//         cout << " sopt " << sopt << endl;
+         if (sopt.Contains("SURF", TString::kIgnoreCase) ||
+             sopt.Contains("LEGO", TString::kIgnoreCase)) {
+             cout << " sopt " << sopt << endl;
+             return;
+         }
+
          if (hist->GetDimension() == 3) {
-            cout << "3d histogram not supported" << endl;
+//            cout << "3d histogram not supported" << endl;
             return;
          } else if (hist->GetDimension() == 2){
             is2dim = kTRUE;
@@ -892,6 +910,8 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    fCtitle = fSelHist->GetName();
    fCtitle += ": ";
    fCtitle += fSelHist->GetTitle();
+//   FitHist * fh_this = this;
+//   if (is3dim(hist)) fh_this = NULL;
    cHist = new HTCanvas(fCname.Data(), fCtitle.Data(),
                         win_topx, win_topy, win_widx, win_widy, hp, this);
    fCanvasIsAlive = kTRUE;
@@ -912,15 +932,6 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    gDirectory = gROOT;
    fSelPad = cHist;
    fSelPad->cd();
-   if (hp && hp->GetUseTimeOfDisplay()) {
-      TDatime dt;
-      hist->SetUniqueID(dt.Get());
-//     cout << whichtime.Data() << endl;
-   }
-
-//   ClearMarks();
-//   Axis_t xl = 0, xu = 0, yl = 0, yu = 0, xrl=0, xru=0, yrl=0, yru=0;
-//   Int_t  xbinl = 0, xbinu = 0, ybinl = 0, ybinu = 0;
 
    if (is3dim(hist)) {
       fSelPad->cd();
@@ -933,10 +944,6 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    		cmd += GetName();
    		cmd += "\"))->auto_exec_2()";
          cHist->AddExec("ex2", cmd.Data());
- //  cout << "cmd: " << cmd << endl;
- //        TString exs(".x ");
- //        exs += hp->fAutoExecName_2->Data();
-//         cHist->AddExec("ex2", exs.Data());
       }
    } else {
       fSelPad->cd();
@@ -948,11 +955,6 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    		cmd += GetName();
    		cmd += "\"))->auto_exec_1()";
          cHist->AddExec("ex1", cmd.Data());
-//      if (hp && hp->fAutoExec_1 
-//             && !gSystem->AccessPathName(hp->fAutoExecName_1->Data())) {
-//         TString exs(".x ");
-//         exs += hp->fAutoExecName_1->Data();
-//         cHist->AddExec("ex1", exs.Data());
       }
    }
    cHist->Update();
@@ -2276,9 +2278,11 @@ void FitHist::Transpose()
    TH2F *h2 = (TH2F *)fOrigHist;
    TString hname(h2->GetName());
    hname += "_transp";
+   TString htitle(h2->GetTitle());
+   htitle += "_transp";
    TAxis *xa = h2->GetXaxis();
    TAxis *ya = h2->GetYaxis();
-   TH2F *h2_transp = new TH2F(hname, h2->GetTitle(),
+   TH2F *h2_transp = new TH2F(hname, htitle,
                               ya->GetNbins(), ya->GetXmin(), ya->GetXmax(),
                               xa->GetNbins(), xa->GetXmin(), xa->GetXmax());
    for (Int_t ix = 0; ix <= xa->GetNbins(); ix++) {
@@ -2290,9 +2294,118 @@ void FitHist::Transpose()
    h2_transp->SetEntries(h2->GetEntries());
    h2_transp->GetXaxis()->SetTitle(h2->GetYaxis()->GetTitle());
    h2_transp->GetYaxis()->SetTitle(h2->GetXaxis()->GetTitle());
-   fSelHist = h2_transp;
+//   fSelHist = h2_transp;
    cHist->cd();
-   Draw2Dim();
+   if  (hp) hp->ShowHist(h2_transp);
+//   Draw2Dim();
+}
+//____________________________________________________________________________________ 
+
+// Profile 2dim histograms
+
+void FitHist::ProfileX()
+{
+   if (!is2dim(fSelHist)) {
+      WarnBox("Only 2dim hist can be profiled");
+      return;
+   }
+   TH2F *h2 = (TH2F *)fOrigHist;
+   TString hname(h2->GetName());
+   hname += "_profX";
+   hname += fSerialPx;
+   fSerialPx++;
+   TString htitle(h2->GetTitle());
+   htitle += "_profX";
+   TAxis *xa = h2->GetXaxis();
+   TAxis *ya = h2->GetYaxis();
+   TMrbArrayD yslice(ya->GetNbins());
+   yslice.SetBinWidth(ya->GetBinWidth(1));
+   yslice.SetLowEdge(ya->GetXmin());
+//   Int_t non_zero = 0;
+   TH1D *h_prof = new TH1D(hname, htitle,
+                              xa->GetNbins(), xa->GetXmin(), xa->GetXmax());
+   UpdateCut();
+   Int_t nc = Ncuts();
+   Double_t max_error = 0;
+   for (Int_t ix = 1; ix <= xa->GetNbins(); ix++) {
+      yslice.Reset();
+      for (Int_t iy = 1; iy <= ya->GetNbins(); iy++) {
+         if (nc > 0 && !InsideCut(xa->GetBinCenter(ix), 
+                              ya->GetBinCenter(iy)))
+            continue;
+         yslice[iy-1] = h2->GetCellContent(ix, iy);
+      }
+//      cout << yslice.GetMean() << endl;
+      if (yslice.GetSum() != 0) {
+         h_prof->SetBinContent(ix, yslice.GetMean());
+         Double_t error = yslice.GetRMS() / TMath::Sqrt(yslice.GetSum());
+         h_prof->SetBinError(ix, error);
+         max_error = TMath::Max(error, max_error);
+      }
+ //     cout << "max_error " << max_error << endl;
+      for (Int_t ix = 1; ix <= h_prof->GetXaxis()->GetNbins(); ix++) {
+         if (h_prof->GetBinContent(ix) != 0 &&
+             h_prof->GetBinError(ix) == 0)
+               h_prof->SetBinError(ix, max_error);
+      }
+   }
+   h_prof->SetEntries(h2->GetEntries());
+   cHist->cd();
+   if  (hp) hp->ShowHist(h_prof);
+}
+//____________________________________________________________________________________ 
+
+// Profile 2dim histograms
+
+void FitHist::ProfileY()
+{
+   if (!is2dim(fSelHist)) {
+      WarnBox("Only 2dim hist can be profiled");
+      return;
+   }
+   TH2F *h2 = (TH2F *)fOrigHist;
+   TString hname(h2->GetName());
+   hname += "_profY";
+   hname += fSerialPx;
+   fSerialPx++;
+   TString htitle(h2->GetTitle());
+   htitle += "_profY";
+   TAxis *xa = h2->GetXaxis();
+   TAxis *ya = h2->GetYaxis();
+   TMrbArrayD xslice(xa->GetNbins());
+   xslice.SetBinWidth(xa->GetBinWidth(1));
+   xslice.SetLowEdge(xa->GetXmin());
+//   Int_t non_zero = 0;
+   TH1D *h_prof = new TH1D(hname, htitle,
+                              xa->GetNbins(), xa->GetXmin(), xa->GetXmax());
+   UpdateCut();
+   Int_t nc = Ncuts();
+   Double_t max_error = 0;
+   for (Int_t iy = 1; iy <= ya->GetNbins(); iy++) {
+      xslice.Reset();
+      for (Int_t ix = 1; ix <= xa->GetNbins(); ix++) {
+         if (nc > 0 && !InsideCut(xa->GetBinCenter(ix), 
+                              ya->GetBinCenter(iy)))
+            continue;
+         xslice[ix-1] = h2->GetCellContent(ix, iy);
+      }
+//      cout << xslice.GetMean() << endl;
+      if (xslice.GetSum() != 0) {
+         h_prof->SetBinContent(iy, xslice.GetMean());
+         Double_t error = xslice.GetRMS() / TMath::Sqrt(xslice.GetSum());
+         h_prof->SetBinError(iy, error);
+         max_error = TMath::Max(error, max_error);
+      }
+//      cout << "max_error " << max_error << endl;
+      for (Int_t ix = 1; ix <= h_prof->GetXaxis()->GetNbins(); ix++) {
+         if (h_prof->GetBinContent(ix) != 0 &&
+             h_prof->GetBinError(ix) == 0)
+               h_prof->SetBinError(ix, max_error);
+      }
+   }
+   h_prof->SetEntries(h2->GetEntries());
+   cHist->cd();
+   if  (hp) hp->ShowHist(h_prof);
 }
 //____________________________________________________________________________________ 
 
@@ -2300,7 +2413,7 @@ void FitHist::Transpose()
 
 void FitHist::ExpandProject(Int_t what)
 {
-//   enum dowhat {expand, projectx, projecty, statonly};
+//   enum dowhat {expand, projectx, projecty, statonly, profilex, profiley};
 
 //   cout << "enter ExpandProject(Int_t what)" << endl;
    if (!fSelPad) {
@@ -2310,6 +2423,7 @@ void FitHist::ExpandProject(Int_t what)
    if (GetMarks(fSelHist) <= 0) {
       cout << "No selection" << endl;
    }
+   TString expname;
    GetLimits();
 //  1-dim case
    if (!is2dim(fSelHist)) {
@@ -2334,16 +2448,14 @@ void FitHist::ExpandProject(Int_t what)
       if (what == expand) {
          if (expHist)
             expHist->GetListOfFunctions()->Clear();
-         expHist = new TH1D(fEname.Data(), fOrigHist->GetTitle(),
+         expname = fEname;
+         expname += fExpInd;
+         fExpInd++;
+         expHist = new TH1D(expname, fOrigHist->GetTitle(),
                             NbinX, fExplx, fExpux);
-         TDatime dt;
-         expHist->SetUniqueID(dt.Get());
          expHist->GetXaxis()->SetTitle(fOrigHist->GetXaxis()->GetTitle());
          expHist->GetYaxis()->SetTitle(fOrigHist->GetYaxis()->GetTitle());
-//         expHist->Sumw2();
       }
-//      Int_t nperbinX = 1;
-//      for (Int_t i=fBinlx; i <= fBinux ; i++ ){
       for (Int_t i = 0; i <= fOrigHist->GetNbinsX() + 1; i++) {
          cont = fOrigHist->GetBinContent(i);
          x = fOrigHist->GetBinCenter(i);
@@ -2354,9 +2466,6 @@ void FitHist::ExpandProject(Int_t what)
          }
          if (what == expand) {
             Int_t newbin = i - fBinlx + 1;
-//            Stat_t oldcont = expHist->GetBinContent(irebin);
-//            oldcont+=cont;
-//            expHist->SetBinContent(irebin,cont);
             expHist->Fill(x, cont);
             if (i >= fBinlx && i <= fBinux)
                expHist->SetBinError(newbin, fOrigHist->GetBinError(i));
@@ -2416,37 +2525,32 @@ void FitHist::ExpandProject(Int_t what)
 //      cout << "fBinlx, ux, ly, uy " 
 //       <<fBinlx << " "  << fBinux<< " "  << fBinly<< " "  << fBinuy<< endl;
       Int_t nperbinX = 1, nperbinY = 1;
-      if (what == projectx || what == projectboth) {
-         TString pname = "Px";
-//         pname += fOrigHist->GetName();
+      TString pname(fOrigHist->GetName());
+      if (what == projectx ||what == projectboth) {
+         pname += "_ProjX";
          pname += fSerialPx;
-         pname += "_";
-         pname += fOrigHist->GetName();
+
          projHistX = new TH1F(pname, fOrigHist->GetTitle(),
                               NbinX, fExplx, fExpux);
          fSerialPx++;
 //         fSelHist=projHist;
       }
       if (what == projecty || what == projectf || what == projectboth) {
-         TString pname ;
          Axis_t low = fExply;
          Axis_t up = fExpuy;
          if (what == projectf) {
             up = 0.5 * (fExpuy - fExply);
             low = -up;
-            pname = "Pf"; pname += fSerialPf;
+            pname += "_Pfunc";
+            pname += fSerialPf;
             fSerialPf++;
          } else {
-            pname = "Py"; pname += fSerialPf;
+            pname += "_ProjX";
+            pname += fSerialPf;
             fSerialPy++;
          }
-         pname += "_";
-         pname += fOrigHist->GetName();
          projHistY = new TH1F(pname, fOrigHist->GetTitle(),
                               NbinY, low, up);
-         TDatime dt;
-         projHistY->SetUniqueID(dt.Get());
-//         fSelHist=projHist;
       }
       if (what == expand) {
          Int_t MaxBin2dim = 1000;
@@ -2456,14 +2560,15 @@ void FitHist::ExpandProject(Int_t what)
          Int_t NbinYrebin = (NbinY - 1) / nperbinY + 1;
          if (expHist)
             expHist->GetListOfFunctions()->Clear();
-         expHist = new TH2F(fEname.Data(), fOrigHist->GetTitle(),
+         expname = fEname;
+         expname += fExpInd;
+         fExpInd++;
+         expHist = new TH2F(expname, fOrigHist->GetTitle(),
                             NbinXrebin, fExplx, fExpux, NbinYrebin, fExply,
                             fExpuy);
          expHist->GetXaxis()->SetTitle(fOrigHist->GetXaxis()->GetTitle());
          expHist->GetYaxis()->SetTitle(fOrigHist->GetYaxis()->GetTitle());
          fSelHist = expHist;
-         TDatime dt;
-         expHist->SetUniqueID(dt.Get());
       }
       TAxis *xa = fSelHist->GetXaxis();
       TAxis *ya = fSelHist->GetYaxis();
@@ -2694,6 +2799,7 @@ void FitHist::ExecDefMacro()
 
 void FitHist::Draw3Dim()
 {
+//   TString drawopt("iso");
    TString drawopt;
    fSelHist->Draw(drawopt);
 }
@@ -2722,11 +2828,12 @@ void FitHist::Draw1Dim()
       fSelHist->SetFillColor(hp->f1DimFillColor);
    } else
       fSelHist->SetFillStyle(0);
-   fSelHist->Draw(drawopt.Data());
+   fSelHist->SetOption(drawopt.Data());
+   fSelHist->Draw();
    gBinW = fSelHist->GetBinWidth(1);
-   Float_t tz = 0.035;
-   if (hp->GetShowDateBox())
-      DrawDateBox(fSelHist, tz);
+//   Float_t tz = 0.035;
+//   if (hp->GetShowDateBox())
+//      DrawDateBox(fSelHist, tz);
    cHist->GetFrame()->SetFillStyle(0);
    TList *lof = fOrigHist->GetListOfFunctions();
 
@@ -2756,6 +2863,16 @@ void FitHist::Draw1Dim()
       fSelPad->Modified(kTRUE);
    }
    cHist->Update();
+   if (hp->fShowDateBox && !hp->fUseTimeOfDisplay) {
+      UInt_t da = fSelHist->GetUniqueID();
+      if (da != 0) {
+        TDatime dat;
+        dat.Set(da);
+        TText * t = (TText*)cHist->GetListOfPrimitives()->FindObject("DATE");
+        if (t) t->SetText(t->GetX(), t->GetY(), dat.AsString());
+      }
+   }
+   cHist->Update();
 //  add extra axis (channels) at top
    if (hp->fDrawAxisAtTop) {
       TPaveStats * st = (TPaveStats *)cHist->GetPrimitive("stats");
@@ -2766,7 +2883,6 @@ void FitHist::Draw1Dim()
       TString cmd("((FitHist*)gROOT->FindObject(\""); 
       cmd += GetName();
       cmd += "\"))->DrawTopAxis()";
- //  cout << "cmd: " << cmd << endl;
       
       TExec * exec = new TExec("exec", cmd.Data());
       exec->Draw();
@@ -2792,20 +2908,14 @@ void FitHist::Draw2Dim()
    if (hp->GetShowTitle())
       gStyle->SetTitleFont(hp->fTitleFont);
 //   cout << "DrawOpt2Dim: " << hp->fDrawOpt2Dim->Data() << endl;
-//   fSelHist->Draw();
-//   SetSelectedPad();
-   fSelHist->Draw(hp->fDrawOpt2Dim->Data());
-   Float_t tz = 0.035;
-//   Float_t tz=gStyle->GetTitleH();
-   if (hp->GetShowDateBox())
-      DrawDateBox(fSelHist, tz);
+   fSelHist->Draw();
+   fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
    DrawCut();
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {
 //      TF1 *p;
       TObject *p;
       TIter next(lof);
-//      while( p= (TF1*)next() ){
       while ( (p = (TObject *) next()) ) {
 //         p->Print();
          if (p->InheritsFrom(TF1::Class())) {
@@ -2836,39 +2946,21 @@ void FitHist::Draw2Dim()
    } else {
       cHist->GetFrame()->SetFillStyle(1001);
       cHist->GetFrame()->SetFillColor(hp->f2DimBackgroundColor);
-//      cout <<  cHist->GetName() << endl;
-//      cout << "GetFillColor() " <<  cHist->GetFrame()->GetFillColor() << endl;
+   }
+   cHist->Update();
+   if (hp->fShowDateBox && !hp->fUseTimeOfDisplay) {
+      UInt_t da = fSelHist->GetUniqueID();
+      if (da != 0) {
+        TDatime dat;
+        dat.Set(da);
+        TText * t = (TText*)cHist->GetListOfPrimitives()->FindObject("DATE");
+        if (t) t->SetText(t->GetX(), t->GetY(), dat.AsString());
+      }
    }
    cHist->Update();
 }
 
 //__________________________________________________________________________________
-
-void FitHist::DrawDateBox(TH1 * fSelHist, Float_t tz)
-{
-   UInt_t uid = fSelHist->GetUniqueID();
-   if (uid) {
-      datebox =
-          new TPaveText(0.7 - 6 * tz, 0.995 - 2 * tz, 0.70, 0.995 - tz,
-                        "NDC");
-      UInt_t year = uid >> 26;
-      year += 1995;
-      UInt_t month = (uid << 6) >> 28;
-      UInt_t day = (uid << 10) >> 27;
-      UInt_t hour = (uid << 15) >> 27;
-      UInt_t min = (uid << 20) >> 26;
-      TString buf;
-      buf += (Int_t)day;   buf+= "." ;
-      buf += (Int_t)month; buf+= "." ;
-      buf += (Int_t)year;  buf+= " " ;
-      buf += (Int_t)hour;  buf+= ":" ;
-      buf += (Int_t)min;;
-
-      datebox->AddText(buf.Data());
-      datebox->Draw();
-   }
-}
-//______________________________________________________________________________________
   
 void FitHist::AddFunctionsToHist()
 {
@@ -2919,12 +3011,8 @@ void FitHist::DrawColors()
    Int_t colindex = basecolor;
 //   Int_t palette = new Int_t[maxcolors];
    for (Int_t i=basecolor; i<= maxcolors; i++) {
-//      cmd = "pcol(\"";
-//      cmd += hexcol.Data();
-//      cmd += "\");";
       scol = Form("%d", colindex);
       b = new TButton(scol.Data(), scol.Data(), x, y, x + .9*dx , y + .9*dy );
-//      c = new TColor(colindex, (Float_t)red/256, (Float_t)green/256, (Float_t)blue/256);
       b->SetFillColor(colindex);
       b->SetTextAlign(22);
       b->SetTextFont(100);

@@ -79,8 +79,79 @@ enum dowhat { expand, projectx, projecty, statonly, projectf,
 
 //____________________________________________________________________________________ 
 /* *INDENT-OFF* */
+//____________________________________________________________________________________ 
+const char Gauss2d[]=
+"Double_t gauss2d( Double_t *x, Double_t *par)\n\
+{\n\
+   Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);\n\
+   Double_t cx = par[0];    // const x\n\
+   Double_t mx = par[1];    // mean x\n\
+   if (par[2] == 0) par[2] = 1;\n\
+   Double_t sx = par[2];    // sigma x\n\
+   Double_t cy = par[3];    // const y\n\
+   Double_t my = par[4];    // mean y\n\
+   if (par[5] == 0) par[5] = 1;\n\
+   Double_t sy = par[5];    // sigma \n\
+   Double_t xij = x[0] - mx;  \n\
+   Double_t argx = xij/(sqrt2*sx);\n\
+   Double_t xval = cx * exp(-argx * argx)/(sqrt2pi*sx);\n\
+   Double_t yij = x[1] - my;  \n\
+   Double_t argy = yij/(sqrt2*sy);\n\
+   Double_t yval = cy * exp(-argy * argy)/(sqrt2pi*sy);\n\
+   return xval * yval;\n\
+};\n\
+\n\
+fit_user_function(const char *hname)\n\
+// This is a template macro to fit a user defined 2d function\n\
+// As an example a 2d gauss is provided\n\
+{\n\
+//   gROOT->Reset();\n\
+   TH2* hist = (TH1*)gROOT->FindObject(hname);\n\
+   if(!hist){\n\
+     cout << \"histogram not found\" << endl;\n\
+     return 0;\n\
+   }\n\
+//  try to use same canvas dimensions for fitted function as used for histogram \n\
+   TCanvas * mc  = (TCanvas *) gPad;\n\
+   Int_t wtopx = 100, wtopy = 100;\n\
+   UInt_t ww = 750, wh = 750;\n\
+   TString cname(\"canvas_2d\");\n\
+   if (mc) {\n\
+      mc->GetCanvasPar(wtopx, wtopy, ww, wh);\n\
+      cname = mc->GetName();\n\
+      cname += \"_2df\";\n\
+      wtopx = TMath::Max(0,wtopx - 100);\n\
+      wtopy = TMath::Max(wh, wtopy + 100);\n\
+ //      cout << wtopx<< " " << wtopy << " " <<  ww<< " " <<  wh << endl;\n\
+   }\n\
+\n\
+//  nb: fit range may be different from histo range\n\
+   Float_t x_from = -2; \n\
+   Float_t x_to   =  2; \n\
+   Float_t y_from = -4; \n\
+   Float_t y_to   =  4; \n\
+   TF2 * f2 = new TF2(\"gauss2d\", gauss2d, x_from, x_to, y_from, y_to , 6);\n\
+   f2->SetParName(0, \"const_x\");\n\
+   f2->SetParName(1, \"mean_x\");\n\
+   f2->SetParName(2, \"sigma_x\");\n\
+   f2->SetParName(3, \"const_y\");\n\
+   f2->SetParName(4, \"mean_y\");\n\
+   f2->SetParName(5, \"sigma_y\");\n\
+\n\
+   f2->SetParameters(100, 0, 1, 100, 0, 1);\n\
+ //  f2->Draw();\n\
+   hist->Fit(\"gauss2d\",\"R0\",\"same\");  // dont in same picture \n\
+   TCanvas *cc = new TCanvas(cname , cname, wtopx, wtopy, ww, wh);\n\
+//  draw in same range as histogram with same drawing options\n\
+   f2->SetRange(hist->GetXaxis()->GetXmin(), hist->GetYaxis()->GetXmin(),\n\
+                hist->GetXaxis()->GetXmax(), hist->GetYaxis()->GetXmax()); \n\
+   f2->Draw(hist->GetOption()); \n\
+}\n\
+";
+//____________________________________________________________________________________
+
 const char ExpGauss[]=
-"//Double_t ExpGauss();\n\
+"/*Exponential + Gauss (formula)*/\n\
 fit_user_function(const char *hname)\n\
 //\n\
 // example with fit function given as formula\n\
@@ -111,9 +182,10 @@ fit_user_function(const char *hname)\n\
 //____________________________________________________________________________________
 
 const char TwoGauss[]=
-"Double_t TwoGauss     ( Double_t *x, Double_t *par) \n\
+"/*Two Gaussians with common mean*/\n\
+Double_t TwoGauss     ( Double_t *x, Double_t *par) \n\
 {\n\
-  // two gaussians with common center\n\
+// two gaussians with common mean\n\
   Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);\n\
   Double_t BinW = 0.5;\n\
   Double_t mean = par[2];\n\
@@ -130,9 +202,7 @@ const char TwoGauss[]=
 }\n\
 \n\
 fit_user_function(const char *hname)\n\
-// This is a template macro to fit a user defined function\n\
-// As an example an exponential + a gauss function is provided\n\
-// The function is defined  as a formula\n\
+// Fit 2 gaussians with common mean\n\
 {\n\
 //   gROOT->Reset();\n\
    TH1* hist = (TH1*)gROOT->FindObject(hname);\n\
@@ -175,7 +245,8 @@ fit_user_function(const char *hname)\n\
 //____________________________________________________________________________________
 
 const char BreitWigner[]=
-"Double_t BreitWigner  ( Double_t *x, Double_t *par) \n\
+"/*Breit Wigner*/\n\
+Double_t BreitWigner  ( Double_t *x, Double_t *par) \n\
 {\n\
 //\n\
 // example with fit function defined as function \n\
@@ -212,7 +283,8 @@ fit_user_function(const char *hname)\n\
 //____________________________________________________________________________________
 
 const char Landau[]=
-"Double_t Landau_f ( Double_t *x, Double_t *par) \n\
+"/*Three landaus*/\n\
+Double_t Landau_f ( Double_t *x, Double_t *par) \n\
 {\n\
     Double_t BinW = 9;\n\
 //   linear background + 3 landau functions\n\
@@ -299,13 +371,44 @@ fit_user_function(const char *hname){\n\
 }\n\
 ";
 //____________________________________________________________________________________
+
+const char Pol2Sine[]=
+"/*Pol2 + Sine, (formula)*/ \n\
+fit_user_function(const char *hname) \n\
+// \n\
+// example with fit function given as formula \n\
+// \n\
+// This is a template macro to fit a user defined function \n\
+// As an example a sine with an amplitude modulated by a polynomial \n\
+// of degree 2 (parabola) is provided \n\
+// The function is defined  as a formula \n\
+{ \n\
+   TH1* hist = (TH1*)gROOT->FindObject(hname); \n\
+   if(!hist){ \n\
+     cout << \"histogram not found\" << endl; \n\
+     return 0; \n\
+   } \n\
+   Float_t from = 500; \n\
+   Float_t to   = 3500;\n\
+   TF1* f = new TF1(\"sinf\",\"pol2 * sin([3]*x+[4])\",from,to); \n\
+   f->SetParameters(0.366, 0, 0, 0.087, -.7); \n\
+      f->SetLineColor(4); \n\
+   f->SetLineWidth(1); \n\
+   f->SetNpx(500); \n\
+//   f->Draw(\"same\");                // dont fit, draw only \n\
+   hist->Fit(\"sinf\",\"R\",\"same\"); \n\
+}\n\
+";
+
+//____________________________________________________________________________________
 /* *INDENT-ON* */
-const Int_t nFitTemplates = 4;
+const Int_t nFitTemplates = 5;
 const char *FitMacroTemplates[nFitTemplates] = {
    &TwoGauss[0],
    &ExpGauss[0],
    &BreitWigner[0],
-   &Landau[0]
+   &Landau[0],
+   &Pol2Sine[0]
 };
 //____________________________________________________________________________________ 
 
@@ -709,7 +812,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
             upar[5] = upar[5] + fSelHist->GetBinContent(i) -
                       (upar[2] + upar[3] * fSelHist->GetBinCenter(i));
          }
-         upar[5] *= fSelHist->GetBinWidth(inp[0]);
+//         upar[5] *= fSelHist->GetBinWidth(inp[0]);
 
          upar[6] = 0.5 * (edgeux + edgelx);
 
@@ -958,10 +1061,10 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
    }
    func->GetParameters(upar);
    Double_t * errors = func->GetParErrors();
-   fSelHist->SetFillColor(hp->f1DimFillColor);
-   fSelPad->cd();
-   fSelPad->Modified(kTRUE);
-   fSelPad->Update();
+//   fSelHist->SetFillColor(hp->f1DimFillColor);
+//   fSelPad->cd();
+//   fSelPad->Modified(kTRUE);
+//   fSelPad->Update();
 
 //   Bool_t enable_calib = kFALSE;
 //                                                                                                                                                                                                                                                             TEnv env(".rootrc");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          // inspect ROOT's environment
@@ -994,14 +1097,16 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
          fdpar[0] = upar[0];
          fdpar[1] = upar[1];
       }
-      TF1 *back = new TF1("backf", backf, edgelx, edgeux, 2);
-      back->SetParameters(fdpar);
-      back->Save(edgelx, edgeux, 0, 0, 0, 0);
-      back->SetLineColor(2);
-      back->SetLineWidth(3);
-//      back->Draw("same");
-      fSelHist->GetListOfFunctions()->Add(back);
+      if (force_zero_bg == 0) {
+         TF1 *back = new TF1("backf", backf, edgelx, edgeux, 2);
+         back->SetParameters(fdpar);
+         back->Save(edgelx, edgeux, 0, 0, 0, 0);
+         back->SetLineColor(2);
+         back->SetLineWidth(3);
+   //      back->Draw("same");
+         fSelHist->GetListOfFunctions()->Add(back);
       back->SetParent(fSelHist);
+      }
 //      if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(back);
 //
       for (Int_t j = 0; j < nPeaks; j++) {
@@ -1049,9 +1154,23 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
 //            if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(tail);
          }
       }
-      fSelHist->Draw();
+          
    }
    ClearMarks();
+//   if (hp->fShowErrors) fSelHist->Draw("e1");
+
+   TString drawopt;
+   if (hp->fShowContour)
+      drawopt = "";
+   if (hp->fShowErrors)
+      drawopt += "e1";
+   if (hp->fFill1Dim) {
+      fSelHist->SetFillStyle(1001);
+      fSelHist->SetFillColor(hp->f1DimFillColor);
+   } else
+      fSelHist->SetFillStyle(0);
+   fSelHist->Draw(drawopt.Data());
+
    fSelPad->cd();
    fSelPad->Modified(kTRUE);
    fSelPad->Update();
@@ -1636,41 +1755,48 @@ void FitHist::EditFitMacro()
          cout << "Cant open new " << name.Data() << endl;
          return;
       }
-      TOrdCollection *svalues = new TOrdCollection();
-      for (Int_t i = 0; i < nFitTemplates; i++) {
-         TString temp(FitMacroTemplates[i]);
-         Int_t firstspace = temp.First(' ');
-         Int_t firstbrace = temp.First('(');
-         cout << firstspace << " " << firstbrace << endl;
-         TString mname = temp(firstspace + 1, firstbrace - firstspace - 2);
-         svalues->Add(new TObjString(mname.Data()));
-      }
+      if (fSelHist->GetDimension() == 1) {
+      	TOrdCollection *svalues = new TOrdCollection();
+      	for (Int_t i = 0; i < nFitTemplates; i++) {
+         	TString temp(FitMacroTemplates[i]);
+         	Int_t cstart = temp.Index("/*");
+         	Int_t cend = -1;
+         	if (cstart >= 0) cend = temp.Index("*/");
+         	TString mname("NoName");
+         	if (cstart >= 0 && cend > cstart) 
+            	mname = temp(cstart + 2, cend - cstart - 2);
 
-      TArrayI flags(nFitTemplates);
-      TString title("Template Fit Macros");
-      Int_t retval;
-      Int_t itemwidth = 240;
-      new TGMrbTableFrame(mycanvas, &retval,
-      						  title.Data(),
-      						  itemwidth, 1,
-      						  nFitTemplates,
-      						  svalues, 0, 0, &flags,
-      						  nFitTemplates);
-      if (retval < 0) {
-         return;
-      }
-      Bool_t ok = kFALSE;
-      for (Int_t i = 0; i < nFitTemplates; i++) {
-         if (flags[i] == 1) {
-            tmpfile << FitMacroTemplates[i];
-            ok = kTRUE;
-            break;
-         }
-      }
-      if (!ok) {
-         cout << "no selection" << endl;
-         return;
-      }
+         	svalues->Add(new TObjString(mname.Data()));
+      	}
+
+      	TArrayI flags(nFitTemplates);
+      	TString title("Template Fit Macros");
+      	Int_t retval;
+      	Int_t itemwidth = 240;
+      	new TGMrbTableFrame(mycanvas, &retval,
+      							  title.Data(),
+      							  itemwidth, 1,
+      							  nFitTemplates,
+      							  svalues, 0, 0, &flags,
+      							  nFitTemplates);
+      	if (retval < 0) {
+         	return;
+      	}
+      	Bool_t ok = kFALSE;
+      	for (Int_t i = 0; i < nFitTemplates; i++) {
+         	if (flags[i] == 1) {
+            	tmpfile << FitMacroTemplates[i];
+            	ok = kTRUE;
+            	break;
+         	}
+      	}
+      	if (!ok) {
+         	cout << "no selection" << endl;
+         	return;
+      	}
+      } else if (fSelHist->GetDimension() == 2) {
+          tmpfile << Gauss2d;
+       }
       tmpfile.close();
    }
    TString EditCmd = "nedit ";

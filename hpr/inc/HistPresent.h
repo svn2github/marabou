@@ -30,15 +30,15 @@ class HistPresent : public TNamed {
 
 friend class FitHist;
 friend class HTCanvas;
-friend class HTRootCanvas;
+friend class HandleMenus;
 
 protected:
    TCanvas *cHPr;                 // the main canvas
    TCanvas *filelist;                 // the main canvas
    TFile       *fRootFile;        // root file
    TH1 * fCurrentHist;
-   HTRootCanvas *maincanvas;
-   HTRootCanvas *lastcanvas;
+   TRootCanvas *maincanvas;
+   TRootCanvas *lastcanvas;
    Bool_t fByTitle;
    Int_t fRebin, fRMethod;
    TVirtualPad *activeFile;
@@ -76,8 +76,6 @@ protected:
 
    TMrbHelpBrowser * fHelpBrowser;
 
-   Float_t fHprGridX;
-   Float_t fHprGridY;
    Int_t fNwindows; 
    Int_t fWintopx;     // origin of window
    Int_t fWintopy; 
@@ -105,8 +103,6 @@ protected:
    Int_t fFill2Dim;
    Int_t f2DimBackgroundColor;
    Int_t f1DimFillColor;
-   Int_t fStatFont;
-   Int_t fTitleFont;
 
    Int_t fFitOptLikelihood;  
    Int_t fFitOptQuiet;  
@@ -131,6 +127,7 @@ protected:
    Int_t fRememberZoom; 
    Int_t fUseAttributeMacro;
    Int_t fShowAllAsFirst; 
+   Int_t fAlwaysNewLimits; 
 
    Int_t fNofColorLevels;
    Int_t * fPalette;
@@ -168,14 +165,100 @@ protected:
    Bool_t  fSocketIsOpen;
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
-   Float_t fXXXXX;
+//  Graphics attributes
+
+   Int_t         fLabelMaxDigits;  
+
+   Int_t        fNdivisionsX; 
+   Color_t      fAxisColorX;  
+   Color_t      fLabelColorX; 
+   Style_t      fLabelFontX;  
+   Float_t      fLabelOffsetX;
+   Float_t      fLabelSizeX;  
+   Float_t      fTickLengthX; 
+   Float_t      fTitleOffsetX;
+   Float_t      fTitleSizeX;  
+   Color_t      fTitleColorX; 
+   Style_t      fTitleFontX;  
+
+   Int_t        fNdivisionsY; 
+   Color_t      fAxisColorY;  
+   Color_t      fLabelColorY; 
+   Style_t      fLabelFontY;  
+   Float_t      fLabelOffsetY;
+   Float_t      fLabelSizeY;  
+   Float_t      fTickLengthY; 
+   Float_t      fTitleOffsetY;
+   Float_t      fTitleSizeY;  
+   Color_t      fTitleColorY; 
+   Style_t      fTitleFontY;  
+
+   Int_t        fNdivisionsZ; 
+   Color_t      fAxisColorZ;  
+   Color_t      fLabelColorZ; 
+   Style_t      fLabelFontZ;  
+   Float_t      fLabelOffsetZ;
+   Float_t      fLabelSizeZ;  
+   Float_t      fTickLengthZ; 
+   Float_t      fTitleOffsetZ;
+   Float_t      fTitleSizeZ;  
+   Color_t      fTitleColorZ; 
+   Style_t      fTitleFontZ;  
+
+   Color_t       fHistFillColor;
+   Color_t       fHistLineColor;
+   Style_t       fHistFillStyle;
+   Style_t       fHistLineStyle;
+   Width_t       fHistLineWidth;
+   Float_t       fEndErrorSize;
+   Float_t       fErrorX;      
+   Color_t       fFuncColor;   
+   Style_t       fFuncStyle;   
+   Width_t       fFuncWidth;   
+
+   Color_t       fStatColor;     
+   Color_t       fStatTextColor; 
+   Width_t       fStatBorderSize;
+   Style_t       fStatFont;      
+   Float_t       fStatFontSize;  
+   Style_t       fStatStyle;     
+   Float_t       fStatX;         
+   Float_t       fStatY;         
+   Float_t       fStatW;         
+   Float_t       fStatH;
+
+   Color_t       fPadColor;       
+   Width_t       fPadBorderSize;  
+   Int_t         fPadBorderMode;  
+   Float_t       fPadBottomMargin;
+   Float_t       fPadTopMargin;   
+   Float_t       fPadLeftMargin;  
+   Float_t       fPadRightMargin; 
+   Bool_t        fPadGridX;       
+   Bool_t        fPadGridY;       
+   Int_t         fPadTickX;       
+   Int_t         fPadTickY;  
+
+   Color_t       fTitleColor;     
+   Color_t       fTitleTextColor; 
+   Width_t       fTitleBorderSize;
+   Style_t       fTitleFont;      
+   Float_t       fTitleFontSize;  
+   Style_t       fTitleStyle;     
+   Float_t       fTitleX;         
+   Float_t       fTitleY;         
+   Float_t       fTitleW;         
+   Float_t       fTitleH;  
+   Int_t         fForceStyle;  
+                       
+    Float_t fXXXXX;
 
 public:
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
    void RecursiveRemove(TObject *);
-   HTRootCanvas* GetMyCanvas(){return lastcanvas;};  
-   void  SetMyCanvas(HTRootCanvas *myc){lastcanvas = myc;}; 
+   TRootCanvas* GetMyCanvas(){return lastcanvas;};  
+   void  SetMyCanvas(TRootCanvas *myc){lastcanvas = myc;}; 
    void SaveOptions();
    void RestoreOptions();
    void EditAttrFile();
@@ -188,7 +271,19 @@ public:
    void RebinHist();               // 
    void OperateHist(Int_t);               // 
    void SetOperateVal();               // 
-   void ListSelect();  
+   void ListSelect(); 
+   void SetPadAtt();
+   void SetTitleAtt();
+   void SetHistAtt();
+   void SetStatAtt();
+   void SetAxisAtt();
+   void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetTitleAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetHistAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetStatAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetXaxisAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetYaxisAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetZaxisAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetDisplayOptions(TGWindow * win = 0, FitHist * fh = 0);  
    void Set1DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
    void Set2DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
@@ -257,10 +352,6 @@ public:
    TList* GetSelections(){return fSelectHist;};
    void ShowSelectedHists(TList *, const char* title =0);
 
-   Float_t GetGridX(){return fHprGridX;};
-   Float_t GetGridY(){return fHprGridY;};
-   void    SetGridX(Float_t x){fHprGridX = x;};
-   void    SetGridY(Float_t y){fHprGridY = y;};
    TH1 *  GetCurrentHist(){return fCurrentHist;};
    void   SetCurrentHist(TH1 * hist){fCurrentHist = hist;};
    Int_t  GetOptStat(){return fOptStat;};

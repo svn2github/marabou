@@ -15,7 +15,11 @@
 //*KEEP,TPad.
 #include "TList.h"
 #include "TCanvas.h"
-#include "HTCanvasImp.h"
+#include "TGMenu.h"
+#include "TGStatusBar.h"
+#include "TRootCanvas.h"
+
+#include <iostream>
 
 namespace std {} using namespace std;
 
@@ -23,17 +27,24 @@ namespace std {} using namespace std;
 class FitHist;
 class HistPresent;
 class HTimer;
-
+class HandleMenus;
 
 class HTCanvas : public TCanvas {
+
+friend class HandleMenus;
 
 private:
    HistPresent    * fHistPresent; 
    FitHist        * fFitHist;
    HTimer         * fTimer;
    TList          * fHistList;
+   TRootCanvas    * fRootCanvas;
+   HandleMenus * fHandleMenus;
+   Double_t       fGridX;
+   Double_t       fGridY;
+   Bool_t         fUseGrid;
    void Build();
-
+//
 public:
    HTCanvas();
    HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -51,6 +62,14 @@ public:
    void UpdateHists();
    void ClearFitHist(){fFitHist = 0;};
    void ClearHistPresent(){fHistPresent = 0;};
+   void SetLog(Int_t state);
+   Double_t GetGridX(){return fGridX;};
+   Double_t GetGridY(){return fGridY;};
+   void    SetGridX(Double_t x){fGridX = x;};
+   void    SetGridY(Double_t y){fGridY = y;};
+   void    SetUseGrid(Bool_t use){fUseGrid = use;};
+   Bool_t  GetUseGrid(){return fUseGrid;};
+
    ClassDef(HTCanvas,0)  //Graphics canvas
 };
 

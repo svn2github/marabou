@@ -1,6 +1,7 @@
 #include "TROOT.h"
 #include "TEnv.h"
 #include "TColor.h"
+#include "TGaxis.h"
 #include "TList.h"
 #include "TString.h"
 #include "TStyle.h"
@@ -241,7 +242,7 @@ void HistPresent::RestoreOptions()
    fFill1Dim = env.GetValue("HistPresent.Fill1Dim", fFill1Dim);
    fShowContour = env.GetValue("HistPresent.ShowContour", fShowContour);
    fOptStat = env.GetValue("HistPresent.OptStat", 1001111);
-   fShowDateBox = env.GetValue("HistPresent.ShowDateBox", 1);
+   fShowDateBox = env.GetValue("HistPresent.ShowDateBox", 21);
    fShowStatBox = env.GetValue("HistPresent.ShowStatBox", 1);
    fUseTimeOfDisplay = env.GetValue("HistPresent.UseTimeOfDisplay", 0);
    fShowTitle = env.GetValue("HistPresent.ShowTitle", 1);
@@ -251,6 +252,7 @@ void HistPresent::RestoreOptions()
    fShowPSFile = env.GetValue("HistPresent.AutoShowPSFile", 1);
    fShowListsOnly= env.GetValue("HistPresent.ShowListsOnly", 0);
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
+   fAlwaysNewLimits    = env.GetValue("HistPresent.AlwaysNewLimits", 0);
    fRememberLastSet = env.GetValue("HistPresent.RememberLastSet", 1);
    fRememberZoom = env.GetValue("HistPresent.RememberZoom", 0);
    fUseAttributeMacro = env.GetValue("HistPresent.UseAttributeMacro", 1);
@@ -282,7 +284,7 @@ void HistPresent::RestoreOptions()
        env.GetValue("HistPresent.2DimBackgroundColor", 0);
    f1DimFillColor = env.GetValue("HistPresent.1DimFillColor", 46);
    fStatFont = env.GetValue("HistPresent.StatBoxFont", 40);
-   fTitleFont = env.GetValue("HistPresent.TitleBoxFont", 60);
+   fTitleFont = env.GetValue("HistPresent.TitleFont", 62);
    fFitOptUseLinBg = env.GetValue("HistPresent.FitOptUseLinBg", 0);
    fMaxListEntries= env.GetValue("HistPresent.MaxListEntries", 333);
    fDisplayCalibrated= env.GetValue("HistPresent.DisplayCalibrated", 1);
@@ -294,6 +296,91 @@ void HistPresent::RestoreOptions()
    fAutoExec_2 = env.GetValue("HistPresent.AutoExec_2", 1);
    fAutoProj_X = env.GetValue("HistPresent.AutoProj_X", 0);
    fAutoProj_Y = env.GetValue("HistPresent.AutoProj_Y", 0);
+
+   fLabelMaxDigits=  env.GetValue("HistPresent.LabelMaxDigits",  5);  
+
+   fNdivisionsX= env.GetValue("HistPresent.NdivisionsX", 510); 
+   fAxisColorX=  env.GetValue("HistPresent.AxisColorX",  1);  
+   fLabelColorX= env.GetValue("HistPresent.LabelColorX", 1); 
+   fLabelFontX=  env.GetValue("HistPresent.LabelFontX",  62);  
+   fLabelOffsetX=env.GetValue("HistPresent.LabelOffsetX",0.005);
+   fLabelSizeX=  env.GetValue("HistPresent.LabelSizeX",  0.03);  
+   fTickLengthX= env.GetValue("HistPresent.TickLengthX", 0.03); 
+   fTitleOffsetX=env.GetValue("HistPresent.TitleOffsetX",1);
+   fTitleSizeX=  env.GetValue("HistPresent.TitleSizeX",  0.03);  
+   fTitleColorX= env.GetValue("HistPresent.TitleColorX", 1); 
+   fTitleFontX=  env.GetValue("HistPresent.TitleFontX",   62);  
+
+   fNdivisionsY= env.GetValue("HistPresent.NdivisionsY", 510); 
+   fAxisColorY=  env.GetValue("HistPresent.AxisColorY",  1);  
+   fLabelColorY= env.GetValue("HistPresent.LabelColorY", 1); 
+   fLabelFontY=  env.GetValue("HistPresent.LabelFontY",  62);  
+   fLabelOffsetY=env.GetValue("HistPresent.LabelOffsetY",0.005);
+   fLabelSizeY=  env.GetValue("HistPresent.LabelSizeY",  0.03);  
+   fTickLengthY= env.GetValue("HistPresent.TickLengthY", 0.03); 
+   fTitleOffsetY=env.GetValue("HistPresent.TitleOffsetY",1);
+   fTitleSizeY=  env.GetValue("HistPresent.TitleSizeY",  0.03);  
+   fTitleColorY= env.GetValue("HistPresent.TitleColorY", 1); 
+   fTitleFontY=  env.GetValue("HistPresent.TitleFontY",   62);  
+
+   fNdivisionsZ= env.GetValue("HistPresent.NdivisionsZ", 510); 
+   fAxisColorZ=  env.GetValue("HistPresent.AxisColorZ",  1);  
+   fLabelColorZ= env.GetValue("HistPresent.LabelColorZ", 1); 
+   fLabelFontZ=  env.GetValue("HistPresent.LabelFontZ",  62);  
+   fLabelOffsetZ=env.GetValue("HistPresent.LabelOffsetZ",0.005);
+   fLabelSizeZ=  env.GetValue("HistPresent.LabelSizeZ",  0.03);  
+   fTickLengthZ= env.GetValue("HistPresent.TickLengthZ", 0.03); 
+   fTitleOffsetZ=env.GetValue("HistPresent.TitleOffsetZ",1);
+   fTitleSizeZ=  env.GetValue("HistPresent.TitleSizeZ",  0.03);  
+   fTitleColorZ= env.GetValue("HistPresent.TitleColorZ", 1); 
+   fTitleFontZ=  env.GetValue("HistPresent.TitleFontZ",   62);  
+
+   fHistFillColor=env.GetValue("HistPresent.HistFillColor", 0);
+   fHistLineColor=env.GetValue("HistPresent.HistLineColor", 1);
+   fHistFillStyle=env.GetValue("HistPresent.HistFillStyle", 0);
+   fHistLineStyle=env.GetValue("HistPresent.HistLineStyle", 1);
+   fHistLineWidth=env.GetValue("HistPresent.HistLineWidth", 2);
+   fEndErrorSize= env.GetValue("HistPresent.EndErrorSize ", 1);
+   fErrorX=       env.GetValue("HistPresent.ErrorX       ", 0.0);
+   fFuncColor=    env.GetValue("HistPresent.FuncColor    ", 4);
+   fFuncStyle=    env.GetValue("HistPresent.FuncStyle    ", 1);
+   fFuncWidth=    env.GetValue("HistPresent.FuncWidth    ", 2);
+
+   fStatColor=     env.GetValue("HistPresent.StatColor     ", 19);
+   fStatTextColor= env.GetValue("HistPresent.StatTextColor ", 1);
+   fStatBorderSize=env.GetValue("HistPresent.StatBorderSize", 1);
+   fStatFont=      env.GetValue("HistPresent.StatFont      ", 62);
+   fStatFontSize=  env.GetValue("HistPresent.StatFontSize  ", 0);
+   fStatStyle=     env.GetValue("HistPresent.StatStyle     ", 1001);
+   fStatX=         env.GetValue("HistPresent.StatX         ", 0.98);
+   fStatY=         env.GetValue("HistPresent.StatY         ", 0.995);
+   fStatW=         env.GetValue("HistPresent.StatW         ", 0.2);
+   fStatH=         env.GetValue("HistPresent.StatH         ", 0.16);
+
+   fTitleColor     = env.GetValue("HistPresent.TitleColor",     1);
+   fTitleTextColor = env.GetValue("HistPresent.TitleTextColor", 1);
+   fTitleBorderSize= env.GetValue("HistPresent.TitleBorderSize",1);
+   fTitleFont      = env.GetValue("HistPresent.TitleFont",      62);
+   fTitleFontSize  = env.GetValue("HistPresent.TitleFontSize",  0);
+   fTitleStyle     = env.GetValue("HistPresent.TitleStyle",     1001);
+   fTitleX         = env.GetValue("HistPresent.TitleX",         0.01);
+   fTitleY         = env.GetValue("HistPresent.TitleY",         .995);
+   fTitleW         = env.GetValue("HistPresent.TitleW",         0);
+   fTitleH         = env.GetValue("HistPresent.TitleH",         0);
+
+   fPadColor       = env.GetValue("HistPresent.PadColor",       19);
+   fPadBorderSize  = env.GetValue("HistPresent.PadBorderSize",  2);
+   fPadBorderMode  = env.GetValue("HistPresent.PadBorderMode",  1);
+   fPadBottomMargin= env.GetValue("HistPresent.PadBottomMargin",0.1);
+   fPadTopMargin   = env.GetValue("HistPresent.PadTopMargin",   0.1);
+   fPadLeftMargin  = env.GetValue("HistPresent.PadLeftMargin",  0.1);
+   fPadRightMargin = env.GetValue("HistPresent.PadRightMargin", 0.1);
+   fPadGridX       = env.GetValue("HistPresent.PadGridX",       0);
+   fPadGridY       = env.GetValue("HistPresent.PadGridY",       0);
+   fPadTickX       = env.GetValue("HistPresent.PadTickX",       0);
+   fPadTickY       = env.GetValue("HistPresent.PadTickY",       0);
+   fForceStyle     = env.GetValue("HistPresent.ForceStyle",      1);
+
    *fHelpDir =
        env.GetValue("HistPresent.HelpDir",
                     "/usr/local/marabou_doc/html/hpr");
@@ -344,10 +431,21 @@ void HistPresent::RestoreOptions()
       gStyle->SetOptFit(0);
       gStyle->SetOptStat(0);
    }
+   if (fShowDateBox) {
+      gStyle->SetOptDate(fShowDateBox);
+   } else {
+      gStyle->SetOptDate(0);
+   }
    gStyle->SetOptTitle(fShowTitle);
 //   gStyle->SetStatFont(fStatFont);
-   gStyle->SetTitleFont(fTitleFont);
-   gROOT->ForceStyle();
+//   gStyle->SetTitleFont(fTitleFont);
+   SetAxisAtt();
+   SetHistAtt();
+   SetTitleAtt();
+   SetStatAtt();
+   SetPadAtt();
+   if (fForceStyle > 0) gROOT->ForceStyle();
+   else                 gROOT->ForceStyle(kFALSE);
 //   cout << "RestoreOptions,  fUseAttributeMacro " << fUseAttributeMacro << endl;
 }
 
@@ -390,6 +488,7 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.AutoShowPSFile", fShowPSFile);
    SetIntValue(env, "HistPresent.ShowListsOnly", fShowListsOnly);
    SetIntValue(env, "HistPresent.RememberTreeHists", fRememberTreeHists);
+   SetIntValue(env, "HistPresent.AlwaysNewLimits", fAlwaysNewLimits);
    SetIntValue(env, "HistPresent.RememberLastSet", fRememberLastSet);
    SetIntValue(env, "HistPresent.RememberZoom", fRememberZoom);
    SetIntValue(env, "HistPresent.UseAttributeMacro", fUseAttributeMacro);
@@ -431,7 +530,559 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.LiveGauss", fLiveGauss);
    env.SetValue("HistPresent.LiveBG", fLiveBG);
 
+   env.SetValue("HistPresent.LabelMaxDigits", fLabelMaxDigits);  
+   env.SetValue("HistPresent.NdivisionsX", fNdivisionsX); 
+   env.SetValue("HistPresent.AxisColorX",  fAxisColorX);  
+   env.SetValue("HistPresent.LabelColorX", fLabelColorX); 
+   env.SetValue("HistPresent.LabelFontX",  fLabelFontX);  
+   env.SetValue("HistPresent.LabelOffsetX",fLabelOffsetX);
+   env.SetValue("HistPresent.LabelSizeX",  fLabelSizeX);  
+   env.SetValue("HistPresent.TickLengthX", fTickLengthX); 
+   env.SetValue("HistPresent.TitleOffsetX",fTitleOffsetX);
+   env.SetValue("HistPresent.TitleSizeX",  fTitleSizeX);  
+   env.SetValue("HistPresent.TitleColorX", fTitleColorX); 
+   env.SetValue("HistPresent.TitleFontX",   fTitleFontX);  
+
+   env.SetValue("HistPresent.NdivisionsY", fNdivisionsY); 
+   env.SetValue("HistPresent.AxisColorY",  fAxisColorY);  
+   env.SetValue("HistPresent.LabelColorY", fLabelColorY); 
+   env.SetValue("HistPresent.LabelFontY",  fLabelFontY);  
+   env.SetValue("HistPresent.LabelOffsetY",fLabelOffsetY);
+   env.SetValue("HistPresent.LabelSizeY",  fLabelSizeY);  
+   env.SetValue("HistPresent.TickLengthY", fTickLengthY); 
+   env.SetValue("HistPresent.TitleOffsetY",fTitleOffsetY);
+   env.SetValue("HistPresent.TitleSizeY",  fTitleSizeY);  
+   env.SetValue("HistPresent.TitleColorY", fTitleColorY); 
+   env.SetValue("HistPresent.TitleFontY",   fTitleFontY);  
+
+   env.SetValue("HistPresent.NdivisionsZ", fNdivisionsZ); 
+   env.SetValue("HistPresent.AxisColorZ",  fAxisColorZ);  
+   env.SetValue("HistPresent.LabelColorZ", fLabelColorZ); 
+   env.SetValue("HistPresent.LabelFontZ",  fLabelFontZ);  
+   env.SetValue("HistPresent.LabelOffsetZ",fLabelOffsetZ);
+   env.SetValue("HistPresent.LabelSizeZ",  fLabelSizeZ);  
+   env.SetValue("HistPresent.TickLengthZ", fTickLengthZ); 
+   env.SetValue("HistPresent.TitleOffsetZ",fTitleOffsetZ);
+   env.SetValue("HistPresent.TitleSizeZ",  fTitleSizeZ);  
+   env.SetValue("HistPresent.TitleColorZ", fTitleColorZ); 
+   env.SetValue("HistPresent.TitleFontZ",  fTitleFontZ);  
+
+   env.SetValue("HistPresent.HistFillColor", fHistFillColor);
+   env.SetValue("HistPresent.HistLineColor", fHistLineColor);
+   env.SetValue("HistPresent.HistFillStyle", fHistFillStyle);
+   env.SetValue("HistPresent.HistLineStyle", fHistLineStyle);
+   env.SetValue("HistPresent.HistLineWidth", fHistLineWidth);
+   env.SetValue("HistPresent.EndErrorSize",  fEndErrorSize );
+   env.SetValue("HistPresent.ErrorX",        fErrorX       );
+   env.SetValue("HistPresent.FuncColor",     fFuncColor    );
+   env.SetValue("HistPresent.FuncStyle",     fFuncStyle    );
+   env.SetValue("HistPresent.FuncWidth",     fFuncWidth    );
+
+   env.SetValue("HistPresent.StatColor",      fStatColor     );
+   env.SetValue("HistPresent.StatTextColor",  fStatTextColor );
+   env.SetValue("HistPresent.StatBorderSize", fStatBorderSize);
+   env.SetValue("HistPresent.StatFont",       fStatFont      );
+   env.SetValue("HistPresent.StatFontSize",   fStatFontSize  );
+   env.SetValue("HistPresent.StatStyle",      fStatStyle     );
+   env.SetValue("HistPresent.StatX",          fStatX         );
+   env.SetValue("HistPresent.StatY",          fStatY         );
+   env.SetValue("HistPresent.StatW",          fStatW         );
+   env.SetValue("HistPresent.StatH",          fStatH         );
+
+   env.SetValue("HistPresent.TitleColor",      fTitleColor     );
+   env.SetValue("HistPresent.TitleTextColor",  fTitleTextColor );
+   env.SetValue("HistPresent.TitleBorderSize", fTitleBorderSize);
+   env.SetValue("HistPresent.TitleFont",       fTitleFont      );
+   env.SetValue("HistPresent.TitleFontSize",   fTitleFontSize  );
+   env.SetValue("HistPresent.TitleStyle",      fTitleStyle     );
+   env.SetValue("HistPresent.TitleX",          fTitleX         );
+   env.SetValue("HistPresent.TitleY",          fTitleY         );
+   env.SetValue("HistPresent.TitleW",          fTitleW         );
+   env.SetValue("HistPresent.TitleH",          fTitleH         );
+
+   env.SetValue("HistPresent.PadColor",        fPadColor       );
+   env.SetValue("HistPresent.PadBorderSize",   fPadBorderSize  );
+   env.SetValue("HistPresent.PadBorderMode",   fPadBorderMode  );
+   env.SetValue("HistPresent.PadBottomMargin", fPadBottomMargin);
+   env.SetValue("HistPresent.PadTopMargin",    fPadTopMargin   );
+   env.SetValue("HistPresent.PadLeftMargin",   fPadLeftMargin  );
+   env.SetValue("HistPresent.PadRightMargin",  fPadRightMargin );
+   env.SetValue("HistPresent.PadGridX",        fPadGridX       );
+   env.SetValue("HistPresent.PadGridY",        fPadGridY       );
+   env.SetValue("HistPresent.PadTickX",        fPadTickX       );
+   env.SetValue("HistPresent.PadTickY",        fPadTickY       );
+   env.SetValue("HistPresent.ForceStyle",      fForceStyle     );
+ 
    env.SaveLevel(kEnvUser);
+}
+
+//_______________________________________________________________________
+
+void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 10;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("TitleColor"));     
+   row_lab->Add(new TObjString("TitleTextColor")); 
+   row_lab->Add(new TObjString("TitleBorderSize"));
+   row_lab->Add(new TObjString("TitleFont"));      
+   row_lab->Add(new TObjString("TitleFontSize"));  
+   row_lab->Add(new TObjString("TitleStyle"));     
+   row_lab->Add(new TObjString("TitleX"));         
+   row_lab->Add(new TObjString("TitleY"));         
+   row_lab->Add(new TObjString("TitleW"));         
+   row_lab->Add(new TObjString("TitleH"));  
+
+   values[vp++] = fTitleColor;     
+   values[vp++] = fTitleTextColor; 
+   values[vp++] = fTitleBorderSize;
+   values[vp++] = fTitleFont;      
+   values[vp++] = fTitleFontSize;  
+   values[vp++] = fTitleStyle;     
+   values[vp++] = fTitleX;         
+   values[vp++] = fTitleY;         
+   values[vp++] = fTitleW;         
+   values[vp++] = fTitleH;  
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "Histogram title attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab);
+   if (ret >= 0) {
+      vp = 0;
+      fTitleColor     = (Int_t)values[vp++];
+      fTitleTextColor = (Int_t)values[vp++];
+      fTitleBorderSize= (Int_t)values[vp++];
+      fTitleFont      = (Int_t)values[vp++];
+      fTitleFontSize  = values[vp++];
+      fTitleStyle     = (Int_t)values[vp++];
+      fTitleX         = values[vp++];
+      fTitleY         = values[vp++];
+      fTitleW         = values[vp++];
+      fTitleH         = values[vp++];
+      SaveOptions();
+      SetTitleAtt();
+   }
+}
+//_______________________________________________________________________
+
+void HistPresent::SetTitleAtt()
+{
+   gStyle->SetTitleColor(     fTitleColor, "t");    
+   gStyle->SetTitleTextColor( fTitleTextColor);
+   gStyle->SetTitleBorderSize(fTitleBorderSize);
+   gStyle->SetTitleFont(      fTitleFont, "t");     
+   gStyle->SetTitleFontSize(  fTitleFontSize); 
+   gStyle->SetTitleStyle(     fTitleStyle);    
+   gStyle->SetTitleX(         fTitleX);        
+   gStyle->SetTitleY(         fTitleY);        
+   gStyle->SetTitleW(         fTitleW);        
+   gStyle->SetTitleH(         fTitleH);
+}
+//_______________________________________________________________________
+
+void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 11;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("PadColor"));       
+   row_lab->Add(new TObjString("PadBorderSize"));  
+   row_lab->Add(new TObjString("PadBorderMode"));  
+   row_lab->Add(new TObjString("PadBottomMargin"));
+   row_lab->Add(new TObjString("PadTopMargin"));   
+   row_lab->Add(new TObjString("PadLeftMargin"));  
+   row_lab->Add(new TObjString("PadRightMargin")); 
+   row_lab->Add(new TObjString("PadGridX"));       
+   row_lab->Add(new TObjString("PadGridY"));       
+   row_lab->Add(new TObjString("PadTickX"));       
+   row_lab->Add(new TObjString("PadTickY"));  
+
+   values[vp++] = fPadColor;       
+   values[vp++] = fPadBorderSize;  
+   values[vp++] = fPadBorderMode;  
+   values[vp++] = fPadBottomMargin;
+   values[vp++] = fPadTopMargin;   
+   values[vp++] = fPadLeftMargin;  
+   values[vp++] = fPadRightMargin; 
+   values[vp++] = fPadGridX;       
+   values[vp++] = fPadGridY;       
+   values[vp++] = fPadTickX;       
+   values[vp++] = fPadTickY;  
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "Pad attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab);
+   if (ret >= 0) {
+      vp = 0;
+      fPadColor           = (Int_t)values[vp++];
+      fPadBorderSize      = (Int_t)values[vp++];
+      fPadBorderMode      = (Int_t)values[vp++];
+      fPadBottomMargin    = values[vp++];
+      fPadTopMargin       = values[vp++];
+      fPadLeftMargin      = values[vp++];
+      fPadRightMargin     = values[vp++];
+      fPadGridX           = values[vp++];
+      fPadGridY           = values[vp++];
+      fPadTickX           = (Int_t)values[vp++];
+      fPadTickY           = (Int_t)values[vp++];
+      SaveOptions();
+      SetPadAtt();
+   } 
+}
+//_______________________________________________________________________
+
+void HistPresent::SetPadAtt()
+{
+   gStyle->SetPadColor       (fPadColor       ); 
+   gStyle->SetPadBorderSize  (fPadBorderSize  ); 
+   gStyle->SetPadBorderMode  (fPadBorderMode  ); 
+   gStyle->SetPadBottomMargin(fPadBottomMargin); 
+   gStyle->SetPadTopMargin   (fPadTopMargin   ); 
+   gStyle->SetPadLeftMargin  (fPadLeftMargin  ); 
+   gStyle->SetPadRightMargin (fPadRightMargin ); 
+   gStyle->SetPadGridX       (fPadGridX       ); 
+   gStyle->SetPadGridY       (fPadGridY       ); 
+   gStyle->SetPadTickX       (fPadTickX       ); 
+   gStyle->SetPadTickY       (fPadTickY       ); 
+}
+//_______________________________________________________________________
+
+void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 10;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("HistFillColor")); 
+   row_lab->Add(new TObjString("HistLineColor"));  
+   row_lab->Add(new TObjString("HistFillStyle")); 
+   row_lab->Add(new TObjString("HistLineStyle"));  
+   row_lab->Add(new TObjString("HistLineWidth"));
+   row_lab->Add(new TObjString("EndErrorSize "));  
+   row_lab->Add(new TObjString("ErrorX       ")); 
+   row_lab->Add(new TObjString("FuncColor    "));
+   row_lab->Add(new TObjString("FuncStyle    "));  
+   row_lab->Add(new TObjString("FuncWidth    ")); 
+
+   values[vp++] = fHistFillColor;
+   values[vp++] = fHistLineColor;
+   values[vp++] = fHistFillStyle;
+   values[vp++] = fHistLineStyle;
+   values[vp++] = fHistLineWidth;
+   values[vp++] = fEndErrorSize;
+   values[vp++] = fErrorX;      
+   values[vp++] = fFuncColor;   
+   values[vp++] = fFuncStyle;   
+   values[vp++] = fFuncWidth;   
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "Histogram attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab);
+   if (ret >= 0) {
+      vp = 0;
+      fHistFillColor  = (Int_t)values[vp++];
+      fHistLineColor  = (Int_t)values[vp++];
+      fHistFillStyle  = (Int_t)values[vp++];
+      fHistLineStyle  = (Int_t)values[vp++];
+      fHistLineWidth  = (Int_t)values[vp++];
+      fEndErrorSize   = values[vp++];
+      fErrorX         = values[vp++];
+      fFuncColor      = (Int_t)values[vp++];
+      fFuncStyle      = (Int_t)values[vp++];
+      fFuncWidth      = (Int_t)values[vp++];
+
+      SaveOptions();
+      SetHistAtt();
+   }
+}
+//_______________________________________________________________________
+void HistPresent::SetHistAtt()
+{
+   gStyle->SetHistFillColor(fHistFillColor);
+   gStyle->SetHistLineColor(fHistLineColor);
+   gStyle->SetHistFillStyle(fHistFillStyle);
+   gStyle->SetHistLineStyle(fHistLineStyle);
+   gStyle->SetHistLineWidth(fHistLineWidth);
+   gStyle->SetEndErrorSize (fEndErrorSize );
+   gStyle->SetErrorX       (fErrorX       );
+   gStyle->SetFuncColor    (fFuncColor    );
+   gStyle->SetFuncStyle    (fFuncStyle    );
+   gStyle->SetFuncWidth    (fFuncWidth    );
+}
+//_______________________________________________________________________
+
+void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 10;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("StatColor     ")); 
+   row_lab->Add(new TObjString("StatTextColor "));  
+   row_lab->Add(new TObjString("StatBorderSize")); 
+   row_lab->Add(new TObjString("StatFont      "));  
+   row_lab->Add(new TObjString("StatFontSize  "));
+   row_lab->Add(new TObjString("StatStyle     "));  
+   row_lab->Add(new TObjString("StatX         ")); 
+   row_lab->Add(new TObjString("StatY         "));
+   row_lab->Add(new TObjString("StatW         "));  
+   row_lab->Add(new TObjString("StatH         ")); 
+
+   values[vp++] = fStatColor;     
+   values[vp++] = fStatTextColor; 
+   values[vp++] = fStatBorderSize;
+   values[vp++] = fStatFont;      
+   values[vp++] = fStatFontSize;  
+   values[vp++] = fStatStyle;     
+   values[vp++] = fStatX;         
+   values[vp++] = fStatY;         
+   values[vp++] = fStatW;         
+   values[vp++] = fStatH;
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "Statistics box attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab);
+   if (ret >= 0) {
+      vp = 0;
+      fStatColor      = (Int_t)values[vp++];
+      fStatTextColor  = (Int_t)values[vp++];
+      fStatBorderSize = (Int_t)values[vp++];
+      fStatFont       = (Int_t)values[vp++];
+      fStatFontSize   = values[vp++];;
+      fStatStyle      = (Int_t)values[vp++];;
+      fStatX          = values[vp++];;
+      fStatY          = values[vp++];;
+      fStatW          = values[vp++];;
+      fStatH          = values[vp++];
+      SetStatAtt();
+      SaveOptions();
+   }
+}
+//_______________________________________________________________________________
+
+void HistPresent::SetStatAtt()
+{
+   gStyle->SetStatColor     (fStatColor     );
+   gStyle->SetStatTextColor (fStatTextColor );
+   gStyle->SetStatBorderSize(fStatBorderSize);
+   gStyle->SetStatFont      (fStatFont      );
+   gStyle->SetStatFontSize  (fStatFontSize  );
+   gStyle->SetStatStyle     (fStatStyle     );
+   gStyle->SetStatX         (fStatX         );
+   gStyle->SetStatY         (fStatY         );
+   gStyle->SetStatW         (fStatW         );
+   gStyle->SetStatH         (fStatH         );
+}
+//_______________________________________________________________________________
+
+void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 11;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("NdivisionsZ")); 
+   row_lab->Add(new TObjString("AxisColorZ"));  
+   row_lab->Add(new TObjString("LabelColorZ")); 
+   row_lab->Add(new TObjString("LabelFontZ"));  
+   row_lab->Add(new TObjString("LabelOffsetZ"));
+   row_lab->Add(new TObjString("LabelSizeZ"));  
+   row_lab->Add(new TObjString("TickLengthZ")); 
+   row_lab->Add(new TObjString("TitleOffsetZ"));
+   row_lab->Add(new TObjString("TitleSizeZ"));  
+   row_lab->Add(new TObjString("TitleColorZ")); 
+   row_lab->Add(new TObjString("TitleFontZ"));  
+
+   values[vp++] = fNdivisionsZ;
+   values[vp++] = fAxisColorZ ;
+   values[vp++] = fLabelColorZ;
+   values[vp++] = fLabelFontZ ;
+   values[vp++] = fLabelOffsetZ;
+   values[vp++] = fLabelSizeZ ;
+   values[vp++] = fTickLengthZ;
+   values[vp++] = fTitleOffsetZ;
+   values[vp++] = fTitleSizeZ ;
+   values[vp++] = fTitleColorZ;
+   values[vp++] = fTitleFontZ ;
+   SaveOptions();
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "Z axis attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab);
+   if (ret >= 0) {
+      vp = 0;
+      fNdivisionsZ  = (Int_t)values[vp++];
+      fAxisColorZ   = (Int_t)values[vp++];
+      fLabelColorZ  = (Int_t)values[vp++];
+      fLabelFontZ   = (Int_t)values[vp++];
+      fLabelOffsetZ = values[vp++];;
+      fLabelSizeZ   = values[vp++];;
+      fTickLengthZ  = values[vp++];;
+      fTitleOffsetZ = values[vp++];;
+      fTitleSizeZ   = values[vp++];;
+      fTitleColorZ  = (Int_t)values[vp++];
+      fTitleFontZ   = (Int_t)values[vp++];
+   }
+   SetAxisAtt();
+}
+//_______________________________________________________________________
+
+void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 11;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("NdivisionsY")); 
+   row_lab->Add(new TObjString("AxisColorY"));  
+   row_lab->Add(new TObjString("LabelColorY")); 
+   row_lab->Add(new TObjString("LabelFontY"));  
+   row_lab->Add(new TObjString("LabelOffsetY"));
+   row_lab->Add(new TObjString("LabelSizeY"));  
+   row_lab->Add(new TObjString("TickLengthY")); 
+   row_lab->Add(new TObjString("TitleOffsetY"));
+   row_lab->Add(new TObjString("TitleSizeY"));  
+   row_lab->Add(new TObjString("TitleColorY")); 
+   row_lab->Add(new TObjString("TitleFontY"));  
+
+   values[vp++] = fNdivisionsY;
+   values[vp++] = fAxisColorY ;
+   values[vp++] = fLabelColorY;
+   values[vp++] = fLabelFontY ;
+   values[vp++] = fLabelOffsetY;
+   values[vp++] = fLabelSizeY ;
+   values[vp++] = fTickLengthY;
+   values[vp++] = fTitleOffsetY;
+   values[vp++] = fTitleSizeY ;
+   values[vp++] = fTitleColorY;
+   values[vp++] = fTitleFontY ;
+   SaveOptions();
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "Y axis attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab);
+   if (ret >= 0) {
+      vp = 0;
+      fNdivisionsY  = (Int_t)values[vp++];
+      fAxisColorY   = (Int_t)values[vp++];
+      fLabelColorY  = (Int_t)values[vp++];
+      fLabelFontY   = (Int_t)values[vp++];
+      fLabelOffsetY = values[vp++];;
+      fLabelSizeY   = values[vp++];;
+      fTickLengthY  = values[vp++];;
+      fTitleOffsetY = values[vp++];;
+      fTitleSizeY   = values[vp++];;
+      fTitleColorY  = (Int_t)values[vp++];
+      fTitleFontY   = (Int_t)values[vp++];
+   }
+   SetAxisAtt();
+}
+//_______________________________________________________________________
+
+void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
+{
+   Int_t nopt = 12;
+   TArrayD values(nopt);
+   TOrdCollection *row_lab = new TOrdCollection();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("NdivisionsX")); 
+   row_lab->Add(new TObjString("AxisColorX"));  
+   row_lab->Add(new TObjString("LabelColorX")); 
+   row_lab->Add(new TObjString("LabelFontX"));  
+   row_lab->Add(new TObjString("LabelOffsetX"));
+   row_lab->Add(new TObjString("LabelSizeX")); 
+   row_lab->Add(new TObjString("Max digits used in label"));  
+   row_lab->Add(new TObjString("TickLengthX")); 
+   row_lab->Add(new TObjString("TitleOffsetX"));
+   row_lab->Add(new TObjString("TitleSizeX"));  
+   row_lab->Add(new TObjString("TitleColorX")); 
+   row_lab->Add(new TObjString("TitleFontX"));  
+
+   values[vp++] = fNdivisionsX;
+   values[vp++] = fAxisColorX ;
+   values[vp++] = fLabelColorX;
+   values[vp++] = fLabelFontX ;
+   values[vp++] = fLabelOffsetX;
+   values[vp++] = fLabelSizeX ;
+   values[vp++] = fLabelMaxDigits ;
+   values[vp++] = fTickLengthX;
+   values[vp++] = fTitleOffsetX;
+   values[vp++] = fTitleSizeX ;
+   values[vp++] = fTitleColorX;
+   values[vp++] = fTitleFontX ;
+   SaveOptions();
+   Int_t ret, itemwidth = 240, precission = 5;
+   TGMrbTableOfDoubles(win, &ret, "X axis attributes", itemwidth,
+                       1, nopt, values, precission, 0, row_lab,
+                       NULL, 0, NULL, NULL, "Set Y, Z axis to same values");
+   if (ret >= 0) {
+      vp = 0;
+      fNdivisionsX  = (Int_t)values[vp++];
+      fAxisColorX   = (Int_t)values[vp++];
+      fLabelColorX  = (Int_t)values[vp++];
+      fLabelFontX   = (Int_t)values[vp++];
+      fLabelOffsetX = values[vp++];;
+      fLabelSizeX   = values[vp++];;
+      fLabelMaxDigits = (Int_t)values[vp++];
+      fTickLengthX  = values[vp++];;
+      fTitleOffsetX = values[vp++];;
+      fTitleSizeX   = values[vp++];;
+      fTitleColorX  = (Int_t)values[vp++];
+      fTitleFontX   = (Int_t)values[vp++];
+      if (ret == 1){
+         fNdivisionsZ  = fNdivisionsY  = fNdivisionsX  ; 
+         fAxisColorZ   = fAxisColorY   = fAxisColorX   ; 
+         fLabelColorZ  = fLabelColorY  = fLabelColorX  ; 
+         fLabelFontZ   = fLabelFontY   = fLabelFontX   ; 
+         fLabelOffsetZ = fLabelOffsetY = fLabelOffsetX ; 
+         fLabelSizeZ   = fLabelSizeY   = fLabelSizeX   ; 
+         fTickLengthZ  = fTickLengthY  = fTickLengthX  ; 
+         fTitleOffsetZ = fTitleOffsetY = fTitleOffsetX ; 
+         fTitleSizeZ   = fTitleSizeY   = fTitleSizeX   ; 
+         fTitleColorZ  = fTitleColorY  = fTitleColorX  ; 
+         fTitleFontZ   = fTitleFontY   = fTitleFontX   ;
+      }        
+      SetAxisAtt();
+   }
+}
+
+//_______________________________________________________________________
+
+void HistPresent::SetAxisAtt()
+{
+   if (fLabelMaxDigits > 0) TGaxis::SetMaxDigits(fLabelMaxDigits);
+   gStyle->SetNdivisions( fNdivisionsX); 
+   gStyle->SetAxisColor(  fAxisColorX);  
+   gStyle->SetLabelColor( fLabelColorX); 
+   gStyle->SetLabelFont(  fLabelFontX);  
+   gStyle->SetLabelOffset(fLabelOffsetX);
+   gStyle->SetLabelSize(  fLabelSizeX);  
+   gStyle->SetTickLength( fTickLengthX); 
+   gStyle->SetTitleOffset(fTitleOffsetX);
+   gStyle->SetTitleSize(  fTitleSizeX);  
+   gStyle->SetTitleColor( fTitleColorX); 
+   gStyle->SetTitleFont(  fTitleFontX);  
+
+   gStyle->SetNdivisions( fNdivisionsY, "Y"); 
+   gStyle->SetAxisColor(  fAxisColorY, "Y");  
+   gStyle->SetLabelColor( fLabelColorY, "Y"); 
+   gStyle->SetLabelFont(  fLabelFontY, "Y");  
+   gStyle->SetLabelOffset(fLabelOffsetY, "Y");
+   gStyle->SetLabelSize(  fLabelSizeY, "Y");  
+   gStyle->SetTickLength( fTickLengthY, "Y"); 
+   gStyle->SetTitleOffset(fTitleOffsetY, "Y");
+   gStyle->SetTitleSize(  fTitleSizeY, "Y");  
+   gStyle->SetTitleColor( fTitleColorY, "Y"); 
+   gStyle->SetTitleFont(  fTitleFontY, "Y");  
+
+   gStyle->SetNdivisions( fNdivisionsZ, "Z"); 
+   gStyle->SetAxisColor(  fAxisColorZ, "Z");  
+   gStyle->SetLabelColor( fLabelColorZ, "Z"); 
+   gStyle->SetLabelFont(  fLabelFontZ, "Z");  
+   gStyle->SetLabelOffset(fLabelOffsetZ, "Z");
+   gStyle->SetLabelSize(  fLabelSizeZ, "Z");  
+   gStyle->SetTickLength( fTickLengthZ, "Z"); 
+   gStyle->SetTitleOffset(fTitleOffsetZ, "Z");
+   gStyle->SetTitleSize(  fTitleSizeZ, "Z");  
+   gStyle->SetTitleColor( fTitleColorZ, "Z"); 
+   gStyle->SetTitleFont(  fTitleFontZ, "Z");  
 }
 
 //_______________________________________________________________________
@@ -517,9 +1168,10 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
          drawopt += "e1";
       if (fFill1Dim) {
          hi->SetFillStyle(1001);
-         hi->SetFillColor(44);
+         hi->SetFillColor(f1DimFillColor);
       } else
          hi->SetFillStyle(0);
+      hi->SetOption(drawopt.Data());
       hi->SetDrawOption(drawopt.Data());
    }
 }
@@ -528,17 +1180,17 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 {
    const Int_t nopt = 24;
-   enum drawopt2 { e_scat, e_box, e_cont0, e_contz, e_cont1, e_cont2,
-          e_cont3,
-      e_col, e_colz, e_lego1, e_lego2, e_lego3,
-      e_surf1, e_surf2, e_surf3, e_surf4, e_text,
-      e_arr, e_livestat, e_fb, e_bb
+   enum drawopt2 { e_scat,  e_box,   e_cont0, e_contz, e_cont1,
+                   e_cont2, e_cont3, e_col,   e_colz,  e_lego1, 
+                   e_lego2, e_lego3, e_surf1, e_surf2, e_surf3, 
+                   e_surf4, e_text,  e_arr, e_fb, e_bb, e_livestat
    };
-   const char *drawopt2[] =
-       { "scat", "box", "cont0", "contz", "cont1", "cont2", "cont3",
-      "col", "COLZ", "lego1", "lego2", "lego3",
-      "surf1", "surf2", "surf3", "surf4",
-      "text", "arr", "BB", "FB", "MONO", "MINV", "REGB"
+   const char *cdrawopt2[] =
+       { "scat",  "box",   "cont0", "contz", "cont1", 
+         "cont2", "cont3", "col",   "COLZ",  "lego1", 
+         "lego2", "lego3", "surf1", "surf2", "surf3", 
+         "surf4", "text",  "arr", 
+         "BB", "FB", "MONO", "MINV", "REGB", "LBOX"
    };
    const char *gDrawOpt2Text[] = {
       "Scatter pixels",
@@ -559,29 +1211,30 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       "Surface, Gourand shading",
       "Numbers",
       "Arrows indicating gradient",
-      "Show live statbox when dragging mouse",
+
       "Dont show back box",
       "Dont show front box",
       "Monochrome levels, highest=white",
       "Monochrome levels, highest=black",
-      "Rainbow colors"
+      "Rainbow colors",
+      "Show live statbox when dragging mouse"
    };
    TArrayI flags(nopt);
    TOrdCollection *svalues = new TOrdCollection();
    for (Int_t i = 0; i < nopt; i++) {
-      if (fDrawOpt2Dim->Contains(drawopt2[i]))
+      if (fDrawOpt2Dim->Contains(cdrawopt2[i]))
          flags[i] = 1;
       else
          flags[i] = 0;
       svalues->Add(new TObjString(gDrawOpt2Text[i]));
    }
    if (f2DimColorPalette->Contains("REGB"))
-      flags[nopt - 1] = 1;
-   else if (f2DimColorPalette->Contains("MINV"))
       flags[nopt - 2] = 1;
-   else if (f2DimColorPalette->Contains("MONO"))
+   else if (f2DimColorPalette->Contains("MINV"))
       flags[nopt - 3] = 1;
-   flags[nopt - 6] = fLiveStat2dim;
+   else if (f2DimColorPalette->Contains("MONO"))
+      flags[nopt - 4] = 1;
+   flags[nopt - 1] = fLiveStat2dim;
    Int_t retval;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
@@ -595,29 +1248,36 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
    }
    for (Int_t i = 0; i < nopt - 6; i++) {
       if (flags[i] != 0)
-         *fDrawOpt2Dim = drawopt2[i];
+         *fDrawOpt2Dim = cdrawopt2[i];
    }
-   fLiveStat2dim = flags[nopt - 6];
 
-   if (flags[nopt - 5] != 0)
-      *fDrawOpt2Dim += "BB";
-   if (flags[nopt - 4] != 0)
-      *fDrawOpt2Dim += "FB";
+   fLiveStat2dim = flags[nopt - 1];
+   TString sopt = *fDrawOpt2Dim;
+//         cout << " sopt " << sopt << endl;
+   if (sopt.Contains("SURF", TString::kIgnoreCase) ||
+       sopt.Contains("LEGO", TString::kIgnoreCase)) {
+       cout << " sopt " << sopt << endl;
 
-   if (flags[nopt - 3] != 0) {
+      if (flags[nopt - 6] != 0)
+         *fDrawOpt2Dim += "BB";
+      if (flags[nopt - 5] != 0)
+         *fDrawOpt2Dim += "FB";
+   }
+
+   if (flags[nopt - 4] != 0) {
       *f2DimColorPalette = "MONO";
       fNofColorLevels = fNofGreyLevels;
       fPalette = fGreyPalette;
 //      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
       cout << "Setting MONO " << endl;
-   } else if (flags[nopt - 2] != 0) {
+   } else if (flags[nopt - 3] != 0) {
       *f2DimColorPalette = "MINV";
       fNofColorLevels = fNofGreyLevels;
       fPalette = fGreyPaletteInv;
 
 //      gStyle->SetPalette(fNofGreyLevels, fGreyPaletteInv);
       cout << "Setting MINV " << endl;
-   } else if (flags[nopt - 1] != 0) {
+   } else if (flags[nopt - 2] != 0) {
       *f2DimColorPalette = "REGB";
       fNofColorLevels = 1;
       fPalette = 0;
@@ -634,6 +1294,7 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
    if (fh) {
       fh->SetSelectedPad();
 //      cout << " fDrawOpt2Dim: " << fDrawOpt2Dim->Data() << endl;
+      fh->GetSelHist()->SetOption(fDrawOpt2Dim->Data());
       fh->GetSelHist()->SetDrawOption(fDrawOpt2Dim->Data());
    }
    SaveOptions();
@@ -741,6 +1402,9 @@ void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
             fShowFitBox = 1;
       }
    }
+
+   if (fShowDateBox)gStyle->SetOptDate(21);
+   else             gStyle->SetOptDate(0);
 
    if (fShowStatBox) {
       gStyle->SetOptStat(fOptStat);
@@ -865,19 +1529,21 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 14;
-   enum e_opt { e_listsonly, e_psfile, e_enablecal, e_displaycal, 
-      e_fitted, e_treehists, e_savelast,
+   Int_t nopt = 16;
+   enum e_opt { e_force, e_listsonly, e_psfile, e_enablecal, e_displaycal, 
+      e_fitted, e_treehists, e_treenew, e_savelast,
       e_savezoom, e_useattr, e_allasfirst, e_useregexp, e_auto_1, e_auto_2,
       e_auto_x, e_auto_y
    };
    const char *opt[] = {
+      "Force style, i.e show histograms with current style",
       "Show histlists only",
       "Show PS file after creation",
       "Enable calibration",
       "Auto Display calibrated hist",
       "Display compents of fit function",
       "Remember hist limits if showing trees",
+      "Ask always for hist limits if showing trees",
       "Remember Expand settings (Marks)",
       "Remember Zoomings (by left mouse)",
       "Use Attribute Macro",
@@ -986,36 +1652,23 @@ Auto exec project Y \n\
    for (Int_t i = 0; i < nopt; i++) {
       svalues->Add(new TObjString(opt[i]));
       flags[i] = 0;
-      if (i == e_enablecal && fEnableCalibration)
-         flags[i] = 1;
-      else if (i == e_displaycal && fDisplayCalibrated)
-         flags[i] = 1;
-      else if (i == e_listsonly && fShowListsOnly)
-         flags[i] = 1;
-      else if (i == e_psfile && fShowPSFile)
-         flags[i] = 1;
-      else if (i == e_fitted && fShowFittedCurves)
-         flags[i] = 1;
-      else if (i == e_treehists && fRememberTreeHists)
-         flags[i] = 1;
-      else if (i == e_savelast && fRememberLastSet)
-         flags[i] = 1;
-      else if (i == e_savezoom && fRememberZoom)
-         flags[i] = 1;
-      else if (i == e_useattr && fUseAttributeMacro)
-         flags[i] = 1;
-      else if (i == e_allasfirst && fShowAllAsFirst)
-         flags[i] = 1;
-      else if (i == e_useregexp && fUseRegexp)
-         flags[i] = 1;
-      else if (i == e_auto_1 && fAutoExec_1)
-         flags[i] = 1;
-      else if (i == e_auto_2 && fAutoExec_2)
-         flags[i] = 1;
-      else if (i == e_auto_x && fAutoProj_X)
-         flags[i] = 1;
-      else if (i == e_auto_y && fAutoProj_Y)
-         flags[i] = 1;
+      if      (i == e_enablecal && fEnableCalibration)  flags[i] = 1;
+      else if (i == e_force && fForceStyle)             flags[i] = 1;
+      else if (i == e_displaycal && fDisplayCalibrated) flags[i] = 1;
+      else if (i == e_listsonly && fShowListsOnly)      flags[i] = 1;
+      else if (i == e_psfile && fShowPSFile)            flags[i] = 1;
+      else if (i == e_fitted && fShowFittedCurves)      flags[i] = 1;
+      else if (i == e_treehists && fRememberTreeHists)  flags[i] = 1;
+      else if (i == e_treenew && fAlwaysNewLimits)      flags[i] = 1;
+      else if (i == e_savelast && fRememberLastSet)     flags[i] = 1;
+      else if (i == e_savezoom && fRememberZoom)        flags[i] = 1;
+      else if (i == e_useattr && fUseAttributeMacro)    flags[i] = 1;
+      else if (i == e_allasfirst && fShowAllAsFirst)    flags[i] = 1;
+      else if (i == e_useregexp && fUseRegexp)          flags[i] = 1;
+      else if (i == e_auto_1 && fAutoExec_1)            flags[i] = 1;
+      else if (i == e_auto_2 && fAutoExec_2)            flags[i] = 1;
+      else if (i == e_auto_x && fAutoProj_X)            flags[i] = 1;
+      else if (i == e_auto_y && fAutoProj_Y)            flags[i] = 1;
    }
    Int_t retval;
    Int_t itemwidth = 240;
@@ -1029,12 +1682,14 @@ Auto exec project Y \n\
       return;
    }
 
+   fForceStyle = 0;
    fEnableCalibration = 0;
    fDisplayCalibrated = 0;
    fShowFittedCurves = 0;
    fShowPSFile = 0;
    fShowListsOnly = 0;
    fRememberTreeHists = 0;
+   fAlwaysNewLimits = 0;
    fRememberLastSet = 0;
    fRememberZoom = 0;
    fUseAttributeMacro = 0;
@@ -1046,38 +1701,27 @@ Auto exec project Y \n\
    fAutoProj_Y = 0;
    for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0) {
-         if (i == e_enablecal)
-            fEnableCalibration = 1;
-         else if (i == e_displaycal)
-             fDisplayCalibrated= 1;
-         else if (i == e_psfile)
-            fShowPSFile = 1;
-         else if (i == e_listsonly)
-            fShowListsOnly = 1;
-         else if (i == e_fitted)
-            fShowFittedCurves = 1;
-         else if (i == e_treehists)
-            fRememberTreeHists = 1;
-         else if (i == e_savelast)
-            fRememberLastSet = 1;
-         else if (i == e_savezoom)
-            fRememberZoom = 1;
-         else if (i == e_useattr)
-            fUseAttributeMacro = 1;
-         else if (i == e_allasfirst)
-            fShowAllAsFirst = 1;
-         else if (i == e_useregexp)
-            fUseRegexp = 1;
-         else if (i == e_auto_1)
-            fAutoExec_1 = 1;
-         else if (i == e_auto_2)
-            fAutoExec_2 = 1;
-         else if (i == e_auto_x)
-            fAutoProj_X = 1;
-         else if (i == e_auto_y)
-            fAutoProj_Y = 1;
+         if      (i == e_enablecal)  fEnableCalibration = 1;
+          else if (i == e_force)     fForceStyle = 1;
+         else if (i == e_displaycal) fDisplayCalibrated= 1;
+         else if (i == e_psfile)     fShowPSFile = 1;
+         else if (i == e_listsonly)  fShowListsOnly = 1;
+         else if (i == e_fitted)     fShowFittedCurves = 1;
+         else if (i == e_treehists)  fRememberTreeHists = 1;
+         else if (i == e_treenew)    fAlwaysNewLimits = 1;
+         else if (i == e_savelast)   fRememberLastSet = 1;
+         else if (i == e_savezoom)   fRememberZoom = 1;
+         else if (i == e_useattr)    fUseAttributeMacro = 1;
+         else if (i == e_allasfirst) fShowAllAsFirst = 1;
+         else if (i == e_useregexp)  fUseRegexp = 1;
+         else if (i == e_auto_1) fAutoExec_1 = 1;
+         else if (i == e_auto_2) fAutoExec_2 = 1;
+         else if (i == e_auto_x) fAutoProj_X = 1;
+         else if (i == e_auto_y) fAutoProj_Y = 1;
       }
    }
+   if (fForceStyle > 0) gROOT->ForceStyle();
+   else                 gROOT->ForceStyle(kFALSE);
    SaveOptions();
 }
 

@@ -41,8 +41,8 @@ void FitHist::MarksToWindow(){
          if(us >= 0)cname.Remove(0,2);
          us = cname.Index("_");
          if(us >= 0)cname.Remove(0,us+1);
-         cut_numb++;
-         cname.Prepend(Form("%d_", cut_numb));
+         fCutNumber++;
+         cname.Prepend(Form("%d_", fCutNumber));
          cname.Prepend("Wdw");
          Bool_t ok;
          fWdwname = GetString("Window will be saved with name",cname.Data(),
@@ -232,15 +232,23 @@ void FitHist::UpdateCut(){
    CheckList(fActiveCuts, "TMrbWindow2D");
    CheckList(fAllCuts, "TMrbWindow2D");
    TCutG *cut = (TCutG*)gROOT->FindObject("CUTG");
+   
    if(cut)
    {
-//      cut->SetName(fCutname.Data());
+      if (fCutname.Length() < 1) {
+         fCutname = fHname;
+         fCutNumber++;
+         fCutname.Prepend(Form("%d_", fCutNumber));
+         fCutname.Prepend("Cut");
+      }
+      cout << "Create cut: " << fCutname.Data() << endl;
       TMrbWindow2D * wdw2d = 
       new TMrbWindow2D(fCutname.Data(), cut->GetN(), cut->GetX(), cut->GetY());
       fActiveCuts->Add(wdw2d);
       fAllCuts->Add(wdw2d);
       delete cut;
       DrawCut();
+      fCutname = "";
    }
    CloseCuts();
 }
@@ -299,8 +307,8 @@ void FitHist::InitCut(){
    UpdateCut();
 //   CheckList(fActiveCuts);
    TString cname = fHname;
-   cut_numb++;
-   cname.Prepend(Form("%d_", cut_numb));
+   fCutNumber++;
+   cname.Prepend(Form("%d_", fCutNumber));
    cname.Prepend("Cut");
    Bool_t ok;
    fCutname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
@@ -560,8 +568,8 @@ void FitHist::MarksToCut(){
       y[1] = y[0];   
    }
    TString cname = fHname;
-   cut_numb++;
-   cname.Prepend(Form("%d_", cut_numb));
+   fCutNumber++;
+   cname.Prepend(Form("%d_", fCutNumber));
    cname.Prepend("Cut");
    Bool_t ok;
    fWdwname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);

@@ -14,7 +14,7 @@
 #include "TGWindow.h"
 #include "TVirtualPad.h"
 #include "HTCanvas.h"
-#include "HTRootCanvas.h"
+#include "TRootCanvas.h"
 
 //#include "SetColor.h"
 //#include "TMrbWdw.h"
@@ -72,11 +72,12 @@ private:
    TObjArray *markers;
    TObjArray *peaks;
    TList *fCmdLine;
+   Int_t fExpInd;
    Int_t fSerialPx;
    Int_t fSerialPy;
    Int_t fSerialPf;
    Int_t func_numb;
-   Int_t cut_numb;
+   Int_t fCutNumber;
    Int_t wdw_numb;
    Int_t fColSuperimpose;
    void ExpandProject(Int_t);
@@ -89,8 +90,8 @@ private:
    Bool_t fSetColors;
 
    Float_t fMax, fMin, fXmax, fXmin, fYmax, fYmin;
-   HTRootCanvas *mycanvas;
-   TPaveText *datebox;
+   TRootCanvas *mycanvas;
+//   TPaveText *datebox;
    Int_t fDimension;
    Bool_t fCanvasIsAlive;
    TString fXtitle; 
@@ -121,9 +122,9 @@ public:
    void Draw3Dim();                      // 
    void DrawColors();                      // 
    const Char_t * GetCanvasName(){return fCname.Data();};             // 
-   HTRootCanvas* GetMyCanvas(){return mycanvas;};  
+   TRootCanvas* GetMyCanvas(){return mycanvas;};  
    HTCanvas* GetCanvas(){return cHist;};  
-   void  SetMyCanvas(HTRootCanvas *myc){mycanvas = myc;}; 
+   void  SetMyCanvas(TRootCanvas *myc){mycanvas = myc;}; 
    TH1* GetSelHist(){return fSelHist;}; 
    TH1* SetHist(TH1* newhist){
       TH1* temp = fSelHist;
@@ -135,6 +136,8 @@ public:
    TH1* GetOneHist(); 
    Bool_t IsThereAnyHist(); 
    void Entire();                  // 
+   void ProfileX();                  // 
+   void ProfileY();                  // 
    void RebinOne();                  // 
    void ExecDefMacro();                  // 
    void ExecFitMacro();                  // 
@@ -196,7 +199,7 @@ public:
    void DrawCutName();                      // 
    void MarksToCut();               // 
    void AddCutsToHist();
-   void DrawDateBox(TH1*, Float_t);                      // 
+//   void DrawDateBox(TH1*, Float_t);                      // 
    Bool_t UseCut(TMrbWindow2D *);         // 
    Bool_t UseWindow(TMrbWindow *);         // 
    Bool_t InsideCut(Float_t, Float_t);               // 

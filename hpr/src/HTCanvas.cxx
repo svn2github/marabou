@@ -2,14 +2,22 @@
 #include "TApplication.h"
 #include "TWbox.h"
 #include "TButton.h"
+#include "TGClient.h"
+#include "TGuiFactory.h"
+#include "TRootHelpDialog.h"
+#include "TGMenu.h"
+#include "TGWindow.h"
 #include "TStyle.h"
 #include "TString.h"
-#include "HTRootGuiFactory.h"
+// #include "HTRootGuiFactory.h"
 #include "TH1.h"
 #include "TList.h"
+#include "TMarker.h"
+#include "TMath.h"
 
-#include "HTCanvasImp.h"
+// #include "HTCanvasImp.h"
 #include "HTCanvas.h"
+#include "HandleMenus.h"
 //*KEEP,TDirectory.
 #include "TContextMenu.h"
 
@@ -18,14 +26,17 @@
 #include "support.h"
 #include "HTimer.h"
 #include "SetColor.h"
+#include "TMrbHelpBrowser.h" 
 
 //class TContextMenu;
 //class TControlBar;
 //extern HistPresent *hp;
 const Size_t kDefaultCanvasSize   = 20;
 
-static HTRootGuiFactory * gHTGuiFactory = 0;
-ClassImp(HTCanvas);
+// static HTRootGuiFactory * gHTGuiFactory = 0;
+ClassImp(HTCanvas)
+//ClassImp(HandleMenus)
+
 //____________________________________________________________________________
 HTCanvas::HTCanvas():TCanvas(){};
 
@@ -43,7 +54,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //     if wtopx < 0) the menubar is not shown.
 //  ww is the canvas size in pixels along X
 //  wh is the canvas size in pixels along Y
-   if(!gHTGuiFactory) gHTGuiFactory = new HTRootGuiFactory();
+//   if(!gHTGuiFactory) gHTGuiFactory = new HTRootGuiFactory();
 
    fSelected     = 0;
    fMenuBar = kTRUE;
@@ -66,7 +77,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
       fBatch        = kTRUE;
    } else {                   //normal mode with a screen window
       Float_t cx = gStyle->GetScreenFactor();
-      fCanvasImp = (TCanvasImp*)gHTGuiFactory->CreateCanvasImp(this, name, Int_t(cx*wtopx), Int_t(cx*wtopy), UInt_t(cx*ww), UInt_t(cx*wh));
+      fCanvasImp = gGuiFactory->CreateCanvasImp(this, name, Int_t(cx*wtopx), Int_t(cx*wtopy), UInt_t(cx*ww), UInt_t(cx*wh));
       fCanvasImp->ShowMenuBar(fMenuBar);
       fCanvasImp->Show();
       fBatch = kFALSE;
@@ -74,13 +85,25 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetName(name);
    SetTitle(title); // requires fCanvasImp set
    fTimer = 0;
-   Build();           
+   fGridX = 0;
+   fGridY = 0;
+   fUseGrid = kFALSE;
+   fRootCanvas = (TRootCanvas*)fCanvasImp;
+   if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
+   Build();
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist);         
+//   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
+   fHandleMenus->BuildMenus(); 
+   ToggleEventStatus();
+   ToggleEventStatus();
 //   if(fHistPresent && fFitHist)fHistPresent->GetCanvasList()->Add(this);
-//   cout << "ctor HTCanvas " << endl;
+//   cout << "ctor HTCanvas: " << this << " " << name << endl;
 };
+
 HTCanvas::~HTCanvas()
 {
-//   cout << "dtor HTCanvas " << GetName()<< endl;
+//   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+   delete fHandleMenus;
    if (fHistPresent && fFitHist) {
       TH1 * hist =  fFitHist->GetSelHist();
       if(!hist || !hist->TestBit(TObject::kNotDeleted) ||
@@ -168,6 +191,7 @@ HTCanvas::~HTCanvas()
    }
    if(fHistPresent){
       fHistPresent->GetHistList()->Remove(this);
+      fHistPresent->SetMyCanvas(NULL);
 //     cout << "remove " << this->GetName() << endl;
    }
    if(fHistList){
@@ -198,12 +222,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //
 
    TPad         *pad;
-   TObjLink     *pickobj;
+   TPad         *padsave;
+//   TObjLink     *pickobj;
    TObject      *prevSelObj = 0;
    TPad         *prevSelPad = 0;
 //OS start
-   static Float_t oldx=0, oldy=0;
-   Float_t gx = 0, gy = 0, x = 0, y = 0;
+//   static Float_t oldx=0, oldy=0;
+   Double_t x = 0, y = 0;
    Int_t n;
 //OS end
 
@@ -211,21 +236,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       prevSelObj = fSelected;
    if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
       prevSelPad = (TPad*) fSelectedPad;
-/*
-   if (prevSelObj){
-      if(!(prevSelObj->TestBit(kNotDeleted))) 
-          prevSelObj = 0;
-      else if(prevSelObj->TestBit(0xf0000000)){
-          cout << "######## hoops: prevSelObj " << prevSelObj << endl;
-          prevSelObj = 0;
-          
-      }
-   }
-   if (prevSelPad && !(prevSelPad->TestBit(kNotDeleted)))
-      prevSelPad = 0;
-//      cout << "fSel " << fSelectedPad<< endl;
-*/
    fPadSave = (TPad*)gPad;
+   padsave  = fPadSave;
    cd();        // make sure this canvas is the current canvas
 
    fEvent  = event;
@@ -237,29 +249,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kMouseMotion:
       // highlight object tracked over
-      fSelected    = 0;
-      fSelectedOpt = "";
-      fSelectedPad = 0;
-      pickobj      = 0;
-      pad = Pick(px, py, pickobj);
+      pad = Pick(px, py, prevSelObj);
       if (!pad) return;
 
-      if (!pickobj) {
-         fSelected    = pad;
-         fSelectedOpt = "";
-      } else {
-         if (!fSelected) {
-            fSelected    = pickobj->GetObject();
-            fSelectedOpt = pickobj->GetOption();
-         }
-      }
-      fSelectedPad = pad;
-//      cout << "pad,prev " << pad<< " " << prevSelPad<< endl;
       EnterLeave(prevSelPad, prevSelObj);
-//      if (fSelected && fSelected->TestBit(kNotDeleted))
-//         prevSelObj = fSelected;
-//      if (fSelectedPad && fSelectedPad->TestBit(kNotDeleted))
-//         prevSelPad = (TPad*) fSelectedPad;
 
       gPad = pad;   // don't use cd() we will use the current
                     // canvas via the GetCanvas member and not via
@@ -295,63 +288,42 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kButton1Down:
 
      // find pad in which input occured
-      fSelected    = 0;
-      fSelectedOpt = "";
-      fSelectedPad = 0;
-      pickobj      = 0;
-      pad = Pick(px, py, pickobj);
+      pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-
-      if (!pickobj) {
-         fSelected    = pad;
-         fSelectedOpt = "";
-      } else {
-         if (!fSelected) {
-            fSelected    = pickobj->GetObject();
-            fSelectedOpt = pickobj->GetOption();
-         }
-      }
-      fSelectedPad = pad;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
 
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
-      if(fHistPresent){
-         gx = fHistPresent->GetGridX();
-         if(gx !=0){
+      if(fUseGrid){
+//         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
+         if(fGridX !=0){
             x = gPad->AbsPixeltoX(px);
-            n = (Int_t)((x +0.5*gx) / gx);
-            oldx = x - n * gx;
-            x = n * gx;
+            n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
+            x = n * fGridX;
          }
-         gy = fHistPresent->GetGridY();
-         if(gy !=0){
+         if(fGridY !=0){
             y = gPad->AbsPixeltoY(py);
-            n = (Int_t)((y +0.5*gy) / gy);
-            oldy = y - n * gy;
-            y = n * gy;
+            n = (Int_t)((y + TMath::Sign(0.5*fGridY, y)) / fGridY);
+            y = n * fGridY;
          }
-//         if(gROOT->GetEditorMode()){
-            if(gx !=0){
+            if(fGridX !=0){
                px =  gPad->XtoAbsPixel(x);
                if(px < 1)px = 1;
                if(px > (Int_t)gPad->GetWw()) px = gPad->GetWw()-1;
             }
-            if(gy !=0){
+            if(fGridY !=0){
                py =  gPad->YtoAbsPixel(y);
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
             }
-//         }
+//         cout << "x y grid " << x << " " << y << endl;
       }
-//      cout << "oldx oldy, " << oldx << " " << oldy << endl;
 //OS end
 
       fSelected->ExecuteEvent(event, px, py);
 
-      if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
       if (fAutoExec)        RunAutoExec();
 
       break;
@@ -361,24 +333,19 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
-         if(fHistPresent){
-            Float_t gx = fHistPresent->GetGridX();
-            if(gx !=0){
-   //     cout << "oldx oldy, " << oldx << " " << oldy << endl;
-               Float_t x = gPad->AbsPixeltoX(px);
-               Int_t n = (Int_t)((x +0.5*gx) / gx);
-   //            x = n * gx + oldx;
-               x = n * gx;
+         if(fUseGrid){
+            if(fGridX !=0){
+               x = gPad->AbsPixeltoX(px);
+               n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
+               x = n * fGridX;
                px =  gPad->XtoAbsPixel(x);
                if(px < 1)px = 1;
                if(px > (Int_t)gPad->GetWw())px = gPad->GetWw()-1;
             }
-            Float_t gy = fHistPresent->GetGridY();
-            if(gy !=0){
-               Float_t y = gPad->AbsPixeltoY(py);
-               Int_t n = (Int_t)((y +0.5*gy) / gy);
-               y = n * gy;
-   //            y = n * gy + oldy;
+            if(fGridY !=0){
+               y = gPad->AbsPixeltoY(py);
+               n = (Int_t)((y + TMath::Sign(0.5*fGridY, y)) / fGridY);
+               y = n * fGridY;
                py =  gPad->YtoAbsPixel(y);
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
@@ -386,18 +353,22 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
 //OS end
 //         cout << ", " << px << " " << py ;
-//         if(++nout > 10){cout << endl; nout = 0;};
          fSelected->ExecuteEvent(event, px, py);
 
-         if (fSelected->InheritsFrom(TBox::Class()))
-            if ((!((TBox*)fSelected)->IsBeingResized() && fMoveOpaque) ||
-                (((TBox*)fSelected)->IsBeingResized() && fResizeOpaque)) {
+         {
+            Bool_t resize = kFALSE;
+            if (fSelected->InheritsFrom(TBox::Class()))
+               resize = ((TBox*)fSelected)->IsBeingResized();
+            if (fSelected->InheritsFrom(TVirtualPad::Class()))
+               resize = ((TVirtualPad*)fSelected)->IsBeingResized();
+
+            if ((!resize && fMoveOpaque) || (resize && fResizeOpaque)) {
                gPad = fPadSave;
                Update();
                FeedbackMode(kTRUE);
             }
-         if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
-         if (fAutoExec)        RunAutoExec();
+         }
+         if (fAutoExec) RunAutoExec();
       }
 
       break;
@@ -409,21 +380,19 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //         cout << "name, px, py, bef " << px << " " << py << endl;
 //         fSelected->Print();
          
-         if(fHistPresent){
-            Float_t gx = fHistPresent->GetGridX();
-            if(gx !=0){
-               Float_t x = gPad->AbsPixeltoX(px);
-               Int_t n = (Int_t)((x +0.5*gx) / gx);
-               x = n * gx;
+         if(fUseGrid){
+            if(fGridX !=0){
+               x = gPad->AbsPixeltoX(px);
+               n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
+               x = n * fGridX;
                px =  gPad->XtoAbsPixel(x);
                if(px < 1)px = 1;
                if(px > (Int_t)gPad->GetWw())px = gPad->GetWw()-1;
             }
-            Float_t gy = fHistPresent->GetGridY();
-            if(gy !=0){
-               Float_t y = gPad->AbsPixeltoY(py);
-               Int_t n = (Int_t)((y +0.5*gy) / gy);
-               y = n * gy;
+            if(fGridY !=0){
+               y = gPad->AbsPixeltoY(py);
+               n = (Int_t)((y + TMath::Sign(0.5*fGridY, y)) / fGridY);
+               y = n * fGridY;
                py =  gPad->YtoAbsPixel(y);
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
@@ -436,12 +405,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
          if (fAutoExec)        RunAutoExec();
 
-         if (fPadSave->TestBit(kNotDeleted))
-            gPad = fPadSave;
-         else {
+//         if (fPadSave->TestBit(kNotDeleted))
+//            gPad = fPadSave;
+//         else {
             gPad     = this;
             fPadSave = this;
-         }
+            padsave  = fPadSave;
+//        }
 
          Update();    // before calling update make sure gPad is reset
       }
@@ -452,23 +422,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton2Down:
       // find pad in which input occured
-      fSelected    = 0;
-      fSelectedOpt = "";
-      fSelectedPad = 0;
-      pickobj      = 0;
-      pad = Pick(px, py, pickobj);
+      pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-
-      if (!pickobj) {
-         fSelected    = pad;
-         fSelectedOpt = "";
-      } else {
-         if (!fSelected) {
-            fSelected    = pickobj->GetObject();
-            fSelectedOpt = pickobj->GetOption();
-         }
-      }
-      fSelectedPad = pad;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
@@ -477,22 +432,21 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       fSelected->Pop();           // pop object to foreground
       pad->cd();                  // and make its pad the current pad
+      if (gDebug)
+         printf("Current Pad: %s / %s\n", pad->GetName(), pad->GetTitle());
+
+      // loop over all canvases to make sure that only one pad is highlighted
+      {
+         TIter next(gROOT->GetListOfCanvases());
+         TCanvas *tc;
+         while ((tc = (TCanvas *)next()))
+            tc->Update();
+      }
 //     Otto 
       {
-//         TString myFitHistName = pad->GetName();
-//         myFitHistName.Remove(0,2);
-//        cout <<  myFitHistName  << endl;
-//         char *cn = (const char *)myFitHistName; 
-//         FitHist *oFitHist=(FitHist*)gROOT->FindObject(cn);
-//         if(oFitHist) oFitHist->AddMark((TPad*)gPad,px,py);
          if(fFitHist) fFitHist->AddMark((TPad*)gPad,px,py);
          else {
-//            if(gPad->GetFillStyle() == 0 || gPad->GetFillStyle() == 4000){;
-//               gPad->SetFillStyle(1001);
-//               gPad->SetFillColor(0);  // transparent
-//            }
          }
-//         else         printf("No FitHist found for %s\n", pad->GetName()); 
       }
 //      if (gDebug)
 //        printf("Current Pad: %x: %s / %s\n", pad, pad->GetName(), pad->GetTitle());
@@ -520,24 +474,14 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton3Down:
    {
-      pad = Pick(px, py, pickobj);
+      // popup context menu
+      pad = Pick(px, py, prevSelObj);
       if (!pad) return;
 
-      if (!pickobj) {
-         fSelected    = pad;
-         fSelectedOpt = "";
-      } else {
-         if (!fSelected) {
-            fSelected    = pickobj->GetObject();
-            fSelectedOpt = pickobj->GetOption();
-         }
-      }
-      fSelectedPad = pad;
-
-      if (fContextMenu)
+      if (fContextMenu && !fSelected->TestBit(kNoContextMenu) &&
+          !pad->TestBit(kNoContextMenu) && !TestBit(kNoContextMenu))
           fContextMenu->Popup(px, py, fSelected, this, pad);
 
-      if (fAutoExec)        RunAutoExec();
 
       break;
    }
@@ -554,30 +498,15 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kKeyPress:
 
       // find pad in which input occured
-      fSelected    = 0;
-      fSelectedOpt = "";
-      fSelectedPad = 0;
-      pickobj      = 0;
-      pad = Pick(px, py, pickobj);
+      pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-
-      if (!pickobj) {
-         fSelected    = pad;
-         fSelectedOpt = "";
-      } else {
-         if (!fSelected) {
-            fSelected    = pickobj->GetObject();
-            fSelectedOpt = pickobj->GetOption();
-         }
-      }
-      fSelectedPad = pad;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
 
       fSelected->ExecuteEvent(event, px, py);
 
-      if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
+//      if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
       if (fAutoExec)        RunAutoExec();
 
       break;
@@ -818,6 +747,10 @@ void HTCanvas::UpdateHists()
    this->Modified(kTRUE);
    this->Update();
 }
+//______________________________________________________________________________
+void HTCanvas::SetLog(Int_t state)
+{
+    fHandleMenus->SetLog(state);
 
-
-
+}
+//______________________________________________________________________________
