@@ -307,23 +307,26 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 	TString pathName;
 	TString remoteHome;
 
-	pathName = gMbsSetup->GetHomeDir();	// get home dir
-	if (pathName.IsNull()) {
-		remoteHome = this->RemoteHomeDir();
-		if (remoteHome.IsNull()) {
-			gMrbLog->Err() << "Can't set path \"" << Path << "\" -" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetPath");
-			gMrbLog->Err() << "\"TMbsSetup.HomeDir\" has to be set properly first" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetPath");
-			return(kFALSE);
-		} else {
-			this->SetHomeDir(remoteHome.Data());
-			pathName = remoteHome;
+	pathName = Path;
+	if (!pathName.BeginsWith("/")) {
+		pathName = gMbsSetup->GetHomeDir();	// get home dir
+		if (pathName.IsNull()) {
+			remoteHome = this->RemoteHomeDir();
+			if (remoteHome.IsNull()) {
+				gMrbLog->Err() << "Can't set path \"" << Path << "\" -" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetPath");
+				gMrbLog->Err() << "\"TMbsSetup.HomeDir\" has to be set properly first" << endl;
+				gMrbLog->Flush(this->ClassName(), "SetPath");
+				return(kFALSE);
+			} else {
+				this->SetHomeDir(remoteHome.Data());
+				pathName = remoteHome;
+			}
 		}
-	}
 
-	pathName += "/";
-	pathName += Path; 			// append current path
+		pathName += "/";
+		pathName += Path; 			// append current path
+	}
 
 	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 		if (Create) {
