@@ -636,7 +636,7 @@ Bool_t TMrbTransport::OpenMEDFile(const Char_t * MEDFile) {
 
 	sts = mbs_open_med(MEDFile);
 	if (sts) {
-		gMrbLog->Out()	<< this->ClassName() << "::OpenLMDFile(): Writing MBS event data to file " << MEDFile << endl;
+		gMrbLog->Out()	<< "Writing MBS event data to file " << MEDFile << endl;
 		gMrbLog->Flush(this->ClassName(), "OpenMEDFile", setblue);
 	} else {
 		PrintMbsIoError("OpenMEDFile");
@@ -663,7 +663,7 @@ Bool_t TMrbTransport::CloseMEDFile() {
 
 	sts = mbs_close_med();
 	if (sts) {
-		gMrbLog->Out()	<< this->ClassName() << "::CloseMEDFile(): MED file closed" << endl;
+		gMrbLog->Out()	<< "MED file closed" << endl;
 		gMrbLog->Flush(this->ClassName(), "CloseLMDFile", setblue);
 	} else {
 		PrintMbsIoError("CloseLMDFile");
@@ -690,7 +690,7 @@ Bool_t TMrbTransport::OpenLMDFile(const Char_t * LMDFile) {
 
 	sts = mbs_open_lmd(LMDFile);
 	if (sts) {
-		gMrbLog->Out()	<< this->ClassName() << "::OpenLMDFile(): Writing LMD data to file " << LMDFile << endl;
+		gMrbLog->Out()	<< "Writing LMD data to file " << LMDFile << endl;
 		gMrbLog->Flush(this->ClassName(), "OpenLMDFile", setblue);
 	} else {
 		PrintMbsIoError("OpenLMDFile");
@@ -717,7 +717,7 @@ Bool_t TMrbTransport::CloseLMDFile() {
 
 	sts = mbs_close_lmd();
 	if (sts) {
-		gMrbLog->Out()	<< this->ClassName() << "::CloseLMDFile(): LMD file closed" << endl;
+		gMrbLog->Out()	<< "LMD file closed" << endl;
 		gMrbLog->Flush(this->ClassName(), "CloseLMDFile", setblue);
 	} else {
 		PrintMbsIoError("CloseLMDFile");
