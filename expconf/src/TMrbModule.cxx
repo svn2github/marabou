@@ -98,6 +98,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fBinRange = Range;								// number of channels
 			fBlockReadout = kFALSE; 						// turn off block mode
 			fIsActive = kTRUE;								// module is active
+			fExcludeFromReadout = kFALSE;					// module will be read out
 			fNofShortsPerChannel = 1;						// 16 bit words per channel
 			fTimeOffset = 0;								// time offset
 			if (fModuleID.GetIndex() != TMrbConfig::kModuleSoftModule) fSerial = gMrbConfig->AssignModuleSerial();		// assign a unique module number

@@ -79,6 +79,9 @@ class TMrbModule : public TNamed {
 		inline void SetActive(Bool_t ActiveFlag = kTRUE) { fIsActive = ActiveFlag; };
 		inline Bool_t IsActive() const { return(fIsActive); };						// module active?
 
+		inline void ExcludeFromReadout(Bool_t ExcludeFlag = kTRUE) { fExcludeFromReadout = ExcludeFlag; };
+		inline Bool_t ToBeExcludedFromReadout() const { return(fExcludeFromReadout); };						// module active?
+
 		Bool_t SetBlockReadout(Bool_t Flag = kTRUE);							// turn block mode on
 		inline Bool_t HasBlockReadout() const { return(fBlockReadout); }; 			// check if block mode
 
@@ -164,6 +167,7 @@ class TMrbModule : public TNamed {
 		Int_t fNofChannels;						// number of channels available
 
 		Bool_t fIsActive; 						// kTRUE if module active
+		Bool_t fExcludeFromReadout; 			// kTRUE if to be EXcluded from readout
 
 		TMrbNamedX * fDataType;					// data type
 		Int_t fNofShortsPerChannel; 			// number of 16 bit words per channel
