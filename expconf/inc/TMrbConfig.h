@@ -475,11 +475,13 @@ class TMrbConfig : public TNamed {
  														// generate rc file
 		Bool_t MakeRcFile(const Char_t * CodeFile = "", const Char_t * ResourceName = "", Option_t * Options = "byName");
 
-		Bool_t CallUserMacro(const Char_t * MacroName = "");				// call user macro
+		Bool_t CallUserMacro(const Char_t * MacroName = "", Bool_t AclicFlag = kTRUE);				// call user macro
 		Bool_t ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord);
 				
 		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE);	// compile readout code
 		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE);						// compile analysis code
+
+		Bool_t UpdateMbsSetup();						// update .mbssetup database if online mode
 
 		void Print(ostream & OutStrm, const Char_t * Prefix = "");			// show data
 		inline virtual void Print() { Print(cout, ""); };

@@ -41,6 +41,8 @@
 #include "TMrbCamacScaler.h"
 #include "TMrbNamedArray.h"
 
+#include "TMbsSetup.h"
+
 #include "SetColor.h"
 
 //_________________________________________________________________________________________________________ data types
@@ -3513,15 +3515,17 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName) {
+Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::CallUserMacro
 // Purpose:        Define user macro to be called
 // Arguments:      Char_t * Macroname        -- name of code file to be generated
+//                 Bool_t AclicFlag          -- use ACliC to compile user macro
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Looks for a file <MacroName> to be called when generating code.
+//                 Tries to compile it by ACliC of flag set.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3603,10 +3607,32 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName) {
 		fUserMacroCmd(0,1).ToLower();
 		fUserMacroToBeCalled = kTRUE;
 		TString aclic = fp;
-		aclic += "+g";
-		if (gMrbConfig->IsVerbose()) {
-			gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fp << "\" (option \"+g\")"<< endl;
-			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+		if (AclicFlag) {
+			TString cplusIncludePath = gSystem->Getenv("CPLUS_INCLUDE_PATH");
+			TString mrbInclude = gSystem->ExpandPathName("$MARABOU/include");
+			if (!cplusIncludePath.Contains(mrbInclude.Data())) {
+				gMrbLog->Err()	<< mrbInclude << " is missing in your environment" << endl;
+				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+				gMrbLog->Err()	<< endl
+								<< "                      Execute command" << endl
+								<< "                      ==> "
+								<< setblue
+								<< "export CPLUS_INCLUDE_PATH=$MARABOU/include:$CPLUS_INCLUDE_PATH" << endl
+								<< setred
+								<< "                      or add it to your profile permanently" << endl;
+				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+				return(kFALSE);
+			}
+			aclic += "+g";
+			if (gMrbConfig->IsVerbose()) {
+				gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fp << "\" (option \"+g\")"<< endl;
+				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+			}
+		} else {
+			if (gMrbConfig->IsVerbose()) {
+				gMrbLog->Out()  << "Loading user macro \"" << fp << "\" (interpreter mode)"<< endl;
+				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+			}
 		}	
 		gROOT->LoadMacro(aclic.Data());
 		if (gMrbConfig->IsVerbose()) {
@@ -4605,7 +4631,8 @@ Bool_t TMrbConfig::CompileAnalyzeCode(Bool_t CleanFlag) {
 	compileCmd.Prepend("make -f ");
 	compileCmd += "Analyze.mk";
 	if (CleanFlag) compileCmd += " clean all";
-	cout << setblue << "[M_analyze: Compiling analyze code from source]" << setblack << endl;
+	gMrbLog->Out() << "[M_analyze: Compiling analyze code from source]" << endl;
+	gMrbLog->Flush("", "", setblue);
 	gSystem->Exec(compileCmd.Data());
 	return(kTRUE);
 }
@@ -4624,4 +4651,42 @@ Bool_t TMrbConfig::CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag) {
 
 	return(kTRUE);
 }
+
+Bool_t TMrbConfig::UpdateMbsSetup() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::UpdateMbsSetup
+// Purpose:        Update .mbssetup data base
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Updates some entries in .mbssetup
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gSystem->AccessPathName(".mbssetup")) {
+		gMrbLog->Err() << "No such file - .mbssetup" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+		gMrbLog->Err() << "Generating DEFAULT version (to be edited or to be updated via C_analyze)" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
+	}
+	TMbsSetup * mbsSetup = new TMbsSetup();
+	UInt_t cratePattern = this->GetCratePattern();
+	TArrayI c(5);
+	c.Reset(-1);
+	Int_t n = 0;
+	for (Int_t bit = 0; bit < 5; bit++) {
+		if (cratePattern & (1 << bit)) {
+			c[n] = bit;
+			n++;
+		}
+	}
+	mbsSetup->SetNofReadouts(1);
+	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
+	mbsSetup->Save();
+	gMrbLog->Out() << "[.mbssetup: MBS setup updated]" << endl;
+	gMrbLog->Flush("", "", setblue);
+	return(kTRUE);
+}
+
 
