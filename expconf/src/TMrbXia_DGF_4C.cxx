@@ -106,7 +106,8 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					fTraceLength = 40;
 					fRunTask = 0x100;
 					fSwitchBusTerm = kFALSE;
-					fSwitchBusIndiv = kFALSE;
+					fSwitchBusIndiv = gEnv->GetValue("TMrbDGF.TerminateSwitchBusIndividually", kFALSE);
+					fSwitchBusTermIfMaster = gEnv->GetValue("TMrbDGF.TerminateSwitchBusIfMaster", kTRUE);
 					fSynchWait = 1;
 					fActivateUserPSA = kFALSE;
 					fInSynch = 0;
@@ -192,8 +193,10 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			seg = this->GetClusterSegments();
 			if (fSwitchBusIndiv) {
 				fCodeTemplates.Substitute("$switchBusTerm", fSwitchBusTerm ? "TRUE" : "FALSE");
-			} else {
+			} else if (fSwitchBusTermIfMaster) {
 				fCodeTemplates.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? "TRUE" : "FALSE");
+			} else {
+				fCodeTemplates.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? "FALSE" : "TRUE");
 			}
 			fCodeTemplates.Substitute("$settingsPath", sPath.Data());
 			fCodeTemplates.Substitute("$moduleNameLC", this->GetName());
@@ -745,8 +748,10 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 				seg = this->GetClusterSegments();
 				if (fSwitchBusIndiv) {
 					rcTmpl.Substitute("$switchBusTerm", fSwitchBusTerm ? "TRUE" : "FALSE");
-				} else {
+				} else if (fSwitchBusTermIfMaster) {
 					rcTmpl.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? "TRUE" : "FALSE");
+				} else {
+					rcTmpl.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? "FALSE" : "TRUE");
 				}
 				rcTmpl.WriteCode(RcStrm);
 				return(kTRUE);

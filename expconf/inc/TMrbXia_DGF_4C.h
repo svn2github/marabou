@@ -75,11 +75,13 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		inline Int_t GetSynchWait() const { return(fSynchWait); };
 		inline void SetInSynch(Int_t InSynch = 0) { fInSynch = InSynch; };
 		inline Int_t GetInSynch() const { return(fInSynch); };
-		inline void SetSwitchBusTerm(Bool_t IndivFlag = kTRUE, Bool_t TermFlag = kTRUE) {
+		inline void SetSwitchBusTerm(Bool_t IndivFlag = kTRUE, Bool_t TermFlag = kTRUE, Bool_t MasterFlag = kTRUE) {
 							fSwitchBusIndiv = IndivFlag;
 							fSwitchBusTerm = TermFlag; 
+							fSwitchBusTermIfMaster = MasterFlag; 
 		};
 		inline Bool_t SwitchBusToBeTerminated() { return(fSwitchBusTerm); };
+		inline Bool_t SwitchBusToBeTerminatedIfMaster() { return(fSwitchBusTermIfMaster); };
 		inline void ActivateUserPSACode(Bool_t ActiveFlag = kTRUE) { fActivateUserPSA = ActiveFlag; };
 		inline Bool_t UserPSAIsActive() const { return(fActivateUserPSA); };
 
@@ -118,6 +120,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		Int_t fInSynch; 					// parameter INSYNCH
 
 		Bool_t fSwitchBusTerm;				// kTRUE if switch bus is to be terminated
+		Bool_t fSwitchBusTermIfMaster;		// kTRUE if switch bus is to be terminated for a master module
 		Bool_t fSwitchBusIndiv;				// kTRUE if switch bus is to be terminated individually
 		Bool_t fActivateUserPSA;			// kTRUE if user PSA code should be activated
 

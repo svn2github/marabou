@@ -177,8 +177,18 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	if (firstCall) {
 		gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
 		gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
-		gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
-		gDGFControlData->fUserPSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
+		TString xIndivTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", "");
+		if (xIndivTerm.IsNull()) {
+			gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("TMrbDGF.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
+		} else {
+			gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
+		}
+		TString xActivatePSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", "");
+		if (xActivatePSA.IsNull()) {
+			gDGFControlData->fUserPSA = gEnv->GetValue("TMrbDGF.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
+		} else {
+			gDGFControlData->fUserPSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
+		}
 	}
 	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
 	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
