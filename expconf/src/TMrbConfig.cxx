@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.86 2004-11-29 14:01:47 rudi Exp $       $Id: TMrbConfig.cxx,v 1.86 2004-11-29 14:01:47 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.87 2004-12-07 14:37:22 rudi Exp $       $Id: TMrbConfig.cxx,v 1.87 2004-12-07 14:37:22 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -563,6 +563,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fCrateTable.Set(TMrbConfig::kNofCrates);				// init crate table
 		fControllerTable.Set(TMrbConfig::kNofCrates);			// init controller table
+		fControllerTable.Reset(kCrateUnused);
 
 		fLofDataTypes.SetName("Data Types");					// ... data types
 		fLofDataTypes.SetPatternMode();
@@ -1462,14 +1463,21 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						}
 						break;
 					case TMrbConfig::kRdoCamacController:
-						contrType = this->GetControllerType(1);
-						if (contrType == TMrbConfig::kControllerUnused) {
-							gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
-							gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
-							contrType = TMrbConfig::kControllerCBV;
+						{
+							UInt_t camacPattern = this->GetCratePattern(kCrateCamac);
+							TString ctrlName = "NoCamac";
+							if (camacPattern != 0) {
+								contrType = this->GetControllerType(1);
+								if (contrType == TMrbConfig::kControllerUnused) {
+									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
+									contrType = TMrbConfig::kControllerCBV;
+								}
+								camacController = fLofControllerTypes.FindByIndex((UInt_t) contrType);
+								ctrlName = camacController->GetName();
+							}
+							rdoStrm << rdoTmpl.Encode(line, ctrlName.Data()) << endl;
 						}
-						camacController = fLofControllerTypes.FindByIndex((UInt_t) contrType);
-						rdoStrm << rdoTmpl.Encode(line, camacController->GetName()) << endl;
 						break;
 					case TMrbConfig::kRdoNameLC:
 						rdoStrm << rdoTmpl.Encode(line, GetName()) << endl;
@@ -1525,7 +1533,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (this->GetCrateType(crate) == TMrbConfig::kCrateCamac) {
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1658,7 +1666,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 									iniTag = "%CB";
 									Int_t cc = this->GetControllerType(crate);
 									if (cc == TMrbConfig::kControllerUnused) {
-										gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+										gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
 										gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 										cc = TMrbConfig::kControllerCBV;
 									}
@@ -1678,7 +1686,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CE";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1740,7 +1748,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CB";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1765,7 +1773,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CE";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
@@ -1798,7 +1806,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								iniTag = "%CB";
 								Int_t cc = this->GetControllerType(crate);
 								if (cc == TMrbConfig::kControllerUnused) {
-									gMrbLog->Wrn()  << "Type if CAMAC controller missing - using default (CBV)" << endl;
+									gMrbLog->Wrn()  << "Type of CAMAC controller missing - using default (CBV)" << endl;
 									gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 									cc = TMrbConfig::kControllerCBV;
 								}
