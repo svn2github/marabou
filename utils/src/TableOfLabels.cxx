@@ -7,16 +7,20 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
                                Int_t nc, Int_t nr, 
                                TOrdCollection *values, 
                                TOrdCollection *col_labels,
-                               TOrdCollection *row_labels){
-   ULong_t brown, antiquewhite1, antiquewhite2;
+                               TOrdCollection *row_labels,
+                               Int_t xpos, Int_t ypos) :
+                TGMainFrame(win, 10, 10){
+   ULong_t grey, white, brown, antiquewhite1, antiquewhite2;
+   gClient->GetColorByName("grey",   grey);
    gClient->GetColorByName("brown",   brown);
    gClient->GetColorByName("antiquewhite1",     antiquewhite1);
    gClient->GetColorByName("antiquewhite2", antiquewhite2);
+   gClient->GetColorByName("white", white);
 
    const TGWindow *main = gClient->GetRoot();
    const TGWindow *mywin = main;
    if(win != 0)mywin=win;
-   fMainFrame = new TGTransientFrame(main, mywin, 10, 10);
+//   fMainFrame = new TGMainFrame(main, 10, 10);
    fWidgets = new TList;
    fEntries = new TList;
    // command to be executed by buttons and text entry widget
@@ -66,11 +70,11 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    if(row_labels)rl=1;
    Int_t itemwidth;
    if(fNcols == 1) itemwidth = 240;
-   else            itemwidth = 100;
+   else            itemwidth = 180;
    Int_t istart = 1;
    if(row_labels) istart = 0;
    if(col_labels){
-      fRowFrame      = new TGCompositeFrame(fMainFrame, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
+      fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
       fWidgets->AddFirst(fRowFrame);
       for(Int_t i=istart; i <= fNcols; i++){
          fLabelFrame = new TGCompositeFrame(fRowFrame,itemwidth,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
@@ -81,17 +85,17 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
             fLabel    = new TGLabel(fLabelFrame, new TGString((const char *)s));
             fLabelFrame->AddFrame(fLabel, fLO4);
             fWidgets->AddFirst(fLabel);
-            fLabel->ChangeBackground(antiquewhite1);
+            fLabel->ChangeBackground(white);
 //            gVirtualX->ChangeWindowAttributes(fLabel->GetId(), &wattawhite1);
          }
          fRowFrame->AddFrame(fLabelFrame,fLO2);
       }
-      fMainFrame->AddFrame(fRowFrame,fLO1);                // frame into main frame
+      this->AddFrame(fRowFrame,fLO1);                // frame into main frame
    }
 
    TIter next(values);
    for(Int_t j = 0; j < fNrows; j++){
-      fRowFrame      = new TGCompositeFrame(fMainFrame, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
+      fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
       fWidgets->AddFirst(fRowFrame);
       if(row_labels){
          objs = (TObjString *)row_labels->At(j);
@@ -102,7 +106,7 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
          fLabelFrame->AddFrame(fLabel, fLO4);
          fWidgets->AddFirst(fLabel);
          fRowFrame->AddFrame(fLabelFrame,fLO2);
-         fLabel->ChangeBackground(antiquewhite2);
+         fLabel->ChangeBackground(grey);
 //         gVirtualX->ChangeWindowAttributes(fLabel->GetId(), &wattabrown);
       }
       for(Int_t i=0; i < fNcols; i++){
@@ -116,13 +120,13 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
          fWidgets->AddFirst(fLabel);
          fEntries->Add(fLabel);
          fRowFrame->AddFrame(fLabelFrame,fLO2);
-         fLabel->ChangeBackground(antiquewhite1);
+         fLabel->ChangeBackground(white);
 //         gVirtualX->ChangeWindowAttributes(fLabel->GetId(), &wattawhite1);
       }
-      fMainFrame->AddFrame(fRowFrame,fLO1);                // frame into main frame
+      this->AddFrame(fRowFrame,fLO1);                // frame into main frame
    }
 
-   fRowFrame      = new TGCompositeFrame(fMainFrame, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
+   fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
    fWidgets->AddFirst(fRowFrame);
 //   fActionFrame  = new TGCompositeFrame(fMainFrame, 100, 20, kHorizontalFrame);  
    fCancelButton = new TGTextButton
@@ -132,54 +136,62 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    
    fRowFrame->AddFrame(fCancelButton,fLO1);
    fCancelButton->SetCommand(cmd);
-   fMainFrame->AddFrame(fRowFrame,fLO1);                // frame into main frame
+   this->AddFrame(fRowFrame,fLO1);                // frame into main frame
 
-   if(title)fMainFrame->SetWindowName((const char *)*title);
-   fMainFrame->MapSubwindows();
+   if(title)this->SetWindowName((const char *)*title);
+   this->MapSubwindows();
 
-   UInt_t width  = fMainFrame->GetDefaultWidth();
+   UInt_t width  = this->GetDefaultWidth();
 //   UInt_t width  = itemwidth*(fNcols+rl) +30;
-   UInt_t height = fMainFrame->GetDefaultHeight();
-   fMainFrame->Resize(width, height);
-   fMainFrame->ChangeBackground(brown);
+   UInt_t height = this->GetDefaultHeight();
+   this->Resize(width, height);
+   this->ChangeBackground(brown);
 
 //   gVirtualX->ChangeWindowAttributes(fMainFrame->GetId(), &wattbrown);
    // position relative to the parent window (which is the root window)
    Window_t wdum;
    Int_t      ax, ay;
-
-   gVirtualX->TranslateCoordinates(mywin->GetId(), fMainFrame->GetParent()->GetId(),
+   if (xpos == -1) {
+      gVirtualX->TranslateCoordinates(mywin->GetId(), this->GetParent()->GetId(),
          ((TGFrame *) mywin)->GetWidth() - width >> 1,
          ((TGFrame *) mywin)->GetHeight() - height >> 1,
                           ax, ay, wdum);
-   fMainFrame->Move(ax, ay);
-   fMainFrame->SetWMPosition(ax, ay);
-   fMainFrame->MapWindow();
+   } else {
+      ax = xpos;
+      ay = ypos;
+   }
+   this->Move(ax, ay);
+   this->SetWMPosition(ax, ay);
+   this->MapWindow();
 //   gClient->WaitFor(fMainFrame);
 };
 
 //_______________________________________________________________________
 
-TableOfLabels::~TableOfLabels(){
+void TableOfLabels::CloseWindow()
+{
+//   cout << "TableOfLabels::CloseWindow()" << endl;
+   DeleteWindow();
+   TQObject::Destroyed();  
+}
+//_______________________________________________________________________
 
+TableOfLabels::~TableOfLabels(){
+//   cout << "dtor ~TableOfLabels" << endl;
    fWidgets->Delete();
    delete fWidgets;
    delete fEntries;
-   delete fMainFrame;
 
 };
 
-void TableOfLabels::ProcessMessage (Long_t msg, Long_t parm1, Long_t){
+Bool_t TableOfLabels::ProcessMessage (Long_t msg, Long_t parm1, Long_t){
   switch(GET_MSG(msg)) {
       case kC_COMMAND:
          switch(GET_SUBMSG(msg)) {
            case kCM_BUTTON:
                switch(parm1) {
                   case M_CANCEL:
-//                     printf(" M_CANCEL pressed \n"); 
-//                     *fRet = -1;
-//                     CloseWindow();
-                   gApplication->Terminate(0);
+                     delete this;
                    break;
                }
                break;
@@ -198,7 +210,5 @@ void TableOfLabels::ProcessMessage (Long_t msg, Long_t parm1, Long_t){
       default:
          break;
    }
-
-//   return kTRUE;
-
+   return kTRUE;
 };
