@@ -293,12 +293,12 @@ Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %E% 	g$evtNameUC->WriteTree(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.WriteTree"), kTRUE));
 %E% 	if (!g$evtNameUC->TreeToBeWritten()) {
-%E% 		gMrbLog->Err()	<< "Output of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
+%E% 		gMrbLog->Wrn()	<< "Output of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
 %E% 		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
 %E% 	}
 %U% 	g$classNameUC->WriteTree(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$classNameUC.WriteTree"), kTRUE));
 %U% 	if (!g$classNameUC->TreeToBeWritten()) {
-%U% 		gMrbLog->Err()	<< "Output of tree data TURNED OFF for event \"$classNameLC\"" << endl;
+%U% 		gMrbLog->Wrn()	<< "Output of tree data TURNED OFF for event \"$classNameLC\"" << endl;
 %U% 		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
 %U% 	}
 %%EndOfCode%%
@@ -384,12 +384,12 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %E% 		g$evtNameUC->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.ReplayMode"), kTRUE));
 %E% 		if (!g$evtNameUC->IsReplayMode()) {
-%E% 			gMrbLog->Err()	<< "Replay of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
+%E% 			gMrbLog->Wrn()	<< "Replay of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
 %E% 			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
 %E% 		}
 %U% 		g$classNameUC->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$classNameUC.ReplayMode"), kTRUE));
 %U% 		if (!g$classNameUC->IsReplayMode()) {
-%U% 			gMrbLog->Err()	<< "Replay of tree data TURNED OFF for event \"$classNameLC\"" << endl;
+%U% 			gMrbLog->Wrn()	<< "Replay of tree data TURNED OFF for event \"$classNameLC\"" << endl;
 %U% 			gMrbLog->Flush(this->ClassName(), "OpenRootFile");
 %U% 		}
 %%EndOfCode%%
