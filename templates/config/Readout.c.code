@@ -103,8 +103,9 @@ int unix_string_getval_b(TUnixEntry * e, const char * name, int vnum, int bvalue
 %CBV%static volatile unsigned long * cam_dwinh_C$crateNo; 		/* dataway inhibit in crate C$crateNo */
 %CBV%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
 %CBV%static volatile unsigned long * cam_lam_C$crateNo;  	/* LAM pattern in crate C$crateNo */
+%CC32%static volatile unsigned long * cam_reset_C$crateNo; 		/* reset controller in crate C$crateNo */
 %CC32%static volatile unsigned long * cam_dwinh_C$crateNo; 		/* dataway inhibit in crate C$crateNo */
-%CC32%static volatile unsigned long * cam_auto_C$crateNo; 		/* auto read */
+%CC32%static volatile unsigned char * cam_auto_C$crateNo; 		/* auto read */
 %CC32%static volatile unsigned long * cam_rddw_C$crateNo; 		/* read double word */
 %CC32%static volatile unsigned long * cam_bcast_C$crateNo; 		/* broadcast */
 %CC32%static volatile unsigned long * cam_sreg_C$crateNo; 	/* X/Q enable in crate C$crateNo */
@@ -176,9 +177,10 @@ int f_user_get_virt_ptr(long *pl_loc_hwacc,
 %C% 	moduleTable[kMrbModule$moduleNameUC - 1].addr = $moduleNameLC;
 %CBV% 	cam_dwinh_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(30));	/* dataway inhibit in crate C$crateNo */
 %CBV% 	cam_sreg_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));	/* X/Q enable in crate C$crateNo */
+%CC32% 	cam_reset_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(31));	/* reset in crate C$crateNo */
 %CC32% 	cam_dwinh_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* dataway inhibit in crate C$crateNo */
-%CC32% 	cam_auto_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(0)); 	/* auto read in crate C$crateNo */
-%CC32% 	cam_rddw_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* read double in crate C$crateNo */
+%CC32% 	cam_auto_C$crateNo = (volatile unsigned char *) CIO_SET_BASE(B(0), C($crateNo), N(0)); 	/* auto read in crate C$crateNo */
+%CC32% 	cam_rddw_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(27));	/* read double word in crate C$crateNo */
 %CC32% 	cam_bcast_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(25));	/* broadcast in crate C$crateNo */
 %CC32% 	cam_lam_C$crateNo = CIO_SET_BASE(B(0), C($crateNo), N(28));		/* LAM pattern in crate C$crateNo */
 %V% 	$moduleNameLC = (volatile char *) find_controller($baseAddrL, $segSizeL, $addrMod, 0, 0, &s_param);	/* $moduleNameLC: $moduleTitle */
@@ -231,8 +233,11 @@ int f_user_init (unsigned char  bh_crate_nr,
 %CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */
 %CECBV%
 %CECBV%			CIO_CTRL_R2B(cam_sreg_C$crateNo, F(26), A(1));	/* enable X and Q for crate C$crateNo */
-%CBCC32%				CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
-%CBCC32%				CIO_WRITE_R2B(cam_lam_C$crateNo, F(16), A(0), 0L);		/* crate C1: clear lam ff */
+%CBCC32%			CIO_WRITE_R2B(cam_reset_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: reset */
+%CBCC32%			CC_AUTOREAD_OFF(cam_auto_C$crateNo);					/* crate C$crateNo: no auto read */
+%CBCC32%			CC_READ_DWORD_OFF(cam_rddw_C$crateNo);					/* crate C$crateNo: no double word read */
+%CBCC32%			CIO_WRITE_R2B(cam_dwinh_C$crateNo, F(16), A(0), 0L);	/* crate C$crateNo: dataway disable */
+%CBCC32%			CIO_WRITE_R2B(cam_lam_C$crateNo, F(16), A(0), 0L);		/* crate C$crateNo: clear lam ff */
 %CECC32%
 %CE% 			break;
 %CE%

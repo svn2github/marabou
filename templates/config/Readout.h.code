@@ -54,8 +54,13 @@ typedef struct {
 / Useful macro defs
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
 
-#define CC_AUTOREAD_ON(cc)	CIO_WRITE_R2B(cc, A(0), F(3), CIO_READ_R2B(cc, A(0), F(3)) | (0x1 << 12))
-#define CC_AUTOREAD_OFF(cc)	CIO_WRITE_R2B(cc, A(0), F(3), CIO_READ_R2B(cc, A(0), F(3)) & ~(0x1 << 12))
+#define CC_AUTOREAD_ON(cc)	cc += 0x0c; \
+							cctmp = *((volatile unsigned short *) cc); \
+							*((volatile unsigned short *) cc) = cctmp | (0x1 << 12)
+
+#define CC_AUTOREAD_OFF(cc)	cc += 0x0c; \
+							cctmp = *((volatile unsigned short *) cc); \
+							*((volatile unsigned short *) cc) = cctmp & ~(0x1 << 12)
 
 #define CC_READ_DWORD_ON(cc)	CIO_WRITE_R2B(cc, A(2), F(16), 0)
 #define CC_READ_DWORD_OFF(cc)	CIO_WRITE_R2B(cc, A(3), F(16), 0)
@@ -65,5 +70,7 @@ typedef struct {
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Device-dependent definitions
 /~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
+
+unsigned short cctmp;	/* temp for vc32/cc32 controller functions */
 
 %%INCLUDES_AND_DEFS_READOUT%%

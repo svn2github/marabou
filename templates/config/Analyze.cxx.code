@@ -97,7 +97,8 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 // initialize histogram arrays
 %%BeginOfCode%%
 %N% 	memset(h$prefix$paramNameUC, 0, $indexRange * sizeof(TH1 *));	// $sevtNameLC.$paramNameLC
-%A% 	memset(h$sevtNameUCArray, 0, $nofParams * sizeof(TH1 *));	// $sevtNameLC
+%A% 	h$sevtNameUCArray.Expand($nofParams); h$sevtNameUCArray.Clear();	// $sevtNameLC
+%U% 	$hArrayName.Expand($nofHistos); $hArrayName.Clear();	// user-defined histos in array $hArrayName
 %%EndOfCode%%
 %%HISTO_INIT_ARRAYS%%
 
@@ -146,6 +147,14 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %B%// book histograms defined by user
 %UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%UDA1%	if ($hName == NULL) {
+%UDA1%		$hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
+%UDA1%		$hArrayName.Add($hName);
+%UDA1%	}
+%UDA2%	if ($hName == NULL) {
+%UDA2%		$hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
+%UDA2%		$hArrayName.Add($hName);
+%UDA2%	}
 %%EndOfCode%%
 %%HISTO_BOOK_USER_DEFINED%%
 

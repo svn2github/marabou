@@ -50,7 +50,7 @@
 %X% 	}
 %A%	if (h$prefix$paramNameUC == NULL) {
 %A% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
-%A% 			h$prefix$sevtNameUCArray[k$paramNameUC] = h$prefix$paramNameUC;
+%A% 			h$prefix$sevtNameUCArray.AddAt(h$prefix$paramNameUC, k$paramNameUC);
 %A% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %A% 	}
 %E%
@@ -122,13 +122,13 @@
 %BP%// add-one to histograms
 %S%	h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC);
 %X%	for (i = 0; i < $indexRange; i++) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i]);
-%A%	for (i = k$firstParam; i <= k$lastParam; i++) h$prefix$sevtNameUCArray[i]->Fill((Axis_t) fData[i]);
+%A%	for (i = k$firstParam; i <= k$lastParam; i++) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i]);
 %PS%	if ($paramNameLC > 0) h$prefix$paramNameUC->Fill((Axis_t) $paramNameLC);
 %PX%	for (i = 0; i < $indexRange; i++) {
 %PX%		if ($paramNameLC[i] > 0) h$prefix$paramNameUC[i]->Fill((Axis_t) $paramNameLC[i]);
 %PX%	}
 %PA%	for (i = k$firstParam; i <= k$lastParam; i++) {
-%PA%		if (fData[i] > 0) h$prefix$sevtNameUCArray[i]->Fill((Axis_t) fData[i]);
+%PA%		if (fData[i] > 0) ((TH1F *) h$prefix$sevtNameUCArray[i])->Fill((Axis_t) fData[i]);
 %PA%	{
 %E%
 %E%	gMrbAnalyze->SetUpdateFlag(); 		// activate update handler

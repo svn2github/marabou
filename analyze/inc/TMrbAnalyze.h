@@ -743,7 +743,7 @@ class TUsrEvent : public TObject {
 																					// list of subevents
 		inline void AddSubevent(TObject * Subevent, Int_t SevtSerial = -1) {		// add subevent to list
 				if (SevtSerial == -1)	fLofSubevents.AddLast(Subevent);
-				else					fLofSubevents.AddAt(Subevent, SevtSerial);
+				else					fLofSubevents.AddAtAndExpand(Subevent, SevtSerial);
 		};
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObject * GetSubevent(Int_t SevtSerial) { return(fLofSubevents.At(SevtSerial)); };	// get it from list
@@ -752,7 +752,7 @@ class TUsrEvent : public TObject {
 																	// list of hit buffers
 		inline void AddHBX(TUsrHBX * HBX, Int_t SevtSerial = -1) {	// add hit buffer wrapper to list
 				if (SevtSerial == -1)	fLofHBXs.AddLast(HBX);
-				else					fLofHBXs.AddAt(HBX, SevtSerial);
+				else					fLofHBXs.AddAtAndExpand(HBX, SevtSerial);
 		};
 		inline TUsrHBX * GetHBX(Int_t SevtSerial) { return((TUsrHBX *) fLofHBXs.At(SevtSerial)); }; // get it from list
 

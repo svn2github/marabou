@@ -71,6 +71,9 @@
 #define DGF_PAR_LIVETIMEC0			$parLiveTimeC
 #define DGF_PAR_FASTPEAKSA0			$parFastPeaksA
 #define DGF_PAR_FASTPEAKSB0			$parFastPeaksB
+/* cc32 controller functions */
+#define CC32_ADR_AUTO_READ			0x0c
+#define CC32_BIT_AUTO_READ			(0x1 << 12)
 
 /*		inline functions */
 #define DGF_WRITE_ICSR(dgf, data)	CIO_WRITE_R2B(dgf, A(8), F(17), data)
