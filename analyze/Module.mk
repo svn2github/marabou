@@ -13,7 +13,6 @@ ANDIRI     := $(ANDIR)/inc
 AN         := M_analyze
 MRBA       := TMrbAnalyze
 MUTEX      := mutex
-N2LL       := n2ll
 
 ##### lib #####
 MRBADL      := $(MODDIRI)/LinkDef.h
@@ -27,9 +26,6 @@ MRBAO       := $(MRBAS:.cxx=.o)
 MUTEXS      := $(MODDIRS)/$(MUTEX).cxx
 MUTEXO      := $(MUTEXS:.cxx=.o)
 
-N2LLS      := $(MODDIRS)/$(N2LL).cxx
-N2LLO      := $(N2LLS:.cxx=.o)
-
 ANS         := $(MODDIRS)/$(AN).cxx
 ANO         := $(ANS:.cxx=.o)
 
@@ -38,13 +34,11 @@ MRBADEP     := $(MRBAO:.o=.d) $(MRBADO:.o=.d)
 
 MRBALIB     := $(LPATH)/lib$(MRBA).$(SOEXT)
 MUTEXLIB    := $(LPATH)/libMutex.$(SOEXT)
-N2LLLIB     := $(LPATH)/libN2ll.$(SOEXT)
 ANOBJ       := obj/$(AN).o
 
 ALLEXECS    += $(ANEXE)
 ALLLIBS     += $(MRBALIB)
 ALLLIBS     += $(MUTEXLIB)
-ALLLIBS     += $(N2LLLIB)
 
 # used in the main Makefile
 ALLHDRS     += include/$(MRBA).h
@@ -71,9 +65,6 @@ $(MRBALIB):     $(MRBADO) $(MRBAO) $(MAINLIBS) $(MRBALIBDEP)
 $(MUTEXLIB):     $(MUTEXO)
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libMutex.$(SOEXT) $@ "$(MUTEXO)"
-$(N2LLLIB):     $(N2LLO)
-		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
-		   "$(SOFLAGS)" libN2ll.$(SOEXT) $@ "$(N2LLO)"
 
 $(MRBADS):     $(MRBAH) $(MRBADL)
 		@echo "Generating dictionary $@..."
@@ -113,6 +104,4 @@ install-analyze:
 		$(INSTALL) $(MRBALIB) $(LIBDIR); \
 		echo "Installing $(MUTEXLIB) in $(LIBDIR)"; \
 		$(INSTALL) $(MUTEXLIB) $(LIBDIR); \
-		echo "Installing $(N2LLLIB) in $(LIBDIR)"; \
-		$(INSTALL) $(N2LLLIB) $(LIBDIR); \
 	fi)
