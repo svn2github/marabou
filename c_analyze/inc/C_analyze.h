@@ -77,7 +77,7 @@ private:
 
    TString *fSaveMap;
    Bool_t  fWriteOutput, fAutoSave, fSelectTime, fSelectNumber, fAutoSetup,
-           fShowRate, fAttach, fUseMap, fMbsDebug;
+           fShowRate, fAttach, fUseMap, fMbsDebug, fForcedStop;
    Int_t   fM_Status;
    Int_t   fC_Status;
    Int_t   fWasStarted;

@@ -1946,7 +1946,7 @@ Bool_t FhMainFrame::StartDAQ()
          gdbrc << gdbCmd.Data() << endl;
          gdbrc << "bt" << endl;
          gdbrc.close();
-         startCmd.Prepend("gdb ./M_analyze");
+         startCmd = "gdb ./M_analyze";
          if (fDebugMode == 1) startCmd += " < /dev/null &";
       } else {
          startCmd.Prepend("./M_analyze");
@@ -1982,7 +1982,8 @@ Bool_t FhMainFrame::StartDAQ()
             return kFALSE;
 
          } else if(fM_Status == M_RUNNING){
-           Bool_t ok = kTRUE;
+            Bool_t ok = kTRUE;
+            fForcedStop = kFALSE;
             if(*fInputSource == "TcpIp")ok = fMbsControl->StartAcquisition();
             if(ok) {
               fStopwatch->Reset();     
@@ -3170,11 +3171,19 @@ void FhMainFrame::Runloop(){
    TString stime;
    TMessage * message;
    Int_t nobs; 
-   if(fWriteOutput && fOutputFile->Length() > 1){
+   if(!fForcedStop && fWriteOutput && fOutputFile->Length() > 1){
       gSystem->GetPathInfo(fOutputFile->Data(),
                            &id, &size, &flags, &modtime);
       fOutSize->SetText(new TGString(Form("%d", size))); 
       gClient->NeedRedraw(fOutSize);
+      if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
+         cout << setred << "outfile size (Mbyte): " << size/1000000 
+              << " exceeds MaxFileSize: " << fMaxFileSize << endl;
+         cout << "force StopDAQ" << setblack << endl;
+         fForcedStop = kTRUE;
+         this->StopDAQ();
+         return;
+      }  
    }
    fM_Status = IsAnalyzeRunning(0);
 
@@ -3320,7 +3329,7 @@ void FhMainFrame::Runloop(){
                      }                        
                      if(binsum >0)avg_rate = sum / binsum;
                   }
-                  fRate->SetText(new TGString(Form("%d",avg_rate))); 
+                  fRate->SetText(new TGString(Form("%d",(Int_t)avg_rate))); 
                   gClient->NeedRedraw(fRate);
 //                same for deadtime if available
                   if(hdeadt){
