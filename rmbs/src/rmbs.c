@@ -123,7 +123,7 @@ int extractSubevents(MBSDataIO * mbs) {
 			case kMrbSevtClu7:				/* subevent clu7: dgf cluster 7, id=7 */
 			case kMrbSevtClu8:				/* subevent clu8: dgf cluster 8, id=8 */
 			case kMrbSevtClu9:				/* subevent clu9: dgf cluster 9 (time stamping dgf), id=9 */
-			case kMrbSevtClu10:				/* subevent clu10: dgf cluster 10 (beam dump dgf), id=9 */
+			case kMrbSevtClu10:				/* subevent clu10: dgf cluster 10 (beam dump dgf), id=10 */
 				sts = decodeDgfData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
@@ -146,7 +146,7 @@ int extractSubevents(MBSDataIO * mbs) {
 				if (sts == FALSE) return(FALSE);
 				continue;
 			case kMrbSevtPuData:			/* subevent puData: pattern unit id=20 */
-				sts = decodeScalerData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodePuData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
 			case kMrbSevtDsca1:				/* subevent dsca1: dgf counters crate 1, id=21 */
@@ -172,37 +172,37 @@ int extractSubevents(MBSDataIO * mbs) {
 	}
 }
 
-/* subevent id 1-9, type [10,22]: raw dgf data, format 0x101 */
+/* subevent id 1-10, type [10,22]: raw dgf data, format 0x101 */
 int decodeDgfData(int sevtId, int sevtWc, unsigned short * sevtData) {
 	printf("Subevent %d: Dgf data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
-/* subevent id 10 + 11, type [10,42]: raw caen data */
+/* subevent id 11-16, type [10,42]: raw caen data */
 int decodeCaenAdcData(int sevtId, int sevtWc, unsigned short * sevtData) {
 	printf("Subevent %d: Caen V785 adc data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
-/* subevent id 12 + 13, type [10,42]: raw caen data */
+/* subevent id 17 + 18, type [10,42]: raw caen data */
 int decodeCaenTdcData(int sevtId, int sevtWc, unsigned short * sevtData) {
 	printf("Subevent %d: Caen V775 tdc data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
-/* subevent 14, type [10,11]: i/o reg bits, 1 word */
-int decodePuData(int sevtId, int sevtWc, unsigned short * sevtData) {
-	printf("Subevent %d: pattern data, wc=%d\n", sevtId, sevtWc);
-	return(TRUE);
-}
-
-/* subevent 15, type [10,11]: scaler data: 3 scalers a 32 chn a 32 bit */
+/* subevent 19, type [10,11]: scaler data: 3 scalers a 32 chn a 32 bit */
 int decodeScalerData(int sevtId, int sevtWc, unsigned short * sevtData) {
 	printf("Subevent %d: scaler data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
-/* subevent 16, 17, 18, type [10,65]: internal dgf counters:         */
+/* subevent 20, type [10,53]: pattern unit Sis3600 */
+int decodePuData(int sevtId, int sevtWc, unsigned short * sevtData) {
+	printf("Subevent %d: scaler data, wc=%d\n", sevtId, sevtWc);
+	return(TRUE);
+}
+
+/* subevent 21, 22, 23, type [10,65]: internal dgf counters:         */
 /*                                    0: magic word 0x2525           */
 /*                                    1: word count                  */
 /*                                    2: subevent id                 */
