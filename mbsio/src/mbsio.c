@@ -864,6 +864,8 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	}
 
 	if (med_out) {
+		eh = eHdr;
+		bto_put_long(&evl, &eh->l_dlen, 1, bo);
 		ehs = sizeof(s_vehe);
 		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */

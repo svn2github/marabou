@@ -30,6 +30,7 @@ NAME
 	bto_get_short
 	bto_get_long
 	bto_get_string
+	bto_put_long
 AUTOR
 	R. Lutter
 FUNKTION
@@ -49,6 +50,12 @@ AUFRUF
 
 .	char *bto_get_string(out, in, cnt, bytord)
 	char *out;
+	char *in;
+	int cnt;
+	int bytord;
+
+.	char *bto_put_long(out, in, cnt, bytord)
+	long *out;
 	char *in;
 	int cnt;
 	int bytord;
@@ -216,3 +223,62 @@ int bytord;
 								}
 	}
 }
+
+char *bto_put_long(out, in, cnt, bytord)
+
+long *out;
+char *in;
+int cnt;
+int bytord;
+
+{
+	register int i;
+	union x {
+		long l;
+		char b[4];
+	} x;
+
+	switch (bytord)
+	{
+		case BYTE_ORDER_1_TO_1:	for (i = 0; i < cnt; i++)
+								{
+									x.b[0] = *in++;
+									x.b[1] = *in++;
+									x.b[2] = *in++;
+									x.b[3] = *in++;
+									*out++ = x.l;
+								}
+								return(in);
+
+		case BYTE_ORDER_BSW:	for (i = 0; i < cnt; i++)
+								{
+									x.b[1] = *in++;
+									x.b[0] = *in++;
+									x.b[3] = *in++;
+									x.b[2] = *in++;
+									*out++ = x.l;
+								}
+								return(in);
+
+		case BYTE_ORDER_LSW:	for (i = 0; i < cnt; i++)
+								{
+									x.b[2] = *in++;
+									x.b[3] = *in++;
+									x.b[0] = *in++;
+									x.b[1] = *in++;
+									*out++ = x.l;
+								}
+								return(in);
+
+		case BYTE_ORDER_REV:	for (i = 0; i < cnt; i++)
+								{
+									x.b[3] = *in++;
+									x.b[2] = *in++;
+									x.b[1] = *in++;
+									x.b[0] = *in++;
+									*out++ = x.l;
+								}
+								return(in);
+	}
+}
+
