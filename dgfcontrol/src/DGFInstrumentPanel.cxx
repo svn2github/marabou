@@ -906,6 +906,12 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // TraceDelayEntry:
 	dblStr = dgf->GetDelay(chn);
 	fTraceDelayEntry->GetEntry()->SetText(dblStr.Data());
+// TracePSALengthEntry:
+	dblStr = dgf->GetPSALength(chn);
+	fTracePSALengthEntry->GetEntry()->SetText(dblStr.Data());
+// TracePsaOffsetEntry:
+	dblStr = dgf->GetPSAOffset(chn);
+	fTracePSAOffsetEntry->GetEntry()->SetText(dblStr.Data());
 // StatRegModICSREntry:
 	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl");
 	intStr.FromInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
@@ -1149,6 +1155,18 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			}
 			dgf->SetThreshold(chn, intVal);
 			break;
+		case kDGFInstrTracePSALengthEntry:
+			entry = fTracePSALengthEntry->GetEntry();
+			dblStr = entry->GetText();
+			dblStr.ToDouble(dblVal);
+			dgf->SetPSALength(chn, dblVal);
+			break;
+		case kDGFInstrTracePSAOffsetEntry:
+			entry = fTracePSAOffsetEntry->GetEntry();
+			dblStr = entry->GetText();
+			dblStr.ToDouble(dblVal);
+			dgf->SetPSAOffset(chn, dblVal);
+			break;
 		case kDGFInstrTraceLengthEntry:
 			entry = fTraceLengthEntry->GetEntry();
 			dblStr = entry->GetText();
@@ -1303,6 +1321,12 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 			break;
 		case kDGFInstrTraceDelayEntry:
 			entry = fTraceDelayEntry->GetEntry();
+			break;
+		case kDGFInstrTracePSALengthEntry:
+			entry = fTracePSALengthEntry->GetEntry();
+			break;
+		case kDGFInstrTracePSAOffsetEntry:
+			entry = fTracePSAOffsetEntry->GetEntry();
 			break;
 		case kDGFInstrStatRegModICSREntry:
 			entry = fStatRegModICSREntry->GetEntry();
