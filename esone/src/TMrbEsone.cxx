@@ -22,6 +22,7 @@ namespace std {} using namespace std;
 #include "Rtypes.h"
 #include "TSystem.h"
 #include "TEnv.h"
+#include "TObjString.h"
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
@@ -283,14 +284,17 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	Bool_t found;
 	TString remoteHome;
 	TString setupPath;
-	TString mbsVersion;
+	TMrbString mbsVersion;
 	Bool_t startPrompter;
 	TString prmOrDsp;
 
 	this->SetOffline(kFALSE);
 	
 	setupPath = gEnv->GetValue("TMrbEsone.SetupPath", "/nfs/mbssys/esone");
-	mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "deve");
+	mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "");
+	if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "deve");
+	TObjArray v;
+	if (mbsVersion.Split(v, "-") > 1) mbsVersion = ((TObjString *) v[1])->GetString();
 	startPrompter = gEnv->GetValue("TMrbEsone.StartPrompter", kFALSE);
 
 	// reset mbs
