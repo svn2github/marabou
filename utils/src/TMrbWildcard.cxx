@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbWildcard.cxx,v 1.3 2004-12-15 08:09:45 rudi Exp $       
+// Revision:       $Id: TMrbWildcard.cxx,v 1.4 2004-12-15 09:21:05 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -22,8 +22,8 @@ void TMrbWildcard::SetMask(const Char_t * Wildcard) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWildcard::SetMask
-// Purpose:        Set wildcrad mask
-// Arguments:      Char_t * Wildcard   -- masked to be used in match calls
+// Purpose:        Set wildcard mask
+// Arguments:      Char_t * Wildcard   -- mask to be used in match calls
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Defines wildcard mask.
