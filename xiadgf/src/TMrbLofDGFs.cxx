@@ -560,8 +560,9 @@ TMrbDGF::EMrbWaitStatus TMrbLofDGFs::WaitActive(Int_t Timeout) {
 	time_t start;
 
 	start = time(NULL);
+	sleep(1);
 
-	while ((time(NULL) - start) > Timeout) {
+	while ((time(NULL) - start) < Timeout) {
 		TMrbDGF * dgf = (TMrbDGF *) this->First();
 		Bool_t ok = kTRUE;
 		while (dgf) {
