@@ -34,7 +34,7 @@ LIBS    =	/lib/ces/libvme.a $(LIB)/lib_mbs.a \
 			$(LIB)/lib_utils.a \
 			$(LIB)/libedit.a -lnetinet
 
-all:	m_read_meb m_read_meb_debug
+all:	m_read_meb %%DEBUG_READOUT%%
 
 m_read_meb: if$(LEGALCPU) $(OBJ)/m_read_meb.o \
 		$(OBJ)/objects \
@@ -63,6 +63,9 @@ m_read_meb_debug: if$(LEGALCPU) $(OBJ)/m_read_meb.o \
 	strip m_read_meb_debug
 	rm -f *.unstripped
 	chmod og-w m_read_meb_debug
+
+m_read_meb_no_debug:
+	rm -f m_read_meb_debug
 
 clean:
 	rm -f core *.bak *.jou *.o m_read_meb
