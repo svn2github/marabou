@@ -2078,14 +2078,15 @@ Bool_t TMrbDGF::PrintStatus(ostream & OutStrm, Int_t Channel) {
 	}
 }
 
-Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
+Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, const Char_t * AltParamFile, Bool_t UpdateDSP) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::LoadParams
 // Purpose:        Read param values from file
-// Arguments:      Char_t * ParamFile   -- file name
-//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
-// Results:        Int_t NofParams      -- number of params read
+// Arguments:      Char_t * ParamFile     -- file name
+//                 Char_t * AltParamFile  -- alternative file name
+//                 Bool_t UpdateDSP       -- kTRUE if DSP is to be updated
+// Results:        Int_t NofParams        -- number of params read
 // Exceptions:
 // Description:    Reads a set param values from file.
 // Keywords:
@@ -2111,7 +2112,20 @@ Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 		return(-1);
 	}
 
-	paramFile = ParamFile;
+	if (gSystem->AccessPathName(ParamFile, kFileExists) == 0) {
+		paramFile = ParamFile;
+	} else if (*AltParamFile != '\0' && gSystem->AccessPathName(AltParamFile, kFileExists) == 0) {
+		paramFile = AltParamFile;
+	} else {
+			gMrbLog->Err() << "Param file not found - " << ParamFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadParams");
+			if (*AltParamFile != '\0') {
+				gMrbLog->Err() << "Alternative param file not found - " << AltParamFile << endl;
+				gMrbLog->Flush(this->ClassName(), "LoadParams");
+			}
+			return(-1);
+	}
+
 	if (uxSys.CheckExtension(paramFile.Data(), ".par")) {
 		pf.open(paramFile, ios::in);
 		if (!pf.good()) {
@@ -2196,13 +2210,14 @@ Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 	return(nofParams);
 }
 
-Int_t TMrbDGF::LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile) {
+Int_t TMrbDGF::LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile, const Char_t * AltParamFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::LoadParamsToEnv
 // Purpose:        Read param values to ROOT environment
-// Arguments:      TEnv * Env           -- environment to store params
-//                 Char_t * ParamFile   -- file name
+// Arguments:      TEnv * Env             -- environment to store params
+//                 Char_t * ParamFile     -- file name
+//                 Char_t * AltParamFile  -- alternate file name
 // Results:        Int_t NofParams      -- number of params read
 // Exceptions:
 // Description:    Reads a set param values from file and stores them into
@@ -2228,7 +2243,20 @@ Int_t TMrbDGF::LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile) {
 		return(0);
 	}
 
-	paramFile = ParamFile;
+	if (gSystem->AccessPathName(ParamFile, kFileExists) == 0) {
+		paramFile = ParamFile;
+	} else if (*AltParamFile != '\0' && gSystem->AccessPathName(AltParamFile, kFileExists) == 0) {
+		paramFile = AltParamFile;
+	} else {
+			gMrbLog->Err() << "Param file not found - " << ParamFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadParamsToEnv");
+			if (*AltParamFile != '\0') {
+				gMrbLog->Err() << "Alternative param file not found - " << AltParamFile << endl;
+				gMrbLog->Flush(this->ClassName(), "LoadParamsToEnv");
+			}
+			return(-1);
+	}
+
 	if (uxSys.CheckExtension(paramFile.Data(), ".par")) {
 		pf.open(paramFile, ios::in);
 		if (!pf.good()) {
@@ -6019,11 +6047,15 @@ const Char_t * TMrbDGF::GetClusterInfo(TMrbString & Info) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Info = "CLU";
-	Info += fClusterID.GetIndex();
+	Info += this->GetClusterSerial();
 	Info += " ";
-	Info += fClusterID.GetName();
+	TMrbString h;
+	h.FromInteger(this->GetClusterHexNum(), 0, ' ', 16);
+	Info += h;
+	Info += " ";
+	Info += this->GetClusterColor();
 	Info += " (";
-	Info += fClusterID.GetTitle();
+	Info += this->GetClusterSegments();
 	Info += ")";
 	return(Info.Data());
 }

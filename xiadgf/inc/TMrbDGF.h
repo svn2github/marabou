@@ -169,8 +169,8 @@ class TMrbDGF : public TNamed {
 		inline Bool_t PrintStatus(Int_t Channel = -1) { return(PrintStatus(cout, Channel)); };
 		 
 		Int_t SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP = kTRUE);		// save params to file
-		Int_t LoadParams(const Char_t * ParamFile, Bool_t UpdateDSP = kTRUE);		// read params from file
-		Int_t LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile);				// read param values to ROOT environment
+		Int_t LoadParams(const Char_t * ParamFile, const Char_t * AltParamFile = "", Bool_t UpdateDSP = kTRUE);		// read params from file
+		Int_t LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile, const Char_t * AltParamFile = "");				// read param values to ROOT environment
 		Int_t SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP = kTRUE);		// save values to file
 
 		Int_t LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP = kTRUE);	// read psa params from file
@@ -323,10 +323,14 @@ class TMrbDGF : public TNamed {
 		inline Int_t GetCrate() { return(fCrate); };
 		inline Int_t GetStation() { return(fStation); };
 
-		inline void SetClusterID(Int_t ClusterSerial = 0, const Char_t * ClusterColor = "", const Char_t * SegmentID = "") {
-			fClusterID.Set(ClusterSerial, ClusterColor, SegmentID);
+		inline void SetClusterID(Int_t ClusterSerial = 0, const Char_t * ClusterColor = "", const Char_t * SegmentID = "", Int_t HexNum = 0) {
+			fClusterID.Set((Int_t) (ClusterSerial << 12) + HexNum, ClusterColor, SegmentID);
 		};
 		inline TMrbNamedX * GetClusterID() { return(&fClusterID); };
+		inline Int_t GetClusterSerial() const { return((Int_t) (fClusterID.GetIndex() >> 12)); }; 		// use TMrbNamedX object:
+		inline Int_t GetClusterHexNum() const { return(fClusterID.GetIndex() & 0xFFF); }; 		// use TMrbNamedX object:
+		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
+		inline const Char_t * GetClusterSegments() const { return(fClusterID.GetTitle()); };	// title <- segment info
 		const Char_t * GetClusterInfo(TMrbString & Info);
 		
 		TMrbNamedX * GetRevision(Bool_t Renew = kFALSE); 							// module revision
