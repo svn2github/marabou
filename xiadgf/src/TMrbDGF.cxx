@@ -2450,7 +2450,9 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 	if (uxSys.CheckExtension(paramFile.Data(), ".psa")) {
 		pf.open(paramFile, ios::in);
 		if (!pf.good()) {
-			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
+			gMrbLog->Err()	<< "[Warning] " << gSystem->GetError() << " - " << paramFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+			gMrbLog->Err()	<< "[Warning] PSA values not set" << endl;
 			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
 			return(-1);
 		}
