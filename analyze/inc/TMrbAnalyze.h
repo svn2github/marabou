@@ -522,6 +522,9 @@ class TUsrHBX : public TObject {
 		TUsrHit * FindEvent(Int_t EventNumber); 							// find an event
 		TUsrHit * FindNextEvent();											// find first hit of next event
 
+		inline void SetAssigned(Bool_t Flag = kTRUE) { fIsAssigned = Flag; };
+		inline Bool_t IsAssigned() { return(fIsAssigned); };
+
 		inline Bool_t AtEnd() const { return(fCurIndex >= this->GetNofHits()); }; // kTRUE if at end of buffer
 
 		Bool_t HitInWindow(TUsrHit * Hit0) const; 								// check if hit in time window
@@ -538,6 +541,7 @@ class TUsrHBX : public TObject {
 		Bool_t fResetDone;						// kTRUE after ResetIndex()
 		Int_t fCurIndex;						// current index in buffer
 		Int_t fWindow;							// time stamp window
+		Bool_t fIsAssigned;						// assigned to an event
 		TUsrHitBuffer * fHitBuffer; 			//! hit buffer address
 		TClonesArray * fHits;					//! access to hit array
 			
