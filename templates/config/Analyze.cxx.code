@@ -496,17 +496,23 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %%EndOfCode%%
 %%EVT_IGNORE_TRIGGER%%
 
+%%BeginOfCode%%
 		case kMrbTriggerStartAcquisition:					// start acquisition (trigger 14)
 			gStartEvent->ExtractTimeStamp(EventData, BaseAddr);
 			gStartEvent->Print();
 			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STARTING);
 			return(kTRUE);
+%%EndOfCode%%
+%%EVT_TRIGGER_START_ACQUISITION%%
 
+%%BeginOfCode%%
 		case kMrbTriggerStopAcquisition:					// stop acquisition (trigger 15)
 			gStopEvent->ExtractTimeStamp(EventData, BaseAddr);
 			gStopEvent->Print();
 			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
 			return(kFALSE);
+%%EndOfCode%%
+%%EVT_TRIGGER_STOP_ACQUISITION%%
 
 		default:
 			gMrbLog->Err()	<< "Illegal trigger number - #" << EventData->i_trigger << endl;

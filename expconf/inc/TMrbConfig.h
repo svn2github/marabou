@@ -137,6 +137,8 @@ class TMrbConfig : public TNamed {
 									kAnaEventMethodToProcessEvent,
 									kAnaEventDispatchOverTrigger,
 									kAnaEventIgnoreTrigger,
+									kAnaEventTriggerStartAcq,
+									kAnaEventTriggerStopAcq,
 									kAnaEventReplayEvent,
 									kAnaEventBookParams,
 									kAnaEventBookHistograms,
@@ -539,7 +541,7 @@ class TMrbConfig : public TNamed {
 		inline virtual void Print() const { Print(cout, ""); };
 
 		Int_t GetNofErrors() const;							// number of errors
-		Int_t PrintErrors() const; 							// print error summary
+		Int_t PrintErrors(Bool_t ErrorsOnly = kTRUE) const; // print error summary
 		
 		inline void AddEvent(TObject * Evt) {				 				// add a new event
 			fLofEvents.Add(Evt);

@@ -988,45 +988,191 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					}
 					break;
 				case TMrbConfig::kAnaSevtBookHistograms:
-					stdHistosOK = kFALSE;
-					evt = (TMrbEvent *) fLofEvents.First();
-					while (evt) {
-						evtNameLC = evt->GetName();
-						evtNameUC = evtNameLC;
-						evtNameUC(0,1).ToUpper();
-						doIt = kFALSE;
-						if (evt->HasPrivateHistograms()) {
-							anaTmpl.InitializeCode("%BP%");
-							pFlag = kTRUE;
-							pUC = evt->GetPrefix();
-							pUC(0,1).ToUpper();
-							doIt = kTRUE;
-						} else if (!stdHistosOK) {
-							anaTmpl.InitializeCode("%BN%");
-							pFlag = prependPrefix;
-							pUC = prefixUC;
-							stdHistosOK = kTRUE;
-							doIt = kTRUE;
-						}
+					if (this->HistosToBeAllocated()) {
+						stdHistosOK = kFALSE;
+						evt = (TMrbEvent *) fLofEvents.First();
+						while (evt) {
+							evtNameLC = evt->GetName();
+							evtNameUC = evtNameLC;
+							evtNameUC(0,1).ToUpper();
+							doIt = kFALSE;
+							if (evt->HasPrivateHistograms()) {
+								anaTmpl.InitializeCode("%BP%");
+								pFlag = kTRUE;
+								pUC = evt->GetPrefix();
+								pUC(0,1).ToUpper();
+								doIt = kTRUE;
+							} else if (!stdHistosOK) {
+								anaTmpl.InitializeCode("%BN%");
+								pFlag = prependPrefix;
+								pUC = prefixUC;
+								stdHistosOK = kTRUE;
+								doIt = kTRUE;
+							}
 
-						if (!this->HistosToBeAllocated()) {
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.WriteCode(AnaStrm);
-							stdHistosOK = kTRUE;
-						} else if (doIt) {
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.WriteCode(AnaStrm);
-							if (this->IsA() != TMrbSubevent_Data_S::Class() && this->IsA() != TMrbSubevent_Data_I::Class()) {
-								if (this->GetAnalyzeOptions(evt) & TMrbConfig::kAnaOptHistograms)
+							if (doIt) {
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+								anaTmpl.WriteCode(AnaStrm);
+								if (this->IsA() != TMrbSubevent_Data_S::Class() && this->IsA() != TMrbSubevent_Data_I::Class()) {
+									if (this->GetAnalyzeOptions(evt) & TMrbConfig::kAnaOptHistograms)
 											defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramTrue;
-								else		defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
+									else	defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
+									if (this->IsInArrayMode()) {
+										param = (TMrbModuleChannel *) fLofParams.First();
+										while (param) {
+											histoMode = param->GetHistoMode();
+											if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
+											if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
+												paramStatus = param->GetStatus();
+												if (paramStatus != TMrbConfig::kChannelArrElem) {
+													module = (TMrbModule *) param->Parent();
+													if (module->HistosToBeAllocated() && module->GetRange() > 0) {
+														moduleNameLC = module->GetName();
+														moduleNameUC = moduleNameLC;
+														moduleNameUC(0,1).ToUpper();
+														paramNameLC = param->GetName();
+														paramNameUC = paramNameLC;
+														paramNameUC(0,1).ToUpper();
+														if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
+														else if (paramStatus == TMrbConfig::kChannelSingle) anaTmpl.InitializeCode("%S%");
+														else												anaTmpl.InitializeCode("%X%");
+														if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
+														else		anaTmpl.Substitute("$prefix", "");
+														anaTmpl.Substitute("$evtNameLC", evtNameLC);
+														anaTmpl.Substitute("$evtNameUC", evtNameUC);
+														anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+														anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+														anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+														anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+														anaTmpl.Substitute("$paramNameLC", paramNameLC);
+														anaTmpl.Substitute("$paramNameUC", paramNameUC);
+														anaTmpl.Substitute("$paramIndex", param->GetAddr());
+														anaTmpl.Substitute("$hBinSize", (Int_t) module->GetBinRange());
+														anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetRange());
+														anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
+														anaTmpl.WriteCode(AnaStrm);
+													}
+												}
+											}
+											param = (TMrbModuleChannel *) fLofParams.After(param);
+										}
+									} else {
+										param = (TMrbModuleChannel *) fLofParams.First();
+										while (param) {
+											histoMode = param->GetHistoMode();
+											if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
+											if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
+												paramStatus = param->GetStatus();
+												if (paramStatus != TMrbConfig::kChannelArrElem) {
+													module = (TMrbModule *) param->Parent();
+													if (module->HistosToBeAllocated() && module->GetRange() > 0) {
+														moduleNameLC = module->GetName();
+														moduleNameUC = moduleNameLC;
+														moduleNameUC(0,1).ToUpper();	
+														paramNameLC = param->GetName();
+														paramNameUC = paramNameLC;
+														paramNameUC(0,1).ToUpper();
+														if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
+														else if (paramStatus == TMrbConfig::kChannelSingle)	anaTmpl.InitializeCode("%S%");
+														else												anaTmpl.InitializeCode("%X%");
+														if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
+														else		anaTmpl.Substitute("$prefix", "");
+														anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+														anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+														anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
+														anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
+														anaTmpl.Substitute("$paramNameLC", paramNameLC);
+														anaTmpl.Substitute("$paramNameUC", paramNameUC);
+														anaTmpl.Substitute("$paramIndex", param->GetAddr());
+														anaTmpl.Substitute("$hBinSize", (Int_t) module->GetBinRange());
+														anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetRange());
+														anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
+														anaTmpl.WriteCode(AnaStrm);
+													}	
+												}
+											}
+											param = (TMrbModuleChannel *) fLofParams.After(param);
+										}
+									}
+								}
+							}
+							if (evt->HasPrivateHistograms()) {
+								anaTmpl.InitializeCode("%E%");
+								anaTmpl.WriteCode(AnaStrm);
+							}
+							evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+						}
+						if (stdHistosOK) {
+							anaTmpl.InitializeCode("%E%");
+							anaTmpl.WriteCode(AnaStrm);
+						}
+					} else {
+						anaTmpl.InitializeCode("%BN%");
+						anaTmpl.Substitute("$evtNameLC", evtNameLC);
+						anaTmpl.Substitute("$evtNameUC", evtNameUC);
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.WriteCode(AnaStrm);
+						anaTmpl.InitializeCode("%E%");
+						anaTmpl.WriteCode(AnaStrm);
+					}
+					break;
+				case TMrbConfig::kAnaSevtFillHistograms:
+					if (this->HistosToBeAllocated()) {
+						stdHistosOK = kFALSE;
+						evt = (TMrbEvent *) fLofEvents.First();
+						while (evt) {
+							doIt = kFALSE;
+							if (evt->HasPrivateHistograms()) {
+								anaTmpl.InitializeCode("%BP%");
+								evtNameLC = evt->GetName();
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								pFlag = kTRUE;
+								pUC = evt->GetPrefix();
+								pUC(0,1).ToUpper();
+								doIt = kTRUE;
+							} else if (!stdHistosOK) {
+								anaTmpl.InitializeCode("%BN%");
+								pFlag = prependPrefix;
+								pUC = prefixUC;
+								stdHistosOK = kTRUE;
+								doIt = kTRUE;
+							}
+							if (doIt) {
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+								anaTmpl.WriteCode(AnaStrm);
 								if (this->IsInArrayMode()) {
+									anaTmpl.InitializeCode(this->HistosToBeFilledIfTrueHit() ? "%PA" : "%A%");
+									if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
+									else		anaTmpl.Substitute("$prefix", "");
+									anaTmpl.Substitute("$evtNameLC", evtNameLC);
+									anaTmpl.Substitute("$evtNameUC", evtNameUC);
+									anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+									anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+									param = (TMrbModuleChannel *) fLofParams.First();
+									paramNameLC = param->GetName();
+									paramNameUC = paramNameLC;
+									paramNameUC(0,1).ToUpper();
+									anaTmpl.Substitute("$firstParam", paramNameUC);
+									param = (TMrbModuleChannel *) fLofParams.Last();
+									paramNameLC = param->GetName();
+									paramNameLC = param->GetName();
+									paramNameUC = paramNameLC;
+									paramNameUC(0,1).ToUpper();
+									anaTmpl.Substitute("$lastParam", paramNameUC);
+									anaTmpl.Substitute("$nofParams", this->GetNofParams());
+									anaTmpl.WriteCode(AnaStrm);
+								} else {
+									if (this->GetAnalyzeOptions(evt) & TMrbConfig::kAnaOptHistograms)
+												defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramTrue;
+									else		defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
 									param = (TMrbModuleChannel *) fLofParams.First();
 									while (param) {
 										histoMode = param->GetHistoMode();
@@ -1036,65 +1182,20 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 											if (paramStatus != TMrbConfig::kChannelArrElem) {
 												module = (TMrbModule *) param->Parent();
 												if (module->HistosToBeAllocated() && module->GetRange() > 0) {
-													moduleNameLC = module->GetName();
-													moduleNameUC = moduleNameLC;
-													moduleNameUC(0,1).ToUpper();
 													paramNameLC = param->GetName();
 													paramNameUC = paramNameLC;
 													paramNameUC(0,1).ToUpper();
-													if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
-													else if (paramStatus == TMrbConfig::kChannelSingle) anaTmpl.InitializeCode("%S%");
-													else												anaTmpl.InitializeCode("%X%");
+													iniTag = this->HistosToBeFilledIfTrueHit() ? "%P" : "%";
+													iniTag += (paramStatus == TMrbConfig::kChannelSingle) ? "S%" : "X%";
+													anaTmpl.InitializeCode(iniTag);
 													if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
 													else		anaTmpl.Substitute("$prefix", "");
 													anaTmpl.Substitute("$evtNameLC", evtNameLC);
 													anaTmpl.Substitute("$evtNameUC", evtNameUC);
 													anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 													anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-													anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
-													anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
 													anaTmpl.Substitute("$paramNameLC", paramNameLC);
 													anaTmpl.Substitute("$paramNameUC", paramNameUC);
-													anaTmpl.Substitute("$paramIndex", param->GetAddr());
-													anaTmpl.Substitute("$hBinSize", (Int_t) module->GetBinRange());
-													anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetRange());
-													anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
-													anaTmpl.WriteCode(AnaStrm);
-												}
-											}
-										}
-										param = (TMrbModuleChannel *) fLofParams.After(param);
-									}
-								} else {
-									param = (TMrbModuleChannel *) fLofParams.First();
-									while (param) {
-										histoMode = param->GetHistoMode();
-										if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
-										if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
-											paramStatus = param->GetStatus();
-											if (paramStatus != TMrbConfig::kChannelArrElem) {
-												module = (TMrbModule *) param->Parent();
-												if (module->HistosToBeAllocated() && module->GetRange() > 0) {
-													moduleNameLC = module->GetName();
-													moduleNameUC = moduleNameLC;
-													moduleNameUC(0,1).ToUpper();
-													paramNameLC = param->GetName();
-													paramNameUC = paramNameLC;
-													paramNameUC(0,1).ToUpper();
-													if (this->IsInArrayMode())							anaTmpl.InitializeCode("%A%");
-													else if (paramStatus == TMrbConfig::kChannelSingle)	anaTmpl.InitializeCode("%S%");
-													else												anaTmpl.InitializeCode("%X%");
-													if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
-													else		anaTmpl.Substitute("$prefix", "");
-													anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-													anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-													anaTmpl.Substitute("$moduleNameLC", moduleNameLC);
-													anaTmpl.Substitute("$moduleNameUC", moduleNameUC);
-													anaTmpl.Substitute("$paramNameLC", paramNameLC);
-													anaTmpl.Substitute("$paramNameUC", paramNameUC);
-													anaTmpl.Substitute("$paramIndex", param->GetAddr());
-													anaTmpl.Substitute("$hBinSize", (Int_t) module->GetBinRange());
-													anaTmpl.Substitute("$hUpperLim", (Int_t) module->GetRange());
 													anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
 													anaTmpl.WriteCode(AnaStrm);
 												}
@@ -1104,116 +1205,23 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 									}
 								}
 							}
-						}
-						if (evt->HasPrivateHistograms()) {
-							anaTmpl.InitializeCode("%E%");
-							anaTmpl.WriteCode(AnaStrm);
-						}
-						evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
-					}
-					if (stdHistosOK) {
-						anaTmpl.InitializeCode("%E%");
-						anaTmpl.WriteCode(AnaStrm);
-					}
-					break;
-				case TMrbConfig::kAnaSevtFillHistograms:
-					stdHistosOK = kFALSE;
-					evt = (TMrbEvent *) fLofEvents.First();
-					while (evt) {
-						doIt = kFALSE;
-						if (evt->HasPrivateHistograms()) {
-							anaTmpl.InitializeCode("%BP%");
-							evtNameLC = evt->GetName();
-							evtNameUC = evtNameLC;
-							evtNameUC(0,1).ToUpper();
-							pFlag = kTRUE;
-							pUC = evt->GetPrefix();
-							pUC(0,1).ToUpper();
-							doIt = kTRUE;
-						} else if (!stdHistosOK) {
-							anaTmpl.InitializeCode("%BN%");
-							pFlag = prependPrefix;
-							pUC = prefixUC;
-							stdHistosOK = kTRUE;
-							doIt = kTRUE;
-						}
-						if (!this->HistosToBeAllocated()) {
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.WriteCode(AnaStrm);
-							stdHistosOK = kTRUE;
-						} else if (doIt) {
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.WriteCode(AnaStrm);
-							if (this->IsInArrayMode()) {
-								anaTmpl.InitializeCode(this->HistosToBeFilledIfTrueHit() ? "%PA" : "%A%");
-								if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
-								else		anaTmpl.Substitute("$prefix", "");
-								anaTmpl.Substitute("$evtNameLC", evtNameLC);
-								anaTmpl.Substitute("$evtNameUC", evtNameUC);
-								anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-								anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-								param = (TMrbModuleChannel *) fLofParams.First();
-								paramNameLC = param->GetName();
-								paramNameUC = paramNameLC;
-								paramNameUC(0,1).ToUpper();
-								anaTmpl.Substitute("$firstParam", paramNameUC);
-								param = (TMrbModuleChannel *) fLofParams.Last();
-								paramNameLC = param->GetName();
-								paramNameLC = param->GetName();
-								paramNameUC = paramNameLC;
-								paramNameUC(0,1).ToUpper();
-								anaTmpl.Substitute("$lastParam", paramNameUC);
-								anaTmpl.Substitute("$nofParams", this->GetNofParams());
+							if (evt->HasPrivateHistograms()) {
+								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(AnaStrm);
-							} else {
-								if (this->GetAnalyzeOptions(evt) & TMrbConfig::kAnaOptHistograms)
-											defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramTrue;
-								else		defaultHistoMode = TMrbModuleChannel::kMrbHasHistogramFalse;
-								param = (TMrbModuleChannel *) fLofParams.First();
-								while (param) {
-									histoMode = param->GetHistoMode();
-									if (histoMode == TMrbModuleChannel::kMrbHasHistogramDefault) histoMode = defaultHistoMode;
-									if (histoMode == TMrbModuleChannel::kMrbHasHistogramTrue) {
-										paramStatus = param->GetStatus();
-										if (paramStatus != TMrbConfig::kChannelArrElem) {
-											module = (TMrbModule *) param->Parent();
-											if (module->HistosToBeAllocated() && module->GetRange() > 0) {
-												paramNameLC = param->GetName();
-												paramNameUC = paramNameLC;
-												paramNameUC(0,1).ToUpper();
-												iniTag = this->HistosToBeFilledIfTrueHit() ? "%P" : "%";
-												iniTag += (paramStatus == TMrbConfig::kChannelSingle) ? "S%" : "X%";
-												anaTmpl.InitializeCode(iniTag);
-												if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
-												else		anaTmpl.Substitute("$prefix", "");
-												anaTmpl.Substitute("$evtNameLC", evtNameLC);
-												anaTmpl.Substitute("$evtNameUC", evtNameUC);
-												anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-												anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-												anaTmpl.Substitute("$paramNameLC", paramNameLC);
-												anaTmpl.Substitute("$paramNameUC", paramNameUC);
-												anaTmpl.Substitute("$indexRange", (Int_t) param->GetIndexRange());
-												anaTmpl.WriteCode(AnaStrm);
-											}
-										}
-									}
-									param = (TMrbModuleChannel *) fLofParams.After(param);
-								}
 							}
-						}
-						if (evt->HasPrivateHistograms()) {
+							evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
+						}	
+						if (stdHistosOK) {
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(AnaStrm);
 						}
-						evt = (TMrbEvent *) fLofEvents.After((TObject *) evt);
-					}
-					if (stdHistosOK) {
+					} else {
+						anaTmpl.InitializeCode("%BN%");
+						anaTmpl.Substitute("$evtNameLC", evtNameLC);
+						anaTmpl.Substitute("$evtNameUC", evtNameUC);
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.WriteCode(AnaStrm);
 						anaTmpl.InitializeCode("%E%");
 						anaTmpl.WriteCode(AnaStrm);
 					}

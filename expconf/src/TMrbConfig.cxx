@@ -230,6 +230,8 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventMethodToProcessEvent, "EVT_METHOD_TO_PROCESS_EVENT"	},
 								{TMrbConfig::kAnaEventDispatchOverTrigger,	"EVT_DISPATCH_OVER_TRIGGER" 	},
 								{TMrbConfig::kAnaEventIgnoreTrigger,		"EVT_IGNORE_TRIGGER"			},
+								{TMrbConfig::kAnaEventTriggerStartAcq,		"EVT_TRIGGER_START_ACQUISITION" },
+								{TMrbConfig::kAnaEventTriggerStopAcq,		"EVT_TRIGGER_STOP_ACQUISITION" 	},
 								{TMrbConfig::kAnaEventReplayEvent,			"EVT_REPLAY_EVENT"			 	},
 								{TMrbConfig::kAnaEventSetFakeMode,			"EVT_SET_FAKE_MODE"				},
 								{TMrbConfig::kAnaEventCreateTree,			"EVT_CREATE_TREE"				},
@@ -2756,6 +2758,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						break;
+					case TMrbConfig::kAnaEventTriggerStartAcq:
+					case TMrbConfig::kAnaEventTriggerStopAcq:
+						anaTmpl.InitializeCode();
+						anaTmpl.WriteCode(anaStrm);
+						break;
 					case TMrbConfig::kAnaEventIgnoreTrigger:
 						ignTrigger = kFALSE;
 						for (trg = 0; trg < kNofTriggers; trg++) {
@@ -3289,7 +3296,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 						case kVarF:
 							Template.Substitute("$varInit", ((TMrbVarF *) varp)->Get()); break;
 						case kVarS:
-							Template.Substitute("$varInit", ((TMrbVarS *) varp)->Get()); break;
+							{
+								TString vInit = "\"";
+								vInit += ((TMrbVarS *) varp)->Get();
+								vInit += "\"";
+								Template.Substitute("$varInit", vInit.Data());
+								break;
+							}
 					}
 				}
 			} else if ( (type = (id & kIsWindow)) ) {
@@ -4723,6 +4736,7 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 			if (line.Contains("class ")) {
 				Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
 				Int_t n2 = line.Index(":", n1);
+				if (n2 == -1) continue;
 				TString userClass = line(n1, n2 - n1);
 				userClass = userClass.Strip(TString::kBoth);
 				this->AddUserClass(TMrbConfig::kIclOptUserLib, userClass.Data());
@@ -5093,13 +5107,13 @@ void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	}
 }
 
-Int_t TMrbConfig::PrintErrors() const {
+Int_t TMrbConfig::PrintErrors(Bool_t ErrorsOnly) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::PrintErrors
 // Purpose:        Print error summary
-// Arguments:      --
-// Results:        Int_t NofErrors   -- number of errors
+// Arguments:      Bool_t ErrorsOnly   -- print error summary only
+// Results:        Int_t NofErrors     -- number of errors
 // Exceptions:
 // Description:    Outputs logger contents
 // Keywords:
@@ -5112,6 +5126,9 @@ Int_t TMrbConfig::PrintErrors() const {
 				<< "ERROR(S) while processing config script:" << setblack << endl;
 		gMrbLog->Print(0, "Error");
 	}
+
+	if (ErrorsOnly) return(nofErrors);
+
 	TObjArray wrn;
 	Int_t nofWarnings = gMrbLog->GetWarnings(wrn);
 	if (nofWarnings > 0) {
