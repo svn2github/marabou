@@ -1,48 +1,26 @@
-The following resources can be put into a .rootrc file
-either  in the current or  in the home directory. Units for
-Window  parameters are in pixel. (N.b. Normally a screen has
-1280 x 1024 pixels.)
+<TITLE>What is .rootrc good for?</TITLE>
+
+In this file ROOT and applications using ROOT remember
+various default settings. It normally resides in the
+users home directory and the resources stored here
+are valid for all sessions of HistPresent. 
+Among others the following resources can be added to 
+this file. 
 
 HistPresent.HelpDir:				  $(MARABOU)/doc/html/hpr
 HistPresent.WorkFileName:       q3dparams.root
 HistPresent.PrintCommand:       lpr -Paul
 HistPresent.LastSettingsName:   defaults/Last
 
-HistPresent.PaperSizeX:         20
-HistPresent.PaperSizeY:         26
-HistPresent.WindowX:            530
-HistPresent.WindowY:            5
-HistPresent.WindowYShift:       30
-HistPresent.WindowXShift:       0
-HistPresent.WindowXWidth_1dim:  750
-HistPresent.WindowYWidth_1dim:  550
-HistPresent.WindowXWidth_2dim:  750
-HistPresent.WindowYWidth_2dim:  650
-HistPresent.WindowXWidth_many:  800
-HistPresent.WindowYWidth_many:  800
-HistPresent.WindowArrange_many: ontop
-HistPresent.WindowArrange_many: sidebyside
 
-With WindowXShift is > 0 one can arrange the 
-pictures as tiles. In this case one should set
-WindowXShift = WindowXWidth_1dim + 4 ,
-WindowYShift = WindowYWidth_1dim + 30,
+In addition parameters set from the various
+<a href=#options.html>options menus</a> are remembered in this file.
 
-This will cause an arrangment like this:
---------------------------
-| window1    |  window2  |
---------------------------
-| window3    |  window4  |
---------------------------
-etc.
-
-Most of these parameters may also be set from the various
-<a href=#options.html>options menus</a>.
-
-If the path LastSettingsName is defined  ranges and scales
+Apropos LastSettingsName:
+If the path LastSettingsName is defined ranges and scales
 (lin - log) of histograms are remembered during and between
 sessions in files with names defaults/Last_histname.def.  It
 is convenient to use an own subdirectory  (in this example
 $CWD/defaults) for this. LastSettingsName may be any legal
-pathname e.g. /tmp/$(USER)/ Note $(USER) instead of just
-$USER for compatibility with NT.
+pathname e.g. /tmp/$(USER)/ Note:  Use $(USER) instead of just
+$USER for compatibility reasons.

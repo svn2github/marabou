@@ -1,6 +1,7 @@
 <!DOCTYPE HTML>
 <HTML>
 <PRE>
+<TITLE>Items on HistPresent startup window</TITLE>
 
 <H1>HistPresent start window</H1>
 <a href=#Help_on_operators>Operators</a> 
@@ -43,53 +44,7 @@ accessed later by the command <a href=#Help_on_ListObjectsInMemory>List Objects 
 
 <a NAME=Help_on_rootrc></a> 
 <H1>Edit .rootrc</H1>
-The following resources can be put into
-a .rootrc file either in the current or 
-in the home directory. Units for Window 
-parameters are in pixel. (N.b. Normally
-a screen has 1280 x 1024 pixels.)
-
-HistPresent.PaperSizeX:         20
-HistPresent.PaperSizeY:         26
-HistPresent.WindowX:            530
-HistPresent.WindowY:              5
-HistPresent.WindowYShift:        30
-HistPresent.WindowXShift:        0
-HistPresent.WindowXWidth_1dim:  750
-HistPresent.WindowYWidth_1dim:  550
-HistPresent.WindowXWidth_2dim:  750
-HistPresent.WindowYWidth_2dim:  650
-HistPresent.WindowXWidth_many:  800
-HistPresent.WindowYWidth_many:  800
-HistPresent.WindowArrange_many:  ontop
-HistPresent.WindowArrange_many:  sidebyside
-
-HistPresent.WorkFileName:  q3dparams.root
-HistPresent.PrintCommand:  lpr -Paul
-HistPresent.LastSettingsName: defaults/Last
-
-With WindowXShift is > 0 one can arrange the 
-pictures as tiles. In this case one should set
-WindowXShift = WindowXWidth_1dim + 4 ,
-WindowYShift = WindowYWidth_1dim + 30,
-
-This will cause an arrangment like this:
---------------------------
-| window1    |  window2  |
---------------------------
-| window3    |  window4  |
---------------------------
-etc.
-
-If the path LastSettingsName is defined 
-ranges and scales (lin - log) of histograms are
-remembered during and between sessions in files
-with names defaults/Last_histname.def. 
-It is convenient to use an own subdirectory 
-(in this example $CWD/defaults) for this.
-LastSettingsName may be any legal pathname
-e.g. /tmp/$(USER)/
-
+The content of .rootrc ids described <a href=rootrc.html>here</a>
 <a NAME=Help_on_ShowFileList></a> 
 <H1>Show Filelist</H1>
 Display a list of root files (.map, .root, .histlist)  in

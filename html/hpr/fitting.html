@@ -1,20 +1,22 @@
 <!DOCTYPE HTML>
 <HTML>
+<TITLE>Howto to do Fitting</TITLE>
 <PRE>
-<H1>Fitting with HistPresent</H1>
+<H1>Fitting of functions to 1 and 2-dimensional histograms</H1>
 HistPresent supports two possibilities to fit functions
 to a 1-dim histogram:
 1. Fit of predefined functions from a <a href=#Help_on_Fit_1dim_Menu>Popup Menu</a>.
 2. User defined function with the help of a <a href=#Help_on_Fit_1dim_Macro>macro</a>.
-<a href=#Help_on_Fit_2dim>Fitting </a>with 2-dim Histograms
+
+<a href=#Help_on_Fit_2dim>Fitting </a>with 2-dim histograms
 
 <a NAME=Help_on_Fit_1dim_Menu></a>
 <H1>Fitting of functions to 1-dim histograms</H1>
 from the Fit Popup Menu:
-Predefined are polynmials upto degree 8, gaussians
+Predefined are polynomials upto degree 8, gaussians
 (max 3 peaks) plus a linear background and gaussians
 with low or high energy tails. The tail function is
-explained <a href=#Help_on_Tail>here</a> and <a href=#Help_on_Tail>there.</a>
+explained <a href=#Help_on_Tail>here</a>.
 In case with tail the parameter Ta_fract (tail
 fraction) is the contents of the tail part relative
 to the pure gaussian part. In case of more then one
@@ -68,7 +70,7 @@ Currently 4 examples are provided: An exponential + a
 gaussian, 2 gaussians with common mean, a Breit Wigner and
 3 Landau functions.
 
-Use the command Edit User Fit Macro to edit the macro. If
+Use the command <b>Edit User Fit Macro</b> to edit the macro. If
 the macro given by the name exists this is taken otherwise
 a choice menu with the above 4 examples is presented.
 Meaningful start values should be given to assure that
@@ -101,17 +103,22 @@ the fit. An example is given in the attached picture
 
 <a NAME=Help_on_Fit_2dim></a>
 <H1>Fitting with to 2-dim histograms</H1>
+2-dim functions can be fitted to a 2-dim histogram with
+the help of a user provided macro. 
+Use the command <b>Edit User Fit Macro</b> to edit the macro.
+If the file doesnt exist a template implementing a 
+2-dim gauss function is provided. The result of the
+fit is drawn in a separate canvas with the same drawing 
+options as used for the 2-dim histogram.
 
-For 2-dim histograms polynomials can be fitted to user
-defined marks or to the entries in regions of the histograms
-nomally defined with a graphical cut (see help on Cuts). In
-this case the entries inside the cut are averaged along the
-y-axis in slices of the bins along the x-axis and the fit is
-done to the resulting 1-dim histogram using the spread of
-the entries along the y-axis as errors.
-
+1-dim polynomials can be fitted in a 2-dim histogram
+either to user defined marks or to a profile histogram
+projected onto the X-axis with a possible active graphical 
+cut applied.
 
 Functions are named. They may be written on a root file and
 retrieved using their names. Parameters, errors etc. may be
 made persistent and reused in analysis programs e.g. as
 calibration.
+</pre>
+</html>

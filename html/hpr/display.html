@@ -1,18 +1,20 @@
 <!DOCTYPE HTML>
 <HTML>
 <PRE>
+<TITLE>Help on items in Display popup menu</TITLE>
 <H1>Display actions</H1>
-<a href=#Help_on_Mark>Help_on_Marks</a> 
 <a href=#Help_on_Expand>Help_on_Expand</a> 
-<a href=#Help_on_RedefineAxis>Help_on_RedefineAxis</a> 
+<a href=#Help_on_Entire>Help_on_Entire</a> 
+<a href=#Help_on_Rebin>Help_on_Rebin</a> 
+<a href=#Help_on_Contour>Help_on_Contour</a> 
+<a href=#Help_on_Mark>Help_on_Marks</a> 
 <a href=#Help_on_Project>Help_on_Project</a> 
 <a href=#Help_on_ProjectF>ProjectF, Project along function</a> 
 <a href=#Help_on_ProjectBoth>Help_on_Project_Both</a> 
-<a href=#Help_on_Entire>Help_on_Entire</a> 
+<a href=#Help_on_RedefineAxis>Help_on_RedefineAxis</a> 
 <a href=#Help_on_GetRange>Help_on_Show_in_same_range</a> 
 <a href=#Help_on_Superimpose>Help_on_Superimpose</a> 
-<a href=#Help_on_Rebin>Help_on_Rebin</a> 
-<a href=#Help_on_Contour>Help_on_Contour</a> 
+<a href=#Help_on_RedefineAxis>Help_on_RedefineAxis</a> 
 
 <a NAME=Help_on_Mark></a>
 <H1>Use of marks</H1>
@@ -121,19 +123,20 @@ bin contents selectable.
 
 <a NAME=Help_on_Contour></a>
 <H1>User defined contours</H1>
-Levels and colors in 2-dim histograms using the drawing options
-<b>colz</b> or similiar are normally automatically adjusted 
-using 20 equidistant levels and a color spectrum blue-green-
-yellow-red (rainbow colors).
-Levels and colors can be selected from the <b>Display</b> popup menu.
-Color numbers or levels may all be set to 0, in this case 
-the default colors (e.g. rainbow) or default equidistant
-levels are used. The convention is such that cells with
-content  greater level and less or equal the following level
-get the corresping color. That means cells with content below
-the lowest level are in background color (not visible). So in
-the normal case when no cells with negative content are
-present the lowest level should be 0.
+Levels and colors in 2-dim histograms using the drawing 
+options <b>colz</b> or similiar are normally automatically 
+adjusted using 20 equidistant levels and a color spectrum 
+blue-green-yellow-red (rainbow colors).
+Levels and colors can be selected using <b>Set User Contours</b>
+in  the <b>Display</b> popup menu. Color numbers or levels 
+may all be set to 0, in this case the default colors 
+(e.g. rainbow)  and the default equidistant levels are used. 
+The convention is such that cells with content greater than a xx 
+level value and less orequal to the following value get the 
+corresponding color. That means cells with content below the 
+lowest level are in background color (not visible).
+So in the normal case when no cells with negative content 
+are present the lowest level should be 0.
 
 These settings can be saved to a rootfile and reused later.
 Save is done be the command <b>Save User Contours</b>

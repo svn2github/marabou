@@ -1,18 +1,22 @@
 <!DOCTYPE HTML>
 <HTML>
+<TITLE>Setting options and parameters</TITLE>
 <PRE>
-<H1>What to display for histogram</H1>
+<H3>What to display for histogram</H3>
 This allows to adjust what items should be shown when
 displaying a histogram like title, statistics box etc.
 
-<H1>How to display a 1-dim histogram</H1>
+<H3>How to display a 1-dim histogram</H3>
 Here error bars, filling and contours may be choosen.
+Fitting of Gaussian optionally with linear background
+when dragging with mouse button 1 pressed can be
+switched on and off here.
 
-<H1>How to display a 2-dim histogram</H1>
+<H3>How to display a 2-dim histogram</H3>
 ROOT has many different ways to plot a 2-dim histogram
 like boxes all sorts of lego plots etc.
 
-<H1>Various HistPresent options</H1>
+<H3>Various HistPresent options</H3>
 These options are described in some detail below.
 <a href=#Help_on_ShowFitted>Help_on_ShowFitted</a> 
 <a href=#Help_on_RemParTrees>Help_on_RemParTrees</a> 
@@ -23,7 +27,7 @@ These options are described in some detail below.
 <a href=#Help_on_Auto_1dim>Help_on_Auto_1dim</a> 
 <a href=#Help_on_Auto_2dim>Help_on_Auto_2dim</a> 
 
-<H1>HistPresent numerical options</H1>
+<H3>HistPresent numerical options</H3>
 <b> LogScale_Minimum </b>  
     This allows to set the minimum when logarithmic sales 
     are used
@@ -31,7 +35,7 @@ These options are described in some detail below.
     This is the update frequency when using the 
     <a href=showlists.html#Help_on_ShowSelected>automatic update</a> option.
 
-<H1>Default window sizes and positions</H1>
+<H3>Default window sizes and positions</H3>
 Default sizes of windows for 1-dim and 2-dim histograms 
 may be adjusted seperately. Units are in pixels. 
 Each new window is shifted according to the values of
@@ -49,11 +53,11 @@ The parameter Project_Both_Ratio determines the
 space left for the original scatter plot when the
 the Display action <b>ProjectBoth</b> is used.
 
-<H1>Default colors and fonts</H1>
+<H3>Default colors and fonts</H3>
 This allows to set various colors and fonts.
 
 <a NAME=Help_on_ShowFitted></a> 
-<H1>Display fitted curves</H1>
+<H3>Display fitted curves</H3>
 This option controls which curves are drawn if a function
 is fitted to a 1_dim histogram. (see <a href=fitting.html>Help_on_Fit_1dim_Menu)</a>
 This function is normally is a sum of several components
@@ -64,13 +68,13 @@ the fit. An example is given
 <img SRC="Fitted_Curves.canvas.gif"  height=400 width=600 align=ABSCENTER>
 
 <a NAME=Help_on_RemParTrees></a> 
-<H1>Remember hist limits when showing trees</H1>
+<H3>Remember hist limits when showing trees</H3>
 When displaying trees (ntuples) limits for histograms 
 (number of channels, lower, upper edge), these values
 may be remembered for each tree entry between sessions.
 
 <a NAME=Help_on_RememberLastSettings></a> 
-<H1>Help_on_RememberLastSettings></H1>
+<H3>Help_on_RememberLastSettings</H3>
 Remember expand settings (set via marks), calibrations etc.
 This option allows to remember for the same and future sessions:
 expand limits, log scales, axis titles, 
@@ -81,14 +85,14 @@ not remembered by this option. To do achieve this the option
 <b>RememberZoomings</b> must be activated.
 
 <a NAME=Help_on_RememberZoomings></a> 
-<H1>Help_on_RememberZoomings</H1>
+<H3>Help_on_RememberZoomings</H3>
 Pressing the left mouse button in the scale of a histogram
 dragging to the required limit allows to zoom in the picture.
 Note: The cursor symbol must a hand with forefinger.
 This option allows to pass these limits to later sessions.
 
 <a NAME=Help_on_AttrMacro></a> 
-<H1>Invoking attributes macro</H1>
+<H3>Invoking attributes macro</H3>
 Each time a histogram is displayed a macro (FH_setdefaults.C)
 may be executed. This macro may be edited from the HistPresent
 start menu: <b>EditAttrMacro</b>
@@ -96,7 +100,7 @@ This option can be switched on or off.
 
 
 <a NAME=Help_on_RegExp></a> 
-<H1>Use Regular expression syntax</H1>
+<H3>Use Regular expression syntax</H3>
 Normally wild card syntax (e.g. ls *.root to list all
 files ending with .root) is used in file/histo selection
 masks. One may switch to the more powerful Regular expression.
@@ -104,7 +108,7 @@ For details consult a book on Unix.
 
 
 <a NAME=Help_on_Auto_1dim></a> 
-<H1>Auto exec macro 1-dim</H1>
+<H3>Auto exec macro 1-dim</H3>
 A macro (default name auto_exec_1.C) is executed when the left
 mouse button is pressed in a pad containing a 1-dim histogram. 
 The default behaviour is as follows:
@@ -115,7 +119,7 @@ The default behaviour is as follows:
 
 
 <a NAME=Help_on_Auto_2dim></a> 
-<H1>Auto exec macro 2-dim</H1>
+<H3>Auto exec macro 2-dim</H3>
 A macro (default name auto_exec_2.C) is executed when the left
 mouse button is pressed in a pad containing a 2-dim histogram. 
 The default behaviour is as follows:
