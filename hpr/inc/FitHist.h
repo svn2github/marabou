@@ -250,7 +250,7 @@ public:
    void handle_mouse();
    void DrawTopAxis();
    void ClearTofl() {
-      cout << "ClearTofl()" << endl; 
+//      cout << "ClearTofl()" << endl; 
       fTofLabels = 0;
    }
   ClassDef(FitHist,0)      // A histogram presenter

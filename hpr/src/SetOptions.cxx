@@ -426,9 +426,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.LiveBG", fLiveBG);
 
    env.SaveLevel(kEnvUser);
-   env.Save();
-//   env.Print();
-//   delete env;
 }
 
 //_______________________________________________________________________
@@ -479,6 +476,8 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
    fFill1Dim = 0;
    fShowErrors = 0;
    fDrawAxisAtTop = 0;
+   fLiveGauss = 0;
+   fLiveBG = 0;
    for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0) {
          if (i == e_contour)
@@ -621,6 +620,7 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 //      cout << " fDrawOpt2Dim: " << fDrawOpt2Dim->Data() << endl;
       fh->GetSelHist()->SetDrawOption(fDrawOpt2Dim->Data());
    }
+   SaveOptions();
 }
 
 //_______________________________________________________________________
@@ -734,6 +734,7 @@ void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
       gStyle->SetOptStat(0);
    }
    gStyle->SetOptTitle(fShowTitle);
+   SaveOptions();
 }
 
 //_______________________________________________________________________
@@ -841,6 +842,7 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
             fShowFittedCurves = 1;
       }
    }
+   SaveOptions();
 }
 
 //_______________________________________________________________________
@@ -1060,8 +1062,7 @@ Auto exec project Y
             fAutoProj_Y = 1;
       }
    }
-//   cout << "fShowListsOnly " << fShowListsOnly << endl;
-//   CheckAutoExecFiles();
+   SaveOptions();
 }
 
 //_______________________________________________________________________
@@ -1116,7 +1117,7 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
       fWincury = fWintopy;
       fWincurx = fWintopx;
    }
-//   if(values) delete [] values;
+   SaveOptions();
 }
 
 //___________________________________________________________________________________________
@@ -1155,7 +1156,7 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
       fPeakMwidth      = (Int_t)values[vp++];
       fPeakThreshold   = values[vp++];
    }
-//   if(values) delete [] values;
+   SaveOptions();
 }
 
 //___________________________________________________________________________________________
@@ -1207,35 +1208,6 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
 //   cout << "fStatFont " << fStatFont << endl;
    gStyle->SetStatFont(fStatFont);
    gStyle->SetTitleFont(fTitleFont);
+   SaveOptions();
 }
 
-//___________________________________________________________________________________________
-/*
-void HistPresent::CheckAutoExecFiles()
-{
-
-   if (fAutoExec_1 && gSystem->AccessPathName(fAutoExecName_1->Data())) {
-      cout << "Generating AutoExec Macro for 1-dim : " << fAutoExecName_1->
-          Data()
-          << endl;
-      ofstream tmpfile(fAutoExecName_1->Data(), ios::out);
-      if (!tmpfile.good())
-         cerr << "SetOptions: " << gSystem->GetError()
-             << " - " << fAutoExecName_1->Data() << endl;
-      else
-         tmpfile << AutoExecMacro_1;
-   }
-   if (fAutoExec_2 && gSystem->AccessPathName(fAutoExecName_2->Data())) {
-      cout << "Generating AutoExec Macro for 2-dim : " << fAutoExecName_2->
-          Data()
-          << endl;
-      ofstream tmpfile(fAutoExecName_2->Data(), ios::out);
-      if (!tmpfile.good())
-         cerr << "SetOptions: " << gSystem->GetError()
-             << " - " << fAutoExecName_2->Data() << endl;
-      else
-         tmpfile << AutoExecMacro_2;
-   }
-}
-*/
-//_______________________________________________________________________

@@ -1884,7 +1884,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
                tag = lname[i]; tag += ".max";
                env->SetValue(tag.Data(),vmax[i]);
             }
-            env->Save();
+            env->SaveLevel(kEnvLocal);
          }
       }
    }

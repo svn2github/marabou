@@ -192,10 +192,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    TEnv env(".rootrc");         // inspect ROOT's environment
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
-   if (env.GetValue("HistPresent.LiveGauss", 0) == 1) fLiveGauss = kTRUE;
-   else                                                 fLiveGauss = kFALSE;
-   if (env.GetValue("HistPresent.LiveBG", 0) == 1)    fLiveBG = kTRUE;
-   else                                                 fLiveBG = kFALSE;
    fTemplateMacro = "TwoGaus";
    fFirstUse = 1;
    fSerialPx = 0;
@@ -297,16 +293,14 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    Bool_t fok = kFALSE;
    TEnv env(".rootrc");         // inspect ROOT's environment
    env.SetValue("HistPresent.FitMacroName", fFitMacroName);
-   env.Save();
    defname =
        env.GetValue("HistPresent.LastSettingsName", defname.Data());
    if (defname.Length() <= 0) {
       WarnBox("Setting defaults dir/name to defaults/Last");
       defname = "defaults/Last";
       env.SetValue("HistPresent.LastSettingsName", defname.Data());
-      env.SaveLevel(kEnvLocal);
-      env.Save();
    }    
+   env.SaveLevel(kEnvUser);
    fok = kTRUE;
    Int_t lslash = defname.Last('/');
    if (lslash > 0) {
@@ -525,8 +519,7 @@ void FitHist::RestoreDefaults()
 
 void FitHist::handle_mouse()
 {   
-//   Bool_t fLiveGauss = kTRUE;
-//   Bool_t fLiveBG    = kTRUE;
+   Double_t fChi2Limit = 5;
    static TF1 * gFitFunc;
    Double_t cont, sum;
    static Double_t gconst, center, sigma, bwidth,  esigma;
@@ -538,6 +531,8 @@ void FitHist::handle_mouse()
 
    static Bool_t is2dim = kFALSE;
    static Bool_t first_fit = kFALSE;
+   static Int_t LiveGauss = 0;
+   static Int_t LiveBG = 0;
    static TH1 * hist = 0;
    static Int_t npar = 0;
    static TLine * lowedge = 0;
@@ -604,27 +599,26 @@ void FitHist::handle_mouse()
          Axis_t xx = gPad->AbsPixeltoX(px);
          startbinX = hist->GetXaxis()->FindBin(xx);
          startbinX_lowedge = hist->GetXaxis()->GetBinLowEdge(startbinX);
+         nrows = 4;
+
          if (is2dim) {
             Axis_t yy = gPad->AbsPixeltoY(py);
             startbinY = hist->GetYaxis()->FindBin(yy);
             startbinY_lowedge = hist->GetYaxis()->GetBinLowEdge(startbinY);
             cont = hist->GetBinContent(startbinX, startbinY);
-            nrows = 4;
          } else {
             bwidth = hist->GetBinWidth(startbinX);
             esigma = hist->GetBinWidth(startbinX) * TMath::Sqrt(12.);
             cont = hist->GetBinContent(startbinX);
             gconst = cont * bwidth / TMath::Sqrt(2*TMath::Pi() * esigma);
             center = hist->GetBinCenter(startbinX);
-
-            if (fLiveGauss) {
-               if (fLiveBG) {
+            TEnv env(".rootrc");
+            LiveGauss = env.GetValue("HistPresent.LiveGauss", 0);
+            LiveBG    = env.GetValue("HistPresent.LiveBG", 0);
+            if (LiveGauss) {
+               if (LiveBG) {
                   gFitFunc = new TF1("fitfunc", "pol1+gaus(2)");
                   npar = 5;
- //                 gFitFunc ->SetParLimits(0, fLinBgConst, fLinBgConst);
-//                  gFitFunc ->SetParLimits(1, fLinBgSlope, fLinBgSlope);
-//                  gFitFunc ->SetParameters(fLinBgConst, fLinBgSlope, gconst, center, esigma);
-//                  gFitFunc ->SetParameters(cont, 0, gconst, center, esigma);
                   nrows = 6;
                } else {
                   gFitFunc = new TF1("fitfunc", "gaus");
@@ -662,8 +656,8 @@ void FitHist::handle_mouse()
                        + hist->GetBinWidth(startbinX))));
                values.Add(new TObjString(Form("%9.3f", cont)));
                values.Add(new TObjString(Form("%9.3f", cont)));
-                if (fLiveGauss) {
-                   if (fLiveBG) {
+                if (LiveGauss) {
+                   if (LiveBG) {
                       rowlabels.Add(new TObjString("Background: const, slope"));
                       values.Add(new TObjString("no fit done yet"));
                    }
@@ -738,42 +732,42 @@ void FitHist::handle_mouse()
             fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
             fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
             Int_t ndf = binXup - binXlow - npar;
-            if (fLiveGauss &&  (binXup - binXlow - npar) > 0) {
+            if (LiveGauss &&  (binXup - binXlow - npar) > 0) {
                Int_t ndf = binXup - binXlow - npar;
                if (first_fit) chi2 = gFitFunc->GetChisquare();
-               if (fLiveBG) {
+               if (LiveBG) {
                   if (!first_fit                    ||
                       gFitFunc->GetParameter(2) < 0 ||
                       gFitFunc->GetParameter(4) < 0 ||
-                      chi2 / ndf > 5) {
-                     	 cout << " old par at bin " << binX << ": ";
-                     	 for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
-                        	cout  << gFitFunc->GetParameter(i) << " ";
-                     	 cout << chi2 << " " << ndf << endl;
+                      chi2 / ndf > fChi2Limit) {
+//                     	 cout << " old par at bin " << binX << ": ";
+//                     	 for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
+//                        	cout  << gFitFunc->GetParameter(i) << " ";
+//                     	 cout << chi2 << " " << ndf << endl;
                      	 gFitFunc->SetParameter(0, cont);
                       	 gFitFunc->SetParameter(1, 0);
                     		 gFitFunc->SetParameter(2, sum * bwidth);
                      	 gFitFunc->SetParameter(3, 0.5 * (XupEdge + XlowEdge));
                      	 gFitFunc->SetParameter(4, 0.25 * (XupEdge - XlowEdge) );
-                     	 cout << " new par: " << cont << " 0.0 "  << sum * bwidth << " " 
-                        	  << 0.5 * (XupEdge + XlowEdge)<< " "                            
-                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
+ //                    	 cout << " new par: " << cont << " 0.0 "  << sum * bwidth << " " 
+//                        	  << 0.5 * (XupEdge + XlowEdge)<< " "                            
+//                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
                   }
                } else {
                   if (!first_fit                   ||
                      gFitFunc->GetParameter(0) < 0 ||
                      gFitFunc->GetParameter(3) < 0 ||
                      chi2 / ndf > 5) {
-                        cout << " old par at bin " << binX << ": ";
-                     	for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
-                        	cout  << gFitFunc->GetParameter(i) << " ";
-                     	cout << chi2 << " " << ndf << endl;
+//                        cout << " old par at bin " << binX << ": ";
+//                     	for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
+//                        	cout  << gFitFunc->GetParameter(i) << " ";
+//                     	cout << chi2 << " " << ndf << endl;
                     		gFitFunc->SetParameter(0, sum * bwidth);
                      	gFitFunc->SetParameter(1, 0.5 * (XupEdge + XlowEdge));
                      	gFitFunc->SetParameter(2, 0.5 * (XupEdge - XlowEdge));
-                        cout << " new par: " << sum * bwidth << " " 
-                        	  << 0.5 * (XupEdge + XlowEdge)<< " "                            
-                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
+//                        cout << " new par: " << sum * bwidth << " " 
+//                        	  << 0.5 * (XupEdge + XlowEdge)<< " "                            
+//                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
                   }
                }
                hist->Fit(gFitFunc, "RnlQ", "",XlowEdge ,XupEdge );
@@ -781,7 +775,7 @@ void FitHist::handle_mouse()
                gFitFunc->Draw("same");
                gPad->Update();
                gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
-               if (fLiveBG) { 
+               if (LiveBG) { 
                   sigma = gFitFunc->GetParameter(4);
                   gconst = gFitFunc->GetParameter(2) * 
                               TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
