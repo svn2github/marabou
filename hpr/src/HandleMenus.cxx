@@ -1476,9 +1476,9 @@ void HandleMenus::BuildMenus()
       	   fDisplayMenu->AddEntry("Rotate Clockwise", kFHRotateClock);
       	   fDisplayMenu->AddEntry("Rotate Counter Clockwise", kFHRotateCClock);
          } else {
-      	   fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
       	   fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
          }
+      	fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
       	fDisplayMenu->AddEntry("Show in same Range",    kFHGetRange   );
 
       	fDisplayMenu->AddSeparator();
@@ -1585,6 +1585,10 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddPopup("FitPolyHist",  fCascadeMenu1);
       if(is2dim){
          fFitMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
+      	fFitMenu->AddSeparator();
+      	fFitMenu->AddEntry("Edit User Fit Slices Y Macro", kFHEditSlicesYUser);
+      	fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
+      	fFitMenu->AddSeparator();
       } else {
          fFitMenu->AddEntry("Fit Gauss Only",             kFHFitGOnly);
          fFitMenu->AddEntry("Fit Gauss + Bg",             kFHFitGBg);
@@ -1604,9 +1608,6 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
       fFitMenu->AddSeparator();
 
-      fFitMenu->AddEntry("Edit User Fit Slices Y Macro", kFHEditSlicesYUser);
-      fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
-      fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
       fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
       fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);

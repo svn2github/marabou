@@ -2608,8 +2608,8 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       if (!hist) {
       	fRootFile=new TFile(fname);
          if (strlen(dir) > 0) fRootFile->cd(dir);
-	      cout << "GetHist: |" << shname.Data()<< "|"
-         << dir << "|" << endl;
+//	      cout << "GetHist: |" << shname.Data()<< "|"
+//         << dir << "|" << endl;
          if (shname.Index(";") > 0)shname.Resize(shname.Index(";"));
          TKey * key = gDirectory->GetKey(shname.Data());
 //      	hist = (TH1*)gDirectory->Get(shname.Data());

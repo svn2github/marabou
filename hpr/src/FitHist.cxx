@@ -213,7 +213,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
 //   fCallMinos = kFALSE;
 //   fKeepParameters = kFALSE;
    fOldMode = -1;
-   fColSuperimpose = 6;
+   fColSuperimpose = 2;
    fMax = hist->GetMaximum();
    fMin = hist->GetMinimum();
    fXmin = hist->GetXaxis()->GetXmin();
@@ -588,6 +588,7 @@ void FitHist::handle_mouse()
          TIter next(lofp);
          TObject * obj = 0; 
          while ( (obj = next()) ) {
+            if (obj->InheritsFrom("TH3")) return;
             if (obj->InheritsFrom("TH1")) hist = (TH1*)obj;
          }
          if (!hist) {
@@ -598,7 +599,6 @@ void FitHist::handle_mouse()
 //         cout << " sopt " << sopt << endl;
          if (sopt.Contains("SURF", TString::kIgnoreCase) ||
              sopt.Contains("LEGO", TString::kIgnoreCase)) {
-     //        cout << " sopt " << sopt << endl;
              return;
          }
 
@@ -732,8 +732,16 @@ void FitHist::handle_mouse()
    }  else if (event == kButton1Motion || event == kButton1Up) {
 //      if(!hist || !fTofLabels) return;
       if(!hist) return;
+      TString sopt = hist->GetOption();
+//         cout << " sopt " << sopt << endl;
+      if (sopt.Contains("SURF", TString::kIgnoreCase) ||
+           sopt.Contains("LEGO", TString::kIgnoreCase)) {
+          return;
+      }
+
       if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
          ||  (select->InheritsFrom("TCanvas") && IsInsideFrame(cHist, px, py))){
+         if (select->InheritsFrom("TH3")) return;
          Int_t px = gPad->GetEventX();
          Axis_t xx = gPad->AbsPixeltoX(px);
          Axis_t yy = gPad->AbsPixeltoY(py);
@@ -2009,11 +2017,12 @@ void FitHist::Superimpose(Int_t mode)
       cHist->cd();
       TString drawopt = fSelHist->GetDrawOption();
       drawopt += "same";
-      cout << "drawopt " << drawopt << endl;
+//      cout << "drawopt " << drawopt << endl;
 //      fSelHist->DrawCopy(drawopt.Data());
 //      TH1* hnew =  (TH1*)hdisp->Clone();
-      hdisp->DrawCopy(drawopt.Data());
-
+      TH1* hcop = hdisp->DrawCopy(drawopt.Data());
+      hcop->SetDrawOption(drawopt.Data());
+      hcop->SetOption(drawopt.Data());
 //      hdisp->GetXaxis()->SetName("xaxis");
       Float_t x1 = 0.2;
       Float_t x2 = 0.3;
@@ -2022,6 +2031,7 @@ void FitHist::Superimpose(Int_t mode)
 
       tname = new TPaveLabel(x1, y1, x2, y2, hdisp->GetName(), "NDC");
 //      tname->SetNDC(kTRUE);
+      tname->SetFillColor(0);
       tname->SetTextColor(fColSuperimpose);
       tname->Draw();
 
@@ -3005,6 +3015,8 @@ void FitHist::Draw2Dim()
       gStyle->SetTitleFont(hp->fTitleFont);
 //   cout << "DrawOpt2Dim: " << hp->fDrawOpt2Dim->Data() << endl;
    fSelHist->Draw();
+   fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
+   fSelHist->SetDrawOption(hp->fDrawOpt2Dim->Data());
    fSelHist->SetStats(0);
    if (hp && hp->GetShowStatBox()) fSelHist->SetStats(1);
    fSelHist->SetOption(hp->fDrawOpt2Dim->Data());

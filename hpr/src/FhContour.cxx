@@ -42,14 +42,15 @@ Int_t FhContour::Edit( TGWindow * canvas)
 //   TArrayD xyvals(ncont);
 //   TArrayI colors(ncont);
    TOrdCollection *col_lab = new TOrdCollection();
-   TOrdCollection *row_lab = NULL;
+   TOrdCollection *row_lab = new TOrdCollection();
    col_lab->Add(new TObjString("Level"));
    col_lab->Add(new TObjString("Color"));
-
-//   for (Int_t i=0; i < ncont; i++) {
-//      colors[i] = fColors[i];
-//      xyvals[i] = fLevels[i];
-//   }
+   TString rowl;
+   for (Int_t i=0; i < ncont; i++) {
+      rowl = "Level #: ";
+      rowl += i;
+      row_lab->Add(new TObjString(rowl.Data()));
+   }
    Int_t ret, ncols = 1, itemwidth=120, precission = 5; 
    TGMrbTableOfDoubles(canvas, &ret, "Contour values", 
                          itemwidth, ncols, ncont, fLevels, precission,
