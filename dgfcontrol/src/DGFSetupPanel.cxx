@@ -556,6 +556,16 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
 	gDGFControlData->fCAMACHost = camacHost;
 
+	Int_t hostAddr = esoneCold->ConnectToHost(camacHost.Data(), kTRUE);
+	if (hostAddr == 0) {
+			gMrbLog->Err()	<< "ESONE not running" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "ESONE not running", kMBIconStop);
+			delete esoneCold;
+			esoneCold = NULL;
+			return(kFALSE);
+	}
+
 	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
 
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
@@ -563,6 +573,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 		TMrbDGF * dgf = dgfModule->GetAddr();
 		if (dgf) delete dgf;
 		dgfModule->SetAddr(NULL);
+		dgfModule->SetActive();
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 	}
 
