@@ -612,6 +612,7 @@ class TMrbAnalyze : public TObject {
 		Bool_t TestRunStatus(); 								// wait for run flag
 		Bool_t Initialize(TMrbIOSpec * IOSpec);					// init objects here
 		Bool_t InitializeUserCode(TMrbIOSpec * IOSpec);			// user may init additional objects here
+		Bool_t AdjustWindowPointers();							// adjust wdw pointers after reload
 
 		Bool_t HandleMessage(const Char_t * ArgList); 			// handle messages to M_analyze
 

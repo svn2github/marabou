@@ -847,7 +847,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 							break;
 					}
 				} else {
-/*
+#if 0
 					gMrbLofUserVars->Replace(vobj, fobj);
 					gROOT->GetList()->Remove(vobj);
 					if (vobj) delete vobj;
@@ -858,7 +858,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
                         fMapFile->Add(fobj);
                         fMapFile->Update(fobj);
 					}
-*/
+#endif
 					switch (((TMrbWindow *) fobj)->GetType()) {
 						case kWindowI:
                             ((TMrbWindowI *) vobj)->Print();
@@ -874,8 +874,8 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
 													((TMrbWindowF *) fobj)->GetUpperLimit());
 							break;
 						case kWindow2D:
-/*
 							gMrbLofUserVars->Replace(vobj, fobj);
+#if 0
 							gROOT->GetList()->Remove(vobj);
 							if (vobj) delete vobj;
 							vobj = fobj;
@@ -885,7 +885,7 @@ Bool_t TMrbAnalyze::ReloadVarsAndWdws(TMrbIOSpec * IOSpec) {
                                 fMapFile->Add(fobj);
                                 fMapFile->Update(fobj);
 					        }
-*/
+#endif
 							break;
 					}
 				}
