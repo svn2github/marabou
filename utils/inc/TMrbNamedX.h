@@ -8,7 +8,7 @@
 // Class:          TMrbNamedX    -- a TNamed with an index assigned
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbNamedX.h,v 1.5 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbNamedX.h,v 1.6 2005-04-05 07:25:44 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -87,6 +87,7 @@ class TMrbNamedX: public TNamed {
 		const Char_t * GetFullName(TMrbString & FullName, Int_t Base = 10, Bool_t IndexFlag = kFALSE) const;
 
 		inline Int_t GetIndex() const { return(fIndex); };							// return index
+		inline void ChangeIndex(Int_t Index) { fIndex = Index; };					// change index
 		inline void AssignObject(TObject * Obj) { fObject = Obj; }; 			// assign an object to this index
 		inline TObject * GetAssignedObject() const { return(fObject); };				// return addr of assigned object
 
