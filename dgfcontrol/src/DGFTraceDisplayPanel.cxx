@@ -491,7 +491,10 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 							hName = dgfModule->GetName();
 							hName += chn;
 							h->SetName(hName.Data());
-							h->SetTitle(dgfModule->GetTitle());
+							TString title = h->GetTitle();
+							title.Prepend(": ");
+							title.Prepend(dgfModule->GetTitle());
+							h->SetTitle(title.Data());
 							h->Write();
 							if (gDGFControlData->IsVerbose()) {
 								cout	<< "[" << dgfModule->GetTitle()
