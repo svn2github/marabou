@@ -271,14 +271,37 @@ Bool_t TMrbCaen_V785::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleInitModule:
-			fCodeTemplates.InitializeCode();
+			fCodeTemplates.InitializeCode("%B%");
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.Substitute("$moduleTitle", this->GetTitle());
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
-			fCodeTemplates.Substitute("$fineOrCoarse", this->HasFineThresh() ? "FINE" : "COARSE");
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%THR%");
+			fCodeTemplates.Substitute("$fineOrCoarse", this->HasFineThresh() ? "FINE" : "COARSE");
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%ZSP%");
+			if (this->HasZeroSuppression()) {
+				fCodeTemplates.Substitute("$onOrOff", "ON");
+				fCodeTemplates.Substitute("$dont", "");
+			} else {
+				fCodeTemplates.Substitute("$onOrOff", "OFF");
+				fCodeTemplates.Substitute("$dont", "don't");
+			}
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%ORC%");
+			if (this->HasOverRangeCheck()) {
+				fCodeTemplates.Substitute("$onOrOff", "ON");
+				fCodeTemplates.Substitute("$dont", "");
+			} else {
+				fCodeTemplates.Substitute("$onOrOff", "OFF");
+				fCodeTemplates.Substitute("$dont", "don't");
+			}
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.WriteCode(RdoStrm);
 			for (i = 0; i < fNofChannels; i++, chn++) {
 				chn = (TMrbVMEChannel *) fChannelSpec[i];

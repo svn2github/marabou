@@ -168,6 +168,7 @@ class TMrbSubevent : public TNamed {
 				
 		virtual inline Bool_t NeedsHitBuffer() const { return(kFALSE); }; 			// no hit buffer needed
 		virtual inline Bool_t NeedsBranchMode() const { return(kFALSE); }; 			// may run with leaves or branches
+		virtual inline Bool_t NeedsModulesToBeAssigned() const { return(kTRUE); };	// normal subevents need modules
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 			// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };

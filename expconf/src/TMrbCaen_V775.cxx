@@ -111,6 +111,8 @@ TMrbCaen_V775::TMrbCaen_V775(const Char_t * ModuleName, UInt_t BaseAddr, Int_t N
 			fCommonStart = kTRUE;
 			fFullScaleRange = 0x1E; 				// set full scale range to 1200 ns
 			fFullScaleRangeNsecs = 1200;
+			fZeroSuppression = kTRUE;
+			fOverRangeCheck = kTRUE;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
@@ -291,7 +293,28 @@ Bool_t TMrbCaen_V775::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.WriteCode(RdoStrm);
-			fCodeTemplates.InitializeCode(this->IsCommonStart() ? "%STA%" : "%STO%");
+			fCodeTemplates.InitializeCode("%CST%");
+			fCodeTemplates.Substitute("$startOrStop", this->IsCommonStart() ? "START" : "STOP");
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%ZSP%");
+			if (this->HasZeroSuppression()) {
+				fCodeTemplates.Substitute("$onOrOff", "ON");
+				fCodeTemplates.Substitute("$dont", "");
+			} else {
+				fCodeTemplates.Substitute("$onOrOff", "OFF");
+				fCodeTemplates.Substitute("$dont", "don't");
+			}
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%ORC%");
+			if (this->HasOverRangeCheck()) {
+				fCodeTemplates.Substitute("$onOrOff", "ON");
+				fCodeTemplates.Substitute("$dont", "");
+			} else {
+				fCodeTemplates.Substitute("$onOrOff", "OFF");
+				fCodeTemplates.Substitute("$dont", "don't");
+			}
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.WriteCode(RdoStrm);
 			fCodeTemplates.InitializeCode("%E%");

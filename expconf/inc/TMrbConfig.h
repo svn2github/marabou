@@ -539,6 +539,8 @@ class TMrbConfig : public TNamed {
 
 		TObject * FindEvent(Int_t Trigger) const;									// find event by its trigger
 
+		inline Int_t GetNofEvents() { return(fNofEvents); };
+
 		inline void AddSubevent(TObject * Sevt) {							// add a new subevent
 			fLofSubevents.Add(Sevt);
 			fNofSubevents++;

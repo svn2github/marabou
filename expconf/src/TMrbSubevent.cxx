@@ -96,6 +96,8 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 			
 			fNofShorts = 0; 				// 16 bit words
 
+			fNofEvents = 0; 				// no events assigned
+
 			fLofEvents.SetName("List of events");
 			fLofModules.SetName("List of modules");
 			fLofParams.SetName("List of parameters");

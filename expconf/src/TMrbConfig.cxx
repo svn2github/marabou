@@ -6285,16 +6285,105 @@ Bool_t TMrbConfig::CheckConfig() {
 
 	if (fConfigChecked) return(kTRUE);		// all done
 
-	Bool_t ok = kTRUE;
+	Int_t nofErrors = 0;
 
-	if (fNofEvents == 0) {
+	if (this->GetNofEvents() == 0) {
 		gMrbLog->Err()	<< "No events/triggers defined" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig");
-		ok = kFALSE;
-	} else if (this-IsVerbose()) {
-		gMrbLog->Out()  << "Number of events/triggers:    " << fNofEvents << endl;
+		nofErrors++;
+	} else {
+		if (this->IsVerbose()) {
+			gMrbLog->Out()  << "Number of events/triggers:    " << fNofEvents << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		}
+		TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
+		while (evt) {
+			if (evt->GetNofSubevents() == 0) {
+				gMrbLog->Err()	<< "Event \"" << evt->GetName()
+								<< "\" (trigger " << evt->GetTrigger()
+								<< "): No subevents defined" << endl;
+				gMrbLog->Flush(this->ClassName(), "CheckConfig");
+				nofErrors++;
+			} else {
+				if (this->IsVerbose()) {
+					gMrbLog->Out()	<< "Event \"" << evt->GetName()
+									<< "\" (trigger " << evt->GetTrigger()
+									<< ") has " << evt->GetNofSubevents() << " subevent(s)" << endl;
+					gMrbLog->Flush(this->ClassName(), "CheckConfig");
+				}
+				TMrbSubevent * sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
+				while (sevt) {
+					if (sevt->NeedsModulesToBeAssigned()) {
+						if (sevt->GetNofModules() == 0) {
+							gMrbLog->Err()	<< "Subevent \"" << sevt->GetName()
+											<< "\" (serial " << sevt->GetSerial()
+											<< "): No modules assigned" << endl;
+							gMrbLog->Flush(this->ClassName(), "CheckConfig");
+							nofErrors++;
+						} else if (this->IsVerbose()) {
+							gMrbLog->Out()	<< "Subevent \"" << sevt->GetName()
+											<< "\" (serial " << sevt->GetSerial()
+											<< ") has " << sevt->GetNofModules() << " module(s) assigned" << endl;
+							gMrbLog->Flush(this->ClassName(), "CheckConfig");
+						}
+					}
+					if (sevt->GetNofParams() == 0) {
+						gMrbLog->Err()	<< "Subevent \"" << sevt->GetName()
+										<< "\" (serial " << sevt->GetSerial()
+										<< "): No params assigned" << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckConfig");
+						nofErrors++;
+					} else if (this->IsVerbose()) {
+						gMrbLog->Out()	<< "Subevent \"" << sevt->GetName()
+										<< "\" (serial " << sevt->GetSerial()
+										<< ") has " << sevt->GetNofParams() << " param(s) assigned" << endl;
+						gMrbLog->Flush(this->ClassName(), "CheckConfig");
+					}
+					sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
+				}
+			}
+			evt = (TMrbEvent *) fLofEvents.After(evt);
+		}
+	}
+
+	TMrbSubevent * sevt = (TMrbSubevent *) fLofSubevents.First();
+	while (sevt) {
+		if (sevt->GetNofEvents() == 0) {
+			gMrbLog->Err()	<< "Subevent \"" << sevt->GetName()
+							<< "\" (serial " << sevt->GetSerial()
+							<< "): Not used by any event" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+		}
+		sevt = (TMrbSubevent *)  fLofSubevents.After(sevt);
+	}
+
+	TMrbModule * module = (TMrbModule *) fLofModules.First();
+	while (module) {
+		if (module->GetNofChannelsUsed() == 0) {
+			gMrbLog->Err()	<< "Module \"" << module->GetName()
+							<< "\" (serial " << module->GetSerial()
+							<< "): Not used by any subevent" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			nofErrors++;
+		} else if (this->IsVerbose()) {
+			gMrbLog->Out()	<< "Module \"" << module->GetName()
+							<< "\" (serial " << module->GetSerial()
+							<< "): " << module->GetNofChannelsUsed()
+							<< " channel(s) used out of " << module->GetNofChannels() << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		}
+		module = (TMrbModule *)  fLofModules.After(module);
+	}
+
+	if (nofErrors == 0) {
+		gMrbLog->Out()	<< "Check done: No inconsistencies encountered" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckConfig", setblue);
+	} else {
+		gMrbLog->Err()	<< "Check done: " << nofErrors << " inconsistencies encountered" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckConfig");
 	}
 
 	fConfigChecked = kTRUE;
-	return(ok);
+	return(nofErrors == 0);
 }

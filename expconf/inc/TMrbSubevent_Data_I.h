@@ -48,6 +48,7 @@ class TMrbSubevent_Data_I : public TMrbSubevent {
 
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };		// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kFALSE); };		// has no meaning in this context
+		inline Bool_t NeedsModulesToBeAssigned() const { return(kFALSE); }; 	// no modules needed
 		inline Int_t GetNofWords() const { return(fNofWords); };				// number of data words
 		
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Data_I.html&"); };

@@ -133,26 +133,26 @@
 %%INIT_COMMON_CODE%%
 
 %%BeginOfCode%%
-
-									/* init module $moduleName at addr $baseAddr */
-					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
-					caen_v785_module_info(CAEN_V785_A_ROM($moduleName));
-					caen_v785_reset($moduleName);
-					CAEN_V785_AUTO_INCR_ON($moduleName);
-					CAEN_V785_ZERO_SUPPR_ON($moduleName);
-					CAEN_V785_ALL_TRIG_ON($moduleName);
-					CAEN_V785_OVER_RANGE_CHECK_ON($moduleName);
-					CAEN_V785_SLIDING_SCALE_ON($moduleName);
-					CAEN_V785_EMPTY_PROG_ENABLE($moduleName);
-					CAEN_V785_THRESH_RES_$fineOrCoarse($moduleName);
-					CAEN_V785_CLEAR_DATA($moduleName);
-					CAEN_V785_RESET_EVENT_COUNTER($moduleName);
+%B%
+%B%									/* init module $moduleName at addr $baseAddr */
+%B%					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+%B%					caen_v785_module_info(CAEN_V785_A_ROM($moduleName));
+%B%					caen_v785_reset($moduleName);
+%B%					CAEN_V785_AUTO_INCR_ON($moduleName);
+%B%					CAEN_V785_ALL_TRIG_ON($moduleName);
+%B%					CAEN_V785_SLIDING_SCALE_ON($moduleName);
+%ZSP%					CAEN_V785_ZERO_SUPPR_$onOrOff($moduleName); 				/* $dont use zero suppression */
+%ORC%					CAEN_V785_OVER_RANGE_CHECK_$onOrOff($moduleName);			/* $dont check for range overflow */
+%THR%					CAEN_V785_THRESH_RES_$fineOrCoarse($moduleName);			/* set threshold resolution */
+%E%					CAEN_V785_EMPTY_PROG_ENABLE($moduleName);
+%E%					CAEN_V785_CLEAR_DATA($moduleName);
+%E%					CAEN_V785_RESET_EVENT_COUNTER($moduleName);
 %%EndOfCode%%
 %%INIT_MODULE%%
 
 %%BeginOfCode%%
 %U%					CAEN_V785_SET_THRESHOLD($moduleName, $chnNo, $lowerThreshL);	/* lower limit $chnName:$chnNo */
-%N%					CAEN_V785_SET_KILL_BIT($moduleName, $chnNo);	/* de-activate chnName:$chnNo */
+%N%					CAEN_V785_SET_KILL_BIT($moduleName, $chnNo);	/* de-activate $chnName:$chnNo */
 %F% 				caen_v785_set_thresh($moduleName, "$threshFile");
 %%EndOfCode%%
 %%INIT_CHANNEL%%

@@ -122,6 +122,12 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 		Int_t SetFullScaleRange(Int_t NanoSeconds);					// set full scale range in nanoseconds
 		inline Int_t GetFullScaleRange(Bool_t NsecFlag = kTRUE) const { return(NsecFlag ? fFullScaleRangeNsecs : fFullScaleRange); };
 
+		inline void SetZeroSuppression(Bool_t ZsFlag = kTRUE) { fZeroSuppression = ZsFlag; };	// zero compression on/off
+		inline Bool_t HasZeroSuppression() const { return(fZeroSuppression); };
+		
+		inline void SetOverRangeCheck(Bool_t OrFlag = kTRUE) { fOverRangeCheck = OrFlag; }; 	// range check on/off
+		inline Bool_t HasOverRangeCheck() const { return(fOverRangeCheck); };
+		
 		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,4x]
 
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
@@ -137,6 +143,8 @@ class TMrbCaen_V775 : public TMrbVMEModule {
 	protected:
 		Bool_t fFFMode;
 		Bool_t fCommonStart;
+		Bool_t fZeroSuppression;
+		Bool_t fOverRangeCheck;
 
 		Int_t fFullScaleRange;
 		Int_t fFullScaleRangeNsecs;

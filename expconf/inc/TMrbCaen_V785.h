@@ -118,6 +118,12 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 		inline void SetFineThresh(Bool_t FineFlag = kTRUE) { fFineThresh = FineFlag; }; // lower thresh in steps of 2 bits
 		inline Bool_t HasFineThresh() const { return(fFineThresh); };
 
+		inline void SetZeroSuppression(Bool_t ZsFlag = kTRUE) { fZeroSuppression = ZsFlag; };	// zero compression on/off
+		inline Bool_t HasZeroSuppression() const { return(fZeroSuppression); };
+		
+		inline void SetOverRangeCheck(Bool_t OrFlag = kTRUE) { fOverRangeCheck = OrFlag; }; 	// range check on/off
+		inline Bool_t HasOverRangeCheck() const { return(fOverRangeCheck); };
+		
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_V7X5"); };
 		
@@ -129,6 +135,9 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 	protected:
 		Bool_t fFFMode;
 		Bool_t fFineThresh;
+
+		Bool_t fZeroSuppression;
+		Bool_t fOverRangeCheck;
 
 	ClassDef(TMrbCaen_V785, 1)		// [Config] CAEN V785, 32 x 4K peak sensing VME ADC
 };
