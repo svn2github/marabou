@@ -143,8 +143,6 @@
 %E% 					CAEN_V775_SET_FULL_SCALE_RANGE($moduleName,$fullScaleRange); 	/* full scale range is $fullScaleNsecs ns */
 %E%					CAEN_V775_CLEAR_DATA($moduleName);
 %E%					CAEN_V775_RESET_EVENT_COUNTER($moduleName);
-%E%					sprintf(msg, "  $moduleName: Bit reg #2 = %#x\n", CAEN_V775_READ_BITSET2($moduleName));
-%E%					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 %%EndOfCode%%
 %%INIT_MODULE%%
 

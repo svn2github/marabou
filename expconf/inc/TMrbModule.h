@@ -85,13 +85,13 @@ class TMrbModule : public TNamed {
 		inline Int_t GetRange() { return(fRange); };							// get module range
 		inline TMrbNamedX * GetDataType() { return(fDataType); };				// get data type
 
-		inline Bool_t SetBinSize(Int_t BinSize) {								// define bin size for histograms
-			fBinSize = BinSize;
-			fBinRange = (fRange + fBinSize - 1) / fBinSize;
+		inline Bool_t SetBinning(Int_t PointsPerBin) {							// define bin size for histograms
+			fPointsPerBin = PointsPerBin;
+			fBinRange = (fRange + fPointsPerBin - 1) / fPointsPerBin;
 			return(kTRUE);
 		};
 
-		inline Int_t GetBinSize() { return(fBinSize); };						// get bin values
+		inline Int_t GetBinning() { return(fPointsPerBin); };					// get bin values
 		inline Int_t GetBinRange() { return(fBinRange); };
 
 		inline Int_t GetSubDevice() { return(fSubDevice); };					// get subdevice number
@@ -167,7 +167,7 @@ class TMrbModule : public TNamed {
 		Int_t fCrate;							// crate number
 
 		Int_t fRange;							// number of data points
-		Int_t fBinSize;							// bin size
+		Int_t fPointsPerBin;					// points per bin
 		Int_t fBinRange;						// number of bins
 		Int_t fSubDevice;						// subdevice
 

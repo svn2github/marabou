@@ -1,3 +1,5 @@
+#include "GlobDef.h"
+
 //___________________________________________________________[C++ HEADER FILE]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           %%ANALYZE_FILE%%Globals.h
@@ -27,7 +29,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-static TUsrEvt$evtNameUC * g$evtNameUC = NULL;	// event $evtNameLC, trigger $trigNo
+GLOBAL(TUsrEvt$evtNameUC *,g$evtNameUC,g$evtNameUC = NULL);	// event $evtNameLC, trigger $trigNo
 %%EndOfCode%%
 %%EVT_DEFINE_POINTERS%%
 
@@ -35,22 +37,22 @@ static TUsrEvt$evtNameUC * g$evtNameUC = NULL;	// event $evtNameLC, trigger $tri
 //////////////////////////////////////////////////////////////////////////////
 // Purpose:        Define global instances of user's variables/windows
 // Comment:        TMrbVariableX and TMrbVarArrayX are defined as
-//                 STATIC objects so they can be addressed DIRECTLY
+//                 GLOBAL objects so they can be addressed DIRECTLY
 //                 TMrbWindowX objects are defined by pointers to the heap.
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-static $className $varName("$varName", $varInit);
+GLOBAL($className,$varName,$varName("$varName", $varInit));
 %%EndOfCode%%
 %%VAR_CLASS_INSTANCE%%
 
 %%BeginOfCode%%
-static $className $varName("$varName", $varSize, $varInit);
+GLOBAL($className,$varName,$varName("$varName", $varSize, $varInit));
 %%EndOfCode%%
 %%VARARR_CLASS_INSTANCE%%
 
 %%BeginOfCode%%
-static $className * $varName = NULL;
+GLOBAL($className *,$varName,$varName = NULL);
 %%EndOfCode%%
 %%WDW_DEFINE_POINTERS%%
 
@@ -60,21 +62,21 @@ static $className * $varName = NULL;
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-%SN%static TH1F * h$paramNameUC = NULL; 	// $sevtNameLC.$paramNameLC
-%XN%static TH1F * h$paramNameUC[$indexRange]; 	// $sevtNameLC.$paramNameLC
-%SP%static TH1F * h$prefix$paramNameUC = NULL; 	// $evtNameLC: $sevtNameLC.$paramNameLC
-%XP%static TH1F * h$prefix$paramNameUC[$indexRange]; 	// $evtNameLC: $sevtNameLC.$paramNameLC
-%AN%static TH1F * h$paramNameUC = NULL; 	// $sevtNameLC.$paramNameLC
-%ANX%static TH1F * h$sevtNameUCArray[$nofParams]; 	// array of ptrs to hists for subevent $sevtNameLC
-%AP%static TH1F * h$prefix$paramNameUC = NULL; 	// $evtNameLC: $sevtNameLC.$paramNameLC
-%APX%static TH1F * h$sevtNameUCArray[$nofParams]; 	// $evtNameLC: array of ptrs to hists for subevent $sevtNameLC
+%SN%GLOBAL(TH1F *,h$paramNameUC,h$paramNameUC = NULL); 	// $sevtNameLC.$paramNameLC
+%XN%GLOBAL(TH1F *,h$paramNameUC[],h$paramNameUC[$indexRange]); 		// $sevtNameLC.$paramNameLC
+%SP%GLOBAL(TH1F *,h$prefix$paramNameUC,h$prefix$paramNameUC = NULL); 	// $evtNameLC: $sevtNameLC.$paramNameLC
+%XP%GLOBAL(TH1F *,h$prefix$paramNameUC[],h$prefix$paramNameUC[$indexRange]); 	// $evtNameLC: $sevtNameLC.$paramNameLC
+%AN%GLOBAL(TH1F *,h$paramNameUC,h$paramNameUC = NULL); 	// $sevtNameLC.$paramNameLC
+%ANX%GLOBAL(TH1F *,h$sevtNameUCArray[],h$sevtNameUCArray[$nofParams]); 	// array of ptrs to hists for subevent $sevtNameLC
+%AP%GLOBAL(TH1F *,h$prefix$paramNameUC,h$prefix$paramNameUC = NULL); 	// $evtNameLC: $sevtNameLC.$paramNameLC
+%APX%GLOBAL(TH1F *,h$sevtNameUCArray[],h$sevtNameUCArray[$nofParams]); 	// $evtNameLC: array of ptrs to hists for subevent $sevtNameLC
 %UDH%
 %UDH%//_______________________________________________________________[GLOBAL DEFS]
 %UDH%//////////////////////////////////////////////////////////////////////////////
 %UDH%// Purpose:        Define pointers to histograms booked by user
 %UDH%//////////////////////////////////////////////////////////////////////////////
 %UDH%
-%UDBH%static $hType * $hName = NULL;
+%UDBH%GLOBAL($hType *,$hName,$hName = NULL);
 %%EndOfCode%%
 %%HISTO_DEFINE_POINTERS%%
 

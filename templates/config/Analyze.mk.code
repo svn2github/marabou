@@ -21,7 +21,7 @@ ROOTGLIBS	=	$(shell root-config --new --glibs)
 
 # Linux with egcs
 CXX 		=	g++
-CXXFLAGS	=	-c -O -fPIC $(INCLUDE) -I./
+CXXFLAGS	=	-g -c -O -fPIC $(INCLUDE) -I./
 
 LD			=	g++
 LFLAGS		=	-g
@@ -38,11 +38,8 @@ USER_HDRS	=	\
 				$(AFILE).h \
 				$(AFILE)Globals.h
 
-# Pieces of code to be included in %%ANALYZE_FILE%%.cxx
-%%MAKE_USER_CODE%%
-
 # User code to be compiled separately
-USER_OBJS 	=
+%%MAKE_USER_CODE%%
 
 # User classes to be documented via THtml
 DOCS		=	\
@@ -56,16 +53,16 @@ PROGRAMS	=	M_analyze
 
 all:		$(PROGRAMS)
 
-M_analyze:	$(OBJPATH)/M_analyze.o $(USER_CODE) $(USER_OBJS) lib$(AFILE).so
-			$(LD) $(LFLAGS) -o M_analyze $(OBJPATH)/M_analyze.o $(USER_OBJS) \
+M_analyze:	$(OBJPATH)/M_analyze.o lib$(AFILE).so
+			$(LD) $(LFLAGS) -o M_analyze $(OBJPATH)/M_analyze.o \
 					-L. -l$(AFILE) \
 					$(TMRBLIBS) \
 					$(GLIBS) -lpthread
 
-lib$(AFILE).so: $(AFILE).o $(AFILE)Dict.o
-			$(CXX) $(LDFLAGS) -shared $(AFILE).o $(AFILE)Dict.o -o lib$(AFILE).so
+lib$(AFILE).so: $(USER_OBJS) $(AFILE).o $(AFILE)Dict.o
+			$(CXX) $(LDFLAGS) -shared $(AFILE).o $(AFILE)Dict.o $(USER_OBJS) -o lib$(AFILE).so
 
-$(AFILE).o: $(USER_HDRS) $(USER_CODE) $(AFILE).cxx
+$(AFILE).o: $(USER_HDRS) $(AFILE).cxx
 			$(CXX) $(CXXFLAGS) $(AFILE).cxx
 
 $(AFILE)Dict.cxx: $(USER_HDRS) $(AFILE).cxx
@@ -73,6 +70,8 @@ $(AFILE)Dict.cxx: $(USER_HDRS) $(AFILE).cxx
 
 $(AFILE)Dict.o:	$(AFILE)Dict.cxx
 			$(CXX) $(CXXFLAGS) $(AFILE)Dict.cxx
+
+%%MAKE_USER_RULES%%
 
 doc:		$(AFILE).cxx
 			@if [ ! -d HTML ]; then mkdir HTML; fi
@@ -92,3 +91,6 @@ doc:		$(AFILE).cxx
 
 clean:
 			rm -f *.o $(USER_OBJS) lib$(AFILE).so $(AFILE)Dict.cxx
+
+.cxx.o:
+			$(CXX) $(CXXFLAGS) -o $@ $<

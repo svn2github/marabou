@@ -215,13 +215,14 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventPrivateData,			"EVT_PRIVATE_DATA"				},
 								{TMrbConfig::kAnaEventUserMethods,			"EVT_USER_METHODS"				},
 								{TMrbConfig::kAnaEventUserData,				"EVT_USER_DATA"					},
-								{TMrbConfig::kAnaEventDispatchOverTrigger,	"EVT_DISPATCH_OVER_TRIGGER" 	},
+								{TMrbConfig::kAnaEventActivateEventBuilder, "EVT_ACTIVATE_EVENT_BUILDER"	},								{TMrbConfig::kAnaEventDispatchOverTrigger,	"EVT_DISPATCH_OVER_TRIGGER" 	},
 								{TMrbConfig::kAnaEventIgnoreTrigger,		"EVT_IGNORE_TRIGGER"			},
 								{TMrbConfig::kAnaEventSetFakeMode,			"EVT_SET_FAKE_MODE"				},
 								{TMrbConfig::kAnaEventCreateTree,			"EVT_CREATE_TREE"				},
 								{TMrbConfig::kAnaEventAddBranches,			"EVT_ADD_BRANCHES"				},
 								{TMrbConfig::kAnaEventBookParams,			"EVT_BOOK_PARAMS"				},
 								{TMrbConfig::kAnaEventBookHistograms,		"EVT_BOOK_HISTOGRAMS"			},
+								{TMrbConfig::kAnaEventFillHistograms,		"EVT_FILL_HISTOGRAMS"			},
 								{TMrbConfig::kAnaEventSetupSevtList,		"EVT_SETUP_SEVT_LIST"			},
 								{TMrbConfig::kAnaEventAllocHitBuffer,		"EVT_ALLOC_HITBUFFER"			},
 								{TMrbConfig::kAnaEventSetScaleDown, 		"EVT_SET_SCALEDOWN" 			},
@@ -233,6 +234,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventSetBranchStatus,		"EVT_SET_BRANCH_STATUS" 		},
 								{TMrbConfig::kAnaEventBuildEvent,			"EVT_BUILD_EVENT"				},
 								{TMrbConfig::kAnaEventAnalyze,				"EVT_ANALYZE"			 		},
+								{TMrbConfig::kAnaEventFillHistograms,		"EVT_FILL_HISTOGRAMS"	 		},
 								{TMrbConfig::kAnaEvtResetData,				"EVT_RESET_DATA"				},
 								{TMrbConfig::kAnaSevtNameLC,				"SEVT_NAME_LC"					},
 								{TMrbConfig::kAnaSevtNameUC,				"SEVT_NAME_UC"					},
@@ -270,16 +272,18 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaVarArrClassInstance,		"VARARR_CLASS_INSTANCE" 		},
 								{TMrbConfig::kAnaWdwDefinePointers, 		"WDW_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaWdwClassInstance,			"WDW_CLASS_INSTANCE"			},
-								{TMrbConfig::kAnaUserDefsAndProtos,			"INCLUDE_USER_DEFS_AND_PROTOS"	},
 								{TMrbConfig::kAnaUserInitialize,			"INCLUDE_USER_INITIALIZE"		},
-								{TMrbConfig::kAnaUserReloadParams,			"INCLUDE_USER_RELOAD_PARAMS"	},
 								{TMrbConfig::kAnaUserBookParams,			"INCLUDE_USER_BOOK_PARAMS"		},
 								{TMrbConfig::kAnaUserBookHistograms,		"INCLUDE_USER_BOOK_HISTOGRAMS"	},
 								{TMrbConfig::kAnaUserGlobals,				"INCLUDE_USER_GLOBALS"			},
 								{TMrbConfig::kAnaUserUtilities,				"INCLUDE_USER_UTILITIES"		},
-								{TMrbConfig::kAnaUserMessages,				"HANDLE_USER_MESSAGES"			},
+								{TMrbConfig::kAnaUserReloadParams,			"RELOAD_PARAMS" 				},
+								{TMrbConfig::kAnaUserMessages,				"HANDLE_MESSAGES"				},
+								{TMrbConfig::kAnaUserDummyMethods,			"INCLUDE_DUMMY_METHODS" 		},
+								{TMrbConfig::kAnaUsingNameSpace ,			"USING_NAMESPACE"	 			},
 								{TMrbConfig::kAnaMakeUserHeaders,			"MAKE_USER_HEADERS" 			},
 								{TMrbConfig::kAnaMakeUserCode,				"MAKE_USER_CODE"	 			},
+								{TMrbConfig::kAnaMakeUserRules,				"MAKE_USER_RULES"	 			},
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
 								{0, 										NULL							}
@@ -360,6 +364,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleLeCroy4432, 			"LeCroy_4432"					},
 								{TMrbConfig::kModuleLeCroy4448,				"LeCroy_4448"					},
 								{TMrbConfig::kModuleKinetics3655,			"Kinetics_3655"					},
+								{TMrbConfig::kModuleMpiHD_IOReg,			"MpiHD_IOReg"					},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}
 							};
@@ -390,7 +395,6 @@ const SMrbNamedXShort kMrbAnalyzeOptions[] =
 								{TMrbConfig::kAnaOptOverwrite,				"OVERWRITE" 					},
 								{TMrbConfig::kAnaOptReplayMode, 			"REPLAYMODE"					},
 								{TMrbConfig::kAnaOptEventBuilder,			"EVENTBUILDER"					},
-								{TMrbConfig::kAnaOptFillHistosAfter,		"FILLHISTOSAFTERUSERCODE"		},
 								{TMrbConfig::kAnaOptVerbose,	 			"VERBOSE"						},
 								{TMrbConfig::kAnaOptDefault,				"DEFAULT"						},
 								{0, 										NULL							}
@@ -417,27 +421,24 @@ const SMrbNamedXShort kMrbRcFileOptions[] =
 								{0, 										NULL							}
 							};
 
+
 //_________________________________________________________________________________________________________ options for user-specific include files
 
 const SMrbNamedXShort kMrbIncludeOptions[] =
 							{
-								{TMrbConfig::kIclOptDefsAndProtos,			"DEFS&PROTOS"					},
-								{TMrbConfig::kIclOptGlobals,				"GLOBALS"	 					},
-								{TMrbConfig::kIclOptInitialize,				"INITIALIZE"					},
-								{TMrbConfig::kIclOptReloadParams,			"RELOADPARAMS"					},
-								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"				},
-								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"					},
-								{TMrbConfig::kIclOptAnalyze,				"ANALYZE"						},
-								{TMrbConfig::kIclOptEventBuilder,			"EVENTBUILDER"					},
-								{TMrbConfig::kIclOptUtilities,				"UTILITIES"						},
-								{TMrbConfig::kIclOptHandleUserMessages,		"HANDLEUSERMESSAGES"			},
-								{TMrbConfig::kIclOptByEventName,			"BYEVENTNAME"					},
-								{TMrbConfig::kIclOptDefault,				"DEFAULT"						},
-								{0, 										NULL							}
+								{TMrbConfig::kIclOptUtilities,				"UTILITIES"			},
+								{TMrbConfig::kIclOptUserMethod,				"USERMETHOD"		},
+								{TMrbConfig::kIclOptInitialize,				"INITIALIZE"		},
+								{TMrbConfig::kIclOptReloadParams,			"RELOADPARAMS"		},
+								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"	},
+								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"		},
+								{TMrbConfig::kIclOptAnalyze,				"ANALYZE"			},
+								{TMrbConfig::kIclOptBuildEvent,				"BUILDEVENT"		},
+								{TMrbConfig::kIclOptHandleMessages,			"HANDLEMESSAGES"	},
+								{0, 										NULL				}
 							};
 
 //_________________________________________________________________________________________________________ types of variables and windows
-
 const SMrbNamedXShort kMrbVariableTypes[] =
 							{
 								{kVarI,						"INTEGER"						},
@@ -1769,8 +1770,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 	TMrbNamedX * icl;
 	TString iclFile, iclPath, iclPrefix, iclEvt;
 	TString srcPath;
-	Bool_t writeIcl;
-	Bool_t writeCmt;
 
 	ofstream anaStrm;
 
@@ -2058,291 +2057,161 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kVarOrWindow, anaTmpl);
 						break;
 					case TMrbConfig::kAnaUserInitialize:
-					case TMrbConfig::kAnaUserReloadParams:
-					case TMrbConfig::kAnaUserGlobals:
-					case TMrbConfig::kAnaUserUtilities:
-					case TMrbConfig::kAnaUserDefsAndProtos:
-					case TMrbConfig::kAnaUserMessages:
 						if (this->UserCodeToBeIncluded()) {
+							Bool_t first = kTRUE;
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							while (icl) {
-								iclFile = icl->GetName();
-								if (iclFile.Length() == 0) iclFile = this->GetName();
-								iclFile(0,1).ToUpper();
-								writeIcl = kFALSE;
-								writeCmt = kTRUE;
-								switch (tagIdx) {
-									case kAnaUserInitialize:
-										if (icl->GetIndex() & TMrbConfig::kIclOptInitialize) {
-											iclFile += "Initialize.udc.cxx";
-											writeIcl = kTRUE;
-										}
-										break;
-									case kAnaUserReloadParams:
-										if (icl->GetIndex() & TMrbConfig::kIclOptReloadParams) {
-											iclFile += "ReloadParams.udc.cxx";
-											writeIcl = kTRUE;
-										}
-										break;
-									case kAnaUserGlobals:
-										if (icl->GetIndex() & TMrbConfig::kIclOptGlobals) {
-											iclFile += "Globals.udc.h";
-											writeIcl = kTRUE;
-										}
-										break;
-									case kAnaUserUtilities:
-										if (icl->GetIndex() & TMrbConfig::kIclOptUtilities) {
-											iclFile += "Utilities.udc.cxx";
-											writeIcl = kTRUE;
-										}
-										break;
-									case kAnaUserDefsAndProtos:
-										if (icl->GetIndex() & TMrbConfig::kIclOptUtilities) {
-											iclFile += "DefsAndProtos.udc.h";
-											writeIcl = kTRUE;
-										}
-										break;
-									case kAnaUserMessages:
-										if (icl->GetIndex() & TMrbConfig::kIclOptUtilities) {
-											iclFile += "HandleMessages.udc.cxx";
-											writeIcl = kTRUE;
-										}
-										break;
-								}
-								if (writeIcl) {
-									if (writeCmt) {
-										anaTmpl.InitializeCode("%B%");
+								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
+									if (first) {
+										anaTmpl.InitializeCode();
 										anaTmpl.WriteCode(anaStrm);
+										first = kFALSE;
 									}
-									writeCmt = kFALSE;
-									anaTmpl.InitializeCode("%I%");
-									iclPath = icl->GetTitle();
-									if (iclPath.Length() == 0) iclPath = srcPath;
-									fp = gSystem->Which(iclPath.Data(), iclFile.Data());
-									if (fp) {
-										TMrbSystem ux;
-										iclPath = fp;
-										fp = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
-										anaTmpl.Substitute("$iclFile", fp);
-									} else {
-										anaTmpl.Substitute("$iclFile", iclFile);
-									}
-									anaTmpl.WriteCode(anaStrm);
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
 						break;
-					case TMrbConfig::kAnaUserBookHistograms:
-						if (!this->UserCodeToBeIncluded()) break;
-						icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
-						writeCmt = kTRUE;
-						while (icl) {
-							iclFile = icl->GetName();
-							if (iclFile.Length() == 0) iclFile = gMrbConfig->GetName();
-							iclFile(0,1).ToUpper();
-							if (((icl->GetIndex() & TMrbConfig::kIclOptByEventName) == 0)
-							&&	(icl->GetIndex() & TMrbConfig::kIclOptBookHistograms)) {
-								iclFile += "BookHistograms.udc.cxx";
-								if (writeCmt) {
-									anaTmpl.InitializeCode("%B%");
+					case TMrbConfig::kAnaUserReloadParams:
+					case TMrbConfig::kAnaUserMessages:
+						if (this->UserCodeToBeIncluded()) {
+							UInt_t iclOpt;
+							if (tagIdx == kAnaUserReloadParams) 	iclOpt = TMrbConfig::kIclOptReloadParams;
+							else if (tagIdx == kAnaUserMessages)	iclOpt = TMrbConfig::kIclOptHandleMessages;
+							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t userCode = kFALSE;
+							while (icl) {
+								if ((icl->GetIndex() & iclOpt) == iclOpt) {
+									userCode = kTRUE;
+									break;
+								}
+								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
+							}
+							if (userCode) break;
+						}
+						anaTmpl.InitializeCode();
+						anaTmpl.WriteCode(anaStrm);
+						break;
+					case TMrbConfig::kAnaUserDummyMethods:
+						if (this->UserCodeToBeIncluded()) {
+							Bool_t userInit = kFALSE;
+							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							while (icl) {
+								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
+									userInit = kTRUE;
+									break;
+								}
+								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
+							}
+							if (userInit) break;
+						}
+						anaTmpl.InitializeCode();
+						anaTmpl.WriteCode(anaStrm);
+						break;
+					case TMrbConfig::kAnaUsingNameSpace:
+						break;
+					case TMrbConfig::kAnaUserGlobals:
+						if (this->UserCodeToBeIncluded()) {
+							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t whdr = kTRUE;
+							while (icl) {
+								if (icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) {
+									if (whdr) {
+										anaTmpl.InitializeCode("%B%");
+										anaTmpl.WriteCode(anaStrm);
+										whdr = kFALSE;
+									}
+									iclPath = icl->GetTitle();
+									TMrbSystem ux;
+									iclPath = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
+									anaTmpl.InitializeCode("%I%");
+									anaTmpl.Substitute("$iclFile", iclPath.Data());
 									anaTmpl.WriteCode(anaStrm);
 								}
-								writeCmt = kFALSE;
-								anaTmpl.InitializeCode("%I%");
-								iclPath = icl->GetTitle();
-								if (iclPath.Length() > 0) iclPath += "/";
-								anaTmpl.Substitute("$iclPath", iclPath);
-								anaTmpl.Substitute("$iclFile", iclFile);
-								anaTmpl.WriteCode(anaStrm);
+								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
-							icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
 						}
 						break;
 					case TMrbConfig::kAnaMakeUserHeaders:
-						found = kFALSE;
 						if (this->UserCodeToBeIncluded()) {
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t first = kTRUE;
 							while (icl) {
-								iclFile = icl->GetName();
-								if (iclFile.Length() == 0) iclFile = this->GetName();
-								iclFile(0,1).ToUpper();
-								if (icl->GetIndex() & TMrbConfig::kIclOptGlobals) {
-									iclFile += "Globals.udc.h";
-									if (found) anaStrm << " \\" << endl;
-									found = kTRUE;
+								if (icl->GetIndex()) {
+									TMrbSystem ux;
 									iclPath = icl->GetTitle();
-									if (iclPath.Length() == 0) iclPath = srcPath;
-									fp = gSystem->Which(iclPath.Data(), iclFile.Data());
-									if (fp == NULL) {
-										gMrbLog->Err()	<< "Warning: User-defined header file not found - " << iclFile << endl;
-										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-										gMrbLog->Err()	<< "            Searching on path " << iclPath << endl;
-										gMrbLog->Flush();
-										iclPath = icl->GetTitle();
-										if (iclPath.Length() > 0) iclPath += "/";
-										anaStrm << "\t\t\t\t" << iclPath << iclFile;
-									} else if (verboseMode) {
-										gMrbLog->Out()  << "Using user-defined header file " << fp << endl;
-										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-										TMrbSystem ux;
-										iclPath = fp;
-										fp = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
-										anaStrm << "\t\t\t\t" << fp;
-									}	
-								}
-								iclFile = icl->GetName();
-								if (iclFile.Length() == 0) iclFile = this->GetName();
-								iclFile(0,1).ToUpper();
-								if (icl->GetIndex() & TMrbConfig::kIclOptDefsAndProtos) {
-									iclFile += "DefsAndProtos.udc.h";
-									if (found) anaStrm << " \\" << endl;
-									found = kTRUE;
-									iclPath = icl->GetTitle();
-									if (iclPath.Length() == 0) iclPath = srcPath;
-									fp = gSystem->Which(iclPath.Data(), iclFile.Data());
-									if (fp == NULL) {
-										gMrbLog->Err()	<< "Warning: User-defined header file not found - " << iclFile << endl;
-										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-										gMrbLog->Err()	<< "            Searching on path " << iclPath << endl;
-										gMrbLog->Flush();
-										iclPath = icl->GetTitle();
-										if (iclPath.Length() > 0) iclPath += "/";
-										anaStrm << "\t\t\t\t" << iclPath << iclFile;
-									} else if (verboseMode) {
-										gMrbLog->Out()  << "Using user-defined header file " << fp << endl;
-										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-										TMrbSystem ux;
-										iclPath = fp;
-										fp = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
-										anaStrm << "\t\t\t\t" << fp;
-									}	
+									if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) != 0) {
+										if (!first) anaStrm << " \\" << endl;
+										first = kFALSE;
+										iclPath = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
+										anaStrm << "\t\t\t\t" << iclPath;
+									}
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
-							if (found) anaStrm << " \\" << endl;
+							anaStrm << " \\" << endl;
 						}
 						break;
 					case TMrbConfig::kAnaMakeUserCode:
 						anaStrm << "USER_CODE\t=";
 						if (this->UserCodeToBeIncluded()) {
-							TList onceOnly;
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t first = kTRUE;
 							while (icl) {
-								iclPrefix = icl->GetName();
-								if (iclPrefix.Length() == 0) iclPrefix = this->GetName();
-								iclPrefix(0,1).ToUpper();
-								if (icl->GetIndex() & TMrbConfig::kIclOptReloadParams) {
-									iclFile = iclPrefix;
-									iclFile += "ReloadParams.udc.cxx";
-									if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-								}
-								if (icl->GetIndex() & TMrbConfig::kIclOptInitialize) {
-									iclFile = iclPrefix;
-									iclFile += "Initialize.udc.cxx";
-									if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-								}
-								if (icl->GetIndex() & TMrbConfig::kIclOptBookHistograms) {
-									if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) {
-										evt = (TMrbEvent *) fLofEvents.First();
-										while (evt) {
-											iclFile = evt->GetName();
-											iclFile(0,1).ToUpper();
-											iclFile.Prepend(iclPrefix.Data());
-											iclFile += "BookHistograms.udc.cxx";
-											if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-											evt = (TMrbEvent *) fLofEvents.After(evt);
-										}
+								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
+									TMrbSystem ux;
+									iclPath = icl->GetTitle();
+									iclPath = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
+									if (first) {
+										anaStrm << "\t" << iclPath;
+										first = kFALSE;
 									} else {
-										iclFile = iclPrefix;
-										iclFile += "BookHistograms.udc.cxx";
-										if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
+										anaStrm << " \\" << endl;
+										anaStrm << "\t\t\t\t" << iclPath;
 									}
-								}
-								if (icl->GetIndex() & TMrbConfig::kIclOptBookParams) {
-									if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) {
-										evt = (TMrbEvent *) fLofEvents.First();
-										while (evt) {
-											iclFile = evt->GetName();
-											iclFile(0,1).ToUpper();
-											iclFile.Prepend(iclPrefix.Data());
-											iclFile += "BookParams.udc.cxx";
-											if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-											evt = (TMrbEvent *) fLofEvents.After(evt);
-										}
-									} else {
-										iclFile = iclPrefix;
-										iclFile += "BookParams.udc.cxx";
-										if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-									}
-								}
-								if (icl->GetIndex() & TMrbConfig::kIclOptEventBuilder) {
-									if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) {
-										evt = (TMrbEvent *) fLofEvents.First();
-										while (evt) {
-											iclFile = evt->GetName();
-											iclFile(0,1).ToUpper();
-											iclFile.Prepend(iclPrefix.Data());
-											iclFile += "EventBuilder.udc.cxx";
-											if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-											evt = (TMrbEvent *) fLofEvents.After(evt);
-										}
-									} else {
-										iclFile = iclPrefix;
-										iclFile += "EventBuilder.udc.cxx";
-										if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-									}
-								}
-								if (icl->GetIndex() & TMrbConfig::kIclOptAnalyze) {
-									if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) {
-										evt = (TMrbEvent *) fLofEvents.First();
-										while (evt) {
-											iclFile = evt->GetName();
-											iclFile(0,1).ToUpper();
-											iclFile.Prepend(iclPrefix.Data());
-											iclFile += "Analyze.udc.cxx";
-											if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-											evt = (TMrbEvent *) fLofEvents.After(evt);
-										}
-									} else {
-										iclFile = iclPrefix;
-										iclFile += "Analyze.udc.cxx";
-										if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
-									}
-								}
-								if (icl->GetIndex() & TMrbConfig::kIclOptUtilities) {
-									iclFile = iclPrefix;
-									iclFile += "Utilities.udc.cxx";
-									if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
-							TNamed * iclf = (TNamed *) onceOnly.First();
-							while (iclf) {
-								anaStrm << " \\" << endl;
-								iclPath = iclf->GetTitle();
-								if (iclPath.Length() == 0) iclPath = srcPath;
-								fp = gSystem->Which(iclPath.Data(), iclf->GetName());
-								if (fp == NULL) {
-									gMrbLog->Err()	<< "Warning: User-defined file not found - " << iclf->GetName() << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-									gMrbLog->Err()	<< "            Searching on path " << iclPath << endl;
-									gMrbLog->Flush();
-									iclPath = iclf->GetTitle();
-									if (iclPath.Length() != 0) anaStrm << "\t\t\t\t" << iclPath << iclFile;
-								} else if (verboseMode) {
-									gMrbLog->Out()  << "Using user-defined file " << fp << endl;
-									gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+						}
+						anaStrm << endl << endl;
+						anaStrm << "USER_OBJS\t=";
+						if (this->UserCodeToBeIncluded()) {
+							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t first = kTRUE;
+							while (icl) {
+								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
 									TMrbSystem ux;
-									iclPath = fp;
-									fp = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
-									anaStrm << "\t\t\t\t" << fp;
-								}	
-								iclf = (TNamed *) onceOnly.After(iclf);
+									iclPath = icl->GetTitle();
+									iclPath = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
+									iclPath.ReplaceAll(".cxx", ".o");
+									if (first) {
+										anaStrm << "\t" << iclPath;
+										first = kFALSE;
+									} else {
+										anaStrm << " \\" << endl;
+										anaStrm << "\t\t\t\t" << iclPath;
+									}
+								}
+								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
-							onceOnly.Delete();
 						}
 						anaStrm << endl;
+						break;
+					case TMrbConfig::kAnaMakeUserRules:
+						if (this->UserCodeToBeIncluded()) {
+							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							while (icl) {
+								if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) == 0) {
+									TMrbSystem ux;
+									iclPath = icl->GetTitle();
+									iclPath = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
+									TString objPath = iclPath;
+									objPath.ReplaceAll(".cxx", ".o");
+									anaStrm << objPath << ":\t$(USER_HDRS) " << iclPath << endl << endl;
+								}
+								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
+							}
+						}
 						break;
 					case TMrbConfig::kAnaEventClassInstance:
 						evt = (TMrbEvent *) fLofEvents.First();
@@ -3569,11 +3438,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 	TString macroName;
 	
 	fUserMacro = MacroName;
-	if (fUserMacro.Length() == 0) {
-		fUserMacro = this->GetName();
-		fUserMacro += "UserMacro.C";
-		fUserMacro(0,1).ToUpper();
-	}
+	if (fUserMacro.Length() == 0) fUserMacro = "UserMacro.C";
 	
 	macroPath = gEnv->GetValue("Root.MacroPath", ".:$HOME/rootmacros:$MARABOU/macros");
 	gSystem->ExpandPathName(macroPath);
@@ -3631,7 +3496,6 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 	} else {
 		fUserMacroCmd = fUserMacro;
 		fUserMacroCmd.Remove(fUserMacroCmd.Index(".C"), 100);
-		fUserMacroCmd(0,1).ToLower();
 		fUserMacroToBeCalled = kTRUE;
 		TString aclic = fp;
 		if (AclicFlag) {
@@ -3738,16 +3602,14 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 
 	sca = (TMrbCamacScaler *) fLofScalers.FindObject(Scaler);
 	if (sca == NULL) {
-		cout	<< setred
-				<< this->ClassName() << "::WriteDeadTime(): No such scaler - " << Scaler
-				<< setblack << endl;
+		gMrbLog->Err()	<< "No such scaler - " << Scaler << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteDeadTime");
 		return(kFALSE);
 	}
 
 	if (Interval <= 0) {
-		cout	<< setred
-				<< this->ClassName() << "::WriteDeadTime(): Illegal dead time interval - " << Interval
-				<< setblack << endl;
+		gMrbLog->Err()	<< "Illegal dead time interval - " << Interval << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteDeadTime");
 		return(kFALSE);
 	}
 
@@ -3757,30 +3619,237 @@ Bool_t TMrbConfig::WriteDeadTime(const Char_t * Scaler, Int_t Interval) {
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::IncludeUserCode(const Char_t * Path, const Char_t * Prefix, Option_t * Options) {
+Bool_t TMrbConfig::IncludeUserCode(const Char_t * Path, const Char_t * UserFile, Bool_t AutoGenFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::IncludeUserCode
 // Purpose:        Specify user code to be included
 // Arguments:      const Char_t * Path         -- where to find user's includes
-//                 Char_t * Prefix             -- prefix to be prepended
-//                 Option_t * Options          -- options to be used
+//                 Char_t * UserFile           -- name of user file
+//                 Bool_t AutoGenFlag          -- kTRUE if (header) file auto-generated
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Specifies user-depended code parts to be included.
+// Description:    Specifies user-definded code to be included.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbLofNamedX includeOptions;
-	UInt_t iclOpt;
-	TMrbNamedX * icl;
+	TString ucPath = Path;
+	TString userFile = UserFile;
+	TMrbLofNamedX iclOptions;
 
-	iclOpt = includeOptions.CheckPatternShort(this->ClassName(), "IncludeUserCode", Options, kMrbIncludeOptions);
-	if (iclOpt == TMrbLofNamedX::kIllIndexBit) return(kFALSE);
+	Bool_t verboseMode = (this->IsVerbose() || (this->GetConfigOptions() & kCfgOptVerbose) != 0);
 
-	icl = new TMrbNamedX(iclOpt, Prefix, Path);
-	fLofUserIncludes.AddNamedX(icl);
+    iclOptions.AddNamedX(kMrbIncludeOptions);
 
+	if (ucPath.Length() == 0) ucPath = gEnv->GetValue("TMrbConfig.SrcPath", gSystem->WorkingDirectory());
+	gSystem->ExpandPathName(ucPath);
+	TString xpath = gSystem->Which(ucPath.Data(), userFile.Data());
+	TMrbSystem ux;
+	TRegexp rxh("\\.h$");
+	TRegexp rxcxx("\\.cxx$");
+	const Char_t * fp = ux.GetRelPath(xpath, gSystem->WorkingDirectory());
+	if (fp == NULL || *fp == '\0') {
+		if (AutoGenFlag && (userFile.Index(rxh, 0) >= 0)) {
+			gMrbLog->Out()	<< "User-defined header file not found - "
+							<< userFile << " (expected to be auto-generated afterwards)" << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+			fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, userFile.Data(), userFile.Data());
+		} else {
+			gMrbLog->Err()	<< "User code file not found - " << userFile << endl
+							<< "                               Searching on path " << ucPath << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+			return(kFALSE);
+		}
+	} else {
+		ucPath = fp;
+		if (userFile.Index(rxh, 0) >= 0) {
+			fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, userFile.Data(), fp);
+			if (verboseMode) {
+				gMrbLog->Out()  << "Using user-defined header file " << ucPath << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+			}
+		} else if (userFile.Index(rxcxx, 0) >= 0) {
+			TString ptPath = ucPath;
+			ptPath.ReplaceAll(".cxx", ".h");
+			ifstream f(ptPath.Data(), ios::in);
+			if (!f.good()) {
+				gMrbLog->Err() << "Prototype file missing - " << ptPath << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+				return(kFALSE);
+			} else {
+				if (verboseMode) {
+					gMrbLog->Out()  << "Using user-defined code file " << ucPath << endl;
+					gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+					gMrbLog->Out()  << "Using user-defined prototype file " << ptPath << endl;
+					gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+				}
+				TMrbString line;
+				UInt_t iclOpts = 0;
+				TMrbLofNamedX * lofMethods = new TMrbLofNamedX(userFile.Data());
+				Int_t lineNo = 0;
+				for (;;) {
+					line.ReadLine(f, kFALSE);
+					if (f.eof()) {
+						f.close();
+						break;
+					}
+					lineNo++;
+					line.ReplaceWhiteSpace();
+					line.ReplaceAll(" ::", "::");
+					line.ReplaceAll(":: ", "::");
+					line.ReplaceAll(" (", "(");
+					if (line.Contains("(") && line.Contains(")")) {
+						TString method = "";
+						TObjArray splitted;
+						if (line.Contains("::")) {
+							splitted.Delete();
+							Int_t n = line.Split(splitted, " ");
+							for (Int_t i = 0; i < n; i++) {
+								method = ((TObjString *) splitted[i])->GetString();
+								if (method.Contains("::")) break;
+							}
+							method.Resize(method.Index("(", 0));
+							n = method.Index("::", 0);
+							TString scope = method;
+							scope.Resize(n);
+							TString mth = method;
+							mth = mth(n + 2, 1000);
+							if (scope.CompareTo("TMrbAnalyze") == 0) {
+								if (mth.CompareTo("InitializeUserCode") == 0) {
+									iclOpts |= TMrbConfig::kIclOptInitialize;
+									lofMethods->AddNamedX(TMrbConfig::kIclOptInitialize, method.Data(), line.Data());
+								} else if (mth.CompareTo("ReloadParams") == 0) {
+									iclOpts |= TMrbConfig::kIclOptReloadParams;
+									lofMethods->AddNamedX(TMrbConfig::kIclOptReloadParams, method.Data(), line.Data());
+								} else if (mth.CompareTo("HandleMessages") == 0) {
+									iclOpts |= TMrbConfig::kIclOptHandleMessages;
+									lofMethods->AddNamedX(TMrbConfig::kIclOptHandleMessages, method.Data(), line.Data());
+								} else {
+									gMrbLog->Err()  << "User code file " << fp << " (line " << lineNo
+												<< "): Syntax error -" << endl
+												<< "                               Unknown method " << method << "\"" << endl;
+									gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+								}
+							} else if (scope.Contains("TUsrEvt")) {
+								TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
+								Bool_t ok = kFALSE;
+								while (evt) {
+									TString evtName = evt->GetName();
+									evtName(0,1).ToUpper();
+									evtName.Prepend("TUsrEvt");
+									if (scope.CompareTo(evtName.Data()) == 0) {
+										ok = kTRUE;
+										break;
+									}
+									evt = (TMrbEvent *) fLofEvents.After(evt);
+								}
+								if (ok) {
+									TString lineUC = line;
+									lineUC.ToUpper();
+									TMrbNamedX * icl = (TMrbNamedX *) iclOptions.First();
+									Bool_t knownMethod = kFALSE;
+									while (icl) {
+										if (icl->GetIndex() & TMrbConfig::kIclOptClassTUsrEvent) {
+											TString tag = icl->GetName();
+											tag.Prepend("%%");
+											tag += "%%";
+											if (lineUC.Contains(tag.Data())) {
+												iclOpts |= icl->GetIndex();
+												lofMethods->AddNamedX(icl->GetIndex(), method.Data(), line.Data());
+												Int_t n1 = line.Index("%%", 0);
+												Int_t n2 = line.Index("%%", n1 + 2);
+												line.Remove(n1, n2 - n1 + 2);
+												knownMethod = kTRUE;
+												break;
+											}
+										}
+										icl = (TMrbNamedX *) iclOptions.After(icl);
+									}
+									if (!knownMethod) {
+										iclOpts |= TMrbConfig::kIclOptEventMethod;
+										lofMethods->AddNamedX(TMrbConfig::kIclOptEventMethod, method.Data(), line.Data());
+									}
+								} else {
+									gMrbLog->Err()  << "User code file " << fp << " (line " << lineNo
+													<< "): Syntax error -" << endl
+													<< "                               Wrong scope operator \"" << scope
+													<< "::\" (should be \"TUsrEvt<EventName>::\")" << endl;
+									gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+								}
+							} else {
+								gMrbLog->Err()  << "User code file " << fp << " (line " << lineNo
+												<< "): Syntax error -" << endl
+												<< "                               Unknown scope operator \"" << scope << "\"" << endl;
+								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+							}
+						} else {
+							splitted.Delete();
+							Int_t n = line.Split(splitted, " ");
+							for (Int_t i = 0; i < n; i++) {
+								method = ((TObjString *) splitted[i])->GetString();
+								if (method.Contains("(")) break;
+							}
+							method.Resize(method.Index("("));
+							iclOpts |= TMrbConfig::kIclOptUtilities;
+							lofMethods->AddNamedX(TMrbConfig::kIclOptUtilities, method.Data(), line.Data());
+						}
+					}
+				}
+				fLofUserIncludes.AddNamedX(iclOpts, userFile.Data(), ucPath.Data(), lofMethods);
+			}
+		} else {
+			gMrbLog->Err()	<< "User code file has wrong extension - " << userFile
+							<< " (should be \".cxx\" or \".h\")" << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+			return(kFALSE);
+		}
+	}
+
+	if (this->UserCodeToBeIncluded()) {
+		TString protoFile;
+		TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
+		Bool_t first = kTRUE;
+		ofstream f;
+		while (icl) {
+			if (icl->GetIndex() & TMrbConfig::kIclOptUtilities) {
+				TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+				TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
+				while (nx) {
+					if (nx->GetIndex() & TMrbConfig::kIclOptUtilities) {
+						if (first) {
+							protoFile = this->GetName();
+							protoFile(0,1).ToUpper();
+							protoFile += "UtilityProtos.h";
+							f.open(protoFile.Data(), ios::out);
+							if (!f.good()) {
+								gMrbLog->Err()	<< "Can't write file - " << protoFile
+												<< " (utility prototypes)" << setblack << endl;
+								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+								return(kFALSE);
+							}
+							if (this->IsVerbose()) {
+								gMrbLog->Out()	<< "Writing file " << protoFile << " (utility prototypes)" << endl;
+								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+							}
+						}
+						first = kFALSE;
+						f << nx->GetTitle() << endl;
+					}
+					nx = (TMrbNamedX *) lofMethods->After(nx);
+				}
+			}
+			icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+		}
+		if (!first) {
+			f.close();
+			fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, protoFile.Data(), protoFile.Data());
+			if (verboseMode) {
+				gMrbLog->Out()  << "Using prototype defs in file " << protoFile << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+			}
+		}			
+	}
+	
 	return(kTRUE);
 }
 

@@ -169,22 +169,30 @@ class TMrbParamListEntry : public TObject {
 	public:
 		TMrbParamListEntry( TMrbNamedX * Module = NULL,								// ctor
 							Int_t * Address = NULL,
-							TH1 * HistoAddress = NULL) :	fModule(Module),
+							TH1 * HistoAddress = NULL,
+							TH1 * SingleAddress = NULL) :	fModule(Module),
 															fAddress(Address),
-															fHistoAddress(HistoAddress) {};
+															fHistoAddress(HistoAddress),
+															fSingleAddress(SingleAddress) {};
 		virtual ~TMrbParamListEntry() {};  											// dtor
 
 		inline TMrbNamedX * GetModule() { return(fModule); };
 		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
 		inline Int_t * GetAddress() { return(fAddress); };
 		inline void SetAddress(Int_t * Address) { fAddress = Address; };
-		inline TH1 * GetHistoAddress() { return(fHistoAddress); };
-		inline void SetHistoAddress(TH1 * Address) { fHistoAddress = Address; };
+		inline TH1 * GetHistoAddress(Bool_t SingleFlag = kFALSE) {
+			return(SingleFlag ? fSingleAddress : fHistoAddress);
+		};
+		inline void SetHistoAddress(TH1 * Address, Bool_t SingleFlag = kFALSE) {
+			if (SingleFlag) fSingleAddress = Address;
+			else			fHistoAddress = Address;
+		};
 
 	protected:
 		TMrbNamedX * fModule;
 		Int_t * fAddress;
 		TH1 * fHistoAddress;
+		TH1 * fSingleAddress;
 
 	ClassDef(TMrbParamListEntry, 0) 	// [Analyze] List of params
 };
@@ -237,10 +245,12 @@ class TMrbModuleListEntry : public TObject {
 								Int_t IndexOfFirstParam = 0,
 								Int_t TimeOffeset = 0,
 								TMrbNamedX * FirstParam = NULL,
-								TMrbNamedX * FirstHisto = NULL) :	fNofParams(NofParams),
+								TMrbNamedX * FirstHisto = NULL,
+								TMrbNamedX * FirstSingle = NULL) :	fNofParams(NofParams),
 																	fIndexOfFirstParam(IndexOfFirstParam),
 																	fFirstParam(FirstParam),
-																	fFirstHisto(FirstHisto) {}; 
+																	fFirstHisto(FirstHisto),
+																	fFirstSingle(FirstSingle) {}; 
 		virtual ~TMrbModuleListEntry() {}; 									// dtor
 
 		inline Int_t GetNofParams() { return(fNofParams); };
@@ -251,8 +261,13 @@ class TMrbModuleListEntry : public TObject {
 		inline void SetIndexOfFirstParam(Int_t FirstParam) { fIndexOfFirstParam = FirstParam; };
 		inline TMrbNamedX * GetFirstParam() { return(fFirstParam); };
 		inline void SetFirstParam(TMrbNamedX * FirstParam) { fFirstParam = FirstParam; };
-		inline TMrbNamedX * GetFirstHisto() { return(fFirstHisto); };
-		inline void SetFirstHisto(TMrbNamedX * FirstHisto) { fFirstHisto = FirstHisto; };
+		inline TMrbNamedX * GetFirstHisto(Bool_t SingleFlag = kFALSE) {
+			return(SingleFlag ? fFirstSingle : fFirstHisto);
+		};
+		inline void SetFirstHisto(TMrbNamedX * FirstHisto, Bool_t SingleFlag = kFALSE) {
+			if (SingleFlag) 	fFirstSingle = FirstHisto;
+			else				fFirstHisto = FirstHisto;
+		};
 
 	protected:
 		Int_t fNofParams;
@@ -260,6 +275,7 @@ class TMrbModuleListEntry : public TObject {
 		Int_t fTimeOffset;
 		TMrbNamedX * fFirstParam;
 		TMrbNamedX * fFirstHisto;
+		TMrbNamedX * fFirstSingle;
 
 	ClassDef(TMrbModuleListEntry, 0) 	// [Analyze] List of modules
 };
@@ -507,9 +523,10 @@ class TMrbAnalyze : public TObject {
 		TH1F * UpdateRateHistory();  							// add a bin to the rate history
 		TH1F * UpdateDTimeHistory();  							// update the dead-time history
 		Bool_t TestRunStatus(); 								// wait for run flag
-		Bool_t Initialize(TMrbIOSpec *);						// user may init his objects here
+		Bool_t Initialize(TMrbIOSpec * IOSpec);					// init objects here
+		Bool_t InitializeUserCode(TMrbIOSpec * IOSpec);			// user may init additional objects here
 
-		Bool_t HandleUserMessage(const Char_t * ArgList); 		// handle messages to M_analyze
+		Bool_t HandleMessage(const Char_t * ArgList); 			// handle messages to M_analyze
 
 		Bool_t OpenRootFile(const Char_t * FileName);			// open input file
 		Bool_t OpenRootFile(TMrbIOSpec * IOSpec);
@@ -622,9 +639,12 @@ class TMrbAnalyze : public TObject {
 
 		inline TMrbNamedX * FindModule(const Char_t * ModuleName) { return(fModuleList.FindByName(ModuleName)); };
 		inline TMrbNamedX * FindParam(const Char_t * ParamName) { return(fParamList.FindByName(ParamName)); };
-		inline TMrbNamedX * FindHisto(const Char_t * HistoName) { return(fHistoList.FindByName(HistoName)); };
+		inline TMrbNamedX * FindHisto(const Char_t * HistoName, Bool_t SingleFlag = kFALSE) {
+			return(SingleFlag ? fSingleList.FindByName(HistoName) : fHistoList.FindByName(HistoName));
+		};
 		
-		void PrintLists();
+		void PrintLists(ostream & out = cout);				// print modules, params, histos ...
+		void PrintLists(const Char_t * FileName);
 
 		void PrintStartStop();		// output start/stop time stamps
 
@@ -672,6 +692,7 @@ class TMrbAnalyze : public TObject {
 		TMrbLofNamedX fModuleList;	// list of modules, indexed by serial number
 		TMrbLofNamedX fParamList;	// list of params, indexed by param number
 		TMrbLofNamedX fHistoList;	// list of histograms, indexed by param number
+		TMrbLofNamedX fSingleList;	// list of single histograms, indexed by param number
 
 	ClassDef(TMrbAnalyze, 1)	// [Analyze] Describe user's analysis
 };
@@ -724,6 +745,7 @@ class TUsrEvent : public TObject {
 				if (SevtSerial == -1)	fLofSubevents.AddLast(Subevent);
 				else					fLofSubevents.AddAt(Subevent, SevtSerial);
 		};
+		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObject * GetSubevent(Int_t SevtSerial) { return(fLofSubevents.At(SevtSerial)); };	// get it from list
 		inline Int_t GetNofSubevents() { return(fLofSubevents.GetSize()); };
 

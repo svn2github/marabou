@@ -940,7 +940,7 @@ void * msg_handler(void * dummy) {
            sock->Send(mess0);
 
          } else if ( cmd == "user" ){
-           Int_t result = u_analyze->HandleUserMessage(smess.Data());
+           Int_t result = u_analyze->HandleMessage(smess.Data());
            if ( verboseMode ) cout << "UserMessage called, result: " 
                             << result << endl;                
          } else if ( cmd == "exit" ){

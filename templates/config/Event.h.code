@@ -26,13 +26,17 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		Bool_t FillEvent(const s_vehe *, const MBSDataIO *);	// event filling function supplied by system
 		Bool_t BookParams();									// book params for this event
 		Bool_t BookHistograms();								// book histograms for this event
+		Bool_t FillHistograms();								// fill histograms
 		Bool_t AllocHitBuffers();								// allocate hit buffers for subevents if needed
 		Bool_t CreateTree();									// create a tree if needed
+%%BeginOfCode%%
 		Bool_t BuildEvent();									// special event builder
+%%EndOfCode%%
+%%EVT_ACTIVATE_EVENT_BUILDER%%
 		Bool_t Analyze();										// user's analyzing code
 		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)
 		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
-		void Reset(Int_t InitValue = 0);						// reset subevent data
+		void Reset(Int_t InitValue = 0);						// reset event data
 
 		inline UInt_t GetSubeventPattern() { return(fSubeventPattern); };
 		inline Bool_t ThereIsSubevent(UInt_t SubeventBit) { return((fSubeventPattern & SubeventBit) != 0); };

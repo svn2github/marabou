@@ -12,7 +12,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-static char sccsid[]	=	"%W%";
+#define _MARABOU_MAIN_
 
 #define MAX_LLONG	9223372036854775807LL
 
@@ -35,22 +35,22 @@ ClassImp($className)
 %%EndOfCode%%
 %%IMPLEMENT_CLASSES%%
 
-%%BeginOfCode%%
-%B%// definitions & prototypes supplied by user
-%I%#include "$iclFile"
-%%EndOfCode%%
-%%INCLUDE_USER_DEFS_AND_PROTOS%%
-
 // global objects
 #include "%%ANALYZE_FILE%%Globals.h"
 
 %%BeginOfCode%%
-%B%// globals supplied by user
+%B%// global defs supplied by user
 %I%#include "$iclFile"
 %%EndOfCode%%
 %%INCLUDE_USER_GLOBALS%%
 
 %%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
+
+%%BeginOfCode%%
+%B%// namespaces used by user
+%NS%using namespace $nameSpace;
+%%EndOfCode%%
+%%USING_NAMESPACE%%
 
 extern pthread_mutex_t global_data_mutex;		// global pthread mutex to protect TMapped data
 
@@ -65,10 +65,9 @@ extern TUsrDeadTime * gDeadTime;				// dead-time data
 
 extern TMrbLofUserVars * gMrbLofUserVars;		// list of user vars/wdws
 
-static Bool_t verboseMode;						// verbosity flag;
-
-static Bool_t dumpIt = kFALSE;					// kTRUE - dump records
-static Int_t recNo = 0;
+Bool_t verboseMode;							// verbosity flag;
+Bool_t dumpIt = kFALSE;						// kTRUE - dump records
+Int_t recNo = 0;
 
 Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
@@ -105,9 +104,17 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %B%// initialize user lists: modules, params & histos
 %B% 	gMrbAnalyze->InitializeLists($nofModules, $nofParams);
-%ML%	gMrbAnalyze->AddModuleToList("$moduleNameLC", "$moduleTitle", kMrbModule$moduleNameUC, $paramIndex, $nofParams);
+%ML%	gMrbAnalyze->AddModuleToList("$moduleNameLC", "$moduleTitle", kMrbModule$moduleNameUC, $paramIndex, $nofParams, 0);
 %%EndOfCode%%
 %%INITIALIZE_LISTS%%
+
+%%BeginOfCode%%
+%B%// set time offsets for modules
+%B% 	Int_t timeOffset;
+%T% 	timeOffset = gEnv->GetValue("Module.$moduleNameUC.TimeOffset", $timeOffset);	// $moduleNameLC ($moduleTitle)
+%T% 	gMrbAnalyze->SetTimeOffset(kMrbModule$moduleNameUC, timeOffset);
+%%EndOfCode%%
+%%MODULE_TIME_OFFSET%%
 
 %%BeginOfCode%%
 %C%// instantiate user's event classes and book histograms
@@ -136,12 +143,6 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%INITIALIZE_EVT_SEVT_MODS%%
 
 %%BeginOfCode%%
-%B%// user-specific code to book histograms
-%I%#	include "$iclFile"
-%%EndOfCode%%
-%%INCLUDE_USER_BOOK_HISTOGRAMS%%
-
-%%BeginOfCode%%
 %B%// book histograms defined by user
 %UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
 %UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
@@ -149,39 +150,35 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%HISTO_BOOK_USER_DEFINED%%
 
 %%BeginOfCode%%
-%B%// user-specific code to initialize objects and/or variables
-%I%#	include "$iclFile"
+// user-specific code to initialize objects and/or variables
+	this->InitializeUserCode(IOSpec);
 %%EndOfCode%%
 %%INCLUDE_USER_INITIALIZE%%
 
 	return(kTRUE);
 }
 
-Bool_t TMrbAnalyze::HandleUserMessage(const Char_t * UserArgs){
+%%BeginOfCode%%
+Bool_t TMrbAnalyze::HandleMessage(const Char_t * Args){
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::HandleUserMessage
-// Purpose:        Execute a user message
-// Arguments:      Char_t * UserArgs
+// Name:           TMrbAnalyze::HandleMessage
+// Purpose:        Execute a message
+// Arguments:      Char_t * Args   -- argument list
 // Results:        kTRUE/kFALSE
 // Description:    Called by message handler.
-//                 Format of argument string depends on user's definitions
+//                 Format of argument string depends on caller's definitions
 //                 and has to be decoded according to his requirements.
 // Exceptions:     
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t sts = kFALSE;
+	return(kFALSE);
+};
+%%EndOfCode%%
+%%HANDLE_MESSAGES%%
 
 %%BeginOfCode%%
-%B%// user-defined message handler
-%I%#	include "$iclFile"
-%%EndOfCode%%
-%%HANDLE_USER_MESSAGES%%
-
-	return(sts);
-};
-
 Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -194,14 +191,10 @@ Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-%%BeginOfCode%%
-%B%// user-specific code to reload parameters
-%I%#	include "$iclFile"
-%%EndOfCode%%
-%%INCLUDE_USER_RELOAD_PARAMS%%
-
 	return(this->ReloadVarsAndWdws(IOSpec));
 };
+%%EndOfCode%%
+%%RELOAD_PARAMS%%
 
 Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
@@ -446,7 +439,8 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 }					
 
 %%BeginOfCode%%
-%B%// user-specific utility functions
-%I%#	include "$iclFile"
+// dummy methods if user extensions are not active
+Bool_t TMrbAnalyze::InitializeUserCode(TMrbIOSpec * IOSpec) { return(kFALSE); };
 %%EndOfCode%%
-%%INCLUDE_USER_UTILITIES%%
+%%INCLUDE_DUMMY_METHODS%%
+

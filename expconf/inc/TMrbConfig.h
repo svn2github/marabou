@@ -121,10 +121,12 @@ class TMrbConfig : public TNamed {
 									kAnaEventPrivateData,
 									kAnaEventUserMethods,
 									kAnaEventUserData,
+									kAnaEventActivateEventBuilder,
 									kAnaEventDispatchOverTrigger,
 									kAnaEventIgnoreTrigger,
 									kAnaEventBookParams,
 									kAnaEventBookHistograms,
+									kAnaEventFillHistograms,
 									kAnaEventSetupSevtList,
 									kAnaEventAllocHitBuffer,
 									kAnaEventSetFakeMode,
@@ -176,7 +178,6 @@ class TMrbConfig : public TNamed {
 									kAnaVarArrClassInstance,
 									kAnaWdwDefinePointers,
 									kAnaWdwClassInstance,
-									kAnaUserDefsAndProtos,
 									kAnaUserInitialize,
 									kAnaUserReloadParams,
 									kAnaUserBookParams,
@@ -184,8 +185,11 @@ class TMrbConfig : public TNamed {
 									kAnaUserGlobals,
 									kAnaUserUtilities,
 									kAnaUserMessages,
+									kAnaUserDummyMethods,
+									kAnaUsingNameSpace,
 									kAnaMakeUserHeaders,
 									kAnaMakeUserCode,
+									kAnaMakeUserRules,
 									kAnaIncludeEvtSevtModGlobals,
 									kAnaInitializeEvtSevtMods
 								};
@@ -237,8 +241,7 @@ class TMrbConfig : public TNamed {
 									kAnaOptOverwrite		=	BIT(4),
 									kAnaOptReplayMode		=	BIT(5),
 									kAnaOptEventBuilder 	=	BIT(6),
-									kAnaOptFillHistosAfter	=	BIT(7),
-									kAnaOptVerbose			=	BIT(8)
+									kAnaOptVerbose			=	BIT(7)
 								};
 		enum					{	kAnaOptDefault			=	kAnaOptSubevents |
 																kAnaOptParamsByName |
@@ -255,27 +258,19 @@ class TMrbConfig : public TNamed {
 								};
 		enum					{	kRcOptDefault			=	kRcOptByName	}; 
 
-		enum EMrbIncludeOptions	{	kIclOptGlobals				=	BIT(0),		// include options
-									kIclOptInitialize	 		=	BIT(1),
-									kIclOptReloadParams			=	BIT(2),
-									kIclOptBookHistograms		=	BIT(3),
-									kIclOptBookParams			=	BIT(4),
-									kIclOptBuildRootEvent		=	BIT(5),
-									kIclOptAnalyze				=	BIT(6),
-									kIclOptEventBuilder			=	BIT(7),
-									kIclOptUtilities			=	BIT(8),
-									kIclOptDefsAndProtos		=	BIT(9),
-									kIclOptHandleUserMessages	=	BIT(10),
-									kIclOptByEventName			=	BIT(13)
-								};
-		enum					{	kIclOptDefault			=	kIclOptGlobals
-																| kIclOptInitialize
-																| kIclOptReloadParams
-																| kIclOptBookHistograms
-																| kIclOptBookParams
-																| kIclOptAnalyze
-																| kIclOptUtilities
-																| kIclOptDefsAndProtos
+		enum EMrbIncludeOptions	{	kIclOptHeaderFile			=	BIT(0),		// include options
+									kIclOptUserMethod			=	BIT(1),
+									kIclOptClassTMrbAnalyze		=	BIT(2),
+									kIclOptClassTUsrEvent		=	BIT(3),
+									kIclOptInitialize			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(4),
+									kIclOptReloadParams			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(5),
+									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(6),
+									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(7),
+									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(8),
+									kIclOptAnalyze				=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
+									kIclOptBuildEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
+									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
+									kIclOptUtilities			=	BIT(12)
 								};
 
 		enum					{	kNofCrates			=	100			};	// max number of crates
@@ -388,7 +383,8 @@ class TMrbConfig : public TNamed {
 									kManufactGanelec	=	BIT(19),
 									kManufactXia		=	BIT(20),
 									kManufactAcromag	=	BIT(21),
-									kManufactKinetics	=	BIT(22)
+									kManufactKinetics	=	BIT(22),
+									kManufactMpiHD		=	BIT(23)
 								};
 
 		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 1,  // modules ids
@@ -413,6 +409,7 @@ class TMrbConfig : public TNamed {
 									kModuleKinetics3655		 =	kManufactKinetics + 20,
 									kModuleCaenV775 		=	kManufactCaen + 21,
 									kModuleCaenV820 		=	kManufactCaen + 22,
+									kModuleMpiHD_IOReg 		=	kManufactMpiHD + 23,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
@@ -587,10 +584,8 @@ class TMrbConfig : public TNamed {
 		inline TObject * GetDeadTimeScaler() { return(fDeadTimeScaler); };			// get scaler def
 
 																					// include user-specific code
-		Bool_t IncludeUserCode(const Char_t * Path, const Char_t * Prefix, Option_t * Options);
-		inline Bool_t IncludeUserCode(const Char_t * Prefix = "", Option_t * Options = "Default") {
-									return(this->IncludeUserCode("", Prefix, Options));
-		};
+		Bool_t IncludeUserCode(const Char_t * Path, const Char_t * UserFile, Bool_t AutoGenFalg = kFALSE);
+		inline Bool_t IncludeUserCode(const Char_t * UserFile, Bool_t AutoGenFalg = kFALSE) { return(this->IncludeUserCode("", UserFile, AutoGenFalg)); };
 
 		inline Bool_t UserCodeToBeIncluded() { return(fLofUserIncludes.Last() >= 0); };
 		inline TMrbLofNamedX * GetLofUserIncludes() { return(&fLofUserIncludes); };

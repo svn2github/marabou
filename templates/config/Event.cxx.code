@@ -10,18 +10,20 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::BookParams() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	Bool_t err = kFALSE;
+
 %%BeginOfCode%%
-	$sevtNameLC.BookParams();
+	err |= !$sevtNameLC.BookParams();
 %%EndOfCode%%
 %%EVT_BOOK_PARAMS%%
 
 %%BeginOfCode%%
-%B%// user-specific code to book parameters
-%I%#	include "$iclFile"
+%B%// user-defined methods to book parameters
+%UM% err |= !this->$userMethod();
 %%EndOfCode%%
 %%INCLUDE_USER_BOOK_PARAMS%%
 
-	return(kTRUE);
+	return(!err);
 }
 
 Bool_t TUsrEvt%%EVT_NAME_UC%%::BookHistograms() {
@@ -38,19 +40,21 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::BookHistograms() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	Bool_t err = kFALSE;
+
 %%BeginOfCode%%
-%N%	$sevtNameLC.BookHistograms();
-%P%	$sevtNameLC.Book$evtNameUCHistograms();
+%N%	err |= !$sevtNameLC.BookHistograms();
+%P%	err |= !$sevtNameLC.Book$evtNameUCHistograms();
 %%EndOfCode%%
 %%EVT_BOOK_HISTOGRAMS%%
 
 %%BeginOfCode%%
-%B%// user-specific code to book histograms
-%I%#	include "$iclFile"
+%B%// user-defined methods to book histograms
+%UM% err |= this->$userMethod();
 %%EndOfCode%%
 %%INCLUDE_USER_BOOK_HISTOGRAMS%%
 		
-	return(kTRUE);
+	return(!err);
 }
 
 Int_t TUsrEvt%%EVT_NAME_UC%%::SetupLofSubevents() {
@@ -438,67 +442,70 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, const MBSData
 }
 
 %%BeginOfCode%%
-%B%Bool_t TUsrEvt$evtNameUC::BuildEvent() {
-%B%//________________________________________________________________[C++ METHOD]
-%B%//////////////////////////////////////////////////////////////////////////////
-%B%// Name:           TUsrEvt$evtNameUC::BuildEvent
-%B%// Purpose:        Event builder for $evtNameLC
-%B%//                 (Trigger $evtTrigger)
-%B%// Arguments:      --
-%B%// Results:        kTRUE/kFALSE
-%B%// Exceptions:     
-%B%// Description:    Event builder for trigger $evtNameLC to be called before analysis
-%B%// Keywords:       
-%B%//////////////////////////////////////////////////////////////////////////////
-%B%
-%IUC%
-%IUC%//++++++++ Special event builder code goes here +++++++++++++
-%IUC%
-%IUC%#include "$iclFile"
-%IUC%
-%N%
-%N% this->Analyze();
-%N%
-%E%	if (gMrbAnalyze->TreeToBeWritten()) fTreeOut->Fill();
-%E%
-%E%	return(kTRUE);
-%E%}
+Bool_t TUsrEvt$evtNameUC::BuildEvent() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		   TUsrEvt$evtNameUC::BuildEvent
+// Purpose: 	   Event builder for $evtNameLC
+//  			   (Trigger $evtTrigger)
+// Arguments:	   --
+// Results: 	   kTRUE/kFALSE
+// Exceptions:     
+// Description:    Event builder for trigger $evtNameLC to be called before analysis
+// Keywords:	   
+//////////////////////////////////////////////////////////////////////////////
+
+	return(this->Analyze());
+}
 %%EndOfCode%%
 %%EVT_BUILD_EVENT%%
 
 %%BeginOfCode%%
-%B%Bool_t TUsrEvt$evtNameUC::Analyze() {
+Bool_t TUsrEvt$evtNameUC::Analyze() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:		TUsrEvt$evtNameUC::Analyze
+// Purpose: 	Analyze data for event $evtNameLC
+//  			(Trigger $evtTrigger)
+// Arguments:		--
+// Results: 	kTRUE/kFALSE
+// Exceptions:     
+// Description:    User's analysis function for trigger $evtTrigger
+//  			Any sorting, filtering, and analyzing goes here.
+// Keywords:	
+//////////////////////////////////////////////////////////////////////////////
+
+	this->FillHistograms(); 		// fill histograms
+
+	if (gMrbAnalyze->TreeToBeWritten()) fTreeOut->Fill(); 	// write raw data to file
+
+	return(kTRUE);
+}
+%%EndOfCode%%
+%%EVT_ANALYZE%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrEvt$evtNameUC::FillHistograms() {
 %B%//________________________________________________________________[C++ METHOD]
 %B%//////////////////////////////////////////////////////////////////////////////
-%B%// Name:           TUsrEvt$evtNameUC::Analyze
-%B%// Purpose:        Analyze data for event $evtNameLC
-%B%//                 (Trigger $evtTrigger)
-%B%// Arguments:      --
-%B%// Results:        kTRUE/kFALSE
+%B%// Name:		   TUsrEvt$evtNameUC::FillHistograms
+%B%// Purpose: 	   Fill histograms for event $evtNameLC
+%B%//  			   (Trigger $evtTrigger)
+%B%// Arguments:	   --
+%B%// Results: 	   kTRUE/kFALSE
 %B%// Exceptions:     
-%B%// Description:    User's analysis function for trigger $evtTrigger
-%B%//                 Any sorting, filtering, and analyzing goes here.
-%B%// Keywords:       
+%B%// Description:    Fills histograms for event $evtNameLC,
+%B%//                 one for each parameter.
+%B%// Keywords:	   
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%WTF% 	Bool_t treeToBeFilled = kTRUE;			// may be changed by user's analysis
-%WTF%
-%FHBN%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
-%FHBP%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
-%AC%
-%AC%//++++++++ User's analyzing code goes here +++++++++++++
-%AC%
-%IUC%#include "$iclFile"
-%IUC%
-%FHAN%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
-%FHAP%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
-%WT%
-%WT%	if (gMrbAnalyze->TreeToBeWritten() && treeToBeFilled) fTreeOut->Fill();
+%N%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
+%P%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
 %E%
 %E%	return(kTRUE);
 %E%}
 %%EndOfCode%%
-%%EVT_ANALYZE%%
+%%EVT_FILL_HISTOGRAMS%%
 
 void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue) {
 //________________________________________________________________[C++ METHOD]

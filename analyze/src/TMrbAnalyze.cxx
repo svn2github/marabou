@@ -2375,12 +2375,12 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	return(kTRUE);
 }
 
-void TMrbAnalyze::PrintLists() {
+void TMrbAnalyze::PrintLists(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::PrintLists
 // Purpose:        Output list contents
-// Arguments:      --
+// Arguments:      ostream & Out     -- output stream
 // Results:        --
 // Exceptions:     
 // Description:    Printout of module, param, histo lists, resp.
@@ -2399,11 +2399,11 @@ void TMrbAnalyze::PrintLists() {
 	TString hName;
 	TMrbString addr;
 
-	cout	<< endl;
+	Out	<< endl;
 	for (i = 0; i <= fModuleList.GetLast(); i++) {
 		nmx = (TMrbNamedX *) fModuleList[i];
 		if (nmx) {
-			cout	<< "Module " << nmx->GetName() << ", Index = "
+			Out	<< "Module " << nmx->GetName() << ", Index = "
 					<< nmx->GetIndex() << " (" << nmx->GetTitle() << ")" << endl;
 			mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 			np = mle->GetNofParams();
@@ -2413,7 +2413,7 @@ void TMrbAnalyze::PrintLists() {
 				npx = (TMrbNamedX *) fParamList[px];
 				if (npx) {
 					if (!h) {
-						cout	<< "Param     RelX AbsX           Addr     Histogram                     Addr" << endl
+						Out	<< "Param     RelX AbsX           Addr     Histogram                     Addr" << endl
 								<< "-----------------------------------------------------------------------------------" << endl;
 						h = kTRUE;
 					}
@@ -2421,7 +2421,7 @@ void TMrbAnalyze::PrintLists() {
 					nhx = (TMrbNamedX *) fHistoList[px];
 					hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
 					addr.FromInteger((Int_t) ple->GetAddress(), 0, 0, 16);
-					cout	<< setiosflags(ios::left) << setw(10) << npx->GetName()
+					Out	<< setiosflags(ios::left) << setw(10) << npx->GetName()
 							<< resetiosflags(ios::left)	<< setw(4) << j
 							<< setw(5) << npx->GetIndex()
 							<< setw(15) << addr;
@@ -2431,16 +2431,37 @@ void TMrbAnalyze::PrintLists() {
 						hName += nhx->GetTitle();
 						hName += ")";
 						addr.FromInteger((Int_t) hle->GetAddress(), 0, 0, 16);
-						cout	<< "     " << setiosflags(ios::left) << setw(30) << hName
+						Out	<< "     " << setiosflags(ios::left) << setw(30) << hName
 								<< resetiosflags(ios::left) << addr;
 					}
 				}
-				cout	<< endl;
+				Out	<< endl;
 				px++;
 			}
 		}
-		cout	<< endl;
+		Out	<< endl;
 	}
+}
+
+void TMrbAnalyze::PrintLists(const Char_t * FileName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::PrintLists
+// Purpose:        Output list contents
+// Arguments:      Char_t * FileName    -- output file
+// Results:        --
+// Exceptions:     
+// Description:    Printout of module, param, histo lists, resp.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	ofstream f(FileName, ios::out);
+	if (!f.good()) {
+		gMrbLog->Err()	<< gSystem->GetError() << " - " << FileName << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintLists");
+	}
+	this->PrintLists(f);
+	f.close();
 }
 
 Bool_t TMrbAnalyze::DumpData(const Char_t * Prefix, Int_t Index,	const Char_t * CallingClass,

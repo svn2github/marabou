@@ -91,7 +91,7 @@ TMrbModule::TMrbModule(const Char_t * ModuleName, const Char_t * ModuleID, Int_t
 			fCrate = -1;	 								// crate number
 			fNofChannels = NofChannels; 	 				// number of channels available
 			fRange = Range; 								// range
-			fBinSize = 1;									// bin size defaults to 1
+			fPointsPerBin = 1;								// bin size defaults to 1
 			fBinRange = Range;								// number of channels
 			fBlockReadout = kFALSE; 						// turn off block mode
 			fIsActive = kTRUE;								// module is active
