@@ -2263,8 +2263,10 @@ void HistPresent::SetRebinMethod()
   
 void HistPresent::SetOperateVal() 
 {
-   Float_t fac = GetFloat("Factor", fOpfac);
+   Bool_t ok; 
+   Float_t fac = GetFloat("Factor", fOpfac, &ok, maincanvas);
    fOpfac = fac;
+   fValButton->SetTitle(Form("%lg", fac));
 }
 //________________________________________________________________________________________
 // Operate on  histograms 

@@ -86,6 +86,9 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
 void PrintGraph(TGraphErrors * gr); 
 Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py);
 TGraph * FindGraph(TCanvas * ca);
+void DrawColors();
+void DrawFillStyles();
+void DrawLineStyles();
 
 inline void nothing();
 #endif

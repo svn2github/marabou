@@ -538,28 +538,6 @@ Bool_t QuestionBox(const char *message, TGWindow * win)
    else
       return kTRUE;
 }
-//__________________________________________________________________
-
-void Show_Fonts()
-{
-   const char text[] = "The big brown fox jumps over the lazy dog.";
-   new TCanvas("ct", "Text fonts used by root", 100, 100, 600, 400);
-   Float_t x0 = 0.05, y = 0.9, dy = 0.07;
-   TText *t1;
-   TText *t;
-   for (Int_t i = 10; i <= 120; i += 10) {
-      t1 = new TText(x0, y, Form("%d", i));
-      t = new TText(x0 + 0.1, y, text);
-      t1->SetTextSize(0.05);
-      t1->SetTextFont(i);
-      t->SetTextSize(0.05);
-      t->SetTextFont(i);
-      t1->Draw();
-      t->Draw();
-      y -= dy;
-   }
-};
-
 //------------------------------------------------------   
 void CloseWorkFile(TGWindow * win)
 {
@@ -968,8 +946,12 @@ the picture size is halfed";
          gSystem->Exec(cmd.Data());
       }
    } else {
-      TString cmd = "lpr -P";
-      cmd += gSystem->Getenv("PRINTER");
+      TString cmd = "lpr ";
+      const char *pc = gSystem->Getenv("PRINTER");
+      if (pc) {
+         cmd += "-P";
+         cmd += pc;
+      }
 //                                                                                                                                                                                                                                                                TEnv env(".rootrc");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // inspect ROOT's environment
       const char *ccmd =
           env.GetValue("HistPresent.PrintCommand", cmd.Data());
@@ -1338,4 +1320,137 @@ TGraph * FindGraph(TCanvas * ca)
    }
    return NULL;
 };
+
+//__________________________________________________________________
+
+void Show_Fonts()
+{
+   const char text[] = "The big brown fox jumps over the lazy dog.";
+   new TCanvas("ct", "Text fonts used by root", 100, 100, 600, 400);
+   Float_t x0 = 0.05, y = 0.9, dy = 0.07;
+   TText *t1;
+   TText *t;
+   for (Int_t i = 10; i <= 120; i += 10) {
+      t1 = new TText(x0, y, Form("%d", i));
+      t = new TText(x0 + 0.1, y, text);
+      t1->SetTextSize(0.05);
+      t1->SetTextFont(i);
+      t->SetTextSize(0.05);
+      t->SetTextFont(i);
+      t1->Draw();
+      t->Draw();
+      y -= dy;
+   }
+};
+
+//______________________________________________________________________________________
+  
+void DrawColors() 
+{
+//   TString hexcol;
+   TString scol;
+//   TString cmd;
+   new TCanvas("colors", "rgb colors", 400, 20, 800, 400);
+   Float_t dx = 1./10.2 , dy = 1./10.2 ;
+   Float_t x0 = 0.1 * dx,  y0 =0.1 *  dy; 
+   Float_t x = x0, y = y0;;
+   TButton * b;
+   TColor  * c;
+   Int_t maxcolors = 100;
+   Int_t basecolor = 1;
+   Int_t colindex = basecolor;
+//   Int_t palette = new Int_t[maxcolors];
+   for (Int_t i=basecolor; i<= maxcolors; i++) {
+      scol = Form("%d", colindex);
+      b = new TButton(scol.Data(), scol.Data(), x, y, x + .9*dx , y + .9*dy );
+      b->SetFillColor(colindex);
+      b->SetTextAlign(22);
+      b->SetTextFont(100);
+      b->SetTextSize(0.8);
+      c = GetColorByInd(colindex);
+      if (c) {
+         if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
+         else                   b->SetTextColor(1);
+      } else {
+         cout << "color not found " << colindex << endl;
+      }
+      if ( (colindex++ >= maxcolors + basecolor) ) {
+         cout << "Too many colors " << maxcolors << endl;
+         break;
+      }
+      b->Draw();
+      y += dy;
+      if ( y >= 1 - dy ){
+         y = y0;
+         x+= dx;
+      }
+   }
+}
+//______________________________________________________________________________________
+  
+void DrawFillStyles() 
+{
+   Int_t styles[30];
+   styles[0] = 0; 
+   styles[1] = 1001; 
+   styles[2] = 2001; 
+   styles[3] = 4000; 
+   for (Int_t i=1; i<= 25; i++) styles[3 + i] = i +3000;
+
+   TString scol;
+//   TString cmd;
+   new TCanvas("fillstyles", "fillstyles", 400, 20, 800, 400);
+   Float_t dx = 1./7.2 , dy = 1./5.2 ;
+   Float_t x0 = 0.1 * dx,  y0 = 1 - 1.1 *  dy; 
+   Float_t x = x0, y = y0;
+   TPaveText * b;
+//   Int_t palette = new Int_t[maxcolors];
+
+   for (Int_t i=0; i< 29 ; i++) {
+      scol = Form("%d", styles[i]);
+      if      (i==0) scol = Form("%d \n hollow", styles[i]);
+      else if (i==1) scol += "\n solid";
+   
+      b = new TPaveText(x, y, x + .9*dx , y + .9*dy );
+      b->AddText(Form("%d", styles[i]));
+      if (i==0) {
+         b->AddText("hollow");
+         b->SetFillColor(0);
+      } else if (i==1) {
+          b->AddText("solid");
+          b->SetFillColor(1);
+          b->SetTextColor(10);
+      } else if (i==2) {
+          b->AddText("hatch");
+          b->SetFillColor(1);
+          b->SetTextColor(10);
+      } else if (i==3) {
+         b->SetFillColor(0);
+         b->AddText("trans-");
+         b->AddText("parent");
+      } else {
+          b->SetTextColor(1);
+          b->SetFillColor(1);
+      }
+      b->SetFillStyle(styles[i]);
+      b->SetTextAlign(22);
+      b->SetTextFont(100);
+      b->SetTextSize(0.06);
+      b->Draw();
+      x += dx;
+      if ( x >= 1 - dx ){
+         y -= dy;
+         x = x0;
+      }
+   }
+}
+//______________________________________________________________________________________
+  
+void DrawLineStyles() 
+{
+}
+
+
+
+
 

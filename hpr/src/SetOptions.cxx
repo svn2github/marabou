@@ -362,7 +362,7 @@ void HistPresent::RestoreOptions()
    fStatW=         env.GetValue("HistPresent.StatW         ", 0.2);
    fStatH=         env.GetValue("HistPresent.StatH         ", 0.16);
 
-   fTitleColor     = env.GetValue("HistPresent.TitleColor",     1);
+   fTitleColor     = env.GetValue("HistPresent.TitleColor",     0);
    fTitleTextColor = env.GetValue("HistPresent.TitleTextColor", 1);
    fTitleBorderSize= env.GetValue("HistPresent.TitleBorderSize",1);
    fTitleFont      = env.GetValue("HistPresent.TitleFont",      62);
@@ -466,6 +466,8 @@ void HistPresent::RestoreOptions()
    SetPadAtt();
    if (fForceStyle > 0) gROOT->ForceStyle();
    else                 gROOT->ForceStyle(kFALSE);
+
+   gEnv->SetValue("Root.Stacktrace", 0);
 //   cout << "RestoreOptions,  fUseAttributeMacro " << fUseAttributeMacro << endl;
 }
 

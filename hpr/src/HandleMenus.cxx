@@ -48,6 +48,8 @@ enum ERootCanvasCommands {
    kViewColors,
    kViewFonts,
    kViewMarkers,
+   kViewFillStyles,
+   kViewLineStyles,
    kViewIconify,
    kViewX3D,
    kViewOpenGL,
@@ -463,16 +465,15 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
                   // Handle View menu items...
                   case kViewColors:
-                     {
-                     if (fFitHist) fFitHist->DrawColors(); 
-//                        TVirtualPad *padsav = gPad->GetCanvas();
-//                        TCanvas *m = new TCanvas("colors","Color Table");
-//                        TPad::DrawColorTable();
-//                        m->Update();
-//                        padsav->cd();                     
-                     }
+                     DrawColors(); 
                      break;
-                  case kViewFonts:
+                   case kViewFillStyles:
+                     DrawFillStyles(); 
+                     break;
+                   case kViewLineStyles:
+                     DrawLineStyles(); 
+                     break;
+                 case kViewFonts:
                      Show_Fonts();
                      break;
                   case kViewMarkers:
@@ -1164,13 +1165,15 @@ void HandleMenus::BuildMenus()
    fAttrMenu->AddEntry("X axis attributes", kOptionXaxis);
    fAttrMenu->AddEntry("Y axis attributes", kOptionYaxis);
    fAttrMenu->AddEntry("Z axis attributes", kOptionZaxis);
-   fAttrMenu->AddEntry("Pad attributes", kOptionPad);
-   fOptionMenu->AddPopup("Graphics Attr (Hist, Axis etc)",  fAttrMenu);
+   fAttrMenu->AddEntry("Canvas, Pad, Frame ", kOptionPad);
+   fOptionMenu->AddPopup("Graphics Attr (Canvas, Pads, Hist, Axis, etc)",  fAttrMenu);
 
    fOptionMenu->AddSeparator();
    fOptionMenu->AddEntry("Show Colors",             kViewColors);
    fOptionMenu->AddEntry("Show Fonts",              kViewFonts);
    fOptionMenu->AddEntry("Show Markers",            kViewMarkers);
+   fOptionMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+   fOptionMenu->AddEntry("Show Line Attr",          kViewLineStyles);
 
    fOptionMenu->CheckEntry(kOptionAutoResize);
    fOptionMenu->CheckEntry(kOptionStatistics);
@@ -1253,6 +1256,8 @@ void HandleMenus::BuildMenus()
    	fViewMenu->AddEntry("Show Colors",             kViewColors);
    	fViewMenu->AddEntry("Show Fonts",              kViewFonts);
       fViewMenu->AddEntry("Show Markers",            kViewMarkers);
+      fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+      fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
    	fViewMenu->AddEntry("Graph Editor",            kEditEditor);
    }
    if(fh_menus){
@@ -1348,7 +1353,9 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Show Colors",  			  kViewColors);
    	fEditMenu->AddEntry("Show Fonts",				  kViewFonts);
    	fEditMenu->AddEntry("Show Markers", 			  kViewMarkers);
-
+      fEditMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+      fEditMenu->AddEntry("Show Line Attr",          kViewLineStyles);
+  
       if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "fitting.html");
       
       if(!is2dim){

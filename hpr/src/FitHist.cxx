@@ -529,7 +529,7 @@ void FitHist::handle_mouse()
 {   
    Double_t fChi2Limit = 5;
    static TF1 * gFitFunc;
-   Double_t cont, sum;
+   Double_t cont, sum, mean;
    static Double_t gconst, center, sigma, bwidth,  esigma;
    static Double_t startbinX_lowedge, startbinY_lowedge; 
    static Double_t chi2 = 0;
@@ -669,24 +669,24 @@ void FitHist::handle_mouse()
                rowlabels.Add(new TObjString("Up right Bin: Number, Up edge"));
             }
             rowlabels.Add(new TObjString("Current Bin: Content "));
-            rowlabels.Add(new TObjString("Integral"));
+            rowlabels.Add(new TObjString("Integral, Mean"));
             TOrdCollection values;
             if (is2dim) {
-               values.Add(new TObjString(Form("%d, %d, %7.1f, %7.1f", 
+               values.Add(new TObjString(Form("%d,  %d,  %lg,  %lg", 
                          startbinX, startbinY, startbinX_lowedge , startbinY_lowedge)));
-               values.Add(new TObjString(Form("%d, %d, %7.1f, %7.1f", 
+               values.Add(new TObjString(Form("%d,  %d,  %lg,  %lg", 
                          startbinX, startbinY, 
                          startbinX_lowedge + hist->GetBinWidth(startbinX),
                          startbinY_lowedge + hist->GetYaxis()->GetBinWidth(startbinY))));
-               values.Add(new TObjString(Form("%9.3f", cont)));
-               values.Add(new TObjString(Form("%9.3f", cont)));
+               values.Add(new TObjString(Form("%lg", cont)));
+               values.Add(new TObjString(Form("%lg", cont)));
 
             } else {
-               values.Add(new TObjString(Form("%d, %9.3f", startbinX, startbinX_lowedge )));
-               values.Add(new TObjString(Form("%d, %9.3f", startbinX, startbinX_lowedge
+               values.Add(new TObjString(Form("%d,  %lg", startbinX, startbinX_lowedge )));
+               values.Add(new TObjString(Form("%d,  %lg", startbinX, startbinX_lowedge
                        + hist->GetBinWidth(startbinX))));
-               values.Add(new TObjString(Form("%9.3f", cont)));
-               values.Add(new TObjString(Form("%9.3f", cont)));
+               values.Add(new TObjString(Form("%lg", cont)));
+               values.Add(new TObjString(Form("%lg", cont)));
                 if (fLiveGauss) {
                    if (fLiveBG) {
                       rowlabels.Add(new TObjString("Background: const, slope"));
@@ -707,8 +707,8 @@ void FitHist::handle_mouse()
          } else {
             fTofLabels->SetLabelText(0,0,Form("%d", startbinX));   
             fTofLabels->SetLabelText(0,1,Form("%d", startbinX));   
-            fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
-            fTofLabels->SetLabelText(0,3,Form("%9.3f", cont));   
+            fTofLabels->SetLabelText(0,2,Form("%lg", cont));   
+            fTofLabels->SetLabelText(0,3,Form("%lg", cont));   
          }
          ratio1 = (gPad->AbsPixeltoX(px) - gPad->GetUxmin())/(gPad->GetUxmax() - gPad->GetUxmin());
          px1old = gPad->XtoAbsPixel(gPad->GetUxmin()+ratio1*(gPad->GetUxmax() - gPad->GetUxmin()));
@@ -748,21 +748,27 @@ void FitHist::handle_mouse()
             cont = hist->GetBinContent(binX, binY);
             binYlow = TMath::Min(startbinY, binY);
             binYup  = TMath::Max(startbinY, binY);
+            sum = hist->Integral(binXlow, binXup, binYlow, binYup);
+            Int_t totbins = (binYup - binYlow +1) * (binXup - binXlow +1);
+            if (totbins > 0) mean = sum / (Double_t)totbins;
+            else             mean = 0;
             YlowEdge = hist->GetYaxis()->GetBinLowEdge(binYlow);
             YupEdge  = hist->GetYaxis()->GetBinLowEdge(binYup) + hist->GetYaxis()->GetBinWidth(binYup);
  
-            sum = hist->Integral(binXlow, binXup, binYlow, binYup);
-            fTofLabels->SetLabelText(0,0,Form("%d, %d, %7.1f, %7.1f", binXlow, binYlow, XlowEdge, XupEdge));     
-            fTofLabels->SetLabelText(0,1,Form("%d, %d, %7.1f, %7.1f", binXup,  binYup,  YlowEdge, YupEdge));  
-            fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
-            fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
+            fTofLabels->SetLabelText(0,0,Form("%d,  %d,  %lg,  %lg", binXlow, binYlow, XlowEdge, XupEdge));     
+            fTofLabels->SetLabelText(0,1,Form("%d,  %d,   %lg,  %lg", binXup,  binYup,  YlowEdge, YupEdge));  
+            fTofLabels->SetLabelText(0,2,Form("%lg", cont));   
+            fTofLabels->SetLabelText(0,3,Form("%lg,  %lg", sum, mean));
          } else {
             cont = hist->GetBinContent(binX);
             sum = hist->Integral(binXlow, binXup);
-            fTofLabels->SetLabelText(0,0,Form("%d, %9.3f", binXlow, XlowEdge));   
-            fTofLabels->SetLabelText(0,1,Form("%d, %9.3f", binXup, XupEdge ));
-            fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
-            fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
+            Int_t totbins = (binXup - binXlow +1);
+            if (totbins > 0) mean = sum / (Double_t)totbins;
+            else             mean = 0;
+            fTofLabels->SetLabelText(0,0,Form("%d,  %lg", binXlow, XlowEdge));   
+            fTofLabels->SetLabelText(0,1,Form("%d,  %lg", binXup, XupEdge ));
+            fTofLabels->SetLabelText(0,2,Form("%lg", cont));   
+            fTofLabels->SetLabelText(0,3,Form("%lg,  %lg", sum, mean));
             if (fLiveGauss &&  (binXup - binXlow - npar) > 0) {
                Int_t ndf = binXup - binXlow - npar;
                if (first_fit) chi2 = gFitFunc->GetChisquare();
@@ -811,16 +817,16 @@ void FitHist::handle_mouse()
                   gconst = gFitFunc->GetParameter(2) * 
                               TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
                   center = gFitFunc->GetParameter(3);
-                  fTofLabels->SetLabelText(0,4,Form("%7.1f, %7.1f", 
+                  fTofLabels->SetLabelText(0,4,Form("%lg,  %lg", 
                      gFitFunc->GetParameter(0), gFitFunc->GetParameter(1)));
-                  fTofLabels ->SetLabelText(0,5, Form("%7.1f, %7.1f, %7.1f", 
+                  fTofLabels ->SetLabelText(0,5, Form("%lg,  %lg,  %lg", 
                                gconst, center, sigma));
                } else {
                   sigma = gFitFunc->GetParameter(2);
                   gconst = gFitFunc->GetParameter(0) * 
                               TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
                   center = gFitFunc->GetParameter(1);
-                  fTofLabels ->SetLabelText(0, 4, Form("%7.1f, %7.1f, %7.1f", 
+                  fTofLabels ->SetLabelText(0, 4, Form("%lg,  %lg,  %lg", 
                                gconst, center, sigma));
                }
             }
@@ -2812,13 +2818,15 @@ void FitHist::Draw3Dim()
 void FitHist::Draw1Dim()
 {
    TString drawopt;
+/*
    if (hp->GetShowStatBox()) {
       gStyle->SetOptStat(hp->GetOptStat());
 //       gStyle->SetStatFont(hp->fStatFont); 
-//       cout << "hp->GetOptStat() " << hp->GetOptStat() << endl;     
+       cout << "hp->GetOptStat() " << hp->GetOptStat() << endl;     
    } else {
       gStyle->SetOptStat(0);
    }
+*/
    gROOT->ForceStyle();
    gStyle->SetOptTitle(hp->GetShowTitle());
    if (hp->GetShowTitle())
@@ -2867,6 +2875,13 @@ void FitHist::Draw1Dim()
       fSelPad->Modified(kTRUE);
    }
    DrawDate(); 
+   if (hp->GetShowStatBox()) {
+      gStyle->SetOptStat(hp->GetOptStat());
+//       gStyle->SetStatFont(hp->fStatFont); 
+//       cout << "hp->GetOptStat() " << hp->GetOptStat() << endl;     
+   } else {
+      gStyle->SetOptStat(0);
+   }
    cHist->Update();
 //  add extra axis (channels) at top
    if (hp->fDrawAxisAtTop) {
@@ -2954,7 +2969,12 @@ void FitHist::Draw2Dim()
    }
    UpdateCanvas();
    if (hp->f2DimBackgroundColor == 0) {
-      cHist->GetFrame()->SetFillStyle(0);
+      if (gStyle->GetCanvasColor() == 0) {
+         cHist->GetFrame()->SetFillStyle(0);
+      } else {
+      	cHist->GetFrame()->SetFillStyle(1001);
+      	cHist->GetFrame()->SetFillColor(10);
+   	}
    } else {
       cHist->GetFrame()->SetFillStyle(1001);
       cHist->GetFrame()->SetFillColor(hp->f2DimBackgroundColor);
@@ -2995,49 +3015,6 @@ void FitHist::SetLogz(Int_t state)
    }
    cHist->SetLogz(state);
 //   SaveDefaults();
-}
-//______________________________________________________________________________________
-  
-void FitHist::DrawColors() 
-{
-//   TString hexcol;
-   TString scol;
-//   TString cmd;
-   new TCanvas("colors", "rgb colors", 400, 20, 800, 400);
-   Float_t dx = 1./10.2 , dy = 1./10.2 ;
-   Float_t x0 = 0.1 * dx,  y0 =0.1 *  dy; 
-   Float_t x = x0, y = y0;;
-   TButton * b;
-   TColor  * c;
-   Int_t maxcolors = 100;
-   Int_t basecolor = 1;
-   Int_t colindex = basecolor;
-//   Int_t palette = new Int_t[maxcolors];
-   for (Int_t i=basecolor; i<= maxcolors; i++) {
-      scol = Form("%d", colindex);
-      b = new TButton(scol.Data(), scol.Data(), x, y, x + .9*dx , y + .9*dy );
-      b->SetFillColor(colindex);
-      b->SetTextAlign(22);
-      b->SetTextFont(100);
-      b->SetTextSize(0.8);
-      c = GetColorByInd(colindex);
-      if (c) {
-         if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
-         else                   b->SetTextColor(1);
-      } else {
-         cout << "color not found " << colindex << endl;
-      }
-      if ( (colindex++ >= maxcolors + basecolor) ) {
-         cout << "Too many colors " << maxcolors << endl;
-         break;
-      }
-      b->Draw();
-      y += dy;
-      if ( y >= 1 - dy ){
-         y = y0;
-         x+= dx;
-      }
-   }
 }
 //______________________________________________________________________________________
   

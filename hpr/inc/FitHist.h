@@ -121,7 +121,6 @@ public:
    void Draw1Dim();                      // 
    void Draw2Dim();                      // 
    void Draw3Dim();                      // 
-   void DrawColors();                      // 
    const Char_t * GetCanvasName(){return fCname.Data();};             // 
    TRootCanvas* GetMyCanvas(){return mycanvas;};  
    HTCanvas* GetCanvas(){return cHist;};  
