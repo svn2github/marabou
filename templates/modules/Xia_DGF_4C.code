@@ -217,6 +217,7 @@
 %%BeginOfCode%%
 					/* start new run for $moduleNameLC in $modulePosition */
 					dgf_set_par_value($moduleNameLC, -1, DGF_PAR_RUNTASK, root_env_getval_i("$moduleNameUC.RunTask", DGF_RUN_LINEAR));
+					DGF_READ_WCR($moduleNameLC);
 					dgf_modify_csr($moduleNameLC, 0, DGF_CSR_NEWRUN | DGF_CSR_RUNENA | DGF_CSR_ENALAM);	/* clear histos, start run */
 %%EndOfCode%%
 %%START_ACQUISITION%%
@@ -229,7 +230,7 @@
 %%BeginOfCode%%
 					/* stop run for $moduleNameLC in $modulePosition */
 					dgf_modify_csr($moduleNameLC, DGF_CSR_NEWRUN | DGF_CSR_RUNENA, 0);
-					dgf_wait_active($moduleNameLC, "$moduleNameLC", 0, 1);			/* wait for run to complete */
+/*					dgf_wait_active($moduleNameLC, "$moduleNameLC", 0, 1);			/* wait for run to complete */
 %%EndOfCode%%
 %%STOP_ACQUISITION%%
 

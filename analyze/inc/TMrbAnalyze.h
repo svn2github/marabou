@@ -447,9 +447,13 @@ class TUsrHBX : public TObject {
 
 		inline Bool_t AtEnd() { return(fCurIndex >= this->GetNofHits()); }; // kTRUE if at end of buffer
 
-		TUsrHit * NextHitInWindow(TUsrHit * Hit0);
+		Bool_t HitInWindow(TUsrHit * Hit0);
 
 		inline TUsrHit * NextHit() { return((++fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL); };
+		inline TUsrHit * CurHit() {
+			Int_t curIndex = (fCurIndex == -1) ? 0 : fCurIndex;
+			return((curIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(curIndex) : NULL);
+		};
 
 		inline TUsrHitBuffer * GetHitBuffer() { return(fHitBuffer); };
 

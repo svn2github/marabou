@@ -3091,15 +3091,14 @@ TUsrHit * TUsrHBX::FindNextEvent() {
 	return(NULL);
 }
 
-TUsrHit * TUsrHBX::NextHitInWindow(TUsrHit * Hit0) {
+Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHBX::NextHitInWindow
-// Purpose:        Find next hit within time window
+// Name:           TUsrHBX::HitInWindow
+// Purpose:        Check if hit within time window
 // Arguments:      TUsrHit * Hit0      -- hit with time = 0
-// Results:        TUsrHit * Hit       -- next hit matching time conditions
-// Exceptions:
-// Description:    Searches for next hit within time window.
+// Results:        kTRUE/kFALSE
+// Description:    Checks if hit within time window.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3112,10 +3111,5 @@ TUsrHit * TUsrHBX::NextHitInWindow(TUsrHit * Hit0) {
 	long long tDiff =	(ushort2ll48(hit->GetEventTime()) - fOffset[hit->GetModuleNumber()])
 						- (ushort2ll48(Hit0->GetEventTime()) - fOffset[Hit0->GetModuleNumber()]);
 	if (tDiff < 0) tDiff = -tDiff;
-	if (tDiff <= (long long) fWindow) {
-		fCurIndex++;
-		return(hit);
-	} else {
-		return(NULL);
-	}
+	return(tDiff <= (long long) fWindow);
 }		

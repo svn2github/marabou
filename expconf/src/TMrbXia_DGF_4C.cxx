@@ -37,7 +37,7 @@ ClassImp(TMrbXia_DGF_4C)
 static Bool_t printRelease = kTRUE;
 
 TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModulePosition) :
-									TMrbCamacModule(ModuleName, "Xia_DGF_4C", ModulePosition, 0, 4, 1 << 15) {
+									TMrbCamacModule(ModuleName, "Xia_DGF_4C", ModulePosition, 0, 4, 1 << 16) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C
