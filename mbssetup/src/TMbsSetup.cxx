@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.23 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.24 2005-01-10 12:59:24 rudi Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -637,13 +637,10 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	TInetAddress * ia;
 
-	char pstr[1024];
-	TString hString;
 	TString hName;
 	TString hAddr;
 	TString userName;
 
-	FILE * hosts;
 	Int_t n1, n2;
 	Bool_t isOK;
 	Int_t nofHosts;
@@ -659,34 +656,45 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	userName = gSystem->Getenv("USER");
 
-	hosts = gSystem->OpenPipe("getrdhosts Lynx:", "r"); 	// get valid lynx hosts
-	fgets(pstr, 1024, hosts);
-	gSystem->ClosePipe(hosts);
-	hString = pstr;
-	hString = hString.Strip(TString::kTrailing, '\n');
-	hString = hString.Strip(TString::kBoth);
-	hString += " ";
-	hosts = gSystem->OpenPipe("getrdhosts Marabou:", "r"); 	// get valid MARaBOU hosts
-	fgets(pstr, 1024, hosts);
-	gSystem->ClosePipe(hosts);
-	hString += pstr;
-	hString = hString.Strip(TString::kTrailing, '\n');
-	hString = hString.Strip(TString::kBoth);
-	hString += " ";
+	TString hString = gSystem->Getenv("HOSTNAME");
+	hString += ":";
+	for (Int_t i = 0; i < kNofPPCs; i++) {
+		hString += "ppc-";
+		hString += i;
+		hString += ":";
+	}
 
 	isOK = kTRUE;
 	nofHosts = 0;
 	n1 = 0;
 	Bool_t once = kFALSE;
 	TString domain = "";
-	while ((n2 = hString.Index(" ", n1)) != -1) {
+	while ((n2 = hString.Index(":", n1)) != -1) {
 		hName = hString(n1, n2 - n1);
 		ia = new TInetAddress(gSystem->GetHostByName(hName));
 		hAddr = ia->GetHostName();
 		if (hAddr.CompareTo("UnknownHost") == 0) {
 			gMrbLog->Err() << "Can't resolve host name - " << hName << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
-		} else if (hAddr.Index(".", 0) == -1) {
+			continue;
+		}
+		
+		if (domain.IsNull()) {
+			Char_t hstr[1024];
+			TString hcmd = "host ";
+			hcmd += hName;
+			FILE * hPipe = gSystem->OpenPipe(hcmd, "r");
+			while (fgets(hstr, 1024, hPipe) != NULL) {
+				hAddr = hstr;
+				if (hAddr.Contains("has address")) {
+					hAddr.Resize(hAddr.Index(" ", 0));
+					break;
+				}
+			}
+			gSystem->ClosePipe(hPipe);
+		}
+
+		if (hAddr.Index(".", 0) == -1) {
 			if (domain.IsNull()) domain = gEnv->GetValue("TMbsSetup.DefaultDomain", "");
 			if (domain.IsNull()) {
 				if (!once) {

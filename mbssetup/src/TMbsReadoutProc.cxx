@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.14 2004-11-29 12:47:04 rudi Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.15 2005-01-10 12:59:24 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -117,9 +117,6 @@ Bool_t TMbsReadoutProc::SetProcName(const Char_t * ProcName) {
 	TString procName;
 	TString procType;
 	TMrbNamedX * ptype;
-	Char_t pstr[100];
-	TString lhString;
-	FILE * lynxHosts;
 	Int_t n;
 	
 	if (fId < 0) return(kFALSE);
@@ -127,18 +124,6 @@ Bool_t TMbsReadoutProc::SetProcName(const Char_t * ProcName) {
 	procName = ProcName;
 	procName.ToLower();					// use always lower case names
 
-	lynxHosts = gSystem->OpenPipe("getrdhosts Lynx:", "r"); 	// get valid lynx hosts
-	fgets(pstr, 100, lynxHosts);
-	gSystem->ClosePipe(lynxHosts);
-	lhString = pstr;
-	lhString = lhString.Strip(TString::kTrailing, '\n');
-	lhString = lhString.Strip(TString::kBoth);
-	if (lhString.Index(procName.Data()) == -1) {
-		gMrbLog->Err() << "No a LynxOs host - " << ProcName << endl;
-		gMrbLog->Flush(this->ClassName(), "SetName");
-		return(kFALSE);
-	}
-	
 	ia = new TInetAddress(gSystem->GetHostByName(ProcName));
 	procName = ia->GetHostName();
 	if (procName.CompareTo("UnknownHost") == 0) {

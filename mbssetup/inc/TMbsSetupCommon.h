@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.5 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.6 2005-01-10 12:59:24 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -15,6 +15,7 @@
 enum						{	kNofTriggers			=	16	};			// number of triggers
 enum						{	kNofCrates				=	16	};			// ... crates
 enum						{	kNofRdoProcs			=	16	};			// ... readout procs
+enum						{	kNofPPCs				=	8	};			// ... ppcs
 
 enum						{	kMinFCT 				=	20	};			// minimum FCT value
 
