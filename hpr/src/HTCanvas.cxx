@@ -538,34 +538,23 @@ void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    const Int_t kTMAX=256;
    static char atext[kTMAX];
 
-   if (!selected) return;
+   if (!fShowEventStatus || !selected) return;
 
-//#ifndef WIN32
-#if 0
-   static Int_t pxt, pyt;
-   gPad->SetDoubleBuffer(0);           // Turn off double buffer mode
-   gVirtualX->SetTextColor(1);
-   gVirtualX->SetTextAlign(11);
-
-   pxt = gPad->GetCanvas()->XtoAbsPixel(gPad->GetCanvas()->GetX1()) + 5;
-   pyt = gPad->GetCanvas()->YtoAbsPixel(gPad->GetCanvas()->GetY1()) - 5;
-
-   sprintf(atext,"%s / %s ", selected->GetName()
-                           , selected->GetObjectInfo(px,py));
-   for (Int_t i=strlen(atext);i<kTMAX-1;i++) atext[i] = ' ';
-   atext[kTMAX-1] = 0;
-   gVirtualX->DrawText(pxt, pyt, 0, 1, atext, TVirtualX::kOpaque);
-#else
    if (!fCanvasImp) return; //this may happen when closing a TAttCanvas
-   fCanvasImp->SetStatusText((Text_t *)(selected->GetTitle()),0);
-   fCanvasImp->SetStatusText((Text_t *)(selected->GetName()),1);
+
+   TVirtualPad* savepad;
+   savepad = gPad;
+   gPad = GetSelectedPad();
+
+   fCanvasImp->SetStatusText(selected->GetTitle(),0);
+   fCanvasImp->SetStatusText(selected->GetName(),1);
    if (event == kKeyPress)
       sprintf(atext, "%c", (char) px);
    else
       sprintf(atext, "%d,%d", px, py);
    fCanvasImp->SetStatusText(atext,2);
-   fCanvasImp->SetStatusText((Text_t *)(selected->GetObjectInfo(px,py)),3);
-#endif
+   fCanvasImp->SetStatusText(selected->GetObjectInfo(px,py),3);
+   gPad = savepad;
 }
 //______________________________________________________________________________
 
