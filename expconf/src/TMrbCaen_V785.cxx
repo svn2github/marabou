@@ -99,6 +99,8 @@ TMrbCaen_V785::TMrbCaen_V785(const Char_t * ModuleName, UInt_t BaseAddr) :
 			fNofShortsPerChannel = 1;
 			fFFMode = kFALSE;
 			fFineThresh = kTRUE;
+			fZeroSuppression = kTRUE;
+			fOverRangeCheck = kTRUE;
 			codeFile = fModuleID.GetName();
 			codeFile += ".code";
 			if (LoadCodeTemplates(codeFile)) {
