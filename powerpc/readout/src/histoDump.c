@@ -132,6 +132,8 @@ int main(int argc, char * argv[]) {
 // Arguments:      int crate             -- crate number
 //                 int station           -- station number
 //                 int chnPattern        -- channel pattern
+//                 char * file           -- file name for output
+//                 char * mode           -- output mode ("b" or "a")
 // Results:        
 // Exceptions:     
 // Description:      
@@ -148,7 +150,8 @@ int main(int argc, char * argv[]) {
 	char mode, quiet;
 	int ascii, beQuiet;
 	FILE * f;
-	unsigned int data[8192], data32[8192], d;
+	int errCnt;
+	unsigned int data[8192], data32[4 * 8192], d;
 
 	volatile unsigned long * dgf;
 
@@ -158,14 +161,23 @@ int main(int argc, char * argv[]) {
 		exit(1);
 	}
 
-	crate = strtol(argv[1], NULL, 0));
-	station = strtol(argv[2], NULL, 0));
+	crate = strtol(argv[1], NULL, 0);
+	station = strtol(argv[2], NULL, 0);
 	chnPattern = strtol(argv[3], NULL, 0);
 
 	strcpy(fileName, argv[4]);
+
+	strcpy(handshake, ".");						/* handshake with file .<filename>.ok */
+	strcat(handshake, fileName);
+	strcat(handshake, ".ok");
+		
+	errCnt = 0;
+
 	f = fopen(fileName, "w");
 	if (f == NULL) {
 		fprintf(stderr, "%s?histoDump: Can't open file - %s%s\n", setred, fileName, setblack);
+		errCnt++;
+		histoDump_write_hs(handshake, errCnt);
 		exit(1);
 	}
 
@@ -176,6 +188,8 @@ int main(int argc, char * argv[]) {
 		case 'b':
 		case 'B':	ascii = 0; break;
 		default:	fprintf(stderr, "%s?histoDump: Illegal file mode - %s%s\n", setred, argv[5], setblack);
+					errCnt++;
+					histoDump_write_hs(handshake, errCnt);
 					exit(1);
 	}
 
@@ -192,19 +206,15 @@ int main(int argc, char * argv[]) {
 	addr = dgf_get_par_value(dgf, -1, DGF_OFFS_AOUTBUFFER);
 	wc = dgf_get_par_value(dgf, -1, DGF_OFFS_LOUTBUFFER);
 
-	strcpy(handshake) = ".";			/* handshake with file .<filename>.ok */
-	strcat(handshake, filename);
-	strcat(handshale, ".ok");
-	unlink(handshake);					/* remove hs file */
-		
-	idx = 0;
 	nofWords = 0;
 	nofChannels = 0;
 	for (chn = 0; chn < 4; chn++) {
 		if (chnPattern & (1 << chn)) {
+			memset(data32, 0, sizeof(int) * 8 * 1024);
+			idx = 0;
 			nofChannels++;
 			dgf_set_par_value(dgf, -1, DGF_OFFS_HOSTIO, chn);
-			for (page = 0; page < 8; j++) {
+			for (page = 0; page < 8; page++) {
 				dgf_set_par_value(dgf, -1, DGF_OFFS_RUNTASK, DGF_RUN_CONTROL);
 				cTask = (page == 0) ? DGF_CTRL_READ_HISTO_FIRST : DGF_CTRL_READ_HISTO_NEXT;
 				dgf_set_par_value(dgf, -1, DGF_OFFS_CONTROLTASK, cTask);
@@ -223,6 +233,11 @@ int main(int argc, char * argv[]) {
 					}
 				}
 			}
+			if (ascii == 0) {
+				fwrite(data32, sizeof(unsigned int), idx, f);
+			} else {
+				for (i = 0; i < idx; i++) fprintf(f, "%6d%10d\n", i, data32[i]);
+			}
 		}
 	}
 
@@ -231,23 +246,26 @@ int main(int argc, char * argv[]) {
 								crate, station, fileName, nofChannels, nofWords, mode);
 	}
 	
-	if (ascii == 0) {
-		fwrite(data32, sizeof(unsigned int), idx, f);
-	} else {
-		for (i = 0; i < nofWords; i++) fprintf(f, "%6d%10d\n", i, data32[i]);
-	}
 	fclose(f);
 	
 	f = fopen(handshake, "w");					/* write handshake file */
-	fprintf("HistoDump.Crate: %d\n", crate);
-	fprintf("HistoDump.Station: %d\n", station);
-	fprintf("HistoDump.ChnPattern: %#x\n", chnPattern);
-	fprintf("HistoDump.File: %s\n", filename);
-	fprintf("HistoDump.Mode: %s\n", (ascii == 0) ? "binary" : "ascii");
-	fprintf("HistoDump.NofDataWords: %d\n", nofWords);
-	fclose();
+	fprintf(f, "HistoDump.Errors: %d\n", errCnt);
+	fprintf(f, "HistoDump.Crate: %d\n", crate);
+	fprintf(f, "HistoDump.Station: %d\n", station);
+	fprintf(f, "HistoDump.ChnPattern: %#x\n", chnPattern);
+	fprintf(f, "HistoDump.File: %s\n", fileName);
+	fprintf(f, "HistoDump.Mode: %s\n", (ascii == 0) ? "binary" : "ascii");
+	fprintf(f, "HistoDump.NofDataWords: %d\n", nofWords);
+	fclose(f);
 	
 	exit(0);
+}
+
+int histoDump_write_hs(char * hs, int errCnt) {
+	FILE * f;
+	f = fopen(hs, "w");					/* write handshake file */
+	fprintf(f, "HistoDump.Errors: %d\n", errCnt);
+	fclose(f);
 }
 
 unsigned short dgf_get_par_value(volatile unsigned long * dgf, int chn, int pidx) {	/* read param value from dsp */
