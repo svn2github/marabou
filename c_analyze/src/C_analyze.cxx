@@ -1761,6 +1761,7 @@ Bool_t FhMainFrame::MbsSetup(){
 
 //  dont Close at the moment, otherwise compile wouldnt owrk
 //   fSetup->Close();
+   if(fSetup) fSetup->Save();
    return ok; 
 
 }
@@ -1778,7 +1779,7 @@ Bool_t FhMainFrame::MbsCompile(){
          TMbsReadoutProc * rp = fSetup->ReadoutProc(0);
          if(rp){
             rp->SetCodeName(fCodeName->Data());
-			rp->CopyMakefile();
+			   rp->CopyMakefile();
             rp->CompileReadout("deve");
          } else {WarnBox("No ReadoutProc defined", this); return kFALSE;}
       } else {WarnBox("No Makefile found to compile readout function", this); return kFALSE;}
@@ -2818,90 +2819,6 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "AUTOSETUP:"  <<  wout       << endl; 
   return kTRUE; 
 }
-//________________________________________________________________________________
-
-Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
-{
-   Bool_t ok = kFALSE;
-//   fComSocket = 0;
-   Int_t socknr = 0;
-   TString pidfile("/tmp/M_analyze.");
-   Int_t baselength = pidfile.Length();
-   Int_t sock1, sock2;
-
-//  loop on files in /tmp
-//  if online (input TcpIp) insist on socket MINSOCKET (9090)
-//  otherwise look for 9091-9095
-
-   if( *fInputSource == "TcpIp" ) {
-      sock1 = MINSOCKET;
-      sock2 = sock1;
-   } else if (attachsock > 0) {
-      sock1 = attachsock;
-      sock2 = sock1;
-   } else {
-      sock1 = MINSOCKET+1;
-      sock2 = MAXSOCKET;
-   }
-   for (Int_t sock = sock1; sock <= sock2; sock++) {
-      pidfile.Resize(baselength);
-      pidfile += sock;
-      if ( !gSystem->AccessPathName(pidfile.Data()) ) {
-//  case pidfile exists
-      	ifstream wstream;
-	//      TString wline;
-      	Int_t pid, status;
-      	wstream.open(pidfile.Data(), ios::in);
-      	wstream >> pid >> status;
-      	wstream.close();
-         ostrstream buf;
-         buf << pid << ends;        
-         TString procs = "/proc/";
-         procs+=buf.str();
-         buf.rdbuf()->freeze(0);
-         if ( !gSystem->AccessPathName(procs.Data()) ){
-            if ( attachid > 0 & attachid == pid ) {
-               *fOurPidFile = pidfile;
-               socknr = sock;
-               return socknr;
-            }
-
-         } else {
-            int buttons = kMBYes | kMBNo, retval=0;
-            EMsgBoxIcon icontype = kMBIconQuestion;
-            TString emess("M_analyze with Id ");
-            emess += pid;
-            emess += "seems not running, clean lock file?"; 
-            new TGMsgBox(gClient->GetRoot(),this,"Question", 
-            emess.Data(),
-            icontype, 
-//            gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn1.xpm"),
-            buttons, &retval);
-            if ( retval == kMBYes ) {
-               TString RmCmd = "rm "; 
-               RmCmd += pidfile;
-               gSystem->Exec((const char *)RmCmd);
-            }
-         }  
-   	}
-//     
-      if ( socknr == 0 && gSystem->AccessPathName(pidfile.Data()) ) {
-         cout << sock << " " << pidfile.Data() << endl;
-         socknr = sock; 
-         *fOurPidFile = pidfile;
-         ok = kTRUE;
-      }
-   }
-   if ( attachid > 0 )
-      cout <<  setred << "Cant find running M_analyze with pid: " << attachid
-           << setblack << endl;
-
-// try to find a socket to communicate with M_analyze (9091-9095)
-   if ( socknr == 0 )
-      cout << setred << "Cant get free Socket, more than 5 M_analyze running?"
-          << setblack << endl;
-    return socknr;
-}
  //________________________________________________________________________________
 
 Bool_t FhMainFrame::GetDefaults(){
@@ -3093,6 +3010,90 @@ Bool_t FhMainFrame::GetDefaults(){
       cout << "No .mbssetup in cwd" << endl;
    }
    return kTRUE;
+}
+//________________________________________________________________________________
+
+Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
+{
+   Bool_t ok = kFALSE;
+//   fComSocket = 0;
+   Int_t socknr = 0;
+   TString pidfile("/tmp/M_analyze.");
+   Int_t baselength = pidfile.Length();
+   Int_t sock1, sock2;
+
+//  loop on files in /tmp
+//  if online (input TcpIp) insist on socket MINSOCKET (9090)
+//  otherwise look for 9091-9095
+
+   if( *fInputSource == "TcpIp" ) {
+      sock1 = MINSOCKET;
+      sock2 = sock1;
+   } else if (attachsock > 0) {
+      sock1 = attachsock;
+      sock2 = sock1;
+   } else {
+      sock1 = MINSOCKET+1;
+      sock2 = MAXSOCKET;
+   }
+   for (Int_t sock = sock1; sock <= sock2; sock++) {
+      pidfile.Resize(baselength);
+      pidfile += sock;
+      if ( !gSystem->AccessPathName(pidfile.Data()) ) {
+//  case pidfile exists
+      	ifstream wstream;
+	//      TString wline;
+      	Int_t pid, status;
+      	wstream.open(pidfile.Data(), ios::in);
+      	wstream >> pid >> status;
+      	wstream.close();
+         ostrstream buf;
+         buf << pid << ends;        
+         TString procs = "/proc/";
+         procs+=buf.str();
+         buf.rdbuf()->freeze(0);
+         if ( !gSystem->AccessPathName(procs.Data()) ){
+            if ( attachid > 0 & attachid == pid ) {
+               *fOurPidFile = pidfile;
+               socknr = sock;
+               return socknr;
+            }
+
+         } else {
+            int buttons = kMBYes | kMBNo, retval=0;
+            EMsgBoxIcon icontype = kMBIconQuestion;
+            TString emess("M_analyze with Id ");
+            emess += pid;
+            emess += "seems not running, clean lock file?"; 
+            new TGMsgBox(gClient->GetRoot(),this,"Question", 
+            emess.Data(),
+            icontype, 
+//            gClient->GetPicture("/home/rg/schaileo/myroot/xpm/warn1.xpm"),
+            buttons, &retval);
+            if ( retval == kMBYes ) {
+               TString RmCmd = "rm "; 
+               RmCmd += pidfile;
+               gSystem->Exec((const char *)RmCmd);
+            }
+         }  
+   	}
+//     
+      if ( socknr == 0 && gSystem->AccessPathName(pidfile.Data()) ) {
+         cout << sock << " " << pidfile.Data() << endl;
+         socknr = sock; 
+         *fOurPidFile = pidfile;
+         ok = kTRUE;
+      }
+   }
+   if ( attachid > 0 )
+      cout <<  setred << "Cant find running M_analyze with pid: " << attachid
+           << setblack << endl;
+
+// try to find a socket to communicate with M_analyze (9091-9095)
+   if ( socknr == 0 )
+      cout << setred << "Cant get free Socket, more than 5 M_analyze running?"
+          << setblack << endl;
+    return socknr;
 }
 //________________________________________________________________________________
 
