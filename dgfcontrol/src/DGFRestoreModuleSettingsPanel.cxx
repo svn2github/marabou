@@ -48,8 +48,9 @@ static Char_t * kDGFFileTypesSettings[]	=	{
 
 const SMrbNamedX kDGFRestoreModuleSettingsActions[] =
 			{
-				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestore,	"Restore",		"Restore module settings"	},
-				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsClose,		"Close",		"Close window"				},
+				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestore,		"Restore",			"Restore module params"	},
+				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestorePSA,	"Restore + PSA",	"Restore params + PSA values"	},
+				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsClose,			"Close",			"Close window"				},
 				{0, 									NULL,			NULL								}
 			};
 
@@ -247,7 +248,10 @@ Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1
 					if (Param1 < kDGFRestoreModuleSettingsSelectColumn) {
 						switch (Param1) {
 							case kDGFRestoreModuleSettingsRestore:
-								this->LoadDatabase();
+								this->LoadDatabase(kFALSE);
+								break;
+							case kDGFRestoreModuleSettingsRestorePSA:
+								this->LoadDatabase(kTRUE);
 								break;
 							case kDGFRestoreModuleSettingsClose:
 								this->CloseWindow();
@@ -289,12 +293,12 @@ Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1
 	return(kTRUE);
 }
 
-Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
+Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFRestoreModuleSettingsPanel::LoadDatabase
 // Purpose:        Restore DGF settings from file
-// Arguments:      --
+// Arguments:      Bool_t LoadPSA     -- load PSA values if kTRUE
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Restores DGF settings.
@@ -308,7 +312,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
 	TString errMsg;
 	TString dgfFile;
 
-	TString dgfName, paramFile, loadDir;
+	TString dgfName, paramFile, psaFile, loadDir;
 	TEnv * dgfEnv;
 	TString fileType;
 	DGFModule * module;
@@ -389,6 +393,13 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
 						nofRestored++;
 					}
 				} else nerr++;
+				if (LoadPSA) {
+					psaFile = loadDir;
+					psaFile += "/";
+					psaFile += dgfName;
+					psaFile += ".psa";
+					if (!dgf->LoadPsaParams(psaFile.Data())) nerr++;
+				}
 			}
 			if (!verbose) cout << "." << flush;
 			module = gDGFControlData->NextModule(module);

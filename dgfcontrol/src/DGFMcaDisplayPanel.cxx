@@ -438,9 +438,9 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 			dgf = dgfModule->GetAddr();
 			dgf->AccuHist_Init(chnPattern);
 			dgf->AccuHist_Start();
-			nofModules++;
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
 	}				
 	if (nofModules == 0) {
 		gMrbLog->Err()	<< "No modules selected" << endl;
@@ -498,9 +498,9 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 				}
 				dgf->RestoreParams(TMrbDGF::kSaveAccuHist);
 			}
-			nofModules++;
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
 	}
 	if (nofHistos > 0) {
 		listFile.close();

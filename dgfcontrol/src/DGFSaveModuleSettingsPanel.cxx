@@ -304,7 +304,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TGFileInfo fileInfoSave;
-	TString saveLog, saveDir, paramFile, valueFile;
+	TString saveLog, saveDir, paramFile, psaFile, valueFile;
 	TMrbSystem uxSys;
 	TMrbEnv env;
 	Int_t nerr;
@@ -374,10 +374,13 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 				paramFile += "/";
 				paramFile += dgf->GetName();
 				valueFile = paramFile;
+				psaFile = paramFile;
 				paramFile += ".par";
 				valueFile += ".val";
+				psaFile += ".psa";
 				if (!dgf->SaveParams(paramFile.Data())) nerr++;
 				if (!dgf->SaveValues(valueFile.Data())) nerr++;
+				if (!dgf->SavePsaParams(psaFile.Data())) nerr++;
 				nofModules++;
 			}
 			if (!verbose) cout << "." << flush;

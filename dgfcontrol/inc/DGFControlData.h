@@ -64,7 +64,8 @@ class DGFControlData : public TNamed {
 								kDGFOfflineMode			= BIT(3),
 								kDGFSimulStartStop		= BIT(4),
 								kDGFSyncClocks		 	= BIT(5),
-								kDGFIndivSwitchBusTerm	= BIT(6)
+								kDGFIndivSwitchBusTerm	= BIT(6),
+								kDGFUserPSA 			= BIT(7)
 							};
 		
 	public:
@@ -166,7 +167,8 @@ class DGFControlData : public TNamed {
 
 		Bool_t fSimulStartStop;						// kTRUE if to start/stop simultaneously
 		Bool_t fSyncClocks;							// kTRUE if clocks have to be synchronized
-		Bool_t fIndivSwitchBusTerm;				// kTRUE if switchbus should be terminated individually
+		Bool_t fIndivSwitchBusTerm;					// kTRUE if switchbus should be terminated individually
+		Bool_t fUserPSA;							// kTRUE if user PSA code should be used
 
 		TString fLoadPath;							// where to load DSP/FPGA code from
 		TString fDSPCodeFile;						// ... DSP code

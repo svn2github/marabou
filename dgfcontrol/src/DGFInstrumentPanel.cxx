@@ -34,7 +34,8 @@
 
 const SMrbNamedX kDGFInstrumentModuleButtons[] =
 			{
-				{DGFInstrumentPanel::kDGFInstrButtonCopy,		"Copy", 	"Copy settings to other modules/channels"	},
+				{DGFInstrumentPanel::kDGFInstrButtonShow,		"Show params", 	"Show actual param settings"	},
+				{DGFInstrumentPanel::kDGFInstrButtonCopy,		"Copy params", 	"Copy settings to other modules/channels"	},
 				{DGFInstrumentPanel::kDGFInstrButtonClose,		"Close",	"Close window"							},
 				{0, 											NULL,		NULL									}
 			};
@@ -793,6 +794,9 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 						case kDGFInstrButtonCopy:
                     		this->CopyModuleSettings();
 							break;
+						case kDGFInstrButtonShow:
+                    		this->ShowModuleSettings();
+							break;
 						case kDGFInstrButtonClose:
 							this->CloseWindow();
 							break;
@@ -1215,6 +1219,32 @@ Bool_t DGFInstrumentPanel::CopyModuleSettings() {
 		return(kFALSE);
 	}
 }
+
+Bool_t DGFInstrumentPanel::ShowModuleSettings() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::ShowModuleSettings
+// Purpose:        Show module settings
+// Arguments:      
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Calls $EDITOR to show current module settings
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString editor = gSystem->Getenv("EDITOR");
+	DGFModule * dgfModule = gDGFControlData->GetSelectedModule();
+	TString tmpFile = "/tmp/DGFControl.";
+	tmpFile += dgfModule->GetName();
+	tmpFile += ".par";
+	dgfModule->GetAddr()->PrintParamsToFile(tmpFile.Data());
+	TString cmd;
+	if (editor.CompareTo("nedit") == 0) cmd = "nedit -read ";
+	else								cmd = "xterm -geom 130x80 -sb -e view ";
+	cmd += tmpFile;
+	gSystem->Exec(cmd.Data());
+	return(kTRUE);
+}	
 
 Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t ChannelId) {
 //________________________________________________________________[C++ METHOD]

@@ -53,6 +53,7 @@ class DGFRestoreModuleSettingsPanel : public TGTransientFrame {
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFRestoreModuleSettingsActionsId 	{	kDGFRestoreModuleSettingsRestore,
+														kDGFRestoreModuleSettingsRestorePSA,
 														kDGFRestoreModuleSettingsClose,
 														kDGFRestoreModuleSettingsSelectAll,
 														kDGFRestoreModuleSettingsSelectNone,
@@ -81,7 +82,7 @@ class DGFRestoreModuleSettingsPanel : public TGTransientFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
-		Bool_t LoadDatabase();						// restore dgf settings from file
+		Bool_t LoadDatabase(Bool_t LoadPSA);		// restore dgf settings from file
 
 	protected:
 		TList fHeap;								//! list of objects created on heap

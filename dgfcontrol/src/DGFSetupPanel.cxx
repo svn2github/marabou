@@ -41,6 +41,7 @@ const SMrbNamedXShort kDGFSetupDGFModes[] =
 								{DGFControlData::kDGFSimulStartStop,		"Simultaneously start/stop modules" },
 								{DGFControlData::kDGFSyncClocks,			"Synchronize clocks with run"		},
 								{DGFControlData::kDGFIndivSwitchBusTerm,	"Terminate switchbus individually"	},
+								{DGFControlData::kDGFUserPSA,				"Activate user PSA code"			},
 								{0, 										NULL								}
 							};
 
@@ -183,10 +184,12 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 		gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
 		gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
 		gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
+		gDGFControlData->fUserPSA = gEnv->GetValue("DGFControl.ActivateUserPSACode", kFALSE) ? kButtonDown : kButtonUp;
 	}
 	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
 	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
 	fDGFFrame->SetState(DGFControlData::kDGFIndivSwitchBusTerm, gDGFControlData->fIndivSwitchBusTerm ? kButtonDown : kButtonUp);
+	fDGFFrame->SetState(DGFControlData::kDGFUserPSA, gDGFControlData->fUserPSA ? kButtonDown : kButtonUp);
 
 //	CAMAC defs
 	TGLayoutHints * camacLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
@@ -685,6 +688,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 							TMrbDGF * dgf = dgfModule->GetAddr();
 							if (dgf->IsConnected()) {
 								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+								if (!dgf->ActivateUserPSACode(gDGFControlData->fUserPSA)) nerr++;
 							}
 						}
 						dgfModule = gDGFControlData->NextModule(dgfModule);
