@@ -116,7 +116,6 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 
 	if (!fIsSystemEnv && fCurEnv != NULL) delete fCurEnv;
 	fCurEnv = new TEnv(resFile.Data());
-
 	fCurFile = resFile;
 	this->Set("TMrbEnv.Info.File", gSystem->BaseName(resFile.Data()));
 	this->Set("TMrbEnv.Info.Modified", dt.AsString());
@@ -180,7 +179,7 @@ void TMrbEnv::Save(Bool_t Verbose) {
 		pfs = fPrefix;
 		this->SetPrefix("");
 		if (!fIsSystemEnv) this->Set("TMrbEnv.Info.Modified", dt.AsString());
-		fCurEnv->Save();	// write to file
+		fCurEnv->SaveLevel(kEnvLocal);	// write to file
 		if (Verbose) {
 			gMrbLog->Out()	<< "Resource data saved to file " << fCurFile << endl;
 			gMrbLog->Flush(this->ClassName(), "Save", setblue);
@@ -259,8 +258,6 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, const Char_t * StrVal) {
 
 	fResourceName = fPrefix + Resource;
 
-	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
-
 	resString = fResourceName + "=" + StrVal;
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
@@ -284,8 +281,6 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t IntVal, Int_t Base) {
 	TMrbString resString, resValue;
 
 	fResourceName = fPrefix + Resource;
-
-	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
 
 	resValue.FromInteger(IntVal, 0, ' ', Base, kTRUE);
 	resString = fResourceName + "=" + resValue.Data();
@@ -311,8 +306,6 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t DblVal, Int_t Precision) {
 	TMrbString resValue;
 
 	fResourceName = fPrefix + Resource;
-
-	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
 
 	resValue.FromDouble(DblVal, 0, ' ', Precision);
 	TString resString = fResourceName + "=" + resValue.Data();
