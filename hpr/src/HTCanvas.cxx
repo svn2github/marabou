@@ -68,6 +68,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //  wh is the canvas size in pixels along Y
 //   if(!gHTGuiFactory) gHTGuiFactory = new HTRootGuiFactory();
 
+   Init();
    fSelected     = 0;
    fMenuBar = kTRUE;
    if (wtopx < 0) {
@@ -77,6 +78,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fCw           = ww;
    fCh           = wh;
    fCanvasID = -1;
+//   fShowEditor = kFALSE;
+//   fShowToolBar = kFALSE;
    HTCanvas *old = (HTCanvas*)gROOT->FindObject(name);
    if (old && old->IsOnHeap()) delete old;
    if (strlen(name) == 0 || gROOT->IsBatch()) {   //We are in Batch mode
@@ -685,6 +688,7 @@ void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    gVirtualX->UpdateWindow(1);
 #endif
 }
+
 //______________________________________________________________________________
 void HTCanvas::RunAutoExec()
 {
@@ -864,9 +868,9 @@ void HTCanvas::WritePrimitives()
    Bool_t ok;
 //   TString name = "drawing";
    TString name = GetName();
-   name += "_canvas";
+   name += "_pict";
    name =
-       GetString("Save Function List with name", name.Data(), &ok,
+       GetString("Save picture with name", name.Data(), &ok,
                  (TGWindow*)fRootCanvas);
    if (!ok)
       return;

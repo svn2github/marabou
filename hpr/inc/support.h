@@ -59,47 +59,47 @@ Int_t XBinNumber(TH1*, Axis_t);
 Int_t YBinNumber(TH1*, Axis_t);
 Stat_t Content(TH1*, Axis_t xlow, Axis_t xup, Stat_t * mean,  Stat_t * sigma);
 
-void  WarnBox( const char * message, TGWindow* win = 0);
-Bool_t  QuestionBox( const char * message, TGWindow* win = 0);
-void  InfoBox( const char * message, TGWindow* win = 0);
+void          WarnBox( const char * message, TGWindow* win = 0);
+Bool_t        QuestionBox( const char * message, TGWindow* win = 0);
+void          InfoBox( const char * message, TGWindow* win = 0);
 extern Bool_t OpenWorkFile(TGWindow* win = 0);
-extern void CloseWorkFile(TGWindow* win = 0);
-extern Int_t GetUsedSize(TMapFile *);
-extern Int_t GetObjects(TList &, TFile *, const char *);
+extern void   CloseWorkFile(TGWindow* win = 0);
+extern Int_t  GetUsedSize(TMapFile *);
+extern Int_t  GetObjects(TList &, TDirectory *, const char *);
 
-extern TH1 * GetTheHist(TVirtualPad * pad);
+extern TH1 *  GetTheHist(TVirtualPad * pad);
 
-void Show_Fonts();
-void ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode,
+void     Show_Fonts();
+void     ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode,
                        TGWindow* win = 0);
-void CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
-void RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
-void Canvas2LP(TCanvas * canvas, const Char_t * opt = 0, TGWindow * = 0,
+void     CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
+void     RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
+void     Canvas2LP(TCanvas * canvas, const Char_t * opt = 0, TGWindow * = 0,
                Bool_t autops = kFALSE);
-void  Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
-TEnv * GetDefaults(TString &, Bool_t mustexist = kTRUE);
-TH1 * gethist( const char * hname, TSocket * sock);
+void     Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
+TEnv *   GetDefaults(TString &, Bool_t mustexist = kTRUE);
+TH1 *    gethist( const char * hname, TSocket * sock);
 TMrbStatistics * getstat(TSocket * sock);
 TColor * GetColorByInd(Int_t index);   
-void SetUserPalette(Int_t startindex, TArrayI * pixels); 
-void AdjustMaximum(TH1 * h2, TArrayD * xyvals);
-Int_t DeleteOnFile(const char * fname, TList * list, TGWindow * win =0);
+void     SetUserPalette(Int_t startindex, TArrayI * pixels); 
+void     AdjustMaximum(TH1 * h2, TArrayD * xyvals);
+Int_t    DeleteOnFile(const char * fname, TList * list, TGWindow * win =0);
 TH1 * calhist(TH1 * hist, TF1 * calfunc,
               Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
               const char * origname =0);
-void PrintGraph(TGraphErrors * gr); 
-Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py);
+void     PrintGraph(TGraphErrors * gr); 
+Bool_t   IsInsideFrame(TCanvas * c, Int_t px, Int_t py);
 TGraph * FindGraph(TCanvas * ca);
-void DrawColors();
-void DrawFillStyles();
-void DrawLineStyles();
-Bool_t CreateDefaultsDir(TRootCanvas * mycanvas = 0, Bool_t checkonly = kFALSE);
+void     DrawColors();
+void     DrawFillStyles();
+void     DrawLineStyles();
+Bool_t   CreateDefaultsDir(TRootCanvas * mycanvas = 0, Bool_t checkonly = kFALSE);
 TGraph * FindGraph(HTCanvas * c); 
-void WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
-void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
-Bool_t fixnames(TFile * * infile, Bool_t checkonly);
+void     WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
+void     WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
+Bool_t   fixnames(TFile * * infile, Bool_t checkonly);
 TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color); 
-Int_t getcol();
+Int_t    getcol();
 
 inline void nothing();
 #endif

@@ -130,6 +130,7 @@ protected:
    Int_t fUseAttributeMacro;
    Int_t fShowAllAsFirst; 
    Int_t fAlwaysNewLimits; 
+   Int_t fRealStack; 
 
    Int_t fNofColorLevels;
    Int_t * fPalette;
@@ -320,7 +321,6 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void ListMacros(const char* bp =0);               // 
    void GetFileSelMask(const char* bp =0);               // 
    void GetHistSelMask(const char* bp =0);               // 
-   void SelectHist(const char* , const char*, const char* bp =0); 
    void SelectCut(const char* , const char*, const char* bp =0); 
    void SelectContour(const char* , const char*, const char* bp =0); 
    void SelectGraph(const char* , const char*, const char* bp =0); 
@@ -334,7 +334,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void EditExpression(const char* bp =0);  
    void ToggleExpression(const char* bp =0);  
    void ShowFiles(const char* , const char* bp =0);               // 
-   void ShowContents(const char* , const char* bp =0);    // 
+   void ShowContents(const char* fname, const char* dir = 0,const char* bp =0);    // 
    void ShowFunction(const char* , const char*, const char* bp =0); 
    void LoadFunction(const char* , const char*, const char* bp =0); 
    void ShowCanvas(const char* , const char*, const char* bp =0); 
@@ -348,12 +348,17 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void PrintWindow(const char* , const char*, const char* bp =0); 
    void LoadWindow(const char* , const char*, const char* bp =0); 
 //   void ShowMap(const char* , const char*);  
-   void ShowHist(const char* , const char*, const char* bp =0); 
+   void ShowHist(const char * fname , const char* dir, const char  * hname, const char* bp =0); 
+   void SelectHist(const char*  fname , const char* dir , const char * hname, const char* bp =0); 
    void ShowStatOfAll(const char* , const char* bp =0); 
    void PurgeEntries(const char* , const char* bp =0); 
    void DeleteSelectedEntries(const char* , const char* bp =0); 
    void ShowSelectedHists(const char* bp =0);
+   void ShowSelectedHists(TList *, const char* title =0);
+   void StackSelectedHists(const char* bp =0);
+   void StackSelectedHists(TList *, const char* title =0);
    void ShowInOneCanvas(const char* bp =0);
+   void StackInOneCanvas(const char* bp =0);
    void ShowTree(const char* , const char*, const char* bp =0);
    void ShowLeaf(const char* , const char*, const char* l=0, const char* bp =0);  // display hist of leaf
 
@@ -361,7 +366,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void HistFromASCII(TGWindow * win = 0, EHfromASCIImode mode = kNotDefined); 
    void SaveMap(const char*, const char* bp =0);  
    void SaveFromSocket(const char*, const char* bp =0);  
-   TH1*  GetHist(const char* , const char*); 
+   TH1*  GetHist(const char*, const char*, const char*); 
    FitHist * ShowHist(TH1*, const char* origname=0);  
    TList* GetCanvasList(){return fCanvasList;};
    TList* GetHistList(){return fHistLists;};
@@ -372,7 +377,6 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    TH1* GetSelHistAt(Int_t, TList * hl = 0);
    void TurnButtonGreen(TVirtualPad **);
    TList* GetSelections(){return fSelectHist;};
-   void ShowSelectedHists(TList *, const char* title =0);
 
    TH1 *  GetCurrentHist(){return fCurrentHist;};
    void   SetCurrentHist(TH1 * hist){fCurrentHist = hist;};

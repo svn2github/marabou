@@ -10,6 +10,7 @@
 #include "TCutG.h"
 #include "TH1.h"
 #include "TH2.h"
+#include "THStack.h"
 #include "TGMsgBox.h"
 #include "TObject.h"
 #include "TTree.h"
@@ -349,12 +350,14 @@ void HistPresent::ShowMain()
    b->SetToolTipText(
    "Show files ending .root, .map or .histlist in CWD in alphabetical order",hint_delay);
    y-=dy;
-   cmd="mypres->ShowFiles(\"R\")";
-   tit="Show FileList (reverse)";
-   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
-   b->SetToolTipText(
-   "Show files ending .root, .map or .histlist in CWD in reverse alphabetical order",hint_delay);
-   y-=dy;
+//
+//   cmd="mypres->ShowFiles(\"R\")";
+//   tit="Show FileList (reverse)";
+//   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
+//   b->SetToolTipText(
+//   "Show files ending .root, .map or .histlist in CWD in reverse alphabetical order",hint_delay);
+//
+//   y-=dy;
    cmd="mypres->ShowFiles(\"D\")";
    tit="Show FileList (bydate)";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
@@ -402,6 +405,13 @@ void HistPresent::ShowMain()
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
    b->SetToolTipText(
    "List files ending with .C (root macros) in CWD with first line starting with //Hint:",hint_delay);
+   y-=dy;
+
+   cmd = "mypres->StackSelectedHists()";
+   tit = "Stack selected hists";
+   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
+   b->SetToolTipText(
+   "Stackselected histograms",hint_delay);
    y-=dy;
 
    cmd = "mypres->ShowSelectedHists()";
@@ -490,7 +500,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
          if (sname.Index(endwithlist) >= 0) {
             cmd = cmd + "List(\"\",\"" + fname + "\")";
          } else {
-            cmd = cmd + "Contents(\"" + fname + "\")";
+            cmd = cmd + "Contents(\"" + fname + "\", \"\" )";
          }
         
          TString nam=fname;
@@ -587,9 +597,8 @@ void HistPresent::TurnButtonGreen(TVirtualPad ** pad)
 }
 //________________________________________________________________________________________
 
-void HistPresent::ShowContents(const char *fname, const char* bp)
+void HistPresent::ShowContents(const char *fname, const char * dir, const char* bp)
 {
-//   cout << "###ShowContents enter: fCmdLine " << fCmdLine << endl;
    static Int_t ycanvas=5;
    TMrbStatistics * st = NULL;
    TList lofF;
@@ -667,22 +676,40 @@ Should we create a new file with corrected names?", maincanvas)) {
          nstat = 0;
          cout << "Skip hists in file, show hist lists only" << endl;
       } else {
-      	st = (TMrbStatistics*)rfile->Get("TMrbStatistics");
+         if (strlen(dir) > 0) rfile->cd(dir);
+//         gDirectory->ls();
+      	st = (TMrbStatistics*)gDirectory->Get("TMrbStatistics");
       	if (!st) {
          	st=new TMrbStatistics(fname);
-         	nstat = st->Fill(rfile);
+         	nstat = st->Fill(gDirectory);
       	} else nstat = st->GetListOfEntries()->GetSize();
+         // look for directory entries
+   		TIter next(gDirectory->GetListOfKeys());
+   		TKey* key;
+   		while( (key = (TKey*)next()) ){
+      		if(!strncmp(key->GetClassName(),"TDirectory",10)){
+            	cmd = "mypres->ShowContents(\"";
+            	cmd = cmd + fname + "\",\"";
+               if (strlen(dir) > 0) cmd = cmd + "/" + dir;
+               cmd = cmd + key->GetName() + "\")";
+            	sel = "";
+            	title = "Dir: ";
+               title += key->GetName();
+               hint = title;
+            	fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            }
+         }
       }
-      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TTree"),        maxkey);
-      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
-      maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
-      maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
-      maxkey = TMath:: Max(GetObjects(lofC, rfile, "HTCanvas"),      maxkey);
-      maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
-      maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
-      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
-      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowI"), maxkey);
-      maxkey = TMath:: Max(GetObjects(lofW2, rfile, "TMrbWindow2D"),maxkey);
+      maxkey = TMath:: Max(GetObjects(lofT, gDirectory, "TTree"),        maxkey);
+      maxkey = TMath:: Max(GetObjects(lofT, gDirectory, "TNtuple"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofF, gDirectory, "TF1"),          maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "TCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, gDirectory, "HTCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofG, gDirectory, "TGraph"),       maxkey);
+      maxkey = TMath:: Max(GetObjects(lofUc, gDirectory, "FhContour"),   maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowF"), maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW1, gDirectory, "TMrbWindowI"), maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW2, gDirectory, "TMrbWindow2D"),maxkey);
       rfile->Close();
    } else if (strstr(fname,"Socket")) {
       if (!fComSocket) {
@@ -813,20 +840,25 @@ Should we create a new file with corrected names?", maincanvas)) {
             }
          }
          cmd = fname;
+         cmd = cmd + "\",\"";
+         cmd += dir;  
          cmd = cmd + "\",\"" + stent->GetName();
-//         if (stent->GetCycle() > 0) {
-//            cmd += ";";
-//            cmd += stent->GetCycle();
-//         }   
+         if (stent->GetCycle() > 0) {
+            cmd += ";";
+            cmd += stent->GetCycle();
+         } 
          cmd += "\")";
          sel = cmd; 
          cmd.Prepend("mypres->ShowHist(\"");
          sel.Prepend("mypres->SelectHist(\"");
+
+//         cout << cmd << endl;
+
          title = stent->GetName();
-//         if (stent->GetCycle() > 1) {
-//            title += ";";
-//            title += stent->GetCycle();
-//         }   
+         if (stent->GetCycle() > 1) {
+            title += ";";
+            title += stent->GetCycle();
+         }   
          hint = title;
          if     ( stent->GetDimension() == 1  )title.Prepend("1d ");
          else if (stent->GetDimension() == 2 )title.Prepend("2d ");
@@ -1048,19 +1080,13 @@ Should we create a new file with corrected names?", maincanvas)) {
          fHistLists->Remove(obj);
          delete obj;
       }
-//      cout << "###ShowContents GetSize(): fCmdLine " << fCmdLine << endl;
-//      if (fCmdLine->GetSize() > fMaxListEntries) {
-//      } else {
          ycanvas = 5 + 50 * fHistLists->GetSize();
-         HTCanvas *ccont = CommandPanel(fname, fCmdLine, 
+         TString cmd_title(fname);
+         if (strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
+         HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine, 
                            260, ycanvas, this, fWinwidx_hlist);
-//         cout << "fHistLists " << fHistLists << endl;
          if (fHistLists)fHistLists->Add(ccont);
-//      }
-//      ycanvas += 50;
-//      if (ycanvas >= 500)ycanvas=5;
    }
-//   cout << "###ShowContents exit: fCmdLine " << fCmdLine << endl;
    fCmdLine->Delete();
    if (st) delete st;
    gDirectory=gROOT;
@@ -1191,8 +1217,9 @@ void HistPresent::ComposeList(const char* bp)
    for(Int_t i = 0; i < nselect; i++) {
       TString hname  = ((TObjString *)fSelectHist->At(i))->String();
       Int_t pp = hname.Index(" ");
-//      if (pp <= 0) {cout << "pp<=0 in " << hname << endl; return;};
       hname.Remove(0,pp+1);
+      pp = hname.Index(";");
+      if (pp > 0) hname.Resize(pp);
 //      hist = GetSelHistAt(i);
 //      if (!hist) {WarnBox("Histogram not found");return;};
 //      name = hist->GetName();
@@ -1247,9 +1274,9 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 //      if (is_a_file(fname))cmd += "ShowHist(\"";
 //      else                cmd += "ShowMap(\"";
       cmd += fname; 
-      cmd +=  "\",\""; 
+      cmd +=  "\",\"\",\""; 
       sel = "mypres->SelectHist";
-      sel = sel + "(\"" + fname + "\",\"";
+      sel = sel + "(\"" + fname + "\",\"\",\"";
 
       cmd = cmd + line + "\")";
       sel = sel + line + "\")";
@@ -1265,29 +1292,8 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
          hist    = (TH1 *) mfile->Get(line.Data(), hist);
 
       } else if (strstr(fname, "Socket")) {
-//         cout << "Warning: Validity of entries in list are not checked" << endl;
-/*
-         if(!fComSocket){
-            cout << setred << "No connection open"  << setblack << endl;
-            return;
-         }
-         hist = gethist(line.Data(), fComSocket); 
-      	if (!hist){
-         	cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
-         	fComSocket->Close("force");
-         	fComSocket = NULL;
-		    	wstream.close();
-   			fCmdLine->Delete(); 
-   			gDirectory=gROOT;
-            return;
-      	}
-*/
+//
       }
-//      if (!hist) {
-//        cout << "Warning: " << line.Data() << " from " 
-//              << fname.Data()<< " not found" << endl;
-//         continue;
-//      }
       if (hist) { 
          if (is2dim(hist))   line.Prepend("2d ");
          else                line.Prepend("1d ");
@@ -1322,6 +1328,11 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       TString hint = "Show all hists in list in one Canvas";
       sel.Resize(0);
       fCmdLine->AddFirst(new CmdListEntry(cmd, tit, hint, sel));
+      cmd = "mypres->StackInOneCanvas()";
+      tit = "StackAll";
+      hint = "Stack all hists in list in one Canvas";
+      sel.Resize(0);
+      fCmdLine->AddFirst(new CmdListEntry(cmd, tit, hint, sel));
 
 //      TString cname = fname;
 //      cname = cname + "_" +lname; 
@@ -1332,6 +1343,47 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
    } 
    fCmdLine->Delete(); 
    gDirectory=gROOT;
+}
+//________________________________________________________________________________________
+// Show List 
+  
+void HistPresent::StackInOneCanvas(const char *bp)
+{
+   TList * hlist = new TList();
+   TButton * b;
+   b = (TButton *)strtoul(bp, 0, 16);
+//      cout << "bp " << b << endl;
+   TCanvas * mcanvas = b->GetCanvas();
+//   cp_many title start
+   TString ctitle(mcanvas->GetTitle());
+   TRegexp cprefix("CP_");
+   TRegexp cpostfix(".histlist");
+   ctitle(cprefix) = "";
+   ctitle(cpostfix) = "";
+//   cout << "Title of mcanvas: " << ctitle.Data() << endl;
+//  cp_many title end
+   TIter next(mcanvas->GetListOfPrimitives());
+   TString cmd;
+   TRegexp apo("\"");
+   TRegexp comma(",");
+   while (  TObject *obj=next()) {
+      if (!strncmp(obj->ClassName(), "TButton", 7)) {
+         TButton * button = (TButton*)obj;
+         cmd = button->GetMethod();
+         if (cmd.Contains("Select")) {
+//            cout << cmd  << endl;
+            for(Int_t i = 0; i < 4; i++)cmd(apo) = "";
+            Int_t pp = cmd.Index("(");
+            cmd.Remove(0,pp+1); 
+            cmd(comma) = " ";
+            pp = cmd.Index(",");
+            cmd.Resize(pp);
+            hlist->Add(new TObjString(cmd.Data()));
+         }
+      }
+   }
+   StackSelectedHists(hlist, ctitle.Data());
+   hlist->Delete();
 }
 //________________________________________________________________________________________
 // Show List 
@@ -2560,11 +2612,11 @@ void HistPresent::CloseHistLists()
 //________________________________________________________________________________________
 // Select
   
-void HistPresent::SelectHist(const char* fname, const char* hname, const char* bp)
+void HistPresent::SelectHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
 //   cout << fname << " " << hname << endl;
    TString sel = fname;
-   sel = sel + " " + hname;
+   sel = sel + " " + hname + " " + dir;
    if (bp) {
       TButton * b;
       b = (TButton *)strtoul(bp, 0, 16);
@@ -3109,7 +3161,7 @@ void HistPresent::ListSelect()
 };
 //_______________________________________________________________________
   
-TH1* HistPresent::GetHist(const char* fname, const char* hname) 
+TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname) 
 {
 //   TurnButtonGreen(&activeHist);
    TH1* hist=0;
@@ -3146,13 +3198,19 @@ TH1* HistPresent::GetHist(const char* fname, const char* hname)
 
       if (!hist) {
       	fRootFile=new TFile(fname);
+         if (strlen(dir) > 0) fRootFile->cd(dir);
 	//      cout << "GetHist: |" << shname.Data()<< "|"<< endl;
-      	hist = (TH1*)fRootFile->Get(shname.Data());
-      	if (hist) hist->SetDirectory(gROOT);
-         TDatime dt = fRootFile->GetModificationDate();
-         hist->SetUniqueID(dt.Convert());
+      	hist = (TH1*)gDirectory->Get(shname.Data());
+      	if (hist) {
+            hist->SetDirectory(gROOT);
+            TDatime dt = gDirectory->GetModificationDate();
+            hist->SetUniqueID(dt.Convert());
+      	   hist->SetName((const char*)newhname);
+         } else {
+            cout << "Histogram: " << hname << 
+                    " not found in: " << fname << endl;
+         }
       	fRootFile->Close();
-      	if (hist) hist->SetName((const char*)newhname);
       } 
 //       else cout << "Use existing: " << hn << endl;
    
@@ -3230,9 +3288,9 @@ void HistPresent::CleanWindowLists(TH1* hist)
 }
 //_______________________________________________________________________
   
-void HistPresent::ShowHist(const char* fname, const char* hname, const char* bp)
+void HistPresent::ShowHist(const char* fname, const char* dir, const char* hname, const char* bp)
 {
-   TH1* hist = GetHist( fname, hname);
+   TH1* hist = GetHist(fname, dir, hname);
    if (hist) {
       if (bp) {
          TButton * b;
@@ -3332,6 +3390,100 @@ void HistPresent::CloseAllCanvases()
    fWincury = fWintopy;
    fWincurx = fWintopx;
    if (fHelpBrowser) fHelpBrowser->Clear();
+}
+//_______________________________________________________________________
+  
+void HistPresent::StackSelectedHists(const char *bp) 
+{
+   StackSelectedHists(fSelectHist);
+}
+//_______________________________________________________________________
+  
+void HistPresent::StackSelectedHists(TList * hlist, const char* title) 
+{
+   Int_t nsel = hlist->GetSize();
+   Int_t nx = 1, ny =1;
+   TH1* hist = 0;
+   if (nsel == 0) {
+      WarnBox("No histogram selected");
+      return;
+
+   } else if (nsel > 32) {
+      WarnBox("Maximum 32 histograms allowed");
+      return;
+   } 
+//  make a copy of  hlist, add its pointer to list of histlists fHistListList
+//  pass its pointer to HTCanvas,
+//  destructor of HTCanvas shall delete the list and remove its 
+//  pointer from fHistListList
+   TList * savelist = new TList();
+   TIter next(hlist);
+   while ( TObjString * objs = (TObjString*)next()) {
+      savelist->Add(new TObjString(*objs));
+   }
+   fHistListList->Add(savelist);
+//   savelist->Print();
+
+ 	TMrbString wwhx = "HistPresent.WindowXWidth_";
+	wwhx += nx;
+	wwhx += "x";
+	wwhx += ny;
+	TMrbString wwhy = "HistPresent.WindowYWidth_";
+	wwhy += nx;
+	wwhy += "x";
+	wwhy += ny;
+   TEnv env(".rootrc");		// inspect ROOT's environment
+	Int_t wwx   =   env.GetValue(wwhx.Data(), 0);
+	if (wwx == 0) wwx   =   env.GetValue("HistPresent.WindowXWidth_many", 800);
+	Int_t wwy   =   env.GetValue(wwhy.Data(), 0);
+	if (wwy == 0) wwy   =   env.GetValue("HistPresent.WindowYWidth_many", 800);
+
+
+   TString buf("cstack_");
+   buf += fSeqNumberMany++;
+   const char * tit = buf.Data();
+   if (title) tit = title;
+   HTCanvas * cmany = 
+       new HTCanvas(buf.Data(), tit, fWincurx, fWincury, wwx, wwy,
+                    this, 0, savelist);
+   fWincurx = fWintopx; fWincury += fWinshifty;
+
+   fCanvasList->Add(cmany);
+//   cmany->SetEditable(kTRUE);ShowSele
+//   TEnv * lastset = 0;
+   TString hname;
+   TString stitle;
+   
+//   TString ytitle(""); 
+   THStack * hs = new THStack("hstack","");
+   fAnyFromSocket = kFALSE;
+   for(Int_t i=0; i<nsel; i++) {
+      hist = GetSelHistAt(i, hlist); 
+      if (!hist) {
+//         cout << " Hist not found at: " << i << endl;  
+         continue;
+      }  
+      TString fname = ((TObjString *)hlist->At(i))->String();
+      if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
+      hname = hist->GetName();
+ //     cout << "Bef: " << hname << endl;
+
+      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
+      if(last_us >0)hname.Remove(last_us);
+      last_us = hname.Last(';');    // chop off version
+      if(last_us >0)hname.Remove(last_us);
+      if (stitle.Length() > 0) stitle += "_";
+      stitle += hname.Data();
+//      cout << "Aft: "  << hname << endl;
+      hs->Add(hist);
+      hist->SetFillColor(i+2);
+      hist->SetFillStyle(1001);
+      hist->SetDrawOption("hist");
+   }
+   hs->Draw();
+   hs->SetTitle(stitle.Data());
+   cmany->Modified();
+   cmany->Update();
 }
 //_______________________________________________________________________
   
@@ -3528,13 +3680,14 @@ void HistPresent::DinA4Page(Int_t form)
    HTCanvas *c1; 
    if (form == 1) {
       c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
-                  400,40,1004, 759, this);
+                  350,40,1004, 759, this);
       c1->Range(0, 0, 210. * TMath::Sqrt(2.), 210);
    } else if (form == 0) {
       c1= new HTCanvas("dina4page", "A DIN a4 page portrait",
-                  800,40,  712, 1050, this);
+                  750,40,  712, 1050, this);
       c1->Range(0, 0, 210, 210. * TMath::Sqrt(2.));
    }
+   GetCanvasList()->Add(c1);
    c1->SetRightMargin(0);
    c1->SetLeftMargin(0);
    c1->SetBottomMargin(0);
@@ -3543,6 +3696,7 @@ void HistPresent::DinA4Page(Int_t form)
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
+//   c1->ToggleEditor();
 }
 //________________________________________________________________________________________
 // Show Canvas
@@ -3560,12 +3714,24 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    if (c) {
       TString tempname(c->GetName());
       c->SetName("abcxyz");
+      UInt_t ww, wh;
+      ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
+      wh =  c->GetWindowHeight(
       HTCanvas * c1 = new HTCanvas(tempname.Data(), c->GetTitle(),
                          c->GetWindowTopX(), c->GetWindowTopY(),
-                         c->GetWindowWidth(), c->GetWindowHeight(), this);
+                         ww, wh, this);
+//                         c->GetWindowWidth(), c->GetWindowHeight(), this);
+
+//      c1->SetCanvasSize(c->GetWw(), c->GetWh());
+
       Double_t x1, y1, x2, y2;
       c->GetRange(x1, y1, x2, y2);
       c1->Range(x1, y1, x2, y2);
+
+//      cout << c->GetWindowWidth() << " " << c->GetWindowHeight() << " "
+//           << c->GetWw() << " " << c->GetWh() << " "
+//           << x1 << " "<<  y1 << " "<<  x2 << " " << y2 << endl;
+
       TList * l = c->GetListOfPrimitives();
       TList * l1 = c1->GetListOfPrimitives();
       TIter next(l);
@@ -3575,10 +3741,10 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
          if (obj->InheritsFrom(TH1::Class())) {
             h = (TH1*)obj;
             h->SetDirectory(gROOT);
-            cout << obj->GetName() << endl;
+//            cout << obj->GetName() << endl;
          } else {
    
-            cout << obj->GetName() << endl;
+//            cout << obj->GetName() << endl;
 //            obj->Dump();
             if (obj->InheritsFrom("TPad")){
                TPad * newp = (TPad * )obj->Clone();

@@ -10,6 +10,7 @@
 #include "TStyle.h"
 #include "TString.h"
 #include "TH1.h"
+#include "THStack.h"
 #include "TList.h"
 #include "TMarker.h"
 #include "TMath.h"
@@ -122,6 +123,7 @@ enum ERootCanvasCommands {
    kFHAllAsSel,
    kFHCalAllAsSel,
    kFHAllAsFirst,
+   kFHStack,
    kFHCanvas2LP,
    kFHCanvas2LPplain,
    kFHAllAsSelRangeOnly,
@@ -418,6 +420,24 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      }
                      break;
 
+                  case kFHStack:
+                     {
+                     THStack * st = (THStack *)fHCanvas->GetListOfPrimitives()
+                                               ->FindObject("hstack");
+                     if (fHistPresent->fRealStack) {
+                        fHistPresent->fRealStack = 0;
+                        fViewMenu->UnCheckEntry(kFHStack);
+                        if (st) st->SetDrawOption("nostack");
+                     } else {
+                        fHistPresent->fRealStack = 1;
+                        fViewMenu->CheckEntry(kFHStack);
+                        if (st) st->SetDrawOption("stack");
+                     }
+                     fHCanvas->Modified();
+                     fHCanvas->Update();
+                     }
+                     break;
+
                   case kFHCanvas2LP:
                      Canvas2LP((TCanvas*)fHCanvas, "lp", fRootCanvas, autops);
                      break;
@@ -433,7 +453,11 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
                   // Handle Edit menu items...
                   case kEditEditor:
-                     fHCanvas->EditorBar();
+//                     fHCanvas->EditorBar();
+//                     fHCanvas->ToggleEditor();
+                       fRootCanvas->ShowEditor();
+                       fRootCanvas->ShowToolBar();
+//                     if (!fEditor) CreateEditor();
                      break;
                   case kEditUndo:
                      // noop
@@ -1176,30 +1200,26 @@ void HandleMenus::BuildMenus()
          fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
          fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
       }
-      TGPopupMenu * HfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
-      HfromAMenu->AddEntry("Channel contents, (Spectrum)",   kFHSpectrum); 
-      HfromAMenu->AddEntry("Channel contents, error",   kFHSpectrumError); 
-      HfromAMenu->AddEntry("X-values of histogram",   kFH1dimHist); 
-      HfromAMenu->AddEntry("X-values, weights of histogram",	kFH1dimHistWeight);
-      HfromAMenu->AddEntry("X-, Y-values of 2dim histogram",	kFH2dimHist); 
-      HfromAMenu->AddEntry("X-, Y-values, weights values of 2dim histogram",	kFH2dimHistWeight); 
+      if (!edit_menus) {
+         TGPopupMenu * HfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
+         HfromAMenu->AddEntry("Channel contents, (Spectrum)",   kFHSpectrum); 
+         HfromAMenu->AddEntry("Channel contents, error",   kFHSpectrumError); 
+         HfromAMenu->AddEntry("X-values of histogram",   kFH1dimHist); 
+         HfromAMenu->AddEntry("X-values, weights of histogram",	kFH1dimHistWeight);
+         HfromAMenu->AddEntry("X-, Y-values of 2dim histogram",	kFH2dimHist); 
+         HfromAMenu->AddEntry("X-, Y-values, weights values of 2dim histogram",	kFH2dimHistWeight); 
 
-      TGPopupMenu * GfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
-      GfromAMenu->AddEntry("X, Y of TGraph (without errors)",	kFHGraph); 
-      GfromAMenu->AddEntry("X, Y, ErrorX, ErrorY of TGraphErrors",	kFHGraphError);
-      GfromAMenu->AddEntry("X, Y, EXlow, EXhigh, EYlow, EYhigh of TGraphAsymmErrors",	kFHGraphAsymmError);
-      fFileMenu->AddPopup("ASCII data from file to histogram ",  HfromAMenu);
-      fFileMenu->AddPopup("ASCII data from file to graph",  GfromAMenu);
+         TGPopupMenu * GfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
+         GfromAMenu->AddEntry("X, Y of TGraph (without errors)",	kFHGraph); 
+         GfromAMenu->AddEntry("X, Y, ErrorX, ErrorY of TGraphErrors",	kFHGraphError);
+         GfromAMenu->AddEntry("X, Y, EXlow, EXhigh, EYlow, EYhigh of TGraphAsymmErrors",	kFHGraphAsymmError);
+         fFileMenu->AddPopup("ASCII data from file to histogram ",  HfromAMenu);
+         fFileMenu->AddPopup("ASCII data from file to graph",  GfromAMenu);
 
-      HfromAMenu->Associate((TGWindow*)this);
-      GfromAMenu->Associate((TGWindow*)this);
-//      fFileMenu->AddEntry("Picture_to_PS-File",    kFHPictToPS);
-//      fFileMenu->AddEntry("Pict_to_PS-File (plain)", kFHPictToPSplain);
-//      fFileMenu->AddEntry("Picture_to_Printer",      kFHPictToLP);
-      fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
-//   fFileMenu->AddEntry("&Open...",            kFileOpen);
+         HfromAMenu->Associate((TGWindow*)this);
+         GfromAMenu->Associate((TGWindow*)this);
+      }
       fFileMenu->AddSeparator();
-//   fFileMenu->AddEntry("Save As...",          kFileSaveAs);
    }
    fFileMenu->AddEntry("Picture_to_Printer (white bg)",  kFHCanvas2LPplain);
    fFileMenu->AddEntry("Picture_to_Printer (as it is)",  kFHCanvas2LP);
@@ -1209,29 +1229,21 @@ void HandleMenus::BuildMenus()
    fFileMenu->AddEntry("Save As canvas.eps",  kFileSaveAsEPS);
    fFileMenu->AddEntry("Save As canvas.gif",  kFileSaveAsGIF);
    fFileMenu->AddEntry("Save As canvas.C",    kFileSaveAsC);
-   if(!fFitHist)fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
+   if (!edit_menus) {
+//   if(!fFitHist)fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
 //   if(!fFitHist)fFileMenu->AddEntry("Save As canvas.root", kFileSaveAsRoot);
-   fFileMenu->AddSeparator();
-   fFileMenu->AddEntry("Read Cuts (Window2D) from ASCII file", kFHCutsFromASCII);
+      fFileMenu->AddSeparator();
+      fFileMenu->AddEntry("Read Cuts (Window2D) from ASCII file", kFHCutsFromASCII);
 //   fFileMenu->AddEntry("&Print...",           kFilePrint);
-   fFileMenu->AddSeparator();
-   fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
-   fFileMenu->AddEntry("Open DinA4 canvas (portrait)",    kFH_Portrait);
-   fFileMenu->AddEntry("Open DinA4 canvas (landscape)",   kFH_Landscape);
+      fFileMenu->AddSeparator();
+      fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
+      fFileMenu->AddEntry("Open DinA4 canvas (portrait)",    kFH_Portrait);
+      fFileMenu->AddEntry("Open DinA4 canvas (landscape)",   kFH_Landscape);
+   }
    fFileMenu->AddSeparator();
    fFileMenu->AddEntry("Terminate program",          kFileQuit);
 
    fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
-/*
-   fOptionMenu->AddEntry("&Event Status",       kOptionEventStatus);
-   fOptionMenu->AddEntry("&Pad Auto Exec",        kOptionAutoExec);
-   fOptionMenu->AddSeparator();
-   fOptionMenu->AddEntry("&Auto Resize Canvas", kOptionAutoResize);
-   fOptionMenu->AddEntry("&Resize Canvas",      kOptionResizeCanvas);
-   fOptionMenu->AddEntry("R&efresh",            kOptionRefresh);
-   fOptionMenu->AddEntry("Can Edit Histograms", kOptionCanEdit);
-   fOptionMenu->AddSeparator();
-*/
    fOptionMenu->AddEntry("What to display for a histgram", kOptionDisp);
    if(!fFitHist || !(fFitHist->Its2dim()))
       fOptionMenu->AddEntry("How to display a 1-dim histgram", kOption1Dim);
@@ -1336,14 +1348,21 @@ void HandleMenus::BuildMenus()
       	if(hbrowser)hbrowser->DisplayMenu(fViewMenu, "display.html");
 	//      fViewMenu->AddEntry("ProjectY",    kFHProjectY, );
    	} else if (fHCanvas->GetHistList()) {
-      	fViewMenu->AddEntry("Show now all as selected, Range only", kFHAllAsSelRangeOnly);
-      	fViewMenu->AddEntry("Show now all as selected, Range, Min, Max ",  kFHAllAsSel);
-      	fViewMenu->AddEntry("Calibrate all as selected",  kFHCalAllAsSel);
-      	fViewMenu->AddEntry("Show always all as First", kFHAllAsFirst);
-         if (fHistPresent->fShowAllAsFirst) fViewMenu->CheckEntry(kFHAllAsFirst);
-         else                      fViewMenu->UnCheckEntry(kFHAllAsFirst);
-      	fViewMenu->AddEntry("Rebin all",  kFHRebinAll);
-      	fViewMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
+         if (!strncmp(fHCanvas->GetName(), "cmany", 5)) {
+      	   fViewMenu->AddEntry("Show now all as selected, Range only", kFHAllAsSelRangeOnly);
+      	   fViewMenu->AddEntry("Show now all as selected, Range, Min, Max ",  kFHAllAsSel);
+      	   fViewMenu->AddEntry("Calibrate all as selected",  kFHCalAllAsSel);
+      	   fViewMenu->AddEntry("Show always all as First", kFHAllAsFirst);
+            if (fHistPresent->fShowAllAsFirst) fViewMenu->CheckEntry(kFHAllAsFirst);
+            else                      fViewMenu->UnCheckEntry(kFHAllAsFirst);
+      	   fViewMenu->AddEntry("Rebin all",  kFHRebinAll);
+         	fViewMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
+         } else if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
+      	   fViewMenu->AddEntry("Real stack", kFHStack);
+            if (fHistPresent->fRealStack) fViewMenu->CheckEntry(kFHStack);
+            else                          fViewMenu->UnCheckEntry(kFHStack);
+            
+         }
       	fViewMenu->AddSeparator();
 	//      fViewMenu->AddEntry("Help",  kFH_Help_ShowSelected);
    	}
@@ -1454,10 +1473,10 @@ void HandleMenus::BuildMenus()
    }
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-   	fEditMenu->AddEntry("Graphics Editor",        kEditEditor);
+   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write objects to file",  kFH_WritePrim);
-   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
+//   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
      
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);

@@ -3006,7 +3006,7 @@ void FitHist::UpdateDrawOptions()
    SetSelectedPad();
    TString drawopt;
    if (hp->fShowContour)
-      drawopt = "hist";
+      drawopt = "";
    if (hp->fShowErrors)
       drawopt += "e1";
    if (hp->fFill1Dim) {
