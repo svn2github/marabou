@@ -1094,7 +1094,7 @@ Int_t TMrbHelpBrowser::DisplayMenu(TGPopupMenu * menu, const char * pattern)
       if(patlen > 0){
          if(sname.Index(pat) < 0)continue;
       }  
-      Int_t is = -1;
+//      Int_t is = -1;
       Int_t ie = -1;
       TString htmlfile(fHtmlDir.Data());
       htmlfile += "/";
