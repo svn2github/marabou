@@ -27,6 +27,7 @@
 #include "TMrbLofDGFs.h"
 #include "TMrbLogger.h"
 #include "TMrbEnv.h"
+#include "TMrbSystem.h"
 
 #include "TGMsgBox.h"
 
@@ -53,21 +54,13 @@ const SMrbNamedXShort kDGFSetupDGFCodes[] =
 
 const SMrbNamedX kDGFSetupConnect[] =
 			{
-				{DGFSetupPanel::kDGFSetupConnectConnect,		"Connect",		"Connect to DGF modules w/o downloading code" },
-				{DGFSetupPanel::kDGFSetupConnectReloadDGFs,		"Reload DGFs",	"Download FPGA and DSP code"			},
-				{DGFSetupPanel::kDGFSetupConnectAbortBusySync,	"Abort Busy-Sync","Force return from busy-sync-loop"			},
-				{DGFSetupPanel::kDGFSetupConnectRestartEsone,	"Restart ESONE","Restart ESONE server"			},
-				{DGFSetupPanel::kDGFSetupConnectAbortEsone, 	"Abort ESONE Restart","Abort ESONE restart procedure"			},
-				{DGFSetupPanel::kDGFSetupConnectClose,			"Close",		"Close window"					},
+				{DGFSetupPanel::kDGFSetupConnectToEsone,		"Connect",		"Connect to DGF modules w/o downloading code" },
+				{DGFSetupPanel::kDGFSetupReloadDGFs,			"Reload DGFs",	"Download FPGA and DSP code"			},
+				{DGFSetupPanel::kDGFSetupAbortBusySync,			"Abort Busy-Sync","Force return from busy-sync-loop"			},
+				{DGFSetupPanel::kDGFSetupRestartEsone,			"Restart ESONE","Restart ESONE server"			},
+				{DGFSetupPanel::kDGFSetupAbortEsone, 			"Abort ESONE Restart","Abort ESONE restart procedure"			},
+				{DGFSetupPanel::kDGFSetupClose,					"Close",		"Close window"					},
 				{0, 											NULL,			NULL							}
-			};
-
-const SMrbNamedXShort kDGFSetupAccessMode[] =
-			{
-				{DGFSetupPanel::kDGFSetupBroadCast,			"broadcast" 				},
-				{DGFSetupPanel::kDGFSetupSingleDGF,			"single"		 			},
-				{DGFSetupPanel::kDGFSetupRemoteShell,		"rsh"			 			},
-				{0, 										NULL						}
 			};
 
 TMrbEsone * esoneCold = NULL;
@@ -172,8 +165,6 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	fSetupDGFCodes.SetPatternMode();
 	fSetupConnect.SetName("Connect to CAMAC");			// button list: 		connect to CAMAC
 	fSetupConnect.AddNamedX(kDGFSetupConnect);
-	fSetupBroadCast.SetName("AccessMode");				// button list: 		single/broadcast/remote
-	fSetupBroadCast.AddNamedX(kDGFSetupAccessMode);
 
 // DGF defs
 	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
@@ -240,19 +231,6 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	fCodeFrame->AddFrame(fCodes, groupGC->LH());
 	fCodes->SetState(0xffffffff, kButtonDown);
 
-	fBroadCast = new TGMrbRadioButtonList(fCodeFrame, NULL, &fSetupBroadCast, 1, 
-											DGFSetupPanel::kFrameWidth, DGFSetupPanel::kLEHeight,
-											frameGC, labelGC, buttonGC);
-	fCodeFrame->AddFrame(fBroadCast, groupGC->LH());
-	fBroadCast->SetState(kDGFSetupRemoteShell, kButtonDown);
-	HEAP(fBroadCast);
-	esoneCold = new TMrbEsone();
-	Bool_t hasBroadCast = esoneCold->HasBroadCast();
-	delete esoneCold;
-	if (!hasBroadCast) {
-		fBroadCast->SetState(DGFSetupPanel::kDGFSetupBroadCast, kButtonDisabled);
-		fBroadCast->SetState(DGFSetupPanel::kDGFSetupRemoteShell, kButtonDisabled);
-	}
 	
 // modules
 	fModules = new TGGroupFrame(this, "Modules", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
@@ -356,31 +334,31 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 				case kCM_BUTTON:
 					if (Param1 < kDGFSetupModuleSelectColumn) {
 						switch (Param1) {
-							case kDGFSetupConnectConnect:
-								if (this->StartDGFs(kDGFSetupConnectConnect)) {
+							case kDGFSetupConnectToEsone:
+								if (this->ConnectToEsone()) {
 									gDGFControlData->fStatus |= fDGFFrame->GetActive();
 									this->CloseWindow();
 								}
 								break;
-							case kDGFSetupConnectReloadDGFs:
-								if (this->StartDGFs(kDGFSetupConnectReloadDGFs)) {
+							case kDGFSetupReloadDGFs:
+								if (this->ReloadDGFs()) {
 									gDGFControlData->fStatus |= fDGFFrame->GetActive();
 								}
 								break;
-							case kDGFSetupConnectAbortBusySync:
+							case kDGFSetupAbortBusySync:
 								if (this->AbortDGFs()) {
 									gDGFControlData->fStatus |= fDGFFrame->GetActive();
 								}
 								break;
-							case kDGFSetupConnectRestartEsone:
-								if (this->StartDGFs(kDGFSetupConnectRestartEsone)) {
+							case kDGFSetupRestartEsone:
+								if (this->RestartEsone()) {
 									gDGFControlData->fStatus |= fDGFFrame->GetActive();
 								}
 								break;
-							case kDGFSetupConnectAbortEsone:
+							case kDGFSetupAbortEsone:
 								if (esoneCold) esoneCold->Abort();
 								break;
-							case kDGFSetupConnectClose:
+							case kDGFSetupClose:
 								gDGFControlData->fStatus |= fDGFFrame->GetActive();
 								this->CloseWindow();
 								break;
@@ -423,131 +401,61 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 	return(kTRUE);
 }
 
-Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
+Bool_t DGFSetupPanel::ConnectToEsone() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           DGFSetupPanel::StartDGFs
-// Purpose:        Initialize DGF modules
-// Arguments:      EDGFSetupCmdId Mode    -- connect only, warm / cold start?
+// Name:           DGFSetupPanel::ConnectToEsone
+// Purpose:        Connect modules to esone server
+// Arguments:      --
 // Results:        kTRUE/kFALSE
 // Exceptions:     
-// Description:    (1) if cold start restart MBS and the ESONE server,
-//                 (2) connect to it
-//                 (3) if warm or cold start download FPGA and DSP codes
-//                 (4) initialize DGF modules
+// Description:    Connects to esone server
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	DGFModule * dgfModule;
-	TMrbDGF * dgf;
-	Int_t nerr;
-	Int_t broadCast;
-	Bool_t offlineMode;
-	TMrbLofDGFs lofDGFs[kNofCrates];
-	UInt_t toBeLoaded;
-						
-	TString camacHost;
-
-	TMrbNamedX * clID;
-
 	TObjArray errLog;
-	Int_t errCnt;
+	TMrbLofDGFs lofDGFs[kNofCrates];
 
-	Bool_t systemFPGAok;
-	Bool_t fippiFPGAok;
-	Bool_t DSPok;
+	Bool_t offlineMode = gDGFControlData->IsOffline();
 	
-	Int_t cl;
-
-	offlineMode = gDGFControlData->IsOffline();
-	
-	errCnt = gMrbLog->GetErrors(errLog);
+	Int_t errCnt = gMrbLog->GetErrors(errLog);
 
 	if (gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs");
+		gMrbLog->Flush(this->ClassName(), "ConnectToEsone");
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
 		return(kFALSE);
 	}
 
-	esoneCold = new TMrbEsone(offlineMode);
-	if (esoneCold->IsZombie()) {
-		gMrbLog->Err()	<< "ESONE not running" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs");
-		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "ESONE not running", kMBIconStop);
-		delete esoneCold;
-		esoneCold = NULL;
-		return(kFALSE);
-	}
-	
-	camacHost = fCAMACHostEntry->GetEntry()->GetText();
-	gDGFControlData->fCAMACHost = camacHost;
-
-	toBeLoaded = fCodes->GetActive();
-	if (Mode == kDGFSetupConnectReloadDGFs) {
-		if ((toBeLoaded & (kDGFSetupCodeSystemFPGA | kDGFSetupCodeFippiFPGA | kDGFSetupCodeDSP)) == 0) {
-			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DOWNLOAD option", kMBIconStop);
+	if (esoneCold == NULL) {
+		esoneCold = new TMrbEsone(offlineMode);
+		if (esoneCold->IsZombie()) {
+			gMrbLog->Err()	<< "ESONE not running" << endl;
+			gMrbLog->Flush(this->ClassName(), "ConnectToEsone");
+			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "ESONE not running", kMBIconStop);
+			delete esoneCold;
+			esoneCold = NULL;
 			return(kFALSE);
 		}
-
-		systemFPGAok = kFALSE;
-		fippiFPGAok = kFALSE;
-		DSPok = kFALSE;
-		if (toBeLoaded & kDGFSetupCodeSystemFPGA) {
-			systemFPGAok = kFALSE;
-			fippiFPGAok = kFALSE;
-			DSPok = kFALSE;
-		} else {
-			systemFPGAok = kTRUE;
-		}
-		if (systemFPGAok) {
-			if (toBeLoaded & kDGFSetupCodeFippiFPGA) {
-				fippiFPGAok = kFALSE;
-				DSPok = kFALSE;
-			} else {
-				fippiFPGAok = kTRUE;
-			}
-		}
-		if (systemFPGAok && fippiFPGAok) {
-			if (toBeLoaded & kDGFSetupCodeDSP)	DSPok = kFALSE;
-			else								DSPok = kTRUE;
-		}
-	} else {
-		systemFPGAok = kTRUE;
-		fippiFPGAok = kTRUE;
-		DSPok = kTRUE;
 	}
 	
-	nerr = 0;
-	if (Mode == kDGFSetupConnectRestartEsone) {
-		if (!offlineMode) {
-			cout	<< setblue
-				<< "[DGFSetupPanel::StartDGFs(): Cold start for ESONE server / MBS @ " << camacHost << "]"
-				<< setblack << endl;
-			if (!esoneCold->StartServer(camacHost.Data())) {
-				gMrbLog->Err()	<< "Restarting ESONE server failed" << endl;
-				gMrbLog->Flush(this->ClassName(), "StartDGFs");
-				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Restarting ESONE server failed", kMBIconStop);
-				delete esoneCold;
-				esoneCold = NULL;
-				return(kFALSE);
-			} else {
-				dgfModule = gDGFControlData->FirstModule();
-				while (dgfModule) {
-					dgf = dgfModule->GetAddr();
-					if (dgf) delete dgf;
-					dgfModule->SetAddr(NULL);
-					dgfModule = gDGFControlData->NextModule(dgfModule);
-				}
-			}
-		}
-		return(kTRUE);
-	}
+	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
+	gDGFControlData->fCAMACHost = camacHost;
 
 	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
 		
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	while (dgfModule) {
+		TMrbDGF * dgf = dgfModule->GetAddr();
+		if (dgf) delete dgf;
+		dgfModule->SetAddr(NULL);
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+	}
+
+	Int_t nerr = 0;
 	UInt_t selFlag = 0;
-	for (cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+
+	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		gDGFControlData->SetPatInUse(cl, fCluster[cl]->GetActive());
 		selFlag |= fCluster[cl]->GetActive();
 	}
@@ -557,23 +465,29 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 	}
 
 	if (nerr == 0) {
-		esoneCold->UseBroadCast(fBroadCast->GetActive() == kDGFSetupBroadCast);
-		broadCast = esoneCold->HasBroadCast();
-		if (broadCast && !offlineMode) {
-			gMrbLog->Out() << "DGFSetupPanel::StartDGFs(): Using broadcast mode" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
+		esoneCold->UseBroadCast(kTRUE);
+		Bool_t broadCast = esoneCold->HasBroadCast();
+		if (!broadCast) {
+			gMrbLog->Err()	<< "Need broadcast mode - controller isn't capable of" << endl;
+			gMrbLog->Flush(this->ClassName(), "ConnectToEsone");
+			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Camac controller doesn't have BROADCAST mode", kMBIconStop);
+			return(kFALSE);
+		}
+		if (!offlineMode) {
 			for (Int_t cr = 0; cr < kNofCrates; cr++) lofDGFs[cr].Delete();
-			dgfModule = gDGFControlData->FirstModule();
+			DGFModule * dgfModule = gDGFControlData->FirstModule();
+			Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+			if (!verbose) cout << "[Connecting to DGF modules - wait " << flush;
 			while (dgfModule) {
 				if (gDGFControlData->ModuleInUse(dgfModule)) {
-					dgf = dgfModule->GetAddr();
+					TMrbDGF * dgf = dgfModule->GetAddr();
 					if (dgf == NULL) {
 						dgf = new TMrbDGF(dgfModule->GetName(), camacHost.Data(),
 											dgfModule->GetCrate(), dgfModule->GetStation(),
 											kTRUE, offlineMode);
 						dgfModule->SetHost(camacHost.Data());
 						dgfModule->SetAddr(dgf);
-						clID = dgfModule->GetClusterID();
+						TMrbNamedX * clID = dgfModule->GetClusterID();
 						dgf->SetClusterID(clID->GetIndex(), clID->GetName(), clID->GetTitle());
 						if (dgf->IsZombie()) dgfModule->SetActive(kFALSE);
 					}
@@ -584,82 +498,195 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 						dgfModule->SetTitle(dgf->GetTitle());
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
-						if (dgf->Data()->ReadFPGACode(TMrbDGFData::kSystemFPGA, gDGFControlData->fSystemFPGAConfigFile) <= 0) nerr++;
-						if (dgf->Data()->ReadFPGACode(TMrbDGFData::kFippiFPGA, gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD], TMrbDGFData::kRevD) <= 0) nerr++;
-						if (dgf->Data()->ReadFPGACode(TMrbDGFData::kFippiFPGA, gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE], TMrbDGFData::kRevE) <= 0) nerr++;
-						if (dgf->Data()->ReadDSPCode(gDGFControlData->fDSPCodeFile) <= 0) nerr++;
+						if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
+						dgf->ClearChannelMask();
+						dgf->ClearTriggerMask();
+						gDGFControlData->fDeltaT = dgf->GetDeltaT();
+						Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
+						dgf->SetSynchWait(synchWait, kTRUE);
+						Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
+						dgf->SetInSynch(inSynch, kTRUE);
+						gROOT->Append(dgf);
+					} else nerr++;
+				}
+				if (!verbose) cout << "." << flush;
+				dgfModule = gDGFControlData->NextModule(dgfModule);
+			}
+			if (!verbose) cout << " done]" << endl;
+		}
+	}
+
+	if (nerr > 0 || gMrbLog->GetErrors(errLog) > errCnt) {
+		gMrbLog->Err()	<< "Connecting DGF module(s) to esone server failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ConnectToEsone");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Connecting DGF module(s) to esone server failed", kMBIconStop);
+		return(kFALSE);
+	} else {
+		gMrbLog->Out()	<< "DGF module(s) connected" << endl;
+		gMrbLog->Flush(this->ClassName(), "ConnectToEsone", setblue);
+		return(kTRUE);
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFSetupPanel::ReloadDGFs() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::ReloadDGFs
+// Purpose:        Reload DGF code
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Downloads code file to fpgas and dsp.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray errLog;
+	TMrbLofDGFs lofDGFs[kNofCrates];
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	Int_t errCnt = gMrbLog->GetErrors(errLog);
+
+	if (gDGFControlData->GetNofModules() == 0) {
+		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
+		return(kFALSE);
+	}
+
+	if (esoneCold == NULL) {
+		esoneCold = new TMrbEsone(offlineMode);
+		if (esoneCold->IsZombie()) {
+			gMrbLog->Err()	<< "ESONE not running" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "ESONE not running", kMBIconStop);
+			delete esoneCold;
+			esoneCold = NULL;
+			return(kFALSE);
+		}
+	}
+	
+	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
+	gDGFControlData->fCAMACHost = camacHost;
+
+	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
+		
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	while (dgfModule) {
+		TMrbDGF * dgf = dgfModule->GetAddr();
+		if (dgf) delete dgf;
+		dgfModule->SetAddr(NULL);
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+	}
+
+	Int_t nerr = 0;
+	UInt_t selFlag = 0;
+
+	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+		gDGFControlData->SetPatInUse(cl, fCluster[cl]->GetActive());
+		selFlag |= fCluster[cl]->GetActive();
+	}
+	if (selFlag == 0) {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	}
+
+	if (nerr == 0) {
+		esoneCold->UseBroadCast(kTRUE);
+		Bool_t broadCast = esoneCold->HasBroadCast();
+		if (!broadCast) {
+			gMrbLog->Err()	<< "Need broadcast mode - controller isn't capable of" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Camac controller doesn't have BROADCAST mode", kMBIconStop);
+			return(kFALSE);
+		}
+		if (!offlineMode) {
+			UInt_t toBeLoaded = fCodes->GetActive();
+			for (Int_t cr = 0; cr < kNofCrates; cr++) lofDGFs[cr].Delete();
+			DGFModule * dgfModule = gDGFControlData->FirstModule();
+			while (dgfModule) {
+				if (gDGFControlData->ModuleInUse(dgfModule)) {
+					TMrbDGF * dgf = dgfModule->GetAddr();
+					if (dgf == NULL) {
+						dgf = new TMrbDGF(dgfModule->GetName(), camacHost.Data(),
+											dgfModule->GetCrate(), dgfModule->GetStation(),
+											kTRUE, offlineMode);
+						dgfModule->SetHost(camacHost.Data());
+						dgfModule->SetAddr(dgf);
+						TMrbNamedX * clID = dgfModule->GetClusterID();
+						dgf->SetClusterID(clID->GetIndex(), clID->GetName(), clID->GetTitle());
+						if (dgf->IsZombie()) dgfModule->SetActive(kFALSE);
+					}
+					if (!dgf->IsZombie() && dgf->IsConnected()) {
+						dgf->Camac()->UseBroadCast(kTRUE);
+						lofDGFs[dgf->GetCrate() - 1].AddModule(dgf);
+						dgf->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0);
+						dgfModule->SetTitle(dgf->GetTitle());
+						dgfModule->SetAddr(dgf);
+						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
 					} else nerr++;
 				}
 				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
 
-			for (Int_t cr = 0; cr < kNofCrates; cr++) {
-				if (lofDGFs[cr].GetLast() >= 0) {
-					if (toBeLoaded & kDGFSetupCodeSystemFPGA) {
-						gMrbLog->Out()	<< "Downloading System FPGA for modules in C"
-										<< (cr + 1) << " (broadcast pattern = 0x"
-										<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
-						gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-						if (lofDGFs[cr].DownloadFPGACode(TMrbDGFData::kSystemFPGA)) {
-							systemFPGAok = kTRUE;
-						} else {
-							systemFPGAok = kFALSE;
-							nerr++;
-						}
-					}
-					if (toBeLoaded & kDGFSetupCodeFippiFPGA) {
-						gMrbLog->Out()	<< "Downloading Fippi FPGA for modules in C"
-										<< (cr + 1) << " (broadcast pattern = 0x"
-										<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
-						gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-						if (lofDGFs[cr].DownloadFPGACode(TMrbDGFData::kFippiFPGA)) {
-							fippiFPGAok = kTRUE;
-						} else {
-							fippiFPGAok = kFALSE;
-							nerr++;
-						}
+			if (nerr == 0) {
+				TString dlOpt = "";
+				if (toBeLoaded & kDGFSetupCodeSystemFPGA)	dlOpt += "S";
+				if (toBeLoaded & kDGFSetupCodeFippiFPGA)	dlOpt += "F";
+				if (toBeLoaded & kDGFSetupCodeDSP)			dlOpt += "D";
+				if (dlOpt.Length() == 0) {
+					gMrbLog->Err()	<< "Download option missing - neither SystemFPGA, nor FippiFPGA, nor DSP selected" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+					new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You didn't select a download option", kMBIconStop);
+					return(kFALSE);
+				}
+				ofstream dlf(".DgfDownload.rc", ios::out);
+				dlf << "DownloadOptions:	" << dlOpt << endl;
+				TString relPath;
+				TMrbSystem ux;
+				dlf << "LoadPath: 	" << gDGFControlData->fLoadPath << endl;
+				relPath = gDGFControlData->fSystemFPGAConfigFile;
+				dlf << "SystemFPGACode: 	" << ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
+				relPath = gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD];
+				dlf << "FippiFPGACode.RevD: 	" <<  ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
+				relPath = gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE];
+				dlf << "FippiFPGACode.RevE: 	" << ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
+				relPath = gDGFControlData->fDSPCodeFile;
+				dlf << "DspCode:		" << ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
+				Int_t nofCrates = 0;
+				for (Int_t cr = 0; cr < kNofCrates; cr++) {
+					if (lofDGFs[cr].GetLast() >= 0) {
+						nofCrates++;
+						dlf << "StationMask.Crate" << cr + 1 << ":			0x"
+							<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << endl;
 					}
 				}
-			}
+				dlf << "NofCrates:			" << nofCrates << endl;
+				dlf.close();
 
-			if (systemFPGAok && fippiFPGAok) {
+				TString dlPgm = gEnv->GetValue("DGFControl.DownloadProgram", "unknown");
+				gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
+				gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
+
+				gSystem->Exec(Form("rsh %s 'cd %s; %s %s'", camacHost.Data(), gSystem->WorkingDirectory(), dlPgm.Data(), ".DgfDownload.rc"));
+
 				dgfModule = gDGFControlData->FirstModule();
 				while (dgfModule) {
 					if (gDGFControlData->ModuleInUse(dgfModule)) {
-						dgf = dgfModule->GetAddr();
+						TMrbDGF * dgf = dgfModule->GetAddr();
 						if (dgf->IsConnected()) {
-							if (Mode == kDGFSetupConnectReloadDGFs) {
-								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
-							}
+							if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
 						}
 					}
 					dgfModule = gDGFControlData->NextModule(dgfModule);
 				}
-			}
 
-			for (Int_t cr = 0; cr < kNofCrates; cr++) {
-				if (lofDGFs[cr].GetLast() >= 0) {
-					if (toBeLoaded & kDGFSetupCodeDSP) {
-						gMrbLog->Out()	<< "Downloading DSP for modules in C"
-										<< (cr + 1) << " (broadcast pattern = 0x"
-										<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
-						gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-						if (lofDGFs[cr].DownloadDSPCode()) {
-							DSPok = kTRUE;
-						} else {
-							DSPok = kFALSE;
-							nerr++;
-						}
-					}
-				}
-			}
-
-			dgfModule = gDGFControlData->FirstModule();
-			while (dgfModule) {
-				if (gDGFControlData->ModuleInUse(dgfModule)) {
-					dgf = dgfModule->GetAddr();
-					if (dgf->IsConnected()) {
-						if (systemFPGAok && fippiFPGAok && DSPok) {
+				dgfModule = gDGFControlData->FirstModule();
+				while (dgfModule) {
+					if (gDGFControlData->ModuleInUse(dgfModule)) {
+						TMrbDGF * dgf = dgfModule->GetAddr();
+						if (dgf->IsConnected()) {
 							if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
 							dgf->ClearChannelMask();
 							dgf->ClearTriggerMask();
@@ -669,136 +696,25 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 							Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
 							dgf->SetInSynch(inSynch, kTRUE);
 							gROOT->Append(dgf);
-						}
-					} else nerr++;
-				}
-				dgfModule = gDGFControlData->NextModule(dgfModule);
-			}
-		} else {
-			dgfModule = gDGFControlData->FirstModule();
-			while (dgfModule) {
-				if (gDGFControlData->ModuleInUse(dgfModule)) {
-					dgf = dgfModule->GetAddr();
-					if (dgf == NULL) {
-						dgf = new TMrbDGF(dgfModule->GetName(), camacHost.Data(),
-											dgfModule->GetCrate(), dgfModule->GetStation(),
-											kTRUE, offlineMode);
-						dgfModule->SetHost(camacHost.Data());
-						dgfModule->SetAddr(dgf);
-						clID = dgfModule->GetClusterID();
-						dgf->SetClusterID(clID->GetIndex(), clID->GetName(), clID->GetTitle());
-						if (dgf->IsZombie()) dgfModule->SetActive(kFALSE);
+						} else nerr++;
 					}
-					if (!dgf->IsZombie() && dgf->IsConnected()) {
-						dgf->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0);
-						dgfModule->SetTitle(dgf->GetTitle());
-						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
-						if (Mode == kDGFSetupConnectReloadDGFs) {
-							if (!offlineMode) {
-								if (toBeLoaded & kDGFSetupCodeSystemFPGA) {
-									if (dgf->Data()->ReadFPGACode(TMrbDGFData::kSystemFPGA, gDGFControlData->fSystemFPGAConfigFile) <= 0) nerr++;
-									if (dgf->DownloadFPGACode(TMrbDGFData::kSystemFPGA)) {
-										systemFPGAok = kTRUE;
-										if (!dgf->Data()->IsVerbose()) {
-											gMrbLog->Out()	<< "[System FPGA] " << dgf->GetName()
-																<< " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-																<< ": Download successful" << endl;
-											gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-										}
-									} else {
-										systemFPGAok = kFALSE;
-										nerr++;
-									}
-								}
-							}
-						}
-					} else nerr++;
+					dgfModule = gDGFControlData->NextModule(dgfModule);
 				}
-				dgfModule = gDGFControlData->NextModule(dgfModule);
-			}
-
-			dgfModule = gDGFControlData->FirstModule();
-			while (dgfModule) {
-				if (gDGFControlData->ModuleInUse(dgfModule)) {
-					dgf = dgfModule->GetAddr();
-					if (dgf->IsConnected()) {
-						if (Mode == kDGFSetupConnectReloadDGFs) {
-							if (!offlineMode) {
-								if (systemFPGAok && toBeLoaded & kDGFSetupCodeFippiFPGA) {
-									TMrbDGFData::EMrbDGFRevision rev = (TMrbDGFData::EMrbDGFRevision) dgf->GetRevision()->GetIndex();
-									if (dgf->Data()->ReadFPGACode(TMrbDGFData::kFippiFPGA, gDGFControlData->fFippiFPGAConfigFile[rev], rev) <= 0) nerr++;
-									if (dgf->DownloadFPGACode(TMrbDGFData::kFippiFPGA)) {
-										fippiFPGAok = kTRUE;
-										if (!dgf->Data()->IsVerbose()) {
-											gMrbLog->Out()	<< "[Fippi FPGA] " << dgf->GetName()
-																<< " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-																<< ": Download successful" << endl;
-											gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-										}
-									} else {
-										fippiFPGAok = kFALSE;
-										nerr++;
-									}
-								}
-
-								if (systemFPGAok && fippiFPGAok) {
-									if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
-									if (toBeLoaded & kDGFSetupCodeDSP) {
-										if (dgf->Data()->ReadDSPCode(gDGFControlData->fDSPCodeFile) <= 0) nerr++;
-										if (dgf->DownloadDSPCode()) {
-											DSPok = kTRUE;
-											if (!dgf->Data()->IsVerbose()) {
-												gMrbLog->Out()	<< dgf->GetName()
-																	<< " C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-																	<< ": DSP download successful" << endl;
-												gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-											}
-										} else {
-											DSPok = kFALSE;
-											nerr++;
-										}
-									}
-								}
-							}
-						}
-						if (!offlineMode) {
-							if (systemFPGAok && fippiFPGAok && DSPok) {
-								if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-								gDGFControlData->fDeltaT = dgf->GetDeltaT();
-								Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
-								dgf->SetSynchWait(synchWait, kTRUE);
-								Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
-								dgf->SetInSynch(inSynch, kTRUE);
-							}
-						}
-						gROOT->Append(dgf);
-					} else nerr++;
-					if (offlineMode) {
-						cout	<< setgreen
-								<< "[DGFSetupPanel::StartDGFs(): Running " << dgf->GetTitle()
-								<< " in OFFLINE mode" << setblack << endl;
-					}
-				}
-				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
 		}
 	}
 
 	if (nerr > 0 || gMrbLog->GetErrors(errLog) > errCnt) {
-		gMrbLog->Err()	<< "Initialization of DGF modules failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs");
-		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Initialization of DGF modules failed", kMBIconStop);
+		gMrbLog->Err()	<< "Downloading DGF code failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Downloading DGF code failed", kMBIconStop);
 		return(kFALSE);
-	} else if (Mode == kDGFSetupConnectReloadDGFs) {
-		gMrbLog->Out()	<< "DGF download ok" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
-		return(kTRUE);
 	} else {
-		gMrbLog->Out()	<< "DGF module(s) connected" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
+		gMrbLog->Out()	<< "Download of DGF code finished" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 		return(kTRUE);
 	}
-	return(kFALSE);
+	return(kTRUE);
 }
 
 Bool_t DGFSetupPanel::AbortDGFs() {
@@ -836,7 +752,8 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 	while (dgfModule) {
 		Int_t cl = nofModules / kNofModulesPerCluster;
 		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
-		if ((fCluster[cl]->GetActive() == (UInt_t) gDGFControlData->ModuleIndex(cl, modNo)) && dgfModule->IsActive()) {
+		UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
 			dgf = dgfModule->GetAddr();
 			isAborted = kTRUE;
 			dgf->SetParValue("SYNCHDONE", 1, kTRUE);
@@ -864,3 +781,50 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 		return(kFALSE);
 	}
 }
+
+Bool_t DGFSetupPanel::RestartEsone() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::RestartEsone
+// Purpose:        Restart esone server
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Restarts esone server
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	esoneCold = new TMrbEsone(offlineMode);
+	if (esoneCold->IsZombie()) {
+		gMrbLog->Err()	<< "ESONE not running" << endl;
+		gMrbLog->Flush(this->ClassName(), "RestartEsone");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "ESONE not running", kMBIconStop);
+		delete esoneCold;
+		esoneCold = NULL;
+		return(kFALSE);
+	}
+	
+	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
+	gDGFControlData->fCAMACHost = camacHost;
+
+	if (!offlineMode) {
+		cout	<< setblue
+				<< "[DGFSetupPanel::StartDGFs(): Cold start for ESONE server / MBS @ " << camacHost << "]"
+				<< setblack << endl;
+		if (!esoneCold->StartServer(camacHost.Data())) {
+			gMrbLog->Err()	<< "Restarting ESONE server failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "RestartEsone");
+			new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Restarting ESONE server failed", kMBIconStop);
+			delete esoneCold;
+			esoneCold = NULL;
+			return(kFALSE);
+		}
+	}
+
+	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
+		
+	return(kTRUE);
+}
+

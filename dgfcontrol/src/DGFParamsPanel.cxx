@@ -79,8 +79,6 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, const TGWindow * MainFra
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
 	
-	DGFModule * dgfModule;
-	
 //	clear focus list
 	fFocusList.Clear();
 
@@ -176,8 +174,9 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, const TGWindow * MainFra
 	HEAP(fSelectFrame);
 	this->AddFrame(fSelectFrame, groupGC->LH());
 
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
 	TObjArray pNames;
-	TMrbLofNamedX * pNameAddr = gDGFControlData->GetSelectedModule()->GetAddr()->Data()->GetLofParamNames();
 	TMrbNamedX * px = (TMrbNamedX *) pNameAddr->First();
 	while (px) {
 		pNames.Add(new TObjString(px->GetName()));
@@ -361,7 +360,8 @@ Bool_t DGFParamsPanel::ReadParams() {
 		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 			for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
 				Int_t n = modNo + cl * kNofModulesPerCluster;
-				if (fCluster[cl]->GetActive() == (UInt_t) gDGFControlData->ModuleIndex(cl, modNo)) {
+				UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+				if ((fCluster[cl]->GetActive() & bits) == bits) {
 					selectOk = kTRUE;
 					TMrbDGF * dgf = gDGFControlData->GetModule(modNo)->GetAddr();
 					Int_t parVal = dgf->GetParValue(px->GetName(), kTRUE);
@@ -410,7 +410,8 @@ Bool_t DGFParamsPanel::ApplyParams() {
 	if (px) {
 		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 			for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
-				if (fCluster[cl]->GetActive() == (UInt_t) gDGFControlData->ModuleIndex(cl, modNo)) {
+				UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+				if ((fCluster[cl]->GetActive() & bits) == bits) {
 					selectOk = kTRUE;
 					TMrbDGF * dgf = gDGFControlData->GetModule(cl, modNo)->GetAddr();
 					intStr = fParVal[modNo + cl * kNofModulesPerCluster]->GetEntry()->GetText();

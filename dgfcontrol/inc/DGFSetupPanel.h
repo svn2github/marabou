@@ -55,16 +55,12 @@ class DGFSetupPanel : public TGTransientFrame {
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFSetupCmdId 	{	kDGFSetupCamacHost,							// group frame "CAMAC"
 
-									kDGFSetupConnectConnect,					// connect modules
-									kDGFSetupConnectReloadDGFs, 				// reload code
-									kDGFSetupConnectAbortBusySync,				// abort busy-sync loop
-									kDGFSetupConnectRestartEsone,				// restart esone server
-									kDGFSetupConnectAbortEsone, 				// abort restart procedure
-									kDGFSetupConnectClose,						// do nothing
-
-									kDGFSetupBroadCast, 						// broadCast on
-									kDGFSetupSingleDGF, 						// single dgf
-									kDGFSetupRemoteShell,						// remote shell
+									kDGFSetupConnectToEsone,					// connect modules
+									kDGFSetupReloadDGFs,						// reload code
+									kDGFSetupAbortBusySync,						// abort busy-sync loop
+									kDGFSetupRestartEsone,						// restart esone server
+									kDGFSetupAbortEsone, 						// abort restart procedure
+									kDGFSetupClose,								// do nothing
 
 									kDGFSetupModuleSelectAll,					// select all modules
 									kDGFSetupModuleSelectNone,					// select none
@@ -99,8 +95,10 @@ class DGFSetupPanel : public TGTransientFrame {
 		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		Bool_t StartDGFs(EDGFSetupCmdId Mode);	 	// (start ESONE server and) initialize DGF modules
+		Bool_t ConnectToEsone();					// connect modules to esone server
+		Bool_t ReloadDGFs();						// reload dgf code
 		Bool_t AbortDGFs(); 						// abort busy-sync loop
+		Bool_t RestartEsone();						// restart esone server
 		
 	protected:
 		TList fHeap;								//! list of objects created on heap
