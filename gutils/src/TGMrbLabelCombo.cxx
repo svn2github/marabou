@@ -63,6 +63,8 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 	TGLabel * label;
 	Int_t bSize;
 
+	fClientWindow = NULL;
+
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	ComboGC = this->SetupGC(ComboGC, FrameOptions);
 
@@ -175,7 +177,7 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) - 1);
 							}
 							fCombo->Select(nx->GetIndex());
-							break;								
+							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 						case TGMrbLabelCombo::kGMrbComboButtonUp:
 							idx = fCombo->GetSelected();
 							nx = fEntries.FindByIndex(idx);
@@ -185,12 +187,17 @@ Bool_t TGMrbLabelCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 								nx = (TMrbNamedX *) fEntries.At(fEntries.IndexOf(nx) + 1);
 							}
 							fCombo->Select(nx->GetIndex());
+							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							break;								
 						case TGMrbLabelCombo::kGMrbComboButtonBegin:
-							fCombo->Select(((TMrbNamedX *) fEntries.First())->GetIndex());
+							nx = (TMrbNamedX *) fEntries.First();
+							fCombo->Select(nx->GetIndex());
+							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							break;
 						case TGMrbLabelCombo::kGMrbComboButtonEnd:
-							fCombo->Select(((TMrbNamedX *) fEntries.Last())->GetIndex());
+							nx = (TMrbNamedX *) fEntries.Last();
+							fCombo->Select(nx->GetIndex());
+							if (fClientWindow) this->SendMessage(fClientWindow, MK_MSG(kC_COMMAND, kCM_COMBOBOX), 0, nx->GetIndex());
 							break;
 					}
 					break;

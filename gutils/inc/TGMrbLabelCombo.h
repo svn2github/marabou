@@ -69,7 +69,7 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Associate(const TGWindow * Window) { fCombo->Associate(Window); };	// where to go if combobox
+		inline void Associate(const TGWindow * Window) { fClientWindow = (TGWindow *) Window; fCombo->Associate(Window); };	// where to go if combobox
 																					// selection changes
 		inline const Char_t * GetText() { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
@@ -79,6 +79,8 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 	protected:
 		TGComboBox * fCombo;			//!
 		TString fText;					//!
+
+		TGWindow * fClientWindow;
 
 		TMrbLofNamedX fEntries;			//! entries
 		TGPictureButton * fUp; 			//! button ">", increment
