@@ -31,6 +31,12 @@ public:
    HTRootGuiFactory(const char *name = "Root", const char *title = "ROOT GUI Factory");
    ~HTRootGuiFactory() { }
    HTCanvasImp *CreateCanvasImp(HTCanvas *c, const char *title, Int_t x, Int_t y, UInt_t width, UInt_t height);
+   TCanvasImp *CreateCanvasImp( TCanvas *c, const char *title, Int_t x, Int_t y, UInt_t width, UInt_t height) {
+     return TRootGuiFactory::CreateCanvasImp(c, title, x, y, width, height);
+   };
+   TCanvasImp *CreateCanvasImp( TCanvas *c, const char *title, UInt_t width, UInt_t height) {
+     return TRootGuiFactory::CreateCanvasImp(c, title, width, height);
+   };
    ClassDef(HTRootGuiFactory,0)  //Factory for ROOT GUI components
 };
 

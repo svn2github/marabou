@@ -69,7 +69,7 @@ already exists, delete it? ", mycanvas)) {
    }
 }
 //______________________________________________________________________________________   
-Bool_t FitHist::UseWindow(TMrbWindow * const wdw){
+Bool_t FitHist::UseWindow(TMrbWindow * wdw){
    if(!Nwindows())return kFALSE;
    return fActiveWindows->Contains(wdw);
 }
@@ -259,7 +259,7 @@ void  FitHist::WriteOutCut(){
 }
 //______________________________________________________________________________________
   
-Bool_t FitHist::UseCut(TMrbWindow2D * const cut){
+Bool_t FitHist::UseCut(TMrbWindow2D * cut){
 //   TObjString newcut = (const char*)(name);
    UpdateCut();
    if(!Ncuts())return kFALSE;
@@ -480,7 +480,7 @@ void FitHist::EditCut(const char * name, const char * bp){
 }
 //------------------------------------------------------ 
   
-void FitHist::PrintOneCut(TMrbWindow2D* cut){
+void FitHist::PrintOneCut(TMrbWindow2D * cut){
    cout << cut->GetName() << ":"<<endl;
    int n = cut->GetN();
    for(int i=0; i<n; i++)  {

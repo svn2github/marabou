@@ -182,7 +182,7 @@ public:
    Int_t Ncuts(){return fActiveCuts->GetSize();};                  // 
    void InitCut();                       // 
    void EditCut(const char *, const char * bp); 
-   void PrintOneCut(TMrbWindow2D * const);      // 
+   void PrintOneCut(TMrbWindow2D *);      // 
    void CloseCuts();                       // 
    void ListCuts();                       // 
    void AddCut(const char *, const char * bp);            // 
@@ -191,8 +191,8 @@ public:
    void MarksToCut();               // 
    void AddCutsToHist();
    void DrawDateBox(TH1*, Float_t);                      // 
-   Bool_t UseCut(TMrbWindow2D * const);         // 
-   Bool_t UseWindow(TMrbWindow * const);         // 
+   Bool_t UseCut(TMrbWindow2D *);         // 
+   Bool_t UseWindow(TMrbWindow *);         // 
    Bool_t InsideCut(Float_t, Float_t);               // 
    void ClearCut();                   // 
    void UpdateCut();                  // 
