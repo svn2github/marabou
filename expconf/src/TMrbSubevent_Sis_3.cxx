@@ -1,11 +1,9 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           expconf/src/TMrbSubevent_10_12.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,12]
-// Description:    Implements class methods to handle [10,12] subevents
-//                 Subevents of type [10,12] have variable length data
-//                 Data are with channel number
-//                 Modules are separated by module headers
+// Name:           expconf/src/TMrbSubevent_Sis_3.cxx
+// Purpose:        MARaBOU configuration: subevents of type [10,53] - SIS data
+// Description:    Implements class methods to handle [10,53] subevents
+//                 reflecting data structure of XIA DGF-4C modules
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
@@ -13,7 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-namespace std {} using namespace std;
+using namespace std;
 
 #include <cstdlib>
 #include <iostream>
@@ -28,29 +26,31 @@ namespace std {} using namespace std;
 #include "TMrbConfig.h"
 #include "TMrbModule.h"
 #include "TMrbModuleChannel.h"
-#include "TMrbSubevent_10_12.h"
+#include "TMrbSubevent_Sis_3.h"
 
 #include "SetColor.h"
 
 extern TMrbConfig * gMrbConfig;
 extern TMrbLogger * gMrbLog;
 
-ClassImp(TMrbSubevent_10_12)
+ClassImp(TMrbSubevent_Sis_3)
 
-TMrbSubevent_10_12::TMrbSubevent_10_12(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
+TMrbSubevent_Sis_3::TMrbSubevent_Sis_3(const Char_t * SevtName, const Char_t * SevtTitle, Int_t Crate)
 																: TMrbSubevent(SevtName, SevtTitle, Crate) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_10_12
-// Purpose:        Create a subevent type [10,12]
+// Name:           TMrbSubevent_Sis_3
+// Purpose:        Create a subevent type [10,42]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,12]
+// Description:    Create a new subevent of type [10,53]
+//                 used to store SIS data in DGF-4C list-mode format
 //
-//                 Data format as given by the producer (MBS):
+//
+//                 Data format as given by the producer (MBS) - same as [10,12]:
 //                 -  several modules per subevent possible
 //                 -  channel data 32 bit, arbitrary format
 //                    has to be decoded by use of module id & serial
@@ -86,29 +86,29 @@ TMrbSubevent_10_12::TMrbSubevent_10_12(const Char_t * SevtName, const Char_t * S
 //                 15====================================0
 //
 //                 Data storage by the consumer (ROOT):
-//                 -  stored in a fixed-length vector, indexed by channel number
-//                 -  empty channels padded with reset (default 0) value
+//                 -  data stored in a TClonesArray, channel by channel
+//                 -  each channel entry marked with event time
+//
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
-	
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,12]: hdr + chn + data");
-		fSevtType = 10; 	 						// set subevent type & subtype
-		fSevtSubtype = 12;
-		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
+		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,53]: SIS data, multi-module, multi-event");
+		fSevtType = 10; 	 							// set subevent type & subtype
+		fSevtSubtype = 53;
+		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
+		gMrbConfig->AddUserClass("TMrbSubevent_Sis");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
 
-Bool_t TMrbSubevent_10_12::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
+Bool_t TMrbSubevent_Sis_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbReadoutTag TagIndex,
 															TMrbTemplate & Template,
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_10_12::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,12]
+// Name:           TMrbSubevent_Sis_3::MakeReadoutCode
+// Purpose:        Write a piece of code for subevent [10,53]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template

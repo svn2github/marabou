@@ -2747,13 +2747,10 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nmx;
 	TMrbNamedX * npx;
 	TMrbNamedX * ncx;
-	TMrbModuleListEntry * mle;
 	TMrbParamListEntry * ple;
 	TMrbCalibrationListEntry * cle;
-	Int_t px;
 
 	ncx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
 	if (ncx != NULL) return(kFALSE);

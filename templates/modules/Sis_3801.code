@@ -48,6 +48,7 @@
 #define SIS_3801_A_READ_FIFO(module)		((unsigned long *) (module + SIS_3801_R_READ_FIFO))
 
 #define SIS_3801_READ_STATUS(module)			*SIS_3801_A_STATUS(module)
+#define SIS_3801_DISABLE_COPY(module, b)		*SIS_3801_A_COPY_DISABLE(module) = b
 #define SIS_3801_SET_CTRL_BIT(module, b)		*SIS_3801_A_STATUS(module) |= b
 #define SIS_3801_RESET(module)					*SIS_3801_A_RESET(module) = 0
 #define SIS_3801_CLEAR_FIFO(module)				*SIS_3801_A_CLEAR_FIFO(module) = 0
@@ -98,7 +99,6 @@
 %MH%						memset(evt.out32, 0, sisHit * sizeof(unsigned long));
 %MH%						evt.out32 += sisHit;
 %MH%					}
-%CAR%					SIS_3801_CLEAR_FIFO($moduleName);	/* clear counter & fifo */
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -164,9 +164,9 @@ void sis_3801_module_info(volatile unsigned char * module) {
 	unsigned short modId;
 	unsigned short version;
 	ident = *SIS_3801_A_IDENT(module);
-	modId = (ident >> 16) & 0xFFF;
+	modId = (ident >> 16) & 0xFFFF;
 	version = (ident >> 12) & 0xF;
-	sprintf(str, "  SIS module info: id %#x, version %d", modId, version);
+	sprintf(str, "  SIS module info: id %#x, version %x", modId, version);
 	f_ut_send_msg("m_read_meb", str, ERR__MSG_INFO, MASK__PRTT);
 }
 

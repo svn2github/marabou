@@ -383,10 +383,10 @@ int f_user_readout (unsigned char  bh_trig_typ,
 %CDT%					else { WRITE_TIME_STAMP(); }		/* include time stamp */
 %CT% 	 				WRITE_TIME_STAMP(); 				/* include time stamp */
 %SB%					BEGIN_SUBEVENT($sevtType, $sevtSubtype, 0, $crateNo, kMrbSevt$sevtNameUC); /* subevent $sevtNameLC (type=[$sevtType,$sevtSubtype], crate C$crateNo, serial=$sevtSerial) */
-%SMB%					pmodh = evt.out16;			/* save addr of module header for module $moduleName */
-%SMB%					RDO_2MEM_16($moduleHeader);	/* header for module $moduleName: serial=$moduleSerial, $maxWords data words max */
+%SMB%					pmodh = evt.out16;			/* save addr of module header for module $moduleNameLC */
+%SMB%					RDO_2MEM_16(kRdoHeaderBit | (kMrbModID$moduleType << 16) | kMrbModule$moduleNameUC);	/* header for module $moduleNameLC: type=$moduleType, serial=$moduleSerial */
 %SMB%					RDO_2MEM_16(0);				/* 2nd header word is wc - updated afterwards */
-%SME%					*(pmodh + 1) = (int) (evt.out16 - pmodh);	/* end of data section for module $moduleName: update wc */
+%SME%					*(pmodh + 1) = (int) (evt.out16 - pmodh);	/* end of data section for module $moduleNameLC: update wc */
 %AL%					RDO_2MEM_16(0xffff);	/* + 1 word to align to 32 bit boundary */
 %SE%					END_SUBEVENT(); 	/* end of subevent $sevtNameLC */
 %CE%					break;

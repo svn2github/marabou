@@ -785,7 +785,7 @@ void HTCanvas::UpdateHists()
       fx =  hold->GetXaxis()->GetFirst(); 
       lx =  hold->GetXaxis()->GetLast(); 
       TH1 * hist = fHistPresent->GetSelHistAt(i,fHistList);
-      if (!hist) {
+     if (!hist) {
          cout << setred << "Cant get histogram, M_analyze stopped? " << endl;
          if(fTimer){
             cout << "Deleting existing timer" << endl;
@@ -797,7 +797,7 @@ void HTCanvas::UpdateHists()
 
          return;
       }
-      if(is2dim(hist)){
+     if(is2dim(hist)){
          fy =  hold->GetYaxis()->GetFirst(); 
          ly =  hold->GetYaxis()->GetLast();        
          hist->Draw(fHistPresent->fDrawOpt2Dim->Data());
@@ -809,7 +809,7 @@ void HTCanvas::UpdateHists()
          if(fHistPresent->fShowErrors)drawopt += "e1";
          if(fHistPresent->fFill1Dim){
             hist->SetFillStyle(1001);
-            hist->SetFillColor(44);
+			hist->SetFillColor(44);
          } else hist->SetFillStyle(0);
          hist->Draw(drawopt.Data());
          hist->GetXaxis()->SetRange(fx, lx);

@@ -12,12 +12,12 @@
     gSystem.Load("libTMrbTransport.so");
     gSystem.Load("libTMbsSetup.so");
     gSystem.Load("libTMrbEsone.so");
-//    gSystem.Load("libTMrbDGF.so");
+    gSystem.Load("libTMrbDGF.so");
     gSystem.Load("libTGMrbUtils.so");
     gSystem.Load("libTMrbHelpBrowser.so");
     gSystem.Load("libMutex.so");
     gSystem.Load("libTMrbAnalyze.so");
-//    gSystem.Load("libDGFControl.so");
+    gSystem.Load("libDGFControl.so");
     gSystem.Load("libTSnkDDA0816.so");
     gSystem.Load("libTPolControl.so");
     THtml html;

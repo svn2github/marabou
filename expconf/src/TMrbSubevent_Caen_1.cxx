@@ -1,7 +1,7 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSubevent_Caen_1.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,41] - DGF data
+// Purpose:        MARaBOU configuration: subevents of type [10,41] - CAEN data
 // Description:    Implements class methods to handle [10,41] subevents
 //                 reflecting data structure of CAEN modules
 // Keywords:
@@ -80,7 +80,7 @@ Bool_t TMrbSubevent_Caen_1::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 															const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_DGF_1::MakeReadoutCode
+// Name:           TMrbSubevent_Caen_1::MakeReadoutCode
 // Purpose:        Write a piece of code for subevent [10,41]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file

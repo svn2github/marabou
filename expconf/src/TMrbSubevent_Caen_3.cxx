@@ -1,8 +1,8 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSubevent_Caen_3.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,42] - DGF data
-// Description:    Implements class methods to handle [10,42] subevents
+// Purpose:        MARaBOU configuration: subevents of type [10,43] - CAEN data
+// Description:    Implements class methods to handle [10,43] subevents
 //                 reflecting data structure of XIA DGF-4C modules
 // Keywords:
 // Author:         R. Lutter
@@ -38,14 +38,14 @@ TMrbSubevent_Caen_3::TMrbSubevent_Caen_3(const Char_t * SevtName, const Char_t *
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_3
-// Purpose:        Create a subevent type [10,42]
+// Purpose:        Create a subevent type [10,43]
 // Arguments:      Char_t * SevtName       -- subevent name
 //                 Char_t * SevtTitle      -- ... and title
 //                 Int_t Crate             -- crate number
 // Results:        --
 // Exceptions:
-// Description:    Create a new subevent of type [10,42]
-//                 used to store DGF-4C list-mode data
+// Description:    Create a new subevent of type [10,43]
+//                 used to store CAEN data in DGF-4C list-mode format
 //
 //
 //                 Data format as given by the producer (MBS):
@@ -82,7 +82,7 @@ Bool_t TMrbSubevent_Caen_3::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrb
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSubevent_Caen_3::MakeReadoutCode
-// Purpose:        Write a piece of code for subevent [10,42]
+// Purpose:        Write a piece of code for subevent [10,43]
 // Arguments:      ofstream & RdoStrm           -- file output stream
 //                 EMrbReadoutTag TagIndex      -- index of tag word from template file
 //                 TMrbTemplate & Template      -- template

@@ -1,7 +1,7 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/src/TMrbSubevent_Caen_2.cxx
-// Purpose:        MARaBOU configuration: subevents of type [10,42] - DGF data
+// Purpose:        MARaBOU configuration: subevents of type [10,42] - CAEN data
 // Description:    Implements class methods to handle [10,42] subevents
 //                 reflecting data structure of XIA DGF-4C modules
 // Keywords:
@@ -45,7 +45,7 @@ TMrbSubevent_Caen_2::TMrbSubevent_Caen_2(const Char_t * SevtName, const Char_t *
 // Results:        --
 // Exceptions:
 // Description:    Create a new subevent of type [10,42]
-//                 used to store DGF-4C list-mode data
+//                 used to store CAEN data DGF-4C list-mode format
 //
 //
 //                 Data format as given by the producer (MBS):

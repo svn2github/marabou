@@ -4,7 +4,19 @@
 <axx NAME=Help_on_Calibration></a>
 <H1>Calibrate x-scale of 1-dim histogram</H1>
 The X - scale of of a 1-dim histogram may be recalibrated
-providing x-y-points. At least 2 points are required. 
+providing x-y-points. 
+
+There are two methods implemented:
+1. Only the X - scale of the historam is changed in situ,
+   no rebinning is done, only the part of the  linear calibration 
+   function is used. 
+2. A new histogram with used defined binning is generated
+   In this case the xvalues of the original are randomly
+   shifted within a bin to avoid binning effects.
+   Caveat: The width of (narrow) peaks will in general be 
+   increased by this.
+
+To calibrate obviously least 2 points are required. 
 Points can be provided in the following ways:
 Activate the option  <b>Enable calibration</b> from the 
 <b>Various HistPresent Options</b> menu. Execute a (gauss) fit
@@ -18,16 +30,12 @@ The user is then prompted for a fit function. As default
 <b>pol1</b> is offered, i.e. a straight line. Giving <b>pol2</b>
 would give a polynomial of 2nd degree.
 The fitted function may be written to a root file for later
-use in an analysis program. 
-Note: Use unique and meaningfull names.
-If more then 2 parameters (pol1) are fitted currently only
-the first 2 (i.e. constant and slope of the polynomial) are
-used for the new x-scale. This is because a non linear scaleing
-would require a rebinning of the histogram which in general
-does not give satisfactory results because of artificial gaps
-and peaks.
+use in an analysis program. The name of the fit function which
+is used to retrieve the calibration function is the histgram name
+appended by <i>_calfunc</i>.
+
 The calibration values and titles of the x and y axis are 
-storedin an ascii-file which name is formed from the resource
+stored in an ascii-file which name is formed from the resource
 <b>HistPresent.LastSettingsName</b> in the <b>.rootrc</b> followed by 
 _<i>histname</i>.def
 So normally: if the histogram name is <i>hpx</i> the file is named:
