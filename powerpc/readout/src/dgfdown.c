@@ -100,6 +100,10 @@ int main(int argc, char * argv[]) {
 	int n;
 	unsigned int smaskD, smaskE;
 	unsigned long * baseAddr;
+	int errCnt;
+	FILE *fsts;
+
+	unlink(".dgfdown.ok");
 
 	if (argc >= 2) {
 		strcpy(cfgFile, argv[1]);
@@ -109,7 +113,7 @@ int main(int argc, char * argv[]) {
 
  	n = root_env_read(cfgFile);			/* read ROOT's environment file */
 	if (n <= 0) {
-		fprintf(stderr, "%sdgfdown: Cannot open file %s%s\n", setred, cfgFile, setblack);
+		printf("%sdgfdown: Cannot open file %s%s\n", setred, cfgFile, setblack);
 		exit(1);
 	}
 
@@ -128,24 +132,28 @@ int main(int argc, char * argv[]) {
 		strcat(fileSpec, root_env_getval_s("SystemFPGACode", ""));
 		sysSize = dgf_read_fpga(fileSpec, "System", sys);
 		if (sysSize <= 0) {
-			fprintf(stderr, "%sdgfdown: Error reading file %s [System]%s\n", setred, fileSpec, setblack);
+			printf("%sdgfdown: Error reading file %s [System]%s\n", setred, fileSpec, setblack);
 			exit(1);
 		}
 	}
+
+	errCnt = 0;
 
 	if (strchr(loadOptions, 'F') != NULL) {
 		strcpy(fileSpec, loadPath);
 		strcat(fileSpec, root_env_getval_s("FippiFPGACode.RevD", ""));
 		fippiDsize = dgf_read_fpga(fileSpec, "Fippi(D)", fippiRevD);
 		if (fippiDsize <= 0) {
-			fprintf(stderr, "%sdgfdown: Error reading file %s [Fippi(D)]%s\n", setred, fileSpec, setblack);
+			printf("%sdgfdown: Error reading file %s [Fippi(D)]%s\n", setred, fileSpec, setblack);
+			errCnt++;
 		}
 	
 		strcpy(fileSpec, loadPath);
 		strcat(fileSpec, root_env_getval_s("FippiFPGACode.RevE", ""));
 		fippiEsize = dgf_read_fpga(fileSpec, "Fippi(E)", fippiRevE);
 		if (fippiEsize <= 0) {
-			fprintf(stderr, "%sdgfdown: Error reading file %s [Fippi(E)]%s\n", setred, fileSpec, setblack);
+			printf("%sdgfdown: Error reading file %s [Fippi(E)]%s\n", setred, fileSpec, setblack);
+			errCnt++;
 		}
 	}
 
@@ -156,32 +164,65 @@ int main(int argc, char * argv[]) {
 	}
 
 	for (crate = 1; crate <= nofCrates; crate++) {
+		printf("dgfdown: Starting download for crate %d ...\n", crate);
+
 		if (strchr(loadOptions, 'S') != NULL) {
-			if (dgf_download_fpga(crate, -1, "System", sys, sysSize) == 0) exit(1);
+			if (dgf_download_fpga(crate, -1, "System", sys, sysSize) == 0) {
+				printf("%sdgfdown: Skipping further download for crate %d ...%s\n", setred, crate, setblack);
+				errCnt++;
+				continue;
+			}
 		}
 		if (strchr(loadOptions, 'F') != NULL) {
 			smaskD = dgf_get_revision(crate, FIPPI_REVD);
 			smaskE = dgf_get_revision(crate, FIPPI_REVE);
 			if (smaskD) {
 				if (fippiDsize <= 0) {
-					fprintf(stderr, "%sdgfdown: No data [Fippi(D)]%s\n", setred, setblack);
+					printf("%sdgfdown: No data [Fippi(D)]%s\n", setred, setblack);
 					exit(1);
 				}
-				if (dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize) == 0) exit(1);
+				if (dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize) == 0) {
+					printf("%sdgfdown: Skipping further download for crate %d ...%s\n", setred, crate, setblack);
+					errCnt++;
+					continue;
+				}
 			}
 			if (smaskE) {
 				if (fippiEsize <= 0) {
-					fprintf(stderr, "%sdgfdown: No data [Fippi(E)]%s\n", setred, setblack);
+					printf("%sdgfdown: No data [Fippi(E)]%s\n", setred, setblack);
 					exit(1);
 				}
-				if (dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize) == 0) exit(1);
+				if (dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize) == 0) {
+					printf("%sdgfdown: Skipping further download for crate %d ...%s\n", setred, crate, setblack);
+					errCnt++;
+					continue;
+				}
 			}
 		}
 		if (strchr(loadOptions, 'D') != NULL) {
 			dgf_set_switchbus(crate);
-			if (dgf_download_dsp(crate, dsp, dspSize) == 0) exit(1);
+			if (dgf_download_dsp(crate, dsp, dspSize) == 0) {
+					printf("%sdgfdown: Skipping further download for crate %d ...%s\n", setred, crate, setblack);
+					errCnt++;
+					continue;
+			}
 		}
 	}
-	printf("\n%sdgfdown: Download ok - no errors%s\n\n", setblue, setblack);
-	exit(0);
+	if (errCnt == 0) {
+		printf("\n%sdgfdown: Download ok - no errors%s\n\n", setblue, setblack);
+		fsts = fopen(".dgfdown.ok", "w");
+		if (fsts) {
+			fprintf(fsts, "Download.Errors:	0\n");
+			close(fsts);
+		}
+		exit(0);
+	} else {
+		printf("\n%sdgfdown: Download finished - %d error(s)%s\n\n", setred, errCnt, setblack);
+		fsts = fopen(".dgfdown.ok", "w");
+		if (fsts) {
+			fprintf(fsts, "Download.Errors:	%d\n", errCnt);
+			close(fsts);
+		}
+		exit(1);
+	}
 }
