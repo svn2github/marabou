@@ -191,7 +191,6 @@ class TMrbConfig : public TNamed {
 									kAnaHistoDefinePointers,
 									kAnaHistoInitializeArrays,
 									kAnaHistoBookUserDefined,
-									kAnaHistoBookSevtIndiv,
 									kAnaHistoFillArrays,
 									kAnaVarDefinePointers,
 									kAnaVarClassInstance,
