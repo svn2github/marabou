@@ -101,6 +101,7 @@
 %B%			dgf_update($moduleNameLC, "$moduleNameLC");			/* re-program dacs & fpgas */
 %B%			if (root_env_getval_b("$moduleNameUC.ActivateUserPSACode", $activatePSA) == 1) {
 %B%				dgf_activate_psa($moduleNameLC, "$moduleNameLC", 1);		/* activate user psa code */
+%B% 			dgf_set_ref_time($moduleNameLC);					/* set reference time */
 %B% 		} else {
 %B%				dgf_activate_psa($moduleNameLC, "$moduleNameLC", 0);		/* deactivate user psa code */
 %B% 		}
@@ -409,6 +410,19 @@ void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int fl
 	}
 }
 
+void dgf_set_ref_time(volatile unsigned long * dgf) {
+	int i;
+	unsigned int addr;
+
+	addr = dgf_get_par_value(dgf, -1, kMrbDgfParAoutBuffer);	/* get buffer addr */
+	DGF_WRITE_TSAR(dgf, addr + 11709);
+	DGF_READ_TSAR(dgf);												/* settle down */
+	for(i = 0; i < 4; i++) DGF_WRITE_DSP(dgf, 3072);
+	DGF_WRITE_TSAR(dgf, addr + 11713);
+	DGF_READ_TSAR(dgf);												/* settle down */
+	for(i = 0; i < 4; i++) DGF_WRITE_DSP(dgf, 6912);
+}
+
 %%EndOfCode%%
 %%UTILITIES%%
 
@@ -425,7 +439,7 @@ void dgf_modify_csr(volatile unsigned long * dgf, unsigned short bits2clear, uns
 int dgf_wait_active(volatile unsigned long * dgf, const char * dgfName, int bitState, int timeout);
 void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int flag);
 void dgf_wait();
-
+void dgf_set_ref_time(volatile unsigned long * dgf, const char * dgfName);
 %%EndOfCode%%
 %%DEFINE_PROTOTYPES%%
 
