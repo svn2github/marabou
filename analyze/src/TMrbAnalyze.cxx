@@ -3535,6 +3535,7 @@ TUsrHit * TUsrHBX::FindNextEvent() {
 // Results:        TUsrHit * Hit       -- first hit of next event
 // Exceptions:
 // Description:    Searches for first hit of next event.
+//                 Takes 1st event after reset.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3566,7 +3567,7 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 // Purpose:        Check if hit within time window
 // Arguments:      TUsrHit * Hit0      -- hit with time = 0
 // Results:        kTRUE/kFALSE
-// Description:    Checks if hit within time window.
+// Description:    Checks if current hit within time window.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3610,8 +3611,7 @@ TUsrHit * TUsrHBX::CurHit() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TUsrHit * hit;
-	hit = (fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL;
+	TUsrHit * hit = (fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL;
 	return(hit);
 }
 
