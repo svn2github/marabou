@@ -187,8 +187,7 @@ Bool_t DGFEditChanCSRAPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 					switch (Param1) {
 						case kDGFEditChanCSRAButtonApply:
 							btnState = fCSRAFrame->GetActive();
-							intStr = "0x";
-							intStr.AppendInteger(btnState, 0, '0', 16);
+							intStr.FromInteger(btnState, 0, '0', 16);
 							fEntry->SetText(intStr);
 							this->CloseWindow();
 							break;

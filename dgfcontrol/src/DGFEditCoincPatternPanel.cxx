@@ -211,8 +211,7 @@ Bool_t DGFEditCoincPatternPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Lon
 							patMask |= fRightFrame->GetActive();
 							dgf->SetCoincPattern(patMask);
 							pattern = dgf->GetCoincPattern();
-							intStr = "0x";
-							intStr.AppendInteger((Int_t) pattern, 0, '0', 16);
+							intStr.FromInteger((Int_t) pattern, 0, '0', 16);
 							fEntry->SetText(intStr.Data());
 							this->CloseWindow();
 							break;

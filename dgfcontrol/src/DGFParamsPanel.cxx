@@ -408,8 +408,7 @@ Bool_t DGFParamsPanel::ReadParams() {
 						TString pName = px->GetName();
 						intStr = "";
 						if (pName.Index("CSRA", 0) >= 0 || pName.Index("PATTERN", 0) >= 0) {
-							intStr = "0x";
-							intStr.AppendInteger(parVal, 4, '0', 16);
+							intStr.FromInteger(parVal, 4, '0', 16);
 						} else {
 							intStr = parVal;
 						}

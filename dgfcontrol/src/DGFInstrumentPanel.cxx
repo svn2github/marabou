@@ -908,16 +908,13 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	fTraceDelayEntry->GetEntry()->SetText(dblStr.Data());
 // StatRegModICSREntry:
 	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl");
-	intStr = "0x";
-	intStr.AppendInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
+	intStr.FromInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
 	fStatRegModICSREntry->GetEntry()->SetText(intStr.Data());
 // StatRegChanCSRAEntry:
-	intStr = "0x";
-	intStr.AppendInteger((Int_t) dgf->GetChanCSRA(chn), 4, '0', 16);
+	intStr.FromInteger((Int_t) dgf->GetChanCSRA(chn), 4, '0', 16);
 	fStatRegChanCSRAEntry->GetEntry()->SetText(intStr.Data());
 // StatCoincPatternEntry:
-	intStr = "0x";
-	intStr.AppendInteger((Int_t) dgf->GetCoincPattern(), 4, '0', 16);
+	intStr.FromInteger((Int_t) dgf->GetCoincPattern(), 4, '0', 16);
 	fStatCoincPatternEntry->GetEntry()->SetText(intStr.Data());
 // DACGainEntry:
 	intStr = dgf->GetParValue(chn, "GAINDAC");

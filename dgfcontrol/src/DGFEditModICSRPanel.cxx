@@ -199,8 +199,7 @@ Bool_t DGFEditModICSRPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t P
 							fastState = fFastTriggerFrame->GetActive();
 							icsr = dspState | fastState;
 							icsr &= TMrbDGFData::kSwitchBus;
-							intStr = "0x";
-							intStr.AppendInteger(icsr, 0, '0', 16);
+							intStr.FromInteger(icsr, 0, '0', 16);
 							fEntry->SetText(intStr);
 							this->CloseWindow();
 							break;
