@@ -57,7 +57,11 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 //                 TOrdCollection * ColumnLabels   -- column headings
 //                 TOrdCollection * RowLabels      -- row labels
 //                 TArrayI * Flags                 -- checkbutton flags
+//                                                 -- if number of Flags > 2 * Nrows  show 2 columns 
 //                 Int_t Nradio                    -- first Nradio flags are RadioButtons
+//                                                 -- if < 0 TGColorSelect
+//                                                 -- if 2 Flag columns 2nd group of flags triggers
+//                                                 --  0: TGColorSelect, 1 FillStyle, 2 LineStyle, 3: Markerstyle
 //                 Char_t *HelpText                -- display a help button 
 //                 Char_t *ActionText_1            -- replace text in Ok Button 
 //                 Char_t *ActionText_2            -- put extra Button, RetValue = 1 
@@ -129,9 +133,9 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if(fNrows != 0 && fNcols == 0) fNcols = nvalues/fNrows;
    if(fNcols != 0 && fNrows == 0) fNrows = nvalues/fNcols;
 
-   TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX, 2, 2, 2, 2);
+   TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX , 2, 2, 2, 2);
    fWidgets->AddFirst(lo1);
-   TGLayoutHints * lo2 = new TGLayoutHints(kLHintsLeft | kLHintsExpandY, 2, 2, 2, 2);
+   TGLayoutHints * lo2 = new TGLayoutHints(kLHintsLeft, 2, 2, 2, 2);
    fWidgets->AddFirst(lo2);
    TGLayoutHints * lo3 = new TGLayoutHints(kLHintsExpandX | kLHintsRight, 2, 2, 2, 2);
    fWidgets->AddFirst(lo3);
@@ -152,6 +156,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    Int_t itemwidth;
    Int_t fl1 = 0;
    Int_t fl2 = 0;
+   Int_t flmod = 0;
    if (Flags) {
       fl1 = 1;
       if(Flags->GetSize() < fNrows) {
@@ -159,7 +164,10 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 	  	gMrbLog->Flush("TGMrbTableFrame");
          fl1 = 0;
       }
-	  if(Flags->GetSize() >= 2*fNrows) fl2 = 1;
+	   if(Flags->GetSize() >= 2*fNrows) {
+         if (fColorSelect == 0) fl2 = 1;
+         else                   flmod = 1;
+      }
    }
    if (ItemWidth > 0) {
 		itemwidth = ItemWidth;
@@ -269,15 +277,34 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    }
    if (fl1 > 0) {
       for(Int_t i=0; i < fNrows; i++) {
-         if (fColorSelect > 0)               fFlagButton = new TGColorSelect(fFlagFrame1, (*Flags)[i], i);
-         else if (fRadio > 0 && i < fRadio)	fFlagButton = new TGRadioButton(fFlagFrame1, new TGHotString(""), i);
-         else							            fFlagButton = new TGCheckButton(fFlagFrame1, new TGHotString(""), i);
-         fWidgets->AddFirst(fFlagButton);
-         fFlagFrame1->AddFrame(fFlagButton,lo4);
-         fFlags->Add(fFlagButton);
+         fFlagButton = 0;
+         if (fColorSelect > 0) {
+            if (flmod == 0 || (flmod != 0 && (*Flags)[i + fNrows] == kFlagColor)) {
+               fFlagButton = new TGColorSelect(fFlagFrame1, (*Flags)[i], i);
+            } else if (flmod != 0) {
+               if ((*Flags)[i + fNrows] == kFlagFillStyle) 
+                  fFlagButton = new TGPictureButton(fFlagFrame1,fClient->GetPicture("selection_t.xpm"), i);
+               else if ((*Flags)[i + fNrows] == kFlagLineStyle) 
+                  fFlagButton = new TGPictureButton(fFlagFrame1,fClient->GetPicture("selection_t.xpm"), i);
+               else if ((*Flags)[i + fNrows] == kFlagFillStyle) 
+                  fFlagButton = new TGPictureButton(fFlagFrame1,fClient->GetPicture("selection_t.xpm"), i);
+               else  
+                  fFlagFrame1->AddFrame(new TGLabel(fFlagFrame1,new TGString("noop")),lo1); 
+            } else {
+               fFlagFrame1->AddFrame(new TGLabel(fFlagFrame1,new TGString("noop")),lo1); 
+            }
+         } else  {
+            if (fRadio > 0 && i < fRadio)	fFlagButton = new TGRadioButton(fFlagFrame1, new TGHotString(""), i);
+            else							      fFlagButton = new TGCheckButton(fFlagFrame1, new TGHotString(""), i);
+         }
+         if (fFlagButton) {
+            fWidgets->AddFirst(fFlagButton);
+            fFlagFrame1->AddFrame(fFlagButton,lo4);
+            fFlags->Add(fFlagButton);
 
-         if (fColorSelect <= 0 && (*Flags)[i]) fFlagButton->SetState(kButtonDown);
-         if (fColorSelect <= 0) fFlagButton->Associate(this);
+            if (fColorSelect <= 0 && (*Flags)[i]) fFlagButton->SetState(kButtonDown);
+            fFlagButton->Associate(this);
+         }
       }
       if (fCheck > 0) {
          fBtnAll1 = new TGPictureButton(fFlagFrame1, gClient->GetPicture("cbutton_all.xpm"), kTableFrameAll_1);
@@ -351,7 +378,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    fTableFrame->Resize(fNcols*itemwidth,fTableFrame->GetDefaultHeight());
 
    if (RowLabels) fTableRowFrame->AddFrame(fRowFrame,lo2);
-   fTableRowFrame->AddFrame(fTableFrame,lo2);
+   fTableRowFrame->AddFrame(fTableFrame,lo1);
    if (fl1 > 0) fTableRowFrame->AddFrame(fFlagFrame1,lo4);
    if (fl2 > 0) fTableRowFrame->AddFrame(fFlagFrame2,lo4);
    this->AddFrame(fColFrame,lo1);                // frame into main frame
@@ -527,6 +554,7 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 					break;
 				}
 				break;
+
             case kCM_RADIOBUTTON:
             case kCM_CHECKBUTTON:
                if(fRadio > 0){
@@ -547,7 +575,9 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
             default:
                break;
          }
-         break;
+      case kC_COLORSEL:
+ //        cout << "C_COLORSEL: " << Param1 << " " << Param2 << endl;   
+      break;
 
       default:
          break;
