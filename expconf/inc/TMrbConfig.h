@@ -69,6 +69,7 @@ class TMrbConfig : public TNamed {
 									kRdoInclude,
 									kRdoLibs,
 									kRdoPosix,
+									kRdoLynxPlatform,
 									kRdoDebug,
 									kRdoNameLC,
 									kRdoNameUC,

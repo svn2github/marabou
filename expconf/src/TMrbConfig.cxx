@@ -126,6 +126,7 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoInclude,				"READOUT_INCLUDE"			},
 								{TMrbConfig::kRdoLibs,					"READOUT_LIBS"				},
 								{TMrbConfig::kRdoPosix,					"READOUT_POSIX"				},
+								{TMrbConfig::kRdoLynxPlatform,			"GSI_LYNX_PLATFORM"			},
 								{TMrbConfig::kRdoDebug,					"DEBUG_READOUT"				},
 								{TMrbConfig::kRdoNameLC, 				"EXP_NAME_LC"				},
 								{TMrbConfig::kRdoNameUC, 				"EXP_NAME_UC"				},
@@ -1380,6 +1381,16 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TString posixFlags = gEnv->GetValue("TMrbConfig.ReadoutPosixFlags", "-mposix4d9 -mthreads");
 							rdoStrm << rdoTmpl.Encode(line, posixFlags.Data()) << endl;
+						}
+						break;
+					case TMrbConfig::kRdoLynxPlatform:
+						{
+							TString mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "v2.2-deve");
+							if (mbsVersion.Index("v4", 0) == 0) {
+								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PLATFORM") << endl;
+							} else {
+								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PROC_FAM") << endl;
+							}
 						}
 						break;
 					case TMrbConfig::kRdoDebug:
@@ -3987,15 +3998,15 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 	if (fUserMacroToBeCalled) {
 		cmd = fUserMacroCmd;
 		cmd.SetBase(16);
-		cmd += "((ofstream *) 0x";
+		cmd += "((ofstream *) ";
 		cmd += (Int_t) Strm;
-		cmd += ", (TMrbConfig *) 0x";
+		cmd += ", (TMrbConfig *) ";
 		cmd += (Int_t) this;
-		cmd += ", (TObject *) 0x";
+		cmd += ", (TObject *) ";
 		cmd += (Int_t) CfgObject;
 		cmd += ", \"";
 		cmd += TagWord;
-		cmd += "\", (Bool_t *) 0x";
+		cmd += "\", (Bool_t *) ";
 		cmd += (Int_t) &result;
 		cmd += ")";
 		cmd.ResetBase();
