@@ -66,8 +66,9 @@ class TMrbDGF : public TNamed {
 		enum EMrbWaitStatus 	{	kWaitError 			=	-3,
 									kWaitTimedOut		=	-2,
 									kWaitAborted		=	-1,
-									kWaitInProgress 	=	0,
-									kWaitOk 			=	1
+									kWaitActive 	 	=	1,
+									kWaitForLAM 	 	=	2,
+									kWaitOk 			=	3
 								};
 		
 		// timeout interval (times 500 ms)
@@ -283,7 +284,8 @@ class TMrbDGF : public TNamed {
 			Bool_t AccuHist_Start();
 			Bool_t AccuHist_Stop(Int_t SecsToWait = 10);
 
-		Int_t ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern); 	// get mca data
+		Int_t ReadHistograms(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern); 	// get mca data via esone
+		Int_t ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern); 	// ... via rsh
 
 		// tau fit
 		Double_t TauFit(Int_t Channel, Int_t NofTraces, Int_t TraceLength, Double_t A0, Double_t A1,
@@ -324,9 +326,14 @@ class TMrbDGF : public TNamed {
 		inline UInt_t GetStatus() { return(fStatusM); };							// soft status
 		inline void SetStatus(UInt_t Status) { fStatusM = Status; };
 		inline void Wait(Int_t Msecs = 100) { gSystem->Sleep(Msecs); };				// wait for DGF to settle down
+
 		EMrbWaitStatus WaitActive(Int_t Timeout = 10);								// wait for active bit to drop
+		EMrbWaitStatus WaitLAM(Int_t Timeout = 10);									// wait for lam
 		inline EMrbWaitStatus GetWaitStatus() { return(fStatusW); }; 				// get wait status
 		
+		inline Bool_t ActiveBit() { return((this->ReadCSR() & TMrbDGFData::kActive) != 0); };
+		inline Bool_t LAMBit() { return((this->ReadCSR() & TMrbDGFData::kLAMActive) != 0); };
+
 		inline Bool_t IsOffline() { return((fStatusM & TMrbDGF::kOffline) != 0); };
 		inline Bool_t HasLocalDataBase() { return((fStatusM & TMrbDGF::kLocalData) != 0); };
 

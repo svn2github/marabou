@@ -36,15 +36,12 @@ class TMrbDGFHistogramBuffer : public TNamed, public TArrayI {
 
 		void Reset();														// reset buffer
 		inline Int_t GetNofChannels() { return(fNofChannels); };			// get/set number of DGF channels
+		inline void SetNofChannels(Int_t NofChannels) { fNofChannels = NofChannels; };
 		Bool_t SetActive(Int_t Channel, Int_t HistNo);						// set channel active
 		Bool_t IsActive(Int_t Channel);										// test if channel active
-		inline void SetNofChannels(Int_t NofChannels) { fNofChannels = NofChannels; };
-		inline Int_t GetESize() { return(fESize); };						// get/set size of energy region
-		inline Int_t GetESizePerChannel() { return(fESizePerChannel); };	// ... per DGF channel
-		inline void SetESize(Int_t Size) { fESize = Size; if (fNofChannels) fESizePerChannel = Size / fNofChannels; };
-		inline Int_t GetBSize() { return(fBSize); };						// get/set size of baseline region
-		inline Int_t GetBSizePerChannel() { return(fBSizePerChannel); };	// ... per DGF channel
-		inline void SetBSize(Int_t Size) { fBSize = Size; if (fNofChannels) fBSizePerChannel = Size / fNofChannels; };
+		inline Int_t GetSize() { return(fSize); };						// get/set size of energy region
+		inline Int_t GetSizePerChannel() { return(fSizePerChannel); };	// ... per DGF channel
+		inline void SetSize(Int_t Size) { fSize = Size; if (fNofChannels) fSizePerChannel = Size / fNofChannels; };
 
 		inline void SetModule(TObject * Module) { fModule = Module; };		// connect to dgf module
 		
@@ -60,10 +57,8 @@ class TMrbDGFHistogramBuffer : public TNamed, public TArrayI {
 		TObject * fModule;					//! ptr to dgf module
 	
 		Int_t fNofChannels;					// number of DGF channels
-		Int_t fESize;						// size of energy region
-		Int_t fESizePerChannel; 			// ... per DGF channel
-		Int_t fBSize;						// size of base line region
-		Int_t fBSizePerChannel; 			// ... per DGF channel
+		Int_t fSize;						// size of energy region
+		Int_t fSizePerChannel; 				// ... per DGF channel
 		Bool_t fIsActive[TMrbDGFData::kNofChannels];	// channel active?
 		Int_t fHistNo[TMrbDGFData::kNofChannels];		// histogram number
 		TH1F * fHistogram[TMrbDGFData::kNofChannels];	// histograms

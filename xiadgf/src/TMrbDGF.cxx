@@ -3874,16 +3874,17 @@ Bool_t TMrbDGF::SetBinning(Int_t Channel, Int_t EnBin, Bool_t UpdateDSP) {
 	return(kTRUE);
 }
 
-Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern) {
+Int_t TMrbDGF::ReadHistograms(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::ReadHistogramBuffer
+// Name:           TMrbDGF::ReadHistogram
 // Purpose:        Read MCA data
 // Arguments:      TMrbDGFHistogramBuffer   -- histogram buffer
 //                 UInt_t ChannelPattern    -- pattern of active channels
 // Results:        Int_t NofWords           -- number of words read
 // Exceptions:
-// Description:    Reads MCA data from DSP. For XiaRelease = 2.0 (32k memory)
+// Description:    Reads MCA data from DSP. Use ESONE server
+//                 For XiaRelease = 2.0 (32k memory)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3896,8 +3897,8 @@ Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t Chann
 	Int_t nofWords;
 	TArrayI cData;
 		
-	if (!this->CheckConnect("ReadHistogramBuffer")) return(-1);
-	if (!this->CheckActive("ReadHistogramBuffer")) return(-1);
+	if (!this->CheckConnect("ReadHistograms")) return(-1);
+	if (!this->CheckActive("ReadHistograms")) return(-1);
 
 	Buffer.Reset(); 						// reset buffer layout
 	nofChannels = 0;						// calc number of DGF channels in use
@@ -3914,7 +3915,7 @@ Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t Chann
 	cData.Set(wc);
 
 	nofWords = TMrbDGFData::kMCAPageSize * nofChannels;
-	Buffer.SetESize(nofWords);		// size of energy region
+	Buffer.SetSize(nofWords);		// size of energy region
 	Buffer.Set(nofWords);			// reset data region
 	
 	Int_t fc = fCamac.HasFastCamac();
@@ -3922,8 +3923,6 @@ Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t Chann
 
 	k = 0;			// buffer index
 	nofWords = 0;
-	ofstream f;
-	f.open("hist.dat", ios::out);
 	for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (Buffer.IsActive(chn)) {
 			this->SetParValue("HOSTIO", chn, kTRUE);
@@ -3938,7 +3937,7 @@ Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t Chann
 					gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
 									<< ".A0.F0: Reading histogram energies failed - DSPAddr=0x" << setbase(16) << addr
 									<< setbase(10) << ", wc=" << wc << endl;
-					gMrbLog->Flush(this->ClassName(), "ReadHistogramBuffer");
+					gMrbLog->Flush(this->ClassName(), "ReadHistograms");
 					return(-1);
 				}
 				nofWords += wc / 2;
@@ -3947,7 +3946,6 @@ Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t Chann
 					if (i & 1) {
 						data |= cData[i];
 						Buffer[k] = (Int_t) data;
-						f << setw(8) << k << setw(10) << Buffer[k] << endl;
 						k++;
 					} else {
 						data = cData[i] << 8;
@@ -3956,7 +3954,92 @@ Int_t TMrbDGF::ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t Chann
 			}
 		}
 	}
-	f.close();
+	return(nofWords);
+}
+
+Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::ReadHistogramsViaRsh
+// Purpose:        Read MCA data
+// Arguments:      TMrbDGFHistogramBuffer   -- histogram buffer
+//                 UInt_t ChannelPattern    -- pattern of active channels
+// Results:        Int_t NofWords           -- number of words read
+// Exceptions:
+// Description:    Reads MCA data via remote shell.
+//                 For XiaRelease = 2.0 (32k memory)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t chn;
+	Int_t nofChannels;
+	Int_t nofWords;
+		
+	if (!this->CheckConnect("ReadHistogramsViaRsh")) return(-1);
+	if (!this->CheckActive("ReadHistogramsViaRsh")) return(-1);
+
+	Buffer.Reset(); 						// reset buffer layout
+	nofChannels = 0;						// calc number of DGF channels in use
+	for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+		if (ChannelPattern & (1 << chn)) {
+			Buffer.SetActive(chn, nofChannels);
+			nofChannels++;
+		}
+	}
+	Buffer.SetNofChannels(nofChannels);
+
+	TString datFile = this->GetName();			// store binary data in file <dgf>.histoDump.dat
+	datFile += ".histoDump.dat";
+
+	TString hsFile = ".";						// use file .<dgf>.histoDump.dat.ok for handshake
+	hsFile += datFile;
+	hsFile += ".ok";
+	
+	TString cmd = "rm -rf .";
+	cmd += hsFile;
+	gSystem->Exec(cmd.Data());					// remove handshake file
+
+	TString hdPgm = gEnv->GetValue("TMrbDGF.HowToDumpHistos", "/nfs/mbssys/bin/histoDump");
+	if (gMrbDGFData->fVerboseMode) {
+		gMrbLog->Out()	<< "Calling program \"" << fCamacHost << ":" << hdPgm << "\" via rsh" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
+	}
+	gSystem->Exec(Form("rsh %s 'cd %s; %s %d %d %#x %s'",
+							fCamacHost.Data(),
+							gSystem->WorkingDirectory(),
+							hdPgm.Data(),
+							this->GetCrate(),
+							this->GetStation(),
+							ChannelPattern,
+							fName.Data(),
+							"b"));
+
+	Bool_t fileOk = kFALSE;
+	for (Int_t i = 0; i < 10; i++) {			// wait for handshake file
+		if (!gSystem->AccessPathName(hsFile.Data(), (EAccessMode) F_OK)) {
+			fileOk = kTRUE;
+			break;
+		}
+	}
+	if (!fileOk) {
+		gMrbLog->Err()	<< "Handshake error - can't open file " << datFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
+		return(-1);
+	}
+	TEnv * hdEnv = new TEnv(hsFile.Data());
+	nofWords = hdEnv->GetValue("HistoDump.NofDataWords", 0);
+	if (nofWords != nofChannels * 32 * 1024) {
+		gMrbLog->Err()	<< "Number of data words unexpected -  " << nofWords
+						<< " (should be " << nofChannels << " * 32k = " << nofChannels * 32 * 1024 << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
+		return(-1);
+	}
+	FILE * f = fopen(datFile.Data(), "r");
+	if (f == NULL) {
+		gMrbLog->Err() << gSystem->GetError() << " - " << datFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
+	}
+	fread(Buffer.GetArray(), nofChannels, 32 * 1024, f);
 	return(nofWords);
 }
 
@@ -4050,7 +4133,7 @@ Bool_t TMrbDGF::AccuHist_Start() {
 
 	this->SetParValue("RUNTASK", TMrbDGFData::kRunMCA, kTRUE);
 	this->StartRun();			// start & clear MCA
-	fStatusW = TMrbDGF::kWaitInProgress;
+	fStatusW = TMrbDGF::kWaitActive;
 	return(kTRUE);
 }
 
@@ -4609,14 +4692,14 @@ TMrbDGF::EMrbWaitStatus TMrbDGF::WaitActive(Int_t Timeout) {
 // Arguments:      Int_t Timeout    -- timeout in seconds
 // Results:        Status: error, timeout, abort, ok
 // Exceptions:
-// Description:    Waits until bit ACTIVE disapears in the csr.
+// Description:    Waits until bit TMrbDGFData::kActive disapears in the csr.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	UInt_t csr;
 	time_t start;
 
-	fStatusW = TMrbDGF::kWaitInProgress;
+	fStatusW = TMrbDGF::kWaitActive;
 	
 	start = time(NULL);
 	for (;;) {
@@ -4645,6 +4728,57 @@ TMrbDGF::EMrbWaitStatus TMrbDGF::WaitActive(Int_t Timeout) {
 			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
 							<< ": Timed out after " << Timeout << " secs" << endl;
 			gMrbLog->Flush(this->ClassName(), "WaitActive");
+			fStatusW = TMrbDGF::kWaitTimedOut;
+			break;
+		}
+	}
+	return(fStatusW);
+}
+
+TMrbDGF::EMrbWaitStatus TMrbDGF::WaitLAM(Int_t Timeout) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::WaitLAM
+// Purpose:        Wait for LAM
+// Arguments:      Int_t Timeout    -- timeout in seconds
+// Results:        Status: error, timeout, abort, ok
+// Exceptions:
+// Description:    Waits until bit TMrbDGFData::kLAMActive shows up in the csr.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t csr;
+	time_t start;
+
+	fStatusW = TMrbDGF::kWaitForLAM;
+	
+	start = time(NULL);
+	for (;;) {
+		csr = this->ReadCSR();
+		if (csr == 0xffffffff) {
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+							<< ": Unexpected error. Giving up." << endl;
+			gMrbLog->Flush(this->ClassName(), "WaitLAM");
+			fStatusW = TMrbDGF::kWaitError;
+			break;
+		}
+		if ((csr & TMrbDGFData::kLAMActive) != 0) {
+			fStatusW = TMrbDGF::kWaitOk;
+			break;
+		}
+
+		gSystem->ProcessEvents();
+		if (this->IsAborted()) {
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+							<< ": Aborted after " << (time(NULL) - start) << " secs. Stopping current run." << endl;
+			gMrbLog->Flush(this->ClassName(), "WaitLAM");
+			fStatusW = TMrbDGF::kWaitAborted;
+			break;
+		}
+		if ((time(NULL) - start) > Timeout) {
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+							<< ": Timed out after " << Timeout << " secs" << endl;
+			gMrbLog->Flush(this->ClassName(), "WaitLAM");
 			fStatusW = TMrbDGF::kWaitTimedOut;
 			break;
 		}

@@ -66,10 +66,8 @@ void TMrbDGFHistogramBuffer::Reset() {
 	Int_t i;
 
 	fNofChannels = 0;
-	fESize = 0;
-	fESizePerChannel = 0;
-	fBSize = 0;
-	fBSizePerChannel = 0;
+	fSize = 0;
+	fSizePerChannel = 0;
 
 	for (i = 0; i < TMrbDGFData::kNofChannels; i++) {
 		fIsActive[i] = kFALSE;
@@ -146,10 +144,8 @@ void TMrbDGFHistogramBuffer::Print() {
 				<< " DGF-4C Histogram buffer" << endl
 				<< "..........................................................................................." << endl
 				<< " Number of active channels   : " << fNofChannels << endl
-				<< " Size of energy region       : " << fESize << endl
-				<< "             ... per channel : " << fESizePerChannel << endl
-				<< " Size of baseline region     : " << fBSize << endl
-				<< "             ... per channel : " << fBSizePerChannel << endl
+				<< " Size of energy region       : " << fSize << endl
+				<< "             ... per channel : " << fSizePerChannel << endl
 				<< "..........................................................................................." << endl;
 		for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 			if (fIsActive[chn]) cout	<< " Counts in channel # " << chn << "       : " << this->GetContents(chn) << endl;
@@ -175,8 +171,8 @@ Int_t TMrbDGFHistogramBuffer::GetContents(Int_t Channel) {
 
 	sum = 0;
 	if (fIsActive[Channel]) {
-		k = fHistNo[Channel] * fESizePerChannel;
-		for (i = 0; i < fESizePerChannel; i++, k++) sum += fArray[k];
+		k = fHistNo[Channel] * fSizePerChannel;
+		for (i = 0; i < fSizePerChannel; i++, k++) sum += fArray[k];
 	}
 	return(sum);
 }
@@ -210,16 +206,17 @@ Bool_t TMrbDGFHistogramBuffer::FillHistogram(Int_t Channel, Bool_t DrawIt) {
 		return(kFALSE);
 	}
 
-	hName = "mca"; hName += Channel;
+	hName = fModule->GetName();
+	hName += ".mca."; hName += Channel;
 	hTitle = "MCA histogram channel "; hTitle += Channel;
 	h = fHistogram[Channel];
 
 	if (h) delete h;
 
-	h = new TH1F(hName.Data(), hTitle.Data(), fESizePerChannel, 0., (Float_t) fESizePerChannel);
+	h = new TH1F(hName.Data(), hTitle.Data(), fSizePerChannel, 0., (Float_t) fSizePerChannel);
 
-	k = fHistNo[Channel] * fESizePerChannel;
-	for (i = 1; i <= fESizePerChannel; i++, k++) h->SetBinContent(i, (Stat_t) fArray[k]);
+	k = fHistNo[Channel] * fSizePerChannel;
+	for (i = 1; i <= fSizePerChannel; i++, k++) h->SetBinContent(i, (Stat_t) fArray[k]);
 	if (DrawIt) h->Draw();
 	fHistogram[Channel] = h;
 	return(kTRUE);
@@ -271,15 +268,16 @@ Bool_t TMrbDGFHistogramBuffer::Save(const Char_t * McaFile, Int_t Channel) {
 						return(kFALSE);
 					}
 				}
-				hName = "mca"; hName += chn;
+				hName = fModule->GetName();
+				hName += ".mca."; hName += chn;
 				hTitle = "MCA histogram ";
 				hTitle += ((TMrbDGF *) fModule)->GetName();
 				hTitle += ", chn ";
 				hTitle += chn;
 				if (h) delete h;
-				h = new TH1F(hName.Data(), hTitle.Data(), fESizePerChannel, 0., (Float_t) fESizePerChannel);
-				k = fHistNo[chn] * fESizePerChannel;
-				for (i = 0; i < fESizePerChannel; i++, k++) h->Fill((Axis_t) i, (Float_t) fArray[k]);
+				h = new TH1F(hName.Data(), hTitle.Data(), fSizePerChannel, 0., (Float_t) fSizePerChannel);
+				k = fHistNo[chn] * fSizePerChannel;
+				for (i = 0; i < fSizePerChannel; i++, k++) h->Fill((Axis_t) i, (Float_t) fArray[k]);
 				h->Write();
 				nofHistos++;
 			} else {
