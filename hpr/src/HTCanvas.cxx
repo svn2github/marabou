@@ -290,8 +290,17 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    fEvent  = event;
    fEventX = px;
    fEventY = py;
-
-//   cout << "HTCanvas: " << event << endl;
+   static TObject * pad_of_image = 0;
+   static Bool_t in_image = kFALSE;
+   if (fSelected) {
+      if (event == kButton1Down && !strncmp(fSelected->ClassName(), "TASI", 4)) {
+//         cout << "HTCanvas: " << fSelected->ClassName()<< " gPad " <<
+//              gPad << endl;
+//         gPad->Dump();
+         in_image = kTRUE;
+      }
+   }
+   
    switch (event) {
 
    case kMouseMotion:
@@ -337,9 +346,14 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-
+      
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
+      if (in_image) {
+         pad_of_image = pad;
+         fSelected = pad_of_image;
+      }
+//      cout << fSelected  << endl;
 
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
@@ -381,7 +395,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //OS end
 
       fSelected->ExecuteEvent(event, px, py);
-//      fSelected->Dump();
       if (fAutoExec)        RunAutoExec();
 
       break;
@@ -391,7 +404,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
-
+         if (in_image) {
+            fSelected = pad_of_image;
+//            fSelected = gPad;
+         }
 //         if(fUseEditGrid && !(fSelected->IsA() == TPad::Class())){
          if(fUseEditGrid && 
           !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
@@ -440,6 +456,12 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kButton1Up:
       if (fSelected) {
          gPad = fSelectedPad;
+ 
+         if (in_image) {
+//            cout << "setting: " << fSelected << endl;
+            fSelected = pad_of_image;
+            in_image = kFALSE;
+         }
 //OS start
 //         cout << "name, px, py, bef " << px << " " << py << endl;
 //         fSelected->Print();

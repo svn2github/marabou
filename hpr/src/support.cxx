@@ -354,7 +354,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 //      if(cle->fSel != "NoOp") anysel=kTRUE;
    }
    if (maxlen_nam > 20)
-      xw = 50 + maxlen_nam * 11;
+      xw = 40 + maxlen_nam * 12;
    if (Nentries < 25)
       yw = 24 * (Nentries + 1);
    TString pname(fname);

@@ -688,7 +688,7 @@ Should we create a new file with corrected names?", maincanvas)) {
             	cmd = "mypres->ShowContents(\"";
             	cmd = cmd + fname + "\",\"";
                if (strlen(dir) > 0) cmd = cmd + "/" + dir;
-               cmd = cmd + key->GetName() + "\")";
+               cmd = cmd + key->GetName()+ "/" + "\")";
             	sel = "";
             	title = "Dir: ";
                title += key->GetName();
@@ -2568,6 +2568,7 @@ void HistPresent::ListSelect()
 TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname) 
 {
 //   TurnButtonGreen(&activeHist);
+   TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
    TH1* hist=0;
    TString shname = hname;
 //    shname = shname.Strip(TString::kBoth);
@@ -2578,6 +2579,9 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       Int_t pp = newhname.Index(".");
       if (pp) newhname.Resize(pp);
       newhname = newhname + "_" + shname.Data();
+      while (newhname.Index(notascii) >= 0) {
+         newhname(notascii) = "_";
+      }
 //      if (newhname.Index(";") > 1) newhname.Resize(newhname.Index(";"));
       const char * hn = (const char*)newhname;
       TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
@@ -2604,13 +2608,27 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       if (!hist) {
       	fRootFile=new TFile(fname);
          if (strlen(dir) > 0) fRootFile->cd(dir);
-	//      cout << "GetHist: |" << shname.Data()<< "|"<< endl;
-      	hist = (TH1*)gDirectory->Get(shname.Data());
+	      cout << "GetHist: |" << shname.Data()<< "|"
+         << dir << "|" << endl;
+         if (shname.Index(";") > 0)shname.Resize(shname.Index(";"));
+         TKey * key = gDirectory->GetKey(shname.Data());
+//      	hist = (TH1*)gDirectory->Get(shname.Data());
+      	if (key)hist = (TH1*)key->ReadObj();
       	if (hist) {
             hist->SetDirectory(gROOT);
+            TString hn = hist->GetName();
+            if (hn.Index(notascii)>= 0) {
+               cout << "WARNING: Replace non letter/numbers by US(_) in: " 
+                    << hn << endl;
+               while (hn.Index(notascii) >= 0) {
+                 hn(notascii) = "_";
+               }
+               hist->SetName(hn);
+            }
             TDatime dt = gDirectory->GetModificationDate();
             hist->SetUniqueID(dt.Convert());
-      	   hist->SetName((const char*)newhname);
+
+      	   hist->SetName(newhname);
          } else {
             cout << "Histogram: " << hname << 
                     " not found in: " << fname << endl;
@@ -2738,9 +2756,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 {
    static TString FHnameSave;
    static FitHist *fh=0;
-   const char * origname;
-   origname = hname;
-   if (origname == 0) origname = hist->GetName();
+   TString origname;
+   if (hname) origname = hname;
+   else       origname = hist->GetName();
    TString FHname("F");
    FHname += hist->GetName();
 //   cout << "FHname " << FHname<< endl;
@@ -2749,10 +2767,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    while (FHname.Index(notascii) >= 0) {
       FHname(notascii) = "_";
    }
-//   while (FHname.Index(" ") >= 0) {
-//      FHname(mspace) = "_";
-//   }
-//   cout << "FHname " << FHname<< endl;
+   while (origname.Index(notascii) >= 0) {
+      origname(notascii) = "_";
+   }
    if (gDirectory) {
       TList *tl=gDirectory->GetList();   
       FitHist *fhist = (FitHist*)tl->FindObject(FHname);
@@ -2805,7 +2822,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 //   cout << "FHname " << FHname << endl;
 //   cout << "hist->GetName() " << hist->GetName() << endl;
 //   cout << "origname " << origname << endl;
-   fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname,
+   fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname.Data(),
           fWincurx, fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();
    return fh;

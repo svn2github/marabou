@@ -232,10 +232,10 @@ void HTCanvas::InsertImage()
       pad->SetPad(pad->GetXlowNDC(),pad->GetYlowNDC(),
                   pad->GetXlowNDC() + pad->GetWNDC(),
                   pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
-      pad->SetTopMargin(0);
-      pad->SetBottomMargin(0);
-      pad->SetLeftMargin(0);
-      pad->SetRightMargin(0);
+      pad->SetTopMargin(.02);
+      pad->SetBottomMargin(0.02);
+      pad->SetLeftMargin(0.02);
+      pad->SetRightMargin(0.02);
       img->SetConstRatio(kTRUE);
 //      img->SetConstRatio(kFALSE);
       img->SetImageQuality(TAttImage::kImgBest);
