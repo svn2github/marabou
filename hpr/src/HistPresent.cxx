@@ -768,6 +768,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
       }
    }
+   Int_t anything_to_delete = 0;
    if (fHistSelMask->Length() <=0) {
 //  windows
       if (lofW1.GetSize() > 0) {
@@ -785,6 +786,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             hint =  title;
             hint+=" 1-dim window";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            anything_to_delete++; 
          }
       }
       if (lofW2.GetSize() > 0) {
@@ -809,6 +811,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          cmd = cmd + fname + "\")";
          sel = "";
          fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+         anything_to_delete++; 
       }
    //  functions
       if (lofF.GetSize() > 0) {
@@ -826,6 +829,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             hint =  title;
             hint+=" function";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            anything_to_delete++; 
          }
       }
    //  canvases
@@ -843,6 +847,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             hint =  title;
             hint+=" canvas";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            anything_to_delete++; 
          }
       }
    //  user contours
@@ -861,6 +866,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             hint =  title;
             hint+=" contour";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            anything_to_delete++; 
          }
       }
    //  graphs
@@ -879,6 +885,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             hint =  title;
             hint+=" graph";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            anything_to_delete++; 
          }
       }
    //  trees
@@ -899,28 +906,35 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
       }
    }
 //
-   if (maxkey > 1) {
-   	cmd = "mypres->PurgeEntries(\"";
+   if (anything_to_delete > 0) {
+   	if (maxkey > 1) {
+   		cmd = "mypres->PurgeEntries(\"";
+   		cmd = cmd + fname +  "\")";
+   		title = "Purge Entries";
+   		hint = "Purge: delete entries, keep last cycl";
+   		sel.Resize(0);
+   		fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+   	}
+   	cmd = "mypres->DeleteSelectedEntries(\"";
    	cmd = cmd + fname +  "\")";
-   	title = "Purge Entries";
-   	hint = "Purge: delete entries, keep last cycl";
+   	title = "Delete Sel Entries";
+   	hint = "Delete selected entries";
    	sel.Resize(0);
    	fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
    }
-   cmd = "mypres->DeleteSelectedEntries(\"";
-   cmd = cmd + fname +  "\")";
-   title = "Delete Sel Entries";
-   hint = "Delete selected entries";
-   sel.Resize(0);
-   fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
-   
    cmd = "mypres->ShowStatOfAll(\"";
    cmd = cmd + fname +  "\")";
    title = "Show Stats of all";
    hint = "Show statistics of all histograms and save to file";
    sel.Resize(0);
    fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
-
+   if (strstr(fname,"Socket")) { 
+      cmd = "mypres->SaveFromSocket(\"";
+      cmd = cmd + fname + "\")";
+      hint = "Save all hists to a local ROOT file ";
+      title = "Save to local ROOT file";
+      fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+   }
 //
    if (fCmdLine->GetSize() > 0) {
 
@@ -1868,8 +1882,6 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
    Int_t pp = fname.Index(".");
    if (pp) fname.Resize(pp);
    fname+=".root";
-   Int_t retval=kMBYes;
-   repeat:
 
    Bool_t ok;
    const char * foutname=GetString("File Name",(const char *)fname, 
@@ -1878,35 +1890,66 @@ void HistPresent::SaveMap(const char* mapname, const char* bp)
    if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
       TString question=foutname;
       question += " already exists, overwrite?";
-      int buttons= kMBYes | kMBNo | kMBRetry;
-      EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), 0,
-       "Qustion",(const char *)question,
-       icontype, buttons, &retval);
-      if (retval == kMBRetry) {
-         fname=foutname;
-         goto repeat;
-      }
-//      if (retval == kMBNo) return;
+      if (!QuestionBox(question.Data(), GetMyCanvas())) return;
    }
-   if (retval == kMBYes) {
-      TFile *f = new TFile(foutname,"RECREATE");
-      const char * name;
-      TMapRec *mr = mfile->GetFirst();
-      if (mr) {
-         while (mfile->OrgAddress(mr)) {
-            if (!mr) break;
-            name=mr->GetName();
-            TH1 *hist=0;
-            hist    = (TH1 *) mfile->Get(name, hist);
-            if (hist) hist->Write();
-            cout << "Writing: " << name << endl;
-            mr=mr->GetNext();         
-         }
+   TFile *f = new TFile(foutname,"RECREATE");
+   const char * name;
+   TMapRec *mr = mfile->GetFirst();
+   if (mr) {
+      while (mfile->OrgAddress(mr)) {
+         if (!mr) break;
+         name=mr->GetName();
+         TH1 *hist=0;
+         hist    = (TH1 *) mfile->Get(name, hist);
+         if (hist) hist->Write();
+         cout << "Writing: " << name << endl;
+         mr=mr->GetNext();         
       }
-      if (f) f->Close();
-      cout << "SaveMap done" << endl;
    }
+   if (f) f->Close();
+   cout << "SaveMap done" << endl;
+   gDirectory=gROOT;
+}
+//________________________________________________________________________________________
+// Save histograms from mapped file
+  
+void HistPresent::SaveFromSocket(const char * name, const char* bp)
+{
+   if (!fComSocket) return;
+   TString fname ("hists_XX.root");
+
+   Bool_t ok;
+   const char * foutname=GetString("File Name",(const char *)fname, 
+                                   &ok, GetMyCanvas());
+   if (!ok) return;
+   if (!gSystem->AccessPathName((const char *)foutname, kFileExists)) {
+      TString question=foutname;
+      question += " already exists, overwrite?";
+      if (!QuestionBox(question.Data(), GetMyCanvas())) return;
+   }
+
+   TMrbStatistics * st = getstat(fComSocket);
+   if (!st) {
+       cout << " cant get stat(fComSocket)" << endl;
+       return;
+   } else {
+//         st->Print();
+   }
+   TFile *f = new TFile(foutname,"RECREATE");
+   TH1 *hist=0;
+   Int_t nhists = 0;
+   TMrbStatEntry * stent;
+   TIter nextentry(st->GetListOfEntries());
+   while ( (stent = (TMrbStatEntry*)nextentry()) ) {
+      hist = (TH1 *) gethist(stent->GetName(), fComSocket);
+      f->cd();
+      if (hist) hist->Write();
+//           cout << "Writing: " << stent->GetName()<< endl;
+      nhists++;
+   }
+   if (f) f->Close();
+   if (st) delete st;
+   cout << nhists << " histograms saved to " << foutname << endl;
    gDirectory=gROOT;
 }
 

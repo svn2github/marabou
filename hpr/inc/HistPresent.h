@@ -227,6 +227,7 @@ public:
 
    void CutsFromASCII(TGWindow * win = 0); 
    void SaveMap(const char*, const char* bp =0);  
+   void SaveFromSocket(const char*, const char* bp =0);  
    TH1*  GetHist(const char* , const char*); 
    FitHist * ShowHist(TH1*, const char* origname=0);  
    TList* GetCanvasList(){return fCanvasList;};
