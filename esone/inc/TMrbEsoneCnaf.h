@@ -46,54 +46,6 @@ class TMrbEsoneCnaf : public TObject {
 
 		enum					{	kEsoneCnafBits		=	kCnafCrate | kCnafStation | kCnafAddr | kCnafFunction | kCnafData	};
 
-		enum EMrbCnafType		{	kCnafTypeUndefined	=	0,				// cnaf types
-									kCnafTypeRead		=	BIT(0),
-									kCnafTypeControl	=	BIT(1),
-									kCnafTypeWrite		=	BIT(2),
-									kCnafTypeReadStatus =	BIT(3),
-									kCnafTypeAny		=	kCnafTypeRead | kCnafTypeControl | kCnafTypeWrite
-								};
-
-		enum EMrbCamacFunction	{	kCF_RD1,        /* read group 1 register */
-									kCF_RD2,        /* read group 2 register */
-									kCF_RC1,        /* read and clear group 1 register */
-									kCF_RCM,        /* read complement of group 1 register */
-									kCF_TLM = 8,    /* test LAM */
-									kCF_CL1,        /* clear group 1 register */
-									kCF_CLM,        /* clear LAM */
-									kCF_CL2,        /* clear group 2 register */
-									kCF_WT1 = 16,   /* write group 1 register */
-									kCF_WT2,        /* write group 2 register */
-									kCF_SS1,        /* selective set group 1 register */
-									kCF_SS2,        /* selective set group 2 register */
-									kCF_SC1 = 21,   /* selective clear group 1 register */
-									kCF_SC2 = 23,   /* selective clear group 2 register */
-									kCF_DIS,        /* disable */
-									kCF_XEQ,        /* execute */
-									kCF_ENB,        /* enable */
-									kCF_TST         /* test */
-								};
-
-		enum EMrbCamacAction	{	kCANone 					= 	0x0,
-									kCASingle					=	BIT(0),									
-									kCAMultiple					=	BIT(1),									
-									kCAAddrScan 				=	BIT(2),
-									kCABlockXfer 				=	BIT(3),
-									kCAQDriven					=	BIT(4),
-									kCA16Bit	 				=	BIT(5),
-									kCA24Bit			 		=	BIT(6),
-									kCA_cfsa					=	kCASingle | kCA24Bit,
-									kCA_cssa					=	kCASingle | kCA16Bit,
-									kCA_cfga					=	kCAMultiple | kCA24Bit,
-									kCA_csga					=	kCAMultiple | kCA16Bit,
-									kCA_cfmad					=	kCAAddrScan | kCA24Bit,
-									kCA_csmad					=	kCAAddrScan | kCA16Bit,
-									kCA_cfubc					=	kCABlockXfer | kCA24Bit,
-									kCA_csubc					=	kCABlockXfer | kCA16Bit,
-									kCA_cfubr					=	kCABlockXfer | kCAQDriven | kCA24Bit,
-									kCA_csubr					=	kCABlockXfer | kCAQDriven | kCA16Bit
-								};
-
 	public:
 		TMrbEsoneCnaf() { Reset(); };						// default ctor
 		~TMrbEsoneCnaf() {}; 								// default dtor
@@ -106,9 +58,9 @@ class TMrbEsoneCnaf : public TObject {
 		Bool_t SetN(Int_t Station);
 		Bool_t SetA(Int_t Addr);
 		Bool_t SetF(Int_t Function);
-		Bool_t SetData(Int_t Data, EMrbCnafType Type = kCnafTypeUndefined);
+		Bool_t SetData(Int_t Data, EMrbEsoneCnafType Type = kCnafTypeUndefined);
 		inline void ClearStatus() { fStatus = 0; };
-		Bool_t ClearData(EMrbCnafType Type = kCnafTypeUndefined);
+		Bool_t ClearData(EMrbEsoneCnafType Type = kCnafTypeUndefined);
 		inline void SetX() { fStatus |= kEsoneX; };
 		inline void SetQ() { fStatus |= kEsoneQ; };
 		inline void SetXQ() { fStatus |= (kEsoneQ|kEsoneX); };
@@ -118,16 +70,16 @@ class TMrbEsoneCnaf : public TObject {
 		inline Int_t GetN() { return(fStation); };
 		inline Int_t GetA() { return(fAddr); };
 		inline Int_t GetF() { return(fFunction); };
-		Int_t GetData(EMrbCnafType Type = kCnafTypeUndefined);
+		Int_t GetData(EMrbEsoneCnafType Type = kCnafTypeUndefined);
 		Bool_t GetData(Int_t & DataRead, Int_t & DataWrite);
 		inline Bool_t GetX() { return(IS_X(fStatus)); };
 		inline Bool_t GetQ() { return(IS_Q(fStatus)); };
 		inline Bool_t IsError() { return(IS_ERROR(fStatus)); };
 
-		inline EMrbCnafType GetType() { return(fType); };
+		inline EMrbEsoneCnafType GetType() { return(fType); };
 
-		inline EMrbCamacAction GetAction() { return(fAction); };	// return action
-		inline void SetAction(EMrbCamacAction Action) { fAction = Action; };
+		inline EMrbEsoneCamacAction GetAction() { return(fAction); };	// return action
+		inline void SetAction(EMrbEsoneCamacAction Action) { fAction = Action; };
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEsoneCnaf.html&"); };
 
@@ -135,10 +87,10 @@ class TMrbEsoneCnaf : public TObject {
 		Bool_t CheckCnaf(UInt_t CnafBits = kEsoneCnafBits);	// check for missing cnaf components
 		Bool_t CheckCnaf(UInt_t CnafBit, Int_t Data);		// check for valid cnaf component
 
-		inline Bool_t IsWrite() { return(fType == TMrbEsoneCnaf::kCnafTypeWrite); };
-		inline Bool_t IsRead() { return(fType == TMrbEsoneCnaf::kCnafTypeRead); };
-		inline Bool_t IsControl() { return(fType == TMrbEsoneCnaf::kCnafTypeControl); };
-		inline Bool_t IsReadStatus() { return(fType == TMrbEsoneCnaf::kCnafTypeReadStatus); };
+		inline Bool_t IsWrite() { return(fType == kCnafTypeWrite); };
+		inline Bool_t IsRead() { return(fType == kCnafTypeRead); };
+		inline Bool_t IsControl() { return(fType == kCnafTypeControl); };
+		inline Bool_t IsReadStatus() { return(fType == kCnafTypeReadStatus); };
 
 	protected:
 		TMrbString fAscii; 				// ascii representation
@@ -152,9 +104,9 @@ class TMrbEsoneCnaf : public TObject {
 
 		UInt_t fStatus;					// X, Q, error
 
-		EMrbCamacAction fAction;		// Camac action
+		EMrbEsoneCamacAction fAction;	// Camac action
 
-		EMrbCnafType fType; 			// Camac read / control / write
+		EMrbEsoneCnafType fType; 		// Camac read / control / write
 
 	ClassDef(TMrbEsoneCnaf, 1)		// [CAMAC Access] Camac command C.N.A.F
 };

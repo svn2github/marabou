@@ -50,8 +50,8 @@ void TMrbEsoneCnaf::Reset() {
 	fFunction = -1;
 	fDataRead = kEsoneNoData;
 	fDataWrite = kEsoneNoData;
-	fType = TMrbEsoneCnaf::kCnafTypeUndefined;
-	fAction = TMrbEsoneCnaf::kCANone;
+	fType = kCnafTypeUndefined;
+	fAction = kCANone;
 }
 
 Bool_t TMrbEsoneCnaf::Ascii2Int(const Char_t * Cnaf) {
@@ -331,28 +331,28 @@ Bool_t TMrbEsoneCnaf::SetF(Int_t Function) {
 //////////////////////////////////////////////////////////////////////////////
 
 	fFunction = -1;
-	fType = TMrbEsoneCnaf::kCnafTypeUndefined;
+	fType = kCnafTypeUndefined;
 
 	if (Function >= 0 && Function <= 31) {
 		fFunction = Function;
-		if (IS_F_READ(Function)) 					fType = TMrbEsoneCnaf::kCnafTypeRead;
-		else if (IS_F_WRITE(Function)) 				fType = TMrbEsoneCnaf::kCnafTypeWrite;
+		if (IS_F_READ(Function)) 					fType = kCnafTypeRead;
+		else if (IS_F_WRITE(Function)) 				fType = kCnafTypeWrite;
 		else if (IS_F_CNTL(Function)) {
-			if (Function == 8 || Function == 27)	fType = TMrbEsoneCnaf::kCnafTypeReadStatus;
-			else									fType = TMrbEsoneCnaf::kCnafTypeControl;
+			if (Function == 8 || Function == 27)	fType = kCnafTypeReadStatus;
+			else									fType = kCnafTypeControl;
 		} else return(kFALSE);
 		return(kTRUE);
 	}
 	return(kFALSE);
 }
 
-Bool_t TMrbEsoneCnaf::SetData(Int_t Data, EMrbCnafType Type) {
+Bool_t TMrbEsoneCnaf::SetData(Int_t Data, EMrbEsoneCnafType Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsoneCnaf::SetData
 // Purpose:        Set data
-// Arguments:      Int_t Data         -- data word
-//                 EMrbCnafType Type  -- type of data (read / write)
+// Arguments:      Int_t Data              -- data word
+//                 EMrbEsoneCnafType Type  -- type of data (read / write)
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Defines camac data.
@@ -382,12 +382,12 @@ Bool_t TMrbEsoneCnaf::SetData(Int_t Data, EMrbCnafType Type) {
 	return(kFALSE); 	// will never get here ...
 }
 
-Bool_t TMrbEsoneCnaf::ClearData(EMrbCnafType Type) {
+Bool_t TMrbEsoneCnaf::ClearData(EMrbEsoneCnafType Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsoneCnaf::ClearData
 // Purpose:        Clear data
-// Arguments:      EMrbCnafType Type  -- type of data (read / write)
+// Arguments:      EMrbEsoneCnafType Type  -- type of data (read / write)
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Clears data field.
@@ -411,13 +411,13 @@ Bool_t TMrbEsoneCnaf::ClearData(EMrbCnafType Type) {
 	return(kFALSE); 	// will never get here ...
 }
 
-Int_t TMrbEsoneCnaf::GetData(EMrbCnafType Type) {
+Int_t TMrbEsoneCnaf::GetData(EMrbEsoneCnafType Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsoneCnaf::GetData
 // Purpose:        Get data
-// Arguments:      EMrbCnafType Type  -- type of data (read / write)
-// Results:        Int_t Data         -- data word
+// Arguments:      EMrbEsoneCnafType Type  -- type of data (read / write)
+// Results:        Int_t Data              -- data word
 // Exceptions:
 // Description:    Returns data.
 // Keywords:
@@ -576,17 +576,17 @@ Bool_t TMrbEsoneCnaf::CheckCnaf(UInt_t CnafBits) {
 		}
 	}
 	if (CnafBits & TMrbEsoneCnaf::kCnafData) {
-		if (fType == TMrbEsoneCnaf::kCnafTypeWrite && ((fDataWrite & kEsoneNoData) != 0)) {
+		if (fType == kCnafTypeWrite && ((fDataWrite & kEsoneNoData) != 0)) {
 			gMrbLog->Err()	<< "[" << this->Int2Ascii()
 							<< "] Incomplete CNAF def - WRITE cnaf needs data" << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckCnaf");
 			ok = kFALSE;
-		} else if (fType == TMrbEsoneCnaf::kCnafTypeRead && ((fDataRead & kEsoneNoData) == 0)) {
+		} else if (fType == kCnafTypeRead && ((fDataRead & kEsoneNoData) == 0)) {
 			gMrbLog->Err()	<< "[" << this->Int2Ascii()
 							<< "] Illegal CNAF def - READ cnaf can't take data" << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckCnaf");
 			ok = kFALSE;
-		} else if (fType == TMrbEsoneCnaf::kCnafTypeControl) {
+		} else if (fType == kCnafTypeControl) {
 			if (((fDataRead & kEsoneNoData) == 0) || ((fDataWrite & kEsoneNoData) == 0)) {
 				gMrbLog->Err()	<< "[" << this->Int2Ascii()
 								<< "] Illegal CNAF def - CONTROL cnaf can't take data" << endl;

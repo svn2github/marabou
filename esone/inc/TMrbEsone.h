@@ -121,7 +121,7 @@ class TMrbEsone : public TObject {
 		inline Bool_t IsError() { return(IS_ERROR(fStatus)); };
 
 		inline TMrbNamedX * GetAction() { return(fAction); };	// return action
-		inline void SetAction(TMrbEsoneCnaf::EMrbCamacAction Action) { fAction = fLofCamacActions.FindByIndex(Action); };
+		inline void SetAction(EMrbEsoneCamacAction Action) { fAction = fLofCamacActions.FindByIndex(Action); };
 
 // broadcast
 		Bool_t HasBroadCast();										// test broadcast capability
@@ -200,7 +200,7 @@ class TMrbEsone : public TObject {
 																				// [csubr, cfubr, csubc, cfubc] block xfer
 		Int_t EsoneCXUBX(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t First, Int_t Last, Bool_t D16Flag, Bool_t QXfer);
 
-		Bool_t EsoneSpecial(TMrbEsoneCnaf::EMrbCnafType Type, Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Int_t & Data, Bool_t D16Flag);
+		Bool_t EsoneSpecial(EMrbEsoneCnafType Type, Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Int_t & Data, Bool_t D16Flag);
 
 		const Char_t * EsoneCERROR(TString & ErrMsg, Int_t ErrorCode, Bool_t DateFlag);
  

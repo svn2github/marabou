@@ -33,18 +33,18 @@
 
 const SMrbNamedX kMrbLofCamacActions[] =		// list of camac actions
 			{
-				{TMrbEsoneCnaf::kCANone,	"n.a",		"No Action",											},
-				{TMrbEsoneCnaf::kCA_cfsa, 	"cfsa", 	"Single CAMAC Action, 24 bit"							},
-				{TMrbEsoneCnaf::kCA_cssa, 	"cssa", 	"Single CAMAC Action, 16 bit"							},
-				{TMrbEsoneCnaf::kCA_cfga, 	"cfga", 	"General Multiple CAMAC Action, 24 bit" 				},
-				{TMrbEsoneCnaf::kCA_csga, 	"csga", 	"General Multiple CAMAC Action, 16 bit"					},
-				{TMrbEsoneCnaf::kCA_cfmad,	"cfmad",	"Address Scan, 24 bit"									},
-				{TMrbEsoneCnaf::kCA_csmad,	"csmad",	"Address Scan, 16 bit"									},
-				{TMrbEsoneCnaf::kCA_cfubc,	"cfubc",	"Controller Synchronized Block Xfer, 24 bit"			},
-				{TMrbEsoneCnaf::kCA_csubc,	"csubc",	"Controller Synchronized Block Xfer, 16 bit"			},
-				{TMrbEsoneCnaf::kCA_cfubr,	"cfubr",	"Controller Synchronized Block Xfer, Q-driven, 24 bit"	},
-				{TMrbEsoneCnaf::kCA_csubr,	"csubr",	"Controller Synchronized Block Xfer, Q-driven, 16 bit"	},
-				{0,							NULL, 		NULL									 				}
+				{kCANone,	 "n.a", 	 "No Action",											 },
+				{kCA_cfsa,   "cfsa",	 "Single CAMAC Action, 24 bit"  						 },
+				{kCA_cssa,   "cssa",	 "Single CAMAC Action, 16 bit"  						 },
+				{kCA_cfga,   "cfga",	 "General Multiple CAMAC Action, 24 bit"				 },
+				{kCA_csga,   "csga",	 "General Multiple CAMAC Action, 16 bit"				 },
+				{kCA_cfmad,  "cfmad",	 "Address Scan, 24 bit" 								 },
+				{kCA_csmad,  "csmad",	 "Address Scan, 16 bit" 								 },
+				{kCA_cfubc,  "cfubc",	 "Controller Synchronized Block Xfer, 24 bit"			 },
+				{kCA_csubc,  "csubc",	 "Controller Synchronized Block Xfer, 16 bit"			 },
+				{kCA_cfubr,  "cfubr",	 "Controller Synchronized Block Xfer, Q-driven, 24 bit"  },
+				{kCA_csubr,  "csubr",	 "Controller Synchronized Block Xfer, Q-driven, 16 bit"  },
+				{0, 			NULL,		NULL							 				}
 			};
 
 const SMrbNamedXShort kMrbLofCnafNames[] =
@@ -59,33 +59,33 @@ const SMrbNamedXShort kMrbLofCnafNames[] =
 
 const SMrbNamedXShort kMrbLofCnafTypes[] =
 							{
-								{TMrbEsoneCnaf::kCnafTypeRead,			"READ"  	},
-								{TMrbEsoneCnaf::kCnafTypeWrite, 		"WRITE" 	},
-								{TMrbEsoneCnaf::kCnafTypeControl,		"CNTRL" 	},
-								{TMrbEsoneCnaf::kCnafTypeReadStatus,	"RSTATUS"	},
-								{0, 									NULL}
+								{kCnafTypeRead, 		 "READ" 	 },
+								{kCnafTypeWrite,		 "WRITE"	 },
+								{kCnafTypeControl,  	 "CNTRL"	 },
+								{kCnafTypeReadStatus,	 "RSTATUS"   },
+								{0, 					NULL}
 							};
 
 const SMrbNamedXShort kMrbLofCamacFunctions[] =
 							{
-								{TMrbEsoneCnaf::kCF_RD1,			"read group 1 register" 				},
-								{TMrbEsoneCnaf::kCF_RD2,			"read group 2 register"					},
-								{TMrbEsoneCnaf::kCF_RC1,			"read and clear group 1 register"		},
-								{TMrbEsoneCnaf::kCF_RCM,			"read complement of group 1 register"	},
-								{TMrbEsoneCnaf::kCF_TLM,			"test LAM" 								},
-								{TMrbEsoneCnaf::kCF_CL1,			"clear group 1 register"				},
-								{TMrbEsoneCnaf::kCF_CLM,			"clear LAM"								},
-								{TMrbEsoneCnaf::kCF_CL2,			"clear group 2 register"				},
-								{TMrbEsoneCnaf::kCF_WT1,			"write group 1 register"				},
-								{TMrbEsoneCnaf::kCF_WT2,			"write group 2 register"				},
-								{TMrbEsoneCnaf::kCF_SS1,			"selective set group 1 register"		},
-								{TMrbEsoneCnaf::kCF_SS2,			"selective set group 2 register"		},
-								{TMrbEsoneCnaf::kCF_SC1,			"selective clear group 1 register"  	},
-								{TMrbEsoneCnaf::kCF_SC2,			"selective clear group 2 register"  	},
-								{TMrbEsoneCnaf::kCF_DIS,			"disable"								},
-								{TMrbEsoneCnaf::kCF_XEQ,			"execute"								},
-								{TMrbEsoneCnaf::kCF_ENB,			"enable"								},
-								{TMrbEsoneCnaf::kCF_TST,			"test" 									},
+								{kCF_RD1,			 "read group 1 register"				 },
+								{kCF_RD2,			 "read group 2 register"				 },
+								{kCF_RC1,			 "read and clear group 1 register"  	 },
+								{kCF_RCM,			 "read complement of group 1 register"   },
+								{kCF_TLM,			 "test LAM" 							 },
+								{kCF_CL1,			 "clear group 1 register"				 },
+								{kCF_CLM,			 "clear LAM"							 },
+								{kCF_CL2,			 "clear group 2 register"				 },
+								{kCF_WT1,			 "write group 1 register"				 },
+								{kCF_WT2,			 "write group 2 register"				 },
+								{kCF_SS1,			 "selective set group 1 register"		 },
+								{kCF_SS2,			 "selective set group 2 register"		 },
+								{kCF_SC1,			 "selective clear group 1 register" 	 },
+								{kCF_SC2,			 "selective clear group 2 register" 	 },
+								{kCF_DIS,			 "disable"  							 },
+								{kCF_XEQ,			 "execute"  							 },
+								{kCF_ENB,			 "enable"								 },
+								{kCF_TST,			 "test" 								 },
 								{0, 								NULL									}
 							};
 
@@ -1108,7 +1108,7 @@ void TMrbEsone::Print(TMrbEsoneCnaf & Cnaf) {
 
 	action = this->GetAction();
 
-	if (action->GetIndex() == TMrbEsoneCnaf::kCANone) {
+	if (action->GetIndex() == kCANone) {
 		gMrbLog->Err() << "No CAMAC action" << endl;
 		gMrbLog->Flush(this->ClassName(), "Print");
 		return;
@@ -1176,7 +1176,7 @@ void TMrbEsone::Print(TObjArray & CnafList, Int_t From, Int_t To) {
 
 	action = this->GetAction();
 
-	if (action->GetIndex() == TMrbEsoneCnaf::kCANone) {
+	if (action->GetIndex() == kCANone) {
 		gMrbLog->Err() << "No CAMAC action" << endl;
 		gMrbLog->Flush(this->ClassName(), "Print");
 		return;
@@ -1280,7 +1280,7 @@ void TMrbEsone::PrintStatus(const Char_t * Method) {
 
 	action = this->GetAction();
 
-	if (action->GetIndex() == TMrbEsoneCnaf::kCANone) {
+	if (action->GetIndex() == kCANone) {
 		gMrbLog->Err() << "No CAMAC action" << endl;
 		gMrbLog->Flush(this->ClassName(), "PrintStatus");
 		return;
@@ -1578,9 +1578,9 @@ Bool_t TMrbEsone::SetAutoRead(Int_t Crate, Bool_t AutoRead) {
 
 	switch (fController.GetIndex()) {
 		case kCC_CC32:
-			if (!this->EsoneSpecial(TMrbEsoneCnaf::kCnafTypeRead, Crate, 0, 0, 3, sts, kTRUE)) return(kFALSE);
+			if (!this->EsoneSpecial(kCnafTypeRead, Crate, 0, 0, 3, sts, kTRUE)) return(kFALSE);
 			if (AutoRead) sts |= kAutoRead_CC32; else sts &= ~kAutoRead_CC32;
-			return(this->EsoneSpecial(TMrbEsoneCnaf::kCnafTypeWrite, Crate, 0, 0, 3, sts, kTRUE));
+			return(this->EsoneSpecial(kCnafTypeWrite, Crate, 0, 0, 3, sts, kTRUE));
 		case kCC_CBV:
 		default:
 			gMrbLog->Err() << "No AutoRead mode for CAMAC controller " << fController.GetName() << endl;
@@ -1609,7 +1609,7 @@ Bool_t TMrbEsone::ReadDoubleWord(Int_t Crate, Bool_t ReadDW) {
 
 	switch (fController.GetIndex()) {
 		case kCC_CC32:
-			return(this->EsoneSpecial(TMrbEsoneCnaf::kCnafTypeWrite, Crate, 27, ReadDW ? 2 : 3, 16, data0, kTRUE));
+			return(this->EsoneSpecial(kCnafTypeWrite, Crate, 27, ReadDW ? 2 : 3, 16, data0, kTRUE));
 		case kCC_CBV:
 		default:
 			gMrbLog->Err() << "No 32 bit mode for CAMAC controller " << fController.GetName() << endl;
@@ -1780,7 +1780,7 @@ Bool_t TMrbEsone::EsoneCCCI(Int_t Crate, Bool_t Inhibit) {
 	if (!this->EsoneCDCTRL()) return(kFALSE);
 
 	if (this->IsMbsServer()) {
-		sts = ccci(creg, Inhibit ? TMrbEsoneCnaf::kCF_ENB : TMrbEsoneCnaf::kCF_DIS);
+		sts = ccci(creg, Inhibit ? kCF_ENB : kCF_DIS);
 		return(sts == 0);
 	} else {						// not yet implemented
 		return(kFALSE);
@@ -1900,13 +1900,13 @@ Bool_t TMrbEsone::EsoneCXSA(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag) {
 		if (!this->EsoneCDCTRL()) return(kFALSE);
 		camacData = Cnaf.IsWrite() ? Cnaf.GetData() : 0;
 		if (D16Flag) {
-			Cnaf.SetAction(TMrbEsoneCnaf::kCA_cssa);
-			this->SetAction(TMrbEsoneCnaf::kCA_cssa);
+			Cnaf.SetAction(kCA_cssa);
+			this->SetAction(kCA_cssa);
 			if (this->IsOffline()) return(kTRUE);
 			sts = cssa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
 		} else {
-			Cnaf.SetAction(TMrbEsoneCnaf::kCA_cfsa);
-			this->SetAction(TMrbEsoneCnaf::kCA_cfsa);
+			Cnaf.SetAction(kCA_cfsa);
+			this->SetAction(kCA_cfsa);
 			if (this->IsOffline()) return(kTRUE);
 			sts = cfsa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
 		}
@@ -1958,7 +1958,7 @@ Int_t TMrbEsone::EsoneCXGA(TObjArray & CnafList, Bool_t D16Flag) {
 		camacCNA.Set(nofCnafs);
 		camacData.Set(nofCnafs);
 		camacXQ.Set(nofCnafs);
-		this->SetAction(D16Flag ? TMrbEsoneCnaf::kCA_csga : TMrbEsoneCnaf::kCA_cfga);
+		this->SetAction(D16Flag ? kCA_csga : kCA_cfga);
 		for (Int_t i = 0; i < nofCnafs; i++) {
 			cnaf = (TMrbEsoneCnaf *) CnafList[i];
 			camacF[i] = cnaf->GetF();
@@ -1966,7 +1966,7 @@ Int_t TMrbEsone::EsoneCXGA(TObjArray & CnafList, Bool_t D16Flag) {
 			camacCNA[i] = (Int_t) cna;
 			camacData[i] = cnaf->IsWrite() ? cnaf->GetData() : 0;
 			camacXQ[i] = 0;
-			cnaf->SetAction(D16Flag ? TMrbEsoneCnaf::kCA_csga : TMrbEsoneCnaf::kCA_cfga);
+			cnaf->SetAction(D16Flag ? kCA_csga : kCA_cfga);
 		}
 		if (this->IsOffline()) return(nofCnafs);
 		if (D16Flag) {
@@ -2034,13 +2034,13 @@ Int_t TMrbEsone::EsoneCXMAD(TMrbEsoneCnaf & Start, TMrbEsoneCnaf & Stop, TArrayI
 		if (!Start.IsWrite()) Data.Reset();		// reset data buffer in case of read/control cnafs
 
 		if (D16Flag) {
-			Start.SetAction(TMrbEsoneCnaf::kCA_csmad);
-			Stop.SetAction(TMrbEsoneCnaf::kCA_csmad);
+			Start.SetAction(kCA_csmad);
+			Stop.SetAction(kCA_csmad);
 			if (this->IsOffline()) return(0);
 			sts = csmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
 		} else {
-			Start.SetAction(TMrbEsoneCnaf::kCA_cfmad);
-			Stop.SetAction(TMrbEsoneCnaf::kCA_cfmad);
+			Start.SetAction(kCA_cfmad);
+			Stop.SetAction(kCA_cfmad);
 			if (this->IsOffline()) return(0);
 			sts = cfmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
 		}
@@ -2080,21 +2080,21 @@ Int_t TMrbEsone::EsoneCXUBX(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start, I
 		this->SetCB(ctrlBlock, NofWords);
 		if (QXfer) {
 			if (D16Flag) {
-				Cnaf.SetAction(TMrbEsoneCnaf::kCA_csubr);
+				Cnaf.SetAction(kCA_csubr);
 				if (this->IsOffline()) return(0);
 				sts = csubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
 			} else {
-				Cnaf.SetAction(TMrbEsoneCnaf::kCA_cfubr);
+				Cnaf.SetAction(kCA_cfubr);
 				if (this->IsOffline()) return(0);
 				sts = cfubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
 			}
 		} else {
 			if (D16Flag) {
-				Cnaf.SetAction(TMrbEsoneCnaf::kCA_csubc);
+				Cnaf.SetAction(kCA_csubc);
 				if (this->IsOffline()) return(0);
 				sts = csubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
 			} else {
-				Cnaf.SetAction(TMrbEsoneCnaf::kCA_cfubc);
+				Cnaf.SetAction(kCA_cfubc);
 				if (this->IsOffline()) return(0);
 				sts = cfubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
 			}
@@ -2105,20 +2105,20 @@ Int_t TMrbEsone::EsoneCXUBX(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start, I
 	}
 }
 
-Bool_t TMrbEsone::EsoneSpecial(TMrbEsoneCnaf::EMrbCnafType Type,
+Bool_t TMrbEsone::EsoneSpecial(EMrbEsoneCnafType Type,
 													Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function,
 													Int_t & Data, Bool_t D16Flag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::EsoneSpecial
 // Purpose:        Excecute special cnaf
-// Arguments:      EMrbCnafType Type     -- cnaf type
-//                 Int_t Crate           -- crate C
-//                 Int_t Station         -- station N
-//                 Int_t Subaddr         -- subaddress A
-//                 Int_t Function        -- function F
-//                 Int_t & Data          -- data i/o
-//                 Bool_t D16Flag        -- 16 bit data if kTRUE
+// Arguments:      EMrbEsoneCnafType Type  -- cnaf type
+//                 Int_t Crate             -- crate C
+//                 Int_t Station           -- station N
+//                 Int_t Subaddr           -- subaddress A
+//                 Int_t Function          -- function F
+//                 Int_t & Data            -- data i/o
+//                 Bool_t D16Flag          -- 16 bit data if kTRUE
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Executes a special cnaf, 16 or 24 bit
@@ -2138,11 +2138,11 @@ Bool_t TMrbEsone::EsoneSpecial(TMrbEsoneCnaf::EMrbCnafType Type,
 		if (!this->EsoneCDREG(camacCNA, cnaf)) return(kFALSE);
 		camacData = Data;
 		if (D16Flag) {
-			this->SetAction(TMrbEsoneCnaf::kCA_cssa);
+			this->SetAction(kCA_cssa);
 			if (this->IsOffline()) return(kTRUE);
 			sts = cssa(Function, camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
 		} else {
-			this->SetAction(TMrbEsoneCnaf::kCA_cfsa);
+			this->SetAction(kCA_cfsa);
 			if (this->IsOffline()) return(kTRUE);
 			sts = cfsa(Function, camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
 		}
@@ -2150,7 +2150,7 @@ Bool_t TMrbEsone::EsoneSpecial(TMrbEsoneCnaf::EMrbCnafType Type,
 		if (sts == -1) {			// X = 0, Q = 0
 			this->SetError();
 			return(kFALSE);
-		} else if (Type == TMrbEsoneCnaf::kCnafTypeRead) {
+		} else if (Type == kCnafTypeRead) {
 			Data = camacData;
 			return(kTRUE);
 		}
