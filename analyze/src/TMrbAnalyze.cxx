@@ -67,6 +67,15 @@ ClassImp(TMrbModuleListEntry)
 ClassImp(TMrbParamListEntry)
 ClassImp(TMrbHistoListEntry)
 
+const SMrbNamedX kMrbLofDCorrTypes[] =
+							{
+								{kDCorrNone, 			"None", 			"None"							},
+								{kDCorrConstFactor,	"ConstFactor",		"Constant factor"				},
+								{kDCorrFixedAngle, 	"FixedAngle",		"Fixed angle"					},
+								{kDCorrVariableAngle,	"VariableAngle",	"Depending on particle angle"	},
+								{0, 								NULL,				NULL							}
+							};
+
 TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -1940,6 +1949,9 @@ void TMrbAnalyze::InitializeLists(Int_t NofModules, Int_t NofParams) {
 	fCalibrationList.Delete();
 	fCalibrationList.Expand(NofParams);
 	for (Int_t i = 0; i < NofParams; i++) fCalibrationList.AddAt(NULL, i);
+	fDCorrList.Delete();
+	fDCorrList.Expand(NofParams);
+	for (Int_t i = 0; i < NofParams; i++) fDCorrList.AddAt(NULL, i);
 }
 
 const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) const {
@@ -2441,7 +2453,7 @@ TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) const {
 // Name:           TMrbAnalyze::GetCalibration
 // Purpose:        Get Calibration by its name
 // Arguments:      Char_t * CalibrationName     -- calibration name
-// Results:        TH1 * HistoAddr              -- address
+// Results:        TF1 * CalibAddr              -- address
 // Exceptions:     
 // Description:    Searches for a calibrations function with specified name
 //                 Returns address.
@@ -2560,6 +2572,23 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const 
 	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
+Double_t CalibLinear(Double_t * Xvalues, Double_t * Params) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::CalibLinear
+// Purpose:        Calibrate using a linear polynom
+// Arguments:      Double_t * Xvalues   -- array of x values
+//                 Double_t * Params    -- array of parameters
+// Results:        Double_t CalibResult -- resulting value
+// Exceptions:     
+// Description:    Evaluates CalibResult = Params[0] + Params[1] * Xvalues[0]
+//                 to be used in linear calibrations
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	return(Params[0] + Params[1] * Xvalues[0]);
+}
+
 Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -2614,7 +2643,7 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 					calName(0,1).ToUpper();
 					calName.Prepend("h");
 				}
-				TF1 * calFct = new TF1(calName.Data(), "[0] + [1] * x", xmin, xmax);
+				TF1 * calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
 				calFct->SetParameter(0, offset);
 				calFct->SetParameter(1, gain);
 				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
@@ -2624,6 +2653,432 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 		o = cal->GetTable()->After(o);
 	}
 	return(nofCalibs);
+}
+
+TF1 * TMrbAnalyze::GetDCorr(const Char_t * DCorrName) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get doppler correction by its name
+// Arguments:      Char_t * DCorrName     -- dcorr name
+// Results:        TF1 * DCorrAddr        -- address
+// Exceptions:     
+// Description:    Searches for a dcorr function with specified name
+//                 Returns address.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbDCorrListEntry * dcle;
+
+	nx = fDCorrList.FindByName(DCorrName);
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such doppler correction - " << DCorrName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetDCorr");
+		return(NULL);
+	}
+	dcle = (TMrbDCorrListEntry *) nx->GetAssignedObject();
+	return(dcle->GetAddress());
+}
+
+TF1 * TMrbAnalyze::GetDCorr(Int_t AbsParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get doppler correction address
+// Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        TF1 * DCorrAddr           -- address
+// Exceptions:     
+// Description:    Returns dcorr address.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fDCorrList[AbsParamIndex];
+	if (nx == NULL) return(NULL);
+	return(((TMrbDCorrListEntry *) nx->GetAssignedObject())->GetAddress());
+}
+
+TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Factor) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get doppler corr factor
+// Arguments:      Int_t ModuleIndex         -- module index
+//                 Int_t RelParamIndex       -- relative param index
+// Results:        TF1 * DCorrAddr           -- address
+//                 Double_t & Factor         -- dcorr factor
+// Exceptions:     
+// Description:    Returns dcorr factor. Valid only for dcorr type 'ConstFactor'.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * dcorr = this->GetDCorr(ModuleIndex, RelParamIndex);
+	if (dcorr) {
+		Factor = dcorr->GetParameter(0);
+	} else {
+		Factor = 1.;
+	}
+	return(dcorr);
+}
+
+TF1 * TMrbAnalyze::GetDCorr(Int_t AbsParamIndex, Double_t & Factor) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get doppler corr factor
+// Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        TF1 * DCorrAddr           -- address
+//                 Double_t & Factor         -- dcorr factor
+// Exceptions:     
+// Description:    Returns dcorr factor. Valid only for dcorr type 'ConstFactor'.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * dcorr = this->GetCalibration(AbsParamIndex);
+	if (dcorr) {
+		Factor = dcorr->GetParameter(0);
+	} else {
+		Factor = 1.;
+	}
+	return(dcorr);
+}
+
+TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Beta, Double_t & Angle) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get doppler corr factor
+// Arguments:      Int_t ModuleIndex         -- module index
+//                 Int_t RelParamIndex       -- relative param index
+// Results:        TF1 * DCorrAddr           -- address
+//                 Double_t & Beta           -- velocity
+//                 Double_t & Angle          -- angle
+//                 Bool_t InDegrees          -- angle to be returned in degrees
+// Exceptions:     
+// Description:    Returns dcorr factor. Valid only for dcorr type 'FixedAngle'.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * dcorr = this->GetDCorr(ModuleIndex, RelParamIndex);
+	if (dcorr) {
+		Beta = dcorr->GetParameter(0);
+		Angle = dcorr->GetParameter(1);
+	} else {
+		Beta = 0.;
+		Angle = 0.;
+	}
+	return(dcorr);
+}
+
+TF1 * TMrbAnalyze::GetDCorr(Int_t AbsParamIndex, Double_t & Beta, Double_t & Angle) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get doppler corr factor
+// Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        TF1 * DCorrAddr           -- address
+//                 Double_t & Beta           -- velocity
+//                 Double_t & Angle          -- angle
+// Exceptions:     
+// Description:    Returns dcorr factor. Valid only for dcorr type 'FixedAngle'.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * dcorr = this->GetDCorr(AbsParamIndex);
+	if (dcorr) {
+		Beta = dcorr->GetParameter(0);
+		Angle = dcorr->GetParameter(1);
+	} else {
+		Beta = 0.;
+		Angle = 0.;
+	}
+	return(dcorr);
+}
+
+TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorr
+// Purpose:        Get calibration by module number and param offset
+// Arguments:      Int_t ModuleIndex          -- module index
+//                 Int_t RelParamIndex        -- relative param index
+// Results:        TF1 * DCorrAddr            -- calibration address
+// Exceptions:     
+// Description:    Returns dcoor addr given by module and param.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
+	px = mle->GetIndexOfFirstParam() + RelParamIndex;
+	if (px < 0 || px > fDCorrList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fDCorrList[px];
+	if (nx == NULL) return(NULL);
+	return(((TMrbDCorrListEntry *) nx->GetAssignedObject())->GetAddress());
+}
+
+Double_t DCorrConstFactor(Double_t * Xvalues, Double_t * Params) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::DCorrConstFactor
+// Purpose:        Doppler correction using a constant factor
+// Arguments:      Double_t * Xvalues   -- array of x values
+//                 Double_t * Params    -- array of parameters
+// Results:        Double_t EnergyDC    -- resulting energy value
+// Exceptions:     
+// Description:    Returns energy corrected by a const factor
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t energyDC = Params[0] * Xvalues[0];
+	return(energyDC);
+}
+
+Double_t DCorrFixedAngle(Double_t * Xvalues, Double_t * Params) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::DCorrFixedAnlgeRad
+// Purpose:        Doppler correction using a fixed angle
+// Arguments:      Double_t * Xvalues   -- array of x values
+//                 Double_t * Params    -- array of parameters
+// Results:        Double_t EnergyDC    -- resulting energy value
+// Exceptions:     
+// Description:    Returns energy corrected due to angle and velocity.
+//                 Angle given in radians.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t beta = Params[0];
+	Double_t angle = Params[1];
+	Double_t energy = Xvalues[0];
+
+	Double_t energyDC = (1 - beta * TMath::Cos(angle)) * energy;
+	return(energyDC);
+}
+
+Int_t TMrbAnalyze::ReadDCorrFromFile(const Char_t * DCorrFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::ReadDCorrFromFile
+// Purpose:        Read doppler correction data from file
+// Arguments:      Char_t * ReadDCorrFromFile    -- file name
+// Results:        Int_t NofEntries              -- number of calibration entries
+// Exceptions:     
+// Description:    Reads dcorr data from file.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX dcorrTypes;
+
+	if (gSystem->AccessPathName(DCorrFile, (EAccessMode) F_OK)) {
+		gMrbLog->Err()	<< "Can't open doppler correction file - " << DCorrFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadDCorrFromFile");
+		return(-1);
+	}
+
+	TEnv * dcorr = new TEnv(DCorrFile);
+	dcorrTypes.AddNamedX(kMrbLofDCorrTypes);
+	const Char_t * dt = dcorr->GetValue("DCorr.Type", "None");
+	TMrbNamedX * nx = dcorrTypes.FindByName(dt);
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "Doppler correction file is of wrong type \"" <<  dt << "\" - " << DCorrFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadDCorrFromFile");
+		return(-1);
+	}
+
+	Double_t beta = dcorr->GetValue("DCorr.Beta", 0.);
+	Bool_t angleInDegrees = dcorr->GetValue("DCorr.AngleInDegrees", kTRUE);
+
+	Int_t nofDCorrs = 0;
+	TObject * o = dcorr->GetTable()->First();
+	while (o) {
+		TString oName = o->GetName();
+		if (oName.Contains(".Xmin")) {
+			TString histoName = oName;
+			Int_t dot = histoName.Index(".", 0);
+			histoName = histoName(dot + 1, 1000);
+			dot = histoName.Index(".", 0);
+			histoName.Resize(dot);
+			TMrbHistoListEntry * hle = this->GetHistoListEntry(histoName.Data());
+			if (hle) {
+				TString resName = "DCorr.";
+				resName += histoName;
+				resName += ".Xmin";
+				Double_t xmin = dcorr->GetValue(resName.Data(), 0.);
+				resName = "DCorr.";
+				resName += histoName;
+				resName += ".Xmax";
+				Double_t xmax = dcorr->GetValue(resName.Data(), 1.);
+				resName = "DCorr.";
+				resName += histoName;
+				resName += ".Factor";
+				TString x = dcorr->GetValue(resName.Data(), "");
+				if (!x.IsNull() & nx->GetIndex() != kDCorrConstFactor) {
+					gMrbLog->Err()	<< "Doppler correction file has wrong entry \"" <<  resName << ": " << x << "\" - " << DCorrFile << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadDCorrFromFile");
+					return(-1);
+				}
+				Double_t fact = dcorr->GetValue(resName.Data(), 1.);
+				resName = "DCorr.";
+				resName += histoName;
+				resName += ".Angle";
+				x = dcorr->GetValue(resName.Data(), "");
+				Double_t angle = dcorr->GetValue(resName.Data(), 0.);
+				if (!x.IsNull() & nx->GetIndex() == kDCorrConstFactor) {
+					gMrbLog->Err()	<< "Doppler correction file has wrong entry \"" <<  resName << ": " << x << "\" - " << DCorrFile << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadDCorrFromFile");
+					return(-1);
+				}
+				TString dcName = histoName;
+				if (dcName(0) == 'h') {
+					dcName(0) = 'c';
+					dcName.Prepend("d");
+				} else {
+					dcName(0,1).ToUpper();
+					dcName.Prepend("dc");
+				}
+				TF1 * dcFct = NULL;
+				if (nx->GetIndex() == kDCorrConstFactor) {
+					dcFct = new TF1(dcName.Data(), DCorrConstFactor, xmin, xmax, 1);
+					dcFct->SetParameter(0, fact);
+				} else if (nx->GetIndex() == kDCorrFixedAngle) {
+					dcFct = new TF1(dcName.Data(), DCorrFixedAngle, xmin, xmax, 2);
+					dcFct->SetParameter(0, beta);
+					if (angleInDegrees) angle *= TMath::Pi() / 180.;
+					dcFct->SetParameter(1, angle);
+				}
+				if (dcFct) {
+					this->AddDCorrToList(dcFct, hle->GetParam()->GetIndex());
+					nofDCorrs++;
+				} 			
+			}
+		}
+		o = dcorr->GetTable()->After(o);
+	}
+	return(nofDCorrs);
+}
+
+Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AddDCorrToList
+// Purpose:        Add a new doppler correction function to list
+// Arguments:      TF1 * DCorrAddr        -- address
+//                 Int_t ModuleIndex      -- list index
+//                 Int_t RelParamIndex    -- relative param index
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a new entry in dcorr list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nmx;
+	TMrbNamedX * npx;
+	TMrbNamedX * ncx;
+	TMrbModuleListEntry * mle;
+	TMrbParamListEntry * ple;
+	TMrbDCorrListEntry * dcle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+		gMrbLog->Err()	<< "[" << DCorrAddr->GetName()
+						<< "] Module index out of range - " << ModuleIndex
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddDCorrToList");
+		return(kFALSE);
+	}
+	nmx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nmx == NULL) {
+		gMrbLog->Err()	<< "[" << DCorrAddr->GetName() << "] Module index not in use - " << ModuleIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "AddDCorrToList");
+		return(kFALSE);
+	}
+	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
+	px = mle->GetIndexOfFirstParam();
+	ncx = (TMrbNamedX *) fCalibrationList[px + RelParamIndex];
+	if (ncx != NULL) return(kFALSE);
+	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
+	if (npx == NULL) {
+		gMrbLog->Err()	<< "[" << DCorrAddr->GetName() << "] No param assigned to index " << RelParamIndex
+						<< " (abs " << px + RelParamIndex << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddDCorrToList");
+		return(kFALSE);
+	}
+	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
+	ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
+	dcle = new TMrbDCorrListEntry(nmx, npx, DCorrAddr);
+	ncx->AssignObject(dcle);
+	fCalibrationList.AddAt(ncx, npx->GetIndex());
+	ple->SetDCorrAddress(DCorrAddr);
+	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AddDCorrToList
+// Purpose:        Add a new dcorr function to list
+// Arguments:      TF1 * DCorrAddr        -- address
+//                 Int_t AbsParamIndex    -- absolute param index
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a new entry in dcorr list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * npx;
+	TMrbNamedX * ncx;
+	TMrbParamListEntry * ple;
+	TMrbDCorrListEntry * dcle;
+
+	ncx = (TMrbNamedX *) fDCorrList[AbsParamIndex];
+	if (ncx != NULL) return(kFALSE);
+	npx = (TMrbNamedX *) fParamList[AbsParamIndex];
+	if (npx == NULL) {
+		gMrbLog->Err()	<< "[" << DCorrAddr->GetName() << "] No param assigned to index "
+						<< AbsParamIndex << " (abs)" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddDCorrToList");
+		return(kFALSE);
+	}
+	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
+	ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
+	dcle = new TMrbDCorrListEntry(ple->GetModule(), npx, DCorrAddr);
+	ncx->AssignObject(dcle);
+	fDCorrList.AddAt(ncx, AbsParamIndex);
+	ple->SetDCorrAddress(DCorrAddr);
+	return(kTRUE);
+}
+
+TF1 * TMrbAnalyze::AddDCorrToList(	const Char_t * Name, const Char_t * Formula,
+											Double_t Xmin, Double_t Xmax,
+											Int_t ModuleIndex, Int_t RelParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AddDCorrToList
+// Purpose:        Add a new dcorr function to list
+// Arguments:      Char_t * Name          -- name of calibration function
+//                 Char_t * Formula       -- formula (type B)
+//                 Double_t Xmin          -- minimum x
+//                 Double_t Xmax          -- maximum x
+//                 Int_t ModuleIndex      -- list index
+//                 Int_t RelParamIndex    -- relative param index
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a new entry in dcorr list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * dcorr = new TF1(Name, Formula, Xmin, Xmax);
+	if (this->AddDCorrToList(dcorr, ModuleIndex, RelParamIndex)) return(dcorr); else return(NULL);
 }
 
 TObject * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) const {
@@ -3356,6 +3811,26 @@ Double_t TUsrHit::GetCalEnergy(Bool_t Randomize) const {
 	return(e * gain + offset);
 }
 
+Double_t TUsrHit::GetDCorrEnergy(Bool_t Randomize) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHit::GetDCorrEnergy
+// Purpose:        Return energy calibrated and doppler-corrected
+// Arguments:      Bool_t Randomize  -- add random number if kTRUE
+// Results:        Double_t energy   -- calibrated energy value
+// Exceptions:
+// Description:    
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t gain, offset, dcfact;
+	gMrbAnalyze->GetCalibration(fModuleNumber, fChannel, gain, offset);
+	gMrbAnalyze->GetDCorr(fModuleNumber, fChannel, dcfact);
+	Double_t e = fData[kHitEnergy];
+	if (Randomize) e += gRandom->Rndm() - 0.5;
+	return(dcfact * (e * gain + offset));
+}
+
 void TUsrHit::Print(ostream & Out, Bool_t PrintNames) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -3534,7 +4009,8 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Cha
 	fNofHits++;
 	return(hit);
 }
-Bool_t  TUsrHitBuffer::AddHit(TUsrHit * hit_to_add) {
+
+Bool_t  TUsrHitBuffer::AddHit(const TUsrHit * Hit) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::AddHit
@@ -3553,9 +4029,56 @@ Bool_t  TUsrHitBuffer::AddHit(TUsrHit * hit_to_add) {
 	}
 	TClonesArray &hits = * fHits;
 	TUsrHit * hit = new(hits[fNofHits]) TUsrHit();
-   * hit = *hit_to_add;
+	*hit = *Hit;
  	fNofHits++;
 	return kTRUE;
+}
+
+Bool_t  TUsrHitBuffer::AddHitAt(const TUsrHit * Hit, Int_t Index) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::AddHit
+// Purpose:        Add a hist to hit buffer
+// Arguments:      TUsrHit * Hit
+//                 Int_t Index   -- where to add the hit
+// Results:        true / false
+// Exceptions:
+// Description:    Adds a new item to hit list.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Index >= fNofEntries) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Index out of range - " << Index
+						<< "(" << fNofEntries << " entries max)" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddHitAt");
+		return(kFALSE);
+	}
+	TClonesArray &hits = * fHits;
+	TUsrHit * hit = new(hits[Index]) TUsrHit();
+	*hit = *Hit;
+	return kTRUE;
+}
+
+TUsrHit * TUsrHitBuffer::GetHitAt(Int_t Index) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::AddHit
+// Purpose:        Add a hist to hit buffer
+// Arguments:      TUsrHit * Hit
+//                 Int_t Index   -- where to add the hit
+// Results:        true / false
+// Exceptions:
+// Description:    Adds a new item to hit list.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Index >= fNofEntries) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Index out of range - " << Index
+						<< "(" << fNofEntries << " entries max)" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetHitAt");
+		return(NULL);
+	}
+	return (TUsrHit *) fHits->At(Index);
 }
 
 Bool_t TUsrHitBuffer::RemoveHit(TUsrHit * Hit) {

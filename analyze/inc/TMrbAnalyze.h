@@ -14,6 +14,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TROOT.h"
+#include "TMath.h"
 #include "TTree.h"
 #include "TFile.h"
 #include "TKey.h"
@@ -31,6 +32,12 @@
 #include "TMrbLogger.h"
 
 enum				{	kMB 			=	(1024 * 1024)	};
+
+enum EMrbDCorrType	{	kDCorrNone			=	0,
+						kDCorrConstFactor 	=	1,
+						kDCorrFixedAngle 	=	2,
+						kDCorrVariableAngle	=	3
+					};
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -162,6 +169,46 @@ class TMrbIOSpec : public TObject {
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDCorrListEntry
+// Purpose:        An entry in user's list of doppler correction functions
+// Description:    Bookkeeping: Connects dcorr functions to modules and params
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbDCorrListEntry : public TObject {
+
+	public:
+		TMrbDCorrListEntry(	TMrbNamedX * Module = NULL,								// ctor
+							TMrbNamedX * Param = NULL,
+							TF1 * Address = NULL) : fModule(Module),
+													fParam(Param),
+													fAddress(Address) {};
+		virtual ~TMrbDCorrListEntry() {};  											// dtor
+
+		inline TMrbNamedX * GetModule() const { return(fModule); };
+		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
+		inline TMrbNamedX * GetParam() const { return(fParam); };
+		inline void SetParam(TMrbNamedX * Param) { fParam = Param; };
+		inline TF1 * GetAddress() const { return(fAddress); };
+		inline void SetAddress(TF1 * Address) { fAddress = Address; };
+		inline EMrbDCorrType GetType() { return(fType); };
+		inline void SetBeta(Double_t Beta) { fBeta = Beta; };
+		inline Double_t GetBeta() { return(fBeta); };
+		inline Bool_t AngleInDegrees() { return(fAngleInDegrees); };
+
+	protected:
+		EMrbDCorrType fType;
+		Bool_t fAngleInDegrees;
+		Double_t fBeta;
+		TMrbNamedX * fModule;
+		TMrbNamedX * fParam;
+		TF1 * fAddress;
+
+	ClassDef(TMrbDCorrListEntry, 0) 	// [Analyze] List of dcorr functions
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCalibrationListEntry
 // Purpose:        An entry in user's list of calibration functions
 // Description:    Bookkeeping: Connects calibrations to modules and params
@@ -226,6 +273,8 @@ class TMrbParamListEntry : public TObject {
 		};
 		inline TF1 * GetCalibrationAddress() const { return(fCalibrationAddress); };
 		inline void SetCalibrationAddress(TF1 * Address) { fCalibrationAddress = Address; };
+		inline TF1 * GetDCorrAddress() const { return(fDCorrAddress); };
+		inline void SetDCorrAddress(TF1 * Address) { fDCorrAddress = Address; };
 
 	protected:
 		TMrbNamedX * fModule;
@@ -233,6 +282,7 @@ class TMrbParamListEntry : public TObject {
 		TH1 * fHistoAddress;
 		TH1 * fSingleAddress;
 		TF1 * fCalibrationAddress;
+		TF1 * fDCorrAddress;
 
 	ClassDef(TMrbParamListEntry, 0) 	// [Analyze] List of params
 };
@@ -373,7 +423,7 @@ class TUsrHit : public TObject {
 		enum	{	kHitPSA_T90		=	kHitPSA6	};
 
 public:
-		TUsrHit() {};
+		TUsrHit() { this->Reset(); };
 		TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Data, Int_t NofData);	// ctor
@@ -398,11 +448,12 @@ public:
 		const Char_t * ChannelTime2Ascii(TString & TimeString) const;
 
 		inline UShort_t * GetDataAddr() { return(fData); };
-		inline UShort_t GetData(Int_t Index) const { return(fData[Index]); };
+		inline UShort_t GetData(Int_t Index = TUsrHit::kHitEnergy) const { return(fData[Index]); };
 
 		inline UShort_t GetEnergy() const { return(fData[kHitEnergy]); };
 		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
 		Double_t GetCalEnergy(Bool_t Randomize = kTRUE) const;
+		Double_t GetDCorrEnergy(Bool_t Randomize = kTRUE) const;
 
 		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
 				
@@ -433,6 +484,16 @@ public:
 		inline void CopyData(TUsrHit * Hit, Int_t NofData, Int_t Offset = 0) {
 			UShort_t * dp = Hit->GetDataAddr() + Offset;
 			for (Int_t i = 0; i < NofData; i++) fData[i + Offset] = *dp++;
+		};
+
+		inline void Reset() {
+			fBufferNumber = -1;
+			fEventNumber = -1;
+			fModuleNumber = -1;
+			fChannel = -1;
+			fChannelTime = 0LL;
+			fNofData = 0;
+			this->ClearData();
 		};
 
 		inline void ClearData() { memset(fData, 0, kMaxHitData * sizeof(UShort_t)); };	// clear data
@@ -487,7 +548,11 @@ class TUsrHitBuffer : public TObject {
 		TUsrHit * AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
 										UShort_t * ChannelTime,
 										UShort_t * Data, Int_t NofData);
-		Bool_t AddHit(TUsrHit * Hit);					   //  add ready made hit
+		Bool_t AddHit(const TUsrHit * Hit);					  //  add (append) ready made hit
+
+		Bool_t AddHitAt(const TUsrHit * Hit, Int_t Index);	// add at given index
+		TUsrHit * GetHitAt(Int_t Index);					// get hit at given index
+
 		Bool_t RemoveHit(TUsrHit * Hit);					// remove hit
 		Bool_t RemoveHit(Int_t Index);
 
@@ -722,6 +787,18 @@ class TMrbAnalyze : public TObject {
 		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) const;
 		TF1 * GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) const;
 
+		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read calibration data from file
+		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
+		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex);
+		TF1 * AddDCorrToList(const Char_t * Name, const Char_t * Formula, Double_t Xmin, Double_t Xmax, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
+		TF1 * GetDCorr(const Char_t * DCorrName) const; 				// get calibration by name
+		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex) const;		// get calibration by module + param
+		TF1 * GetDCorr(Int_t AbsParamIndex) const;							// get calibration by absolute param index
+		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Factor) const;
+		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Beta, Double_t & Angle) const;
+		TF1 * GetDCorr(Int_t AbsParamIndex, Double_t & Factor) const;
+		TF1 * GetDCorr(Int_t AbsParamIndex, Double_t & Beta, Double_t & Angle) const;
+
 		inline Int_t GetNofModules() const { return(fNofModules); };		// number of modules
 		inline Int_t GetNofParams() const { return(fNofParams); };		// number of params
 
@@ -800,6 +877,7 @@ class TMrbAnalyze : public TObject {
 		TMrbLofNamedX fHistoList;		// list of histograms, indexed by param number
 		TMrbLofNamedX fSingleList;		// list of single histograms, indexed by param number
 		TMrbLofNamedX fCalibrationList;	// list of calibrations, indexed by param number
+		TMrbLofNamedX fDCorrList;		// list of doppler corrections, indexed by param number
 
 	ClassDef(TMrbAnalyze, 1)	// [Analyze] Describe user's analysis
 };
