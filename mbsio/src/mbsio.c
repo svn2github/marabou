@@ -853,6 +853,9 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 		s = (mbs->evttype)->show;
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_EVENT].out);
 	}
+
+	if (med_out) fwrite(mbs->evt_data, 1, mbs->evtsiz, med_out);
+
 	return((mbs->evttype)->type);
 }
 

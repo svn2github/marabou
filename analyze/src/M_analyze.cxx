@@ -198,6 +198,7 @@ int main(int argc, char **argv) {
 				<<	"       input_type     \"FILE\"             input type:" << endl
 				<<	"                                       FILE   read data from ROOT tree (ext = .root)" << endl
 				<<	"                                              or from MBS native file (ext = .lmd)" << endl
+				<<	"                                              or from MBS event data file (ext = .med)" << endl
 				<<	"                                       SYNC   connect to server SYNChronously" << endl
 				<<	"                                       ASYNC  connect to server ASYNChronously" << endl
 				<<	"                                       LIST   read from file list" << endl
@@ -241,17 +242,24 @@ int main(int argc, char **argv) {
 	else				input_type = "F";
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Input type:  " <<  input_type<< endl;
 
+	TRegexp rxroot("\\.root$");
+	TRegexp rxmed("\\.med$");
+	TRegexp rxlmd("\\.lmd$");
 
 	switch (input_type(0)) {
 		case 'f':
 		case 'F':	input_type = "FILE";
 					input_mode = TMrbIOSpec::kInputFile;
-					if (data_source.Index(".root", 0) > 0) {
+					if (data_source.Index(rxroot, 0) > 0) {
 						input_mode = TMrbIOSpec::kInputRoot;
+					} else if (data_source.Index(rxmed, 0) > 0) {
+						input_mode = TMrbIOSpec::kInputMED;
+					} else if (data_source.Index(rxlmd, 0) > 0) {
+						input_mode = TMrbIOSpec::kInputLMD;
 					} else {
 						cerr	<< setred
 								<< "M_analyze: Illegal file extension - " << data_source
-								<< " (sould be \".root\")"
+								<< " (sould be \".root\", \".med\", or \".lmd\")"
 								<< setblack << endl;
 						exit(1);
 					}
@@ -295,7 +303,7 @@ int main(int argc, char **argv) {
 					exit(1);
 	}
 
-	if ((input_mode & TMrbIOSpec::kInputTCP) != 0) {
+	if ((input_mode & TMrbIOSpec::kInputTCP) == TMrbIOSpec::kInputTCP) {
 		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(data_source));
 		TString hAddr = ia->GetHostName();
 		if (hAddr.CompareTo("UnknownHost") == 0) {
@@ -343,9 +351,6 @@ int main(int argc, char **argv) {
 	else {
 		output_mode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteTree | TMrbIOSpec::kOutputClose);
 		oFormat = TMrbIOSpec::kFormatNone;
-		TRegexp rxroot("\\.root$");
-		TRegexp rxmed("\\.med$");
-		TRegexp rxlmd("\\.lmd$");
 		if (output_file.Index(rxroot, 0) > 0) oFormat = TMrbIOSpec::kFormatRoot;
 		else if (output_file.Index(rxmed, 0) > 0) oFormat = TMrbIOSpec::kFormatMED;
 		else if (output_file.Index(rxlmd, 0) > 0) oFormat = TMrbIOSpec::kFormatLMD;
@@ -552,7 +557,7 @@ int main(int argc, char **argv) {
 	if ( verboseMode ) gROOT->ls();
 
 //	input from MBS: tcp or lmd
-	if ((input_mode & TMrbIOSpec::kInputMBS) != 0) {
+	if ((input_mode & TMrbIOSpec::kInputMBS) == TMrbIOSpec::kInputMBS) {
 		if ( verboseMode ) cout	<< "M_analyze: Connecting to MBS - data source is " << data_source
 								<< " (input type \"" << input_type << "\")"
 								<< endl;
@@ -608,16 +613,13 @@ int main(int argc, char **argv) {
 	u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
 
 //	read a given number of events from MBS (tcp or lmd file)
-	if ((input_mode & TMrbIOSpec::kInputMBS) != 0 ) {
+	if ((input_mode & TMrbIOSpec::kInputMBS) == TMrbIOSpec::kInputMBS ) {
 		if ( ioSpec->IsTimeStampMode() ) {
 			cerr	<< setred
 					<< "M_analyze: Can't run in time stamp mode when taking data from MBS"
 					<< setblack << endl;
 			exit(1);
 		}
-
-//	allow to exec some macro code here
-//		u_analyze->ExecFilterMacro();			*** no longer used, RL 12-2000 ***
 
 //	reload params
 		if ( param_mode != TMrbIOSpec::kParamNone ) u_analyze->ReloadParams(ioSpec);
