@@ -1,0 +1,30 @@
+########################################################################
+# Copyright:
+#   GSI, Gesellschaft fuer Schwerionenforschung mbH
+#   Planckstr. 1
+#   D-64291 Darmstadt
+#   Germany
+########################################################################
+# Informations how to create the remote event server for MBS on Linux
+# last update: 18.12.2001, Horst Goeringer
+########################################################################
+
+V20: 18.12.2001: built events of any length from fragments
+     
+
+To create and run the remote event server for MBS, perform the following 
+steps:
+
+(1) execute make file to create the executable mrevserv:
+
+    make -f MRevServ.make
+
+(2) start executable
+
+    mrevserv daq-node 6002 options
+
+For more information and for information on the ROOT event client for
+MBS see
+
+http://www-aix.gsi.de/~goeri/mbsnew/online.html
+
