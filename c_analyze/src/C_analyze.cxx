@@ -55,6 +55,8 @@
 #include <iomanip>
 //#include <sstream.h>
 
+#include <dirent.h>
+
 Bool_t kUseMap = kTRUE;
 // #include "/usr/local/include/uti/psinfo.h"
 
@@ -1766,7 +1768,7 @@ Bool_t FhMainFrame::MbsCompile(){
       if(fCodeName->Length() > 0){
          TMbsReadoutProc * rp = fSetup->ReadoutProc(0);
          if(rp){
-            rp->SetCodeName(fCodeName->Data());
+			rp->SetCodeName(fCodeName->Data());
 			   rp->CopyMakefile();
             rp->CompileReadout("deve");
          } else {WarnBox("No ReadoutProc defined", this); return kFALSE;}
@@ -2882,28 +2884,25 @@ Bool_t FhMainFrame::GetDefaults(){
    fMessageIntervall = 1000;       // 1 second 
    fAverage          = 60;         // 60 seconds
    void* dirp=gSystem->OpenDirectory(".");
-   TRegexp endwithmk("Readout.mk$");
-   TRegexp endwithc("Readout.c$");
-   TRegexp endwithh("Readout.h$");
+   TRegexp endwithmk("Readout\\.mk$");
+   TRegexp endwithc("Readout\\.c$");
+   TRegexp endwithh("Readout\\.h$");
    const char * fname;
-   while ( (fname=gSystem->GetDirEntry(dirp)) ) {
+   while ( (fname = gSystem->GetDirEntry(dirp)) && (fCodeName->Length() == 0) ) {
       TString sname(fname);
       if (sname.Index(endwithc) >= 0) {
 		*fCodeName = sname;
-		endwithc = ".c";
+		endwithc = "\\.c$";
 		(*fCodeName)(endwithc) = "";
       } else if (sname.Index(endwithh) >= 0) {
 		*fCodeName = sname;
-		endwithh = ".h";
+		endwithh = "\\.h$";
 		(*fCodeName)(endwithh) = "";
       } else if (sname.Index(endwithmk) >= 0) {
  		*fCodeName = sname;
-		endwithmk = ".mk";
+		endwithmk = "\\.mk$";
 		(*fCodeName)(endwithmk) = "";
      }
-      if (fCodeName->Length() > 0) {
-		break;
-      }
    }
    fGateLength        = 500;
    fBufSize           = 0x4000;
