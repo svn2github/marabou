@@ -1758,8 +1758,12 @@ Bool_t FhMainFrame::MbsSetup(){
 //_____________________________________________________________________________________
 Bool_t FhMainFrame::MbsCompile(){
    if(!confirm("Do you really want recompile?", this))return kFALSE;
-   if(!fSetup)MbsSetup();
-   else       fSetup->Open(".mbssetup");
+   if(!fSetup) {
+		this->MbsSetup();
+   } else {
+		fSetup->Open(".mbssetup");
+		fSetup->SetPrefix("TMbsSetup");
+   }
    if(fSetup){
       fStatus->SetText(new TGString("Compiling"));
       fStatus->ChangeBackground(cyan);
