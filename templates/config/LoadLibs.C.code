@@ -19,5 +19,8 @@
 	gSystem->Load("$MARABOU/lib/libTMrbTransport.so");
 	gSystem->Load("$MARABOU/lib/libMutex.so");
 	gSystem->Load("$MARABOU/lib/libTMrbAnalyze.so");
-	gSystem->Load("lib%%ANALYZE_FILE%%.so");
+%%BeginOfCode%%
+	gSystem->Load("$libPath$userLib.so");
+%%EndOfCode%%
+%%LOAD_USER_LIBS%%
 }
