@@ -19,6 +19,7 @@ enum EMrbVarWdwType		{	kVarI			=   0x1,		// var of type int
 							kWindowI		=   0x10,		// wdw of type int
 							kWindowF		=   0x20,		// wdw of type float
 							kWindow2D		=   0x40,		// 2-dimensional window
+							kWindowPtr		=   0x100,		// pointer to window
 							kVarIsArray		=   0x1000, 	// array of variables
 							kHasInitValues	=   0x8000, 	// var/wdw has explicit init values
 							kIsRangeChecked =   0x10000,	// range has to be checked

@@ -292,6 +292,25 @@ void TMrbLofUserVars::Print(ostream & OutStrm, Option_t * Option) const {
 		}
 	}
 
+	found = kFALSE;
+	if ((vOpt2 = vOpt & kWindow2D)) {
+		varp = this->First(vOpt2);
+		while (varp) {
+			if (!found) {
+				OutStrm	<< endl << GetName() << "::CUTS:" << endl;
+				OutStrm	<< "   " << setiosflags(ios::left)
+						<< setw(20) << "NAME"
+						<< setw(17) << "TYPE"
+						<< setw(18) << "X"
+						<< setw(11) << "Y"
+						<< endl;
+			}
+			found = kTRUE;
+			((TMrbWindow2D *) varp)->Print();
+			varp = this->After(varp, vOpt2);
+		}
+	}
+
 	OutStrm << endl;
 }
 

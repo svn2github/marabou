@@ -710,8 +710,33 @@ void TMrbWindow2D::Print(Option_t * Option) {
 // Description:    Outputs window limits to cout.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-   cout	<< this->ClassName() << " " << GetName() << endl;
-   TCutG::Print();
+
+	UInt_t vOpt;
+
+	TMrbLofNamedX varOptions;
+
+	vOpt = varOptions.CheckPatternShort(this->ClassName(), "Print", Option, kMrbVarWdwOutput);
+	if (vOpt == TMrbLofNamedX::kIllIndexBit) return;
+
+	if (vOpt & kOutputShort) {
+		cout	<< "   "
+				<< setiosflags(ios::left) << setw(15) << GetName();
+		cout	<< resetiosflags(ios::left)
+				<< setw(9) << "cut";
+		cout	<< endl;
+	} else {
+		cout	<< "   "
+				<< setiosflags(ios::left) << setw(15) << GetName();
+		cout	<< resetiosflags(ios::left)
+				<< setw(9) << "cut";
+		for (Int_t i = 0; i < this->GetN(); i++) {
+			Double_t x, y;
+			this->GetPoint(i, x, y);
+			cout	<< setw(19) << x
+					<< setw(18) << y;
+			cout	<< endl;
+		}
+	}
 }
 
 TMbsWindow2d::~TMbsWindow2d() {

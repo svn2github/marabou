@@ -228,11 +228,6 @@ class TMrbWindowF: public TMrbWindow {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindow2D
 // Purpose:        Base class for a 2-dim windows and cuts
-// Methods:        GetXtext        -- get text position X
-//                 GetYtext        -- ... Y
-//                 SetXtext        -- set text position X
-//                 SetYText        -- ... Y
-//                 AddToHist       -- connect window to histogram
 // Description:    Defines a 2-dim window/cut and its methods.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
