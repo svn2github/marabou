@@ -648,7 +648,6 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					break;
 				case TMrbConfig::kAnaEventAddBranches:
 				case TMrbConfig::kAnaEventInitializeBranches:
-				case TMrbConfig::kAnaEvtResetData:
 				case TMrbConfig::kAnaSevtClassInstance:
 				case TMrbConfig::kAnaSevtSetName:
 					sevt = (TMrbSubevent *) fLofSubevents.First();
@@ -662,6 +661,21 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 						anaTmpl.WriteCode(ana);
 						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 					}
+					break;
+				case TMrbConfig::kAnaEvtResetData:
+					sevt = (TMrbSubevent *) fLofSubevents.First();
+					while (sevt) {
+						sevtNameLC = sevt->GetName();
+						sevtNameUC = sevtNameLC;
+						sevtNameUC(0,1).ToUpper();
+						anaTmpl.InitializeCode("%S%");
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.WriteCode(ana);
+						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+					}
+					anaTmpl.InitializeCode("%R%");
+					anaTmpl.WriteCode(ana);
 					break;
 				case TMrbConfig::kAnaSevtDispatchOverType:
 					foundSevt = kFALSE;
