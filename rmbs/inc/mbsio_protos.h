@@ -1,84 +1,41 @@
-void mbs_set_sevt_minwc(MBSDataIO *, int);
-unsigned int mbs_next_sevent_raw(MBSDataIO *);
-unsigned int mbs_next_sevent(MBSDataIO *);
-unsigned int mbs_next_sheader(MBSDataIO *);
-unsigned int mbs_next_sdata_raw(MBSDataIO *);
-unsigned int mbs_next_sdata(MBSDataIO *);
-void mbs_pass_errors(char *);
-MBSDataIO * mbs_open_file(char *, char *, int, FILE *);
-int mbs_close_file(MBSDataIO *);
-int mbs_free_dbase(MBSDataIO *);
-unsigned int mbs_next_event(MBSDataIO *);
-int mbs_pass_sevent(MBSDataIO * , unsigned short *);
-int mbs_show(MBSDataIO *, char *, FILE *);
-int mbs_set_show(MBSDataIO *, char *, int , FILE *);
-int mbs_show_stat(MBSDataIO *, FILE *);
-int mbs_set_stat(MBSDataIO *, int, FILE *);
-int mbs_set_stream(MBSDataIO *, int, int);
-int mbs_set_dump(MBSDataIO *, int);
-int mbs_open_log(char *);
-int mbs_open_lmd(char *);
-int mbs_close_lmd();
-int mbs_open_med(char *);
-int mbs_close_med();
-void _mbs_show_fheader();
-void _mbs_show_bheader();
-void _mbs_show_evhe_10_1();
-void _mbs_show_sev_10_1();
-void _mbs_show_sev_10_11();
-void _mbs_show_sev_raw();
-void _mbs_copy_fheader();
-void _mbs_convert_bheader();
-void _mbs_convert_eheader();
-void _mbs_convert_sheader();
-void _mbs_type_error();
-unsigned int *_mbs_unpack_sev_10_1();
-unsigned int *_mbs_unpack_sev_10_11();
-unsigned int *_mbs_unpack_sev_raw();
-void _mbs_show_sev_9000_1();
-void _mbs_show_sev_9000_2();
-unsigned int *_mbs_unpack_sev_9000_X();
-MBSServerInfo * _mbs_read_server_info();
-void _mbs_output_error();
-unsigned int _mbs_next_buffer(MBSDataIO *);
-unsigned int _mbs_read_buffer(MBSDataIO *);
-unsigned int _mbs_next_lmd_event(MBSDataIO *);
-unsigned int _mbs_next_med_event(MBSDataIO *);
-void _mbs_show_fheader(MBSDataIO *, FILE *);
-void _mbs_show_bheader(MBSDataIO *, FILE *);
-void _mbs_show_evhe_10_1(MBSDataIO *, FILE *);
-void _mbs_show_sev_10_1(MBSDataIO *, FILE *);
-unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *);
-void _mbs_show_sev_10_11(MBSDataIO *, FILE *);
-unsigned int *_mbs_unpack_sev_10_11(MBSDataIO *);
-unsigned int *_mbs_unpack_sev_raw(MBSDataIO *);
-void _mbs_show_sev_9000_1(MBSDataIO *, FILE *);
-unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *);
-void _mbs_show_sev_9000_2(MBSDataIO *, FILE *);
-void _mbs_show_sev_raw(MBSDataIO *, FILE *);
-unsigned int _mbs_convert_data(MBSDataIO *);
-void _mbs_type_error(MBSDataIO *);
-void _mbs_init_hit(MBSBufferElem *tlist);
-void _mbs_init_triggers();
-MBSBufferElem *_mbs_check_type(unsigned int, MBSBufferElem *, MBSBufferElem *);
-int _mbs_check_sequence(MBSDataIO *, unsigned int);
-void _mbs_copy_fheader(MBSDataIO *);
-void _mbs_convert_bheader(MBSDataIO *);
-void _mbs_convert_eheader(MBSDataIO *);
-void _mbs_convert_sheader(MBSDataIO *);
-int _mbs_check_active(MBSDataIO *);
-int _mbs_check_dbase(MBSDataIO *);
-void _mbs_output_error();
-void _mbs_output_log();
-int _mbs_connect_to_server(char *, unsigned int);
-MBSServerInfo * _mbs_read_server_info(int, MBSServerInfo *);
-int _mbs_read_stream(int, char *, MBSServerInfo *);
-int _mbs_request_stream(int);
-int _mbs_disconnect_from_server(int, unsigned int);
-void _mbs_init_pool(MBSDataIO *);
-void _mbs_free_pool(MBSDataIO *);
-MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO *);
-void _mbs_store_bufno(MBSDataIO *);
-MBSBufferPool * _mbs_find_subseq_buffer(MBSDataIO *);
-void _mbs_dump_buffer(MBSDataIO *);
+#include <Rtypes.h>
+
+//_________________________________________________________[C DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbsio_protos.h
+// Purpose:        C interface to mbsio calls
+// Description:    C prototypes for mbsio
+// Author:         R. Lutter
+// Revision:       
+// Date:           
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	extern "C" void mbs_set_sevt_minwc(const MBSDataIO *, Int_t);
+	extern "C" UInt_t mbs_next_sevent_raw(const MBSDataIO *);
+	extern "C" UInt_t mbs_next_sevent(const MBSDataIO *);
+	extern "C" UInt_t mbs_next_sheader(const MBSDataIO *);
+	extern "C" UInt_t mbs_sevent_subtype(const MBSDataIO *);
+	extern "C" Int_t mbs_sevent_serial(const MBSDataIO *);
+	extern "C" UInt_t mbs_next_sdata_raw(const MBSDataIO *);
+	extern "C" UInt_t mbs_next_sdata(const MBSDataIO *);
+	extern "C" void mbs_pass_errors(const Char_t *);
+	extern "C" const MBSDataIO * mbs_open_file(const Char_t *, const Char_t *, Int_t, FILE *);
+	extern "C" Bool_t mbs_close_file(const MBSDataIO *);
+	extern "C" Bool_t mbs_free_dbase(const MBSDataIO *);
+	extern "C" UInt_t mbs_next_event(const MBSDataIO *);
+	extern "C" Int_t mbs_event_trigger(const MBSDataIO *);
+	extern "C" Int_t mbs_pass_sevent(const MBSDataIO * , UShort_t *);
+	extern "C" Int_t mbs_show(const MBSDataIO *, const Char_t *, FILE *);
+	extern "C" Int_t mbs_set_show(const MBSDataIO *, const Char_t *, Int_t , FILE *);
+	extern "C" Int_t mbs_show_stat(const MBSDataIO *, FILE *);
+	extern "C" Int_t mbs_set_stat(const MBSDataIO *, Int_t, FILE *);
+	extern "C" Int_t mbs_set_stream(const MBSDataIO *, Int_t, Int_t);
+	extern "C" Int_t mbs_set_dump(const MBSDataIO *, Int_t);
+	extern "C" Int_t mbs_open_log(const Char_t *);
+	extern "C" Int_t mbs_open_lmd(const Char_t *);
+	extern "C" Int_t mbs_close_lmd();
+	extern "C" Int_t mbs_open_med(const Char_t *);
+	extern "C" Int_t mbs_close_med();
 

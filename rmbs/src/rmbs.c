@@ -79,7 +79,7 @@ int processEvent(MBSDataIO * mbs) {
 
 	s_vehe * eventData = (s_vehe *) mbs->evt_data; 		/* pointer to event data */
 
-	switch (eventData->i_trigger) {				/* dispatch according to trigger number */
+	switch (mbs_event_trigger(mbs)) {			/* dispatch according to trigger number */
 		case kMrbTriggerReadout:				/* event readout, trigger 1 */
 			sts = extractSubevents(mbs);		/* extract subevents */
 			if (sts == FALSE) return(FALSE);
@@ -113,7 +113,7 @@ int extractSubevents(MBSDataIO * mbs) {
 		sevtType = mbs_next_sdata(mbs); 					/* next subevent */
 		if (sevtType == MBS_STYPE_ERROR) return(FALSE);	/* error */
 
-		switch (mbs->sevt_id) {				/* dispatch according to subevent id */
+		switch (mbs_sevent_serial()) {		/* dispatch according to subevent id */
 			case kMrbSevtClu1:				/* subevent clu1: dgf cluster 1, id=1 */
 			case kMrbSevtClu2:				/* subevent clu2: dgf cluster 2, id=2 */
 			case kMrbSevtClu3:				/* subevent clu3: dgf cluster 3, id=3 */
