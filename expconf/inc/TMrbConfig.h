@@ -744,6 +744,8 @@ class TMrbConfig : public TNamed {
 
 		void MakeDefined(const Char_t * Name, Int_t Value, const Char_t * Comment = "");
 		void MakeDefined(const Char_t * Name, Bool_t Defined = kTRUE, const Char_t * Comment = "");
+		Bool_t IsDefined(const Char_t * Name, Int_t & Value) const;
+		Bool_t IsDefined(const Char_t * Name) const;
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
 

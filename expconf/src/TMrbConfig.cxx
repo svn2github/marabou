@@ -6250,6 +6250,44 @@ void TMrbConfig::MakeDefined(const Char_t * Name, Bool_t Defined, const Char_t *
 	fLofDefines.AddNamedX(new TMrbNamedX((Int_t) Defined, dName.Data(), dComment.Data()));
 }
 
+Bool_t TMrbConfig::IsDefined(const Char_t * Name) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::IsDefined
+// Purpose:        Check if #defined
+// Arguments:      Char_t * Name   -- name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if there is a #define.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofDefines.FindByName(Name);
+	return(nx != NULL);
+}
+
+Bool_t TMrbConfig::IsDefined(const Char_t * Name, Int_t & Value) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::IsDefined
+// Purpose:        Check if #defined
+// Arguments:      Char_t * Name   -- name
+//                 Int_t & Value   -- return value
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if there is a #define. Returns value if any.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fLofDefines.FindByName(Name);
+	Value = (Int_t) kFALSE;
+	if (nx == NULL) return(kFALSE);
+	Value = (Int_t) kTRUE;
+	TString name = nx->GetName();
+	if (name.BeginsWith("Int_t")) Value = nx->GetIndex();
+	return(kTRUE);
+}
+
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
