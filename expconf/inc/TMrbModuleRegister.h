@@ -91,8 +91,6 @@ class TMrbModuleRegister : public TObject {
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;
 		inline virtual void Print() const { Print(cout, ""); };						// print settings
 
-		void PrintBitNames();						// output bit names if present
-
 	protected:
 		TMrbModule * fParent;						// parent module
 		Int_t fNofChannels; 						// number of channels

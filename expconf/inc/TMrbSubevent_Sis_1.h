@@ -55,7 +55,7 @@ class TMrbSubevent_Sis_1 : public TMrbSubevent {
 		inline Bool_t HasFixedLengthFormat() const { return(kFALSE); };				// variable length data
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };				// can store multiple modules
 
-		inline Bool_t CheckModuleID(TMrbModule * Module) {						// needs modules of type Sis
+		inline Bool_t CheckModuleID(TMrbModule * Module) const {						// needs modules of type Sis
 			return(Module->CheckID(TMrbConfig::kModuleSis_3600) || Module->CheckID(TMrbConfig::kModuleSis_3801));
 		};
 				
