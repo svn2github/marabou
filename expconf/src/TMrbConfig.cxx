@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.82 2004-11-26 09:16:18 marabou Exp $       $Id: TMrbConfig.cxx,v 1.82 2004-11-26 09:16:18 marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.83 2004-11-29 13:32:36 rudi Exp $       $Id: TMrbConfig.cxx,v 1.83 2004-11-29 13:32:36 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4196,9 +4196,26 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 				return(kFALSE);
 			}
-			aclic += "+";
+			TObjArray lofLibs;
+			TMrbSystem ux;
+			Int_t nofLibs = ux.FindFile(lofLibs, "*.so", "$MARABOU/lib:$ROOTSYS/lib");
+			Long_t aclicTime;
+			Long_t dmy, modTime;
+			Long64_t dmy64;
+			TString suffix = "+g";
+			gSystem->GetPathInfo(aclic.Data(), &dmy, &dmy64, &dmy, &aclicTime);
+			for (Int_t i = 0; i < nofLibs; i++) {
+				TString fName = ((TObjString *) lofLibs[i])->GetString();
+				gSystem->GetPathInfo(fName.Data(), &dmy, &dmy64, &dmy, &modTime);
+				if (modTime > aclicTime) {
+					suffix = "++g";
+					break;
+				}
+			}
+			aclic += suffix;
 			if (gMrbConfig->IsVerbose()) {
-				gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fileSpec << "\" (option \"+g\")"<< endl;
+				gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fileSpec
+								<< "\" (option \"" << suffix << "\")"<< endl;
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 			}
 		} else {
