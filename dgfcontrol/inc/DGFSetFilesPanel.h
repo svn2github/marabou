@@ -38,7 +38,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFSetFilesPanel : public TGMainFrame {
+class DGFSetFilesPanel : public TGCompositeFrame {
 
 	public:
 
@@ -52,29 +52,12 @@ class DGFSetFilesPanel : public TGMainFrame {
 									kDGFSetFilesSystemSystemFPGAConfig,
 									kDGFSetFilesSystemFippiFPGAConfig,
 									kDGFSetFilesApply,
-									kDGFSetFilesClose
 								};
 
-		// geometry settings
-		enum					{	kFrameWidth 			= 700					};
-		enum					{	kFrameHeight 			= 370					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 400					};
-		enum					{	kLEHeight				= 20					};
-
-		enum					{	kButtonWidth			= kAutoWidth			};
-		enum					{	kButtonHeight			= 20					};
-
 	public:
-		DGFSetFilesPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFSetFilesPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFSetFilesPanel() { fHeap.Delete(); };
 
-		DGFSetFilesPanel(const DGFSetFilesPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -86,6 +69,7 @@ class DGFSetFilesPanel : public TGMainFrame {
 		TGMrbFileEntry * fSystemDSPParamsEntry; 		//		params
 		TGMrbFileEntry * fSystemSystemFPGAConfigEntry;	//		FPGA config (system)
 		TGMrbFileEntry * fSystemFippiFPGAConfig[TMrbDGFData::kNofRevs];	//		... (fippi, rev D, E)
+		TGGroupFrame * fActionFrame;
 		TGMrbTextButtonList * fButtonFrame; 			// buttons: apply/close
 
 		TGFileInfo fSystemDSPCodeFileInfo;				//		DSP code
@@ -96,8 +80,6 @@ class DGFSetFilesPanel : public TGMainFrame {
 		TMrbLofNamedX fLofButtons; 
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFSetFilesPanel, 0)		// [DGFControl] Define file paths
 };
 

@@ -57,7 +57,7 @@ int main(Int_t argc, Char_t **argv)
 		gSystem->Exit(1);
 	}
 
-	DGFRunControlPanel mainWindow(gClient->GetRoot(), DGFRunControlPanel::kFrameWidth, DGFRunControlPanel::kFrameHeight);
+	DGFRunControlPanel mainWindow(gClient->GetRoot(), kTabWidth, kTabHeight);
 
 	theApp.Run();
 }

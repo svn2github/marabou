@@ -39,9 +39,8 @@ using namespace std;
 
 const SMrbNamedX kDGFParamsActions[] =
 			{
-				{DGFParamsPanel::kDGFParamsApply,		"Read",			"Read selected param"			},
+				{DGFParamsPanel::kDGFParamsRead,		"Read",			"Read selected param"			},
 				{DGFParamsPanel::kDGFParamsApply,		"Apply",		"Apply param settings"			},
-				{DGFParamsPanel::kDGFParamsClose,		"Close",		"Close window"					},
 				{0, 									NULL,			NULL							}
 			};
 
@@ -49,17 +48,13 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFParamsPanel)
 
-DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
+														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFParamsPanel
 // Purpose:        DGF Viewer: Setup Panel
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    Implements DGF Viewer's Untrig Trace Panel
@@ -140,7 +135,7 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Hei
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
-							DGFParamsPanel::kFrameWidth, DGFParamsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -148,21 +143,21 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Hei
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
 	
-	fGroupFrame = new TGHorizontalFrame(fModules, DGFParamsPanel::kFrameWidth, DGFParamsPanel::kFrameHeight,
+	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
-							DGFParamsPanel::kFrameWidth, DGFParamsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
-							DGFParamsPanel::kFrameWidth, DGFParamsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
@@ -193,9 +188,9 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Hei
 	}	
 
 	fSelectParam = new TGMrbLabelCombo(fSelectFrame,  "Param", &lofParams,
-													DGFParamsPanel::kDGFParamsSelectParam, 2,
-													DGFParamsPanel::kFrameWidth, DGFParamsPanel::kLEHeight,
-													DGFParamsPanel::kEntryWidth,
+													kDGFParamsSelectParam, 2,
+													kTabWidth, kLEHeight,
+													kEntryWidth,
 													frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectParam);
 	fSelectFrame->AddFrame(fSelectParam, frameGC->LH());
@@ -209,26 +204,42 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Hei
 	this->AddFrame(fValueFrame, groupGC->LH());
 	
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
-		fClusterVals[cl] = new TGHorizontalFrame(fValueFrame, DGFParamsPanel::kFrameWidth, DGFParamsPanel::kFrameHeight,
-													kChildFrame, frameGC->BG());
+		fClusterVals[cl] = new TGHorizontalFrame(fValueFrame, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 		HEAP(fClusterVals[cl]);
 		fValueFrame->AddFrame(fClusterVals[cl], groupGC->LH());
 		for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
 			dgfModule = gDGFControlData->GetModule(cl, modNo);
-			fParVal[modNo] = new TGMrbLabelEntry(fClusterVals[cl], dgfModule->GetName(),
+			Int_t n = modNo + cl * kNofModulesPerCluster;
+			TMrbString dgfName;
+			TGMrbLayout * bgc;
+			if (dgfModule == NULL) {
+				dgfName = "clu";
+				dgfName += cl + 1;
+				dgfName += "-void";
+				dgfName += modNo + 1;
+				bgc = NULL;
+			} else {
+				dgfName = dgfModule->GetName();
+				bgc = buttonGC;
+			}
+			fParVal[n] = new TGMrbLabelEntry(fClusterVals[cl], dgfName,
 																200, -1,
-																DGFParamsPanel::kLEWidth,
-																DGFParamsPanel::kLEHeight,
-																DGFParamsPanel::kEntryWidth,
-																frameGC, labelGC, entryGC, buttonGC);
-			HEAP(fParVal[modNo]);
-			fClusterVals[cl]->AddFrame(fParVal[modNo], frameGC->LH());
-			fParVal[modNo]->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-			fParVal[modNo]->GetEntry()->SetText("0");
-			fParVal[modNo]->SetRange(0, 100000);
-			fParVal[modNo]->SetIncrement(1);
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, bgc);
+			HEAP(fParVal[n]);
+			fClusterVals[cl]->AddFrame(fParVal[n], frameGC->LH());
+			if (dgfModule == NULL) {
+				fParVal[n]->GetEntry()->SetEnabled(kFALSE);
+			} else {
+				fParVal[n]->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+				fParVal[n]->GetEntry()->SetText("0");
+				fParVal[n]->SetRange(0, 100000);
+				fParVal[n]->SetIncrement(1);
+			}
 		}
-	}	
+	}
 	
 // action buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
@@ -245,17 +256,11 @@ DGFParamsPanel::DGFParamsPanel(const TGWindow * Window, UInt_t Width, UInt_t Hei
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: ParamsPanel");
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(kTabWidth, kTabHeight);
 	MapWindow();
 }
 
@@ -288,9 +293,6 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 							case kDGFParamsApply:
 								this->ApplyParams();
 								break;
-							case kDGFParamsClose:
-								this->CloseWindow();
-								break;
 							case kDGFParamsSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -321,13 +323,6 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 			}
 			break;
 			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }
@@ -346,30 +341,34 @@ Bool_t DGFParamsPanel::ReadParams() {
 
 	TMrbString intStr;
 	Bool_t selectOk;
-		
-	TMrbLofNamedX * pNameAddr = gDGFControlData->GetSelectedModule()->GetAddr()->Data()->GetLofParamNames();
+
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
 	TMrbNamedX * px = pNameAddr->FindByIndex(fActiveParam);
 	selectOk = kFALSE;
 	if (px) {
 		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 			for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
+				dgfModule = gDGFControlData->GetModule(cl, modNo);
 				Int_t n = modNo + cl * kNofModulesPerCluster;
-				UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
-				if ((fCluster[cl]->GetActive() & bits) == bits) {
-					selectOk = kTRUE;
-					TMrbDGF * dgf = gDGFControlData->GetModule(modNo)->GetAddr();
-					Int_t parVal = dgf->GetParValue(px->GetName(), kTRUE);
-					TString pName = px->GetName();
-					intStr = "";
-					if (pName.Index("CSRA", 0) >= 0 || pName.Index("PATTERN", 0) >= 0) {
-						intStr = "0x";
-						intStr.AppendInteger(parVal, 4, '0', 16);
+				if (dgfModule && dgfModule->IsActive()) {
+					UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+					if ((fCluster[cl]->GetActive() & bits) == bits) {
+						selectOk = kTRUE;
+						TMrbDGF * dgf = dgfModule->GetAddr();
+						Int_t parVal = dgf->GetParValue(px->GetName(), kTRUE);
+						TString pName = px->GetName();
+						intStr = "";
+						if (pName.Index("CSRA", 0) >= 0 || pName.Index("PATTERN", 0) >= 0) {
+							intStr = "0x";
+							intStr.AppendInteger(parVal, 4, '0', 16);
+						} else {
+							intStr = parVal;
+						}
+						fParVal[n]->GetEntry()->SetText(intStr.Data());
 					} else {
-						intStr = parVal;
+						fParVal[n]->GetEntry()->SetText(" ");
 					}
-					fParVal[n]->GetEntry()->SetText(intStr.Data());
-				} else {
-					fParVal[n]->GetEntry()->SetText(" ");
 				}
 			}
 		}
@@ -398,28 +397,33 @@ Bool_t DGFParamsPanel::ApplyParams() {
 	Int_t idx;
 	Bool_t selectOk;
 				
-	TMrbLofNamedX * pNameAddr = gDGFControlData->GetSelectedModule()->GetAddr()->Data()->GetLofParamNames();
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
 	TMrbNamedX * px = pNameAddr->FindByIndex(fActiveParam);
 	selectOk = kFALSE;
 	if (px) {
 		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 			for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
-				UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
-				if ((fCluster[cl]->GetActive() & bits) == bits) {
-					selectOk = kTRUE;
-					TMrbDGF * dgf = gDGFControlData->GetModule(cl, modNo)->GetAddr();
-					intStr = fParVal[modNo + cl * kNofModulesPerCluster]->GetEntry()->GetText();
-					TString pName = px->GetName();
-					intStr = intStr.Strip();
-					if (intStr.Length() > 0) {
-						idx = intStr.Index("0x", 0);
-						if (idx >= 0) {
-							intStr = intStr(idx + 2, intStr.Length());
-							intStr.ToInteger(parVal, 16);
-						} else {
-							intStr.ToInteger(parVal);
+				dgfModule = gDGFControlData->GetModule(cl, modNo);
+				Int_t n = modNo + cl * kNofModulesPerCluster;
+				if (dgfModule && dgfModule->IsActive()) {
+					UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+					if ((fCluster[cl]->GetActive() & bits) == bits) {
+						selectOk = kTRUE;
+						TMrbDGF * dgf = dgfModule->GetAddr();
+						intStr = fParVal[n]->GetEntry()->GetText();
+						TString pName = px->GetName();
+						intStr = intStr.Strip();
+						if (intStr.Length() > 0) {
+							idx = intStr.Index("0x", 0);
+							if (idx >= 0) {
+								intStr = intStr(idx + 2, intStr.Length());
+								intStr.ToInteger(parVal, 16);
+							} else {
+								intStr.ToInteger(parVal);
+							}
+							dgf->SetParValue(px->GetName(), parVal, kTRUE);
 						}
-						dgf->SetParValue(px->GetName(), parVal, kTRUE);
 					}
 				}
 			}

@@ -47,7 +47,7 @@ using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFUntrigTracePanel : public TGMainFrame {
+class DGFUntrigTracePanel : public TGCompositeFrame {
 
 	public:
 
@@ -55,31 +55,15 @@ class DGFUntrigTracePanel : public TGMainFrame {
 		enum EDGFUntrigTraceActionId 	{
 													kDGFUntrigTraceXwait,
 													kDGFUntrigTraceStart,
-													kDGFUntrigTraceClose,
 													kDGFUntrigTraceSelectAll,
 													kDGFUntrigTraceSelectNone,
 													kDGFUntrigTraceSelectColumn
 												};
 				
-		// geometry settings
-		enum					{	kFrameWidth 			= 750					};
-		enum					{	kFrameHeight 			= 450					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kNumEntryWidth			= 80					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFUntrigTracePanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFUntrigTracePanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFUntrigTracePanel() { fHeap.Delete(); };
 
-		DGFUntrigTracePanel(const DGFUntrigTracePanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -106,8 +90,6 @@ class DGFUntrigTracePanel : public TGMainFrame {
 		
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFUntrigTracePanel, 0)		// [DGFControl] Untriggered trace
 };
 

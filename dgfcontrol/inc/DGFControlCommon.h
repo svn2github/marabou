@@ -50,4 +50,16 @@ const SMrbNamedXShort kDGFChannelNumbers[] =
 								{kDGFChannel3,	"3" 		},
 								{0, 			NULL		}
 							};
+
+// geometry settings
+enum						{	kTabWidth 				= 1100					};
+enum						{	kTabHeight 				= 750					};
+enum						{	kVFrameWidth			= kTabWidth / 2 		};
+enum						{	kVFrameHeight			= kTabHeight / 2 		};
+enum						{	kLEWidth				= kAutoWidth			};
+enum						{	kEntryWidth				= 100					};
+enum						{	kLEHeight				= 20					};
+enum						{	kButtonWidth			= 400					};
+enum						{	kButtonHeight			= 20					};
+
 #endif

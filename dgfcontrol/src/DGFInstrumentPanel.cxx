@@ -36,7 +36,6 @@ const SMrbNamedX kDGFInstrumentModuleButtons[] =
 			{
 				{DGFInstrumentPanel::kDGFInstrButtonShow,		"Show params", 	"Show actual param settings"	},
 				{DGFInstrumentPanel::kDGFInstrButtonCopy,		"Copy params", 	"Copy settings to other modules/channels"	},
-				{DGFInstrumentPanel::kDGFInstrButtonClose,		"Close",	"Close window"							},
 				{0, 											NULL,		NULL									}
 			};
 
@@ -45,17 +44,15 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFInstrumentPanel)
 
-DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) : TGCompositeFrame(	TabFrame,
+																						kTabWidth,
+																						kTabHeight,
+																						kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel
 // Purpose:        DGF Viewer: Instrument Panel
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    Implements DGF Viewer's Instrument Panel
@@ -137,8 +134,8 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	fSelectModule = new TGMrbLabelCombo(fSelectFrame,  "Module",
 											&fLofModuleKeys,
 											DGFInstrumentPanel::kDGFInstrSelectModule, 2,
-											DGFInstrumentPanel::kFrameWidth, DGFInstrumentPanel::kLEHeight,
-											DGFInstrumentPanel::kEntryWidth,
+											kTabWidth, kLEHeight,
+											kEntryWidth,
 											frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
@@ -155,7 +152,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels, 1, 
-													DGFInstrumentPanel::kFrameWidth, DGFInstrumentPanel::kLEHeight,
+													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
@@ -166,21 +163,18 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	TGLayoutHints * hLayout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
 	frameGC->SetLH(hLayout);
 	HEAP(hLayout);
-	fInstrFrame = new TGHorizontalFrame(this, DGFInstrumentPanel::kFrameWidth, DGFInstrumentPanel::kFrameHeight,
-													kChildFrame, frameGC->BG());
+	fInstrFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 	HEAP(fInstrFrame);
 	this->AddFrame(fInstrFrame, frameGC->LH());
 
 	TGLayoutHints * vLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	frameGC->SetLH(vLayout);
 	HEAP(vLayout);
-	fLeftFrame = new TGVerticalFrame(fInstrFrame, DGFInstrumentPanel::kVFrameWidth, DGFInstrumentPanel::kVFrameHeight,
-													kChildFrame, frameGC->BG());
+	fLeftFrame = new TGVerticalFrame(fInstrFrame, kVFrameWidth, kVFrameHeight, kChildFrame, frameGC->BG());
 	HEAP(fLeftFrame);
 	fInstrFrame->AddFrame(fLeftFrame, frameGC->LH());
 
-	fRightFrame = new TGVerticalFrame(fInstrFrame, DGFInstrumentPanel::kVFrameWidth, DGFInstrumentPanel::kVFrameHeight,
-													kChildFrame, frameGC->BG());
+	fRightFrame = new TGVerticalFrame(fInstrFrame, kVFrameWidth, kVFrameHeight, kChildFrame, frameGC->BG());
 	HEAP(fRightFrame);
 	fInstrFrame->AddFrame(fRightFrame, frameGC->LH());
 
@@ -205,9 +199,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(eeLayout);
 	fEnergyPeakTimeEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Peaking [us]",
 																200, kDGFInstrEnergyPeakTimeEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyPeakTimeEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyPeakTimeEntry, frameGC->LH());
@@ -220,9 +214,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fEnergyGapTimeEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Gap [us]",
 																200, kDGFInstrEnergyGapTimeEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyGapTimeEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyGapTimeEntry, frameGC->LH());
@@ -235,9 +229,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fEnergyAveragingEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Averaging 2^",
 																200, kDGFInstrEnergyAveragingEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyAveragingEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyAveragingEntry, frameGC->LH());
@@ -249,9 +243,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fEnergyTauEntry = new TGMrbLabelEntry(fEnergyFilterFrame, "Tau value",
 																200, kDGFInstrEnergyTauEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fEnergyTauEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyTauEntry, frameGC->LH());
@@ -275,9 +269,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(teLayout);
 	fTriggerPeakTimeEntry = new TGMrbLabelEntry(fTriggerFilterFrame, "Peaking [us]",
 																200, kDGFInstrTriggerPeakTimeEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTriggerPeakTimeEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerPeakTimeEntry, frameGC->LH());
@@ -290,9 +284,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fTriggerGapTimeEntry = new TGMrbLabelEntry(fTriggerFilterFrame, "Gap [us]",
 																200, kDGFInstrTriggerGapTimeEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTriggerGapTimeEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerGapTimeEntry, frameGC->LH());
@@ -305,9 +299,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fTriggerThresholdEntry = new TGMrbLabelEntry(fTriggerFilterFrame, "Threshold",
 																200, kDGFInstrTriggerThresholdEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTriggerThresholdEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerThresholdEntry, frameGC->LH());
@@ -343,9 +337,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fDACGainEntry = new TGMrbLabelEntry(fDACGainFrame, "DAC",
 																200, kDGFInstrDACGainEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDACGainEntry);
 	fDACGainFrame->AddFrame(fDACGainEntry, frameGC->LH());
@@ -358,9 +352,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fDACVVEntry = new TGMrbLabelEntry(fDACGainFrame, "V/V",
 																200, kDGFInstrDACVVEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDACVVEntry);
 	fDACGainFrame->AddFrame(fDACVVEntry, frameGC->LH());
@@ -389,9 +383,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fDACOffsetEntry = new TGMrbLabelEntry(fDACOffsetFrame, "DAC",
 																200, kDGFInstrDACOffsetEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDACOffsetEntry);
 	fDACOffsetFrame->AddFrame(fDACOffsetEntry, frameGC->LH());
@@ -404,9 +398,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fDACVoltEntry = new TGMrbLabelEntry(fDACOffsetFrame, "Volt",
 																200, kDGFInstrDACVoltEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDACVoltEntry);
 	fDACOffsetFrame->AddFrame(fDACVoltEntry, frameGC->LH());
@@ -439,9 +433,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(tlLayout);
 	fTraceLengthEntry = new TGMrbLabelEntry(fTraceLengthDelayFrame, "Length [us]",
 																200, kDGFInstrTraceLengthEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceLengthEntry);
 	fTraceLengthDelayFrame->AddFrame(fTraceLengthEntry, frameGC->LH());
@@ -457,9 +451,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(tdLayout);
 	fTraceDelayEntry = new TGMrbLabelEntry(fTraceLengthDelayFrame, "Delay [us]",
 																200, kDGFInstrTraceDelayEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceDelayEntry);
 	fTraceLengthDelayFrame->AddFrame(fTraceDelayEntry, frameGC->LH());
@@ -478,9 +472,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(plLayout);
 	fTracePSALengthEntry = new TGMrbLabelEntry(fTracePSAFrame, "Length [us]",
 																200, kDGFInstrTracePSALengthEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTracePSALengthEntry);
 	fTracePSAFrame->AddFrame(fTracePSALengthEntry, frameGC->LH());
@@ -496,9 +490,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(poLayout);
 	fTracePSAOffsetEntry = new TGMrbLabelEntry(fTracePSAFrame, "Offset [us]",
 																200, kDGFInstrTracePSAOffsetEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTracePSAOffsetEntry);
 	fTracePSAFrame->AddFrame(fTracePSAOffsetEntry, frameGC->LH());
@@ -525,9 +519,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(cfrLayout);
 	fCFDFractionEntry = new TGMrbLabelEntry(fCFDFractionFrame, "Fraction 1/2^",
 																200, kDGFInstrCFDFractionEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fCFDFractionEntry);
 	fCFDFractionFrame->AddFrame(fCFDFractionEntry, frameGC->LH());
@@ -563,9 +557,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	fModICSREditButton->AssignObject(this);
 	fStatRegModICSREntry = new TGMrbLabelEntry(fStatRegEntryFrame, "SwitchBus Register",
 																200, kDGFInstrStatRegModICSREntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, NULL, kFALSE);
 	HEAP(fStatRegModICSREntry);
 	fStatRegEntryFrame->AddFrame(fStatRegModICSREntry, frameGC->LH());
@@ -582,9 +576,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	fChanCSRAEditButton->AssignObject(this);
 	fStatRegChanCSRAEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "Channel CSRA",
 																200, kDGFInstrStatRegChanCSRAEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, NULL, kFALSE,
 																fChanCSRAEditButton, buttonGC);
 	HEAP(fStatRegChanCSRAEntry);
@@ -602,9 +596,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	fCoincPatternEditButton->AssignObject(this);
 	fStatCoincPatternEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "Coinc Pattern",
 																200, kDGFInstrStatCoincPatternEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, NULL, kFALSE,
 																fCoincPatternEditButton, buttonGC);
 	HEAP(fStatCoincPatternEntry);
@@ -643,9 +637,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(mcaeeLayout);
 	fMCAEnergyEntry = new TGMrbLabelEntry(fMCAEnergyFrame, "Energy",
 																200, kDGFInstrMCAEnergyEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fMCAEnergyEntry);
 	fMCAEnergyFrame->AddFrame(fMCAEnergyEntry, frameGC->LH());
@@ -661,9 +655,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(mcaebLayout);
 	fMCAEnergyBinsEntry = new TGMrbLabelEntry(fMCAEnergyFrame, "Binning 2^",
 																200, kDGFInstrMCAEnergyBinsEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fMCAEnergyBinsEntry);
 	fMCAEnergyFrame->AddFrame(fMCAEnergyBinsEntry, frameGC->LH());
@@ -690,9 +684,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(mcabdLayout);
 	fMCABaselineDCEntry = new TGMrbLabelEntry(fMCABaselineFrame, "DC",
 																200, kDGFInstrMCABaselineDCEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fMCABaselineDCEntry);
 	fMCABaselineFrame->AddFrame(fMCABaselineDCEntry, frameGC->LH());
@@ -707,9 +701,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(mcabbLayout);
 	fMCABaselineBinsEntry = new TGMrbLabelEntry(fMCABaselineFrame, "Binning 2^",
 																200, kDGFInstrMCABaselineBinsEntry,
-																DGFInstrumentPanel::kLEWidth,
-																DGFInstrumentPanel::kLEHeight,
-																DGFInstrumentPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fMCABaselineBinsEntry);
 	fMCABaselineFrame->AddFrame(fMCABaselineBinsEntry, frameGC->LH());
@@ -732,23 +726,16 @@ DGFInstrumentPanel::DGFInstrumentPanel(const TGWindow * Window, UInt_t Width, UI
 	fModuleButtonFrame->Associate(this);
 
 // initialize data fields
-	if (this->InitializeValues(kTRUE)) {
+	this->InitializeValues(kTRUE);
 
-//	key bindings
-		fKeyBindings.SetParent(this);
-		fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-		SetWindowName("DGFControl: InstrumentPanel");
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
+	HEAP(dgfFrameLayout);
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
-		MapSubwindows();
-
-		Resize(GetDefaultSize());
-		Resize(Width, Height);
-
-		MapWindow();
-	} else {
-		this->CloseWindow();
-	}
+	MapSubwindows();
+	Resize(GetDefaultSize());
+	Resize(kTabWidth, kTabHeight);
+	MapWindow();
 }
 
 Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -792,9 +779,6 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;
 						case kDGFInstrButtonShow:
                     		this->ShowModuleSettings();
-							break;
-						case kDGFInstrButtonClose:
-							this->CloseWindow();
 							break;
 						case kDGFInstrDACGainEntry:
 							this->UpdateValue(kDGFInstrDACGainEntry,
@@ -850,13 +834,6 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			}
 			break;
 			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }

@@ -47,37 +47,21 @@ using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFOffsetsPanel : public TGMainFrame {
+class DGFOffsetsPanel : public TGCompositeFrame {
 
 	public:
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFOffsetsActionId 	{	kDGFOffsetsStart,
-										kDGFOffsetsClose,
 										kDGFOffsetsSelectAll,
 										kDGFOffsetsSelectNone,
 										kDGFOffsetsSelectColumn
 									};
 				
-		// geometry settings
-		enum					{	kFrameWidth 			= 750					};
-		enum					{	kFrameHeight 			= 380					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kNumEntryWidth			= 80					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFOffsetsPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFOffsetsPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFOffsetsPanel() { fHeap.Delete(); };
 
-		DGFOffsetsPanel(const DGFOffsetsPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -105,8 +89,6 @@ class DGFOffsetsPanel : public TGMainFrame {
 		
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFOffsetsPanel, 0)		// [DGFControl] Set offset values
 };
 

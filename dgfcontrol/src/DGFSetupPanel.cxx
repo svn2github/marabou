@@ -61,7 +61,6 @@ const SMrbNamedX kDGFSetupConnect[] =
 				{DGFSetupPanel::kDGFSetupRestartEsone,			"Restart ESONE","Restart ESONE server"			},
 				{DGFSetupPanel::kDGFSetupAbortEsone, 			"Abort ESONE Restart","Abort ESONE restart procedure"			},
 				{DGFSetupPanel::kDGFSetupUserPSAOnOff, 			"User PSA on/off",	"Turn user PSA on/off"			},
-				{DGFSetupPanel::kDGFSetupClose,					"Close",		"Close window"					},
 				{0, 											NULL,			NULL							}
 			};
 
@@ -74,17 +73,15 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFSetupPanel)
 
-DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) : TGCompositeFrame(	TabFrame,
+																				kTabWidth,
+																				kTabHeight,
+																				kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetupPanel
 // Purpose:        DGF Viewer: Setup Panel
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    Implements DGF Viewer's Setup Panel
@@ -138,9 +135,6 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Heigh
 	TGLayoutHints * cnLabelLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 2, 1, 2, 1);
 	labelGC->SetLH(cnLabelLayout);
 	HEAP(cnLabelLayout);
-//	TGLayoutHints * cnButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 2, 1, 2, 1);
-//	buttonGC->SetLH(cnButtonLayout);
-//	HEAP(cnButtonLayout);
 
 	lofSpecialButtons = new TObjArray();
 	HEAP(lofSpecialButtons);
@@ -210,9 +204,9 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Heigh
 	HEAP(hEntryLayout);
 	fCAMACHostEntry = new TGMrbLabelEntry(fCAMACFrame, "CAMAC Host",
 																10, kDGFSetupCamacHost,
-																DGFSetupPanel::kLEWidth,
-																DGFSetupPanel::kLEHeight,
-																DGFSetupPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, labelGC);
 	fCAMACFrame->AddFrame(fCAMACHostEntry, frameGC->LH());
 	camacHost = gDGFControlData->fCAMACHost.Data();
@@ -229,7 +223,7 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Heigh
 	this->AddFrame(fCodeFrame, groupGC->LH());
 	
 	fCodes = new TGMrbCheckButtonList(fCodeFrame, NULL, &fSetupDGFCodes, 1,
-											DGFSetupPanel::kFrameWidth, DGFSetupPanel::kLEHeight,
+											kTabWidth, kLEHeight,
 											frameGC, labelGC, buttonGC, lofSpecialButtons);
 	HEAP(fCodes);
 	fCodeFrame->AddFrame(fCodes, groupGC->LH());
@@ -244,7 +238,7 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Heigh
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
-							DGFSetupPanel::kFrameWidth, DGFSetupPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -252,28 +246,21 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Heigh
 		fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonDown);
 	}
 
-//	TGLayoutHints * sFrameLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 2, 1, 2, 1);
-//	frameGC->SetLH(sFrameLayout);
-//	HEAP(sFrameLayout);
-//	TGLayoutHints * sButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 2, 1, 2, 1);
-//	buttonGC->SetLH(sButtonLayout);
-//	HEAP(sButtonLayout);
 	
-	fSelectFrame = new TGHorizontalFrame(fModules, DGFSetupPanel::kFrameWidth, DGFSetupPanel::kFrameHeight,
-													kChildFrame, frameGC->BG());
+	fSelectFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 	HEAP(fSelectFrame);
 	fModules->AddFrame(fSelectFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fSelectFrame,  NULL, &gSelect[i], 1, 
-							DGFSetupPanel::kFrameWidth, DGFSetupPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fSelectFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, 1, 
-							DGFSetupPanel::kFrameWidth, DGFSetupPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fSelectFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
@@ -291,20 +278,15 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, UInt_t Width, UInt_t Heigh
 
 	this->ChangeBackground(gDGFControlData->fColorBlue);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: SetupPanel");
+	firstCall = kFALSE;
 
-	MapSubwindows();
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
+	Resize(kTabWidth, kTabHeight);
 
+	MapSubwindows();
 	MapWindow();
-
-	firstCall = kFALSE;
 }
 
 Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -333,7 +315,6 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 							case kDGFSetupConnectToEsone:
 								if (this->ConnectToEsone()) {
 									gDGFControlData->fStatus |= fDGFFrame->GetActive();
-									this->CloseWindow();
 								}
 								break;
 							case kDGFSetupReloadDGFs:
@@ -356,10 +337,6 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 								break;
 							case kDGFSetupUserPSAOnOff:
 								this->TurnUserPSAOnOff(kTRUE);
-								break;
-							case kDGFSetupClose:
-								gDGFControlData->fStatus |= fDGFFrame->GetActive();
-								this->CloseWindow();
 								break;
 							case kDGFSetupModuleSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
@@ -386,14 +363,6 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 					}
 					break;
 				default:	break;
-			}
-			break;
-
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
 			}
 			break;
 	}

@@ -44,7 +44,6 @@ const SMrbNamedX kDGFTauButtons[] =
 				{DGFMcaDisplayPanel::kDGFMcaDisplayAbort,			"Abort",			"Abort accumulation"	},
 				{DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos,		"Save histos",		"Save histograms to file"	},
 				{DGFMcaDisplayPanel::kDGFMcaDisplayReset,			"Reset",			"Reset to default values"	},
-				{DGFMcaDisplayPanel::kDGFMcaDisplayClose,			"Close",			"Close window"				},
 				{0, 															NULL,				NULL						}
 			};
 
@@ -65,17 +64,13 @@ static TString btnText;
 
 ClassImp(DGFMcaDisplayPanel)
 
-DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
+														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFMcaDisplayPanel
 // Purpose:        DGF Viewer: Calculate tau value
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    Implements DGF Viewer's McaDisplay
@@ -171,7 +166,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), 1, 
-							DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -179,21 +174,21 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
 	
-	fGroupFrame = new TGHorizontalFrame(fModules, DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight,
+	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
-							DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
-							DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
@@ -202,7 +197,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 																			frameGC->LH()->GetPadBottom()));
 	fAllSelect->Associate(this);
 			
-	fHFrame = new TGHorizontalFrame(this, DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight,
+	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fHFrame);
 	this->AddFrame(fHFrame, frameGC->LH());
@@ -226,9 +221,9 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(teLayout);
 	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, "Run time",
 																200, kDGFMcaDisplayRunTime,
-																DGFMcaDisplayPanel::kLEWidth,
-																DGFMcaDisplayPanel::kLEHeight,
-																DGFMcaDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
@@ -241,7 +236,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 //	frameGC->SetLH(teLayout);
 	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons, 1, 
-													DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kLEHeight,
+													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fTimeScale);
 	fAccuFrame->AddFrame(fTimeScale, frameGC->LH());
@@ -271,17 +266,11 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	this->ResetValues();
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: McaDisplayPanel");
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(kTabWidth, kTabHeight);
 	MapWindow();
 }
 
@@ -328,9 +317,6 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 								break;
 							case kDGFMcaDisplayReset:
 								break;
-							case kDGFMcaDisplayClose:
-								this->CloseWindow();
-								break;
 							case kDGFMcaDisplaySelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -369,13 +355,6 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			}
 			break;
 			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }

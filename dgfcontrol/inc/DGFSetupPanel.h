@@ -47,7 +47,7 @@ using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFSetupPanel : public TGMainFrame {
+class DGFSetupPanel : public TGCompositeFrame {
 
 	public:
 
@@ -63,7 +63,6 @@ class DGFSetupPanel : public TGMainFrame {
 									kDGFSetupRestartEsone,						// restart esone server
 									kDGFSetupUserPSAOnOff, 						// turn user PSA on/off
 									kDGFSetupAbortEsone, 						// abort restart procedure
-									kDGFSetupClose,								// do nothing
 
 									kDGFSetupModuleSelectAll,					// select all modules
 									kDGFSetupModuleSelectNone,					// select none
@@ -77,25 +76,12 @@ class DGFSetupPanel : public TGMainFrame {
 									kDGFSetupCodeDSP = BIT(2)
 								};
 				
-		// geometry settings
-		enum					{	kFrameWidth 			= 1000					};
-		enum					{	kFrameHeight 			= 700					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kNumEntryWidth			= 80					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFSetupPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFSetupPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFSetupPanel() { fHeap.Delete(); };
 
-		DGFSetupPanel(const DGFSetupPanel & f) : TGMainFrame(f) {};	// default copy ctor
+		DGFSetupPanel(const DGFSetupPanel & f) : TGCompositeFrame(f) {};	// default copy ctor
 
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		Bool_t ConnectToEsone();					// connect modules to esone server
@@ -128,8 +114,6 @@ class DGFSetupPanel : public TGMainFrame {
 		
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFSetupPanel, 0)		// [DGFControl] Module setup
 };
 

@@ -52,7 +52,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFMcaDisplayPanel : public TGMainFrame {
+class DGFMcaDisplayPanel : public TGCompositeFrame {
 
 	public:
 
@@ -65,7 +65,6 @@ class DGFMcaDisplayPanel : public TGMainFrame {
 										kDGFMcaDisplayAbort,			//				abort accu
 										kDGFMcaDisplaySaveHistos,		//				save current histograms
 										kDGFMcaDisplayReset, 			//				reset
-										kDGFMcaDisplayClose,			//				close
 										kDGFMcaDisplaySelectAll,		// select	all
 										kDGFMcaDisplaySelectNone,		//				none
 										kDGFMcaDisplaySelectColumn		//				column
@@ -77,25 +76,10 @@ class DGFMcaDisplayPanel : public TGMainFrame {
 									kDGFMcaTimeScaleHours = kDGFChannel3 << 3,		//	hours
 								};
 
-		// geometry settings
-		enum					{	kFrameWidth 			= 750					};
-		enum					{	kFrameHeight 			= 500					};
-
-		enum					{	kLEWidth					= kAutoWidth		};
-		enum					{	kEntryWidth				= 110					};
-		enum					{	kNumEntryWidth			= 80					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFMcaDisplayPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFMcaDisplayPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFMcaDisplayPanel() { fHeap.Delete(); };
 
-		DGFMcaDisplayPanel(const DGFMcaDisplayPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -135,7 +119,6 @@ class DGFMcaDisplayPanel : public TGMainFrame {
 		TMrbLofNamedX fMcaActions;
 
 		TGMrbFocusList fFocusList;
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 
 	ClassDef(DGFMcaDisplayPanel, 0) 	// [DGFControl] Accumulate/display MCA spectra
 };

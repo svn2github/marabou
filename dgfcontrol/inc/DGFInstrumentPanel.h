@@ -40,13 +40,11 @@
 // Name:           DGFInstrumentPanel
 // Purpose:        Main frame to define module params
 // Constructors:   
-// Methods:        CloseWindow      -- close main frame
-//                 ProcessMessage   -- process widget events
 // Description:    A dialog window to enter module params
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFInstrumentPanel : public TGMainFrame {
+class DGFInstrumentPanel : public TGCompositeFrame {
 
 	public:
 
@@ -82,33 +80,15 @@ class DGFInstrumentPanel : public TGMainFrame {
 									kDGFInstrButtonApplyChanges,		//		apply changes & calc corrections
 									kDGFInstrButtonCopy,				//		copy
 									kDGFInstrButtonShow,				//		show params
-									kDGFInstrButtonClose				//		close
 								};
 
-		// geometry settings
-		enum					{	kFrameWidth 			= 1000					};
-		enum					{	kFrameHeight 			= 670					};
-
-		enum					{	kVFrameWidth 			= kFrameWidth / 2		};
-		enum					{	kVFrameHeight 			= 300					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kLEHeight				= 22					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFInstrumentPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFInstrumentPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFInstrumentPanel() {
 			fFocusList.Clear();
 			fHeap.Delete();
 		};
 
-		DGFInstrumentPanel(const DGFInstrumentPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -185,8 +165,6 @@ class DGFInstrumentPanel : public TGMainFrame {
 
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFInstrumentPanel, 0) 	// [DGFControl] Edit module/channel settings
 };
 

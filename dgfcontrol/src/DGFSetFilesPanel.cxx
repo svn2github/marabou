@@ -46,7 +46,6 @@ static Char_t * kDGFFileTypesDSPCode[]	=	{
 const SMrbNamedX kDGFSetFilesButtons[] =
 	{
 		{DGFSetFilesPanel::kDGFSetFilesApply,		"Apply",	"Apply current settings"	},
-		{DGFSetFilesPanel::kDGFSetFilesClose,		"Close",	"Close window"				},
 		{0, 										NULL		}
 	};
 
@@ -54,17 +53,13 @@ extern DGFControlData * gDGFControlData;
 
 ClassImp(DGFSetFilesPanel)
 
-DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame)
+														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFSetFilesPanel
 // Purpose:        Define file names and paths
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    
@@ -118,9 +113,9 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 
 	fUserRunDataEntry = new TGMrbLabelEntry(fUserFrame, "Run Data File",
 																200, kDGFSetFilesUserRunData,
-																DGFSetFilesPanel::kLEWidth,
-																DGFSetFilesPanel::kLEHeight,
-																DGFSetFilesPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
 																frameGC, labelGC, entryGC);
 	HEAP(fUserRunDataEntry);
 	fUserFrame->AddFrame(fUserRunDataEntry, frameGC->LH());
@@ -138,9 +133,9 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 	fSystemDSPCodeFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
 	fSystemDSPCodeEntry = new TGMrbFileEntry(fSystemFrame, "DSP Code File",
 																200, kDGFSetFilesSystemDSPCode,
-																DGFSetFilesPanel::kLEWidth,
-																DGFSetFilesPanel::kLEHeight,
-																DGFSetFilesPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
 																&fSystemDSPCodeFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemDSPCodeEntry);
@@ -151,9 +146,9 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 	fSystemDSPParamsFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
 	fSystemDSPParamsEntry = new TGMrbFileEntry(fSystemFrame, "DSP Params Table",
 																200, kDGFSetFilesSystemDSPParams,
-																DGFSetFilesPanel::kLEWidth,
-																DGFSetFilesPanel::kLEHeight,
-																DGFSetFilesPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
 																&fSystemDSPParamsFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemDSPParamsEntry);
@@ -164,9 +159,9 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 	fSystemSystemFPGAFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
 	fSystemSystemFPGAConfigEntry = new TGMrbFileEntry(fSystemFrame, "FPGA Configuration [System]",
 																200, kDGFSetFilesSystemSystemFPGAConfig,
-																DGFSetFilesPanel::kLEWidth,
-																DGFSetFilesPanel::kLEHeight,
-																DGFSetFilesPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
 																&fSystemSystemFPGAFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemSystemFPGAConfigEntry);
@@ -178,9 +173,9 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 
 	fSystemFippiFPGAConfig[TMrbDGFData::kRevD] = new TGMrbFileEntry(fSystemFrame, "FPGA Configuration [Fippi] RevD",
 																200, kDGFSetFilesSystemFippiFPGAConfig,
-																DGFSetFilesPanel::kLEWidth,
-																DGFSetFilesPanel::kLEHeight,
-																DGFSetFilesPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
 																&fSystemFippiFPGAFileInfo[TMrbDGFData::kRevD], kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemFippiFPGAConfig[TMrbDGFData::kRevD]);
@@ -192,9 +187,9 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 
 	fSystemFippiFPGAConfig[TMrbDGFData::kRevE] = new TGMrbFileEntry(fSystemFrame, "FPGA Configuration [Fippi] RevE",
 																200, kDGFSetFilesSystemFippiFPGAConfig,
-																DGFSetFilesPanel::kLEWidth,
-																DGFSetFilesPanel::kLEHeight,
-																DGFSetFilesPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
 																&fSystemFippiFPGAFileInfo[TMrbDGFData::kRevE], kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemFippiFPGAConfig[TMrbDGFData::kRevE]);
@@ -202,28 +197,33 @@ DGFSetFilesPanel::DGFSetFilesPanel(const TGWindow * Window, UInt_t Width, UInt_t
 	fSystemFippiFPGAConfig[TMrbDGFData::kRevE]->GetEntry()->SetText(gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data());
 
 //	buttons
+	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	gDGFControlData->SetLH(groupGC, frameGC, aFrameLayout);
+	HEAP(aFrameLayout);
+
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	labelGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, 1,
-												DGFSetFilesPanel::kButtonWidth,
-												DGFSetFilesPanel::kButtonHeight,
+
+	fActionFrame = new TGGroupFrame(this, "Actions", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fActionFrame);
+	this->AddFrame(fActionFrame, groupGC->LH());
+	
+	fButtonFrame = new TGMrbTextButtonList(fActionFrame, NULL, &fLofButtons, 1,
+												kButtonWidth,
+												kButtonHeight,
 												frameGC, NULL, labelGC);
 	HEAP(fButtonFrame);
-	this->AddFrame(fButtonFrame, labelGC->LH());
+	fActionFrame->AddFrame(fButtonFrame, labelGC->LH());
 	fButtonFrame->Associate(this);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: SetFilesPanel");
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(kTabWidth, kTabHeight);
 	MapWindow();
 }
 
@@ -254,10 +254,6 @@ Bool_t DGFSetFilesPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Para
 							gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fSystemFippiFPGAConfig[TMrbDGFData::kRevD]->GetEntry()->GetText();
 							gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fSystemFippiFPGAConfig[TMrbDGFData::kRevE]->GetEntry()->GetText();
 							gDGFControlData->fRunDataFile = fUserRunDataEntry->GetEntry()->GetText();
-							this->CloseWindow();
-							break;
-						case kDGFSetFilesClose:
-							this->CloseWindow();
 							break;
 						default:	break;
 					}
@@ -266,13 +262,6 @@ Bool_t DGFSetFilesPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Para
 			}
 			break;
 
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }

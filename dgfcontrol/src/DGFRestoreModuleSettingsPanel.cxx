@@ -49,7 +49,6 @@ static Char_t * kDGFFileTypesSettings[]	=	{
 const SMrbNamedX kDGFRestoreModuleSettingsActions[] =
 			{
 				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestore,		"Restore",			"Restore module params"	},
-				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsClose,			"Close",			"Close window"				},
 				{0, 									NULL,			NULL								}
 			};
 
@@ -59,17 +58,13 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFRestoreModuleSettingsPanel)
 
-DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(TGCompositeFrame * TabFrame)
+														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFRestoreModuleSettingsPanel
 // Purpose:        DGF Viewer: Setup Panel
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    
@@ -148,7 +143,7 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Wi
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
-							DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -156,21 +151,20 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Wi
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
 	
-	fGroupFrame = new TGHorizontalFrame(fModules, DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kFrameHeight,
-													kChildFrame, frameGC->BG());
+	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
-							DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
-							DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
@@ -192,7 +186,7 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Wi
 	this->AddFrame(fActionFrame, groupGC->LH());
 	
 	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, 1,
-							DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fActionButtons);
 	fActionFrame->AddFrame(fActionButtons, groupGC->LH());
@@ -201,17 +195,11 @@ DGFRestoreModuleSettingsPanel::DGFRestoreModuleSettingsPanel(const TGWindow * Wi
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: RestoreModuleSettingsPanel");
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(kTabWidth, kTabHeight);
 	MapWindow();
 }
 
@@ -241,9 +229,6 @@ Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1
 							case kDGFRestoreModuleSettingsRestore:
 								this->LoadDatabase(kTRUE);
 								break;
-							case kDGFRestoreModuleSettingsClose:
-								this->CloseWindow();
-								break;
 							case kDGFRestoreModuleSettingsSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -270,13 +255,6 @@ Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1
 			}
 			break;
 
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }

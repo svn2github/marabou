@@ -20,6 +20,7 @@
 #include "TGFrame.h"
 #include "TGButton.h"
 #include "TGMenu.h"
+#include "TGTab.h"
 
 #include "TMrbLofNamedX.h"
 #include "TMrbDGF.h"
@@ -45,7 +46,6 @@ class DGFRunControlPanel : public TGMainFrame {
 	public:
 		// cmd ids to dispatch over X events in main frame
 		enum EDGFRunControlCmdId {	kDGFFileExit,					// pulldown menu "File"
-									kDGFFileSave,
 
 									kDGFViewErrors, 				// pulldown menu "View"
 
@@ -59,35 +59,21 @@ class DGFRunControlPanel : public TGMainFrame {
 
 									kDGFHelpContents,				// pulldown menu "Help"
 									kDGFHelpAbout,
-
-									kDGFRunControlSettingsSystem,	// run control panel "Edit Settings"
-									kDGFRunControlSettingsFiles,
-									kDGFRunControlSettingsModules,
-									kDGFRunControlSettingsParams,
-
-									kDGFRunControlCalibrateTauTrace, 		// run control panel "Tau"
-									kDGFRunControlCalibrateTrace, 			// run control panel "Trace"
-									kDGFRunControlCalibrateUntrigTrace, 	// run control panel "Untriggered"
-									kDGFRunControlCalibrateOffsets,			// run control panel "Offsets"
-
-									kDGFRunControlRunEvents,		// run control panel "Run"
-									kDGFRunControlRunMCA,
-									kDGFRunControlRunStatistics,
-
-									kDGFRunControlDatabaseSave, 	// run control panel "Database"
-									kDGFRunControlDatabaseRestore,
-
-									kDGFRunControlClose 			// close session
 								};
 
-		// geometry settings
-		enum					{	kFrameWidth 			= 400					};
-		enum					{	kFrameHeight 			= 450					};
+		enum EDGFRunControlTabId {
+									kDGFRunControlTabSystem = 0,
+									kDGFRunControlTabModules,
+									kDGFRunControlTabParams,
+									kDGFRunControlTabTrace,
+									kDGFRunControlTabUntrigTrace,
+									kDGFRunControlTabOffsets,
+									kDGFRunControlTabMCA,
+									kDGFRunControlTabSave,
+									kDGFRunControlTabRestore,
+									kDGFRunControlTabFiles
+								};
 
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
 
 	public:
 		DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UInt_t Height);
@@ -114,18 +100,31 @@ class DGFRunControlPanel : public TGMainFrame {
 		TGPopupMenu * fMenuHelp;					//					pulldown menu: help
 
 													// run control panel
-		TGVerticalFrame * fRunControlFrame;			//					vert. frame to store different items
-		TGMrbTextButtonGroup * fSettingsFrame;		//					edit settings
-		TGMrbTextButtonGroup * fDatabaseFrame;		//					database
-		TGMrbTextButtonGroup * fCalibrateFrame; 	//					calibrate
-		TGMrbTextButtonGroup * fRunFrame;			//					run
+		TGTab * fRunControlTab; 					//					vert. frame to store different items
+
+		TGCompositeFrame * fSystemTab;
+		TGCompositeFrame * fModulesTab;
+		TGCompositeFrame * fParamsTab;
+		TGCompositeFrame * fTracesTab;
+		TGCompositeFrame * fUntrigTracesTab;
+		TGCompositeFrame * fOffsetsTab;
+		TGCompositeFrame * fMCATab;
+		TGCompositeFrame * fSaveTab;
+		TGCompositeFrame * fRestoreTab;
+		TGCompositeFrame * fFilesTab;
+
+		Bool_t fSystemTabInit;
+		Bool_t fModulesTabInit;
+		Bool_t fParamsTabInit;
+		Bool_t fTracesTabInit;
+		Bool_t fUntrigTracesTabInit;
+		Bool_t fOffsetsTabInit;
+		Bool_t fMCATabInit;
+		Bool_t fSaveTabInit;
+		Bool_t fRestoreTabInit;
+		Bool_t fFilesTabInit;
 
 		TMrbLofMacros * fLofMacros; 				// list of macros
-
-		TMrbLofNamedX fRunControlSettings;			// list of buttons: edit settings
-		TMrbLofNamedX fRunControlDatabase;			//					database
-		TMrbLofNamedX fRunControlCalibrate;			//					calibrate					
-		TMrbLofNamedX fRunControlRun;				//					run
 
 		TGMrbMessageViewer * fMsgViewer;
 		

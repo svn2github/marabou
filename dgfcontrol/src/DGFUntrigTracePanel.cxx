@@ -42,7 +42,6 @@ using namespace std;
 const SMrbNamedX kDGFUntrigTraceActions[] =
 			{
 				{DGFUntrigTracePanel::kDGFUntrigTraceStart,		"Untrig trace",	"Take untriggered trace (control task 4)"	},
-				{DGFUntrigTracePanel::kDGFUntrigTraceClose,		"Close",				"Close window"			},
 				{0, 											NULL,					NULL					}
 			};
 
@@ -51,17 +50,13 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFUntrigTracePanel)
 
-DGFUntrigTracePanel::DGFUntrigTracePanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame)
+														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFUntrigTracePanel
 // Purpose:        DGF Viewer: Setup Panel
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    Implements DGF Viewer's Untrig Trace Panel
@@ -144,7 +139,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(const TGWindow * Window, UInt_t Width, 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), 1, 
-							DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -152,21 +147,21 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(const TGWindow * Window, UInt_t Width, 
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
 	
-	fGroupFrame = new TGHorizontalFrame(fModules, DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kFrameHeight,
+	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
-							DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
-							DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
@@ -175,7 +170,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(const TGWindow * Window, UInt_t Width, 
 																			frameGC->LH()->GetPadBottom()));
 	fAllSelect->Associate(this);
 			
-	fHFrame = new TGHorizontalFrame(this, DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kFrameHeight,
+	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fHFrame);
 	this->AddFrame(fHFrame, frameGC->LH());
@@ -192,9 +187,9 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(const TGWindow * Window, UInt_t Width, 
 
 	fXwait = new TGMrbLabelEntry(fXFrame, "XWAIT",
 																200, kDGFUntrigTraceXwait,
-																DGFUntrigTracePanel::kLEWidth,
-																DGFUntrigTracePanel::kLEHeight,
-																DGFUntrigTracePanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fXwait);
 	fXFrame->AddFrame(fXwait, frameGC->LH());
@@ -219,17 +214,11 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(const TGWindow * Window, UInt_t Width, 
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: UntrigTracePanel");
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(kTabWidth, kTabHeight);
 	MapWindow();
 }
 
@@ -259,9 +248,6 @@ Bool_t DGFUntrigTracePanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t P
 							case kDGFUntrigTraceStart:
 								this->StartTrace();
 								break;
-							case kDGFUntrigTraceClose:
-								this->CloseWindow();
-								break;
 							case kDGFUntrigTraceSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -288,13 +274,6 @@ Bool_t DGFUntrigTracePanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t P
 			}
 			break;
 
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }

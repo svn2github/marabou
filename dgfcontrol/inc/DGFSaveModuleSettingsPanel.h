@@ -47,37 +47,21 @@ using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFSaveModuleSettingsPanel : public TGMainFrame {
+class DGFSaveModuleSettingsPanel : public TGCompositeFrame {
 
 	public:
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFSaveModuleSettingsActionsId 	{	kDGFSaveModuleSettingsRestore,
-													kDGFSaveModuleSettingsClose,
 													kDGFSaveModuleSettingsSelectAll,
 													kDGFSaveModuleSettingsSelectNone,
 													kDGFSaveModuleSettingsSelectColumn
 												};
 				
-		// geometry settings
-		enum					{	kFrameWidth 			= 750					};
-		enum					{	kFrameHeight 			= 380					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kNumEntryWidth			= 80					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFSaveModuleSettingsPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFSaveModuleSettingsPanel() { fHeap.Delete(); };
 
-		DGFSaveModuleSettingsPanel(const DGFSaveModuleSettingsPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -99,8 +83,6 @@ class DGFSaveModuleSettingsPanel : public TGMainFrame {
 		
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFSaveModuleSettingsPanel, 0)		// [DGFControl] Save settings
 };
 

@@ -54,39 +54,6 @@ using namespace std;
 
 #include "SetColor.h"
 
-const SMrbNamedX kDGFRunControlSettingsButtons[] =
-			{
-				{DGFRunControlPanel::kDGFRunControlSettingsSystem,		"System",	"Define and initialize DGF modules" },
-				{DGFRunControlPanel::kDGFRunControlSettingsFiles,		"Files",	"Define path names and files"	},
-				{DGFRunControlPanel::kDGFRunControlSettingsModules,		"Module",	"Set module parameters" 		},
-				{DGFRunControlPanel::kDGFRunControlSettingsParams,		"Params",	"Set parameters"		 		},
-				{0, 													NULL,		NULL							}
-			};
-
-const SMrbNamedX kDGFRunControlCalibrateButtons[] =
-			{
-				{DGFRunControlPanel::kDGFRunControlCalibrateTauTrace,		"Tau",		"Calculate tau value"				},
-				{DGFRunControlPanel::kDGFRunControlCalibrateTrace,			"Trace",	"Take trace"				},
-				{DGFRunControlPanel::kDGFRunControlCalibrateUntrigTrace,	"Untrig Trace",		"Take untriggered trace"	},
-				{DGFRunControlPanel::kDGFRunControlCalibrateOffsets,		"Offsets",	"Modify offsets"					},
-				{0, 														NULL,		NULL								}
-			};
-
-const SMrbNamedX kDGFRunControlRunButtons[] =
-			{
-				{DGFRunControlPanel::kDGFRunControlRunEvents,			"Events",		"Start a LISTMODE run"		},
-				{DGFRunControlPanel::kDGFRunControlRunMCA,				"MCA",			"Start a MCA run"			},
-				{DGFRunControlPanel::kDGFRunControlRunStatistics,		"Statistics",	"Display run statistics"	},
-				{0, 													NULL,			NULL						}
-			};
-
-const SMrbNamedX kDGFRunControlDatabaseButtons[] =
-			{
-				{DGFRunControlPanel::kDGFRunControlDatabaseSave,		"Save", 	"Save current settings to ROOT file" },
-				{DGFRunControlPanel::kDGFRunControlDatabaseRestore,		"Restore",	"Restore previously saved settings" },
-				{0, 													NULL,		NULL							}
-			};
-
 DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
 
@@ -127,23 +94,12 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 								gDGFControlData->fColorBlack,
 								gDGFControlData->fColorGold);	HEAP(groupGC);
 
-	//	Initialize several lists
-	fRunControlSettings.SetName("Edit Settings");		// button list: edit settings
-	fRunControlSettings.AddNamedX(kDGFRunControlSettingsButtons);
-	fRunControlDatabase.SetName("Database");			//				database
-	fRunControlDatabase.AddNamedX(kDGFRunControlDatabaseButtons);
-	fRunControlCalibrate.SetName("Calibrate");			//				calibrate
-	fRunControlCalibrate.AddNamedX(kDGFRunControlCalibrateButtons);
-	fRunControlRun.SetName("Run");						//				run
-	fRunControlRun.AddNamedX(kDGFRunControlRunButtons);
-
 //	Create popup menus.
 
 //	File menu
 	fMenuFile = new TGPopupMenu(fClient->GetRoot());
 	HEAP(fMenuFile);
 
-	fMenuFile->AddEntry("Save ... Ctrl-s", kDGFFileSave);
 	fMenuFile->AddEntry("Exit ... Ctrl-q", kDGFFileExit);
 
 //	View menu
@@ -243,77 +199,46 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fMenuBar->ChangeBackground(gDGFControlData->fColorDarkBlue);
 
-//	Vertical frame to place run control buttons
-	fRunControlFrame = new TGVerticalFrame(this, kFrameWidth, kAutoHeight);
-	HEAP(fRunControlFrame);
+//	create main tab object
+	fRunControlTab = new TGTab(this, kTabWidth, kTabHeight);
+	HEAP(fRunControlTab);
 	TGLayoutHints * vframeLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 5);
 	HEAP(vframeLayout);
-	this->AddFrame(fRunControlFrame, vframeLayout);
-	fRunControlFrame->ChangeBackground(gDGFControlData->fColorGold);
+	this->AddFrame(fRunControlTab, vframeLayout);
 
+// add tabs
+	fSystemTab = fRunControlTab->AddTab("System");		// id=kDGFRunControlSystem
+	fSystemTabInit = kFALSE;
 
-//	Run control: edit settings
-	TGLayoutHints * sFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
-	gDGFControlData->SetLH(groupGC, frameGC, sFrameLayout);
-	HEAP(sFrameLayout);
-	TGLayoutHints * sButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
-	buttonGC->SetLH(sButtonLayout);
-	HEAP(sButtonLayout);
-	fSettingsFrame = new TGMrbTextButtonGroup(fRunControlFrame, "Edit Settings", &fRunControlSettings, 1, groupGC, buttonGC);
-	HEAP(fSettingsFrame);
-	fRunControlFrame->AddFrame(fSettingsFrame, groupGC->LH());
-	fSettingsFrame->JustifyButton(kTextCenterX);
-	fSettingsFrame->Associate(this);
+	fModulesTab = fRunControlTab->AddTab("Modules");	// id=kDGFRunControlModules
+	fModulesTabInit = kFALSE;
 
-//	Run control: calibrate
-	TGLayoutHints * cFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
-	gDGFControlData->SetLH(groupGC, frameGC, cFrameLayout);
-	HEAP(cFrameLayout);
-	TGLayoutHints * cButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
-	buttonGC->SetLH(cButtonLayout);
-	HEAP(cButtonLayout);
-	fCalibrateFrame = new TGMrbTextButtonGroup(fRunControlFrame, "Calibrate", &fRunControlCalibrate, 1, groupGC, buttonGC);
-	HEAP(fCalibrateFrame);
-	fRunControlFrame->AddFrame(fCalibrateFrame, groupGC->LH());
-	fCalibrateFrame->JustifyButton(kTextCenterX);
-	fCalibrateFrame->Associate(this);
+	fParamsTab = fRunControlTab->AddTab("Params");		// id=kDGFRunControlParams
+	fParamsTabInit = kFALSE;
 
-//	Run control: run
-	TGLayoutHints * rFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
-	gDGFControlData->SetLH(groupGC, frameGC, rFrameLayout);
-	HEAP(rFrameLayout);
-	TGLayoutHints * rButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
-	buttonGC->SetLH(rButtonLayout);
-	HEAP(rButtonLayout);
-	fRunFrame = new TGMrbTextButtonGroup(fRunControlFrame, "Run", &fRunControlRun, 1, groupGC, buttonGC);
-	HEAP(fRunFrame);
-	fRunControlFrame->AddFrame(fRunFrame, groupGC->LH());
-	fRunFrame->JustifyButton(kTextCenterX);
-	fRunFrame->Associate(this);
+	fTracesTab = fRunControlTab->AddTab("Traces");		// id=kDGFRunControlTraces
+	fTracesTabInit = kFALSE;
 
-//	Run control: database
-	TGLayoutHints * dbFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 10, 1);
-	gDGFControlData->SetLH(groupGC, frameGC, dbFrameLayout);
-	HEAP(dbFrameLayout);
-	TGLayoutHints * dbButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
-	buttonGC->SetLH(dbButtonLayout);
-	HEAP(dbButtonLayout);
+	fUntrigTracesTab = fRunControlTab->AddTab("Untrig Traces");		// id=kDGFRunControlUntrigTraces
+	fUntrigTracesTabInit = kFALSE;
 
-	fDatabaseFrame = new TGMrbTextButtonGroup(fRunControlFrame, "Database", &fRunControlDatabase, 1, groupGC, buttonGC);
-	HEAP(fDatabaseFrame);
-	fRunControlFrame->AddFrame(fDatabaseFrame, groupGC->LH());
-	fDatabaseFrame->JustifyButton(kTextCenterX);
-	fDatabaseFrame->Associate(this);
+	fOffsetsTab = fRunControlTab->AddTab("Offsets");	// id=kDGFRunControlOffsets
+	fOffsetsTabInit = kFALSE;
 
-	this->ChangeBackground(gDGFControlData->fColorGold);
+	fMCATab = fRunControlTab->AddTab("MCA");			// id=kDGFRunControlMCA
+	fMCATabInit = kFALSE;
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-q", TGMrbLofKeyBindings::kGMrbKeyActionExit);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionExit);
-	fKeyBindings.BindKey("Ctrl-s", TGMrbLofKeyBindings::kGMrbKeyActionSave);
-	
-	SetWindowName("DGFControl: XIA DGF-4C Control");
+	fSaveTab = fRunControlTab->AddTab("Save");			// id=kDGFRunControlSave
+	fSaveTabInit = kFALSE;
+
+	fRestoreTab = fRunControlTab->AddTab("Restore");	// id=kDGFRunControlRestore
+	fRestoreTabInit = kFALSE;
+
+	fFilesTab = fRunControlTab->AddTab("Files");		// id=kDGFRunControlFiles
+	fFilesTabInit = kFALSE;
+
+	fRunControlTab->SetTab(kDGFRunControlTabSystem);
+	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kDGFRunControlTabSystem, 0);
 
 //	create a message viewer window if wanted
 	if (		gEnv->GetValue("DGFControl.ViewMessages", kFALSE)
@@ -323,7 +248,6 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 
 	MapSubwindows();
 
-//	we need to use GetDefault...() to initialize the layout algorithm...
 	Resize(GetDefaultSize());
 	Resize(Width, Height);
 
@@ -404,14 +328,6 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							this->CloseWindow();
 							break;
 
-						case kDGFFileSave:
-							if (gDGFControlData->CheckIfStarted()) {
-								new DGFSaveModuleSettingsPanel(fClient->GetRoot(), DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-							
 						case kDGFGeneralOutputNormal:
 							gDGFControlData->fStatus &= ~(DGFControlData::kDGFVerboseMode | DGFControlData::kDGFDebugMode);
 							fMenuGeneral->RCheckEntry(kDGFGeneralOutputNormal, kDGFGeneralOutputNormal, kDGFGeneralOutputDebug);
@@ -457,92 +373,87 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					}
 					break;
 
-				case kCM_BUTTON:
+				case kCM_TAB:
+					for (Int_t i = kDGFRunControlTabSystem; i <= kDGFRunControlTabFiles; i++) {
+						fRunControlTab->GetTabTab(i)->ChangeBackground(gDGFControlData->fColorGray);
+					}
+					fRunControlTab->GetTabTab(Param1)->ChangeBackground(gDGFControlData->fColorGold);
+
 					switch (Param1) {
 
-						// edit settings
-						case kDGFRunControlSettingsSystem:
-                    		new DGFSetupPanel(fClient->GetRoot(), DGFSetupPanel::kFrameWidth, DGFSetupPanel::kFrameHeight);
+						case kDGFRunControlTabSystem:
+                    		if (!fSystemTabInit) new DGFSetupPanel(fSystemTab);
+							fSystemTabInit = kTRUE;
 							break;
-						case kDGFRunControlSettingsFiles:
-                    		new DGFSetFilesPanel(fClient->GetRoot(), DGFSetFilesPanel::kFrameWidth, DGFSetFilesPanel::kFrameHeight);
+						case kDGFRunControlTabFiles:
+                    		if (!fFilesTabInit) new DGFSetFilesPanel(fFilesTab);
+							fFilesTabInit = kTRUE;
 							break;
-						case kDGFRunControlSettingsParams:
+						case kDGFRunControlTabParams:
 							if (gDGFControlData->CheckIfStarted()) {
-                    			new DGFParamsPanel(fClient->GetRoot(), DGFParamsPanel::kFrameWidth, DGFParamsPanel::kFrameHeight);
+                    			if (!fParamsTabInit) new DGFParamsPanel(fParamsTab);
+								fParamsTabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
-						case kDGFRunControlSettingsModules:
+						case kDGFRunControlTabModules:
 							if (gDGFControlData->CheckIfStarted()) {
-                    			new DGFInstrumentPanel(fClient->GetRoot(), DGFInstrumentPanel::kFrameWidth, DGFInstrumentPanel::kFrameHeight);
+                    			if (!fModulesTabInit) new DGFInstrumentPanel(fModulesTab);
+								fModulesTabInit = kTRUE;
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+						case kDGFRunControlTabTrace:
+							if (gDGFControlData->CheckIfStarted()) {
+	                   			if (!fTracesTabInit) new DGFTraceDisplayPanel(fTracesTab);
+								fTracesTabInit = kTRUE;
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+						case kDGFRunControlTabUntrigTrace:
+							if (gDGFControlData->CheckIfStarted()) {
+	                   			if (!fUntrigTracesTabInit) new DGFUntrigTracePanel(fUntrigTracesTab);
+								fUntrigTracesTabInit = kTRUE;
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+						case kDGFRunControlTabOffsets:
+							if (gDGFControlData->CheckIfStarted()) {
+	                   			if (!fOffsetsTabInit) new DGFOffsetsPanel(fOffsetsTab);
+								fOffsetsTabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 
-						// calibrate
-						case kDGFRunControlCalibrateTauTrace:
+						case kDGFRunControlTabMCA:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFTauDisplayPanel(fClient->GetRoot(), DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kFrameHeight);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlCalibrateTrace:
-							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFTraceDisplayPanel(fClient->GetRoot(), DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kFrameHeight);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlCalibrateUntrigTrace:
-							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFUntrigTracePanel(fClient->GetRoot(), DGFUntrigTracePanel::kFrameWidth, DGFUntrigTracePanel::kFrameHeight);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						case kDGFRunControlCalibrateOffsets:
-							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFOffsetsPanel(fClient->GetRoot(), DGFOffsetsPanel::kFrameWidth, DGFOffsetsPanel::kFrameHeight);
+	                   			if (!fMCATabInit) new DGFMcaDisplayPanel(fMCATab);
+								fMCATabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
 
-						// run
-						case kDGFRunControlRunEvents:
-							break;
-						case kDGFRunControlRunMCA:
+						case kDGFRunControlTabSave:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFMcaDisplayPanel(fClient->GetRoot(), DGFMcaDisplayPanel::kFrameWidth, DGFMcaDisplayPanel::kFrameHeight);
+	                   			if (!fSaveTabInit) new DGFSaveModuleSettingsPanel(fSaveTab);
+								fSaveTabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
 							break;
-						case kDGFRunControlRunStatistics:
-							break;
-
-						// database
-						case kDGFRunControlDatabaseSave:
+						case kDGFRunControlTabRestore:
 							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFSaveModuleSettingsPanel(fClient->GetRoot(), DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
+	                   			if (!fRestoreTabInit) new DGFRestoreModuleSettingsPanel(fRestoreTab);
+								fRestoreTabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
-							break;
-						case kDGFRunControlDatabaseRestore:
-							if (gDGFControlData->CheckIfStarted()) {
-	                   			new DGFRestoreModuleSettingsPanel(fClient->GetRoot(), DGFRestoreModuleSettingsPanel::kFrameWidth, DGFRestoreModuleSettingsPanel::kFrameHeight);
-							} else {
-								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-							}
-							break;
-						// close
-						case kDGFRunControlClose:
-							this->CloseWindow();
 							break;
 
 						default:
@@ -556,13 +467,6 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			switch (Param1) {
 				case TGMrbLofKeyBindings::kGMrbKeyActionExit:
 					gApplication->Terminate(0);
-					break;
-				case TGMrbLofKeyBindings::kGMrbKeyActionSave:
-					if (gDGFControlData->CheckIfStarted()) {
-						new DGFSaveModuleSettingsPanel(fClient->GetRoot(), DGFSaveModuleSettingsPanel::kFrameWidth, DGFSaveModuleSettingsPanel::kFrameHeight);
-					} else {
-						new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
-					}
 					break;
 				default:
 					break;

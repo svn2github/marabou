@@ -48,7 +48,7 @@ using namespace std;
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFParamsPanel : public TGMainFrame {
+class DGFParamsPanel : public TGCompositeFrame {
 
 	public:
 
@@ -56,32 +56,16 @@ class DGFParamsPanel : public TGMainFrame {
 		enum EDGFParamsActionId 	{	kDGFParamsSelectParam,
 										kDGFParamsRead,
 										kDGFParamsApply,
-										kDGFParamsClose,
 										kDGFParamsSelectAll,
 										kDGFParamsSelectNone,
 										kDGFParamsSelectColumn
 																// Attention: HAS TO BE LAST INDEX!
 									};
 				
-		// geometry settings
-		enum					{	kFrameWidth 			= 900					};
-		enum					{	kFrameHeight 			= 780					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 100					};
-		enum					{	kNumEntryWidth			= 80					};
-		enum					{	kLEHeight				= 20					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFParamsPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFParamsPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFParamsPanel() { fHeap.Delete(); };
 
-		DGFParamsPanel(const DGFParamsPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		Bool_t ReadParams();
@@ -109,8 +93,6 @@ class DGFParamsPanel : public TGMainFrame {
 		
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFParamsPanel, 0)		// [DGFControl] Set/display module params
 };
 

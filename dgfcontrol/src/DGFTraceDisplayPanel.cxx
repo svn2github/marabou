@@ -42,7 +42,6 @@ const SMrbNamedX kDGFTraceDisplayActions[] =
 			{
 				{DGFTraceDisplayPanel::kDGFTraceDisplayNormal,		"Normal trace",		"Take trace, leave trigger bits unchanged"		},
 				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"AutoTrig trace",	"Take trace, enable trigger for each channel"		},
-				{DGFTraceDisplayPanel::kDGFTraceDisplayClose,		"Close",			"Close window"				},
 				{0, 												NULL,				NULL						}
 			};
 
@@ -51,17 +50,13 @@ extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFTraceDisplayPanel)
 
-DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
+DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame)
+														: TGCompositeFrame(TabFrame, kTabWidth, kTabHeight, kVerticalFrame) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFTraceDisplayPanel
 // Purpose:        DGF Viewer: Setup Panel
-// Arguments:      TGWindow Window      -- connection to ROOT graphics
-//                 TGWindow * MainFrame -- main frame
-//                 UInt_t Width         -- window width in pixels
-//                 UInt_t Height        -- window height in pixels
-//                 UInt_t Options       -- options
+// Arguments:      TGCompositeFrame * TabFrame   -- pointer to tab object
 // Results:        
 // Exceptions:     
 // Description:    Implements DGF Viewer's Untrig Trace Panel
@@ -143,7 +138,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
 							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), 1, 
-							DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
 		fModules->AddFrame(fCluster[cl], buttonGC->LH());
@@ -151,21 +146,21 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width
 		fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
 	}
 	
-	fGroupFrame = new TGHorizontalFrame(fModules, DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kFrameHeight,
+	fGroupFrame = new TGHorizontalFrame(fModules, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fGroupFrame);
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
 		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
-							DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
 	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
-							DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kLEHeight,
+							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
 	fGroupFrame->AddFrame(fAllSelect, new TGLayoutHints(kLHintsCenterY, 	frameGC->LH()->GetPadLeft(),
@@ -174,7 +169,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width
 																			frameGC->LH()->GetPadBottom()));
 	fAllSelect->Associate(this);
 			
-	fHFrame = new TGHorizontalFrame(this, DGFTraceDisplayPanel::kFrameWidth, DGFTraceDisplayPanel::kFrameHeight,
+	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight,
 													kChildFrame, frameGC->BG());
 	HEAP(fHFrame);
 	this->AddFrame(fHFrame, frameGC->LH());
@@ -191,9 +186,9 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width
 
 	fTraceLength = new TGMrbLabelEntry(fTFrame, NULL,
 																200, kDGFTraceDisplayXwait,
-																DGFTraceDisplayPanel::kLEWidth,
-																DGFTraceDisplayPanel::kLEHeight,
-																DGFTraceDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fTraceLength);
 	fTFrame->AddFrame(fTraceLength, frameGC->LH());
@@ -209,9 +204,9 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width
 
 	fXwait = new TGMrbLabelEntry(fXFrame, NULL,
 																200, kDGFTraceDisplayXwait,
-																DGFTraceDisplayPanel::kLEWidth,
-																DGFTraceDisplayPanel::kLEHeight,
-																DGFTraceDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fXwait);
 	fXFrame->AddFrame(fXwait, frameGC->LH());
@@ -236,17 +231,11 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, UInt_t Width
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: TraceDisplayPanel");
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(kTabWidth, kTabHeight);
 	MapWindow();
 }
 
@@ -278,9 +267,6 @@ Bool_t DGFTraceDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 								break;
 							case kDGFTraceDisplayAutoTrig:
 								this->StartTrace(kTRUE);
-								break;
-							case kDGFTraceDisplayClose:
-								this->CloseWindow();
 								break;
 							case kDGFTraceDisplaySelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
@@ -321,14 +307,6 @@ Bool_t DGFTraceDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 			}
 			break;
 			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
-
 		default:	break;
 	}
 	return(kTRUE);
