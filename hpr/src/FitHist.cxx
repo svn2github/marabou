@@ -3155,10 +3155,9 @@ void FitHist::SetBrightness(TGWindow * win)
    val[1] = (Int_t)(100 * hp->fEnhenceGreen);
    val[2] = (Int_t)(100 * hp->fEnhenceBlue);
 
-   Int_t ret;
    Int_t id  = 1;
    TGMrbSliders * sl = new TGMrbSliders("Set Brightness", 3, min, max, val, lab, NULL, 
-   mycanvas, id, &ret);
+   mycanvas, id);
    sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
                "AdjustBrightness(Int_t, Int_t, Int_t)");
 //   this->Connect("AdjustBrightness(Int_t, Int_t, Int_t)", "TGMrbSliders", sl, 
@@ -3192,16 +3191,21 @@ void FitHist::AdjustBrightness(Int_t id, Int_t row , Int_t val)
 
 void FitHist::SetHLS(TGWindow * win)
 {
-   static const Int_t NVAL = 4;
+   const Int_t NVAL = 4;
    TOrdCollection * lab = new TOrdCollection();
    lab->Add(new TObjString("Hue Start"));
    lab->Add(new TObjString("Hue End"));
    lab->Add(new TObjString("Lightness"));
    lab->Add(new TObjString("Saturation"));
-   static Int_t val[NVAL];
-   static Int_t max[NVAL];
-   static Int_t min[NVAL];
-   static Int_t flags[NVAL];
+   Int_t val[NVAL];
+   const Int_t max[NVAL] = {360, 360, 100, 100};
+   Int_t min[NVAL] = {0, 0, 0, 0};
+   Int_t flags[NVAL] = {1, 1, 0, 0};
+   val[0] = (Int_t)hp->fStartHue;
+   val[1] = (Int_t)hp->fEndHue;
+   val[2] = (Int_t)(100 * hp->fLightness);
+   val[3] = (Int_t)(100 * hp->fSaturation);
+/*
    min[0] = 0;
    min[1] = 0;
    min[0] = 0;
@@ -3210,20 +3214,15 @@ void FitHist::SetHLS(TGWindow * win)
    max[1] = 360;
    max[2] = 100;
    max[3] = 100;
-   val[0] = (Int_t)hp->fStartHue;
-   val[1] = (Int_t)hp->fEndHue;
-   val[2] = (Int_t)(100 * hp->fLightness);
-   val[3] = (Int_t)(100 * hp->fSaturation);
    flags[0] = 1;
    flags[1] = 1;
    flags[2] = 0;
    flags[3] = 0;
-
-   Int_t ret;
-   Int_t id  = 1;
+*/
+   const Int_t id  = 1;
    TGMrbSliders * sl = new TGMrbSliders("Set HLS", NVAL, 
                        min, max, val, lab, flags, 
-                       mycanvas, id, &ret);
+                       mycanvas, id);
    sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
                "AdjustHLS(Int_t, Int_t, Int_t)");
 }

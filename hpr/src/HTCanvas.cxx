@@ -9,16 +9,12 @@
 #include "TGWindow.h"
 #include "TStyle.h"
 #include "TString.h"
-// #include "HTRootGuiFactory.h"
 #include "TH1.h"
 #include "TList.h"
 #include "TMarker.h"
 #include "TMath.h"
-
-// #include "HTCanvasImp.h"
 #include "HTCanvas.h"
 #include "HandleMenus.h"
-//*KEEP,TDirectory.
 #include "TContextMenu.h"
 
 #include "FitHist.h"
@@ -30,14 +26,9 @@
 #include "TGMrbInputDialog.h"
 #include "EditMarker.h"
 
-//class TContextMenu;
-//class TControlBar;
-//extern HistPresent *hp;
 const Size_t kDefaultCanvasSize   = 20;
 
-// static HTRootGuiFactory * gHTGuiFactory = 0;
 ClassImp(HTCanvas)
-//ClassImp(HandleMenus)
 
 //____________________________________________________________________________
 HTCanvas::HTCanvas():TCanvas()
@@ -78,6 +69,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    Init();
 //   fSelected     = 0;
    fMenuBar = kTRUE;
+   cout << wtopx << " " << wtopy << " " << ww << " " << wh << endl;
    if (wtopx < 0) {
       wtopx    = -wtopx;
       fMenuBar = kFALSE;
@@ -85,6 +77,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fCw           = ww;
    fCh           = wh;
    fCanvasID = -1;
+
 //   fShowEditor = kFALSE;
 //   fShowToolBar = kFALSE;
    HTCanvas *old = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name);
@@ -121,12 +114,14 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
   fHandleMenus->BuildMenus(); 
 //   ToggleEventStatus();
 //   ToggleEventStatus();
-//   fCanvasImp->ShowEditor(kFALSE);
-//   fCanvasImp->ShowToolBar(kFALSE);
-//   fCanvasImp->ShowMenuBar(fMenuBar);
+   fCanvasImp->ShowEditor(kFALSE);
+   fCanvasImp->ShowToolBar(kFALSE);
+   fCanvasImp->ShowStatusBar(kFALSE);
+   fCanvasImp->ShowMenuBar(fMenuBar);
 
    // Popup canvas
    fCanvasImp->Show();
+   SetWindowSize(ww , wh );
 
 //   if(fHistPresent && fFitHist)fHistPresent->GetCanvasList()->Add(this);
 //   cout << "ctor HTCanvas: " << this << " " << name << endl;

@@ -2030,6 +2030,7 @@ Stat_t get_bincontent(TH2 * hist, Axis_t x, Axis_t y)
 TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
 {
    if (!hist) return NULL;
+   cout << "Enter rotate_hist" << endl << flush;
    TString hname(hist->GetName());
    Int_t us = hname.Index("_");
    if (us >= 0) hname.Remove(0, us + 1); // remove all before first underscore
@@ -2043,7 +2044,9 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
       delete hold;
 //      cout << "rotate_hist,hold: " << hold << endl;
    }
+   cout << "rotate_hist before  hist->Clone()" << endl << flush;
    TH2 * hrot = (TH2*)hist->Clone();
+   cout << "rotate_hist after hist->Clone()" << endl << flush;
    hrot->Reset();
    hrot->SetName(hname);
    hrot->SetTitle(htitle);
@@ -2073,6 +2076,7 @@ TH2 * rotate_hist(TH2 * hist, Double_t angle_deg, Int_t serial_nr)
             hrot->SetBinContent(binx, biny, hist->GetBinContent(xr, yr));
       }
    }  
+   cout << "Exit rotate_hist" << endl << flush;
    return hrot;
 }
 //__________________________________________________________________________

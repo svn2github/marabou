@@ -394,14 +394,6 @@ void HistPresent::ShowMain()
    "Define a regular expression for selection of a subset of histograms",hint_delay);
    y-=dy;
 /*
-   cmd = "mypres->DefineHist()";
-   tit = "Define new histogram";
-   b = CommandButton(cmd,tit,x0,y,x1,y+dy);
-   b->SetToolTipText(
-   "Create a histogram optionally to be used when projecting tree entries",hint_delay);
-   y-=dy;
-*/
-/*
    cmd = "mypres->ListMacros()";
    tit = "List Macros";
    b = CommandButton(cmd,tit,x0,y,x1,y+dy);
@@ -425,8 +417,6 @@ void HistPresent::ShowMain()
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
    CreateDefaultsDir(maincanvas); 
-//   FitHist *dummy= new FitHist("dummy","dummy", 0);
-//   delete dummy;
 }
 //________________________________________________________________________________________
 
@@ -2322,7 +2312,7 @@ void HistPresent::OperateHist(Int_t op)
 //      return;
 //   }
    if (nselect > 2 && op != 1) {
-      WarnBox("More than 2 selections, canceled");
+      WarnBox("More than 2 selections only allowed for Add (+)");
 //      nselect = 2;     
       return;     
    }
@@ -2332,36 +2322,41 @@ void HistPresent::OperateHist(Int_t op)
    TH1* hist1 = GetSelHistAt(0);
    if (!hist1) {WarnBox("Histogram not found");return;};
    TString name1 = hist1->GetName();
+   Int_t last_sem = name1.Last(';');    // chop off version
+   if (last_sem >0) name1.Remove(last_sem);
+
    cout << "Do: " << name1;
-   TString nameop = "empty";
+   TString nameop;
    TString name2;
    TH1* hresult =  (TH1*)hist1->Clone();
    TH1* hist2;
-//   if (nselect == 2 || op == 1) {
-   if (nselect == 2) {
+   if (nselect == 2 || (op == 1 && nselect != 1)) {
+//   if (nselect == 2) {
       for(Int_t i = 1; i < nselect; i++) {
          hist2 = GetSelHistAt(i);
          if (!hist2) {WarnBox("Histogram not found");return;};
          name2 = hist2->GetName();
+         last_sem = name2.Last(';');    // chop off version
+         if (last_sem > 0) name2.Remove(last_sem);
          switch (op) {
             case 1: 
                hresult->Add(hist2, fOpfac);
-               nameop="_plus_";
+               name1 = name1 + "_plus_" + name2;
                cout << " + " <<  fOpfac << " * " << name2;
                break;
             case 2: 
                hresult->Add(hist2, -1.*fOpfac);
-               nameop="_minus_";
+               nameop = "_minus_";
                cout << " - "<<  fOpfac << " * "  << name2;
                break;
             case 3: 
                hresult->Multiply(hist1, hist2, 1., fOpfac);
-               nameop="_times_";
+               nameop = "_times_";
                cout << " * "<<  fOpfac << " * " << name2;
                break;
             case 4: 
                hresult->Divide(hist1, hist2, 1., fOpfac);
-               nameop="_divby_";
+               nameop = "_divby_";
                cout << " / "<<  fOpfac << " * " << name2;
                break;
          }
@@ -2374,7 +2369,7 @@ void HistPresent::OperateHist(Int_t op)
             fac = - fOpfac;
 //            break;
          case 1:                       // add
-            nameop="_biased";
+            name1 += "_biased";
              nbinsx = hresult->GetNbinsX();
             if (hresult->GetDimension() == 1) {
                for(Int_t binx = 1; binx <= nbinsx; binx ++) {
@@ -2413,12 +2408,14 @@ void HistPresent::OperateHist(Int_t op)
 //            for( Int_t i=1; i <= hresult->GetNbinsX(); i++) {
 //               hresult->SetBinError(i, fOpfac * hist1->GetBinError(i));
 //            }
-            nameop="_scaled";
+            nameop = "_scaled";
             cout<< " * " << fac;
             break;
       }
    }
-   name1 = name1 + nameop + name2;
+   if (op != 1) {
+      name1 = name1 + nameop + name2;
+   }
    if (name1.Length() > 64) {
 //      TDatime td;
 //      name1 = "hist_";
