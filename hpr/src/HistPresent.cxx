@@ -19,6 +19,7 @@
 #include "TProfile.h"
 #include "TPad.h"
 #include "TPaveText.h"
+#include "TPaveLabel.h"
 #include "TPaveStats.h"
 #include "TVirtualPad.h"
 #include "TNtuple.h"
@@ -3514,6 +3515,24 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    if (fRealStack)hs->Draw();
    else           hs->Draw("nostack");
    hs->SetTitle(stitle.Data());
+
+   for(Int_t i=0; i<nsel; i++) {
+      hist = GetSelHistAt(i, hlist); 
+      if (!hist) {
+         continue;
+      }  
+      Float_t x1 = 0.7;
+      Float_t x2 = 0.9;
+      Float_t y1 = 1 - 0.04 * (3.5 + i);
+      Float_t y2 = y1 + 0.04;
+      TPaveLabel * tname = new TPaveLabel(x1, y1, x2, y2, hist->GetName(),"NDC");
+//      tname->SetNDC(kTRUE);
+      tname->SetFillColor(i+2);
+      tname->SetTextColor(1);
+      tname->SetBorderSize(0);
+      tname->SetLineColor(1);
+      tname->Draw();
+   }
    cmany->Modified();
    cmany->Update();
 }
