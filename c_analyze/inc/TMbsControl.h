@@ -1,12 +1,12 @@
 #ifndef TMBSCONTROL
 #define TMBSCONTROL
-#include <iostream.h>
-#include <iomanip.h>
-#include <strstream.h>
 #include "TTimer.h"
 #include <TSocket.h>
 #include <TObjString.h>
 #include <TOrdCollection.h>
+
+#include <iostream>
+#include <iomanip>
 
 const Int_t kHeaderLength      = 54;  
 const Int_t kRunTableLength    = 20;

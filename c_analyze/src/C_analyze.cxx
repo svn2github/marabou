@@ -1,12 +1,7 @@
-
-#include <stdlib.h>
+//#include <stdlib.h>
 #include <sys/socket.h>
 #include "TString.h"
 //#include "TRint.h"
-#include <iostream.h>
-#include <fstream.h>
-#include <iomanip.h>
-#include <strstream.h>
 
 #include <TROOT.h>
 #include <TApplication.h>
@@ -55,6 +50,10 @@
 #include "TMrbNamedX.h"
 
 #include "SetColor.h"
+#include <iostream>
+#include <fstream>
+#include <iomanip>
+//#include <sstream.h>
 
 Bool_t kUseMap = kTRUE;
 // #include "/usr/local/include/uti/psinfo.h"
@@ -844,11 +843,7 @@ trying to attach?",
    fHFrHalf->AddFrame(fLabelFr,fLO2);
 
    fTeMapSize = new TGTextEntry(fHFrHalf, fTbMapSize = new TGTextBuffer(100), M_MAPS);
-   ostrstream * bmap = new  ostrstream();
-   *bmap << fMapSize << ends;
-   fTbMapSize->AddText(0,bmap->str());
-   bmap->rdbuf()->freeze(0);
-   delete bmap;
+   fTbMapSize->AddText(0,Form("%d",fMapSize));
    fTeMapSize->Resize(60, fTeMapSize->GetDefaultHeight());
    fHFrHalf->AddFrame(fTeMapSize,fLO4);
    fTeMapSize->Associate(this);
@@ -1127,7 +1122,6 @@ Int_t FhMainFrame::MessageToM_analyze(const char * mess) {
       delete str0;
       break;
    }
-//    printf("ret string: %s\n", str0);
     if(!strncmp(str0,"ERROR",5))  // on error, print and exit
     {
       cout << str0 << endl;
@@ -1135,13 +1129,8 @@ Int_t FhMainFrame::MessageToM_analyze(const char * mess) {
       break;
     }
     else retval=atoi(str0);
-//    cout << "Int_t:" << retval << endl;
     delete str0;    
   }
-// Close the socket
-//so  sock->Close();
-//so   delete sock;
-//  cout << "Int_t:" << retval << endl;
   return retval;
 }
 //_____________________________________________________________________________________
@@ -1176,18 +1165,13 @@ void FhMainFrame::StopMessage(){
    fPauseButton->SetText(new TGHotString("Pause"));
    *fOldRunNr = *fRunNr;
    if(fInputSource->Contains("TcpIp")){
-      istrstream s(fTbRunNr->GetString());
-      Int_t irun;
-      s >> irun;
+//      istrstream s(fTbRunNr->GetString());
+      Int_t irun = atoi(fTbRunNr->GetString());
+//      s >> irun;
       irun ++;
-      ostrstream buf;
-      buf << setfill('0');
-      buf << setw(3) << irun << ends;
-   //                           buf << irun;
-      *fRunNr = buf.str();
+      *fRunNr = Form("%03d", irun);
       fTbRunNr->Clear();
-      fTbRunNr->AddText(0,buf.str());
-      buf.rdbuf()->freeze(0);
+      fTbRunNr->AddText(0,*fRunNr);
       gClient->NeedRedraw(fTeRunNr);
    }
 }
@@ -1615,17 +1599,17 @@ Bool_t FhMainFrame::Configure(){
       Int_t nb=fMbsControl->GetNofMbsProcs();
 //     look if Mbs processes already running
          if(nb >= 5 && nb < 100){
-         ostrstream buf;
-         buf << "There are " <<  nb << " Mbs processes running" << endl 
-             << "Do you want to attach MBS" << ends;
+         TString buf("There are ");
+         buf +=  nb;
+         buf +=  " Mbs processes running \n Do you want to attach MBS";
+
          cout << setgreen<< "c_ana: Configure, nprocs = " << nb << setblack<< endl;
          Int_t retval = kMBYes;
          new TGMsgBox(gClient->GetRoot(),this,
          "Question", 
-         buf.str(),
+         buf.Data(),
 //         "Do you want to attach MBS",
          kMBIconQuestion, kMBYes | kMBNo, &retval);
-         buf.rdbuf()->freeze(0);
          if(retval == kMBYes){
             if(fMbsControl->GetMbsNodes() < 2) return kFALSE;
             if(!fMbsControl->IdentifyMbsNodes()) return kFALSE;
@@ -1860,7 +1844,8 @@ Bool_t FhMainFrame::StartDAQ()
       gSystem->ProcessEvents();
       fC_Status = M_STARTING;
 //      TString StartCmd = "M_analyze ";
-      ostrstream buf;
+//      TString buf;
+      TString startCmd(" ");
 //      start command will be added later
 //      buf << "./M_analyze ";
 //     Input source File | FileList | TcpIp
@@ -1870,14 +1855,14 @@ Bool_t FhMainFrame::StartDAQ()
          *fInputFile = fTbFile->GetString();
          (*fInputFile)(run)=fRunNr->Data();
          *fInputFile = fInputFile->Strip(TString::kBoth);
-         buf << fInputFile->Data();
-         if(*fInputSource == "File") buf << " F ";
-         else                        buf << " L ";
+         startCmd += fInputFile->Data();
+         if(*fInputSource == "File") startCmd += " F ";
+         else                        startCmd += " L ";
       } else if (*fInputSource == "Fake") {
-         buf << "fake.root F ";
+         startCmd += "fake.root F ";
       } else {
-         buf << masters[fCbMaster->GetSelected()-1];
-         buf <<  " S ";
+         startCmd += masters[fCbMaster->GetSelected()-1];
+         startCmd +=  " S ";
       }
 //     Start event, Stop Event | Start time , Stop time
       if ( *fInputSource == "Fake") {
@@ -1886,59 +1871,81 @@ Bool_t FhMainFrame::StartDAQ()
             cout << "Setting # of events to 50 in Fake mode" << endl;
             stopev = 50;
          }
-         buf << "0 " << stopev  << " ";
+         startCmd += "0 "; 
+         startCmd += stopev;
+         startCmd += " ";
       } else {
-         if     (fSelectTime)   buf << fFromTime->Data() << " " << fToTime->Data() << " ";
-         else if(fSelectNumber) buf << fStartEvent << " " << fStopEvent  << " ";
-         else                   buf << "0 0 ";
+         if     (fSelectTime) {
+            startCmd += fFromTime->Data();
+            startCmd += " ";
+            startCmd += fToTime->Data();
+            startCmd += " ";
+         } else if (fSelectNumber) {
+            startCmd += fStartEvent;
+            startCmd += " ";
+            startCmd += fStopEvent;
+            startCmd += " ";
+         } else  {
+            startCmd += "0 0 ";
+         }
       }
 //     Run Number, downscale factor, output file, max file size
-      buf << fTbRunNr->GetString()  << " " << fDownscale << " ";
+      startCmd += fTbRunNr->GetString();
+      startCmd += " ";
+      startCmd += fDownscale;
+      startCmd += " ";
       if(fRActive->GetState() == kButtonDown){
          *fOutputFile = fTbRootFile->GetString();
          (*fOutputFile)(run) = fRunNr->Data();
          *fOutputFile = fOutputFile->Strip(TString::kBoth);
-         buf << fOutputFile->Data() << " " << fMaxFileSize << " ";
+         startCmd += fOutputFile->Data();
+         startCmd += " ";
+         startCmd += fMaxFileSize;
+         startCmd += " ";
       } else {
-         buf << "none 0 ";
+         startCmd += "none 0 ";
       }
 //     parameter file, histogram file
       TString spar(fTbParFile->GetString());
       spar = spar.Strip(TString::kBoth);
-      if(spar.Length() > 0)
-          buf << spar.Data() << " ";
-      else
-          buf << "none ";
+      if (spar.Length() > 0) {
+          startCmd += spar.Data();
+          startCmd += " ";
+      } else {
+          startCmd += "none ";
+      }
 //      if(fRAuto->GetState() == kButtonDown){
-         *fHistFile = fTbHistFile->GetString();
-         (*fHistFile)(run) =fRunNr->Data();
-         *fHistFile = fHistFile->Strip(TString::kBoth);
-         buf << fHistFile->Data() << " ";
-//      } else {
-//        buf << "none ";
-//      }
-//     mmap file, size
+      *fHistFile = fTbHistFile->GetString();
+      (*fHistFile)(run) = fRunNr->Data();
+      *fHistFile = fHistFile->Strip(TString::kBoth);
+      startCmd += fHistFile->Data();
+      startCmd += " ";
 
-      buf  << fTbMap->GetString() << " " << fTbMapSize->GetString() << " "; 
+      startCmd += fTbMap->GetString();
+      startCmd += " ";
+      startCmd += fTbMapSize->GetString();
+      startCmd += " "; 
       cout << "Startdaq, fSockNr " << fSockNr << endl;
 
 //     socket for communication
-      buf  << fSockNr;
+      startCmd += " ";
+      startCmd += fSockNr;
 
-      TString startCmd("./M_analyze ");
+      cout << "Startdaq, fSockNr " << fSockNr << endl;
+      cout << "startCmd: " << startCmd << endl;
       if (fDebugMode > 0){
-         startCmd.Prepend("gdb ");
          TString gdbCmd("run ");
-         gdbCmd += buf.str();
+         gdbCmd += startCmd.Data();
          ofstream gdbrc;
          gdbrc.open(".gdbinit", ios::out);
          if (fDebugMode > 1)gdbrc << "b main" << endl;
          gdbrc << gdbCmd.Data() << endl;
          gdbrc << "bt" << endl;
          gdbrc.close();
+         startCmd.Prepend("gdb ./M_analyze");
          if (fDebugMode == 1) startCmd += " < /dev/null &";
       } else {
-         startCmd += buf.str();
+         startCmd.Prepend("./M_analyze");
          startCmd += "&";
       }
       if (fDebugMode > 0) {
@@ -3047,11 +3054,8 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
       	wstream.open(pidfile.Data(), ios::in);
       	wstream >> pid >> status;
       	wstream.close();
-         ostrstream buf;
-         buf << pid << ends;        
          TString procs = "/proc/";
-         procs+=buf.str();
-         buf.rdbuf()->freeze(0);
+         procs += pid;
          if ( !gSystem->AccessPathName(procs.Data()) ){
             if ( attachid > 0 & attachid == pid ) {
                *fOurPidFile = pidfile;
@@ -3115,11 +3119,8 @@ Int_t FhMainFrame::IsAnalyzeRunning(Int_t ps_check){
       wstream.close();
 //      cout << "pid, status " << pid << " " << status << endl;
       if(ps_check == 1){
-         ostrstream buf;
-         buf << pid << ends;        
          TString procs = "/proc/";
-         procs+=buf.str();
-         buf.rdbuf()->freeze(0);
+         procs += pid;
 //         cout << procs.Data() << endl;
          if(!gSystem->AccessPathName(procs.Data())){
 //             cout << "found " << procs.Data() << endl;
@@ -3168,10 +3169,7 @@ void FhMainFrame::Runloop(){
    if(fWriteOutput && fOutputFile->Length() > 1){
       gSystem->GetPathInfo(fOutputFile->Data(),
                            &id, &size, &flags, &modtime);
-//         cout << " size " << fOutputFile->Data()  << " " << size << endl;
-      ostrstream buf; buf << size << ends;
-      fOutSize->SetText(new TGString(buf.str())); 
-      buf.rdbuf()->freeze(0);
+      fOutSize->SetText(new TGString(Form("%d", size))); 
       gClient->NeedRedraw(fOutSize);
    }
    fM_Status = IsAnalyzeRunning(0);
@@ -3259,11 +3257,7 @@ void FhMainFrame::Runloop(){
          }
          if(hrate){
             Int_t total = (Int_t)hrate->GetEntries();
-            ostrstream buf1;
-            buf1 << total << ends;
-            fNev->SetText(new TGString(buf1.str())); 
-            buf1.rdbuf()->freeze(0);
-//               delete text;
+            fNev->SetText(new TGString(Form("%d", total))); 
             gClient->NeedRedraw(fNev);
 
             c1->cd();
@@ -3306,9 +3300,7 @@ void FhMainFrame::Runloop(){
 //                  Float_t etime = fStopwatch->RealTime();
                fTotal_livetime += etime;
                Int_t isec = (Int_t)fTotal_livetime;
-               ostrstream buf; buf << isec << ends;
-               fRunTime->SetText(new TGString(buf.str())); 
-               buf.rdbuf()->freeze(0);
+               fRunTime->SetText(new TGString(Form("%d",isec))); 
                gClient->NeedRedraw(fRunTime);
                if(fTotal_livetime > 0){
                   Float_t avg_rate = 0;
@@ -3324,9 +3316,7 @@ void FhMainFrame::Runloop(){
                      }                        
                      if(binsum >0)avg_rate = sum / binsum;
                   }
-                  ostrstream buf2; buf2 << avg_rate << ends;
-                  fRate->SetText(new TGString(buf2.str())); 
-                  buf2.rdbuf()->freeze(0);
+                  fRate->SetText(new TGString(Form("%d",avg_rate))); 
                   gClient->NeedRedraw(fRate);
 //                same for deadtime if available
                   if(hdeadt){
@@ -3342,9 +3332,7 @@ void FhMainFrame::Runloop(){
                         if(sum>0) binsum++; // skip trailing 0's
                      }
                      if(binsum >0)avg_rate = sum /binsum;
-                     ostrstream buf3; buf3 << avg_rate << ends;
-                     fDeadTime->SetText(new TGString(buf3.str())); 
-                     buf3.rdbuf()->freeze(0);
+                     fDeadTime->SetText(new TGString(Form("%d",avg_rate))); 
                      gClient->NeedRedraw(fDeadTime);
                   }
                }
