@@ -3101,7 +3101,7 @@ TUsrEvent::TUsrEvent() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fLofTimeOffsets.Set(gMrbAnalyze->GetNofModules());
+	fLofTimeOffsets.Set(200);
 	fLofTimeOffsets.Reset(0);
 	fLofHBXs.Delete();
 	fLofSubevents.Delete();
