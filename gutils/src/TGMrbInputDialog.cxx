@@ -17,6 +17,7 @@ namespace std {} using namespace std;
 #include <TGFrame.h>
 #include <TGIcon.h>
 #include <TGLabel.h>
+#include <TGListBox.h>
 #include <TGButton.h>
 #include <TGTextEntry.h>
 #include <TGMsgBox.h>
