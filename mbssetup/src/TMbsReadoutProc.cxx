@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.13 2004-11-26 09:05:27 marabou Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.14 2004-11-29 12:47:04 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -979,6 +979,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	sh << "#!/bin/tcsh" << endl;
 	sh << "#" << compileIt << ": shell script to compile readout source " << cFile << endl;
 	sh << endl;
+	sh << "cd " << srcPath << endl;
 	sh << "source /sys/hosttype" << endl;
 	sh << "set path = ( /bin /bin/ces /usr/bin /usr/local/bin /etc /usr/etc . ~/tools)" << endl;
 	sh << "source /mbs/" << Version << "login.com" << endl;
