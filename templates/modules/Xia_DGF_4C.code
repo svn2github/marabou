@@ -439,7 +439,7 @@ void dgf_modify_csr(volatile unsigned long * dgf, unsigned short bits2clear, uns
 int dgf_wait_active(volatile unsigned long * dgf, const char * dgfName, int bitState, int timeout);
 void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int flag);
 void dgf_wait();
-void dgf_set_ref_time(volatile unsigned long * dgf, const char * dgfName);
+void dgf_set_ref_time(volatile unsigned long * dgf);
 %%EndOfCode%%
 %%DEFINE_PROTOTYPES%%
 
