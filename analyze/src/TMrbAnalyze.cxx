@@ -16,6 +16,7 @@
 #include <time.h>
 #include <pthread.h>
 
+#include "TArrayI.h"
 #include "TEnv.h"
 #include "TRegexp.h"
 
@@ -1820,16 +1821,18 @@ void TMrbAnalyze::InitializeLists(Int_t NofModules, Int_t NofParams) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
+	fNofModules = NofModules;
+	fNofParams = NofParams;
+
 	fModuleList.Delete();
 	fModuleList.Expand(NofModules + 1);
-	for (i = 0; i < NofModules + 1; i++) fModuleList.AddAt(NULL, i);
+	for (Int_t i = 0; i < NofModules + 1; i++) fModuleList.AddAt(NULL, i);
 	fParamList.Delete();
 	fParamList.Expand(NofParams);
-	for (i = 0; i < NofParams; i++) fParamList.AddAt(NULL, i);
+	for (Int_t i = 0; i < NofParams; i++) fParamList.AddAt(NULL, i);
 	fHistoList.Delete();
 	fHistoList.Expand(NofParams);
-	for (i = 0; i < NofParams; i++) fHistoList.AddAt(NULL, i);
+	for (Int_t i = 0; i < NofParams; i++) fHistoList.AddAt(NULL, i);
 }
 
 const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
@@ -2712,6 +2715,22 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 	}
 }
 	
+const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::ChannelTime2Ascii
+// Purpose:        Convert 48-bit time to ascii
+// Arguments:      TString & TimeString  -- where to store event time
+// Results:        Char_t * TimeString   -- same as arg#1
+// Exceptions:
+// Description:    Converts a 48-bit event time to ascii.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TimeString = Form("%18lld", ushort2ll48(fChannelTime));
+	TimeString = TimeString.Strip(TString::kBoth);
+	return(TimeString.Data());
+}
 
 TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater) {
 //__________________________________________________________________[C++ CTOR]
@@ -2927,31 +2946,12 @@ void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) {
 	}
 }
 
-const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::ChannelTime2Ascii
-// Purpose:        Convert 48-bit time to ascii
-// Arguments:      TString & TimeString  -- where to store event time
-// Results:        Char_t * TimeString   -- same as arg#1
-// Exceptions:
-// Description:    Converts a 48-bit event time to ascii.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TimeString = Form("%18lld", ushort2ll48(fChannelTime));
-	TimeString = TimeString.Strip(TString::kBoth);
-	return(TimeString.Data());
-}
-
-TUsrHBX::TUsrHBX(TUsrHitBuffer * HitBuffer, Int_t * OffsetTable, Int_t TableLength, Int_t Window) {
+TUsrHBX::TUsrHBX(TObject * Event, TUsrHitBuffer * HitBuffer, Int_t Window) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHBX
 // Purpose:        Access hit buffer elements
 // Arguments:      TUsrHitBuffer * HitBuffer  -- hit buffer to be accessed
-//                 Int_t * OffsetTable        -- table containing time offsets (one per module)
-//                 Int_t TableLength          -- table length
 //                 Int_t Window               -- time stamp window
 // Results:        --
 // Exceptions:
@@ -2959,32 +2959,9 @@ TUsrHBX::TUsrHBX(TUsrHitBuffer * HitBuffer, Int_t * OffsetTable, Int_t TableLeng
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	fEvent = Event;
 	fHitBuffer = HitBuffer;
 	fHits = fHitBuffer->GetCA();
-	fOffset.Set(TableLength);
-	fOffset.Reset(0);
-	fWindow = Window;
-	fCurIndex = -1;
-}
-
-TUsrHBX::TUsrHBX(TUsrHitBuffer * HitBuffer, TArrayI & OffsetTable, Int_t Window) {
-//__________________________________________________________________[C++ CTOR]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHBX
-// Purpose:        Access hit buffer elements
-// Arguments:      TUsrHitBuffer * HitBuffer  -- hit buffer to be accessed
-//                 TArrayI & OffsetTable      -- table containing time offsets (one per module)
-//                 Int_t Window               -- time stamp window
-// Results:        --
-// Exceptions:
-// Description:    Class constructor
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	fHitBuffer = HitBuffer;
-	fHits = fHitBuffer->GetCA();
-	fOffset.Set(OffsetTable.GetSize(), OffsetTable.GetArray());
-	fOffset.Reset(0);
 	fWindow = Window;
 	fCurIndex = -1;
 }
@@ -3106,8 +3083,98 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 	if (curIndex >= this->GetNofHits()) return(kFALSE);
 
 	hit = (TUsrHit *) fHits->At(curIndex);
-	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - fOffset[hit->GetModuleNumber() - 1])
-						- (ushort2ll48(Hit0->GetChannelTime()) - fOffset[Hit0->GetModuleNumber() - 1]);
+	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - ((TUsrEvent *) fEvent)->GetTimeOffset(hit->GetModuleNumber()))
+						- (ushort2ll48(Hit0->GetChannelTime()) - ((TUsrEvent *) fEvent)->GetTimeOffset(Hit0->GetModuleNumber()));
 	if (tDiff < 0) tDiff = -tDiff;
 	return(tDiff <= (long long) fWindow);
 }		
+
+TUsrEvent::TUsrEvent() {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvent
+// Purpose:        Base class for user-defined events
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Class constructor
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofTimeOffsets.Set(gMrbAnalyze->GetNofModules());
+	fLofTimeOffsets.Reset(0);
+	fLofHBXs.Delete();
+	fLofSubevents.Delete();
+}
+
+Bool_t TUsrEvent::SetTimeOffset(Int_t ModuleNumber, Int_t Offset) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::SetTimeOffset
+// Purpose:        Insert time offset in table
+// Arguments:      Int_t ModuleNumber      -- module number
+//                 Int_t Offset            -- time offset
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Defines a time offset. Time offsets are needed to
+//                 build events from hit buffer data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofOffsets = fLofTimeOffsets.GetSize();
+	if (ModuleNumber <= 0 || ModuleNumber > nofOffsets) {
+		gMrbLog->Err()	<< "Module number out of range - " << ModuleNumber
+						<< " (should be in [1, " << nofOffsets << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetTimeOffset");
+		return(kFALSE);
+	}
+	fLofTimeOffsets[ModuleNumber - 1] = Offset;
+	return(kTRUE);
+}
+
+Bool_t TUsrEvent::SetTimeOffset(TArrayI & OffsArr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::SetTimeOffset
+// Purpose:        Fill table with time offsets
+// Arguments:      TArrayI & OffsArr       -- array containing time offsets
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Defines time offsets. Time offsets are needed to
+//                 build events from hit buffer data.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofOffsets = fLofTimeOffsets.GetSize();
+	if (OffsArr.GetSize() != nofOffsets) {
+		gMrbLog->Err()	<< "Wrong table size - " << OffsArr.GetSize()
+						<< " (should be equal to number of modules = " << nofOffsets << ")" << endl; 
+		gMrbLog->Flush(this->ClassName(), "SetTimeOffset");
+		return(kFALSE);
+	}
+	fLofTimeOffsets.Set(nofOffsets, OffsArr.GetArray());
+	return(kTRUE);
+}
+
+Int_t TUsrEvent::GetTimeOffset(Int_t ModuleNumber) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetTimeOffset
+// Purpose:        Get time offset from table
+// Arguments:      Int_t ModuleNumber      -- module number
+// Results:        Int_t Offset            -- time offset
+// Exceptions:     
+// Description:    Returns the time offset for given module.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nofOffsets = fLofTimeOffsets.GetSize();
+	if (ModuleNumber <= 0 || ModuleNumber > nofOffsets) {
+		gMrbLog->Err()	<< "Module number out of range - " << ModuleNumber
+						<< " (should be in [1, " << nofOffsets << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetTimeOffset");
+		return(0);
+	}
+	return(fLofTimeOffsets[ModuleNumber - 1]);
+}
+
