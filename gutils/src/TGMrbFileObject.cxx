@@ -170,7 +170,6 @@ Bool_t TGMrbFileObjectCombo::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 							}
 							this->SetFileEntry(fFileInfo.fFilename);
 							fileKeys = rootFile->GetListOfKeys();
-							fileKeys->Sort();
 							key = (TKey *) fileKeys->First();
 							idx = 0;
 							Int_t nofEntries = fCombo->GetListBox()->GetNumberOfEntries();
