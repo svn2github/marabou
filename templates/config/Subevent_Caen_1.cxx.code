@@ -89,7 +89,7 @@
 %C% 		}
 %C% 		if (moduleNumber > 0) {
 %C% 			chn = (data >> CAEN_V7X5_SH_CHN) & CAEN_V7X5_M_CHN;
-%C%				paramAddr = gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%				paramAddr = (Int_t*) gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
 %C%				if (paramAddr) {
 %C%					*paramAddr = (Int_t) (data & CAEN_V7X5_M_ADCDATA);	// assign data value to param
 %C%				} else {
