@@ -3112,6 +3112,18 @@ TH1* HistPresent::GetHist(const char* fname, const char* hname)
       if (pp) newhname.Resize(pp);
       newhname = newhname + "_" + shname.Data();
       const char * hn = (const char*)newhname;
+      TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
+      TString FHname("F");
+      FHname += hn;
+      while (FHname.Index(notascii) >= 0) {
+         FHname(notascii) = "_";
+      }
+      FitHist *fhist = (FitHist*)gDirectory->GetList()->FindObject(FHname);
+      if (fhist) {
+//         Warning("In GetHist:"," Delete  existing : %s",FHname.Data());
+         gDirectory->GetList()->Remove(fhist);
+         delete fhist;
+      }
       hist=(TH1*)gROOT->FindObject(hn);
 
       if(hist) {

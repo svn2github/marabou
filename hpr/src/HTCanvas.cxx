@@ -145,7 +145,7 @@ HTCanvas::~HTCanvas()
 //                     cout << cname.Data() << endl;
                      if(!strcmp(cname.Data(),hname)){
                         b->ResetBit(kSelected);
-                        b->SetFillColor(19);
+                        b->SetFillColor(42);
                         b->Modified(kTRUE);
                         b->Update();
                      }

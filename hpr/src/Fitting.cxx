@@ -1004,8 +1004,8 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
        "-------------------------------------------------------------"
        << endl;
 
-   func->SetLineWidth(4);
-   func->SetLineColor(4);
+//   func->SetLineWidth(4);
+//   func->SetLineColor(4);
    func->SetParameters(upar);
 
 //  now fit it 
@@ -1087,8 +1087,8 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
          fPeaks->Add(peak);
       }
    }
-//  draw components of fit
-   if (hp->GetShowFittedCurves()) {
+//  draw components of fit, skip simple gaus without bg
+   if (hp->GetShowFittedCurves() && force_zero_bg == 0) {
       double fdpar[4];
       if (with_tail > 0) {
          fdpar[0] = upar[2];
@@ -1102,10 +1102,10 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
          back->SetParameters(fdpar);
          back->Save(edgelx, edgeux, 0, 0, 0, 0);
          back->SetLineColor(2);
-         back->SetLineWidth(3);
+         back->SetLineStyle(3);
    //      back->Draw("same");
          fSelHist->GetListOfFunctions()->Add(back);
-      back->SetParent(fSelHist);
+         back->SetParent(fSelHist);
       }
 //      if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(back);
 //
@@ -1124,7 +1124,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
          TF1 *g1 = new TF1();
          gaus->Copy(*g1);
          g1->SetLineColor(6);
-         g1->SetLineWidth(3);
+         g1->SetLineStyle(4);
 //         g1->Draw("same");
          fSelHist->GetListOfFunctions()->Add(g1);
          g1->SetParent(fSelHist);
@@ -1147,7 +1147,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
             tail->SetParameters(fdpar);
             tail->Save(edgelx, edgeux, 0, 0, 0, 0);
             tail->SetLineColor(7);
-            tail->SetLineWidth(3);
+            tail->SetLineStyle(2);
 //            tail->Draw("same");
             fSelHist->GetListOfFunctions()->Add(tail);
             tail->SetParent(fSelHist);
@@ -1327,6 +1327,7 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
          lof->AddFirst(last);
       }
    }
+   UpdateDrawOptions();
    fSelPad->Update();
    fSelPad->GetFrame()->SetBit(TBox::kCannotMove);
 

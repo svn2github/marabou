@@ -27,6 +27,7 @@ private:
    TGPopupMenu         *fViewMenu;           // view menu
    TGPopupMenu         *fOptionMenu;         // option menu
    TGPopupMenu         *fAttrMenu;         // option menu
+   TGPopupMenu         *fAttrMenuDef;         // option menu
    TGPopupMenu         *fFitMenu;            //
    TGPopupMenu         *fCascadeMenu1;        // classes menu
    TGPopupMenu         *fCascadeMenu2; 

@@ -1448,6 +1448,23 @@ void DrawFillStyles()
   
 void DrawLineStyles() 
 {
+   Int_t nstyles = 4;
+   new TCanvas("linestyles", "linestyles", 400, 20, 500, 300);
+   Float_t dy = 1./ (nstyles + 2) ;
+   Float_t y = 1 - 1.1 *  dy; 
+   Float_t ts = 0.1;
+   TLine * l;
+   TText * t;
+   for (Int_t i = 1; i <= nstyles; i++) {
+      t = new TText(0.1, y - 0.3 * ts , Form("%d", i));
+      l = new TLine(0.15, y, 0.8, y);
+      l->SetLineStyle(i);
+      l->SetLineWidth(2);
+      t->SetTextSize(ts);
+      t->Draw();
+      l->Draw();
+      y -= dy;
+   }
 }
 
 

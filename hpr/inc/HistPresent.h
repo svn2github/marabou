@@ -312,6 +312,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SetFontsAndColors(TGWindow * win = 0, FitHist * fh = 0);
    void SetNumericalOptions(TGWindow * win = 0, FitHist * fh = 0);
    void SetFittingOptions(TGWindow * win = 0, FitHist * fh = 0);
+   void SetStatDefaults(TCanvas *);
 //   void CheckAutoExecFiles();
    void ClearSelect(); 
    void ShowMain();               // 

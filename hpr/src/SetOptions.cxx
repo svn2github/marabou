@@ -8,6 +8,7 @@
 #include "TObjString.h"
 #include "TFrame.h"
 #include "TF1.h"
+#include "TPaveStats.h"
 
 #include "TGMrbInputDialog.h"
 #include "TGMrbTableFrame.h"
@@ -346,21 +347,21 @@ void HistPresent::RestoreOptions()
    fHistLineStyle=env.GetValue("HistPresent.HistLineStyle", 1);
    fHistLineWidth=env.GetValue("HistPresent.HistLineWidth", 2);
    fEndErrorSize= env.GetValue("HistPresent.EndErrorSize ", 1);
-   fErrorX=       env.GetValue("HistPresent.ErrorX       ", 0.0);
-   fFuncColor=    env.GetValue("HistPresent.FuncColor    ", 4);
-   fFuncStyle=    env.GetValue("HistPresent.FuncStyle    ", 1);
-   fFuncWidth=    env.GetValue("HistPresent.FuncWidth    ", 2);
+   fErrorX=       env.GetValue("HistPresent.ErrorX", 0.0);
+   fFuncColor=    env.GetValue("HistPresent.FuncColor", 4);
+   fFuncStyle=    env.GetValue("HistPresent.FuncStyle", 1);
+   fFuncWidth=    env.GetValue("HistPresent.FuncWidth", 2);
 
-   fStatColor=     env.GetValue("HistPresent.StatColor     ", 19);
-   fStatTextColor= env.GetValue("HistPresent.StatTextColor ", 1);
+   fStatColor=     env.GetValue("HistPresent.StatColor", 19);
+   fStatTextColor= env.GetValue("HistPresent.StatTextColor", 1);
    fStatBorderSize=env.GetValue("HistPresent.StatBorderSize", 1);
-   fStatFont=      env.GetValue("HistPresent.StatFont      ", 62);
-   fStatFontSize=  env.GetValue("HistPresent.StatFontSize  ", 0);
-   fStatStyle=     env.GetValue("HistPresent.StatStyle     ", 1001);
-   fStatX=         env.GetValue("HistPresent.StatX         ", 0.98);
-   fStatY=         env.GetValue("HistPresent.StatY         ", 0.995);
-   fStatW=         env.GetValue("HistPresent.StatW         ", 0.2);
-   fStatH=         env.GetValue("HistPresent.StatH         ", 0.16);
+   fStatFont=      env.GetValue("HistPresent.StatFont", 62);
+   fStatFontSize=  env.GetValue("HistPresent.StatFontSize", 0);
+   fStatStyle=     env.GetValue("HistPresent.StatStyle", 1001);
+   fStatX=         env.GetValue("HistPresent.StatX", 0.98);
+   fStatY=         env.GetValue("HistPresent.StatY", 0.995);
+   fStatW=         env.GetValue("HistPresent.StatW", 0.2);
+   fStatH=         env.GetValue("HistPresent.StatH", 0.16);
 
    fTitleColor     = env.GetValue("HistPresent.TitleColor",     0);
    fTitleTextColor = env.GetValue("HistPresent.TitleTextColor", 1);
@@ -602,16 +603,16 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.FuncStyle",     fFuncStyle    );
    env.SetValue("HistPresent.FuncWidth",     fFuncWidth    );
 
-   env.SetValue("HistPresent.StatColor",      fStatColor     );
-   env.SetValue("HistPresent.StatTextColor",  fStatTextColor );
-   env.SetValue("HistPresent.StatBorderSize", fStatBorderSize);
-   env.SetValue("HistPresent.StatFont",       fStatFont      );
-   env.SetValue("HistPresent.StatFontSize",   fStatFontSize  );
-   env.SetValue("HistPresent.StatStyle",      fStatStyle     );
-   env.SetValue("HistPresent.StatX",          fStatX         );
-   env.SetValue("HistPresent.StatY",          fStatY         );
-   env.SetValue("HistPresent.StatW",          fStatW         );
-   env.SetValue("HistPresent.StatH",          fStatH         );
+   env.SetValue("HistPresent.StatColor",      gStyle->GetStatColor()     );
+   env.SetValue("HistPresent.StatTextColor",  gStyle->GetStatTextColor() );
+   env.SetValue("HistPresent.StatBorderSize", gStyle->GetStatBorderSize());
+   env.SetValue("HistPresent.StatFont",       gStyle->GetStatFont()      );
+   env.SetValue("HistPresent.StatFontSize",   gStyle->GetStatFontSize()  );
+   env.SetValue("HistPresent.StatStyle",      gStyle->GetStatStyle()     );
+   env.SetValue("HistPresent.StatX",          gStyle->GetStatX()         );
+   env.SetValue("HistPresent.StatY",          gStyle->GetStatY()         );
+   env.SetValue("HistPresent.StatW",          gStyle->GetStatW()         );
+   env.SetValue("HistPresent.StatH",          gStyle->GetStatH()         );
 
    env.SetValue("HistPresent.TitleColor",      fTitleColor     );
    env.SetValue("HistPresent.TitleTextColor",  fTitleTextColor );
@@ -858,10 +859,10 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("HistLineStyle"));  
    row_lab->Add(new TObjString("HistLineWidth"));
    row_lab->Add(new TObjString("EndErrorSize "));  
-   row_lab->Add(new TObjString("ErrorX       ")); 
-   row_lab->Add(new TObjString("FuncColor    "));
-   row_lab->Add(new TObjString("FuncStyle    "));  
-   row_lab->Add(new TObjString("FuncWidth    ")); 
+   row_lab->Add(new TObjString("ErrorX")); 
+   row_lab->Add(new TObjString("FuncColor"));
+   row_lab->Add(new TObjString("FuncStyle"));  
+   row_lab->Add(new TObjString("FuncWidth")); 
    
    colors[vp] = fHistFillColor;
    colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
@@ -938,6 +939,50 @@ void HistPresent::SetHistAtt()
 }
 //_______________________________________________________________________
 
+void HistPresent::SetStatDefaults(TCanvas * c)
+{
+   TPaveStats * st = (TPaveStats *)c->GetPrimitive("stats");
+   if (!st) {
+      cout << "Statistics box not found" << endl;
+      return;
+   }
+   gStyle->SetStatColor     (st->GetFillColor() );
+   gStyle->SetStatTextColor (st->GetTextColor() );
+   gStyle->SetStatBorderSize(st->GetBorderSize());
+   gStyle->SetStatFont      (st->GetTextFont()  );
+   gStyle->SetStatFontSize  (st->GetTextSize()  );
+   gStyle->SetStatStyle     (st->GetFillStyle() );
+   gStyle->SetStatX         (st->GetX2NDC()        );
+   gStyle->SetStatY         (st->GetY2NDC()        );
+   gStyle->SetStatW         (st->GetX2NDC() - st->GetX1NDC());
+   Float_t stath = st->GetY2NDC() - st->GetY1NDC();
+   Int_t dofit = gStyle->GetOptFit();
+   Int_t dostat = gStyle->GetOptStat();
+   if (dofit  == 1) dofit  =  111;
+   if (dostat == 1) dostat = 1111;
+   Int_t nl = 0;
+   Int_t mask = 1;
+//   cout << dostat << endl;
+   if (dostat != 0) {
+      mask = 1;
+      for (Int_t i = 0; i < 7; i++) {
+         if ( (dostat / mask) % 10 == 1) nl++;
+         mask *= 10;
+      }
+      if (dofit != 0) {
+         mask = 1;
+         for (Int_t i = 0; i < 7; i++) {
+            if ( (dofit / mask) % 10 == 1) nl++;
+            mask *= 10;
+         }
+      } 
+      cout << nl << endl;
+      stath = 4 * stath / (Float_t)nl;
+   }
+   gStyle->SetStatH(stath );
+}
+//_______________________________________________________________________
+
 void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
 {
    Int_t nopt = 10;
@@ -949,22 +994,22 @@ void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("StatBorderSize")); 
    row_lab->Add(new TObjString("StatFont      "));  
    row_lab->Add(new TObjString("StatFontSize  "));
-   row_lab->Add(new TObjString("StatStyle     "));  
-   row_lab->Add(new TObjString("StatX         ")); 
-   row_lab->Add(new TObjString("StatY         "));
+   row_lab->Add(new TObjString("StatStyle (0 transparent)"));  
+   row_lab->Add(new TObjString("StatX (upper right)")); 
+   row_lab->Add(new TObjString("StatY (upper right)"));
    row_lab->Add(new TObjString("StatW         "));  
    row_lab->Add(new TObjString("StatH         ")); 
 
-   values[vp++] = fStatColor;     
-   values[vp++] = fStatTextColor; 
-   values[vp++] = fStatBorderSize;
-   values[vp++] = fStatFont;      
-   values[vp++] = fStatFontSize;  
-   values[vp++] = fStatStyle;     
-   values[vp++] = fStatX;         
-   values[vp++] = fStatY;         
-   values[vp++] = fStatW;         
-   values[vp++] = fStatH;
+   values[vp++] = gStyle->GetStatColor();     
+   values[vp++] = gStyle->GetStatTextColor(); 
+   values[vp++] = gStyle->GetStatBorderSize();
+   values[vp++] = gStyle->GetStatFont();      
+   values[vp++] = gStyle->GetStatFontSize();  
+   values[vp++] = gStyle->GetStatStyle();     
+   values[vp++] = gStyle->GetStatX();         
+   values[vp++] = gStyle->GetStatY();         
+   values[vp++] = gStyle->GetStatW();         
+   values[vp++] = gStyle->GetStatH();
    Int_t ret, itemwidth = 240, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "Statistics box attributes", itemwidth,
                        1, nopt, values, precission, 0, row_lab);

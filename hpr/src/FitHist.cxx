@@ -242,10 +242,10 @@ FitHist::~FitHist()
 //   cout<< "enter FitHist  dtor "<< GetName()<<endl;
 //   if(fMyTimer)fMyTimer->Delete();
 //   fMyTimer=NULL;
+   if (!expHist && hp && hp->fRememberZoom) SaveDefaults(kTRUE);
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
    if (hp) hp->fNwindows -= 1;
-//   SaveDefaults();
    if (expHist) {
 //      cout << "expHist " << expHist->GetName() << endl;
 //      dont delete possible windows
@@ -292,10 +292,10 @@ FitHist::~FitHist()
 
 void FitHist::SaveDefaults(Bool_t recalculate)
 {
-//   cout << "Enter SaveDefaults " << endl;
    if (!hp) return;      // not called from  Histpresenter
 
    if (!hp->fRememberLastSet &&  !hp->fRememberZoom) return;
+//   cout << "Enter SaveDefaults " << endl;
 
    TString defname;
    Bool_t fok = kFALSE;
@@ -364,25 +364,21 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    } else {
       cerr << "Canvas deleted, cant find lin/log state" << endl;
    }
-   if (recalculate) {
-      //         check if hist is still alive
-      if (fSelHist->TestBit(TObject::kNotDeleted)) {
-         wstream << "fBinlx:  " << fSelHist->GetXaxis()-> GetFirst() << endl;
-         wstream << "fBinux:  " << fSelHist->GetXaxis()-> GetLast() << endl;
-         if (is2dim(fSelHist)) {
-            wstream << "fBinly:  " << fSelHist->GetYaxis()->
-                GetFirst() << endl;
-            wstream << "fBinuy:  " << fSelHist->GetYaxis()->
-                GetLast() << endl;
-         }
-      } else {
-         cout << "fSelHist already deleted" << endl;
+   if (recalculate && fSelHist->TestBit(TObject::kNotDeleted)) {
+      wstream << "fBinlx:  " << fSelHist->GetXaxis()-> GetFirst() << endl;
+//      cout  << "recalculate fBinlx:  " << fSelHist->GetXaxis()-> GetFirst() << endl;
+      wstream << "fBinux:  " << fSelHist->GetXaxis()-> GetLast() << endl;
+      if (fDimension == 2) {
+         wstream << "fBinly:  " << fSelHist->GetYaxis()->
+             GetFirst() << endl;
+         wstream << "fBinuy:  " << fSelHist->GetYaxis()->
+             GetLast() << endl;
       }
    } else {
-//      cout << "take current fBinlx " << endl;
+//      cout << "take current fBinlx " << fBinlx  << endl;
       wstream << "fBinlx:  " << fBinlx << endl;
       wstream << "fBinux:  " << fBinux << endl;
-      if (is2dim(fSelHist)) {
+      if (fDimension == 2) {
          wstream << "fBinly:  " << fBinly << endl;
          wstream << "fBinuy:  " << fBinuy << endl;
       }
@@ -539,6 +535,7 @@ void FitHist::handle_mouse()
 
    static Bool_t is2dim = kFALSE;
    static Bool_t first_fit = kFALSE;
+   static Bool_t skip_after_TCUTG = kFALSE;
    static TH1 * hist = 0;
    static Int_t npar = 0;
    static TLine * lowedge = 0;
@@ -546,15 +543,23 @@ void FitHist::handle_mouse()
    static TBox * box = 0;
    static Int_t nrows = 4;
 
+   if (gROOT->GetEditorMode() != 0) return;
    Int_t event = gPad->GetEvent();
    TObject *select = gPad->GetSelected();
    if (!select) return;
-   if (event == kButton1Up) {
+   if (event == kButton1Up && skip_after_TCUTG) {
+      skip_after_TCUTG = kFALSE;
+      return;
+   }
+   if (event == kButton1Down) {
       if (gROOT->FindObject("CUTG")) {
+         cout << "handle_mouse(): UpdateCut();" << endl;
          UpdateCut();
+         skip_after_TCUTG = kTRUE;
          return;
       }
    }
+//   if (gROOT->GetEditorMode() != 0) return;
    
 //  check if lin / log scale changed
    if (hp && hp->fRememberZoom) {
@@ -570,11 +575,17 @@ void FitHist::handle_mouse()
    	}
       if (event == kButton1Up) {
          if (select->IsA() == TAxis::Class()) {
-//      cout << "handle_mouse " << GetSelHist()->GetName() << endl;
             if (fDimension == 2 || !strncmp(select->GetName(), "xaxis", 5)) {
+//               cout << "handle_mouse " << GetSelHist()->GetName() << endl;
+               fBinlx = fSelHist->GetXaxis()->GetFirst();
+               fBinux = fSelHist->GetXaxis()->GetLast();
+               if (fDimension == 2) {
+                  fBinly = fSelHist->GetYaxis()->GetFirst();
+                  fBinuy = fSelHist->GetYaxis()->GetLast();
+               }
                SaveDefaults();
+               return;
             }
-            return;
          }
       }
    }
@@ -1047,7 +1058,7 @@ void FitHist::Entire()
 //   fSelHist->SetMaximum(fMax);  
 //   fSelHist->SetMinimum(fMin);
    fSelHist->GetXaxis()->SetRange(1, fSelHist->GetNbinsX());
-   SaveDefaults();
+   SaveDefaults(kTRUE);
 
    ClearMarks();
    fSelPad->cd();
@@ -2818,15 +2829,6 @@ void FitHist::Draw3Dim()
 void FitHist::Draw1Dim()
 {
    TString drawopt;
-/*
-   if (hp->GetShowStatBox()) {
-      gStyle->SetOptStat(hp->GetOptStat());
-//       gStyle->SetStatFont(hp->fStatFont); 
-       cout << "hp->GetOptStat() " << hp->GetOptStat() << endl;     
-   } else {
-      gStyle->SetOptStat(0);
-   }
-*/
    gROOT->ForceStyle();
    gStyle->SetOptTitle(hp->GetShowTitle());
    if (hp->GetShowTitle())
@@ -2875,13 +2877,8 @@ void FitHist::Draw1Dim()
       fSelPad->Modified(kTRUE);
    }
    DrawDate(); 
-   if (hp->GetShowStatBox()) {
-      gStyle->SetOptStat(hp->GetOptStat());
-//       gStyle->SetStatFont(hp->fStatFont); 
-//       cout << "hp->GetOptStat() " << hp->GetOptStat() << endl;     
-   } else {
-      gStyle->SetOptStat(0);
-   }
+   fSelHist->SetStats(0);
+   if (hp->GetShowStatBox()) fSelHist->SetStats(1);
    cHist->Update();
 //  add extra axis (channels) at top
    if (hp->fDrawAxisAtTop) {
@@ -2924,18 +2921,13 @@ void FitHist::Draw2Dim()
    cHist->cd();
 //   SetLogz(cHist->GetLogz());
    SetLogz(fLogz);
-   if (hp->GetShowStatBox()) {
-      gStyle->SetOptStat(hp->GetOptStat());
-      gStyle->SetStatFont(hp->fStatFont);
-//       cout << "hp->GetOptStat() " << hp->GetOptStat() << endl;     
-   } else {
-      gStyle->SetOptStat(0);
-   }
    gStyle->SetOptTitle(hp->GetShowTitle());
    if (hp->GetShowTitle())
       gStyle->SetTitleFont(hp->fTitleFont);
 //   cout << "DrawOpt2Dim: " << hp->fDrawOpt2Dim->Data() << endl;
    fSelHist->Draw();
+   fSelHist->SetStats(0);
+   if (hp && hp->GetShowStatBox()) fSelHist->SetStats(1);
    fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
    DrawCut();
    TList *lof = fOrigHist->GetListOfFunctions();

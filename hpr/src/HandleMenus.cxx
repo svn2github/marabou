@@ -220,6 +220,7 @@ enum ERootCanvasCommands {
    kOptionTitle,
    kOptionHist,
    kOptionStat,
+   kOptionStatDef,
    kOptionXaxis,
    kOptionYaxis,
    kOptionZaxis
@@ -585,11 +586,24 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      }
                      }
                      break;
+                  case kOptionStatDef:
+                     {
+                     if(fHistPresent){
+                        fHistPresent->SetStatDefaults(fHCanvas);
+                     }
+                     }
+                     break;
                   case kOptionStat:
                      {
                      if(fHistPresent){
                         fHistPresent->SetStatAttributes(fRootCanvas, fFitHist);
-                        if(fFitHist)fFitHist->UpdateCanvas();
+                        if (fFitHist) {
+                           if (gStyle->GetOptStat() != 0) {
+                              fFitHist->GetSelHist()->SetStats(0);
+                              fFitHist->GetSelHist()->SetStats(1);
+                           }
+                           fFitHist->UpdateCanvas();
+                        }
                      }
                      }
                      break;
@@ -1159,14 +1173,18 @@ void HandleMenus::BuildMenus()
    fOptionMenu->AddEntry("Default window sizes", kOptionWin);
    fOptionMenu->AddEntry("Default colors and fonts", kOptionCol);
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
-   fAttrMenu->AddEntry("Histogram attributes", kOptionHist);
-   fAttrMenu->AddEntry("Stat box attributes", kOptionStat);
+   fAttrMenu->AddEntry("Histogram / function", kOptionHist);
+   fAttrMenu->AddEntry("Statistics box", kOptionStat);
    fAttrMenu->AddEntry("Title attributes", kOptionTitle);
    fAttrMenu->AddEntry("X axis attributes", kOptionXaxis);
    fAttrMenu->AddEntry("Y axis attributes", kOptionYaxis);
    fAttrMenu->AddEntry("Z axis attributes", kOptionZaxis);
-   fAttrMenu->AddEntry("Canvas, Pad, Frame ", kOptionPad);
+   fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
    fOptionMenu->AddPopup("Graphics Attr (Canvas, Pads, Hist, Axis, etc)",  fAttrMenu);
+
+   fAttrMenuDef = new TGPopupMenu(fRootCanvas->GetParent());
+   fAttrMenuDef->AddEntry("Take and set Stat box defaults", kOptionStatDef);
+   fOptionMenu->AddPopup(" Take and set defaults",  fAttrMenuDef);
 
    fOptionMenu->AddSeparator();
    fOptionMenu->AddEntry("Show Colors",             kViewColors);
@@ -1190,8 +1208,8 @@ void HandleMenus::BuildMenus()
       	fFitHist->SetMyCanvas(fRootCanvas);
       	is2dim = fFitHist->Its2dim();
 
-      	fViewMenu->AddEntry("Expand",      kFHExpand     );
-      	fViewMenu->AddEntry("Entire",      kFHEntire     );
+      	fViewMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
+      	fViewMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
       	if(!is2dim)fViewMenu->AddEntry("Rebin",       kFHRebinOne);
       	if (is2dim) {
       	   fViewMenu->AddSeparator();
