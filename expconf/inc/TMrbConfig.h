@@ -124,6 +124,7 @@ class TMrbConfig : public TNamed {
 									kAnaEventIgnoreTrigger,
 									kAnaEventBookParams,
 									kAnaEventBookHistograms,
+									kAnaEventSetupSevtList,
 									kAnaEventAllocHitBuffer,
 									kAnaEventSetFakeMode,
 									kAnaEventCreateTree,

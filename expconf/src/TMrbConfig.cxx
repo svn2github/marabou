@@ -219,6 +219,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventAddBranches,			"EVT_ADD_BRANCHES"				},
 								{TMrbConfig::kAnaEventBookParams,			"EVT_BOOK_PARAMS"				},
 								{TMrbConfig::kAnaEventBookHistograms,		"EVT_BOOK_HISTOGRAMS"			},
+								{TMrbConfig::kAnaEventSetupSevtList,		"EVT_SETUP_SEVT_LIST"			},
 								{TMrbConfig::kAnaEventAllocHitBuffer,		"EVT_ALLOC_HITBUFFER"			},
 								{TMrbConfig::kAnaEventSetScaleDown, 		"EVT_SET_SCALEDOWN" 			},
 								{TMrbConfig::kAnaEventInitializeTree,		"EVT_INITIALIZE_TREE"			},
@@ -3601,9 +3602,15 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName) {
 		fUserMacroCmd.Remove(fUserMacroCmd.Index(".C"), 100);
 		fUserMacroCmd(0,1).ToLower();
 		fUserMacroToBeCalled = kTRUE;
-		gROOT->LoadMacro(fp);
+		TString aclic = fp;
+		aclic += "+g";
 		if (gMrbConfig->IsVerbose()) {
-			gMrbLog->Out()  << "Initializing user macro \"" << fp << "\" (will be called when generating code)"<< endl;
+			gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fp << "\" (option \"+g\")"<< endl;
+			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+		}	
+		gROOT->LoadMacro(aclic.Data());
+		if (gMrbConfig->IsVerbose()) {
+			gMrbLog->Out()  << "Initializing user macro \"" << fp << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 		}	
 		TMrbString cmd = fUserMacroCmd;

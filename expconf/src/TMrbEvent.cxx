@@ -521,6 +521,22 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 						}
 					}
 					break;
+				case TMrbConfig::kAnaEventSetupSevtList:
+					sevt = (TMrbSubevent *) fLofSubevents.First();
+					while (sevt) {
+						sevtNameLC = sevt->GetName();
+						sevtNameUC = sevtNameLC;
+						sevtNameUC(0,1).ToUpper();
+						anaTmpl.InitializeCode();
+						anaTmpl.Substitute("$evtNameLC", evtNameLC);
+						anaTmpl.Substitute("$evtNameUC", evtNameUC);
+						anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+						anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+						anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+						anaTmpl.WriteCode(ana);
+						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+					}
+					break;
 				case TMrbConfig::kAnaEventAllocHitBuffer:
 					anaTmpl.InitializeCode("%H%");
 					anaTmpl.Substitute("$evtNameLC", evtNameLC);
