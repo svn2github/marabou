@@ -38,14 +38,6 @@
 #include "TList.h"
 #include "TMessage.h"
 #include "TGraphErrors.h"
-
-//#include "TMapRec.h"
-#include <iostream.h>
-#include <iomanip.h>
-#include <strstream.h>
-#include <fstream.h>
-#include <stdlib.h>
-
 #include "CmdListEntry.h"
 #include "TGMrbInputDialog.h"
 #include "HistPresent.h"
@@ -61,6 +53,12 @@
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
 #include "TMrbHelpBrowser.h" 
+
+#include <iostream>
+#include <iomanip>
+#include <sstream>
+#include <fstream>
+#include <cstdlib>
 
 static const char  *fHlistSuffix=".histlist";
 Int_t nHists;
@@ -748,16 +746,17 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          if     ( stent->GetDimension() == 1  )title.Prepend("1d ");
          else if (stent->GetDimension() == 2 )title.Prepend("2d ");
          else                               title.Prepend("3d ");
-         ostrstream buf;
-         buf << " " << stent->GetEntries()<< '\0';
-         title += buf.str();
+         title +=  " " ;
+         title +=  (Int_t)stent->GetEntries();
+
          hint = stent->GetName();
          if (stent->GetDimension() == 1)     hint += " 1d hist Ent: ";
          else if (stent->GetDimension() == 2 )hint += " 2d hist Ent: ";
          else                               hint += " 3d hist Ent: ";
-         hint += buf.str(); hint += " Title: ";
+         hint += " "; 
+         hint += (Int_t)stent->GetEntries(); 
+         hint += " Title: ";
          hint += stent->GetTitle();
-         buf.rdbuf()->freeze(0);
          TString tmp = fname;
          tmp = tmp + " " + stent->GetName();
 //         TObjString tobjs(tmp.Data());
@@ -1187,13 +1186,12 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
       }
       if (is2dim(hist)) line.Prepend("2d ");
       else                line.Prepend("1d ");
-      ostrstream buf;
-      buf << " " << hist->GetEntries()<< '\0';
-      line += buf.str();
+      line +=  " " ;
+      line +=  (Int_t)hist->GetEntries();
       if (is2dim(hist)) tit += " 2d hist Ent: ";
       else                tit += " 1d hist Ent: ";
-      tit += buf.str();
-      buf.rdbuf()->freeze(0);
+      tit +=  " " ;
+      tit +=  (Int_t)hist->GetEntries();
 //      if (fShowTitle) {
 //        if (strlen(hist->GetTitle()) > 0)
 //        tit = tit + " Title: " + hist->GetTitle();
@@ -1745,16 +1743,12 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
             tag = lname[i]; tag += ".min";
             if (env->Lookup(tag.Data())) {
                ok = kTRUE;
-               ostrstream * buf = new ostrstream(); *buf << vmin[i]<< '\0';
-               vmin[i] = atof(env->GetValue(tag.Data(), buf->str()));
-               buf->rdbuf()->freeze(0); delete buf;
+               vmin[i] = atof(env->GetValue(tag.Data(), Form("%f",vmin[i])));
             }
             tag = lname[i]; tag += ".max";
             if (env->Lookup(tag.Data())) {
                ok = kTRUE;
-               ostrstream * buf = new ostrstream(); *buf << vmax[i]<< '\0';
-               vmax[i] = atof( env->GetValue(tag.Data(), buf->str()));
-               buf->rdbuf()->freeze(0); delete buf;
+               vmax[i] = atof( env->GetValue(tag.Data(), Form("%f",vmax[i])));
             }
          }
       }
@@ -2119,10 +2113,7 @@ void HistPresent::SetRebinValue(Int_t val)
    if (val == 0) {
       Int_t i = GetInteger("Rebin value", fRebin, &ok, GetMyCanvas());
       if (!ok || i <= 0) return;
-      ostrstream buf;
-      buf << i<< '\0';
-      fRebinOth->SetTitle(buf.str());
-      buf.rdbuf()->freeze(0);
+      fRebinOth->SetTitle(Form("%d", i));
       fRebinOth->SetFillColor(3);
       fRebin2->SetFillColor(2);
       fRebin4->SetFillColor(2);
@@ -2156,11 +2147,7 @@ void HistPresent::SetRebinMethod()
 void HistPresent::SetOperateVal() 
 {
    Float_t fac = GetFloat("Factor", fOpfac);
-   ostrstream buf;
-   buf << fac<< '\0';
-//   fValButton->SetTitle(buf.str());
-   buf.rdbuf()->freeze(0);
-   fOpfac=fac;
+   fOpfac = fac;
 }
 //________________________________________________________________________________________
 // Operate on  histograms 
@@ -2251,13 +2238,13 @@ void HistPresent::OperateHist(Int_t op)
    }
    name1 = name1 + nameop + name2;
    if (name1.Length() > 64) {
-      TDatime td;
-      name1 = "hist_";
-      ostrstream buf;
+//      TDatime td;
+//      name1 = "hist_";
+//      ostrstream buf;
       
-      buf << setfill('0') << setw(6) << td.GetTime()<< '\0';
-      name1 += buf.str();
-      buf.rdbuf()->freeze(0);
+ //     buf << setfill('0') << setw(6) << td.GetTime()<< '\0';
+ //     name1 += buf.str();
+ //     buf.rdbuf()->freeze(0);
       WarnBox("Name for result hist got too long, watch terminal");
    }
    hresult->SetName((const char *)name1);
@@ -2318,17 +2305,16 @@ void HistPresent::RebinHist()
       WarnBox("2 dim not supported yet");
       return;
    } 
-   ostrstream buf;
-   buf << hist->GetName() << "_rebinby_" << fRebin<< '\0';  
+   TString buf(hist->GetName());
+   buf += "_rebinby_";  buf += fRebin;  
 //   TString name = hist->GetName();
 //   name += "_rebin_";
-   TH1* hold=(TH1*)gROOT->FindObject(buf.str());
+   TH1* hold=(TH1*)gROOT->FindObject(buf.Data());
    if (hold) {
 //      cout << "Delete existing " <<  buf.str()<< endl;
       delete hold;
    }
-   buf.rdbuf()->freeze(0);
-   TH1F *hnew = (TH1F*)hist->Rebin(fRebin,buf.str());
+   TH1F *hnew = (TH1F*)hist->Rebin(fRebin,buf.Data());
    if (fRMethod == 1) hnew->Scale(1./(Float_t)fRebin);
    ShowHist(hnew);
 }
@@ -2407,12 +2393,10 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
    }
    gDirectory=gROOT;
 //  gROOT->ls();
-   ostrstream buf;
-   buf <<"_"<< pos<< '\0';
    TString newname(hn);
-   newname += buf.str();
+   newname += "_",
+   newname += pos;
    hist->SetName(newname.Data());
-   buf.rdbuf()->freeze(0);
    return hist;
 }
 //________________________________________________________________________________________
@@ -3248,14 +3232,14 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
    arrange =env.GetValue("HistPresent.WindowArrange_many",arrange.Data());
    if (arrange.Contains("top")) {nx = 1; ny = nsel;}
    if (arrange.Contains("side")) {nx =  nsel; ny = 1;}
-   ostrstream buf;
-   buf << "cmany_" << fSeqNumberMany++<< '\0';
-   const char * tit = buf.str();
+
+   TString buf("cmany_");
+   buf += fSeqNumberMany++;
+   const char * tit = buf.Data();
    if (title) tit = title;
    HTCanvas * cmany = 
-       new HTCanvas(buf.str(), tit,fWincurx ,fWincury, wwx, wwy,
+       new HTCanvas(buf.Data(), tit, fWincurx, fWincury, wwx, wwy,
                     this, 0, savelist);
-   buf.rdbuf()->freeze(0);
    fWincurx = fWintopx; fWincury += fWinshifty;
 
    fCanvasList->Add(cmany);

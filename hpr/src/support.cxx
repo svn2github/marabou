@@ -18,16 +18,17 @@
 #include "TStyle.h"
 #include "TObjString.h"
 #include "TList.h"
-#include <iostream.h>
 #include "CmdListEntry.h"
 #include "FitHist.h"
 // #include "Table.h"
 #include "SetColor.h"
-#include <strstream.h>
-#include <fstream.h>
 
 #include "support.h"
 #include "TGMrbInputDialog.h"
+
+#include <iostream>
+#include <sstream>
+#include <fstream>
 
 TSocket * gSocket = 0;
 //extern HistPresent *hp;
@@ -234,12 +235,11 @@ TButton *CommandButton(TString & cmd, TString & tit,
    TButton *button = new TButton((const char *) tit, "", x0, y, x1, y1);
    TRegexp brace(")");
    TString newcmd(cmd);
-   ostrstream buf;
+   TString buf;
    if (cmd.Contains("\""))
-      buf << ",";
-   buf << "\"" << button << "\")" << '\0';
-   newcmd(brace) = buf.str();
-   buf.rdbuf()->freeze(0);
+      buf = ",";
+   buf += Form("\"%x\")", button);
+   newcmd(brace) = buf.Data();
 //   cout << "CommandButton: " << newcmd << endl;
    button->SetBit(kCommand);
    if (selected) {
@@ -297,12 +297,13 @@ void SelectButton(TString & cmd,
    TButton *button = new TButton("", "", x0, y, x1, y1);
    TRegexp brace(")");
    TString newcmd(cmd);
-   ostrstream buf;
+
+   TString buf;
    if (cmd.Contains("\""))
-      buf << ",";
-   buf << "\"" << setbase(16) << button << "\")" << '\0';
-   newcmd(brace) = buf.str();
-   buf.rdbuf()->freeze(0);
+      buf = ",";
+   buf += Form("\"%x\")", button);
+   newcmd(brace) = buf.Data();
+
    button->SetMethod((char *) newcmd.Data());
    button->SetBit(kSelection);
 //   cout << "SelectButton: " << newcmd << endl;
@@ -538,11 +539,7 @@ void Show_Fonts()
    TText *t1;
    TText *t;
    for (Int_t i = 10; i <= 120; i += 10) {
-      ostrstream buf;
-//      buf << setfill(' ');
-//      buf<< setw(3)<<i;
-      buf << i << '\0';
-      t1 = new TText(x0, y, buf.str());
+      t1 = new TText(x0, y, Form("%d", i));
       t = new TText(x0 + 0.1, y, text);
       t1->SetTextSize(0.05);
       t1->SetTextFont(i);
@@ -621,124 +618,6 @@ Int_t GetUsedSize(TMapFile * mfile)
    }
    return size;
 }
-/*
-//------------------------------------------------------   
-TList *GetFunctions(TMapFile * mfile)
-{
-   if (!mfile)
-      return 0;
-   TMapRec *mr = mfile->GetFirst();
-   if (!mr)
-      return 0;
-   TList *list = 0;
-   while (mfile->OrgAddress(mr)) {
-      if (!mr)
-         break;
-      if (!strncmp(mr->GetClassName(), "TF", 2)) {
-         if (!list)
-            list = new TList();
-         list->Add(new TObjString(mr->GetName()));
-      }
-      mr = mr->GetNext();
-   }
-   return list;
-}
-//------------------------------------------------------   
-TList *GetWindows(TMapFile * mfile)
-{
-   if (!mfile)
-      return 0;
-   TMapRec *mr = mfile->GetFirst();
-   if (!mr)
-      return 0;
-   TList *list = 0;
-   TString name;
-   while (mfile->OrgAddress(mr)) {
-      if (!mr)
-         break;
-      if (!strncmp(mr->GetClassName(), "TMrbWindow", 10) ||
-          !strncmp(mr->GetClassName(), "TMbsWindow", 10)) {
-         if (!list)
-            list = new TList();
-         if (!strncmp(mr->GetClassName(), "TMrbWindow2D", 12) ||
-             !strncmp(mr->GetClassName(), "TMbsWindow2d", 12)) {
-            name = "w2 ";
-         } else {
-            name = "w1 ";
-         }
-         name += mr->GetName();
-         list->Add(new TObjString(name));
-      }
-      mr = mr->GetNext();
-   }
-   return list;
-}
-
-//------------------------------------------------------   
-TList *GetFunctions(TFile * rfile)
-{
-   if (!rfile)
-      return 0;
-   TIter next(rfile->GetListOfKeys());
-   TList *list = 0;
-   TKey *key;
-   TString name;
-   ostrstream *keybuf;
-   while ( (key = (TKey *) next()) ) {
-      if (!strncmp(key->GetClassName(), "TF", 2)) {
-         if (!list)
-            list = new TList();
-         keybuf = new ostrstream();
-         *keybuf << ";" << key->GetCycle() << '\0';
-         name = key->GetName();
-         name += keybuf->str();
-         keybuf->rdbuf()->freeze(0);
-         delete keybuf;
-         list->Add(new TObjString(name));
-      }
-   }
-   return list;
-}
-
-//------------------------------------------------------   
-TList *GetCanvases(TFile * rfile)
-{
-   if (!rfile)
-      return 0;
-   TIter next(rfile->GetListOfKeys());
-   TList *list = 0;
-   TKey *key;
-   TString cn;
-   while ( (key = (TKey *) next()) ) {
-      cn = key->GetClassName();
-      if (cn.Contains("TCanvas")) {
-         if (!list)
-            list = new TList();
-         list->Add(new TObjString(key->GetName()));
-      }
-   }
-   return list;
-}
-//------------------------------------------------------   
-TList *GetGraphs(TFile * rfile)
-{
-   if (!rfile)
-      return 0;
-   TIter next(rfile->GetListOfKeys());
-   TList *list = 0;
-   TKey *key;
-   TString cn;
-   while ( (key = (TKey *) next()) ) {
-      cn = key->GetClassName();
-      if (cn.Contains("TGraph")) {
-         if (!list)
-            list = new TList();
-         list->Add(new TObjString(key->GetName()));
-      }
-   }
-   return list;
-}
-*/
 //------------------------------------------------------   
 Int_t GetObjects(TList & list, TFile * rfile, const char * classname)
 {
@@ -763,58 +642,6 @@ Int_t GetObjects(TList & list, TFile * rfile, const char * classname)
    return maxkey;
 }
 
-/*
-//------------------------------------------------------   
-TList *GetWindows(TFile * rfile)
-{
-   if (!rfile)
-      return 0;
-   TIter next(rfile->GetListOfKeys());
-   TList *list = 0;
-   TString name;
-   ostrstream *keybuf;
-   TKey *key;
-   while (( key = (TKey *) next()) ) {
-      if (!strncmp(key->GetClassName(), "TMrbWindow", 10) ||
-          !strncmp(key->GetClassName(), "TMbsWindow", 10)) {
-         keybuf = new ostrstream();
-         *keybuf << ";" << key->GetCycle() << '\0';
-         if (!list)
-            list = new TList();
-         if (!strncmp(key->GetClassName(), "TMrbWindow2", 12) ||
-             !strncmp(key->GetClassName(), "TMbsWindow2d", 12)) {
-            name = "w2 ";
-         } else {
-            name = "w1 ";
-         }
-         name += key->GetName();
-         name += keybuf->str();
-         keybuf->rdbuf()->freeze(0);
-         delete keybuf;
-         list->Add(new TObjString(name));
-      }
-   }
-   return list;
-}
-
-//------------------------------------------------------   
-TList *GetTrees(TFile * rfile)
-{
-   if (!rfile)
-      return 0;
-   TIter next(rfile->GetListOfKeys());
-   TList *list = 0;
-   while (TKey * key = (TKey *) next()) {
-      if (!strncmp(key->GetClassName(), "TTree", 5) ||
-          !strncmp(key->GetClassName(), "TNtuple", 7)) {
-         if (!list)
-            list = new TList();
-         list->Add(new TObjString(key->GetName()));
-      }
-   }
-   return list;
-}
-*/
 //------------------------------------------------------   
 Int_t contains_filenames(const char *lname)
 {

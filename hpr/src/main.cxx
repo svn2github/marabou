@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "TRint.h"
 // #include "TkInterface.h"
-#include <iostream.h>
+#include <iostream>
 #include "HistPresent.h"
 
 int main(int argc, char **argv)

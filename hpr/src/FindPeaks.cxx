@@ -1,7 +1,7 @@
-#include <fstream.h>
-#include <iomanip.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "TROOT.h"
 #include "TArray.h"
@@ -298,11 +298,11 @@ tryagain:
          cout << "In this hist: nlow " << newlow << " nup "<< newup << endl;
          Float_t epb = (newup  - newlow) / 
                        (Float_t)fOrigHist->GetNbinsX();
-         ostrstream buf;
-         buf << "Events/" << epb <<  " keV" << '\0';
-         fYtitle = buf.str();
-         fSelHist->GetYaxis()->SetTitle(buf.str());
-         buf.rdbuf()->freeze(0);
+         TString buf ("Events/");
+         buf += Form("%f", epb);
+         buf += " keV";
+         fYtitle = buf.Data();
+         fSelHist->GetYaxis()->SetTitle(buf.Data());
          if(fSelHist != fOrigHist){
             
             Axis_t newlowo = a + b * fOrigHist->GetXaxis()->GetXmin();

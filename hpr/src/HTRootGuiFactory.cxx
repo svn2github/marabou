@@ -13,7 +13,7 @@
 
 ClassImp(HTRootGuiFactory)
 HTRootGuiFactory::HTRootGuiFactory(
-    const char *name = "Root", const char *title = "ROOT GUI Factory") :
+    const char *name, const char *title) :
     TRootGuiFactory(name, title){} ;
 HTCanvasImp * HTRootGuiFactory::CreateCanvasImp(
    HTCanvas *c, const char *title, Int_t x, Int_t y, UInt_t width, UInt_t height)

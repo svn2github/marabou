@@ -1,6 +1,6 @@
 #ifndef HPR_FHREGION
 #define HPR_FHREGION
-#include "iostream.h"
+#include <iostream>
 #include "iomanip.h"
 #include "TObject.h"
 #include "TList.h"

@@ -8,15 +8,16 @@
 #include "TFrame.h"
 #include "TF1.h"
 
-#include "iostream.h"
-#include "fstream.h"
-#include "strstream.h"
-
 #include "TGMrbInputDialog.h"
 #include "TGMrbTableFrame.h"
 #include "FitHist.h"
 #include "HistPresent.h"
 #include "TMrbHelpBrowser.h"
+
+#include <iostream>
+#include <fstream>
+#include <sstream>
+
 //#include "HprAutoExecMacro.cxx"
 
 //_______________________________________________________________________
@@ -342,10 +343,7 @@ void HistPresent::RestoreOptions()
 //_______________________________________________________________________
 void SetIntValue(TEnv & env, const Char_t * name, Int_t value)
 {
-   ostrstream buf;
-   buf << value << '\0';
-   env.SetValue(name, buf.str());
-   buf.rdbuf()->freeze(0);
+   env.SetValue(name, Form("%d", value));
 }
 
 //_______________________________________________________________________

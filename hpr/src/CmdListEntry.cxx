@@ -1,5 +1,5 @@
 #include "CmdListEntry.h"
-#include "strstream.h"
+#include <sstream>
 
 Bool_t CmdListEntry::IsEqual(const TObject *obj)const  {
    if(fModDate > 0) {

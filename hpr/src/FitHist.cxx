@@ -1,8 +1,8 @@
-#include <math.h>
-#include <fstream.h>
-#include <iomanip.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "TROOT.h"
 #include "TEnv.h"
@@ -1778,10 +1778,10 @@ void FitHist::OutputStat()
       par[1] = mean;
       par[2] = sigma;
       par[3] = 2.35 * sigma;
-      ostrstream buf;
-      buf << xlow << " to " << xup << '\0';
       TString title("Statistics in window: ");
-      title += buf.str();
+      title += Form("%f",xlow);
+      title += " to ";
+      title += Form("%f",xup);
 //      Int_t ret = TGMrbTableOfDoubles(mycanvas,title, 1, 4, par,col_lab,row_lab);
       Int_t ret, ncols = 1, nrows = 4, itemwidth = 240, precission = 5;
       TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth,
@@ -2038,36 +2038,35 @@ void FitHist::ExpandProject(Int_t what)
       Int_t NbinY = fBinuy - fBinly + 1;
       Int_t nperbinX = 1, nperbinY = 1;
       if (what == projectx || what == projectboth) {
-         ostrstream pname;
-//         TString pname = "Px_";
+         TString pname = "Px";
 //         pname += fOrigHist->GetName();
-         pname << "Px" << fSerialPx << "_" << fOrigHist->GetName() << '\0';
-         projHistX = new TH1F(pname.str(), fOrigHist->GetTitle(),
+         pname += fSerialPx;
+         pname += "_";
+         pname += fOrigHist->GetName();
+         projHistX = new TH1F(pname, fOrigHist->GetTitle(),
                               NbinX, fExplx, fExpux);
          fSerialPx++;
-         pname.rdbuf()->freeze(0);
 //         fSelHist=projHist;
       }
       if (what == projecty || what == projectf || what == projectboth) {
-         ostrstream pname;
-//         TString pname = "Py_";
+         TString pname ;
          Axis_t low = fExply;
          Axis_t up = fExpuy;
          if (what == projectf) {
             up = 0.5 * (fExpuy - fExply);
             low = -up;
-            pname << "Pf" << fSerialPf;
+            pname = "Pf"; pname += fSerialPf;
             fSerialPf++;
          } else {
-            pname << "Py" << fSerialPy;
+            pname = "Py"; pname += fSerialPf;
             fSerialPy++;
          }
-         pname << "_" << fOrigHist->GetName() << '\0';
-         projHistY = new TH1F(pname.str(), fOrigHist->GetTitle(),
+         pname += "_";
+         pname += fOrigHist->GetName();
+         projHistY = new TH1F(pname, fOrigHist->GetTitle(),
                               NbinY, low, up);
          TDatime dt;
          projHistY->SetUniqueID(dt.Get());
-         pname.rdbuf()->freeze(0);
 //         fSelHist=projHist;
       }
       if (what == expand) {
@@ -2451,12 +2450,14 @@ void FitHist::DrawDateBox(TH1 * fSelHist, Float_t tz)
       UInt_t day = (uid << 10) >> 27;
       UInt_t hour = (uid << 15) >> 27;
       UInt_t min = (uid << 20) >> 26;
-      ostrstream buf;
-      buf << setfill('0');
-      buf << setw(2) << day << "." << setw(2) << month << "."
-          << year << " "
-          << setw(2) << hour << ":" << setw(2) << min << '\0';
-      datebox->AddText(buf.str());
+      TString buf;
+      buf += (Int_t)day;   buf+= "." ;
+      buf += (Int_t)month; buf+= "." ;
+      buf += (Int_t)year;  buf+= " " ;
+      buf += (Int_t)hour;  buf+= ":" ;
+      buf += (Int_t)min;;
+
+      datebox->AddText(buf.Data());
       datebox->Draw();
    }
 }

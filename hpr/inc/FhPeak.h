@@ -1,6 +1,6 @@
 #ifndef HPR_FHPEAK
 #define HPR_FHPEAK
-#include "iostream.h"
+#include <iostream>
 #include "iomanip.h"
 #include "TObject.h"
 #include "TList.h"

@@ -1,7 +1,3 @@
-#include <fstream.h>
-#include <iomanip.h>
-#include <iostream.h>
-#include <strstream.h>
 #include <TList.h>
 #include "TArrayF.h"
 #include "TString.h"
@@ -16,6 +12,10 @@
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 //______________________________________________________________________________________ 
   
@@ -41,10 +41,8 @@ void FitHist::MarksToWindow(){
          if(us >= 0)cname.Remove(0,2);
          us = cname.Index("_");
          if(us >= 0)cname.Remove(0,us+1);
-         ostrstream buf;
          cut_numb++;
-         buf << cut_numb << "_" << '\0';
-         cname.Prepend(buf.str());
+         cname.Prepend(Form("%d_", cut_numb));
          cname.Prepend("Wdw");
          Bool_t ok;
          fWdwname = GetString("Window will be saved with name",cname.Data(),
@@ -301,10 +299,8 @@ void FitHist::InitCut(){
    UpdateCut();
 //   CheckList(fActiveCuts);
    TString cname = fHname;
-   ostrstream buf;
    cut_numb++;
-   buf << cut_numb << "_" << '\0';
-   cname.Prepend(buf.str());
+   cname.Prepend(Form("%d_", cut_numb));
    cname.Prepend("Cut");
    Bool_t ok;
    fCutname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
@@ -564,10 +560,8 @@ void FitHist::MarksToCut(){
       y[1] = y[0];   
    }
    TString cname = fHname;
-   ostrstream buf;
    cut_numb++;
-   buf << cut_numb << "_" << '\0';
-   cname.Prepend(buf.str());
+   cname.Prepend(Form("%d_", cut_numb));
    cname.Prepend("Cut");
    Bool_t ok;
    fWdwname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);

@@ -1,8 +1,8 @@
-#include <math.h>
-#include <fstream.h>
-#include <iomanip.h>
-#include <iostream.h>
-#include <strstream.h>
+#include <cmath>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <sstream>
 
 #include "TROOT.h"
 #include "TEnv.h"
@@ -619,10 +619,8 @@ void FitHist::FitGBg(Int_t with_tail)
       sfunc = "Bg+Gauss_Tail_";
    else
       sfunc = "Bg+Gauss_";
-   ostrstream buf;
-   buf << setfill('0');
-   buf << setw(2) << func_numb << '\0';
-   sfunc += buf.str();
+   if (func_numb < 10) sfunc += "0";
+   sfunc += func_numb;
    Bool_t ok;
    sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
    if (!ok)
@@ -829,14 +827,10 @@ void FitHist::FitGBg(Int_t with_tail)
    if (with_tail > 0)
       istart = 5;
    for (int i = istart; i < npar; i += 2) {
-      ostrstream *buf = new ostrstream();
-      *buf << "Ga_Cont" << nn << '\0';
-      func->SetParName(i, buf->str());
-      delete buf;
-      buf = new ostrstream();
-      *buf << "Ga_Mean" << nn << '\0';
-      func->SetParName(i + 1, buf->str());
-      delete buf;
+      TString buf("Ga_Cont"); buf += nn;
+      func->SetParName(i, buf.Data());
+      buf = "Ga_Mean"; buf += nn ;
+      func->SetParName(i + 1, buf.Data());
       nn++;
    }
    TArrayI fixflag(2 * npar);
@@ -1147,11 +1141,8 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
    if(us >= 0)sfunc.Remove(0,us+1);
 */
 //   sfunc="poly_";
-   ostrstream buf;
    func_numb++;
-   buf << func_numb << "_" << '\0';
-   sfunc.Prepend(buf.str());
-   buf.rdbuf()->freeze(0);
+   sfunc.Prepend(Form("%d_", func_numb));
    sfunc.Prepend("f");
    Bool_t ok;
    sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
@@ -1479,18 +1470,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    }
    const char *funcname;
    TString sfunc = fHname;
-/*
-   TString sfunc = fSelHist->GetName();
-   Int_t us = sfunc.Index("E_");
-   if(us >= 0)sfunc.Remove(0,2);
-   us = sfunc.Index("_");
-   if(us >= 0)sfunc.Remove(0,us+1);
-*/
-//   sfunc="poly_";
-   ostrstream buf;
    func_numb++;
-   buf << func_numb << "_" << '\0';
-   sfunc.Prepend(buf.str());
+   sfunc.Prepend(Form("%d_", func_numb));
    sfunc.Prepend("f");
    Bool_t ok;
    sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
@@ -1577,17 +1558,17 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
 
    TString scorr = "$1/(";
    for (int i = 0; i <= ndim; i++) {
-      ostrstream *buf = new ostrstream();
       if (i > 0) {
-         *buf << setiosflags(ios::showpos) << fpar[i];
-         *buf << resetiosflags(ios::showpos) << "*$2";
-         if (i > 1)
-            *buf << resetiosflags(ios::showpos) << "^" << i << '\0';
+         if (fpar[i] > 0) scorr += "+";
+          scorr += Form("%f", fpar[i]);
+          scorr += "*$2";
+         if (i > 1) {
+            scorr += "^"; 
+            scorr += i;
+         }
       } else {
-         *buf << fpar[i] << '\0';
+         scorr += Form("%f", fpar[i]);
       }
-      scorr += buf->str();
-      delete buf;
    }
    scorr += "):$2";
    cout << scorr << endl;
