@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TEnv.h"
 #include "TDirectory.h"
@@ -181,7 +183,7 @@ Bool_t TMrbEvent::HasSubevent(const Char_t * Assignment) {
 	TMrbSubevent * sevt;
 	TString sevtName;
 
-	istrstream assign(Assignment);
+	istringstream assign(Assignment);
 
 	for (;;) {
 		assign >> sevtName;

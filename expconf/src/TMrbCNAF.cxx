@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
@@ -178,7 +180,7 @@ const Char_t * TMrbCNAF::Int2Ascii(Bool_t StripBorC) {
 
 	fAscii.Remove(0);
 	dot = "";
-	ostrstream * str = new ostrstream();
+	ostringstream * str = new ostringstream();
 
 	if ((fIsSet & kCnafBranch) && ((fBranch > 0) || !StripBorC)) {
 		*str << dot << "B" << fBranch;
@@ -209,8 +211,8 @@ const Char_t * TMrbCNAF::Int2Ascii(Bool_t StripBorC) {
 	}
 
 	*str << ends;
-	fAscii = str->str();
-	str->rdbuf()->freeze(0);
+	fAscii = str->str().c_str();
+//	str->rdbuf()->freeze(0);
 	delete str;
 
 	return(fAscii.Data());

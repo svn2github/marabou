@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TDirectory.h"
 #include "TEnv.h"
@@ -394,12 +396,12 @@ Bool_t TMrbXia_DGF_4C::ReadNameTable() {
 		if (param.eof()) break;
 		pLine = pLine.Strip(TString::kBoth);
 		if (pLine.Length() == 0 || pLine(0) == '#') continue;
-		istrstream str(pLine.Data());
+		istringstream str(pLine.Data());
 		str >> pOffset >> pName;
 		pName = pName.Strip(TString::kBoth);
 		if (pName.Length() > 0) {
 			if (pName.Length() == 3 && pName(0) == 'U') {
-				istrstream pstr(pName.Data());
+				istringstream pstr(pName.Data());
 				numU = -1;
 				pstr >> charU >> numU;
 				if (numU == -1) continue;

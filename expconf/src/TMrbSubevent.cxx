@@ -11,11 +11,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TEnv.h"
 
@@ -330,7 +332,7 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 		return(kFALSE);
 	}
 	
-	istrstream assign(Assignment);
+	istringstream assign(Assignment);
 
 	channelNo = 0;							// normally starts with channel 0
 	for (;;) {
@@ -354,8 +356,8 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 				chnStatus = TMrbConfig::kChannelArray;
 				fHasIndexedParams = kTRUE;
 				indexName = paramName(nx1 + 1, nx2 - nx1 - 1);
-				indexName += " ";			// to keep istrstream happy: s.good() needs a blank at end of input stream ...
-				istrstream idx(indexName.Data());
+				indexName += " ";			// to keep istringstream happy: s.good() needs a blank at end of input stream ...
+				istringstream idx(indexName.Data());
 				idx >> indexRange;
 				if (!idx.good() || indexRange <= 1) ok = kFALSE;
 			} else ok = kFALSE;
@@ -368,8 +370,8 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 
 		if ((nch = paramName.Index("=")) >= 0) {
 			channelName = paramName(nch + 1, 1000);
-			channelName += " ";			// to keep istrstream happy: s.good() needs a blank at end of input stream ...
-			istrstream chn(channelName.Data());
+			channelName += " ";			// to keep istringstream happy: s.good() needs a blank at end of input stream ...
+			istringstream chn(channelName.Data());
 			chn >> chnNo;
 			if (!chn.good() || chnNo < channelNo) {
 				gMrbLog->Err() << fName << ": Illegal channel number - " << paramName << endl;
