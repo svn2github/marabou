@@ -220,6 +220,11 @@
 					dgf_set_par_value($moduleNameLC, -1, DGF_PAR_RUNTASK, root_env_getval_i("$moduleNameUC.RunTask", DGF_RUN_LINEAR));
 					DGF_READ_WCR($moduleNameLC);
 					dgf_modify_csr($moduleNameLC, 0, DGF_CSR_NEWRUN | DGF_CSR_RUNENA | DGF_CSR_ENALAM);	/* clear histos, start run */
+#ifdef DEBUG
+				dgfCSR = DGF_READ_CSR($moduleNameLC);
+				sprintf(msg, "$moduleNameLC: CSR=%#x\n, dgfCSR");
+				f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+#endif
 %%EndOfCode%%
 %%START_ACQUISITION%%
 
