@@ -1008,9 +1008,9 @@ void * msg_handler(void * dummy) {
             send_ack = kFALSE;
          	cout << "M_analyze::msg_handler(): M_client exit" << endl;
          	mon->Remove(sock);
-//         	for (Int_t i = 0; i < kMaxSock - 1; i++) {
-//            	if (sock == s[i]) s[i] = NULL;
-//         	}
+         	for (Int_t i = 0; i < kMaxSock - 1; i++) {
+            	if (sock == s[i]) s[i] = NULL;
+         	}
 //         	if (sock == s0) s0 = 0;
 //         	if (sock == s1) s1 = 0;
          	continue;
