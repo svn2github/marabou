@@ -13,6 +13,7 @@ enum EMrbDgfParamOffsets	{
 								kMrbDgfParRunTask			=	$parRunTask,
 								kMrbDgfParAoutBuffer		=	$parAddrOfOutputBuffer,
 								kMrbDgfParLoutBuffer		=	$parLengthOfOutputBuffer,
+								kMrbDgfParSynchDone 		=	$parSynchDone,
 								kMrbDgfParTraceLength0		=	$parTraceLength0,
 								kMrbDgfParChanCSRA0			=	$parChanCSRA0,
 								kMrbDgfParChanCSRB0			=	$parChanCSRB0,
