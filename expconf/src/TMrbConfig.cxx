@@ -368,6 +368,7 @@ const SMrbNamedXShort kMrbLofModuleIDs[] =
 								{TMrbConfig::kModuleLeCroy4448,				"LeCroy_4448"					},
 								{TMrbConfig::kModuleKinetics3655,			"Kinetics_3655"					},
 								{TMrbConfig::kModuleMpiHD_IOReg,			"MpiHD_IOReg"					},
+								{TMrbConfig::kModuleSis_3801,				"Sis_3801"						},
 								{TMrbConfig::kModuleSoftModule, 	 		"@SoftMod@" 					},
 								{0, 										NULL							}
 							};

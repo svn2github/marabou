@@ -388,7 +388,8 @@ class TMrbConfig : public TNamed {
 									kManufactXia		=	BIT(20),
 									kManufactAcromag	=	BIT(21),
 									kManufactKinetics	=	BIT(22),
-									kManufactMpiHD		=	BIT(23)
+									kManufactMpiHD		=	BIT(23),
+									kManufactSis		=	BIT(24)
 								};
 
 		enum EMrbModuleID		{	kModuleSilena4418V		=   kManufactSilena + 1,  // modules ids
@@ -414,6 +415,7 @@ class TMrbConfig : public TNamed {
 									kModuleCaenV775 		=	kManufactCaen + 21,
 									kModuleCaenV820 		=	kManufactCaen + 22,
 									kModuleMpiHD_IOReg 		=	kManufactMpiHD + 23,
+									kModuleSis_3801 		=	kManufactSis + 24,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};

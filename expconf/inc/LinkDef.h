@@ -58,5 +58,6 @@
 #pragma link C++ class TMrbAcromag_IP341;
 #pragma link C++ class TMrbKinetics_3655;
 #pragma link C++ class TMrbMpiHD_IOReg;
+#pragma link C++ class TMrbSis_3801;
 #pragma link C++ class TMrbModuleRaw;
 #endif
