@@ -49,7 +49,6 @@ static Char_t * kDGFFileTypesSettings[]	=	{
 const SMrbNamedX kDGFRestoreModuleSettingsActions[] =
 			{
 				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestore,		"Restore",			"Restore module params"	},
-				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestorePSA,	"Restore + PSA",	"Restore params + PSA values"	},
 				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsClose,			"Close",			"Close window"				},
 				{0, 									NULL,			NULL								}
 			};
@@ -248,9 +247,6 @@ Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1
 					if (Param1 < kDGFRestoreModuleSettingsSelectColumn) {
 						switch (Param1) {
 							case kDGFRestoreModuleSettingsRestore:
-								this->LoadDatabase(kFALSE);
-								break;
-							case kDGFRestoreModuleSettingsRestorePSA:
 								this->LoadDatabase(kTRUE);
 								break;
 							case kDGFRestoreModuleSettingsClose:

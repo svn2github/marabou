@@ -53,7 +53,6 @@ class DGFRestoreModuleSettingsPanel : public TGTransientFrame {
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFRestoreModuleSettingsActionsId 	{	kDGFRestoreModuleSettingsRestore,
-														kDGFRestoreModuleSettingsRestorePSA,
 														kDGFRestoreModuleSettingsClose,
 														kDGFRestoreModuleSettingsSelectAll,
 														kDGFRestoreModuleSettingsSelectNone,
