@@ -412,6 +412,7 @@ void HistPresent::ShowMain()
 
    cHPr->SetEditable(kFALSE);
    cHPr->Update();
+   CreateDefaultsDir(maincanvas); 
 //   FitHist *dummy= new FitHist("dummy","dummy", 0);
 //   delete dummy;
 }

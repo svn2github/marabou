@@ -297,46 +297,12 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    if (!hp->fRememberLastSet &&  !hp->fRememberZoom) return;
 //   cout << "Enter SaveDefaults " << endl;
 
-   TString defname;
-   Bool_t fok = kFALSE;
+   TString defname("defaults/Last");
    TEnv env(".rootrc");         // inspect ROOT's environment
    env.SetValue("HistPresent.FitMacroName", fFitMacroName);
-   defname =
-       env.GetValue("HistPresent.LastSettingsName", defname.Data());
-   if (defname.Length() <= 0) {
-      WarnBox("Setting defaults dir/name to defaults/Last");
-      defname = "defaults/Last";
-      env.SetValue("HistPresent.LastSettingsName", defname.Data());
-   }    
-   env.SaveLevel(kEnvUser);
-   fok = kTRUE;
-   Int_t lslash = defname.Last('/');
-   if (lslash > 0) {
-      TString dirname = defname;
-      dirname.Remove(lslash, 100);
-      if (gSystem->AccessPathName(dirname.Data())) {
-         fok = kFALSE;
-         TString question = dirname;
-         question += " does not exist, create it?";
-         int buttons = kMBYes | kMBNo, retval = 0;
-         EMsgBoxIcon icontype = kMBIconQuestion;
-         new TGMsgBox(gClient->GetRoot(), mycanvas,
-                      "Warning", (const char *) question,
-                      icontype, buttons, &retval);
-         if (retval == kMBYes) {
-            if (gSystem->MakeDirectory((const char *) dirname) == 0) {
-               fok = kTRUE;
-            } else {
-               dirname.Prepend("Error creating ");
-               dirname.Append(": ");
-               dirname.Append(gSystem->GetError());
-               WarnBox(dirname.Data());
-            }
-         }
-      }
-   }
 
-   if (!fok) return;
+   if ( (!CreateDefaultsDir(mycanvas)) ) return;
+   defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 
    defname += "_";
    defname += fHname;
@@ -1332,11 +1298,11 @@ void FitHist::ClearUserContours()
    h2->SetContour(20);
    if (hp) gStyle->SetPalette(hp->fNofColorLevels, hp->fPalette);
    TObject * nai;
-   while (nai = fSelHist->GetListOfFunctions()->FindObject("Pixel")){
+   while ( (nai = fSelHist->GetListOfFunctions()->FindObject("Pixel")) ){
       cout << " Removing user contour" << endl;
       fSelHist->GetListOfFunctions()->Remove(nai);
    }
-   while (nai = fSelHist->GetListOfFunctions()->FindObject("palette")){
+   while ( (nai = fSelHist->GetListOfFunctions()->FindObject("palette")) ){
       cout << " Removing palette" << endl;
       fSelHist->GetListOfFunctions()->Remove(nai);
    }

@@ -79,7 +79,7 @@ void HistPresent::auto_exec_1()
          }
       }
    }
-   if (!strncmp(select->GetName(), "TFrame",6)) {
+   if (!strncmp(select->GetName(), "TFrame",6) || !strncmp(select->GetName(), "cmany",5) ) {
 //      cout << "TFrame selected" << endl;
       if(gPad == gPad->GetMother()){
 //         cout << "not in divided" << endl;

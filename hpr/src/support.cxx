@@ -1466,6 +1466,47 @@ void DrawLineStyles()
       y -= dy;
    }
 }
+//______________________________________________________________________________________
+  
+Bool_t CreateDefaultsDir(TRootCanvas * mycanvas) 
+{
+   TString defname("defaults/Last");
+   Bool_t fok = kFALSE;
+   TEnv env(".rootrc");         // inspect ROOT's environment
+   defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
+//   if (defname.Length() <= 0) {
+//      WarnBox("Setting defaults dir/name to defaults/Last");
+//      defname = "defaults/Last";
+//      env.SetValue("HistPresent.LastSettingsName", defname.Data());
+//   }    
+   env.SaveLevel(kEnvUser);
+   fok = kTRUE;
+   Int_t lslash = defname.Last('/');
+   if (lslash > 0) {
+      TString dirname = defname;
+      dirname.Remove(lslash, 100);
+      if (gSystem->AccessPathName(dirname.Data())) {
+         fok = kFALSE;
+         TString question = dirname;
+         question += " does not exist, create it?";
+         int buttons = kMBYes | kMBNo, retval = 0;
+         EMsgBoxIcon icontype = kMBIconQuestion;
+         new TGMsgBox(gClient->GetRoot(), mycanvas,
+                      "Warning", (const char *) question,
+                      icontype, buttons, &retval);
+         if (retval == kMBYes) {
+            if (gSystem->MakeDirectory((const char *) dirname) == 0) {
+               fok = kTRUE;
+            } else {
+               dirname.Prepend("Error creating ");
+               dirname.Append(": ");
+               dirname.Append(gSystem->GetError());
+               WarnBox(dirname.Data());
+            }
+         }
+      }
+   }
+}
 
 
 

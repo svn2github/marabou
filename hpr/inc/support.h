@@ -4,6 +4,7 @@
 #include "TEnv.h"
 #include "TFile.h"
 #include "TCanvas.h"
+#include "TRootCanvas.h"
 #include "TColor.h"
 #include "HTCanvas.h"
 #include "TButton.h"
@@ -89,6 +90,7 @@ TGraph * FindGraph(TCanvas * ca);
 void DrawColors();
 void DrawFillStyles();
 void DrawLineStyles();
+Bool_t CreateDefaultsDir(TRootCanvas * mycanvas);
 
 inline void nothing();
 #endif
