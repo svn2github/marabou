@@ -1749,6 +1749,7 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 	if (valAscii.Index(":", 0) == -1) {		// event count
 		TimeStampFlag = kFALSE;
 		valAscii.ToInteger(Value);			// convert to integer
+		return(kTRUE);
 	} else {								// time stamp
 		TimeStampFlag = kTRUE;
 		TObjArray tsArr;
