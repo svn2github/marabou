@@ -300,13 +300,14 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    TString defname("defaults/Last");
    TEnv env(".rootrc");         // inspect ROOT's environment
    env.SetValue("HistPresent.FitMacroName", fFitMacroName);
-
-   if ( (!CreateDefaultsDir(mycanvas)) ) return;
+   Bool_t checkonly = kTRUE;
+   if ( (!CreateDefaultsDir(mycanvas, checkonly)) ) return;
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
 
    defname += "_";
    defname += fHname;
    defname += ".def";
+
    if (fDeleteCalFlag && !gSystem->AccessPathName(defname.Data())) {
       defname.Prepend("rm ");
       gSystem->Exec(defname.Data());

@@ -1468,7 +1468,7 @@ void DrawLineStyles()
 }
 //______________________________________________________________________________________
   
-Bool_t CreateDefaultsDir(TRootCanvas * mycanvas) 
+Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly) 
 {
    TString defname("defaults/Last");
    Bool_t fok = kFALSE;
@@ -1486,6 +1486,7 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas)
       TString dirname = defname;
       dirname.Remove(lslash, 100);
       if (gSystem->AccessPathName(dirname.Data())) {
+         if (checkonly) return kFALSE;
          fok = kFALSE;
          TString question = dirname;
          question += " does not exist, create it?";
@@ -1504,8 +1505,11 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas)
                WarnBox(dirname.Data());
             }
          }
+      } else {
+         return kTRUE;
       }
    }
+   return fok;
 }
 
 

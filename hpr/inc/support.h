@@ -90,7 +90,7 @@ TGraph * FindGraph(TCanvas * ca);
 void DrawColors();
 void DrawFillStyles();
 void DrawLineStyles();
-Bool_t CreateDefaultsDir(TRootCanvas * mycanvas);
+Bool_t CreateDefaultsDir(TRootCanvas * mycanvas = 0, Bool_t checkonly = kFALSE);
 
 inline void nothing();
 #endif
