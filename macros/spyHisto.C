@@ -37,6 +37,7 @@ class SpyTimer : public TTimer {
 			}
 		};
 		inline void SetAlarm(Double_t Thresh) { fThresh = Thresh; };
+
 		inline void Close() {
 			if (fSock) {
 				fSock->Send("M_client exit");
@@ -133,7 +134,7 @@ Bool_t SpyTimer::Notify() {
 			if (fSpyContents > 0) {
 				Double_t diff = contents - fSpyContents;
 				fSpyHist->SetBinContent(298, diff);
-				if (diff < fThresh) {
+				if (fThresh >= 0 && diff < fThresh) {
 					fSpyHist->SetFillColor(2);
 					this->Alarm();
 				} else {
@@ -185,7 +186,7 @@ void help() {
 	cout	<< "        Host            Host where M_analyze is running (default: localhost)" << endl << endl;
 	cout	<< "Commands:" << endl;
 	cout	<< "        spy(ll, ul)     Set spy window to [ll,ul] (default: entire histogram)" << endl;
-	cout	<< "        alarm(n)        Set alarm to n count/s (default: 0)" << endl;
+	cout	<< "        alarm(n)        Set alarm to n count/s (default: 0, -1 -> turned off)" << endl;
 	cout	<< "        stop()          Stop timer" << endl;
 	cout	<< "        start(n)        Start timer, set spy interval to n (default: previous value)" << endl;
 	cout	<< "        bye()           Close connection and exit (don't use \".q\"!)" << endl << endl;
@@ -266,7 +267,16 @@ void start() {
 	}
 }
 
-void alarm(Double_t Thresh = 0) { if (spyTimer) spyTimer->SetAlarm(Thresh); };
+void alarm(Double_t Thresh = 0) {
+	if (spyTimer) {
+		spyTimer->SetAlarm(Thresh);
+		if (Thresh < 0) {
+			cout << "[Alarm TURNED OFF]" << endl;
+		} else {
+			cout << "[Alarm threshold set to " << Thresh << "]" << endl;
+		}
+	}
+};
 
 void bye() {
 	if (spyTimer) {
