@@ -381,10 +381,10 @@ void HistPresent::RestoreOptions()
    fPadTickY       = env.GetValue("HistPresent.PadTickY",       0);
    fForceStyle     = env.GetValue("HistPresent.ForceStyle",      1);
 
+   TString defdir(gSystem->Getenv("MARABOU"));
+   defdir += "/doc/hpr";
    *fHelpDir =
-       env.GetValue("HistPresent.HelpDir",
-                    "/usr/local/marabou_doc/html/hpr");
-
+       env.GetValue("HistPresent.HelpDir",defdir.Data());
    if (!gSystem->AccessPathName(fHelpDir->Data()))
       fHelpBrowser = new TMrbHelpBrowser(fHelpDir->Data());
    else
