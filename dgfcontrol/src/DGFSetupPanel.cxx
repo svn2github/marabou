@@ -670,35 +670,46 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 
 				gSystem->Exec(Form("rsh %s 'cd %s; %s %s %s'", camacHost.Data(), gSystem->WorkingDirectory(), dlPgm.Data(), ".DgfDownload.rc"));
-
-				dgfModule = gDGFControlData->FirstModule();
-				while (dgfModule) {
-					if (gDGFControlData->ModuleInUse(dgfModule)) {
-						TMrbDGF * dgf = dgfModule->GetAddr();
-						if (dgf->IsConnected()) {
-							if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
-						}
+				for (Int_t i = 0; i < 100; i++) {
+					if (!gSystem->AccessPathName(".dgfdown.ok", (EAccessMode) F_OK)) {
+						TEnv * e = new TEnv(".dgfdown.ok");
+						nerr += e->GetValue("Download.Errors", 0);
+						delete e;
+						break;
 					}
-					dgfModule = gDGFControlData->NextModule(dgfModule);
+					usleep(1000);
 				}
 
-				dgfModule = gDGFControlData->FirstModule();
-				while (dgfModule) {
-					if (gDGFControlData->ModuleInUse(dgfModule)) {
-						TMrbDGF * dgf = dgfModule->GetAddr();
-						if (dgf->IsConnected()) {
-							if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-							dgf->ClearChannelMask();
-							dgf->ClearTriggerMask();
-							gDGFControlData->fDeltaT = dgf->GetDeltaT();
-							Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
-							dgf->SetSynchWait(synchWait, kTRUE);
-							Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
-							dgf->SetInSynch(inSynch, kTRUE);
-							gROOT->Append(dgf);
-						} else nerr++;
+				if (nerr == 0) {
+					dgfModule = gDGFControlData->FirstModule();
+					while (dgfModule) {
+						if (gDGFControlData->ModuleInUse(dgfModule)) {
+							TMrbDGF * dgf = dgfModule->GetAddr();
+							if (dgf->IsConnected()) {
+								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+							}
+						}
+						dgfModule = gDGFControlData->NextModule(dgfModule);
 					}
-					dgfModule = gDGFControlData->NextModule(dgfModule);
+
+					dgfModule = gDGFControlData->FirstModule();
+					while (dgfModule) {
+						if (gDGFControlData->ModuleInUse(dgfModule)) {
+							TMrbDGF * dgf = dgfModule->GetAddr();
+							if (dgf->IsConnected()) {
+								if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
+								dgf->ClearChannelMask();
+								dgf->ClearTriggerMask();
+								gDGFControlData->fDeltaT = dgf->GetDeltaT();
+								Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
+								dgf->SetSynchWait(synchWait, kTRUE);
+								Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
+								dgf->SetInSynch(inSynch, kTRUE);
+								gROOT->Append(dgf);
+							} else nerr++;
+						}
+						dgfModule = gDGFControlData->NextModule(dgfModule);
+					}
 				}
 			}
 		}

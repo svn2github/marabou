@@ -63,7 +63,7 @@ class DGFUntrigTracePanel : public TGTransientFrame {
 				
 		// geometry settings
 		enum					{	kFrameWidth 			= 750					};
-		enum					{	kFrameHeight 			= 380					};
+		enum					{	kFrameHeight 			= 450					};
 
 		enum					{	kLEWidth				= kAutoWidth			};
 		enum					{	kEntryWidth				= 100					};

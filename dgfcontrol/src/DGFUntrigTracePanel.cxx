@@ -336,7 +336,6 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 										
 	traceBuffer.Set(8192 * TMrbDGFData::kNofChannels);
 	
-	nofModules = 0;
 	nofTraces = 0;
 
 	chnPattern = fSelectChannel->GetActive() >> 12;
@@ -351,14 +350,13 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	intStr.ToInteger(xwait);
 	dgfModule = gDGFControlData->FirstModule();
 	selectFlag = kFALSE;
-	dataOkFlag = kFALSE;
+	nofModules = 0;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			selectFlag = kTRUE;
 			dgf = dgfModule->GetAddr();
-			nofWords = dgf->GetUntrigTrace(traceBuffer, chnPattern, xwait);
 
 			if (gDGFControlData->IsDebug()) {
 				TMrbString fn = dgf->GetName();
@@ -366,6 +364,34 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 				dgf->PrintParamsToFile(fn.Data());
 			}
 
+			dgf->GetUntrigTrace_Init(traceBuffer, chnPattern, xwait);
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
+	}				
+	if (!selectFlag) {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	}
+
+	dgfModule = gDGFControlData->FirstModule();
+	dataOkFlag = kFALSE;
+	nofModules = 0;
+	while (dgfModule) {
+		cl = nofModules / kNofModulesPerCluster;
+		modNo = nofModules - cl * kNofModulesPerCluster;
+		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
+			dgf = dgfModule->GetAddr();
+			nofWords = 0;
+			Int_t chn = 0;
+			UInt_t chnp = chnPattern;
+			for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++, chn++) {
+				if (chnp & 1) {
+					dgf->GetUntrigTrace_Start(chn);
+					nofWords += dgf->GetUntrigTrace_Stop(chn, traceBuffer, 0);
+					chnp >>= 1;
+				}
+			}		
 			if (nofWords > 0) {
 				if (!dataOkFlag) {
 					traceFile = new TFile("untrigTrace.root", "RECREATE");
@@ -382,25 +408,20 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 				gMrbLog->Out()	<< "StartTrace(): [" << dgfModule->GetName() << "] "
 								<< nofWords << " untrig trace data written" << endl;
 				gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
-			}			
+			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}				
-	if (selectFlag) {
-		if (dataOkFlag) {
-			traceFile->Close();
-			hl.close();
-			gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
-			return(kTRUE);
-		} else {
-			gMrbLog->Err()	<< "StartTrace(): Couldn't get any traces" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTrace");
-			return(kTRUE);
-		}
+	if (dataOkFlag) {
+		traceFile->Close();
+		hl.close();
+		gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
+		return(kTRUE);
 	} else {
-		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
-		return(kFALSE);
+		gMrbLog->Err()	<< "StartTrace(): Couldn't get any traces" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartTrace");
+		return(kTRUE);
 	}
 }

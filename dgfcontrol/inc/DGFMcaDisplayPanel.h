@@ -79,7 +79,7 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 
 		// geometry settings
 		enum					{	kFrameWidth 			= 750					};
-		enum					{	kFrameHeight 			= 380					};
+		enum					{	kFrameHeight 			= 500					};
 
 		enum					{	kLEWidth					= kAutoWidth		};
 		enum					{	kEntryWidth				= 110					};

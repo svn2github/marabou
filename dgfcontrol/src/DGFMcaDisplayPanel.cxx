@@ -407,7 +407,6 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	TMrbString intStr;
 	Int_t accuTime;
 	TString timeScale;
-	UInt_t chnPattern;
 										
 	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
 
@@ -422,7 +421,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	}
 	Int_t secsToWait = accuTime * waitInv;
 
-	chnPattern = fSelectChannel->GetActive();
+	UInt_t chnPattern = fSelectChannel->GetActive() >> 12;
 	if (chnPattern == 0) {
 		gMrbLog->Err()	<< "No channels selected" << endl;
 		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
@@ -437,10 +436,6 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
-			chnPattern = fSelectChannel->GetActive();
-			histoBuffer.Reset();
-			histoBuffer.SetModule(dgf);
-			UInt_t chnPattern = fSelectChannel->GetActive() >> 12;
 			dgf->AccuHist_Init(chnPattern);
 			dgf->AccuHist_Start();
 			nofModules++;
@@ -473,19 +468,21 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	TFile * mcaFile = NULL;
 	ofstream listFile;
 	while (dgfModule) {
+		histoBuffer.Reset();
+		histoBuffer.SetModule(dgf);
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
 			if (dgf->AccuHist_Stop(0)) {
-                nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
-                if (nofWords > 0) {
-                    if (verbose) histoBuffer.Print();
-                    for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+				nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
+				if (nofWords > 0) {
+					if (verbose) histoBuffer.Print();
+					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 						if (histoBuffer.IsActive(chn)) {
 							if (mcaFile == NULL) {
 								listFile.open("mca.histlist", ios::out);
-								mcaFile = new TFile("mca.root", "NEW");
+								mcaFile = new TFile("mca.root", "RECREATE");
 							}
 							histoBuffer.FillHistogram(chn);
 							TH1F * h = histoBuffer.Histogram(chn);
@@ -494,26 +491,26 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 							nofHistos++;
 						}
 					}
-                } else {
-                    gMrbLog->Err()  << "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-                                        << ": Histogram buffer is empty" << endl;
-                    gMrbLog->Flush(this->ClassName(), "AcquireHistos");
-                }
+				} else {
+					gMrbLog->Err()	<< "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+										<< ": Histogram buffer is empty" << endl;
+					gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+				}
 				dgf->RestoreParams(TMrbDGF::kSaveAccuHist);
 			}
 			nofModules++;
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 	}
-    if (nofHistos > 0) {
+	if (nofHistos > 0) {
 		listFile.close();
 		mcaFile->Close();
 		gMrbLog->Out()	<< nofHistos << " histogram(s) written to file mca.root" << endl;
 		gMrbLog->Flush(this->ClassName(), "AcquireHistos", setblue);
 	} else {
-        gMrbLog->Err()  << "No histograms at all" << endl;
-        gMrbLog->Flush(this->ClassName(), "AcquireHistos");
-    }
+		gMrbLog->Err()  << "No histograms at all" << endl;
+		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+	}
 	return(kTRUE);
 }
 
