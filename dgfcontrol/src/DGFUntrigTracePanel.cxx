@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.19 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       

@@ -8,7 +8,7 @@
 // Class:          TMrbSen_16P_2047     -- pattern unit
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbSen_16P_2047.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

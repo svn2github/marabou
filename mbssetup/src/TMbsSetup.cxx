@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: TMbsSetup.cxx,v 1.22 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 //
 // ************************************************************************************************************************

@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_4434      -- lecroy scaler 4434 (list mode)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbLeCroy_4434.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

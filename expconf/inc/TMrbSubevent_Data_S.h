@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent_Data_S    -- MBS subevent type [10,64]
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbSubevent_Data_S.h,v 1.7 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

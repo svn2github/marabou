@@ -9,7 +9,7 @@
 //                                             showing a progress bar
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TGMrbProgressBar.h,v 1.2 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

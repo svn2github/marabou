@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.78 2004-09-28 13:37:52 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.79 2004-09-28 13:47:32 rudi Exp $       $Id: TMrbConfig.cxx,v 1.79 2004-09-28 13:47:32 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 

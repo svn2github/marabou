@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbLofNamedX.h,v 1.5 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

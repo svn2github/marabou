@@ -8,7 +8,7 @@
 // Class:          TMbsReadoutProc      -- readout proc
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMbsReadoutProc.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

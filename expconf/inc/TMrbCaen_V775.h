@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V775        -- 16/32 chn TDC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbCaen_V775.h,v 1.7 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2339,7 +2339,7 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 //                 Additional entries may be used to identify the module:
 //                       FileType:par
 //                       Module:<name>
-//                       Revision:<rev>
+//                       Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $<rev>
 //                       Crate:<crate>
 //                       Station:<station>
 //                       Cluster:<id>
@@ -2402,7 +2402,7 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 		pf << "#----------------------------------------------------------------------------------------" << endl;
 		pf << "#+FileType:par" << endl;
 		pf << "#+Module:"										<< this->GetName() << endl;
-		pf << "#+Revision:"										<< this->GetRevision()->GetName() << endl;
+		pf << "#+Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $"										<< this->GetRevision()->GetName() << endl;
 		pf << "#+Crate:"										<< this->GetCrate() << endl;
 		pf << "#+Station:" 										<< this->GetStation() << endl;
 		pf << "#+Cluster:"										<< this->GetClusterInfo(info) << endl;
@@ -2598,7 +2598,7 @@ Int_t TMrbDGF::SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 //                 Additional entries may be used to identify the module:
 //                       FileType:par
 //                       Module:<name>
-//                       Revision:<rev>
+//                       Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $<rev>
 //                       Crate:<crate>
 //                       Station:<station>
 //                       Cluster:<id>
@@ -2665,7 +2665,7 @@ Int_t TMrbDGF::SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 		pf << "#----------------------------------------------------------------------------------------" << endl;
 		pf << "#+FileType:psa" << endl;
 		pf << "#+Module:"										<< this->GetName() << endl;
-		pf << "#+Revision:"										<< this->GetRevision()->GetName() << endl;
+		pf << "#+Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $"										<< this->GetRevision()->GetName() << endl;
 		pf << "#+Crate:"										<< this->GetCrate() << endl;
 		pf << "#+Station:" 										<< this->GetStation() << endl;
 		pf << "#+Cluster:"										<< this->GetClusterInfo(info) << endl;
@@ -2717,7 +2717,7 @@ Int_t TMrbDGF::SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP) {
 //                 Additional entries may be used to identify the module:
 //                       FileType:val
 //                       Module:<name>
-//                       Revision:<rev>
+//                       Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $<rev>
 //                       Crate:<crate>
 //                       Station:<station>
 //                       Cluster:<id>
@@ -2778,7 +2778,7 @@ Int_t TMrbDGF::SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP) {
 		vf << "#----------------------------------------------------------------------------------------" << endl;
 		vf << "#+FileType:val" << endl;
 		vf << "#+Module:"										<< this->GetName() << endl;
-		vf << "#+Revision:"										<< this->GetRevision()->GetName() << endl;
+		vf << "#+Revision:       $Id: TMrbDGF.cxx,v 1.30 2004-09-28 13:47:33 rudi Exp $"										<< this->GetRevision()->GetName() << endl;
 		vf << "#+Crate:"										<< this->GetCrate() << endl;
 		vf << "#+Station:" 										<< this->GetStation() << endl;
 		vf << "#+Cluster:"										<< this->GetClusterInfo(info) << endl;

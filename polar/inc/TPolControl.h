@@ -7,7 +7,7 @@
 // Purpose:        Class defs to control the polarized ion source
 // Description:    Class definitions to control Ralf Hertenberger's polarized ion source
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TPolControl.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 // Class:          TMrbSilena_4418T     -- silena tdc 4418/T
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbSilena_4418T.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

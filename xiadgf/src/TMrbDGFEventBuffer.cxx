@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: TMrbDGFEventBuffer.cxx,v 1.5 2004-09-28 13:47:34 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 

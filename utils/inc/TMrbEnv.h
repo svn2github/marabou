@@ -8,7 +8,7 @@
 // Class:          TMrbEnv       -- provide an extended TEnv
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbEnv.h,v 1.5 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

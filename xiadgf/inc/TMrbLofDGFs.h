@@ -8,7 +8,7 @@
 // Class:          TMrbLofDGFs         -- a list of DGF modules
 // Description:    Class definitions to operate XIA DGF-4C modules
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbLofDGFs.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

@@ -8,7 +8,7 @@
 // Class:          TMrbAdcd_9701        -- dual flash adc tum/w.liebl
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbAdcd_9701.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

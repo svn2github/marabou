@@ -8,7 +8,7 @@
 // Class:          TMrbSilena_7420      -- silena adc (NIM) + input register (tum/w.liebl)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbSilena_7420.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

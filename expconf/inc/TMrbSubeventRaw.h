@@ -8,7 +8,7 @@
 // Class:          TMrbSubeventRaw    -- a MBS subevent having raw (used-defined) data
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbSubeventRaw.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

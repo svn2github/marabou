@@ -8,7 +8,7 @@
 // Class:          TMrbHistory    -- (inverse) history buffer
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbHistory.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

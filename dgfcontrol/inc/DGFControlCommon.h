@@ -7,7 +7,7 @@
 // Purpose:        Common defs for the DGF-4C GUI
 // Description:    Defines common values to be used for DGFControl
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: DGFControlCommon.h,v 1.8 2004-09-28 13:47:31 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       

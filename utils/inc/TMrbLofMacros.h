@@ -8,7 +8,7 @@
 // Classes:        TMrbLofMacros     -- a list of root macros
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbLofMacros.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

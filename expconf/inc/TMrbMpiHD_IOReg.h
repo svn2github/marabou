@@ -8,7 +8,7 @@
 // Class:          TMrbMpiHD_IOReg        -- 16 bit i/o reg (MPI HD)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbMpiHD_IOReg.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

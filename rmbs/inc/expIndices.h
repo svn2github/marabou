@@ -9,7 +9,7 @@
 //                 as well as readout code to guarantee coherent addresses
 //
 // Author:         Miniball
-// Revision:         
+// Revision:       $Id: expIndices.h,v 1.3 2004-09-28 13:47:33 rudi Exp $         
 // Date:           Fri Sep 12 09:04:24 2003
 // URL:            
 // Keywords:       

@@ -8,7 +8,7 @@
 // Class:          TMrbLofUserVars -- a list of user-defined variables and windows
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbLofUserVars.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

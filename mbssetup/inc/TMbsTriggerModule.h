@@ -8,7 +8,7 @@
 // Class:          TMbsTriggerModule    -- trigger module
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMbsTriggerModule.h,v 1.2 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

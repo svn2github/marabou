@@ -2,12 +2,12 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           utils/src/TMrbNamedX.cxx
 // Purpose:        MARaBOU utilities:
-//             A TNamed having an index and an opt. object assigned
-// Description:        Implements class methods to manage indexed TNamed objects
+//                 A TNamed having an index and an opt. object assigned
+// Description:    Implements class methods to manage indexed TNamed objects
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: TMrbNamedX.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $      
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 

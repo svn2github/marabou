@@ -7,7 +7,7 @@
 // Purpose:        Define base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbAnalyze.h,v 1.37 2004-09-28 13:47:31 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       

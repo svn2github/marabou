@@ -8,7 +8,7 @@
 // Class:          TMrbGanelec_Q1612F	-- ganelec qdc 16 fold
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbGanelec_Q1612F.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

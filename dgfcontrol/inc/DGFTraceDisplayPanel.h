@@ -8,7 +8,7 @@
 // Class:          DGFTraceDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: DGFTraceDisplayPanel.h,v 1.10 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       

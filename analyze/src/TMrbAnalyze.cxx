@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.44 2004-09-28 13:47:31 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 

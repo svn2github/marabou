@@ -11,7 +11,7 @@
 // ROOT classes:   TNamed
 // Keywords:
 // Author:         R. Lutter
-// Revision:                  
+// Revision:       $Id: TMrbTransport.h,v 1.7 2004-09-28 13:47:33 rudi Exp $                  
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;

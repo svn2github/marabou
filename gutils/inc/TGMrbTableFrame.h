@@ -10,7 +10,7 @@
 //                 TGMrbTableOfDoubles   -- ... pure double elements
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TGMrbTableFrame.h,v 1.5 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

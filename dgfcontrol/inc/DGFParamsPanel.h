@@ -8,7 +8,7 @@
 // Class:          DGFParamsPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: DGFParamsPanel.h,v 1.7 2004-09-28 13:47:32 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       

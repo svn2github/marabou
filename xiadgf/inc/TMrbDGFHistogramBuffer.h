@@ -8,7 +8,7 @@
 // Classes:        TMrbDGFHistogrambuffer    -- buffer structure for histograms
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: TMrbDGFHistogramBuffer.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////

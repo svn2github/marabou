@@ -6,7 +6,7 @@
 // Purpose:        C interface to mbsio calls
 // Description:    C prototypes for mbsio
 // Author:         R. Lutter
-// Revision:       
+// Revision:       $Id: mbsio_protos.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       

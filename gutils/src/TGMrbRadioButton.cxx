@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       
+// Revision:       $Id: TGMrbRadioButton.cxx,v 1.2 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // Layout: A list of radio buttons
 //Begin_Html

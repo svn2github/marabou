@@ -5,7 +5,7 @@
 // Description:    
 // Author:         O. Schaile
 // Mailto:         <a href=mailto:otto.schaile@physik.uni-muenchen.de>O. Schaile</a>
-// Revision:       
+// Revision:       $Id: TGMrbTableFrame.cxx,v 1.5 2004-09-28 13:47:33 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
