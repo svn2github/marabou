@@ -3103,7 +3103,7 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 	TUsrHit * hit;
 
 	Int_t curIndex = (fCurIndex == -1) ? 0 : fCurIndex;
-	if (curIndex >= this->GetNofHits()) return(NULL);
+	if (curIndex >= this->GetNofHits()) return(kFALSE);
 
 	hit = (TUsrHit *) fHits->At(curIndex);
 	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - fOffset[hit->GetModuleNumber() - 1])
