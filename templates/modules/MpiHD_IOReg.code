@@ -1,0 +1,176 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           MpiHD_IOReg.code
+// Purpose:        VME code for i/o register MPIORL (MPI HD)
+// Description:    Contains pieces of code to operate the MPIORL i/o reg
+// Author:         R. Lutter
+// Revision:       
+// Date:           
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for MPIORL i/o register module */
+#define HD_IOREG_R_DATART	0x00
+#define HD_IOREG_R_DATARS	0x02
+#define HD_IOREG_R_DATARL	0x04
+#define HD_IOREG_R_DATAWS	0x06
+#define HD_IOREG_R_DATAW	0x08
+#define HD_IOREG_R_STROUT	0x0a
+#define HD_IOREG_R_IRQMASK	0x0c
+#define HD_IOREG_R_DRESET	0x0e
+#define HD_IOREG_R_IRQENA	0x10
+#define HD_IOREG_R_IRQDIS	0x12
+#define HD_IOREG_R_IRQVEC	0x14
+#define HD_IOREG_R_DATAWR	0x16
+#define HD_IOREG_R_BRESET	0x18
+
+#define HD_IOREG_B_EIRQ 	0x100
+#define HD_IOREG_B_BUSY 	0x200
+#define HD_IOREG_B_IBUSY	0x400
+#define HD_IOREG_B_OBUSY	0x800
+
+#define HD_IOREG_A_DATART(module) 		((unsigned short *) (module + HD_IOREG_R_DATART))
+#define HD_IOREG_A_DATARS(module) 		((unsigned short *) (module + HD_IOREG_R_DATARS))
+#define HD_IOREG_A_DATARL(module) 		((unsigned short *) (module + HD_IOREG_R_DATARL))
+#define HD_IOREG_A_DATAWS(module) 		((unsigned short *) (module + HD_IOREG_R_DATAWS))
+#define HD_IOREG_A_DATAW(module) 		((unsigned short *) (module + HD_IOREG_R_DATAW))
+#define HD_IOREG_A_STROUT(module) 		((unsigned short *) (module + HD_IOREG_R_STROUT))
+#define HD_IOREG_A_IRQMASK(module) 		((unsigned short *) (module + HD_IOREG_R_IRQMASK))
+#define HD_IOREG_A_DRESET(module) 		((unsigned short *) (module + HD_IOREG_R_DRESET))
+#define HD_IOREG_A_IRQENA(module) 		((unsigned short *) (module + HD_IOREG_R_IRQENA))
+#define HD_IOREG_A_IRQDIS(module) 		((unsigned short *) (module + HD_IOREG_R_IRQDIS))
+#define HD_IOREG_A_IRQVEC(module) 		((unsigned short *) (module + HD_IOREG_R_IRQVEC))
+#define HD_IOREG_A_DATAWR(module) 		((unsigned short *) (module + HD_IOREG_R_DATAWR))
+#define HD_IOREG_A_BRESET(module) 		((unsigned short *) (module + HD_IOREG_R_BRESET))
+
+#define HD_IOREG_CLEAR_DATA(module) 	 	*(HD_IOREG_A_DRESET(module)) = 0; mpiorl_bits = 0
+#define HD_IOREG_RESET_BUSY(module) 		*(HD_IOREG_A_BRESET(module)) = 0
+#define HD_IOREG_READ_DATA(module)			*(HD_IOREG_A_DATARS(module))
+#define HD_IOREG_WRITE_DATA(module, bits)	mpiorl_bits = bits; *(HD_IOREG_A_DATAW(module)) = mpiorl_bits
+#define HD_IOREG_SET_BITS(module, bits) 	mpiorl_bits |= bits; *(HD_IOREG_A_DATAW(module)) = mpiorl_bits
+#define HD_IOREG_CLEAR_BITS(module, bits) 	mpiorl_bits &= ~bits; *(HD_IOREG_A_DATAW(module)) = mpiorl_bits
+#define HD_IOREG_OUTPUT_PULSE(module, bits)	HD_IOREG_SET_BITS(module, bits); HD_IOREG_CLEAR_BITS(module, bits)
+#define HD_IOREG_DISABLE_IRQ(module)		*(HD_IOREG_A_IRQDIS(module)) = 0
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName at addr $baseAddr */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					mpiorl_init($moduleName);
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+					mpiorl_data = HD_IOREG_READ_DATA($moduleName);
+					RDO_2MEM_16(mpiorl_data);
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+	mpiorl_reset($moduleName);
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+void mpiorl_init(volatile unsigned char * module) {
+	HD_IOREG_DISABLE_IRQ(module);
+	HD_IOREG_CLEAR_DATA(module);
+	HD_IOREG_RESET_BUSY(module);
+}
+
+void mpiorl_reset(volatile unsigned char * module) {
+	HD_IOREG_CLEAR_DATA(module);
+	HD_IOREG_RESET_BUSY(module);
+}
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+void mpiorl_init(volatile unsigned char * module);
+void mpiorl_reset(volatile unsigned char * module);
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+unsigned short mpiorl_bits;
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	unsigned short mpiorl_data;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%
