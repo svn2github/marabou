@@ -1862,18 +1862,29 @@ Bool_t TMrbDGF::PrintParams(ostream & OutStrm, const Char_t * ParamName) {
 				OutStrm	<< "..........................................................................................." << endl;
 			}
 			found = kTRUE;
+			Int_t nofWords = ((pName.CompareTo("USERIN") == 0) || (pName.CompareTo("USEROUT") == 0)) ? 16 : 1;
 			pOffset = key->GetIndex();
-			pType = (pOffset < TMrbDGFData::kNofDSPInputParams) ? "Input" : "Output";
-			OutStrm	<< " " << setiosflags(ios::left) << setw(14) << pName;
-			OutStrm	<< setiosflags(ios::left) << setw(10) << pType;
-			OutStrm	<< resetiosflags(ios::left) << setw(10) << pOffset;
-			if (this->ParamValuesRead()) {
-				OutStrm	<< setw(10) << (UShort_t) fParams[pOffset]
-						<< "    0x" << setbase(16) << (UShort_t) fParams[pOffset] << setbase(10);
-			} else if (pOffset <= TMrbDGFData::kNofDSPInputParams) {
-				OutStrm	<< setw(10) << "undef";
+			for (Int_t nw = 0; nw < nofWords; nw++, pOffset++) {
+				pType = (pOffset < TMrbDGFData::kNofDSPInputParams) ? "Input" : "Output";
+				TMrbString pn;
+				if (nw > 0) {
+					pn = pName;
+					pn += "+";
+					pn += nw;
+				} else {
+					pn = pName;
+				}
+				OutStrm	<< " " << setiosflags(ios::left) << setw(14) << pn;
+				OutStrm	<< setiosflags(ios::left) << setw(10) << pType;
+				OutStrm	<< resetiosflags(ios::left) << setw(10) << pOffset;
+				if (this->ParamValuesRead()) {
+					OutStrm	<< setw(10) << (UShort_t) fParams[pOffset]
+							<< "    0x" << setbase(16) << (UShort_t) fParams[pOffset] << setbase(10);
+				} else if (pOffset <= TMrbDGFData::kNofDSPInputParams) {
+					OutStrm	<< setw(10) << "undef";
+				}
+				OutStrm	<< endl;
 			}
-			OutStrm	<< endl;
 		}
 		key = fDGFData->NextParam(key);
 	}
@@ -2446,6 +2457,7 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 
 		line = 0;
 		nofParams = 0;
+		Int_t pOffset0 = -1;
 		while (nofParams < 16) {
 			pLine.ReadLine(pf, kFALSE);
 			line++;
@@ -2472,14 +2484,15 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 			} else {
 				pStr = ((TObjString *) pFields[1])->GetString();
 				pStr.ToInteger(pOffset);
-				if (pOffset > 15) {
+				if (pOffset0 == -1) pOffset0 = pOffset;
+				if (pOffset - pOffset0 > 16) {
 					gMrbLog->Err() << paramFile << " (line " << line << "): [" << pName << "] PSA offset > 16" << endl;
 					gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
 					continue;
 				}
 				pStr = ((TObjString *) pFields[2])->GetString();
 				pStr.ToInteger(pValue);				
-				psaVal[pOffset] = pValue;
+				psaVal[pOffset - pOffset0] = pValue;
 				nofParams++;
 			}
 		}
@@ -2635,8 +2648,8 @@ Int_t TMrbDGF::SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 		}
 
 		pOffset = pKey->GetIndex();
-		for (Int_t i = 0; i < 16; i++) {
-			pValue = fParams[pOffset + i];
+		for (Int_t i = 0; i < 16; i++, pOffset++) {
+			pValue = fParams[pOffset];
 			pf << psaNames[i]->GetName() << ":" << pOffset << ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10) << endl;
 			nofParams++;
 		}

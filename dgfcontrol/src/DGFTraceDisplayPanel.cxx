@@ -397,12 +397,13 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 		return(kFALSE);
 	}
 
-	switch (nofChannels) {
-		case 1: traceLength = 8000; break;
-		case 2: traceLength = 4000; break;
-		case 3: traceLength = 2000; break;
-		case 4: traceLength = 2000; break;
-	}
+	traceLength = 40;
+//	switch (nofChannels) {
+//		case 1: traceLength = 8000; break;
+//		case 2: traceLength = 4000; break;
+//		case 3: traceLength = 2000; break;
+//		case 4: traceLength = 2000; break;
+//	}
 
 	intStr = fXwait->GetEntry()->GetText();
 	intStr.ToInteger(xwait);
@@ -426,6 +427,8 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
 	}
+
+	sleep(5);
 
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
@@ -453,23 +456,21 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 				dataOkFlag = kTRUE;
 				if (traceBuffer.GetNofEvents() > 0) {
 					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-						if (traceBuffer.FillHistogram(0, chn, kFALSE)) {
-							if ( (h = traceBuffer.Histogram()) ) {
-								hl << dgfModule->GetName() << chn << endl;
-								hName = dgfModule->GetName();
-								hName += chn;
-								h->SetName(hName.Data());
-								h->SetTitle(dgfModule->GetTitle());
-								h->Write();
-								if (gDGFControlData->IsVerbose()) {
-									cout	<< "[" << dgfModule->GetTitle()
-											<< "(chn" << chn
-											<< "): trace" << nofTraces
-											<< " -> histo " << hName
-											<< ", " << traceLength << " data points]" << endl;
-								}
-								nofTraces++;
+						if ( (h = traceBuffer.FillHistogram(0, chn, kFALSE)) ) {
+							hl << dgfModule->GetName() << chn << endl;
+							hName = dgfModule->GetName();
+							hName += chn;
+							h->SetName(hName.Data());
+							h->SetTitle(dgfModule->GetTitle());
+							h->Write();
+							if (gDGFControlData->IsVerbose()) {
+								cout	<< "[" << dgfModule->GetTitle()
+										<< "(chn" << chn
+										<< "): trace" << nofTraces
+										<< " -> histo " << hName
+										<< ", " << traceLength << " data points]" << endl;
 							}
+							nofTraces++;
 						}
 					}
 					gMrbLog->Out()	<< "[" << dgfModule->GetName() << "] "

@@ -363,7 +363,7 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 								if (esoneCold) esoneCold->Abort();
 								break;
 							case kDGFSetupUserPSAOnOff:
-								this->TurnUserPSAOnOff(gDGFControlData->fUserPSA);
+								this->TurnUserPSAOnOff(kTRUE);
 								break;
 							case kDGFSetupClose:
 								gDGFControlData->fStatus |= fDGFFrame->GetActive();
@@ -894,7 +894,7 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Aborting busy-sync loop failed", kMBIconStop);
 		return(kFALSE);
 	} else if (found) {
-		gMrbLog->Out()	<< "Busy-sync loop terminated properly" << endl;
+		gMrbLog->Out()	<< "User PSA code turned " << onoff << "]" << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff", setblue);
 		return(kTRUE);
 	} else {
