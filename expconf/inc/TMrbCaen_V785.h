@@ -115,6 +115,9 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 
 		inline Bool_t HasRandomReadout() { return(kFALSE); };
 
+		inline void SetFineThresh(Bool_t FineFlag = kTRUE) { fFineThresh = FineFlag; }; // lower thresh in steps of 2 bits
+		inline Bool_t HasFineThresh() { return(fFineThresh); };
+
 		virtual inline Bool_t HasPrivateCode() { return(kTRUE); }; 			// use private code files
 		virtual inline const Char_t * GetPrivateCodeFile() { return("Module_Caen_V7X5"); };
 		
@@ -125,6 +128,7 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 
 	protected:
 		Bool_t fFFMode;
+		Bool_t fFineThresh;
 
 	ClassDef(TMrbCaen_V785, 1)		// [Config] CAEN V785, 32 x 4K peak sensing VME ADC
 };

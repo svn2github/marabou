@@ -275,6 +275,7 @@ Bool_t TMrbCaen_V785::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
+			fCodeTemplates.Substitute("$fineOrCoarse", this->HasFineThresh() ? "FINE" : "COARSE");
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.WriteCode(RdoStrm);
 			for (i = 0; i < fNofChannels; i++, chn++) {
