@@ -235,9 +235,14 @@ enum ERootCanvasCommands {
    kFH_SetGrid,
    kFH_UseGrid,
    kFH_DrawGrid,  
+   kFH_DrawGridVis,  
    kFH_RemoveGrid,
    kFH_ExtractGObjects,
+   kFH_InsertGObjectsG,
    kFH_InsertGObjects,
+   kFH_WriteGObjects,
+   kFH_ReadGObjects,
+   kFH_ShowGallery,
    kOptionPad,
    kOptionGeneral,
    kOptionFeynman,
@@ -496,39 +501,49 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFH_SetGrid:
                      {
-                    TArrayD values(2);
+                    TArrayD values(4);
                     TOrdCollection *row_lab = new TOrdCollection();
-                    row_lab->Add(new TObjString("Grid X"));
-                    row_lab->Add(new TObjString("Grid Y"));
-                    values[0] = fHCanvas->GetGridX();
-                    values[1] = fHCanvas->GetGridY();
+                    row_lab->Add(new TObjString("Real EditGrid X"));
+                    row_lab->Add(new TObjString("Real EditGrid Y"));
+                    row_lab->Add(new TObjString("Visible Grid X"));
+                    row_lab->Add(new TObjString("Visible Grid Y"));
+                    values[0] = fHCanvas->GetEditGridX();
+                    values[1] = fHCanvas->GetEditGridY();
+                    values[2] = fHCanvas->GetVisibleGridX();
+                    values[3] = fHCanvas->GetVisibleGridY();
    					  Int_t ret, itemwidth = 240, precission = 5;
    					  TGMrbTableOfDoubles(fRootCanvas, &ret,  "Edit Grid", itemwidth, 
-                                       1, 2, values, precission, 0, row_lab);
+                                       1, 4, values, precission, 0, row_lab);
    					  if (ret >= 0) {
-                       fHCanvas->SetGridX(values[0]);
-                       fHCanvas->SetGridY(values[1]);
-                       fHCanvas->SetUseGrid(kTRUE);
-                       fHCanvas->DrawGrid();
+                       fHCanvas->SetEditGridX(values[0]);
+                       fHCanvas->SetEditGridY(values[1]);
+                       fHCanvas->SetVisibleGridX(values[2]);
+                       fHCanvas->SetVisibleGridY(values[3]);
+                       fHCanvas->SetUseEditGrid(kTRUE);
+                       fHCanvas->DrawEditGrid(kTRUE);
                     }
                     }
                     break;
                   case kFH_UseGrid:
-     					if (fHCanvas->GetUseGrid()) {
+     					if (fHCanvas->GetUseEditGrid()) {
                         fEditMenu->UnCheckEntry(kFH_UseGrid);
-                        fHCanvas->SetUseGrid(kFALSE);
+                        fHCanvas->SetUseEditGrid(kFALSE);
       					} else {                    
                         fEditMenu->CheckEntry(kFH_UseGrid);
-                        fHCanvas->SetUseGrid(kTRUE);
+                        fHCanvas->SetUseEditGrid(kTRUE);
                      }
                      break;
 
                   case kFH_DrawGrid:  
-                        fHCanvas->DrawGrid();
+                        fHCanvas->DrawEditGrid(kFALSE);
+                     break;
+
+                  case kFH_DrawGridVis:  
+                        fHCanvas->DrawEditGrid(kTRUE);
                      break;
 
                   case kFH_RemoveGrid:
-                        fHCanvas->RemoveGrid();
+                        fHCanvas->RemoveEditGrid();
                      break;
 
                   case kFH_DrawHist:
@@ -541,11 +556,23 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFH_GetPrim:
                         fHCanvas->GetPrimitives();
                      break;
+                  case kFH_InsertGObjectsG:
+                       fHCanvas->InsertGObjects(NULL, kTRUE);
+                     break;
                   case kFH_InsertGObjects:
-                       fHCanvas->InsertGObjects();
+                       fHCanvas->InsertGObjects(NULL, kFALSE);
                      break;
                   case kFH_ExtractGObjects:
                        fHCanvas->ExtractGObjects();
+                     break;
+                  case kFH_WriteGObjects:
+                       fHCanvas->WriteGObjects();
+                     break;
+                  case kFH_ReadGObjects:
+                       fHCanvas->ReadGObjects();
+                     break;
+                  case kFH_ShowGallery:
+                       fHCanvas->ShowGallery();
                      break;
                   case    kFH_Portrait:
                      if(fHistPresent)
@@ -1562,9 +1589,13 @@ void HandleMenus::BuildMenus()
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
 //   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
-   	fEditMenu->AddEntry("Write objects to file",  kFH_WritePrim);
-   	fEditMenu->AddEntry("Extracts objects as macro",  kFH_ExtractGObjects);
-   	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
+   	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
+   	fEditMenu->AddEntry("Extract objects as macro",  kFH_ExtractGObjects);
+   	fEditMenu->AddEntry("Insert macro object, keep connection",  kFH_InsertGObjectsG);
+   	fEditMenu->AddEntry("Insert macro object, break connection",  kFH_InsertGObjects);
+   	fEditMenu->AddEntry("Write macro objects to file",  kFH_WriteGObjects);
+   	fEditMenu->AddEntry("Read macro objects from file",  kFH_ReadGObjects);
+   	fEditMenu->AddEntry("Display list of macro objects",  kFH_ShowGallery);
 //   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
      
 //   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
@@ -1574,10 +1605,11 @@ void HandleMenus::BuildMenus()
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
    	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
-      if (fHCanvas->GetUseGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
+      if (fHCanvas->GetUseEditGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
       else                      fEditMenu->UnCheckEntry(kFH_UseGrid);
 //      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
-   	fEditMenu->AddEntry("Draw Edit Grid",           kFH_DrawGrid  );
+   	fEditMenu->AddEntry("Draw visible grid",           kFH_DrawGridVis);
+   	fEditMenu->AddEntry("Draw real grid",           kFH_DrawGrid  );
    	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
       fEditMenu->AddSeparator();
       fEditMenu->AddEntry("Line- Text- Fill attributes", kOptionGeneral);

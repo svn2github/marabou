@@ -3,6 +3,7 @@
 
 #include "TNamed.h"
 #include "TList.h"
+#include "TPad.h"
 
 class GroupOfGObjects : public TNamed {
 friend class HTCanvas;
@@ -31,9 +32,11 @@ public:
    Bool_t  BindMember(TObject * obj);
    Bool_t  FreeMember(TObject * obj);
    Int_t   GetNMembers() {return fMembers.GetSize();};
-   Int_t   AddMembersToList(TList * list, Double_t xoff = 0, Double_t yoff = 0,
-                            Double_t scale = 1, Double_t angle = 0, Bool_t all = kTRUE);
-   
-ClassDef(GroupOfGObjects,0)
+   Int_t   AddMembersToList(TPad * pad, Double_t xoff = 0, Double_t yoff = 0,
+                            Double_t scaleNDC = 1,
+                            Double_t scaleG = 1,
+                           Double_t angle = 0, Bool_t all = kTRUE);
+   void Print();
+ClassDef(GroupOfGObjects,1)
 };
 #endif

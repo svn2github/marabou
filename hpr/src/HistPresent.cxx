@@ -1491,22 +1491,30 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 void HistPresent::SelectLeaf(const char* lname, const char* bp)
 {
    if (!bp) return;
-   cout << " Adding leaf " << lname << endl;
+//   cout << " Adding leaf " << lname << endl;
+   const char * aname[4] = {"X-axis", "Y-axis", "Z-axis", "4-axis"};
    TString sel = lname;
    TButton * b;
    b = (TButton *)strtoul(bp, 0, 16);
    if (b->TestBit(kSelected)) {
       TObjString tobjs((const char *)sel);
-      cout << "Remove leaf";
-      tobjs.Print(" ");
+      cout << "Remove leaf: " << tobjs.GetString() << endl;
       fSelectLeaf->Remove(&tobjs);
       b->SetFillColor(16);
+//      b->SetTitle("");
       b->ResetBit(kSelected);
    } else {
-      cout << " Add leaf " << lname << endl;
       fSelectLeaf->Add(new TObjString((const char *)sel));     
+//      cout << " Add leaf " << lname << " Index: " << fSelectLeaf->LastIndex()<< endl;
+//      b->SetTitle(Form("%d", fSelectLeaf->LastIndex()));
       b->SetFillColor(3);
       b->SetBit(kSelected);
+   }
+//   b->Paint();
+   if (fSelectLeaf->GetSize() > 0) {
+      cout << "Current selection:" << endl;
+      for (Int_t i = 0; i < fSelectLeaf->GetSize(); i++) 
+         cout << i << " " << aname[i] << ": " <<  ((TObjString*)fSelectLeaf->At(i))->GetString() << endl;
    }
    b->Modified(kTRUE);b->Update();
 }
@@ -1660,7 +1668,7 @@ void HistPresent::EditExpression(const char* bp)
    if (!ok) return;
    if (strlen(*fExpression) > 1) {
       cout << *fExpression<< endl;
-      cout << "Please press grey button to activate" << endl;
+      cout << "Press grey button to activate" << endl;
 //       if (!fApplyExpression)ToggleExpression();
     }   
 }
@@ -1716,14 +1724,17 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TString leaf0;
    TString leaf1;
    TString leaf2;
+   TString leaf3;
+   TString * leaf[4] = {&leaf0, &leaf1, &leaf2, &leaf3};
+
    TString cmd;
    TString hname = "hist_";
-   Int_t nent;
-   static Double_t nbin[3] = {0, 0, 0};
-   static Double_t vmin[3] = {0, 0, 0};
-   static Double_t vmax[3] = {0, 0, 0};
-   cout << "leafname " << leafname << " " << strlen(leafname) 
-    << " nent " << fSelectLeaf->GetSize() << endl;
+   Int_t nent = 1;
+   static Double_t nbin[4] = {0, 0, 0, 0};
+   static Double_t vmin[4] = {0, 0, 0, 0};
+   static Double_t vmax[4] = {0, 0, 0, 0};
+//   cout << "leafname " << leafname << " " << strlen(leafname) 
+//    << " nent " << fSelectLeaf->GetSize() << endl;
    if (strlen(leafname)>0) {
       leaf0=leafname;
       cmd=leaf0;
@@ -1747,28 +1758,18 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          if (nent > 1) {
             objs = (TObjString *)next();
             leaf1 = objs->String();
-   //         cmd += ":";
-   //         cmd  += leaf1;
             cmd.Prepend(":");
             cmd.Prepend(leaf1.Data());
          }
          if (nent == 3) {
             objs = (TObjString *)next();
             leaf2 = objs->String();
-   //         cmd += ":";
-   //         cmd += leaf2;
             cmd.Prepend(":");
             cmd.Prepend(leaf2.Data());
          }
       }
    }
-   const char * lname[3];
-   lname[0] = leaf0.Data();
-   lname[1] = leaf1.Data();
-   lname[2] = leaf2.Data();
    const char * cchname; 
-//   TString hname = "hist_";
-    cout << "nent " << nent << endl;
    if (nent > 0) hname += leaf0;
    else hname += "userdef";
    if (nent > 1) hname += "_"; hname += leaf1;
@@ -1776,6 +1777,41 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 
    if (fApplyExpression) {
       cmd = *fExpression;
+      if (nent == 0) {
+//         find # of dimensions
+         Int_t sind = 0, colind;
+   		while (1) {
+      		colind = cmd.Index(":", sind);
+      		if (colind < 0) break;
+      		if (cmd[colind+1] == ':') {
+               sind = colind + 2;
+               continue;
+            }
+            *leaf[nent] = cmd(sind, colind-sind);
+            sind = colind + 1;
+            nent++;
+   		} 
+         *leaf[nent] = cmd(sind, cmd.Length() -1);
+         nent++;
+      }
+//     inver order
+      TString * temp;
+      if (nent == 2) {
+         temp = leaf[0];
+         leaf[0] = leaf[1];
+         leaf[1] = temp;
+      } else if (nent == 3) {
+         temp = leaf[0];
+         leaf[0] = leaf[2];
+         leaf[2] = temp;
+      } else if (nent == 4) {
+         temp = leaf[0];
+         leaf[0] = leaf[3];
+         leaf[3] = temp;
+         temp = leaf[1];
+         leaf[1] = leaf[2];
+         leaf[2] = temp;
+      }
       TRegexp a1("\\$1");
       while (cmd.Index(a1)>=0) {cmd(a1)=leaf0.Data();}
       TRegexp a2("\\$2");
@@ -1787,10 +1823,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       }  
       TRegexp a3("\\$3");
       if (cmd.Index(a3)>=0) {
-        if (nent <3) {
-           WarnBox("3 args expected");
-           return;
-        } else {while (cmd.Index(a3)>=0) {cmd(a3)=leaf2.Data();}}
+      	if (nent <3) {
+         	WarnBox("3 args expected");
+         	return;
+      	} else {while (cmd.Index(a3)>=0) {cmd(a3)=leaf2.Data();}}
       }  
    }
    TString option = "goff";
@@ -1820,14 +1856,14 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    } else {
       cmd += hname;
       gDirectory=gROOT;
-      cchname= (const char *)hname;
-      cout << "look for:" << cchname << ":" << endl;
-      TObject *obj = (TObject *)gROOT->FindObject(cchname);
-      TH1* hist;
+      TString fh_name;
+      fh_name = hname;
+      fh_name.Prepend("F");
+//      cout << "look for:" << fh_name << endl;
+      TObject *obj = (TObject *)gROOT->FindObject(fh_name.Data());
       if (obj) {
-         hist = (TH1*)obj;
-         cout << " deleting " << hname << endl;
-         delete hist;
+//         cout << " deleting " << fh_name << endl;
+         delete obj;
       }
    }
 
@@ -1860,21 +1896,21 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          limits_defined = kTRUE;
          for(Int_t i = 0; i < nent; i++) {
             Int_t nb;
-            tag = lname[i]; tag += ".nbin";
+            tag = *leaf[i]; tag += ".nbin";
             if (env->Lookup(tag.Data())) {
                nb = (Int_t)nbin[i]; 
                nb = env->GetValue(tag, nb); nbin[i] = nb;
             } else { 
                limits_defined = kFALSE;
             }
-            tag = lname[i]; tag += ".min";
+            tag = *leaf[i]; tag += ".min";
             if (env->Lookup(tag.Data())) {
                vmin[i] = atof(env->GetValue(tag.Data(), Form("%f",vmin[i])));
             }else {
                limits_defined = kFALSE;
             }
 
-            tag = lname[i]; tag += ".max";
+            tag = *leaf[i]; tag += ".max";
             if (env->Lookup(tag.Data())) {
                vmax[i] = atof( env->GetValue(tag.Data(), Form("%f",vmax[i])));
             }else {
@@ -1895,25 +1931,31 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       
       for(Int_t i = 0; i < nent; i++) {
          TString bname;
-         bname = lname[i];
-         Int_t ib = bname.Index('[');
-         if (ib > 0)bname.Resize(ib);
-         Int_t ne = tree->Draw(bname.Data(),"","goff"); // to evaluate min, max
-         cout << "N(tree->Draw()): " << ne << endl; 
-         vmin[i] = tree->GetMinimum(bname.Data());
-         vmax[i] = tree->GetMaximum(bname.Data());
-         cout 	<< "tname: " << tree->GetName() << " bname: " << bname << " min: " 
-              << tree->GetMinimum(bname) << endl;
-         if (vmin[i]> 1.e30 || vmin[i] < -1.e30) {
-            cout << "WARNING: unreasonable Min: " <<  vmin[i] << endl;
-            vmin[i] = -10000;
-         }
+         bname = *leaf[i];
+//         cout << "bname " << bname << endl;
+         if (bname.Length() > 0) {
+         	Int_t ib = bname.Index('[');
+         	if (ib > 0)bname.Resize(ib);
+            tree->Draw(bname.Data(),"","goff"); // to evaluate min, max
+//            	cout << "N(tree->Draw()): " << ne << endl; 
+         	vmin[i] = tree->GetMinimum(bname.Data());
+         	vmax[i] = tree->GetMaximum(bname.Data());
+//         	cout 	<< "tname: " << tree->GetName() << " bname: " << bname << " min: " 
+//            	  << tree->GetMinimum(bname) << endl;
+         	if (vmin[i]> 1.e30 || vmin[i] < -1.e30) {
+            	cout << "WARNING: unreasonable Min: " <<  vmin[i] << endl;
+            	vmin[i] = -10000;
+         	}
 
-         if (vmax[i] > 1.e30 || vmax[i] < -1.e30) {
-            cout << "WARNING unreasonable Max: " <<  vmax[i] << endl;
-            vmax[i] = 10000;
+         	if (vmax[i] > 1.e30 || vmax[i] < -1.e30) {
+            	cout << "WARNING unreasonable Max: " <<  vmax[i] << endl;
+            	vmax[i] = 10000;
+         	} else {
+            	vmax[i] += TMath::Max (1., (vmax[i] - vmin[i]) / 100.);
+         	}
          } else {
-            vmax[i] += TMath::Max (1., (vmax[i] - vmin[i]) / 100.);
+            vmin[i] = 0;
+            vmax[i] = 10000;
          }
          nbin[i] = 100;
       }
@@ -1924,9 +1966,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       col_lab->Add(new TObjString("Nbins"));
       col_lab->Add(new TObjString("Min"));
       col_lab->Add(new TObjString("Max"));
-      row_lab->Add(new TObjString(leaf0.Data()));
-      if (nent > 1 ) row_lab->Add(new TObjString(leaf1.Data()));
-      if (nent == 3) row_lab->Add(new TObjString(leaf2.Data()));
+      row_lab->Add(new TObjString((*leaf[0]).Data()));
+      if (nent > 1 ) row_lab->Add(new TObjString((*leaf[1]).Data()));
+      if (nent == 3) row_lab->Add(new TObjString((*leaf[2]).Data()));
       TArrayD xyvals(3*nent);
       Int_t p = 0;
       for(Int_t i = 0; i < nent; i++) { xyvals[p] = nbin[i]; p++;}
@@ -1940,7 +1982,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
  //        TCanvas * cc = b->GetCanvas();
          pwin = (TRootCanvas *)(b->GetCanvas()->GetCanvasImp());
       }
-      cout << "pwin " << pwin << endl;
+//      cout << "pwin " << pwin << endl;
 
       Int_t ret,  itemwidth=120, precission = 5; 
       TGMrbTableOfDoubles(pwin, &ret, "Set axis ranges", 
@@ -1965,16 +2007,21 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
           icontype, buttons, &retval);
          if (retval == kMBYes) {
             for(Int_t i = 0; i < nent; i++) {
-               tag = lname[i]; tag += ".nbin";
+               tag = *leaf[i]; tag += ".nbin";
                env->SetValue(tag.Data(),(Int_t)nbin[i]);
-               tag = lname[i]; tag += ".min";
+               tag = *leaf[i]; tag += ".min";
                env->SetValue(tag.Data(),vmin[i]);
-               tag = lname[i]; tag += ".max";
+               tag = *leaf[i]; tag += ".max";
                env->SetValue(tag.Data(),vmax[i]);
             }
             env->SaveLevel(kEnvLocal);
          }
       }
+   }
+   TH1 * hold = (TH1*)gDirectory->GetList()->FindObject(hname.Data());
+   if (hold) {
+//       cout << "Delete existing: " <<hname.Data() << endl;
+       delete hold;
    }
 
    if (nent==1) new TH1F(hname.Data(),hname.Data(),
@@ -1991,9 +2038,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    if (env) delete env;
 
    
-	 TEnv rootenv(".rootrc");		// inspect ROOT's environment
-    Int_t max_events = 10000000;
-    max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
+   TEnv rootenv(".rootrc");		// inspect ROOT's environment
+   Int_t max_events = 10000000;
+   max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
 //   cout << cmd << endl;
    if (fApplyLeafCut) {
       TString cut = *fLeafCut;
@@ -2032,22 +2079,13 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //  if (!obj)WarnBox("No Object"); 
    TH1* hist = (TH1*)obj;
    if (hist) {
-//      if (nent < 3) {
-         hist->GetXaxis()->SetTitle(lname[0]);
-         if (nent >= 2) hist->GetYaxis()->SetTitle(lname[1]);
-         if (nent >= 3) hist->GetZaxis()->SetTitle(lname[2]);
+         hist->GetXaxis()->SetTitle(*leaf[0]);
+         if (nent >= 2) hist->GetYaxis()->SetTitle(*leaf[1]);
+         if (nent >= 3) hist->GetZaxis()->SetTitle(*leaf[2]);
          ShowHist(hist);
-//      } else {
-
-//         TString name3d("H3d_");
-//         name3d+=hname.Data();
-//         HTCanvas * h3d = new HTCanvas(name3d, name3d,400, 400, 800,800, this, 0);
-//         hist->Draw();
-//         h3d->Modified(); 
-//         h3d->Update();
-//         fCanvasList->Add(h3d);
-//      }
-   } else WarnBox("No hist");    
+   } else {
+      WarnBox("No hist"); 
+   }   
 }
 
 //________________________________________________________________________________________
@@ -3773,7 +3811,7 @@ void HistPresent::DinA4Page(Int_t form)
 //   c1->SetLeftMargin(0);
 //   c1->SetBottomMargin(0);
 //   c1->SetTopMargin(0);
-   c1->SetGrid(10, 10);
+   c1->SetEditGrid(5, 5, 10, 10);
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
@@ -3843,7 +3881,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    	c1->SetLeftMargin(0);
    	c1->SetBottomMargin(0);
    	c1->SetTopMargin(0);
-   	c1->SetGrid(10, 10);
+   	c1->SetEditGrid(5, 5, 10, 10);
    	c1->Modified(kTRUE);
    	c1->Update();
    	c1->SetEditable(kTRUE);

@@ -1,6 +1,8 @@
 #include "TArrow.h"
+#include "TDialogCanvas.h"
 #include "TCurlyLine.h"
 #include "TEllipse.h"
+#include "TEnv.h"
 
 #include "HistPresent.h"
 #include "support.h"
@@ -10,6 +12,18 @@
 #include "TGMrbInputDialog.h"
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
+//______________________________________________________________________________
+Bool_t SloppyInside(TCutG * cut, Double_t x, Double_t y)
+{
+//   cut->Dump();
+   Double_t m = 0.1;
+   if (cut->IsInside(x,y)) return kTRUE;
+   if (cut->IsInside(x + m,y + m)) return kTRUE;
+   if (cut->IsInside(x - m,y - m)) return kTRUE;
+   if (cut->IsInside(x + m,y - m)) return kTRUE;
+   if (cut->IsInside(x - m,y + m)) return kTRUE;
+   return kFALSE;
+}  
 //______________________________________________________________________________
 
 Double_t MinElement(Int_t n, Double_t * x){
@@ -77,21 +91,31 @@ void SetAllTextSizes(TList *list, Double_t size, Bool_t abs)
       }
    }
 }
-
 //______________________________________________________________________________
 
-void HTCanvas::SetGrid(Double_t x, Double_t y)
+void HTCanvas::SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis)
 {
-   fGridX = x; 
-   fGridY = y;
-   SetUseGrid(kTRUE);
-   DrawGrid();
+   fEditGridX = x; 
+   fEditGridY = y;
+   fVisibleGridX = xvis; 
+   fVisibleGridY = yvis;
+   SetUseEditGrid(kTRUE);
+   DrawEditGrid(kTRUE);
 }
 //______________________________________________________________________________
 
-void HTCanvas::DrawGrid()
+void HTCanvas::DrawEditGrid(Bool_t visible)
 {
-   if (fGridX <= 0 || fGridY <= 0) return;
+	Double_t dx, dy;
+	if (visible) {
+       dx = fVisibleGridX;
+       dy = fVisibleGridY;
+	} else {
+       dx = fEditGridX;
+       dy = fEditGridY;
+	}
+	if (dx <= 0 || dy <= 0) return;
+    cout << ":DrawEditGrid " << dx << " " << dy << endl;
    Double_t xl, yl, xh, yh;
    GetRange(xl, yl, xh, yh);
 
@@ -101,17 +125,17 @@ void HTCanvas::DrawGrid()
    while (x <= xh) {
       y = yl;   
       while (y <= yh) {
-         em = new EditMarker(x, y, 1);
+         em = new EditMarker(x, y, 0.5);
          em->Draw();
-         y += fGridY;
+         y += dy;
       }
-      x += fGridX;
+      x += dx;
    }
    Update();
 }
 //______________________________________________________________________________
 
-void HTCanvas::RemoveGrid()
+void HTCanvas::RemoveEditGrid()
 {
    TIter next(GetListOfPrimitives());
    TObject * obj;
@@ -182,7 +206,7 @@ void HTCanvas::WritePrimitives()
    if (!ok)
       return;
    if (OpenWorkFile(fRootCanvas)) {
-      RemoveGrid();
+      RemoveEditGrid();
       Write(name.Data());
  //     GetListOfPrimitives()->Write(name.Data(), 1);
       CloseWorkFile();
@@ -276,7 +300,8 @@ Int_t HTCanvas::ExtractGObjects()
          }
       } else if (obj->InheritsFrom("TText")) {
          TText * b = (TText*)obj->Clone();
-         if (cut->IsInside(b->GetX(), b->GetY()) ) {
+//         if (cut->IsInside(b->GetX(), b->GetY()) ) {
+         if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
             b->SetX(b->GetX() - xoff);
             b->SetY(b->GetY() - yoff);
             gg->AddMember(b);
@@ -326,17 +351,24 @@ Int_t HTCanvas::ExtractGObjects()
 }
 //______________________________________________________________________________
 
-void HTCanvas::InsertGObjects()
+void HTCanvas::InsertGObjects(const char * objname, Bool_t asGroup)
 {
    if (!fGObjectGroups) {
       cout << "No Macro objects defined" << endl;
       return;
    }
-   Bool_t ok;
-   TString name = "p1";
-   name =
-   GetString("Name of object (must be unique)", name.Data(), &ok,
-        (TGWindow*)fRootCanvas);
+   static TString defname = "p1";
+   TString name;
+   if (objname && strlen(objname) > 1) {
+      name = objname;
+   } else {
+      Bool_t ok;
+      name = defname;
+      name =
+      GetString("Name of object (must be unique)", name.Data(), &ok,
+               (TGWindow*)fRootCanvas);
+      if (!ok) return;
+   }
    GroupOfGObjects * gg = (GroupOfGObjects *)fGObjectGroups->FindObject(name); 
    if (!gg) {
       cout << "Object " << name << " not found" << endl;
@@ -350,29 +382,33 @@ void HTCanvas::InsertGObjects()
 	}
 	cout << fMouseX << " " << fMouseY << endl;
 
-   TString pad_name(gg->GetName());
-   pad_name += "_pad";
-   Double_t dx = gg->fXUpEdge - gg->fXLowEdge;
-   Double_t dy = gg->fYUpEdge - gg->fYLowEdge;
-   this->cd();
-   Double_t x1, x2, y1, y2;
-   GetRange(x1, y1,x2, y2);
-   Double_t dxc = x2 - x1;
-   Double_t dyc = y2 - y1;
+   if (asGroup) {
+      TString pad_name(gg->GetName());
+      pad_name += "_pad";
+      Double_t dx = gg->fXUpEdge - gg->fXLowEdge;
+      Double_t dy = gg->fYUpEdge - gg->fYLowEdge;
+      this->cd();
+      Double_t x1, x2, y1, y2;
+      GetRange(x1, y1,x2, y2);
+      Double_t dxc = x2 - x1;
+      Double_t dyc = y2 - y1;
 
-   cout <<"dx, dy "  << dx << " " << dy << endl;
-   cout <<"dxc, dyc "  << dxc << " " << dyc << endl;
-   TPad * pad = new TPad(pad_name, gg->GetTitle(), 
-                         fMouseX / dxc, fMouseY / dyc, 
-                        (fMouseX + dx) / dxc, (fMouseY + dy) / dyc);
-   pad->Range(0, 0, dx, dy);
-   pad->Draw();
-   pad->cd();
-//   gg->AddMembersToList(this->GetListOfPrimitives(),fMouseX, fMouseY); 
-   SetAllCurlySizes(gg->GetMemberList(), dyc/dy, dyc/dy, kFALSE);
-   SetAllArrowSizes(gg->GetMemberList(), dyc/dy, kFALSE);
-   SetAllTextSizes(gg->GetMemberList(), dxc/dx, kFALSE);
-   gg->AddMembersToList(pad->GetListOfPrimitives(), 0., 0.); 
+      cout <<"dx, dy "  << dx << " " << dy << endl;
+      cout <<"dxc, dyc "  << dxc << " " << dyc << endl;
+      TPad * pad = new TPad(pad_name, gg->GetTitle(), 
+                            fMouseX / dxc, fMouseY / dyc, 
+                           (fMouseX + dx) / dxc, (fMouseY + dy) / dyc);
+      pad->Range(0, 0, dx, dy);
+      pad->Draw();
+      pad->cd();
+   //   gg->AddMembersToList(this->GetListOfPrimitives(),fMouseX, fMouseY); 
+//      SetAllCurlySizes(gg->GetMemberList(), dyc/dy, dyc/dy, kFALSE);
+//      SetAllArrowSizes(gg->GetMemberList(), dyc/dy, kFALSE);
+ //     SetAllTextSizes(gg->GetMemberList(), dyc/dy, kFALSE);
+      gg->AddMembersToList(pad, 0., 0., dyc/dy); 
+   } else {
+      gg->AddMembersToList(this, fMouseX, fMouseY); 
+   }
    this->Modified(); 
    this->Update(); 
 }
@@ -384,17 +420,102 @@ void HTCanvas::WriteGObjects()
       cout << "No graph macro objects defined" << endl;
       return;
    }
-   if (OpenWorkFile(fRootCanvas)) {
-      TIter next(fGObjectGroups);
-      GroupOfGObjects * obj;
-      while ( (obj = (GroupOfGObjects *)next()) ){
-         obj->Write(obj->GetName(), TObject::kSingleKey );
-      }
-      CloseWorkFile();
+   Bool_t ok;
+   TString name = "Graph_macros.root";
+   TEnv env(".rootrc");
+   name = env.GetValue("HistPresent.GraphMacrosFileName", name.Data());
+   name = GetString("File name", name.Data(), &ok,
+        (TGWindow*)fRootCanvas);
+   if (!ok) return;
+   env.SetValue("HistPresent.GraphMacrosFileName", name.Data());
+   TFile * outfile = new TFile(name, "UPDATE");
+   TIter next(fGObjectGroups);
+   GroupOfGObjects * obj;
+   while ( (obj = (GroupOfGObjects *)next()) ){    
+//         obj->Print();
+      obj->Write(obj->GetName());
+         
    }
+   outfile->Close();
 }
 //______________________________________________________________________________
 
 void HTCanvas::ReadGObjects()
 {
+   Bool_t ok;
+   TString name = "Graph_macros.root";
+   TEnv env(".rootrc");
+   name = env.GetValue("HistPresent.GraphMacrosFileName", name.Data());
+   name = GetString("File name", name.Data(), &ok,
+        (TGWindow*)fRootCanvas);
+   if (!ok) return;
+   TFile * infile = new TFile(name);
+   env.SetValue("HistPresent.GraphMacrosFileName", name.Data());
+   if (!fGObjectGroups) fGObjectGroups = new TList();
+   GroupOfGObjects * obj;
+   TIter next(infile->GetListOfKeys());
+   TKey *key;
+   while ( (key = (TKey*)next()) ){ 
+      if (!strcmp(key->GetClassName(),"GroupOfGObjects")){
+         obj=(GroupOfGObjects *)key->ReadObj(); 
+         if (!obj) break; 
+         obj->Print();
+         fGObjectGroups->Add(obj);
+      }
+   }
+   infile->Close();
+}
+//______________________________________________________________________________
+
+void HTCanvas::ShowGallery()
+{
+   if (!fGObjectGroups) {
+      cout << "No graph macro objects defined" << endl;
+      return;
+   }
+   Int_t n = fGObjectGroups->GetSize();
+   TDialogCanvas * dc = new TDialogCanvas("GObjects", "Graphics macro objects",
+                            5,500, 500, 500);
+   Double_t dx = 0.18, dy = 0.18, marg = 0.02;
+   Double_t x = marg;
+   Double_t y = marg;
+   TButton * b;
+   TString cmd;
+   TString oname;
+
+   GroupOfGObjects * go;
+   if (n > 25) {
+      cout << "Max 25 objects allowed, in Collection: " << n << endl;
+      n = 25;
+   }
+   TText * tt;
+   for (Int_t i = 0; i < n; i++) {
+      go = (GroupOfGObjects*)fGObjectGroups->At(i);
+      oname = go->GetName();
+      cmd = "((HTCanvas*)(gROOT->GetListOfCanvases()->FindObject(\"";
+      cmd += this->GetName();
+      cmd += "\")))->InsertGObjects(\"";
+      cmd += oname;
+      cmd += "\",kTRUE);";
+//      cout << cmd << endl;
+      b = new TButton("", cmd.Data(),x, y, x + dx, y + dy);
+      Double_t xr = go->fXUpEdge - go->fXLowEdge;
+      Double_t yr = go->fYUpEdge - go->fYLowEdge;
+      b->Range(0,0, xr, yr);
+      TList * lop = b->GetListOfPrimitives();
+      go->AddMembersToList(b, 0, 0, 5);
+//      SetAllCurlySizes(lop, 5, 5, kFALSE);
+//      SetAllArrowSizes(lop, 5, kFALSE);
+//      SetAllTextSizes(lop, 5, kFALSE);
+      tt = new TText();
+      tt->SetText(0.1 * xr, 0.5 *yr, oname.Data());
+      tt->SetTextSize(0.25);
+      lop->Add(tt);
+      b->Draw();
+      y = y + dy + marg;
+      if (y > 1 - dy - marg) {
+         x = x + dx + marg;
+         y = marg;
+      }
+   }
 }

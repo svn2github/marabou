@@ -44,9 +44,11 @@ private:
    HandleMenus    * fHandleMenus;      //! dont stream
    TList          * fGObjectGroups;      // compound graphic objects
    
-   Double_t       fGridX;
-   Double_t       fGridY;
-   Bool_t         fUseGrid;
+   Double_t       fEditGridX;
+   Double_t       fEditGridY;
+   Double_t       fVisibleGridX;
+   Double_t       fVisibleGridY;
+   Bool_t         fUseEditGrid;
    Double_t       fMouseX;
    Double_t       fMouseY;
    Bool_t         fGetMouse;
@@ -71,23 +73,27 @@ public:
    void ClearFitHist(){fFitHist = 0;};
    void ClearHistPresent(){fHistPresent = 0;};
    void SetLog(Int_t state);
-   Double_t GetGridX() {return fGridX;};
-   Double_t GetGridY() {return fGridY;};
-   void    SetGrid(Double_t x, Double_t y);
-   void    SetGridX(Double_t x) {fGridX = x;};
-   void    SetGridY(Double_t y) {fGridY = y;};
-   void    SetUseGrid(Bool_t use = kTRUE) {fUseGrid = use;};
-   Bool_t  GetUseGrid() {return fUseGrid;};
-   void    DrawGrid();
-   void    RemoveGrid();
+   Double_t GetEditGridX() {return fEditGridX;};
+   Double_t GetEditGridY() {return fEditGridY;};
+   Double_t GetVisibleGridX() {return fVisibleGridX;};
+   Double_t GetVisibleGridY() {return fVisibleGridY;};
+   void    SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis);
+   void    SetEditGridX(Double_t x) {fEditGridX = x;};
+   void    SetEditGridY(Double_t y) {fEditGridY = y;};
+   void    SetVisibleGridX(Double_t x) {fVisibleGridX = x;};
+   void    SetVisibleGridY(Double_t y) {fVisibleGridY = y;};
+   void    SetUseEditGrid(Bool_t use = kTRUE) {fUseEditGrid = use;};
+   Bool_t  GetUseEditGrid() {return fUseEditGrid;};
+   void    DrawEditGrid(Bool_t visible);
+   void    RemoveEditGrid();
    void    DrawHist();
    void    WritePrimitives();
    void    GetPrimitives();
    Int_t   ExtractGObjects();
-   void    InsertGObjects();
+   void    InsertGObjects(const char * fname = 0, Bool_t asGroup = kTRUE);
    void    WriteGObjects();
    void    ReadGObjects();
-   
+   void    ShowGallery();
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

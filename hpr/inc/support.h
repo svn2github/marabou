@@ -62,7 +62,7 @@ Stat_t Content(TH1*, Axis_t xlow, Axis_t xup, Stat_t * mean,  Stat_t * sigma);
 void          WarnBox( const char * message, TGWindow* win = 0);
 Bool_t        QuestionBox( const char * message, TGWindow* win = 0);
 void          InfoBox( const char * message, TGWindow* win = 0);
-extern Bool_t OpenWorkFile(TGWindow* win = 0);
+extern Bool_t OpenWorkFile(TGWindow* win = 0, TFile ** file = 0);
 extern void   CloseWorkFile(TGWindow* win = 0);
 extern Int_t  GetUsedSize(TMapFile *);
 extern Int_t  GetObjects(TList &, TDirectory *, const char *);

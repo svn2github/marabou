@@ -563,7 +563,7 @@ void CloseWorkFile(TGWindow * win)
 }
 
 //------------------------------------------------------   
-Bool_t OpenWorkFile(TGWindow * win)
+Bool_t OpenWorkFile(TGWindow * win, TFile ** file)
 {
    static const char *fWorkname = 0;
    static TFile *fWorkfile = 0;
@@ -572,6 +572,7 @@ Bool_t OpenWorkFile(TGWindow * win)
 //      WarnBox("Close open workfile");
       fWorkfile->Close();
       fWorkfile = NULL;
+      if (file) *file = NULL;
       return kFALSE;
    }
    static TString fname = "workfile.root";
@@ -587,13 +588,16 @@ Bool_t OpenWorkFile(TGWindow * win)
 //   cout << " defval " << cfname << endl;
    Bool_t ok;
    fWorkname = GetString("Use File:", fname.Data(), &ok, win);
-   if (!ok)
+   if (!ok) {
+      if (file) *file = NULL;
       return kFALSE;
+   }
    fname = fWorkname;
    if (!gSystem->AccessPathName(fWorkname, kFileExists))
       fWorkfile = new TFile(fWorkname, "UPDATE", "Output file");
    else
       fWorkfile = new TFile(fWorkname, "RECREATE", "Output file");
+   if (file) *file = fWorkfile;
    return kTRUE;
 }
 

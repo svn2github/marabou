@@ -71,9 +71,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    }
 
    Init();
-//   fSelected     = 0;
    fMenuBar = kTRUE;
-   cout << wtopx << " " << wtopy << " " << ww << " " << wh << endl;
+//   cout << wtopx << " " << wtopy << " " << ww << " " << wh << endl;
    if (wtopx < 0) {
       wtopx    = -wtopx;
       fMenuBar = kFALSE;
@@ -107,10 +106,12 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetName(name);
    SetTitle(title); // requires fCanvasImp set
    fTimer = NULL;
-   fGridX = 0;
-   fGridY = 0;
+   fEditGridX = 0;
+   fEditGridY = 0;
+   fVisibleGridX = 0;
+   fVisibleGridY = 0;
    fGObjectGroups = NULL; 
-   fUseGrid = kFALSE;
+   fUseEditGrid = kFALSE;
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
@@ -334,26 +335,26 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
 
-      if(fUseGrid && 
+      if(fUseEditGrid && 
        !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
         ){
 //         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
-         if(fGridX !=0){
+         if(fEditGridX !=0){
             x = gPad->AbsPixeltoX(px);
-            n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
-            x = n * fGridX;
+            n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
+            x = n * fEditGridX;
          }
-         if(fGridY !=0){
+         if(fEditGridY !=0){
             y = gPad->AbsPixeltoY(py);
-            n = (Int_t)((y + TMath::Sign(0.5*fGridY, y)) / fGridY);
-            y = n * fGridY;
+            n = (Int_t)((y + TMath::Sign(0.5*fEditGridY, y)) / fEditGridY);
+            y = n * fEditGridY;
          }
-            if(fGridX !=0){
+            if(fEditGridX !=0){
                px =  gPad->XtoAbsPixel(x);
                if(px < 1)px = 1;
                if(px > (Int_t)gPad->GetWw()) px = gPad->GetWw()-1;
             }
-            if(fGridY !=0){
+            if(fEditGridY !=0){
                py =  gPad->YtoAbsPixel(y);
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
@@ -382,22 +383,22 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          gPad = fSelectedPad;
 //OS start
 
-//         if(fUseGrid && !(fSelected->IsA() == TPad::Class())){
-         if(fUseGrid && 
+//         if(fUseEditGrid && !(fSelected->IsA() == TPad::Class())){
+         if(fUseEditGrid && 
           !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
            ){
-            if(fGridX !=0){
+            if(fEditGridX !=0){
                x = gPad->AbsPixeltoX(px);
-               n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
-               x = n * fGridX;
+               n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
+               x = n * fEditGridX;
                px =  gPad->XtoAbsPixel(x);
                if(px < 1)px = 1;
                if(px > (Int_t)gPad->GetWw())px = gPad->GetWw()-1;
             }
-            if(fGridY !=0){
+            if(fEditGridY !=0){
                y = gPad->AbsPixeltoY(py);
-               n = (Int_t)((y + TMath::Sign(0.5*fGridY, y)) / fGridY);
-               y = n * fGridY;
+               n = (Int_t)((y + TMath::Sign(0.5*fEditGridY, y)) / fEditGridY);
+               y = n * fEditGridY;
                py =  gPad->YtoAbsPixel(y);
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
@@ -434,19 +435,19 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //         cout << "name, px, py, bef " << px << " " << py << endl;
 //         fSelected->Print();
          
-         if(fUseGrid){
-            if(fGridX !=0){
+         if(fUseEditGrid){
+            if(fEditGridX !=0){
                x = gPad->AbsPixeltoX(px);
-               n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
-               x = n * fGridX;
+               n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
+               x = n * fEditGridX;
                px =  gPad->XtoAbsPixel(x);
                if(px < 1)px = 1;
                if(px > (Int_t)gPad->GetWw())px = gPad->GetWw()-1;
             }
-            if(fGridY !=0){
+            if(fEditGridY !=0){
                y = gPad->AbsPixeltoY(py);
-               n = (Int_t)((y + TMath::Sign(0.5*fGridY, y)) / fGridY);
-               y = n * fGridY;
+               n = (Int_t)((y + TMath::Sign(0.5*fEditGridY, y)) / fEditGridY);
+               y = n * fEditGridY;
                py =  gPad->YtoAbsPixel(y);
                if(py < 1)py = 1;
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
