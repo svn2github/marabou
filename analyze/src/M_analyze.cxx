@@ -429,6 +429,7 @@ int main(int argc, char **argv) {
    TString  * new_name = NULL;
    TFile * save_map = NULL;
    const char * hname = NULL;
+
    if(kUseMap){
 		if( !(gSystem->AccessPathName((const Text_t *)mmap_name, kFileExists)) ) {
 	//   if mapped file exists,  save histos to temp file for later restore
@@ -438,30 +439,40 @@ int main(int argc, char **argv) {
 								<< "M_analyze: M_prod being opened as READ" << endl
          						<< "           Saving histograms to " << new_name->Data() << endl; 
 	   	M_prod = TMapFile::Create((const Text_t *)mmap_name,"READ");
-      	save_map = new TFile(new_name->Data(),"RECREATE");
-      	TMapRec *mr = M_prod->GetFirst();
-      	if(mr){
-         	while (M_prod->OrgAddress(mr)) {
-            	if(!mr) break;
-            	hname=mr->GetName();
-            	TH1 *hist=0;
-            	hist    = (TH1 *) M_prod->Get(hname, hist);
-            	if(hist){ hist->Write(); delete hist; hist = NULL;}
-	//            cout << "Writing: " << hname << endl;
-            	mr=mr->GetNext();         
-         	}
-      	}
-    		M_prod->Close();
-      	TString RmCmd = "rm "; 
-      	RmCmd += (const Text_t *)mmap_name;
-      	gSystem->Exec((const char *)RmCmd);
+         if (M_prod->IsZombie()) { 
+     		   M_prod->Close();
+            cout << setred << "Cant open mapfile for READ: " << mmap_name << setblack << endl;
+         } else {
+      	   save_map = new TFile(new_name->Data(),"RECREATE");
+      	   TMapRec *mr = M_prod->GetFirst();
+      	   if(mr){
+         	   while (M_prod->OrgAddress(mr)) {
+            	   if(!mr) break;
+            	   hname=mr->GetName();
+            	   TH1 *hist=0;
+            	   hist    = (TH1 *) M_prod->Get(hname, hist);
+            	   if(hist){ hist->Write(); delete hist; hist = NULL;}
+	   //            cout << "Writing: " << hname << endl;
+            	   mr=mr->GetNext();         
+         	   }
+      	   }
+    		   M_prod->Close();
+      	   TString RmCmd = "rm "; 
+      	   RmCmd += (const Text_t *)mmap_name;
+      	   gSystem->Exec((const char *)RmCmd);
+         }
 		} 
-   		if (verboseMode) cout	<< setgreen
-								<< "M_analyze: M_prod being opened as NEW"
-								<< setblack << endl;
+   	if (verboseMode) cout	<< setgreen
+							<< "M_analyze: M_prod being opened as NEW"
+						<< setblack << endl;
 		TMapFile::SetMapAddress(0x46000000);		// alloc map file in hi mem
 		M_prod = TMapFile::Create((const Text_t *)mmap_name,"RECREATE",
 										mmap_size, "M memory mapped file");
+      if (M_prod->IsZombie()) { 
+         M_prod->Close();
+         kUseMap = kFALSE;
+         cout << setred << "Cant open mapfile for READ: " << mmap_name << setblack << endl;
+      }
    }
 // pass unix args to i/o spec
 	ioSpec = new TMrbIOSpec();

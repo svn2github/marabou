@@ -1206,6 +1206,12 @@ void FhMainFrame::SaveMap(Bool_t askforname){
          return;
       }
       fMfile = TMapFile::Create(fTbMap->GetString());  ////
+      if (fMfile->IsZombie()) { 
+         fMfile->Close();
+         fMfile = NULL;
+         kUseMap = kFALSE;
+         cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
+      }
       mfile_was_closed = kTRUE; 
    }
    if(!fMfile){
@@ -3166,7 +3172,10 @@ Int_t FhMainFrame::IsAnalyzeRunning(Int_t ps_check){
 void FhMainFrame::Runloop(){
    static Int_t Old_Status=M_ABSENT; 
    static Bool_t saving_hists=kFALSE;
-   Long_t id, size, flags, modtime;
+   Long_t id, flags, modtime;
+   Long_t size;
+//   Long64_t size;
+
    static TH1 * hrate     = 0;
    static TH1 * hdeadt    = 0;
    static TH1 * htemp     = 0;
@@ -3178,7 +3187,7 @@ void FhMainFrame::Runloop(){
    if(!fForcedStop && fWriteOutput && fOutputFile->Length() > 1){
       gSystem->GetPathInfo(fOutputFile->Data(),
                            &id, &size, &flags, &modtime);
-      fOutSize->SetText(new TGString(Form("%d", size))); 
+      fOutSize->SetText(new TGString(Form("%d", size)));
       gClient->NeedRedraw(fOutSize);
       if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
          cout << setred << "outfile size (Mbyte): " << size/1000000 
@@ -3200,14 +3209,21 @@ void FhMainFrame::Runloop(){
       }
       if(kUseMap && !fMfile && !gSystem->AccessPathName(fTbMap->GetString())){
          fMfile = TMapFile::Create(fTbMap->GetString());
-         cout << "Attach to MMapped file " << fMfile << endl;
+         if (fMfile->IsZombie()) { 
+            fMfile->Close();
+            fMfile = NULL;
+            kUseMap = kFALSE;
+            cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
+         } else {
+            cout << "Attach to MMapped file " << fMfile << endl;
+         }
       }
 //     first look if memory mapped file is active
       if(fMfile){
          hrate =  (TH1 *) fMfile->Get("RateHist", hrate);
          hdeadt = (TH1 *) fMfile->Get("DeadTime", hdeadt);
 
-     } else if ( fComSocket ) {
+      } else if ( fComSocket ) {
 //so        TSocket * sock = new TSocket("localhost", fComSocket);
         TSocket * sock = fComSocket;
         if ( !sock || !sock->IsValid() ) {
