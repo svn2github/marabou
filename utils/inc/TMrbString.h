@@ -40,9 +40,10 @@ class TMrbString : public TString {
 					Int_t Width = 0,
 					Char_t PadChar = ' ',
 					Int_t Base = TMrbString::kDefaultBase,
-					Bool_t BaseId = kTRUE) {
+					Bool_t AddBasePrefix = kTRUE,
+					Bool_t LowerCaseHex = kTRUE) {
 						fBase = Base;
-						this->FromInteger(IntVal, Width, PadChar, Base, BaseId);
+						this->FromInteger(IntVal, Width, PadChar, Base, AddBasePrefix, LowerCaseHex);
 					};
 
 		TMrbString(Double_t DblVal, 						// a string consisting of a double
@@ -57,9 +58,11 @@ class TMrbString : public TString {
 					Int_t IntVal,
 					Int_t Width = 0,
 					Char_t PadChar = '0',
-					Int_t Base = TMrbString::kDefaultBase) : TString(Prefix) {
+					Int_t Base = TMrbString::kDefaultBase,
+					Bool_t AddBasePrefix = kTRUE,
+					Bool_t LowerCaseHex = kTRUE) : TString(Prefix) {
 						fBase = Base;
-						this->AppendInteger(IntVal, Width, '0', Base);
+						this->AppendInteger(IntVal, Width, PadChar, Base, AddBasePrefix, LowerCaseHex);
 					};
 
 		TMrbString(const Char_t * Prefix, 						// string + trailing double
@@ -77,12 +80,15 @@ class TMrbString : public TString {
 									Int_t Width = 0,
 									Char_t PadChar = ' ',
 									Int_t Base = 0,
-									Bool_t BaseId = kTRUE);
+									Bool_t AddBasePrefix = kTRUE,
+									Bool_t LowerCaseHex = kTRUE);
 
 		TMrbString & AppendInteger(Int_t IntVal,			// append integer to string
 									Int_t Width = 0,
 									Char_t PadChar = ' ',
-									Int_t Base = 0);
+									Int_t Base = 0,
+									Bool_t AddBasePrefix = kTRUE,
+									Bool_t LowerCaseHex = kTRUE);
 
 		Bool_t ToInteger(Int_t & IntVal, Int_t Base = 0);	// convert string to integer
 
@@ -98,15 +104,16 @@ class TMrbString : public TString {
 
 		Bool_t ToDouble(Double_t & DblVal);					// convert string -> double
 
-		Int_t SplitOffInteger(TString & Prefix,				// split off trailing integer
-								Int_t Base = TMrbString::kDefaultBase);
+		Bool_t SplitOffInteger(TString & Prefix,			// split off trailing integer
+									Int_t & IntVal,
+									Int_t Base = TMrbString::kDefaultBase);
 
 		Bool_t Increment(Int_t Increment = 1,				// increment trailing integer
-							Int_t Base = TMrbString::kDefaultBase);
+									Int_t Base = TMrbString::kDefaultBase);
 
-		Double_t SplitOffDouble(TString & Prefix);		// split off trailing double
+		Bool_t SplitOffDouble(TString & Prefix, Double_t DblVal);		// split off trailing double
 
-		Bool_t Increment(Double_t Increment, Bool_t WithSign = kFALSE);	// increment trailing double
+		Bool_t Increment(Double_t Increment);				// increment trailing double
 
 		Int_t Split(TObjArray & LofSubStrings, const Char_t * Separator = ":", Bool_t RemoveWhiteSpace = kFALSE); // split into substrings
 

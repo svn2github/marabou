@@ -48,16 +48,18 @@ TMrbString::TMrbString(const Char_t * Str) : TString(Str) {
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 }
 
-TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, Int_t Base, Bool_t BaseId) {
+TMrbString & TMrbString::FromInteger(Int_t IntVal,
+							Int_t Width, Char_t PadChar, Int_t Base, Bool_t AddBasePrefix, Bool_t LowerCaseHex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::FromInteger
 // Purpose:        Convert integer to string
-// Arguments:      Int_t IntVal   -- integer value
-//                 Int_t Width    -- number of digits
-//                 Char_t PadChar -- how to pad leading blanks
-//                 Int_t Base     -- conversion base (2, 8, 10, 16)
-//                 Bool_t BaseId  -- prepend base identifier (0b, 0, 0x) if kTRUE
+// Arguments:      Int_t IntVal          -- integer value
+//                 Int_t Width           -- number of digits
+//                 Char_t PadChar        -- how to pad leading blanks
+//                 Int_t Base            -- conversion base (2, 8, 10, 16)
+//                 Bool_t AddBasePrefix  -- prepend base identifier (0b, 0, 0x) if kTRUE
+//                 Bool_t LowerCaseHex   -- use lc chars for hex representation
 // Results:        --
 // Exceptions:
 // Description:    Converts an integer value to its ascii representation
@@ -71,22 +73,32 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, 
 
 	if (Base == 2) {
 		while (IntVal) { this->Prepend((IntVal & 1) ? '1' : '0'); IntVal >>= 1; }
-		if (BaseId) this->Prepend("0b");
+		if (AddBasePrefix) this->Prepend("0b");
 	} else {
 		ostringstream * s = new ostringstream();
 		switch (Base) {
 			case 8:
-				if (BaseId) { *s << "0"; Width -= 1; PadChar = '0'; }
+				if (AddBasePrefix) { *s << "0"; Width -= 1; PadChar = '0'; }
 				if (Width > 0) *s << setw(Width);
 				if (PadChar != '\0') *s << setfill(PadChar);
 				*s << setbase(8) << IntVal << ends;
 				break;
 
 			case 16:
-				if (BaseId) { *s << "0x"; Width -= 2; PadChar = '0'; }
+				if (AddBasePrefix) { *s << "0x"; Width -= 2; PadChar = '0'; }
 				if (Width > 0) *s << setw(Width);
 				if (PadChar != '\0') *s << setfill(PadChar);
-				*s << setbase(16) << setiosflags(ios::uppercase) << IntVal << resetiosflags(ios::uppercase) << ends;
+				if (LowerCaseHex) {
+					*s	<< setbase(16)
+						<< IntVal
+						<< ends;
+				} else {
+					*s	<< setbase(16)
+						<< setiosflags(ios::uppercase)
+						<< IntVal
+						<< resetiosflags(ios::uppercase)
+						<< ends;
+				}
 				break;
 
 			case 10:
@@ -101,15 +113,18 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, 
 	return(*this);
 }
 
-TMrbString & TMrbString::AppendInteger(Int_t IntVal, Int_t Width, Char_t PadChar, Int_t Base) {
+TMrbString & TMrbString::AppendInteger(Int_t IntVal,
+								Int_t Width, Char_t PadChar, Int_t Base, Bool_t AddBasePrefix, Bool_t LowerCaseHex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::AppendInteger
 // Purpose:        Append integer to string
-// Arguments:      Int_t IntVal   -- integer value
-//                 Int_t Width    -- number of digits
-//                 Char_t PadChar -- hwo to pad leading blanks
-//                 Int_t Base     -- conversion base (2, 8, 10, 16)
+// Arguments:      Int_t IntVal          -- integer value
+//                 Int_t Width           -- number of digits
+//                 Char_t PadChar        -- how to pad leading blanks
+//                 Int_t Base            -- conversion base (2, 8, 10, 16)
+//                 Bool_t AddBasePrefix  -- add base prefix if kTRUEs
+//                 Bool_t LowerCaseHex   -- use lc chars for hex representation
 // Results:        --
 // Exceptions:
 // Description:    Appends an integer value to an existing string
@@ -119,7 +134,7 @@ TMrbString & TMrbString::AppendInteger(Int_t IntVal, Int_t Width, Char_t PadChar
 	if (Base == 0) Base = fBase;
 	if (!this->CheckBase(Base, "AppendInteger")) return(*this);
 
-	TMrbString s(IntVal, Width, '0', Base, kFALSE);
+	TMrbString s(IntVal, Width, PadChar, Base, AddBasePrefix, LowerCaseHex);
 	this->Append(s.Data());
 	return(*this);
 }
@@ -159,17 +174,18 @@ Bool_t TMrbString::ToInteger(Int_t & IntVal, Int_t Base) {
 		IntVal = 0;
 		return(kFALSE);
 	}
- 	return(kTRUE);
+	return(kTRUE);
 }
 
-Int_t TMrbString::SplitOffInteger(TString & Prefix, Int_t Base) {
+Bool_t TMrbString::SplitOffInteger(TString & Prefix, Int_t & IntVal, Int_t Base) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::SplitOffInteger
 // Purpose:        Return trailing integer
 // Arguments:      TString & Prefix    -- leading substring
+//                 Int_t IntVal        -- trailing integer part
 //                 Int_t Base          -- numerical base
-// Results:        Int_t IntVal        -- trailing integer part, -1 on error
+// Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Inspects a string for trailing digits.
 // Keywords:
@@ -178,24 +194,25 @@ Int_t TMrbString::SplitOffInteger(TString & Prefix, Int_t Base) {
 	Int_t intVal;
 
 	if (Base == 0) Base = fBase;
-	if (!this->CheckBase(Base, "SplitOffInteger")) return(-1);
+	if (!this->CheckBase(Base, "SplitOffInteger")) return(kFALSE);
 
 	Int_t idx = this->CheckInteger(Base);
 	if (idx == -1) {
 		gMrbLog->Err() << "No trailing integer (base " << Base << ") - " << fData << endl;
 		gMrbLog->Flush("TMrbString", "SplitOffInteger");
 		Prefix = fData;
-		return(-1);
+		return(kFALSE);
 	}
 
-	TMrbString s = &fData[idx];
+	TMrbString s(&fData[idx]);
 	if (!s.ToInteger(intVal, Base)) {
 		Prefix = fData;
-		return(-1);
+		return(kFALSE);
 	}
 
 	Prefix = (*this)(0, idx);
-	return(intVal);
+	IntVal = intVal;
+	return(kTRUE);
 }
 
 Bool_t TMrbString::Increment(Int_t Increment, Int_t Base) {
@@ -211,20 +228,21 @@ Bool_t TMrbString::Increment(Int_t Increment, Int_t Base) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString pf;
+	Int_t intVal;
+	Bool_t basePrefix;
 
 	if (Base == 0) Base = fBase;
 	if (!this->CheckBase(Base, "Increment")) return(-1);
 
-	Int_t intVal = this->SplitOffInteger(pf, Base);
-	if (intVal == -1) return(kFALSE);
-
-	Int_t ns = (pf.Length() > 0) ? (this->Length() - pf.Length()) : 0;
+	if (!this->ToInteger(intVal, Base)) return(kFALSE);
 	intVal += Increment;
-	if (intVal < 0) intVal = 0;
-	this->Replace(0, this->Length(), pf);
-	this->AppendInteger(intVal, ns, Base);
-	return(intVal);
+	switch (Base) {
+		case 2: basePrefix = (this->Index("0b", 0) == 0); break;
+		case 8: basePrefix = (this->Index("0", 0) == 0); break;
+		case 10: basePrefix = kFALSE; break;
+		case 16: basePrefix = (this->Index("0x", 0) == 0); break;
+	}
+	return(this->FromInteger(intVal, 0, ' ', Base, basePrefix));
 }
 
 TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Char_t PadChar, Int_t Precision) {
@@ -314,13 +332,14 @@ Bool_t TMrbString::ToDouble(Double_t & DblVal) {
  	return(kTRUE);
 }
 
-Double_t TMrbString::SplitOffDouble(TString & Prefix) {
+Bool_t TMrbString::SplitOffDouble(TString & Prefix, Double_t DblVal) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::SplitOffDouble
 // Purpose:        Return trailing double
 // Arguments:      TString & Prefix    -- leading substring
-// Results:        Double_t DblVal     -- trailing double part (unsigned)
+//                 Double_t DblVal     -- trailing double part
+// Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Inspects a string for trailing digits.
 // Keywords:
@@ -334,26 +353,26 @@ Double_t TMrbString::SplitOffDouble(TString & Prefix) {
 		gMrbLog->Err() << "No trailing double - " << fData << endl;
 		gMrbLog->Flush("TMrbString", "SplitOffDouble");
 		Prefix = fData;
-		return(-1.);
+		return(kFALSE);
 	}
 
 	TMrbString s = &fData[idx];
 	if (!s.ToDouble(dblVal)) {
 		Prefix = fData;
-		return(-1.);
+		return(kFALSE);
 	}
 
 	Prefix = (*this)(0, idx);
-	return(dblVal);
+	DblVal = dblVal;
+	return(kTRUE);
 }
 
-Bool_t TMrbString::Increment(Double_t Increment, Bool_t WithSign) {
+Bool_t TMrbString::Increment(Double_t Increment) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::Increment
 // Purpose:        Increment trailing double
 // Arguments:      Double_t Increment     -- increment
-//                 Bool_t WithSign        -- allow number to be signed
 // Results:        Double_t IntVal        -- double value
 // Exceptions:
 // Description:    Increments the trailing double of a string (if present).
@@ -361,17 +380,11 @@ Bool_t TMrbString::Increment(Double_t Increment, Bool_t WithSign) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString pf;
+	Double_t dblVal;
 
-	Double_t dblVal = this->SplitOffDouble(pf);
-	if (dblVal == -1.) return(kFALSE);
-
-	Int_t ns = (pf.Length() > 0) ? (this->Length() - pf.Length()) : 0;
+	if (!this->ToDouble(dblVal)) return(kFALSE);
 	dblVal += Increment;
-	if (dblVal < 0.) dblVal = 0.;
-
-	this->Replace(0, this->Length(), pf);
-	this->AppendDouble(dblVal, ns);
-	return(kTRUE);
+	return(this->FromDouble(dblVal));
 }
 
 Int_t TMrbString::Split(TObjArray & LofSubStrings, const Char_t * Separator, Bool_t RemoveWhiteSpace) {
@@ -534,22 +547,26 @@ Int_t TMrbString::CheckInteger(Int_t Base) const {
 			case 8:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
 					Char_t code = fData[i];
-					if (code >= '0' && code <= '7') idx = i; else break;
+					if (code == '-') { idx = i; break; }
+					else if (code >= '0' && code <= '7') idx = i;
+					else break;
 				}
 				break;
 			case 10:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
 					Char_t code = fData[i];
-					if (code >= '0' && code <= '9') idx = i; else break;
-					idx = i;
+					if (code == '-') { idx = i; break; }
+					else if (code >= '0' && code <= '9') idx = i;
+					else break;
 				}
 				break;
 			case 16:
 				for (Int_t i = this->Length() - 1; i >= 0; i--) {
 					Char_t code = fData[i];
-					if ((code >= '0' && code <= '9')
-					||	(code >= 'a' && code <= 'f')
-					||	(code >= 'A' && code <= 'F')) idx = i;
+					if (code == '-') { idx = i; break; }
+					else if (	(code >= '0' && code <= '9')
+							||	(code >= 'a' && code <= 'f')
+							||	(code >= 'A' && code <= 'F')) idx = i;
 					else break;
 				}
 				break;
