@@ -2562,7 +2562,9 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 			return(-1);
 		}
 		pOffset = pKey->GetIndex();
-		for (Int_t i = 0; i < nofParams; i++) this->SetParValue(pOffset + i, psaVal[i]);
+		for (Int_t i = 0; i < nofParams; i++) {
+			this->SetParValue(pOffset + i, psaVal[i]);
+		}
 	}
 
 	if (gMrbDGFData->fVerboseMode) {
@@ -3529,6 +3531,8 @@ Bool_t TMrbDGF::SetDelay(Int_t Channel, Double_t Delay, Bool_t UpdateDSP) {
 	Int_t trgDelay = 0;
 	Int_t pafLength, peakSep, peakSample, dec, dec2;
 
+	cout << "@@ " << Channel << " " << Delay << endl;
+
 	if (UpdateDSP && !this->CheckConnect("SetDelay")) return(kFALSE);
 	if (!this->CheckChannel("SetDelay", Channel)) return(kFALSE);
 
@@ -3542,6 +3546,7 @@ Bool_t TMrbDGF::SetDelay(Int_t Channel, Double_t Delay, Bool_t UpdateDSP) {
 	pafLength = trgDelay + (Int_t) (Delay * 40 + .5) + 8;
 	this->SetParValue(Channel, "PAFLENGTH", pafLength, UpdateDSP);
     this->SetParValue(Channel, "TRIGGERDELAY", trgDelay, UpdateDSP);
+	cout << "@@ PAFLENGTH=" << pafLength << " TRIGGERDELAY=" << trgDelay << endl;
    
 	if (gMrbDGFData->fVerboseMode) {
 		cout 	<< this->ClassName() << "::SetDelay(): PEAKSEP" << Channel
@@ -4656,14 +4661,18 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
  	this->SetParValue("COINCPATTERN", 0xffff);
  	this->SetCoincWait();
   
+	SetParValue("MODCSRB", 0);
+	for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) SetParValue(i, "CHANCSRB", 0);
 	nofChannels = 0;
 	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (ChannelPattern & (1 << chn)) {
 			if (AutoTrigFlag) {
 				this->SetChanCSRA(chn,	TMrbDGFData::kEnableTrigger |
-												TMrbDGFData::kGoodChannel,
+												TMrbDGFData::kGoodChannel
+												| TMrbDGFData::kGroupTriggerOnly
+												| TMrbDGFData::kReadAlways,
 												TMrbDGF::kBitOr, kTRUE);
-				this->SetChanCSRA(chn,	TMrbDGFData::kGroupTriggerOnly,
+				this->SetChanCSRA(chn,	TMrbDGFData::kGFLTValidate,
 												TMrbDGF::kBitClear, kTRUE);
 			}
 			this->SetParValue(chn, "TRACELENGTH", TraceLength);
@@ -6134,4 +6143,23 @@ void TMrbDGF::SetVerboseMode(Bool_t VerboseFlag) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (gMrbDGFData) gMrbDGFData->SetVerboseMode(VerboseFlag);
+}
+
+UShort_t TMrbDGF::ReadDspAddr(Int_t Addr) {
+	Int_t startAddr;
+	Int_t nofParams;
+	TArrayI cData;
+
+	startAddr = Addr;
+	if (!this->WriteTSAR(startAddr)) return(kFALSE); 							// where to read from
+	nofParams = 1;
+	cData.Set(nofParams);
+	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ".A0.F0 failed - DSPAddr=0x" << setbase(16) << startAddr
+						<< setbase(10) << ", wc=" << nofParams << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadDspAddr");
+		return(kFALSE);
+	}
+	return(cData[0]);
 }

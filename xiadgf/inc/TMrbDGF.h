@@ -374,6 +374,8 @@ class TMrbDGF : public TNamed {
 		UInt_t ReadTSAR();												//		read TSAR
 		Int_t ReadWCR();												//		read WCR
 
+		UShort_t ReadDspAddr(Int_t Addr);
+
 	protected:
 		void ResetDGF();												// reset data base
 		void SetupDGF(Bool_t LocalData = kFALSE);						// initialize data base
