@@ -381,7 +381,9 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 					psaFile += "/";
 					psaFile += dgfName;
 					psaFile += ".psa";
-					if (!dgf->LoadPsaParams(psaFile.Data())) nerr++;
+					altParamFile = loadDir;
+					altParamFile += "/dgfCommon.psa";
+					if (!dgf->LoadPsaParams(psaFile.Data(), altParamFile.Data())) nerr++;
 				}
 			}
 			pgb->Increment(1, module->GetName());
