@@ -62,7 +62,7 @@
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%
 %BN%	register Int_t i;
-%BN%	ostrstream * hName, * hTitle;
+%BN%	ostringstream * hName, * hTitle;
 %BN%
 %BP%Bool_t TUsrSevt$sevtNameUC::Book$evtNameUCHistograms() {
 %BP%//________________________________________________________________[C++ METHOD]
@@ -79,7 +79,7 @@
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
 %BP%	register Int_t i;
-%BP%	ostrstream * hName, * hTitle;
+%BP%	ostringstream * hName, * hTitle;
 %BP%
 %S%	if (h$prefix$paramNameUC == NULL) {
 %S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
@@ -87,14 +87,12 @@
 %S% 	}
 %X%	for (i = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
-%X% 			hName = new ostrstream();
-%X% 			hTitle = new ostrstream();
+%X% 			hName = new ostringstream();
+%X% 			hTitle = new ostringstream();
 %X% 			*hName << "h$prefix$paramNameUC" << i << ends;
 %X% 			*hTitle << "$sevtNameLC.$paramNameLC" << i << ends;
 %X% 			h$prefix$paramNameUC[i] = new TH1F(hName->str(), hTitle->str(), $hBinSize, 0.0, $hUpperLim.0);
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
-%X% 			hName->rdbuf()->freeze(0); delete hName;
-%X% 			hTitle->rdbuf()->freeze(0); delete hTitle;
 %X% 		}
 %X% 	}
 %A%	if (h$prefix$paramNameUC == NULL) {
@@ -122,14 +120,13 @@
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
 %B% 	register Int_t i;
-%B% 	ostrstream * pName;
+%B% 	ostringstream * pName;
 %B%
 %S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
 %X%	for (i = 0; i < $indexRange; i++) {
-%X% 		pName = new ostrstream();
+%X% 		pName = new ostringstream();
 %X% 		*pName << "$paramNameLC" << i << ends;
 %X% 		if (gMrbAnalyze->FindParam(pName->str()) == NULL) gMrbAnalyze->AddParamToList(pName->str(), &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
-%X% 		pName->rdbuf()->freeze(0); delete pName;
 %X% 	}
 %A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
 %E%
