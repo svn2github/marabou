@@ -216,6 +216,14 @@ static MBSBufferElem sevent_types[] = {
 					_mbs_show_sev_10_11,
 					_mbs_convert_sheader
 				},
+				{	MBS_STYPE_VME_SIS_1,
+					"SIS VME modules (1)",
+					sizeof(s_veshe),
+					0,
+					_mbs_unpack_sev_10_11,
+					_mbs_show_sev_10_11,
+					_mbs_convert_sheader
+				},
 				{	MBS_STYPE_VME_SIS_2,
 					"SIS VME modules (2)",
 					sizeof(s_veshe),
