@@ -54,7 +54,8 @@ class DGFTraceDisplayPanel : public TGTransientFrame {
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFTraceDisplayActionId 	{
 														kDGFTraceDisplayXwait,
-														kDGFTraceDisplayStart,
+														kDGFTraceDisplayNormal,
+														kDGFTraceDisplayAutoTrig,
 														kDGFTraceDisplayClose,
 														kDGFTraceDisplaySelectAll,
 														kDGFTraceDisplaySelectNone,
@@ -83,7 +84,7 @@ class DGFTraceDisplayPanel : public TGTransientFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
-		Bool_t StartTrace();
+		Bool_t StartTrace(Bool_t AutoTrigFlag);
 		Bool_t Update(Int_t EntryId);											// update program state on X events
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
 

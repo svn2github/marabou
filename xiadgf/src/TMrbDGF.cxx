@@ -2808,7 +2808,8 @@ Bool_t TMrbDGF::SaveParams(TArrayS & TempStorage) {
 	idx = 0;
 		
 	this->WriteTSAR(startAddr); 									// where to read from
-	cData.Set(nofParams);
+	cData.Set(nofParams + 1);										// save params + switchbus
+
 	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
 						<< ".A0.F0 failed - DSPAddr=0x" << setbase(16) << TMrbDGFData::kDSPInparStartAddr
@@ -2816,7 +2817,10 @@ Bool_t TMrbDGF::SaveParams(TArrayS & TempStorage) {
 		gMrbLog->Flush(this->ClassName(), "SaveParams");
 		return(kFALSE);
 	}
-	this->CopyData(TempStorage, cData.GetArray(), nofParams);
+
+	cData[nofParams] = this->GetSwitchBus();						// save switchbus separately
+
+	this->CopyData(TempStorage, cData.GetArray(), nofParams + 1);
 	return(kTRUE);
 }
 
@@ -2864,7 +2868,8 @@ Bool_t TMrbDGF::RestoreParams(TArrayS & TempStorage) {
 
 	this->WriteTSAR(TMrbDGFData::kDSPInparStartAddr);				// where to write to
 	nofParams = TMrbDGFData::kNofDSPInputParams;					// size of params section (input only)
-	this->CopyData(cData, TempStorage.GetArray(), nofParams);
+	this->CopyData(cData, TempStorage.GetArray(), nofParams + 1);	// params + switchbus
+
 	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(16), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
 						<< ".A0.F16 failed - DSPAddr=0x" << setbase(16) << TMrbDGFData::kDSPInparStartAddr
@@ -2872,6 +2877,7 @@ Bool_t TMrbDGF::RestoreParams(TArrayS & TempStorage) {
 		gMrbLog->Flush(this->ClassName(), "WriteParamMemory");
 		return(kFALSE);
 	}
+	this->SetSwitchBus(cData[nofParams], TMrbDGF::kBitSet);			// restore switchbus separately
 	return(kTRUE);
 }
 
@@ -4571,7 +4577,8 @@ Bool_t TMrbDGF::AccuHist_Stop(Int_t SecsToWait) {
 	return(kTRUE);
 }
 
-Int_t TMrbDGF::GetTrace(TMrbDGFEventBuffer & Buffer, Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates) {
+Int_t TMrbDGF::GetTrace(TMrbDGFEventBuffer & Buffer, Int_t TraceLength,
+								UInt_t ChannelPattern, Int_t XwaitStates, Bool_t AutoTrigFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::GetTrace
@@ -4580,18 +4587,20 @@ Int_t TMrbDGF::GetTrace(TMrbDGFEventBuffer & Buffer, Int_t TraceLength, UInt_t C
 //                 Int_t TraceLength              -- trace length
 //                 UInt_t ChannelPattern          -- channel pattern
 //                 Int_t XwaitStates              -- extra wait states
+//                 Bool_t AutoTrigFlag            -- kTRUE: enable trigger for each active channel
+//                                                -- kFALSE: use trigger settings as found
 // Results:        Int_t NofTraceData             -- number of trace data taken
 // Exceptions:
-// Description:    Get trace from module, take all channels.
+// Description:    Get trace from module.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->GetTrace_Init(TraceLength, ChannelPattern, XwaitStates)) return(-1);
+	if (!this->GetTrace_Init(TraceLength, ChannelPattern, XwaitStates, AutoTrigFlag)) return(-1);
 	if (!this->GetTrace_Start()) return(-1);
 	return(this->GetTrace_Stop(Buffer));
 }
 
-Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates) {
+Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates, Bool_t AutoTrigFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::GetTrace_Init
@@ -4616,11 +4625,13 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 	nofChannels = 0;
 	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (ChannelPattern & (1 << chn)) {
-			this->SetChanCSRA(chn,	TMrbDGFData::kEnableTrigger |
-											TMrbDGFData::kGoodChannel,
-											TMrbDGF::kBitOr, kTRUE);
-			this->SetChanCSRA(chn,	TMrbDGFData::kGroupTriggerOnly,
-											TMrbDGF::kBitClear, kTRUE);
+			if (AutoTrigFlag) {
+				this->SetChanCSRA(chn,	TMrbDGFData::kEnableTrigger |
+												TMrbDGFData::kGoodChannel,
+												TMrbDGF::kBitOr, kTRUE);
+				this->SetChanCSRA(chn,	TMrbDGFData::kGroupTriggerOnly,
+												TMrbDGF::kBitClear, kTRUE);
+			}
 			this->SetParValue(chn, "TRACELENGTH", TraceLength);
 			this->SetParValue(chn, "XWAIT", XwaitStates);
 			nofChannels++;
@@ -4632,6 +4643,8 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 			this->SetParValue(chn, "XWAIT", 0);
 		}
 	}
+
+	if (AutoTrigFlag) this->SetSwitchBus(0x2400, TMrbDGF::kBitSet);
 
 	Int_t ngc = this->GetNofGoodChannels();
 	if (ngc != nofChannels) {

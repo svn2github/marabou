@@ -40,7 +40,8 @@ using namespace std;
 
 const SMrbNamedX kDGFTraceDisplayActions[] =
 			{
-				{DGFTraceDisplayPanel::kDGFTraceDisplayStart,		"Start trace",		"Start taking traces"		},
+				{DGFTraceDisplayPanel::kDGFTraceDisplayNormal,		"Normal trace",		"Take trace, leave trigger bits unchanged"		},
+				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"AutoTrig trace",	"Take trace, enable trigger for each channel"		},
 				{DGFTraceDisplayPanel::kDGFTraceDisplayClose,		"Close",			"Close window"				},
 				{0, 												NULL,				NULL						}
 			};
@@ -280,8 +281,11 @@ Bool_t DGFTraceDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 				case kCM_BUTTON:
 					if (Param1 < kDGFTraceDisplaySelectColumn) {
 						switch (Param1) {
-							case kDGFTraceDisplayStart:
-								this->StartTrace();
+							case kDGFTraceDisplayNormal:
+								this->StartTrace(kFALSE);
+								break;
+							case kDGFTraceDisplayAutoTrig:
+								this->StartTrace(kTRUE);
 								break;
 							case kDGFTraceDisplayClose:
 								this->CloseWindow();
@@ -371,12 +375,13 @@ void DGFTraceDisplayPanel::MoveFocus(Int_t EntryId) {
 
 }
 
-Bool_t DGFTraceDisplayPanel::StartTrace() {
+Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFTraceDisplayPanel::StartTrace()
 // Purpose:        Start untriggered trace
-// Arguments:      --
+// Arguments:      Bool_t AutoTrigFlag    -- kTRUE: enable trigger for each channel
+//                                        -- kFALSE: take trigger bits "as is"
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:
@@ -446,7 +451,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
 			selectFlag = kTRUE;
-			dgf->GetTrace_Init(traceLength, chnPattern, xwait);
+			dgf->GetTrace_Init(traceLength, chnPattern, xwait, AutoTrigFlag);
 			dgf->GetTrace_Start();
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -525,7 +530,9 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 	if (dataOkFlag) {
 		traceFile->Close();
 		hl.close();
-		gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"trace.root\"" << endl;
+		gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"trace.root\"";
+		if (AutoTrigFlag) gMrbLog->Out() << " (AutoTrig mode ON)";
+		gMrbLog->Out() << endl;
 		gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 		return(kTRUE);
 	} else {

@@ -269,8 +269,10 @@ class TMrbDGF : public TNamed {
 		Bool_t SetBinning(Int_t Channel, Int_t EnBin, Bool_t UpdateDSP = kTRUE);	// set binning
 
 		// data acquisition
-		Int_t GetTrace(TMrbDGFEventBuffer & Data, Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates = 0);
-			Bool_t GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates = 0);
+		Int_t GetTrace(TMrbDGFEventBuffer & Data, Int_t TraceLength,
+								UInt_t ChannelPattern, Int_t XwaitStates = 0, Bool_t AutoTrigFlag = kTRUE);
+			Bool_t GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern,
+														Int_t XwaitStates = 0, Bool_t AutoTrigFlag = kTRUE);
 			Bool_t GetTrace_Start();
 			Int_t GetTrace_Stop(TMrbDGFEventBuffer & Data, Int_t SecsToWait = 5);
 
