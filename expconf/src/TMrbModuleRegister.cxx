@@ -67,10 +67,11 @@ TMrbModuleRegister::TMrbModuleRegister(TMrbModule * Module, Int_t NofChannels, T
 	fLowerLimit = LowerLimit;
 	if (UpperLimit == -1) UpperLimit = fParent->GetRange() - 1;
 	fUpperLimit = UpperLimit;
-	Reset();
 
 	fAccessMode = AccessMode;
 	
+	Reset();
+
 	fLofBitNames = BitNames;
 	fPatternMode = kFALSE;
 	if (fLofBitNames) {
@@ -132,14 +133,16 @@ Bool_t TMrbModuleRegister::Set(Int_t Value) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->IsReadOnly()) {
-		gMrbLog->Err() << this->GetName() << " is READONLY - can't be set" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is READONLY - can't be set" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
 	
 	if (this->IsCommon()) {
 		if (Value < fLowerLimit || Value > fUpperLimit) {
-			gMrbLog->Err()	<< this->GetName() << ": Value out of limits - " << Value
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << ": Value out of limits - " << Value
 							<< ", should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
 			gMrbLog->Flush(this->ClassName(), "Set");
 			return(kFALSE);
@@ -147,7 +150,8 @@ Bool_t TMrbModuleRegister::Set(Int_t Value) {
 		fValues[0] = Value;
 		return(kTRUE);
 	} else {
-		gMrbLog->Err() << this->GetName() << " is NOT COMMON, channel number missing" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is NOT COMMON, channel number missing" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
@@ -166,26 +170,27 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, Int_t Value) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-
 	if (this->IsReadOnly()) {
-		gMrbLog->Err() << this->GetName() << " is READONLY - can't be set" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is READONLY - can't be set" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
 	
 	if (this->IsPerChannel()) {
 		if (Value < fLowerLimit || Value > fUpperLimit) {
-			gMrbLog->Err()	<< this->GetName() << ": Value out of limits - " << Value
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << ": Value out of limits - " << Value
 							<< ", should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
 			gMrbLog->Flush(this->ClassName(), "Set");
 			return(kFALSE);
 		}
 		if (Channel == -1) {
-			for (i = 0; i < fNofChannels; i++) fValues[i] = Value;
+			for (Int_t i = 0; i < fNofChannels; i++) fValues[i] = Value;
 		} else {
 			if (fParent->GetChannel(Channel) == NULL) {
-				gMrbLog->Err() << this->GetName() << ": Illegal channel - " << Channel << endl;
+				gMrbLog->Err() << "[" << fParent->GetName() << "] "
+							<< this->GetName() << ": Illegal channel - " << Channel << endl;
 				gMrbLog->Flush(this->ClassName(), "Set");
 				return(kFALSE);
 			}
@@ -193,7 +198,8 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, Int_t Value) {
 			return(kTRUE);
 		}
 	} else {
-		gMrbLog->Err() << this->GetName() << " is COMMON, can't be addressed per channel" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is COMMON, can't be addressed per channel" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
@@ -212,38 +218,40 @@ Bool_t TMrbModuleRegister::Set(const Char_t * Value) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t value;
-	TMrbNamedX * kp;
-
 	if (this->IsReadOnly()) {
-		gMrbLog->Err() << this->GetName() << " is READONLY - can't be set" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is READONLY - can't be set" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
 	
 	if (this->IsCommon()) {
 		if (this->HasBitNames()) {
+			Int_t value;
 			if (this->IsPatternMode()) {
 				value = fLofBitNames->CheckPatternShort(this->ClassName(), "Set", Value);
 			} else {
-				kp = fLofBitNames->FindByName(Value);
+				TMrbNamedX * kp = fLofBitNames->FindByName(Value);
 				if (kp == NULL) value = TMrbLofNamedX::kIllIndexBit;
 				else			value = kp->GetIndex();
 			}
 			if (value == TMrbLofNamedX:: kIllIndexBit) {
-				gMrbLog->Err() << this->GetName() << ": Illegal register value - " << Value << endl;
+				gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+								<< this->GetName() << ": Illegal register value - " << Value << endl;
 				gMrbLog->Flush(this->ClassName(), "Set");
 				return(kFALSE);
 			} else {
 				return(this->Set(value));
 			}
 		} else {
-			gMrbLog->Err() << this->GetName() << ": No bit names defined - can't resolve \"" << Value << "\"" << endl;
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << ": No bit names defined - can't resolve \"" << Value << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "Set");
 			return(kFALSE);
 		}
 	} else {
-		gMrbLog->Err() << this->GetName() << " is NOT COMMON, channel number missing" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is NOT COMMON, channel number missing" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
@@ -262,38 +270,40 @@ Bool_t TMrbModuleRegister::Set(Int_t Channel, const Char_t * Value) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t value;
-	TMrbNamedX * kp;
-
 	if (this->IsReadOnly()) {
-		gMrbLog->Err() << this->GetName() << " is READONLY - can't be set" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is READONLY - can't be set" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
 	
 	if (this->IsPerChannel()) {
 		if (this->HasBitNames()) {
+			Int_t value;
 			if (this->IsPatternMode()) {
 				value = fLofBitNames->CheckPatternShort(this->ClassName(), "Set", Value);
 			} else {
-				kp = fLofBitNames->FindByName(Value);
+				TMrbNamedX * kp = fLofBitNames->FindByName(Value);
 				if (kp == NULL) value = TMrbLofNamedX::kIllIndexBit;
 				else			value = kp->GetIndex();
 			}
 			if (value == TMrbLofNamedX:: kIllIndexBit) {
-				gMrbLog->Err() << this->GetName() << ": Illegal register value - " << Value << endl;
+				gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+								<< this->GetName() << ": Illegal register value - " << Value << endl;
 				gMrbLog->Flush(this->ClassName(), "Set");
 				return(kFALSE);
 			} else {
 				return(this->Set(value));
 			}
 		} else {
-			gMrbLog->Err() << this->GetName() << ": No bit names defined - can't resolve \"" << Value << "\"" << endl;
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << ": No bit names defined - can't resolve \"" << Value << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "Set");
 			return(kFALSE);
 		}
 	} else {
-		gMrbLog->Err() << this->GetName() << " is COMMON, can't be addressed per channel" << endl;
+		gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+						<< this->GetName() << " is COMMON, can't be addressed per channel" << endl;
 		gMrbLog->Flush(this->ClassName(), "Set");
 		return(kFALSE);
 	}
@@ -313,7 +323,8 @@ Int_t TMrbModuleRegister::Get(Int_t Channel) const {
 
 	if (Channel == -1) {
 		if (this->IsPerChannel()) {
-			gMrbLog->Err() << this->GetName() << " is NOT COMMON, channel number missing" << endl;
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << " is NOT COMMON, channel number missing" << endl;
 			gMrbLog->Flush(this->ClassName(), "Get");
 			return(-1);
 		} else {
@@ -321,7 +332,8 @@ Int_t TMrbModuleRegister::Get(Int_t Channel) const {
 		}
 	} else {
 		if (this->IsCommon()) {
-			gMrbLog->Err() << this->GetName() << " is COMMON, can't be addressed per channel" << endl;
+			gMrbLog->Err()	<< "[" << fParent->GetName() << "] "
+							<< this->GetName() << " is COMMON, can't be addressed per channel" << endl;
 			gMrbLog->Flush(this->ClassName(), "Get");
 			return(-1);
 		} else if (fParent->GetChannel(Channel) == NULL) {
