@@ -1,0 +1,9 @@
+%%BeginOfCode%%
+%NUM%$resource.Subevent.$sevtNo.ClusterNumber:	$clusterNumber
+%NUM%$resource.Subevent.$sevtNo.ClusterSerial:	$clusterSerial
+%NUM%$resource.Subevent.$sevtNo.ClusterColor:	$clusterColor
+%NAM%$resource.Subevent.$sevtNameUC.ClusterNumber:	$clusterNumber
+%NAM%$resource.Subevent.$sevtNameUC.ClusterSerial:	$clusterSerial
+%NAM%$resource.Subevent.$sevtNameUC.ClusterColor:	$clusterColor
+%%EndOfCode%%
+%%SEVT_DATA%%
