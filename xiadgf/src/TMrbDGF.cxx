@@ -3999,7 +3999,7 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 	cmd += hsFile;
 	gSystem->Exec(cmd.Data());					// remove handshake file
 
-	TString hdPgm = gEnv->GetValue("TMrbDGF.HowToDumpHistos", "/nfs/mbssys/bin/histoDump");
+	TString hdPgm = gEnv->GetValue("TMrbDGF.ProgramToDumpHistos", "/nfs/mbssys/bin/histoDump");
 	if (gMrbDGFData->fVerboseMode) {
 		gMrbLog->Out()	<< "Calling program \"" << fCamacHost << ":" << hdPgm << "\" via rsh" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
