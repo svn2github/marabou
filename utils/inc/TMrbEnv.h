@@ -52,9 +52,11 @@ class TMrbEnv : public TObject {
 
 		Bool_t Set(const Char_t * Resource, const Char_t * Value); 				// set ascii value
 		Bool_t Set(const Char_t * Resource, Int_t Value, Int_t Base = 10);		// set integer value
+		Bool_t Set(const Char_t * Resource, Double_t Value, Int_t Precision = 4);	// set float value
 
 																				// get resource value
 		Int_t Get(const Char_t * Resource, Int_t Default);						// ... integer
+		Double_t Get(const Char_t * Resource, Double_t Default);				// ... float
 		const Char_t * Get(TString & Result, const Char_t * Resource, const Char_t * Default = ""); 	// ... ascii
 		const Char_t * Get(TMrbNamedX & Result, const Char_t * Resource, const Char_t * Default = "");	// ... ascii(int)
 
@@ -82,6 +84,8 @@ class TMrbEnv : public TObject {
 		inline void Print() const { fCurEnv->Print(); };								// print current settings
 		inline void PrintDefaults() const { if (this->HasDefaults()) fDefaultsEnv->Print(); };	// print default settings												// print default settings
 		void PrintInfo();														// print file info
+
+		inline TEnv * GetEnv() { return(fCurEnv); };
 
 		const Char_t * Resource(TString & R,	const Char_t * F1, Int_t X1 = -1,	// init resource name
 												const Char_t * F2 = "", Int_t X2 = -1,

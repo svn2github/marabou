@@ -287,7 +287,34 @@ Bool_t TMrbEnv::Set(const Char_t * Resource, Int_t Value, Int_t Base) {
 
 	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
 
-	resValue.FromInteger(Value, 0, '\0', Base, kTRUE);
+	resValue.FromInteger(Value, 0, ' ', Base, kTRUE);
+	resString = fResourceName + "=" + resValue.Data();
+	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
+	fIsModified = kTRUE;
+	return(kTRUE);
+}
+
+Bool_t TMrbEnv::Set(const Char_t * Resource, Double_t Value, Int_t Precision) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Set
+// Purpose:        Assign an integer value
+// Arguments:      Char_t * Resource         -- resource name
+//                 Double_t Value            -- value to be set
+//                 Int_t Precision           -- precision
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets a given resource.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString resString, resValue;
+
+	fResourceName = fPrefix + Resource;
+
+	if (!fCurEnv->Defined(fResourceName.Data())) fCurEnv->SetValue(fResourceName.Data(), kEnvLocal);
+
+	resValue.FromDouble(Value, 0, ' ', Precision);
 	resString = fResourceName + "=" + resValue.Data();
 	fCurEnv->SetValue(resString.Data(), kEnvChange);	// set resource
 	fIsModified = kTRUE;
@@ -324,6 +351,38 @@ Int_t TMrbEnv::Get(const Char_t * Resource, Int_t Default) {
 	resValue.Strip(TString::kBoth);
 	resValue.ToInteger(intVal);
 	return(intVal);
+}
+
+Double_t TMrbEnv::Get(const Char_t * Resource, Double_t Default) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Get
+// Purpose:        Read an int resource from database
+// Arguments:      Char_t * Resource     -- resource name
+//                 Double_t Default      -- default value
+// Results:        Double_t Value        -- integer value
+// Exceptions:
+// Description:    Reads a given resource from database.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString resValue;
+	Double_t dblVal;
+
+	fResourceName = fPrefix + Resource;
+
+	resValue = fCurEnv->GetValue(fResourceName, "<undef>");	// read as ascii
+	if (resValue.CompareTo("<undef>") == 0) {
+		if (this->HasDefaults()) {
+			resValue = fDefaultsEnv->GetValue(fResourceName, "<undef>");
+			if (resValue.CompareTo("<undef>") == 0) resValue = Default;
+		} else {
+			resValue = Default;
+		}
+	}
+	resValue.Strip(TString::kBoth);
+	resValue.ToDouble(dblVal);
+	return(dblVal);
 }
 
 const Char_t * TMrbEnv::Get(TString & Result, const Char_t * Resource, const Char_t * Default) {
@@ -694,15 +753,19 @@ Int_t TMrbEnv::CopyDefaults(const TRegexp & Regexp, Bool_t OverWrite) {
 	this->SetPrefix("");
 	while (!dFile.eof()) {
 		resEntry.ReadLine(dFile, kFALSE);
+		resEntry = resEntry.Strip(TString::kBoth);
+		if (resEntry(0) == '#') continue;
 		n = resEntry.Index(":");
-		resName = resEntry(0, n);
-		if (resName.Index(Regexp) == -1) continue;
-		if (resName.Index(infoRexp) != -1) continue;
-		rv = fCurEnv->GetValue(resName.Data(), "<undef>");
-		if (OverWrite || (rv.CompareTo("<undef>") == 0)) {
-			resValue = fDefaultsEnv->GetValue(resName, "<undef>");	// read as ascii
-			if (resValue.CompareTo("<undef>") != 0) {
-				if (this->Set(resName.Data(), resValue.Data())) nofRes++;
+		if (n > 0) {
+			resName = resEntry(0, n);
+			if (resName.Index(Regexp) == -1) continue;
+			if (resName.Index(infoRexp) != -1) continue;
+			rv = fCurEnv->GetValue(resName.Data(), "<undef>");
+			if (OverWrite || (rv.CompareTo("<undef>") == 0)) {
+				resValue = fDefaultsEnv->GetValue(resName, "<undef>");	// read as ascii
+				if (resValue.CompareTo("<undef>") != 0) {
+					if (this->Set(resName.Data(), resValue.Data())) nofRes++;
+				}
 			}
 		}
 	}
