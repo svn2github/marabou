@@ -814,19 +814,19 @@ Should we create a new file with corrected names?", maincanvas)) {
          }
          cmd = fname;
          cmd = cmd + "\",\"" + stent->GetName();
-         if (stent->GetCycle() > 0) {
-            cmd += ";";
-            cmd += stent->GetCycle();
-         }   
+//         if (stent->GetCycle() > 0) {
+//            cmd += ";";
+//            cmd += stent->GetCycle();
+//         }   
          cmd += "\")";
          sel = cmd; 
          cmd.Prepend("mypres->ShowHist(\"");
          sel.Prepend("mypres->SelectHist(\"");
          title = stent->GetName();
-         if (stent->GetCycle() > 1) {
-            title += ";";
-            title += stent->GetCycle();
-         }   
+//         if (stent->GetCycle() > 1) {
+//            title += ";";
+//            title += stent->GetCycle();
+//         }   
          hint = title;
          if     ( stent->GetDimension() == 1  )title.Prepend("1d ");
          else if (stent->GetDimension() == 2 )title.Prepend("2d ");
