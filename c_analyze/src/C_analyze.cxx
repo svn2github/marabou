@@ -413,6 +413,7 @@ trying to attach?",
    fTotal_time_no_event = 0; fEvents_before = 0;
    fTotal_time_elapsed = 0;
    fTotal_livetime = 0;
+	fWaitedForStop = 0;
    fMfile = 0;
    fUseMap = kFALSE;
    fSetup = 0;
@@ -483,6 +484,9 @@ trying to attach?",
    fMenuParameters = new TGPopupMenu(fClient->GetRoot());
    fMenuParameters->AddEntry("No Event Warning Time", M_NOEVENT);
    fMenuParameters->AddEntry("Maximum ouput file size", M_MAXFILESIZE);
+   fMenuParameters->AddEntry("Enable automatic restart after max file size", M_AUTORESTART);
+	if (fAutoRestart) fMenuParameters->CheckEntry( M_AUTORESTART);
+	else              fMenuParameters->UnCheckEntry( M_AUTORESTART);
    fMenuParameters->AddEntry("Time constant (seconds) in Avg Rate", M_AVERAGE);
    fMenuParameters->AddEntry("Disk space warn limit (Mbyte)", M_WARNHWM);
    fMenuParameters->AddEntry("Disk space hard limit (Mbyte)", M_HARDHWM);
@@ -2384,6 +2388,15 @@ Note: Unit is 100 ns for historical reasons";
                       else       fMaxFileSize = bs;
                       }  
                       break;
+					   case M_AUTORESTART:
+						    if (fAutoRestart) {
+							    fMenuParameters->UnCheckEntry(M_AUTORESTART);
+								 fAutoRestart = kFALSE;
+							 } else {
+							    fMenuParameters->CheckEntry(M_AUTORESTART);
+								 fAutoRestart = kTRUE;
+							 }
+							 break;
                   case M_WARNHWM:
                       {
                       Int_t bs = GetInteger("Disk space warn limit(Mbyte)", 
@@ -2822,6 +2835,7 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "BUFFERS: "     <<  fBuffers             << endl;
    wstream << "MAXNOEVENT: "  <<  fMax_time_no_event   << endl;
    wstream << "MAXFILESIZE: " <<  fMaxFileSize         << endl;
+   wstream << "AUTORESTART: " <<  fAutoRestart         << endl;
    wstream << "WARNHWM: "     <<  fWarnHWM             << endl;
    wstream << "HARDHWM: "     <<  fHardHWM             << endl;
    wstream << "VERBLEV: "     <<  fVerbLevel           << endl;
@@ -2990,6 +3004,7 @@ Bool_t FhMainFrame::GetDefaults(){
          	if(parName == "BUFFERS")    fBuffers      = atoi(parValue.Data());
          	if(parName == "MAXNOEVENT") fMax_time_no_event = atoi(parValue.Data());
          	if(parName == "STARTEVENT" ) fStartEvent      = atoi(parValue.Data());
+            if(parName == "AUTORESTART") fAutoRestart  = atoi(parValue.Data());
          	if(parName == "MAXFILESIZE")fMaxFileSize   = atoi(parValue.Data());
          	if(parName == "STOPEVENT" ) fStopEvent     = atoi(parValue.Data());
          	if(parName == "WARNHWM" )   fWarnHWM       = atoi(parValue.Data());
@@ -3184,8 +3199,8 @@ void FhMainFrame::Runloop(){
    static Int_t Old_Status=M_ABSENT; 
    static Bool_t saving_hists=kFALSE;
    Long_t id, flags, modtime;
-   Long_t size;
-//   Long64_t size;
+//   Long_t size;
+   Long64_t size;
 
    static TH1 * hrate     = 0;
    static TH1 * hdeadt    = 0;
@@ -3195,7 +3210,8 @@ void FhMainFrame::Runloop(){
    TString stime;
    TMessage * message;
    Int_t nobs; 
-   if(!fForcedStop && fWriteOutput && fOutputFile->Length() > 1){
+   fM_Status = IsAnalyzeRunning(0);
+   if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
       gSystem->GetPathInfo(fOutputFile->Data(),
                            &id, &size, &flags, &modtime);
       fOutSize->SetText(new TGString(Form("%d", size)));
@@ -3209,8 +3225,23 @@ void FhMainFrame::Runloop(){
          return;
       }  
    }
-   fM_Status = IsAnalyzeRunning(0);
-
+//   fM_Status = IsAnalyzeRunning(0);
+   if(fForcedStop && fAutoRestart){
+	   if( (*fInputSource == "TcpIp" &&  fM_Status == M_CONFIGURED) || fM_Status == M_ABSENT) {
+			fForcedStop = kFALSE;
+	      this->StartDAQ();
+			fWaitedForStop = 0;
+         return;
+	   } else {
+		   fWaitedForStop++;
+			if (fWaitedForStop > 30) {
+			   cout << setred << "Waited 30 seconds for stopping, give up" << setblack << endl;
+				fForcedStop = kFALSE;
+		   	fWaitedForStop = 0;
+		   }
+         gSystem->Sleep(1000);
+      }
+   }
 //   cout << "fM_Status,fWasStarted " <<  fM_Status << " " << fWasStarted << endl;
 
 //   if(fM_Status == M_RUNNING || fM_Status == M_PAUSING || fWasStarted){
