@@ -238,6 +238,7 @@ public:
 //   void WriteHistasASCII(const char *, Bool_t);
    void WriteHistasASCII();
    void Superimpose(Int_t);               
+   void KolmogorovTest();
    void WarnBox(const char *);
    void PrintCalib();
    void ClearCalib(){fPeaks->Clear();};

@@ -112,6 +112,7 @@ enum ERootCanvasCommands {
    kFHEntire,
    kFHMagnify,
    kFHSuperimpose,
+   kFHKolmogorov,
    kFHSuperimposeScale,
    kFHGetRange,
 //   kFHSetDrawMode,
@@ -894,6 +895,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHSuperimpose:
                      fFitHist->Superimpose(0); 
                      break;
+                  case kFHKolmogorov:
+                     fFitHist->KolmogorovTest(); 
+                     break;
                   case kFHSuperimposeScale:
                      fFitHist->Superimpose(1); 
                      break;
@@ -1626,6 +1630,9 @@ void HandleMenus::BuildMenus()
          fFitMenu->AddEntry("FindPeaks",         kFHFindPeaks);
          if(hbrowser)hbrowser->DisplayMenu(fFitMenu, "calibration.html");
       }
+      fFitMenu->AddSeparator();
+      fFitMenu->AddEntry("Kolmogorov Test",         kFHKolmogorov);
+
       fCutsMenu->Associate((TGWindow*)this);
       fCascadeMenu1->Associate((TGWindow*)this);
       fCascadeMenu2->Associate((TGWindow*)this);

@@ -767,12 +767,12 @@ void HistPresent::MkClass( const char* fname, const char* dir, const char* tname
    fRootFile=new TFile(fname);
    if (strlen(dir) > 0) fRootFile->cd(dir);
    TTree *tree = (TTree*)gDirectory->Get(tname);
-   gDirectory = gROOT;
    Bool_t ok;
    TString clname(tname);
    if (clname.Index(";") > 0)clname.Resize(clname.Index(";")); 
    clname = GetString("Name of generated class", clname.Data(), &ok);
    if (!ok) return;
    tree->MakeClass(clname.Data());
+
 }
 //________________________________________________________________________________________

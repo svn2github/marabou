@@ -1958,6 +1958,23 @@ void FitHist::GetRange()
 
 //____________________________________________________________________________________ 
 
+void FitHist::KolmogorovTest()
+{
+   TH1 *hist;
+   if (hp->GetSelectedHist()->GetSize() > 0) {	//  choose from hist list
+      if (hp->GetSelectedHist()->GetSize() > 1) {
+         WarnBox("More than 1 selection");
+         return;
+      }
+      hist = hp->GetSelHistAt(0);
+   } else
+      hist = GetOneHist();      // look in memory
+   if (hist) {
+      fSelHist->KolmogorovTest(hist, "D");
+   }
+}
+//____________________________________________________________________________________ 
+
 void FitHist::Superimpose(Int_t mode)
 {
    TH1 *hist;
@@ -2449,12 +2466,12 @@ void FitHist::ProfileX()
          h_prof->SetBinError(ix, error);
          max_error = TMath::Max(error, max_error);
       }
+   }
  //     cout << "max_error " << max_error << endl;
-      for (Int_t ix = 1; ix <= h_prof->GetXaxis()->GetNbins(); ix++) {
-         if (h_prof->GetBinContent(ix) != 0 &&
-             h_prof->GetBinError(ix) == 0)
-               h_prof->SetBinError(ix, max_error);
-      }
+   for (Int_t ix = 1; ix <= h_prof->GetXaxis()->GetNbins(); ix++) {
+      if (h_prof->GetBinContent(ix) != 0 &&
+          h_prof->GetBinError(ix) == 0)
+            h_prof->SetBinError(ix, max_error);
    }
    h_prof->SetEntries(h2->GetEntries());
    cHist->cd();
@@ -2503,12 +2520,12 @@ void FitHist::ProfileY()
          h_prof->SetBinError(iy, error);
          max_error = TMath::Max(error, max_error);
       }
+   }
 //      cout << "max_error " << max_error << endl;
-      for (Int_t ix = 1; ix <= h_prof->GetXaxis()->GetNbins(); ix++) {
-         if (h_prof->GetBinContent(ix) != 0 &&
-             h_prof->GetBinError(ix) == 0)
-               h_prof->SetBinError(ix, max_error);
-      }
+   for (Int_t ix = 1; ix <= h_prof->GetXaxis()->GetNbins(); ix++) {
+      if (h_prof->GetBinContent(ix) != 0 &&
+          h_prof->GetBinError(ix) == 0)
+            h_prof->SetBinError(ix, max_error);
    }
    h_prof->SetEntries(h2->GetEntries());
    cHist->cd();
