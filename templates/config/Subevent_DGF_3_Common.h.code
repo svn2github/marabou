@@ -1,17 +1,17 @@
 %%BeginOfCode%%
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent_DGF_2
+// Name:           TMrbSubevent_DGF_3
 // Purpose:        Base class for subevents containing DGF data
 // Description:    Provides basic methods for DGF subevents
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TMrbSubevent_DGF_2 : public TObject {
+class TMrbSubevent_DGF_3 : public TObject {
 
 	public:
-		TMrbSubevent_DGF_2() {};						// ctor
-		~TMrbSubevent_DGF_2() {};						// default dtor
+		TMrbSubevent_DGF_3() {};						// ctor
+		~TMrbSubevent_DGF_3() {};						// default dtor
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 
@@ -31,9 +31,9 @@ class TMrbSubevent_DGF_2 : public TObject {
 
 		Int_t fTimeStamp;						// time stamp, same as fUniqueID
 
-		TUsrHitBuffer fHitBuffer; 				// hit buffer to store subevent data
+		TUsrHitBuffer fHitBuffer; 				//! hit buffer to store subevent data (** not written to tree **)
 
-	ClassDef(TMrbSubevent_DGF_2, 1)				// [Analyze] Base class for subvents: store DGF data in hit buffer
+	ClassDef(TMrbSubevent_DGF_3, 1)				// [Analyze] Base class for subvents: store DGF data in hit buffer
 };
 %%EndOfCode%%
 %%SEVT_CLASS_DEFINITION%%

@@ -76,12 +76,12 @@
 %B%
 %B% 	TMrbString pName;
 %B%
-%S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
+%S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		pName = "$paramNameLC"; pName += i;
-%X% 		if (gMrbAnalyze->FindParam(pName.Data()) == NULL) gMrbAnalyze->AddParamToList(pName.Data(), &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%X% 		if (gMrbAnalyze->FindParam(pName.Data()) == NULL) gMrbAnalyze->AddParamToList(pName.Data(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 	}
-%A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
+%A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
 %E%
 %E%	return(kTRUE);
 %E%}

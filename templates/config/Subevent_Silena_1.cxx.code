@@ -180,13 +180,13 @@
 %B%
 %B% 	ostringstream * pName;
 %B%
-%S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
+%S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		pName = new ostringstream();
 %X% 		*pName << "$paramNameLC" << i << ends;
-%X% 		if (gMrbAnalyze->FindParam(pName->str()) == NULL) gMrbAnalyze->AddParamToList(pName->str(), &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%X% 		if (gMrbAnalyze->FindParam(pName->str()) == NULL) gMrbAnalyze->AddParamToList(pName->str(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 	}
-%A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
+%A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
 %E%
 %E%	return(kTRUE);
 %E%}

@@ -42,12 +42,9 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 
 												// get param addr (method needed to access params from outside, eg. in macros)
 %%BeginOfCode%%
-%S%		inline $dataType * GetAddr$paramNameUC() { return(&$paramNameLC); };	// addr of $paramNameLC
-%S%		inline $dataType Get$paramNameUC() { return($paramNameLC); };	// value of $paramNameLC
-%X%		inline $dataType * GetAddr$paramNameUC() { return($paramNameLC); };	// addr of $paramNameLC
-%X%		inline $dataType Get$paramNameUC(Int_t Offset) { return($paramNameLC[Offset]); };	// value of $paramNameLC[n]
-%A%		inline $dataType * GetAddr(Int_t Offset) { return(&fData[Offset]); };	//addr of subevent data
-%A%		inline $dataType Get(Int_t Offset) { return(fData[Offset]); };	// value of data[n]
+%S%		inline TUsrHit * GetAddr$paramNameUC() { return(&$paramNameLC); };	// addr of $paramNameLC
+%X%		inline TUsrHit * GetAddr$paramNameUC() { return($paramNameLC); };	// addr of $paramNameLC
+%A%		inline TUsrHit * GetAddr(Int_t Offset) { return(&fData[Offset]); };	//addr of subevent data
 %%EndOfCode%%
 %%SEVT_DEFINE_ADDR%%
 
@@ -59,9 +56,9 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Caen {
 
 // define private data members here
 %%BeginOfCode%%	
-%S% 		$dataType $paramNameLC; 				// $sevtNameLC.$paramNameLC
-%X% 		$dataType $paramNameLC[$indexRange];			// $sevtNameLC.$paramNameLC
-%A% 		$dataType fData[$nofParams];
+%S% 		TUsrHit $paramNameLC; 				// $sevtNameLC.$paramNameLC
+%X% 		TUsrHit $paramNameLC[$indexRange];	// $sevtNameLC.$paramNameLC
+%A% 		TUsrHit fData[$nofParams];
 %%EndOfCode%%
 %%SEVT_PRIVATE_DATA%%
 
