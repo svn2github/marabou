@@ -66,7 +66,7 @@ ClassImp(TMrbHelpBrowser)
 //is done except optionally breaking lines at fMaxLineLenght.
 //A possible image is displayed in a separate window.
 //
-//As an extrension ROOT-files containing canvases may be 
+//As an extension ROOT-files containing canvases may be 
 //defined. If an image with name "pict.canvas.gif" appears
 //in the documentation a root-file with name "pict.canvas.root"
 //is searched for in the same directory.
@@ -841,7 +841,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff){
 
    if(nl <= 36 && longest_line <= line_length){
 //     default size, no scroll bar in x  and y required
-      ca = new TCanvas(hname, hname, fX0, fY0, wwx_max, wwy + 60);
+      ca = new TCanvas(hname, hname, -fX0, fY0, wwx_max, wwy + 60);
    } else { 
       if(wwy < fWwY)fWwY = wwy;
       Int_t wwx =wwx_max;
@@ -849,7 +849,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff){
       if(longest_line > line_length) {
          wwx = (Int_t) (fWwX * (Float_t)longest_line / line_length);
       }
-      ca = new TCanvas(hname, hname, fX0, fY0, wwx_max, fWwY + 60);
+      ca = new TCanvas(hname, hname, -fX0, fY0, wwx_max, fWwY + 60);
 
       if(longest_line <= line_length) wwx = ca->GetWw() + 2 * ca->GetBorderSize();
 //      cout << "wwx  " << wwx << endl;
