@@ -850,15 +850,10 @@ Bool_t TMbsReadoutProc::CopyMakefile(const Char_t * SrcDir) {
 		isOK = kFALSE;
 	}
 
-	gSystem->Unlink(destPath + fname);
-	if (gSystem->Link(srcPath + fname, destPath + fname) == 0) {
-		gMrbLog->Out() << "Linking " << srcPath + fname << " --> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "CopyMakefile", setblue);
-	} else {
-		gMrbLog->Err() << "Hard link failed - " << srcPath + fname << " -> " << destPath << endl;
-		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
-		isOK = kFALSE;
-	}
+	TString cmd = "cp " + srcPath + fname + " " + destPath;
+	gSystem->Exec(cmd.Data());
+	gMrbLog->Out() << "Copying " << srcPath + fname << " --> " << destPath << endl;
+	gMrbLog->Flush(this->ClassName(), "CopyMakefile", setblue);
 
 	return(isOK);
 }
