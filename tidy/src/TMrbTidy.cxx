@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.4 2004-11-17 12:35:47 marabou Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.5 2004-11-17 13:38:43 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -242,7 +242,6 @@ TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyAttr 
 
 	fHandle = AttrHandle;
 	fValue.Resize(0);
-	fTidyDoc = NULL;
 	this->AssignObject(Node);
 }
 

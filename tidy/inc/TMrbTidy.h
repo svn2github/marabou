@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.3 2004-11-17 11:34:19 marabou Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.4 2004-11-17 13:38:43 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -142,12 +142,9 @@ class TMrbTidyAttr : public TMrbNamedX {
 
 		inline TidyAttr GetHandle() { return(fHandle); };
 
-		inline TObject * GetTidyDoc() { return(fTidyDoc); };
-
 	protected:
 		TidyAttr fHandle;
 		TString fValue; 			// attr value
-		TObject * fTidyDoc;			// associated tidy document
 
 	ClassDef(TMrbTidyAttr, 1) 		// [Utils] Tidy interface: attribute
 };
