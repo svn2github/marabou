@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.88 2004-12-08 14:32:15 rudi Exp $       $Id: TMrbConfig.cxx,v 1.88 2004-12-08 14:32:15 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.89 2005-04-05 07:24:20 rudi Exp $       $Id: TMrbConfig.cxx,v 1.89 2005-04-05 07:24:20 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -301,7 +301,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaUserReloadParams,			"RELOAD_PARAMS" 				},
 								{TMrbConfig::kAnaUserMessages,				"HANDLE_MESSAGES"				},
 								{TMrbConfig::kAnaUserDummyMethods,			"INCLUDE_DUMMY_METHODS" 		},
-								{TMrbConfig::kAnaUsingNameSpace ,			"USING_NAMESPACE"	 			},
+								{TMrbConfig::kAnaUsingNameSpace,			"USING_NAMESPACE"	 			},
 								{TMrbConfig::kAnaUserDefinedGlobals,		"USER_DEFINED_GLOBALS"	 		},
 								{TMrbConfig::kAnaUserDefinedEnums,			"USER_DEFINED_ENUMS" 	 		},
 								{TMrbConfig::kAnaUserDefinedDefines,		"USER_DEFINED_DEFINES" 	 		},
