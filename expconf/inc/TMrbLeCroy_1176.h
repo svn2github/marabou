@@ -70,7 +70,7 @@ class TMrbLeCroy_1176 : public TMrbVMEModule {
 	protected:
 		Bool_t fCommonStart;
 
-	ClassDef(TMrbLeCroy_1176, 1)		// [Config] LeCroy 1176, 16 ch multi-hit multi-event TDC
+	ClassDef(TMrbLeCroy_1176, 1)		// [Config] LeCroy 1176, 16 ch multi-hit multi-event VME TDC
 };
 
 #endif

@@ -20,7 +20,7 @@ class  TMrbNamedArrayC: public TNamed, public TArrayC {
                       const Int_t len = 0, const char* val = 0);
       ~TMrbNamedArrayC(){};
 
-ClassDef(TMrbNamedArrayC, 1)
+ClassDef(TMrbNamedArrayC, 1)		// [Utils] A named TArrayC
 };
 
 
@@ -31,7 +31,7 @@ class  TMrbNamedArrayI: public TNamed, public TArrayI {
                       const Int_t len = 0, const Int_t * val = 0);
       ~TMrbNamedArrayI(){};
 
-ClassDef(TMrbNamedArrayI, 1)
+ClassDef(TMrbNamedArrayI, 1)		// [Utils] A named TArrayI
 };
 
 
@@ -42,7 +42,7 @@ class  TMrbNamedArrayF: public TNamed, public TArrayF {
                       const Int_t len = 0, const Float_t * val = 0);
       ~TMrbNamedArrayF(){};
 
-ClassDef(TMrbNamedArrayF, 1)
+ClassDef(TMrbNamedArrayF, 1)		// [Utils] A named TArrayF
 };
 
 
@@ -54,7 +54,7 @@ class  TMrbNamedArrayD: public TNamed, public TArrayD {
                       const Int_t len = 0, const Double_t * val = 0);
       ~TMrbNamedArrayD(){};
 
-ClassDef(TMrbNamedArrayD, 1)
+ClassDef(TMrbNamedArrayD, 1)		// [Utils] A named TArrayD
 };
 #endif
 
