@@ -10,10 +10,12 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 
 #include "TROOT.h"
 #include "TSystem.h"

@@ -18,6 +18,8 @@
 //End_Html
 //////////////////////////////////////////////////////////////////////////////
 
+using namespace std;
+
 #include "TEnv.h"
 #include "TROOT.h"
 #include "TObjString.h"
@@ -32,8 +34,8 @@
 
 #include "SetColor.h"
 
-#include "iostream.h"
-#include "fstream.h"
+#include <iostream>
+#include <fstream>
 
 const SMrbNamedX kDGFParamsActions[] =
 			{

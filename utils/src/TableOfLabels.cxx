@@ -1,4 +1,6 @@
-#include <iostream.h>
+using namespace std;
+
+#include <iostream>
 #include "TableOfLabels.h"
 ClassImp(TableOfLabels)
 TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,

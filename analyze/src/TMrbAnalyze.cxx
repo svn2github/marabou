@@ -13,6 +13,8 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
+#include <sstream>
+
 #include <time.h>
 #include <pthread.h>
 
@@ -236,7 +238,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		lineHdr = kFALSE;
 		line = line.Strip(TString::kBoth);
 		if (line.Length() == 0 || line(0) == '#') continue;
-		istrstream decode(line.Data());
+		istringstream decode(line.Data());
 
 // decode line
 // input file
@@ -1701,8 +1703,8 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 
 	if (valAscii.Index(":", 0) == -1) {		// event count
 		TimeStampFlag = kFALSE;
-		valAscii += " ";					// trailing blank keeps istrstream happy
-		istrstream v(valAscii.Data());
+		valAscii += " ";					// trailing blank keeps istringstream happy
+		istringstream v(valAscii.Data());
 		v >> Value;
 		return(v.good());
 	} else {								// time stamp
@@ -1715,7 +1717,7 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 			n2 = valAscii.Index(":", n1);
 			if (n2 == -1) break;
 			hmsx = valAscii(n1, n2 - n1);
-			istrstream v(hmsx);
+			istringstream v(hmsx.Data());
 			v >> ts[i];
 			if (!v.good()) return(kFALSE);	// not a number
 			n1 = n2 + 1;
@@ -1749,7 +1751,7 @@ void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t xxx, ss, mm, hh;
-	ostrstream ts;
+	ostringstream ts;
 
 	xxx = TstampValue % 10000;
 	TstampValue /= 10000;
@@ -1759,8 +1761,8 @@ void TMrbIOSpec::ConvertToTimeStamp(TString & TimeStamp, Int_t TstampValue) {
 	hh = TstampValue / 60;
 	ts << hh << ":" << mm << ":" << ss << ends;
 	if (xxx > 0) ts << ":" << xxx << ends;
-	TimeStamp = ts.str();
-	ts.rdbuf()->freeze(0);
+	TimeStamp = ts.str().c_str();
+//	ts.rdbuf()->freeze(0);
 }	
 
 void TMrbIOSpec::Print(ostream & out) {
@@ -2520,7 +2522,7 @@ Bool_t TMrbAnalyze::DumpData(const Char_t * Prefix, Int_t Index,	const Char_t * 
 		gMrbLog->Flush(this->ClassName(), "DumpData");
 		return(kFALSE);
 	}
-	f.write(DataPtr, DataWC * sizeof(UShort_t));
+	f.write((const Char_t *) DataPtr, DataWC * sizeof(UShort_t));
 	f.close();
 	return(kTRUE);
 }

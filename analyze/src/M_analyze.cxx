@@ -14,9 +14,12 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+using namespace std;
+
 #include <sys/stat.h>
 #include <unistd.h>
-#include <iostream.h>
+#include <iostream>
+#include <sstream>
 #include <time.h>
 #include <sys/times.h>
 #include <signal.h>
@@ -91,25 +94,25 @@ void PlayQuart(Int_t n){
    Int_t a = 400;
    Int_t loadness = 100;
    Int_t duration = 200;
-   ostrstream cmd1;
-   ostrstream cmd2;
+   ostringstream cmd1;
+   ostringstream cmd2;
    Int_t quart = (Int_t) (a * pow(pow(2,1./12.), 4));
    cmd1 << "xset b " << loadness << " " << a     << " " << duration << ends;
    cmd2 << "xset b " << loadness << " " << quart << " " << duration << ends;
    for(Int_t i = 0; i< n; i++){
 //      gSystem->Exec("xset b 100 400 200");
-      gSystem->Exec(cmd1.str());
+      gSystem->Exec(cmd1.str().c_str());
       cout << bell << endl;
       gSystem->Sleep(400);   
 //      gSystem->Exec("xset b 100 504 300");
-      gSystem->Exec(cmd2.str());
+      gSystem->Exec(cmd2.str().c_str());
       cout << bell << endl;
       gSystem->Sleep(500);
    }
-   gSystem->Exec(cmd1.str());
+   gSystem->Exec(cmd1.str().c_str());
    cout << bell << endl;
-   cmd1.rdbuf()->freeze(0);
-   cmd2.rdbuf()->freeze(0);
+//   cmd1.rdbuf()->freeze(0);
+//   cmd2.rdbuf()->freeze(0);
 }
 
 
@@ -901,7 +904,7 @@ void * msg_handler(void * dummy) {
          else if(cmd == "resume")    u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
 
          else if(cmd == "downscale") {
-            istrstream inbuf(arg.Data());
+            istringstream inbuf(arg.Data());
             Int_t downscale; inbuf >> downscale;
             if(downscale <= 0) downscale = 1;
                                      u_analyze->SetScaleDown(downscale);
@@ -955,10 +958,10 @@ void * msg_handler(void * dummy) {
            count = u_analyze->ClearHistograms(arg.Data());
 		     if (count > 0) u_analyze->SetUpdateFlag();
            mess0.Reset();          // re-use TMessage object
-           ostrstream buf;
+           ostringstream buf;
            buf << "Number of histos cleared: " << count << ends;
-           mess0.WriteString(buf.str());
-           buf.rdbuf()->freeze(0);
+           mess0.WriteString(buf.str().c_str());
+//           buf.rdbuf()->freeze(0);
            sock->Send(mess0);
 
          } else if ( cmd == "user" ){

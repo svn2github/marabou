@@ -1,8 +1,10 @@
 #ifndef __TMrbStatistics_h__
 #define __TMrbStatistics_h__
 
-#include "iostream.h"
-#include "iomanip.h"
+using namespace std;
+
+#include <iostream>
+#include <iomanip>
 #include "TROOT.h"
 #include "Rtypes.h"
 #include "TH1.h"

@@ -11,6 +11,7 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
+#include <sstream>
 #include "TROOT.h"
 #include "TFile.h"
 #include "TMrbNamedX.h"
@@ -84,7 +85,7 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg, const Char_t * ProgName, Bo
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	ostrstream * str = new ostrstream();
+	ostringstream * str = new ostringstream();
 
 	if (WithDate) {
 		switch (fType) {
@@ -106,8 +107,8 @@ const Char_t * TMrbLogMessage::Get(TString & FmtMsg, const Char_t * ProgName, Bo
 	*str << fText;
 	if (WithColors) *str << setblack;
 	*str << ends;
-	FmtMsg = str->str();
-	str->rdbuf()->freeze(0);
+	FmtMsg = str->str().c_str();
+//	str->rdbuf()->freeze(0);
 	delete str;
 	return(FmtMsg.Data());
 }
@@ -125,8 +126,8 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
 	fLog = NULL;
 	if (LogFile != NULL && *LogFile != '\0') fLog = new ofstream();
 
-	fOut = new ostrstream();
-	fErr = new ostrstream();
+	fOut = new ostringstream();
+	fErr = new ostringstream();
 	fEnabled = TMrbLogger::kMrbMsgCout | TMrbLogger::kMrbMsgCerr;
 	if (fLog) fEnabled |= TMrbLogger::kMrbMsgLog;
 	fLofMessages.Delete();
@@ -248,28 +249,28 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	TMrbLogMessage * msg;
 		
 	*fOut << ends;
-	str = fOut->str();
+	str = fOut->str().c_str();
 	if (str.Length() != 0) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
 	}
-	fOut->rdbuf()->freeze(0);
+//	fOut->rdbuf()->freeze(0);
 	delete fOut;
-	fOut = new ostrstream();
+	fOut = new ostringstream();
 	
 	*fErr << ends;
-	str = fErr->str();
+	str = fErr->str().c_str();
 	if (str.Length() != 0) {
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
 		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	}
-	fErr->rdbuf()->freeze(0);
+//	fErr->rdbuf()->freeze(0);
 	delete fErr;
-	fErr = new ostrstream();
+	fErr = new ostringstream();
 
 	if (fGUI) fGUI->Notify();		// trigger GUI object
 		

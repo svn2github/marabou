@@ -13,7 +13,9 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-#include "iostream.h"
+using namespace std;
+
+#include <iostream>
 #include "TObjArray.h"
 #include "TObjString.h"
 

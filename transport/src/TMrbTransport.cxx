@@ -16,8 +16,10 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
+using namespace std;
+
 #include <stdio.h>
-#include <iostream.h>
+#include <iostream>
 #include <errno.h>
 
 #include "mbsio.h"

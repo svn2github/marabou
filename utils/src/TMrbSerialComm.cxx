@@ -11,10 +11,12 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <sys/types.h>
 #include <sys/time.h>
 #include <fcntl.h>

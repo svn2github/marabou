@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 
@@ -110,7 +112,7 @@ Bool_t TMrbEsoneCnaf::Ascii2Int(const Char_t * Cnaf) {
 		}
 		cnafId = cnafPart(1, n2 - n1 - 1);
 		cnafNum = -1;
-		istrstream c(cnafId.Data());
+		istringstream c(cnafId.Data());
 		c >> cnafNum;
 		if (cnafNum == -1) {
 			gMrbLog->Err() << "[" << Cnaf << "] Illegal CNAF syntax - " << cnafPart << endl;
@@ -167,7 +169,7 @@ Bool_t TMrbEsoneCnaf::Ascii2Int(const Char_t * Cnaf) {
 			n1 = 0;
 		}
 		data = cnafData(n1, cnafData.Length() - n1);
-		istrstream c(data.Data());
+		istringstream c(data.Data());
 		switch (base) {
 			case 8:		c >> setbase(8) >> cnafNum;
 			case 10:	c >> cnafNum;

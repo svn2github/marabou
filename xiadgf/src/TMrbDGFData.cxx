@@ -11,11 +11,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 #include "TEnv.h"
@@ -825,7 +827,7 @@ Int_t TMrbDGFData::ReadNameTable(const Char_t * ParamFile, Bool_t Forced) {
 		if (param.eof()) break;
 		pLine = pLine.Strip(TString::kBoth);
 		if (pLine.Length() == 0 || pLine(0) == '#') continue;
-		istrstream str(pLine.Data());
+		istringstream str(pLine.Data());
 		str >> pOffset >> pName;
 		pName = pName.Strip(TString::kBoth);
 		if (pName.Length() > 0) {

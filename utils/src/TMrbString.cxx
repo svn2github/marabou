@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TObjString.h"
 #include "TObjArray.h"
@@ -68,7 +70,7 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, 
 		while (IntVal) { this->Prepend((IntVal & 1) ? '1' : '0'); IntVal >>= 1; }
 		if (BaseId) this->Prepend("0b");
 	} else {
-		ostrstream * s = new ostrstream();
+		ostringstream * s = new ostringstream();
 		switch (Base) {
 			case 8:
 				if (BaseId) { *s << "0"; Width -= 1; PadChar = '0'; }
@@ -95,8 +97,8 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, 
 				gMrbLog->Flush("TMrbString", "FromInteger");
 				return(*this);
 		}
-		this->Insert(0, s->str());
-		s->rdbuf()->freeze(0);
+		this->Insert(0, s->str().c_str());
+//		s->rdbuf()->freeze(0);
 		delete s;
 	}
 	return(*this);
@@ -159,7 +161,7 @@ Bool_t TMrbString::ToInteger(Int_t & IntVal, Int_t Base) {
 			if (fData[i] == '1') IntVal += 1;
 		}
 	} else {
-		istrstream s(&fData[idx]);
+		istringstream s(&fData[idx]);
 		switch (baseId) {
 			case 8: 	s >> setbase(8) >> IntVal; break;
 			case 16:	s >> setbase(16) >> IntVal; break;
@@ -209,7 +211,7 @@ Int_t TMrbString::SplitOffInteger(TString & Prefix, Bool_t & IsSigned, Int_t Bas
 			if (fData[i] == '1') n += 1;
 		}
 	} else {
-		istrstream s(&fData[idx]);
+		istringstream s(&fData[idx]);
 		switch (baseId) {
 			case 8: 	s >> setbase(8) >> n; break;
 			case 16:	s >> setbase(16) >> n; break;
@@ -284,11 +286,11 @@ TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Char_t PadChar
 
 	Int_t precision = (Precision > 0) ? Precision : TMrbString::kDefaultPrecision;
 
-	ostrstream * s = new ostrstream();
+	ostringstream * s = new ostringstream();
 	if (Width > 0) *s << setw(Width) << setfill(PadChar);
 	*s << setprecision(precision) << DblVal << ends;
-	this->Replace(0, this->Length(), s->str());
-	s->rdbuf()->freeze(0);
+	this->Replace(0, this->Length(), s->str().c_str());
+//	s->rdbuf()->freeze(0);
 	delete s;
     return(*this);
 }
@@ -342,7 +344,7 @@ Bool_t TMrbString::ToDouble(Double_t & DblVal) {
 		return(kFALSE);
 	}
 
-	istrstream s(&fData[idx]);
+	istringstream s(&fData[idx]);
 	s >> DblVal;
 	if (isSigned) DblVal = -DblVal;
 	return(kTRUE);
@@ -373,7 +375,7 @@ Double_t TMrbString::SplitOffDouble(TString & Prefix, Bool_t & IsSigned) {
 		return(0.);
 	}
 
-	istrstream s(&fData[idx]);
+	istringstream s(&fData[idx]);
 	s >> d;
 	Prefix.Replace(0, Prefix.Length(), pf.Data());
 	return(d);

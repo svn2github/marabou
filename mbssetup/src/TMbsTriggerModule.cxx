@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 
@@ -72,7 +74,7 @@ Bool_t TMbsTriggerModule::SetType(const Char_t * ModuleType) {
 
 	TString r;
 	TMrbNamedX * moduleType;
-	ostrstream * mod;
+	ostringstream * mod;
 
 	if (fId < 0) return(kFALSE);
 
@@ -86,10 +88,10 @@ Bool_t TMbsTriggerModule::SetType(const Char_t * ModuleType) {
 		return(kFALSE);
 	}
 
-	mod = new ostrstream();
+	mod = new ostringstream();
 	*mod << moduleType->GetName() << "(" << moduleType->GetIndex() << ")" << ends;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod->str());
-	mod->rdbuf()->freeze(0);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod->str().c_str());
+//	mod->rdbuf()->freeze(0);
 	delete mod;
 	return(kTRUE);
 }
@@ -108,7 +110,7 @@ Bool_t TMbsTriggerModule::SetType(EMbsTriggerModuleType ModuleType) {
 
 	TString r;
 	TMrbNamedX * moduleType;
-	ostrstream * mod;
+	ostringstream * mod;
 
 	if (fId < 0) return(kFALSE);
 
@@ -122,10 +124,10 @@ Bool_t TMbsTriggerModule::SetType(EMbsTriggerModuleType ModuleType) {
 		return(kFALSE);
 	}
 
-	mod = new ostrstream();
+	mod = new ostringstream();
 	*mod << moduleType->GetName() << "(" << moduleType->GetIndex() << ")" << ends;
-	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod->str());
-	mod->rdbuf()->freeze(0);
+	gMbsSetup->Set(gMbsSetup->Resource(r, "Readout", fId + 1, "TriggerModule.Type"), mod->str().c_str());
+//	mod->rdbuf()->freeze(0);
 	delete mod;
 	return(kTRUE);
 }

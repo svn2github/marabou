@@ -16,8 +16,10 @@
 //End_Html
 //////////////////////////////////////////////////////////////////////////////
 
-#include <iostream.h>
-#include <iomanip.h>
+using namespace std;
+
+#include <iostream>
+#include <iomanip>
 
 #include "TKey.h"
 #include "TNamed.h"

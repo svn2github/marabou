@@ -14,10 +14,12 @@
 // Revision:                  
 //////////////////////////////////////////////////////////////////////////////
 
+using namespace std;
+
 #include <stdio.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <fstream.h>
 #include "Rtypes.h"
 #include "TNamed.h"

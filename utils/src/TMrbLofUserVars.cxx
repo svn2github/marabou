@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TROOT.h"
 #include "TMrbLofUserVars.h"
@@ -401,7 +403,7 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 			varIndex = varIndex(0, n);
 			varIndex = varIndex.Strip();
 			varIndex += " 1";
-			istrstream s(varIndex.Data());
+			istringstream s(varIndex.Data());
 			one = 0;
 			s >> vIdx >> one;
 			if (one != 1) {
@@ -450,32 +452,32 @@ Bool_t TMrbLofUserVars::ReadFromFile(const Char_t * VarFile) {
 		vline2 += " 1";
 
 		vtype = 0;
-		istrstream s(vline1.Data());
+		istringstream s(vline1.Data());
 		one = 0;
 		s >> ilow >> iup >> one;
 		if (one == 1) {
 			vtype = kWindowI;
 		} else {
 			one = 0;
-			istrstream s(vline1.Data());
+			istringstream s(vline1.Data());
 			s >> flow >> fup >> one;
 			if (one == 1) {
 				vtype = kWindowF;
 			} else {
 				one = 0;
-				istrstream s(vline1.Data());
+				istringstream s(vline1.Data());
 				s >> ilow >> one;
 				if (one == 1) {
 					vtype = kVarI;
 				} else {
 					one = 0;
-					istrstream s(vline1.Data());
+					istringstream s(vline1.Data());
 					s >> flow >> one;
 					if (one == 1) {
 						vtype = kVarF;
 					} else {
 						one = 0;
-						istrstream s(vline2.Data());
+						istringstream s(vline2.Data());
 						s >> str >> one;
 						if (one == 1) {
 							boolStr = str;

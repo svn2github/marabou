@@ -10,12 +10,14 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
+using namespace std;
+
+#include <cstdlib>
 #include <time.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 #include "TSystem.h"
@@ -276,7 +278,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 
 	Int_t i;
 	FILE * pCmd;
-	ostrstream * rCmd;
+	ostringstream * rCmd;
 	Char_t line[100];
 	TString pLine;
 	Bool_t found;
@@ -297,7 +299,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 					<< HostName << "\"." << endl;
 	gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 
-	rCmd = new ostrstream();
+	rCmd = new ostringstream();
 	*rCmd	<< "rsh " << HostName
 			<< " -l " << gSystem->Getenv("USER")
 			<< " \"/mbs/" << mbsVersion
@@ -305,14 +307,14 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 			<< " " << setupPath << " m_remote reset -l >>/dev/null\""
 			<< ends;
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< "Exec >> " << rCmd->str() << " <<" << endl;
+		gMrbLog->Out()	<< "Exec >> " << rCmd->str().c_str() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 	}
-	gSystem->Exec(rCmd->str());
-	rCmd->rdbuf()->freeze(0);
+	gSystem->Exec(rCmd->str().c_str());
+//	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
 
-	rCmd = new ostrstream();
+	rCmd = new ostringstream();
 	*rCmd	<< "rsh " << HostName << " -l " << gSystem->Getenv("USER") << " \"ps ax | fgrep m_\""
 			<< ends;
 
@@ -327,7 +329,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		sleep(1);
 		cout << setmagenta << "." << setblack << ends << flush;
 		found = kFALSE;
-		pCmd = gSystem->OpenPipe(rCmd->str(), "r");
+		pCmd = gSystem->OpenPipe(rCmd->str().c_str(), "r");
 		while (fgets(line, 100, pCmd) != NULL) {
 			pLine = line;
 			if (pLine.Index("m_") == -1) break;
@@ -340,7 +342,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		}
 	}
 
-	rCmd->rdbuf()->freeze(0);
+//	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
 
 	if (found) {
@@ -355,22 +357,22 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 			<< fController.GetName() << ") on host \"" << HostName << "\"." << endl;
 	gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 
-	rCmd = new ostrstream();
+	rCmd = new ostringstream();
 	*rCmd	<< "rsh " << HostName
 			<< " -l " << gSystem->Getenv("USER")
 			<< " \"cp " << setupPath << "/.tcshrc . >>/dev/null\""
 			<< ends;
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< endl << "Exec >> " << rCmd->str() << " <<" << endl;
+		gMrbLog->Out()	<< endl << "Exec >> " << rCmd->str().c_str() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 	}
-	gSystem->Exec(rCmd->str());
-	rCmd->rdbuf()->freeze(0);
+	gSystem->Exec(rCmd->str().c_str());
+//	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
 
 	prmOrDsp = startPrompter ? "m_prompt" : "m_dispatch";
 
-	rCmd = new ostrstream();
+	rCmd = new ostringstream();
 	*rCmd	<< "rsh " << HostName
 			<< " -l " << gSystem->Getenv("USER")
 			<< " \"/mbs/" << mbsVersion
@@ -379,14 +381,14 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 			<< fController.GetName() << "/startup >>/dev/null\""
 			<< ends;
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< "Exec >> " << rCmd->str() << " <<" << endl;
+		gMrbLog->Out()	<< "Exec >> " << rCmd->str().c_str() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 	}
-	gSystem->Exec(rCmd->str());
-	rCmd->rdbuf()->freeze(0);
+	gSystem->Exec(rCmd->str().c_str());
+//	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
 
-	rCmd = new ostrstream();
+	rCmd = new ostringstream();
 	*rCmd	<< "rsh " << HostName << " -l " << gSystem->Getenv("USER") << " \"ps ax | fgrep m_\""
 			<< ends;
 
@@ -401,7 +403,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		sleep(1);
 		cout << setmagenta << "." << setblack << ends << flush;
 		found = kFALSE;
-		pCmd = gSystem->OpenPipe(rCmd->str(), "r");
+		pCmd = gSystem->OpenPipe(rCmd->str().c_str(), "r");
 		while (fgets(line, 100, pCmd) != NULL) {
 			pLine = line;
 			if (pLine.Index("m_esone") != -1) {
@@ -416,7 +418,7 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 		}
 	}
 
-	rCmd->rdbuf()->freeze(0);
+//	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
 
 	if (found) {

@@ -10,9 +10,11 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <iomanip.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <iomanip>
 #include "TObjString.h"
 #include "SetColor.h"
 #include "TMrbLofNamedX.h"

@@ -25,6 +25,8 @@
 // lifo to store objects located on heap
 #define HEAP(x)	fHeap.AddFirst((TObject *) x)
 
+#include <sstream>
+
 #include "TEnv.h"
 #include "TApplication.h"
 #include "TObjArray.h"
@@ -1245,7 +1247,7 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 	TMrbString currentValue, cVal;
 	UInt_t argType;
 
-	ostrstream * cmdString = new ostrstream();
+	ostringstream * cmdString = new ostringstream();
 
 	macroEnv = (TEnv *) fMacro->GetAssignedObject();
 	gROOT->LoadMacro(macroEnv->GetValue("Path", "UNKNOWN"));
@@ -1313,8 +1315,8 @@ Bool_t TGMrbMacroFrame::ExecMacro() {
 		macroArg = (TGMrbMacroArg *) fLofMacroArgs.After(macroArg);
 	}
 	*cmdString << ");" << ends;
-	gROOT->ProcessLine(cmdString->str());
-	cmdString->rdbuf()->freeze(0);
+	gROOT->ProcessLine(cmdString->str().c_str());
+//	cmdString->rdbuf()->freeze(0);
 	delete cmdString;
 	G__unloadfile((Char_t *) macroEnv->GetValue("Path", "UNKNOWN"));
 	return(kTRUE);

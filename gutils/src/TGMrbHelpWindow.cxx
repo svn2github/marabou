@@ -1,5 +1,7 @@
+using namespace std;
+
 #include "TGMrbHelpWindow.h"
-#include "iostream.h"
+#include <iostream>
 
 ClassImp(TGMrbHelpWindow)
 

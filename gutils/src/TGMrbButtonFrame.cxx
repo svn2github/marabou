@@ -10,8 +10,10 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <iostream.h>
-#include <iomanip.h>
+using namespace std;
+
+#include <iostream>
+#include <iomanip>
 
 #include "TGToolTip.h"
 #include "TGMrbButtonFrame.h"

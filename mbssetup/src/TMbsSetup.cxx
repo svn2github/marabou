@@ -49,11 +49,13 @@
 // ************************************************************************************************************************
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 #include "TDirectory.h"
@@ -747,7 +749,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 	EMbsSetupMode smode;
 
 	ofstream stp;
-	ostrstream * str;
+	ostringstream * str;
 
 	TMrbNamedX * setupTag;
 	TString line;
@@ -850,11 +852,11 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 				case kSetBuffers:
 					{
-						str = new ostrstream();
+						str = new ostringstream();
 						stpTmpl.InitializeCode();
 						*str << "0x" << setbase(16) << this->EvtBuilder()->GetBufferSize() << ends;
-						stpTmpl.Substitute("$bufSize", str->str());
-						str->rdbuf()->freeze(0);
+						stpTmpl.Substitute("$bufSize", str->str().c_str());
+//						str->rdbuf()->freeze(0);
 						delete str;
 						stpTmpl.Substitute("$nofBufs", (Int_t) this->EvtBuilder()->GetNofBuffers());
 						stpTmpl.Substitute("$nofStreams", (Int_t) this->EvtBuilder()->GetNofStreams());
@@ -1070,30 +1072,30 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					{
 						if (smode == kModeMultiProc) {
 							stpTmpl.InitializeCode("%B%");
-							str = new ostrstream();
+							str = new ostringstream();
 							stpTmpl.Substitute("$evbName", this->EvtBuilder()->GetName());
 							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
-							stpTmpl.Substitute("$vsbAddr", str->str());
-							str->rdbuf()->freeze(0);
+							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
+//							str->rdbuf()->freeze(0);
 							delete str;
 							stpTmpl.WriteCode(stp);
 							for (i = 0; i < nofReadouts; i++) {
 								stpTmpl.InitializeCode("%L%");
 								stpTmpl.Substitute("$rdoName", this->ReadoutProc(i)->GetName());
-								str = new ostrstream();
+								str = new ostringstream();
 								*str << "0x" << setbase(16) << this->ReadoutProc(i)->GetVSBAddr() << ends;
-								stpTmpl.Substitute("$vsbAddr", str->str());
-								str->rdbuf()->freeze(0);
+								stpTmpl.Substitute("$vsbAddr", str->str().c_str());
+//								str->rdbuf()->freeze(0);
 								delete str;
 								stpTmpl.WriteCode(stp);
 							}
 						} else {
 							stpTmpl.InitializeCode();
-							str = new ostrstream();
+							str = new ostringstream();
 							stpTmpl.Substitute("$procName", this->EvtBuilder()->GetName());
 							*str << "0x" << setbase(16) << this->EvtBuilder()->GetVSBAddr() << ends;
-							stpTmpl.Substitute("$vsbAddr", str->str());
-							str->rdbuf()->freeze(0);
+							stpTmpl.Substitute("$vsbAddr", str->str().c_str());
+//							str->rdbuf()->freeze(0);
 							delete str;
 							stpTmpl.WriteCode(stp);
 						}
@@ -1121,9 +1123,9 @@ const Char_t * TMbsSetup::EncodeArray(TArrayI & Data, Int_t NofEntries, Int_t Ba
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t i;
-	ostrstream * s;
+	ostringstream * s;
 
-	s = new ostrstream();
+	s = new ostringstream();
 	for (i = 0; i < NofEntries; i++) {
 		if (i == 0) *s << "("; else *s << ",";
 		switch (Base) {
@@ -1133,8 +1135,8 @@ const Char_t * TMbsSetup::EncodeArray(TArrayI & Data, Int_t NofEntries, Int_t Ba
 		}
 	}
 	*s << ")" << ends;
-	fArrayString = s->str();
-	s->rdbuf()->freeze(0);
+	fArrayString = s->str().c_str();
+//	s->rdbuf()->freeze(0);
 	delete s;
 	return(fArrayString.Data());
 }
@@ -1155,10 +1157,10 @@ const Char_t * TMbsSetup::EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries,
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t i;
-	ostrstream * s;
+	ostringstream * s;
 	Int_t data;
 
-	s = new ostrstream();
+	s = new ostringstream();
 	for (i = 0; i < NofEntries; i++) {
 		data = (i == Index) ? Data : 0;
 		if (i == 0) *s << "("; else *s << ",";
@@ -1169,8 +1171,8 @@ const Char_t * TMbsSetup::EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries,
 		}
 	}
 	*s << ")" << ends;
-	fArrayString = s->str();
-	s->rdbuf()->freeze(0);
+	fArrayString = s->str().c_str();
+//	s->rdbuf()->freeze(0);
 	delete s;
 	return(fArrayString.Data());
 }
@@ -1538,7 +1540,7 @@ Bool_t TMbsSetup::SetMode(const Char_t * Mode) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * setupMode;
-	ostrstream * mode;
+	ostringstream * mode;
 
 	setupMode = gMbsSetup->fLofSetupModes.FindByName(Mode, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	if (setupMode == NULL) {
@@ -1550,10 +1552,10 @@ Bool_t TMbsSetup::SetMode(const Char_t * Mode) {
 		return(kFALSE);
 	}
 
-	mode = new ostrstream();
+	mode = new ostringstream();
 	*mode << setupMode->GetName() << "(" << setupMode->GetIndex() << ")";
-	gMbsSetup->Set("Mode", mode->str());
-	mode->rdbuf()->freeze(0);
+	gMbsSetup->Set("Mode", mode->str().c_str());
+//	mode->rdbuf()->freeze(0);
 	delete mode;
 	return(kTRUE);
 }
@@ -1571,7 +1573,7 @@ Bool_t TMbsSetup::SetMode(EMbsSetupMode Mode) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * setupMode;
-	ostrstream * mode;
+	ostringstream * mode;
 
 	setupMode = gMbsSetup->fLofSetupModes.FindByIndex(Mode);
 	if (setupMode == NULL) {
@@ -1583,10 +1585,10 @@ Bool_t TMbsSetup::SetMode(EMbsSetupMode Mode) {
 		return(kFALSE);
 	}
 
-	mode = new ostrstream();
+	mode = new ostringstream();
 	*mode << setupMode->GetName() << "(" << setupMode->GetIndex() << ")";
-	gMbsSetup->Set("Mode", mode->str());
-	mode->rdbuf()->freeze(0);
+	gMbsSetup->Set("Mode", mode->str().c_str());
+//	mode->rdbuf()->freeze(0);
 	delete mode;
 	return(kTRUE);
 }

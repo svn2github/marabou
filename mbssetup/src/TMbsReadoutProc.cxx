@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 
@@ -504,7 +506,7 @@ Int_t TMbsReadoutProc::GetCratesToBeRead(TArrayI & LofCrates) {
 		crate = crate.Strip(TString::kBoth);
 		cstr = crate + " 1";
 		one = 0;
-		istrstream s(cstr.Data());
+		istringstream s(cstr.Data());
 		s >> crateNo >> one;
 		if (one != 1) {
 			gMrbLog->Err() << "Illegal crate number - " << crate << endl;
@@ -880,7 +882,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	TString compileIt;
 	TString proc;
 
-	ostrstream * cmd;
+	ostringstream * cmd;
 
 	ofstream sh;
 	ifstream diag;
@@ -981,11 +983,11 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	cout	<< this->ClassName() << "::CompileReadout(): Compiling " << cFile
 			<< " on host " << proc << " (MBS version = " << Version << ") ..."
 			<< endl << endl;
-	cmd = new ostrstream();
+	cmd = new ostringstream();
 	*cmd << "rsh " << proc << " 'cd " << srcPath << "; tcsh " << compileIt << "' 2>" << errFile << ends;
-	gSystem->Exec(cmd->str());
+	gSystem->Exec(cmd->str().c_str());
 	cout << endl;
-	cmd->rdbuf()->freeze(0);
+//	cmd->rdbuf()->freeze(0);
 	delete cmd;
 
 	nofErrors = 0;

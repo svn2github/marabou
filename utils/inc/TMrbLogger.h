@@ -13,10 +13,12 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
 #include <fstream.h>
 
 #include "TObject.h"
@@ -139,8 +141,8 @@ class TMrbLogger: public TNamed {
 				
 		const Char_t * Prefix(const Char_t * Identifier = "*", const Char_t * ProgName = NULL); 	// line prefix
 		
-		inline ostrstream & Out() { return(*fOut); };
-		inline ostrstream & Err() { return(*fErr); };
+		inline ostringstream & Out() { return(*fOut); };
+		inline ostringstream & Err() { return(*fErr); };
 		inline ofstream & Log() { return(*fLog); };
 				
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogger.html&"); };
@@ -153,8 +155,8 @@ class TMrbLogger: public TNamed {
 				
 		UInt_t fEnabled;			// one bit for each stream
 		ofstream * fLog;			//!
-		ostrstream * fOut;			//!
-		ostrstream * fErr;			//!
+		ostringstream * fOut;		//!
+		ostringstream * fErr;		//!
 
 		Int_t fIndexOfLastPrinted;	// index at last printout
 		TObjArray fLofMessages; 	// list of messages

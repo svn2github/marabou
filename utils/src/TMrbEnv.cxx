@@ -10,12 +10,14 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
+using namespace std;
+
 #include <unistd.h>
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "TObjString.h"
 #include "TDatime.h"

@@ -1,5 +1,7 @@
-#include <stdlib.h>
-#include <iostream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
 
 #include <TROOT.h>
 #include <TApplication.h>

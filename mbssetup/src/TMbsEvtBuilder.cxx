@@ -10,11 +10,13 @@
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
-#include <stdlib.h>
-#include <iostream.h>
-#include <strstream.h>
-#include <iomanip.h>
-#include <fstream.h>
+using namespace std;
+
+#include <cstdlib>
+#include <iostream>
+#include <sstream>
+#include <iomanip>
+#include <fstream>
 
 #include "Rtypes.h"
 
@@ -196,7 +198,7 @@ Bool_t TMbsEvtBuilder::SetType(const Char_t * ProcType) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * procType;
-	ostrstream * proc;
+	ostringstream * proc;
 
 	procType = gMbsSetup->fLofProcs.FindByName(ProcType, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	if (procType == NULL) {
@@ -208,10 +210,10 @@ Bool_t TMbsEvtBuilder::SetType(const Char_t * ProcType) {
 		return(kFALSE);
 	}
 
-	proc = new ostrstream();
+	proc = new ostringstream();
 	*proc << procType->GetName() << "(" << procType->GetIndex() << ")" << ends;
-	gMbsSetup->Set("EvtBuilder.Type", proc->str());
-	proc->rdbuf()->freeze(0);
+	gMbsSetup->Set("EvtBuilder.Type", proc->str().c_str());
+//	proc->rdbuf()->freeze(0);
 	delete proc;
 	return(kTRUE);
 }
@@ -229,7 +231,7 @@ Bool_t TMbsEvtBuilder::SetType(EMbsProcType ProcType) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * procType;
-	ostrstream * proc;
+	ostringstream * proc;
 
 	procType = gMbsSetup->fLofProcs.FindByIndex(ProcType);
 	if (procType == NULL) {
@@ -241,10 +243,10 @@ Bool_t TMbsEvtBuilder::SetType(EMbsProcType ProcType) {
 		return(kFALSE);
 	}
 
-	proc = new ostrstream();
+	proc = new ostringstream();
 	*proc << procType->GetName() << "(" << procType->GetIndex() << ")" << ends;
-	gMbsSetup->Set("EvtBuilder.Type", proc->str());
-	proc->rdbuf()->freeze(0);
+	gMbsSetup->Set("EvtBuilder.Type", proc->str().c_str());
+//	proc->rdbuf()->freeze(0);
 	delete proc;
 	return(kTRUE);
 }
