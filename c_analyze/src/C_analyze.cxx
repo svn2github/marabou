@@ -276,7 +276,6 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
             }   
          }
 //  check quota 
-	      Bool_t is_signed; 
       	TMrbString tline(wline);
       	TMrbString value;
       	TRegexp letter("[^0-9]");
@@ -285,32 +284,32 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 	//      cout << "nitems " << nitems << endl;
       	Int_t pos = 0;
       	value = ((TObjString *)lof[pos++])->String();
-      	used =       value.SplitOffInteger(value, is_signed, 10);
+      	used =       value.SplitOffInteger(value, 10);
       	value = ((TObjString *)lof[pos++])->String();
-      	soft_limit = value.SplitOffInteger(value, is_signed, 10);
+      	soft_limit = value.SplitOffInteger(value, 10);
       	value = ((TObjString *)lof[pos++])->String();
-      	hard_limit = value.SplitOffInteger(value, is_signed, 10);
+      	hard_limit = value.SplitOffInteger(value, 10);
 	//     possible grace has a letter
       	value = ((TObjString *)lof[pos++])->String();
 	//     cout << value << endl;
       	if(nitems > 6 && value.Index(letter)>= 0){
          	value.Resize(value.Index(letter));
 	//         cout << value << endl;
-         	grace = value.SplitOffInteger(value, is_signed, 10);
+         	grace = value.SplitOffInteger(value, 10);
          	value = ((TObjString *)lof[pos++])->String();
       	}  
-      	f_used = value.SplitOffInteger(value, is_signed, 10);
+      	f_used = value.SplitOffInteger(value, 10);
 
       	value = ((TObjString *)lof[pos++])->String();
-      	f_soft_limit = value.SplitOffInteger(value, is_signed, 10);
+      	f_soft_limit = value.SplitOffInteger(value, 10);
 
       	value = ((TObjString *)lof[pos++])->String();
-      	f_hard_limit = value.SplitOffInteger(value, is_signed, 10);
+      	f_hard_limit = value.SplitOffInteger(value, 10);
 
       	if(pos <= nitems && value.Index(letter)>= 0){
          	value.Resize(value.Index(letter));
          	cout << value << endl;
-         	f_grace = value.SplitOffInteger(value, is_signed, 10);
+         	f_grace = value.SplitOffInteger(value, 10);
       	}  
 
 	//      line >> used >> soft_limit >> hard_limit;
