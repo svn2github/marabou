@@ -100,6 +100,8 @@ void     WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
 Bool_t   fixnames(TFile * * infile, Bool_t checkonly);
 TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color); 
 Int_t    getcol();
+TString * GetStringArg(TString * arg,  Int_t nth);
+TList * BuildList(const char *bp);
 
 inline void nothing();
 #endif

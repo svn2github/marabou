@@ -1815,5 +1815,86 @@ Int_t getcol()
    delete ccol;
    return ind; 
 }
+//________________________________________________________________
 
+TString * GetStringArg(TString * arg,  Int_t nth)
+{
+   TRegexp apo("\"");
+	TString * result = new TString(*arg);
+   for (Int_t i = 0; i < 2*nth; i++) (*result)(apo) = "";
+	Int_t ip = result->Index(apo);
+	if (ip < 0) {
+	  delete result;
+	  return NULL;
+	}
+	result->Remove(0,ip+1);
+//	cout << *result << endl;
+	ip = result->Index(apo);
+	if (ip < 0) {
+	  delete result;
+	  return NULL;
+	}
+	result->Resize(ip);
+	return result;
+}
+//________________________________________________________________
 
+TList * BuildList(const char *bp)
+{
+   TButton * b;
+   b = (TButton *)strtoul(bp, 0, 16);
+//      cout << "bp " << b << endl;
+   TCanvas * mcanvas = b->GetCanvas();
+//   cp_many title start
+   TString ctitle(mcanvas->GetTitle());
+   TRegexp cprefix("CP_");
+   TRegexp cpostfix(".histlist");
+   ctitle(cprefix) = "";
+   ctitle(cpostfix) = "";
+	TList * hlist = new TList();
+	hlist->SetName(ctitle);
+//   cout << "Title of mcanvas: " << ctitle.Data() << endl;
+//  cp_many title end
+   TIter next(mcanvas->GetListOfPrimitives());
+   TString cmdline;
+	TString entry;
+	TString * arg;
+   while (  TObject *obj=next()) {
+      if (!strncmp(obj->ClassName(), "TButton", 7)) {
+         TButton * button = (TButton*)obj;
+         cmdline = button->GetMethod();
+         if (cmdline.Contains("Select")) {
+//            cout << cmdline  << endl;
+            arg = GetStringArg(&cmdline, 0);
+				if (arg) {
+				   entry = *arg;
+					delete arg;
+			   } else {
+				   cout << "Illegal cmd: " << cmdline << endl;
+					continue;
+			   }
+				entry += " ";
+            arg = GetStringArg(&cmdline, 2);
+				if (arg) {
+				   entry += *arg;
+					delete arg;
+			   } else {
+				   cout << "Illegal cmd: " << cmdline << endl;
+					continue;
+			   }
+				entry += " ";
+            arg = GetStringArg(&cmdline, 1);
+				if (arg) {
+				   entry += *arg;
+					delete arg;
+			   } else {
+				   cout << "Illegal cmd: " << cmdline << endl;
+					continue;
+			   }
+//				cout << "|" << entry.Data() << "|" << endl;
+            hlist->Add(new TObjString(entry.Data()));
+         }
+      }
+   }
+	return hlist;
+}

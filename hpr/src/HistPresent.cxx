@@ -1348,82 +1348,22 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
   
 void HistPresent::StackInOneCanvas(const char *bp)
 {
-   TList * hlist = new TList();
-   TButton * b;
-   b = (TButton *)strtoul(bp, 0, 16);
-//      cout << "bp " << b << endl;
-   TCanvas * mcanvas = b->GetCanvas();
-//   cp_many title start
-   TString ctitle(mcanvas->GetTitle());
-   TRegexp cprefix("CP_");
-   TRegexp cpostfix(".histlist");
-   ctitle(cprefix) = "";
-   ctitle(cpostfix) = "";
-//   cout << "Title of mcanvas: " << ctitle.Data() << endl;
-//  cp_many title end
-   TIter next(mcanvas->GetListOfPrimitives());
-   TString cmd;
-   TRegexp apo("\"");
-   TRegexp comma(",");
-   while (  TObject *obj=next()) {
-      if (!strncmp(obj->ClassName(), "TButton", 7)) {
-         TButton * button = (TButton*)obj;
-         cmd = button->GetMethod();
-         if (cmd.Contains("Select")) {
-//            cout << cmd  << endl;
-            for(Int_t i = 0; i < 4; i++)cmd(apo) = "";
-            Int_t pp = cmd.Index("(");
-            cmd.Remove(0,pp+1); 
-            cmd(comma) = " ";
-            pp = cmd.Index(",");
-            cmd.Resize(pp);
-            hlist->Add(new TObjString(cmd.Data()));
-         }
-      }
+   TList * hlist = BuildList(bp);
+	if (hlist) {
+      StackSelectedHists(hlist, hlist->GetName());
+      hlist->Delete();
    }
-   StackSelectedHists(hlist, ctitle.Data());
-   hlist->Delete();
 }
 //________________________________________________________________________________________
 // Show List 
   
 void HistPresent::ShowInOneCanvas(const char *bp)
 {
-   TList * hlist = new TList();
-   TButton * b;
-   b = (TButton *)strtoul(bp, 0, 16);
-//      cout << "bp " << b << endl;
-   TCanvas * mcanvas = b->GetCanvas();
-//   cp_many title start
-   TString ctitle(mcanvas->GetTitle());
-   TRegexp cprefix("CP_");
-   TRegexp cpostfix(".histlist");
-   ctitle(cprefix) = "";
-   ctitle(cpostfix) = "";
-//   cout << "Title of mcanvas: " << ctitle.Data() << endl;
-//  cp_many title end
-   TIter next(mcanvas->GetListOfPrimitives());
-   TString cmd;
-   TRegexp apo("\"");
-   TRegexp comma(",");
-   while (  TObject *obj=next()) {
-      if (!strncmp(obj->ClassName(), "TButton", 7)) {
-         TButton * button = (TButton*)obj;
-         cmd = button->GetMethod();
-         if (cmd.Contains("Select")) {
-//            cout << cmd  << endl;
-            for(Int_t i = 0; i < 4; i++)cmd(apo) = "";
-            Int_t pp = cmd.Index("(");
-            cmd.Remove(0,pp+1); 
-            cmd(comma) = " ";
-            pp = cmd.Index(",");
-            cmd.Resize(pp);
-            hlist->Add(new TObjString(cmd.Data()));
-         }
-      }
+   TList * hlist = BuildList(bp);
+	if (hlist) {
+      ShowSelectedHists(hlist, hlist->GetName());
+      hlist->Delete();
    }
-   ShowSelectedHists(hlist, ctitle.Data());
-   hlist->Delete();
 }
 //________________________________________________________________________________________
 // Show Tree 
@@ -2519,17 +2459,19 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    TObjString * obj = (TObjString *)hlist->At(pos);
 
    TString fname = obj->String();
+//	cout << "|" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
-   if (pp <= 0) {cout << "pp<=0 in " << fname << endl; return NULL;};
+   if (pp <= 0) {cout << "Not file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
 
    TString hname = obj->String();
    hname.Remove(0,pp+1);
    TString dname = hname.Data();
    pp = hname.Index(" ");
+   if (pp <= 0) {cout << "No histogram name in: " << obj->String()<< endl; return NULL;};
    hname.Resize(pp);
    dname.Remove(0,pp+1);
-//   cout << fname << " " << hname << " " << dname << " " << endl;
+//   cout << fname << "|" << hname << "|" << dname << "|" << endl;
 
    hname = hname.Strip(TString::kBoth);
    dname = dname.Strip(TString::kBoth);
