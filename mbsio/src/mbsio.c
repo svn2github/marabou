@@ -715,7 +715,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	s_vehe *vh;
 	unsigned int bo;
 	unsigned int btype, etype;
-	int evl;
+	int evl, evlsv;
 	int frag1, frag2;
 	int sc;
 	unsigned int (*s)();
@@ -771,6 +771,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		frag1 = evl;
 	}
 
+	evlsv = evl;
 	evl = evl * sizeof(unsigned short) + sizeof(s_evhe);
 	frag1 = frag1 * sizeof(unsigned short) + sizeof(s_evhe);
 
@@ -865,7 +866,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 
 	if (med_out) {
 		eh = eHdr;
-		bto_put_long(&evl, &eh->l_dlen, 1, bo);
+		bto_get_long(&eh->l_dlen, &evlsv, 1, bo);
 		ehs = sizeof(s_vehe);
 		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
