@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.2 2004-11-17 09:35:07 marabou Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.3 2004-11-17 11:34:19 marabou Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -226,19 +226,21 @@ TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNo
 	this->ReadAttr();
 }
 
-TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TObject * Node) : TMrbNamedX((Int_t) AttrId, AttrName) {
+TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyAttr AttrHandle, TObject * Node)
+																	: TMrbNamedX((Int_t) AttrId, AttrName) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyAttr
 // Purpose:        A tidy attribute
 // Arguments:      TidyAttrId AttrId  	  -- attr id
 //                 Char_t * AttrName      -- name
+//                 TidyAttr AttrHanlde    -- ptr to tidy struct
 //                 TMrbTidyNode * Node    -- node attr belongs to
 // Description:    Ctor to instantiate a tidy attribute
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fHandle = NULL;
+	fHandle = AttrHandle;
 	fValue.Resize(0);
 	fTidyDoc = NULL;
 	this->AssignObject(Node);
@@ -332,10 +334,37 @@ Int_t TMrbTidyDoc::ReadOptions() {
 	while (itOpt)
 	{
   		TidyOption optHandle = tidyGetNextOption(fHandle, &itOpt);	// get handle to tidy option
-		TMrbTidyOption * opt = new TMrbTidyOption(tidyOptGetId(fHandle), tidyOptGetName(fHandle), optHandle, this);
+		TMrbTidyOption * opt = new TMrbTidyOption(tidyOptGetId(optHandle), tidyOptGetName(optHandle), optHandle, this);
 		fLofOptions.Add(opt);			// add to list
   	}
 	return(fLofOptions.GetEntriesFast());
+}
+
+void TMrbTidyDoc::PrintOptions(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::PrintOptions
+// Purpose:        Print tidy options
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Prints tidy options.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fLofOptions.GetEntriesFast() > 0) {
+		Out 	<< endl << "Document " << this->GetName();
+		if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
+		Out 	<< ": list of TIDY options" << endl
+				<< "-------------------------------------------------------------------------" << endl
+				<< " Id" << setw(30) << "Name" << setw(10) << "Value" << endl
+				<< "-------------------------------------------------------------------------" << endl;
+		TMrbTidyOption * opt = (TMrbTidyOption *) fLofOptions.First();
+		while (opt) {
+			opt->Print(Out);
+			opt = (TMrbTidyOption *) fLofOptions.After(opt);
+		}
+	}
 }
 
 Bool_t TMrbTidyDoc::ParseFile(const Char_t * DocFile, Bool_t Repair) {
@@ -549,12 +578,46 @@ Int_t TMrbTidyNode::ReadAttr() {
 	fLofAttr.Delete();				// clear option list
 	TidyAttr attrHandle;
 	for (attrHandle = tidyAttrFirst(fHandle); attrHandle; attrHandle = tidyAttrNext(attrHandle)) {
-		TMrbTidyAttr * attr = new TMrbTidyAttr(tidyAttrGetId(attrHandle), tidyAttrName(attrHandle), this);
+		TMrbTidyAttr * attr = new TMrbTidyAttr(tidyAttrGetId(attrHandle), tidyAttrName(attrHandle), attrHandle, this);
 		fLofAttr.Add(attr);				// add to list
 		attr->SetValue(tidyAttrValue(attrHandle));	// get value
-		attr->SetHandle(attrHandle);			// connect to tidy attr
   	}
 	return(fLofAttr.GetEntriesFast());
+}
+
+void TMrbTidyOption::Print(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyOption::Print
+// Purpose:        Print tidy option
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Prints tidy option.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Out << setw(3) << this->GetIndex() << setw(30) << this->GetName() << setw(10);
+	switch (fType) {
+		case TidyString:
+			{
+				TString optVal;
+				if (this->GetValue(optVal)) Out << optVal << endl; else Out << "???";
+			}
+			break;
+		case TidyInteger:
+			{
+				Int_t optVal;
+				if (this->GetValue(optVal)) Out << optVal << endl; else Out << "???";
+			}
+			break;
+		case TidyBoolean:
+			{
+				Bool_t optVal;
+				if (this->GetValue(optVal)) Out << (optVal ? "TRUE" : "FALSE") << endl; else Out << "???";
+			}
+			break;
+	}
 }
 
 //________________________________________________________________[C++ METHOD]
@@ -873,28 +936,20 @@ void TMrbTidyNode::Print(ostream & Out) {
 	TMrbLofNamedX lofTagIds;
 	lofTagIds.AddNamedX(kMrbTidyTagIds);
 
-	printf("[%2d] ", fTreeLevel);
-	for (Int_t lev = 0; lev < fTreeLevel; lev++) printf(".");
-	if (fTreeLevel > 0) printf(" ");
+	Out << "[" << setw(2) << fTreeLevel << "] ";
+	for (Int_t lev = 0; lev < fTreeLevel; lev++) Out << ".";
+	if (fTreeLevel > 0) Out << " ";
 	TString parentName = fParent ? fParent->GetName() : "root";
 	TMrbNamedX * ty = (TMrbNamedX *) lofNodeTypes.FindByIndex((Int_t) this->GetType());
 	TString tyStr;
 	if (ty) tyStr = Form("%s(%d)", ty->GetName(), ty->GetIndex()); else tyStr = this->GetType();
-	if (this->GetIndex() != TidyTag_UNKNOWN) {
-		TMrbNamedX * tag = (TMrbNamedX *) lofTagIds.FindByIndex(this->GetIndex());
-		TString tagStr;
-		if (tag) tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex()); else tagStr = this->GetIndex();
-		printf("node %s: type=%s tagid=%s parent=%s",
-								this->GetName(),
-								tyStr.Data(),
-								tagStr.Data(),
-								parentName.Data());
-	} else {
-		printf("node %s: type=%s parent=%s",
-								this->GetName(),
-								tyStr.Data(),
-								parentName.Data());
-	}
+	TMrbNamedX * tag = (TMrbNamedX *) lofTagIds.FindByIndex(this->GetIndex());
+	TString tagStr;
+	if (tag) tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex()); else tagStr = this->GetIndex();
+	Out << "node " << this->GetName()
+		<< " type=" << tyStr.Data();
+	if (this->GetIndex() != TidyTag_UNKNOWN) Out << " tagid=" << tagStr.Data();
+	Out << " parent=" << parentName.Data();
 	if (tidyNodeHasText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)) {
 		TidyBuffer text = {'\0'};
 		tidyNodeGetText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle, &text);
@@ -904,14 +959,14 @@ void TMrbTidyNode::Print(ostream & Out) {
 			if (*bp == '\n')	str += "<cr>";
 			else				str += *bp;
 		}
-		printf(" text='%s'", str.Data());
+		Out << " text='" << str << "'";
 	}
 	TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
 	while (a) {
-		printf(" %s=%s", a->GetName(), a->GetValue());
+		Out << " " << a->GetName() << "=" << a->GetValue();
 		a = (TMrbTidyAttr *) fLofAttr.After(a);
 	}
-	printf("\n");
+	Out << endl;
 }
 
 TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, const Char_t * NodeAttributes, Bool_t Recursive) {

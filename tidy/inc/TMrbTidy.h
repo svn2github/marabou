@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.2 2004-11-17 09:35:07 marabou Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.3 2004-11-17 11:34:19 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -55,9 +55,11 @@ class TMrbTidyOption : public TMrbNamedX {
 		Bool_t SetValue(Int_t Value);
 		Bool_t SetValue(Bool_t Flag);
 
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & Out = cout);
+
 		void Reset();
 
-		inline void SetHandle(TidyOption Handle) { fHandle = Handle; };
 		inline TidyOption GetHandle() { return(fHandle); };
 
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
@@ -82,7 +84,7 @@ class TMrbTidyOption : public TMrbNamedX {
 class TMrbTidyAttr : public TMrbNamedX {
 
  	public:
-		TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TObject * Node);
+		TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyOption OptHandle, TObject * Node);
 		virtual ~TMrbTidyAttr() {};
 
 		inline void SetValue(const Char_t * Value) { fValue = Value; };
@@ -138,7 +140,6 @@ class TMrbTidyAttr : public TMrbNamedX {
 		Bool_t IsCOLSPAN();
 		Bool_t IsROWSPAN();
 
-		inline void SetHandle(TidyAttr Handle) { fHandle = Handle; };
 		inline TidyAttr GetHandle() { return(fHandle); };
 
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
@@ -321,7 +322,6 @@ class TMrbTidyNode : public TMrbNamedX {
 		TMrbTidyAttr * GetAttrCOLSPAN();
 		TMrbTidyAttr * GetAttrROWSPAN();
 
-		inline void SetHandle(TidyNode Handle) { fHandle = Handle; };
 		inline TidyNode GetHandle() { return(fHandle); };
 
 		TMrbTidyNode * Find(const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
@@ -420,6 +420,8 @@ class TMrbTidyDoc : public TNamed {
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & Out = cout);
+
+		void PrintOptions(ostream & Out = cout);
 
 		inline TMrbTidyNode * GetRoot() { return(fTidyRoot); };
 		inline TMrbTidyNode * GetHtml() { return(fTidyHtml); };
