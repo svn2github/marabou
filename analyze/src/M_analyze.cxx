@@ -184,7 +184,7 @@ int main(int argc, char **argv) {
 
 	void exit_from_analyze(int);
 
-	if(argc <= 2) {
+	if(argc <= 1) {
 		cerr	<< setred
 				<<	endl
 				<<	"Usage: M_analyze data_source [input_type]" << endl
@@ -212,8 +212,8 @@ int main(int argc, char **argv) {
 				<<	"       file_size      0                approx. size of output file in MB" << endl
 				<<	"       parm_file      \"none\"             name of parameter file (.root / .par) to be loaded at startup" << endl
 				<<	"       histo_file     \"Histos_...\"       name / prefix if histogram file" << endl
-				<<	"       mmap_file      \"/tmp/M_prod.map\"  name of mmap file" << endl
-				<<	"       mmap_size      12               size of file in MBs" << endl
+				<<	"       mmap_file      \"none\"  name of mmap file, if not \"none\": must be local e.g. \"/tmp/M_prod.map\"" << endl
+				<<	"       mmap_size      0               size of file in MBs" << endl
 				<<	"       gComSocket     0                socket for communication with C_analyze" << endl
 				<< setblack <<	endl << endl;
 		exit(0);
@@ -240,7 +240,10 @@ int main(int argc, char **argv) {
 	TString input_type;
 	TMrbIOSpec::EMrbInputMode input_mode;
 	if(argc > argNo)	input_type = argv[argNo];
-	else				input_type = "F";
+	else {
+      if (data_source.EndsWith("list")) input_type = "L";
+      else                              input_type = "F";
+   }
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Input type:  " <<  input_type<< endl;
 
 	TRegexp rxroot("\\.root$");
@@ -390,7 +393,11 @@ int main(int argc, char **argv) {
 	TMrbIOSpec::EMrbHistoMode histo_mode;
 	argNo++;
 	if(argc > argNo)	histo_file = argv[argNo];
-	else				histo_file = "none";
+	else {
+ 	   histo_file = "Histos_";
+      histo_file += data_source;
+      if (!histo_file.EndsWith("root")) histo_file += "root";
+   }
 	if (histo_file.CompareTo("none") == 0)	histo_mode = TMrbIOSpec::kHistoNone;
 	else									histo_mode = TMrbIOSpec::kHistoSave;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Histo file:  " << histo_file << endl;
@@ -582,7 +589,7 @@ int main(int argc, char **argv) {
 			} else if (output_mode & TMrbIOSpec::kOutputWriteLMDFormat) {
 				if (!gMrbTransport->OpenLMDFile(output_file)) exit(1);
 			} else if (output_mode & TMrbIOSpec::kOutputWriteRootTree) {
-				if (u_analyze->WriteRootTree(ioSpec)) exit(1);
+				if (!u_analyze->WriteRootTree(ioSpec)) exit(1);
 			} else {
 				cerr << setred << "M_analyze: Wrong output format - " << output_file << setblack << endl;
 				exit(1);
@@ -813,6 +820,7 @@ void exit_from_analyze(int n) {
 /////////////////////////////////////////////////////////////////////////////
 
 void * msg_handler(void * dummy) {
+   const Int_t kMaxSock = 6;
    cout << "Enter msg_handler, gComSocket = " << gComSocket<< endl;
 //   TServerSocket *ss = new TServerSocket(gComSocket, kTRUE);
    if (!(ss->IsValid())) {
@@ -824,13 +832,14 @@ void * msg_handler(void * dummy) {
    mon->Add(ss);
    mon->Print();
 
-   TSocket *s0 = 0, *s1 = 0, *s_reject = 0;
+//   TSocket *s0 = 0, *s1 = 0, *s_reject = 0;
+   TSocket * s[kMaxSock];
    TMessage *mess =0;
    Int_t maxwait = 1000;
 //     TSocket  *sock = ss->Accept();
 //     sock->Send("go 0");
 
-   while (1){
+   while (1) {
       TSocket *sock;
       sock = mon->Select(maxwait);
       if (sock == (TSocket*)-1) {
@@ -838,7 +847,18 @@ void * msg_handler(void * dummy) {
          else continue;   
       }
       if (sock->IsA() == TServerSocket::Class()) {
-
+         Bool_t ok = kFALSE;
+         for (Int_t i = 0; i < kMaxSock - 1; i++) {
+            if (!s[i]) {
+               s[i] = ((TServerSocket *)sock)->Accept();
+               s[i]->Send("accept");
+               mon->Add(s[i]);
+               cout << "Added socket s[" << i << "]" << endl;
+               ok = kTRUE;
+               break;
+            }
+         }
+/*                   
          if (!s0) {
             s0 = ((TServerSocket *)sock)->Accept();
             s0->Send("accept");
@@ -856,6 +876,14 @@ void * msg_handler(void * dummy) {
             s_reject->Close();
             s_reject = NULL;
          }
+*/
+         if (!ok) {
+            cout << "only accept " << kMaxSock - 1 << " client connections" << endl;
+            s[kMaxSock - 1] = ((TServerSocket *)sock)->Accept();
+            s[kMaxSock - 1]->Send("reject");
+            s[kMaxSock - 1]->Close();
+            s[kMaxSock - 1] = NULL;
+         }
 //         if (s0 && s1) {
  //           mon->Remove(ss);
 //            ss->Close();
@@ -871,8 +899,11 @@ void * msg_handler(void * dummy) {
 //  client exited without message
          cout << "M_analyze::msg_handler(): mess == 0" << endl;
          mon->Remove(sock);
-         if (sock == s0) s0 = 0;
-         if (sock == s1) s1 = 0;
+         for (Int_t i = 0; i < kMaxSock - 1; i++) {
+            if (sock == s[i]) s[i] = NULL;
+         }
+//         if (sock == s0) s0 = 0;
+//         if (sock == s1) s1 = 0;
          continue;
       }
 //      if ( verboseMode ) cout << "M_analyze::msg_handler(): Message type " << mess->What() << endl;
@@ -973,8 +1004,11 @@ void * msg_handler(void * dummy) {
             send_ack = kFALSE;
          	cout << "M_analyze::msg_handler(): M_client exit" << endl;
          	mon->Remove(sock);
-         	if (sock == s0) s0 = 0;
-         	if (sock == s1) s1 = 0;
+         	for (Int_t i = 0; i < kMaxSock - 1; i++) {
+            	if (sock == s[i]) s[i] = NULL;
+         	}
+//         	if (sock == s0) s0 = 0;
+//         	if (sock == s1) s1 = 0;
          	continue;
          } else {
             cerr << setred
@@ -999,9 +1033,12 @@ void * msg_handler(void * dummy) {
       if (mess) { delete mess; mess = 0;};
    }
 
-   if (s0) s0->Close();
-   if (s1) s1->Close();
-   if (ss) ss->Close();
+	for (Int_t i = 0; i < kMaxSock; i++) {
+   	if (s[i]) s[i]->Close() ;
+	}
+//   if (s0) s0->Close();
+//   if (s1) s1->Close();
+//   if (ss) ss->Close();
 
    if (mess) delete mess;
    cout << "exit msg_handler" << endl;
