@@ -12,23 +12,25 @@ $CVS2CL -f cvslog/ChangeLog -W 10 -P -S --no-wrap
 
 rm -f cvslog/ChangeLog.bak
 
-root -b <<makedoc
+root <<makedoc
     THtml html;
     TString odir = gEnv.GetValue("Root.Html.OutputDir", "");
-//	gSystem.Load("libTMrbUtils.so");
-//    gSystem.Load("libTMbsControl.so");
-//    gSystem.Load("libTMrbConfig.so");
-//    gSystem.Load("libTMrbTransport.so");
-//    gSystem.Load("libTMbsSetup.so");
-//    gSystem.Load("libTMrbEsone.so");
-//    gSystem.Load("libTMrbDGF.so");
-//    gSystem.Load("libTGMrbUtils.so");
-//    gSystem.Load("libTMrbHelpBrowser.so");
-//    gSystem.Load("libMutex.so");
-//    gSystem.Load("libTMrbAnalyze.so");
-//    gSystem.Load("libDGFControl.so");
-//    gSystem.Load("libTSnkDDA0816.so");
-//    gSystem.Load("libTPolControl.so");
+	cout << "@@ before utils" << endl;
+	gSystem->Load("libTMrbUtils.so");
+	cout << "@@ after utils" << endl;
+	gSystem->Load("libTMbsControl.so");
+	gSystem->Load("libTMrbConfig.so");
+	gSystem->Load("libTMrbTransport.so");
+	gSystem->Load("libTMbsSetup.so");
+	gSystem->Load("libTMrbEsone.so");
+	gSystem->Load("libTMrbDGF.so");
+	gSystem->Load("libTGMrbUtils.so");
+	gSystem->Load("libTMrbHelpBrowser.so");
+	gSystem->Load("libMutex.so");
+	gSystem->Load("libTMrbAnalyze.so");
+	gSystem->Load("libDGFControl.so");
+	gSystem->Load("libTSnkDDA0816.so");
+	gSystem->Load("libTPolControl.so");
     html.Convert("cvslog/ChangeLog", "MARaBOU Release Notes ($VERSION)", odir.Data());
     .q
 makedoc
