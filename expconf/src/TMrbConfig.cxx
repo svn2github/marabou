@@ -1351,7 +1351,11 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 			} else {
 				switch (tagIdx = (TMrbConfig::EMrbReadoutTag) readoutTag->GetIndex()) {
 					case TMrbConfig::kRdoPath:
-						rdoStrm << rdoTmpl.Encode(line, gSystem->WorkingDirectory()) << endl;
+						{
+							TString pwd = gSystem->Getenv("PWD");
+							if (pwd.Length() == 0) pwd = gSystem->WorkingDirectory();
+							rdoStrm << rdoTmpl.Encode(line, pwd.Data()) << endl;
+						}
 						break;
 					case TMrbConfig::kRdoFile:
 						rdoStrm << rdoTmpl.Encode(line, pp->GetF()) << endl;
