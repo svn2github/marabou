@@ -404,7 +404,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    TList* GetWindowList(){return fAllWindows;};
    TList* GetFunctionList(){return fAllFunctions;};
    TList* GetCutList(){return fAllCuts;};
-   TH1* GetSelHistAt(Int_t, TList * hl = 0);
+   TH1* GetSelHistAt(Int_t pos = 0, TList * hl = 0, Bool_t try_memory = kFALSE);
    void TurnButtonGreen(TVirtualPad **);
    TList* GetSelections(){return fSelectHist;};
 

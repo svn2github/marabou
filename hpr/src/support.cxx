@@ -1057,8 +1057,10 @@ TEnv *GetDefaults(TString & hname, Bool_t mustexist)
    if (defname.Length() > 0) {
       defname += "_";
       defname += hname;
+		Int_t ip = defname.Index(";");
+		if (ip > 0) defname.Resize(ip);
       defname += ".def";
-//      cout << "Look for : " << defname.Data() << endl;
+      cout << "Look for : " << defname.Data() << endl;
       if (mustexist && gSystem->AccessPathName(defname.Data()))
          return 0;
 //      cout << "Look for : " << defname.Data() << endl;

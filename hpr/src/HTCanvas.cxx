@@ -837,7 +837,7 @@ void HTCanvas::DrawHist()
             cout << "select exactly 1 histogram" << endl;
             return;
          } else {
-            TH1* hist = fHistPresent->GetSelHistAt(0);
+            TH1* hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
             if (hist) {
 //               hist->Print();
                selected->cd();

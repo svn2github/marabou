@@ -1,4 +1,3 @@
-
 #include "TROOT.h"
 #include "TEnv.h"
 #include "TDirectory.h"
@@ -2503,7 +2502,7 @@ void HistPresent::RebinHist()
 //________________________________________________________________________________________
 // Rebin histograms 
   
-TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl) 
+TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory) 
 {
    TList * hlist;
    if (hl) hlist = hl;
@@ -2535,10 +2534,18 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
    hname = hname.Strip(TString::kBoth);
    dname = dname.Strip(TString::kBoth);
    TH1* hist;
-//   cout << "GetSelHistAt: " << hname << " Fn: " << fname <<  endl;
    hist = (TH1*)gROOT->GetList()->FindObject(hname);
+	if (!hist && try_memory) {
+	   TString newname(fname.Data());
+		pp = newname.Index(".");
+		if (pp>0) newname.Resize(pp);
+		newname += "_";
+		newname += hname.Data();
+	   hist = (TH1*)gROOT->GetList()->FindObject(newname);
+      cout << "Use hist in memory: " << hname << " Fn: " << fname << " Nn: " << newname << endl;
+	}
 //   if (hist) hist->Print();
-   if (hist && fname == "Memory") return hist;
+   if (hist && (fname == "Memory" || try_memory)) return hist;
    if (!(fname == "Memory")) {
       hist=(TH1*)gROOT->GetList()->FindObject(hname);
 //     gROOT->ls();

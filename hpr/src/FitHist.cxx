@@ -311,6 +311,8 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 
    defname += "_";
    defname += fHname;
+	Int_t ip = defname.Index(";");
+	if (ip > 0) defname.Resize(ip);
    defname += ".def";
 
    if (fDeleteCalFlag && !gSystem->AccessPathName(defname.Data())) {
@@ -415,9 +417,10 @@ void FitHist::SaveDefaults(Bool_t recalculate)
 
 void FitHist::RestoreDefaults()
 {
-   TEnv *lastset = 0;
-   if (hp && (hp->fRememberLastSet || hp->fRememberZoom) && (lastset = GetDefaults(fHname)) ) {
-      fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
+   TEnv * lastset = GetDefaults(fHname);
+	if (!lastset) return;
+   fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
+   if (hp && (hp->fRememberLastSet || hp->fRememberZoom)) {
       fLogy = lastset->GetValue("LogY", fLogy);
       fRangeLowX = fSelHist->GetXaxis()->GetXmin();
       fRangeUpX = fSelHist->GetXaxis()->GetXmax();
@@ -489,10 +492,10 @@ void FitHist::RestoreDefaults()
          		if (uc) delete [] uc;     
             }   
          }
-         if (lastset)
-            delete lastset;
       }
    }
+   if (lastset)
+      delete lastset;
 }
 //______________________________________________________________________________________
 
