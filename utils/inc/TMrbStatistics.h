@@ -45,6 +45,15 @@ protected:
    Int_t fDim;             // Dimension of histogram
    Int_t fNofUpdates;      // Number of updates
    Int_t fCycle;           // cycle number of Key on file
+   Int_t fNinX;
+   Int_t fNinY;
+   Int_t fNinZ;
+   Axis_t fLowX;
+   Axis_t fHighX;
+   Axis_t fLowY;
+   Axis_t fHighY;
+   Axis_t fLowZ;
+   Axis_t fHighZ;
    Stat_t fEntries;        // Entries
    Stat_t fSumofw;         // Sum of Weights, contents without under/overflows
    Stat_t fMean;           // Mean (along X for 2 dim)

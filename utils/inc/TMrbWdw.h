@@ -251,6 +251,7 @@ class TMrbWindow2D : public TCutG, public TAttText {
 		inline void SetParent(TObject * Parent) { fParent = Parent; };
 
 		virtual void Draw(Option_t * Option = "");
+		virtual void Print(Option_t * Option = "");
 		Double_t GetXtext() const { return(fXtext); }
 		Double_t GetYtext() const { return(fYtext); }
 		void SetXtext(Double_t Xt){ fXtext = Xt; }

@@ -699,6 +699,21 @@ void TMrbWindow2D::Draw(Option_t * Option) {
 	AppendPad(opt);
 }
 
+void TMrbWindow2D::Print(Option_t * Option) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbWindow2D::Print
+// Purpose:        Print current window limits
+// Arguments:      Char_t * Option  -- option
+// Results:        
+// Exceptions:
+// Description:    Outputs window limits to cout.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+   cout	<< this->ClassName() << " " << GetName() << endl;
+   TCutG::Print();
+}
+
 TMbsWindow2d::~TMbsWindow2d() {
 //__________________________________________________________________[C++ DTOR]
 //////////////////////////////////////////////////////////////////////////////
