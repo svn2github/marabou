@@ -41,7 +41,8 @@ static Char_t * kDGFFileTypesROOT[]	=	{
 const SMrbNamedX kDGFTauButtons[] =
 			{
 				{DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, 		"Acquire histo(s)", "Start run to accumulate histograms"	},
-				{DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos,	"Save histos",		"Save histograms to file"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayAbort,			"Abort",			"Abort accumulation"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos,		"Save histos",		"Save histograms to file"	},
 				{DGFMcaDisplayPanel::kDGFMcaDisplayReset,			"Reset",			"Reset to default values"	},
 				{DGFMcaDisplayPanel::kDGFMcaDisplayClose,			"Close",			"Close window"				},
 				{0, 															NULL,				NULL						}
@@ -51,13 +52,14 @@ const SMrbNamedXShort kDGFMcaTimeScaleButtons[] =
 							{
 								{DGFMcaDisplayPanel::kDGFMcaTimeScaleSecs, 		"sec"		},
 								{DGFMcaDisplayPanel::kDGFMcaTimeScaleMins, 		"min"		},
-								{DGFMcaDisplayPanel::kDGFMcaTimeScaleHours, 		"hour" 	},
+								{DGFMcaDisplayPanel::kDGFMcaTimeScaleHours, 	"hour" 	},
 								{0, 											NULL	}
 							};
 
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
 
+Bool_t abortAccu = kFALSE;
 
 static TString btnText;
 
@@ -328,6 +330,9 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 									if (fMcaFileInfo.fFilename != NULL && *fMcaFileInfo.fFilename != '\0') this->SaveHistos(fMcaFileInfo.fFilename);
 								}
 								break;
+							case kDGFMcaDisplayAbort:
+								abortAccu = kTRUE;
+								break;
 							case kDGFMcaDisplayReset:
 								break;
 							case kDGFMcaDisplayClose:
@@ -398,16 +403,22 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	Int_t modNo, cl;
-	Int_t nofModules, nofHistos, nofWords;
+	Int_t nofModules, nofHistos;
 	TMrbString intStr;
 	Int_t accuTime;
 	TString timeScale;
 	UInt_t chnPattern;
-	Int_t chn;
 										
-	timeScale = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive())->GetName();
+	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
 	intStr = fRunTimeEntry->GetEntry()->GetText();
 	intStr.ToInteger(accuTime);
+	Int_t waitInv;
+	switch (tp->GetIndex()) {
+		case kDGFMcaTimeScaleSecs:	waitInv = 1; break;
+		case kDGFMcaTimeScaleMins:	waitInv = 60; break;
+		case kDGFMcaTimeScaleHours: waitInv = 60 * 60; break;
+	}
+	Int_t secsToWait = accuTime * waitInv;
 
 	chnPattern = fSelectChannel->GetActive();
 	if (chnPattern == 0) {
@@ -419,33 +430,17 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
-	nofHistos = 0;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
 			chnPattern = fSelectChannel->GetActive();
-			for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-				if (chnPattern & (1 << chn)) dgf->SetGoodChannel(chn);
-			}
 			histoBuffer.Reset();
 			histoBuffer.SetModule(dgf);
 			UInt_t chnPattern = fSelectChannel->GetActive() >> 12;
-			if (dgf->AccuHistograms(accuTime, timeScale.Data(), chnPattern)) {
-				nofWords = dgf->ReadHistogramBuffer(histoBuffer, chnPattern);
-				if (nofWords > 0) {
-					histoBuffer.Print();
-					TMrbString fn = dgf->GetName();
-					fn += ".mca.root";
-					histoBuffer.Save(fn.Data());
-					nofHistos++;
-				} else {
-					gMrbLog->Err()	<< "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-										<< ": Histogram buffer is empty" << endl;
-					gMrbLog->Flush(this->ClassName(), "AcquireHistos");
-				}
-			}
+			dgf->AccuHist_Init(chnPattern);
+			dgf->AccuHist_Start();
 			nofModules++;
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -455,10 +450,39 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No modules selected", kMBIconExclamation);
 		return(kFALSE);
-	} else if (nofHistos == 0) {
-		gMrbLog->Err()	<< "No histograms at all" << endl;
-		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
 	}
+
+	cout << "[Accumulating " << accuTime << " " << tp->GetName() << "(s) - wait ... " << ends << flush;
+	abortAccu = kFALSE;
+	for (Int_t i = 0; i < secsToWait; i++) {
+		sleep(1);
+		gSystem->ProcessEvents();
+		if (abortAccu) {
+			gMrbLog->Err() << "Aborted after " << i << " secs. Stopping current run." << endl;
+			gMrbLog->Flush(this->ClassName(), "AccuHistograms");
+			break;
+		}	
+	}
+	if (!abortAccu) cout << "done]" << endl;
+
+	nofHistos = 0;
+	nofModules = 0;
+	dgfModule = gDGFControlData->FirstModule();
+	while (dgfModule) {
+		cl = nofModules / kNofModulesPerCluster;
+		modNo = nofModules - cl * kNofModulesPerCluster;
+		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
+			dgf = dgfModule->GetAddr();
+			if (dgf->AccuHist_Stop(0)) {
+				nofHistos++;
+				dgf->RestoreParams(TMrbDGF::kSaveAccuHist);
+			}
+			nofModules++;
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+	}				
+	gMrbLog->Out()	<< nofHistos << " histogram(s) accumulated" << endl;
+	gMrbLog->Flush(this->ClassName(), "AcquireHistos", setblue);
 	return(kTRUE);
 }
 

@@ -62,9 +62,10 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 										kDGFMcaDisplayRunTime, 			//		runtime
 										kDGFMcaDisplayTimeScale,		//				time scale
 										kDGFMcaDisplayAcquire,			//		actions start accu
+										kDGFMcaDisplayAbort,			//				abort accu
 										kDGFMcaDisplaySaveHistos,		//				save current histograms
 										kDGFMcaDisplayReset, 			//				reset
-										kDGFMcaDisplayClose,				//				close
+										kDGFMcaDisplayClose,			//				close
 										kDGFMcaDisplaySelectAll,		// select	all
 										kDGFMcaDisplaySelectNone,		//				none
 										kDGFMcaDisplaySelectColumn		//				column
