@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.84 2004-11-29 13:39:56 rudi Exp $       $Id: TMrbConfig.cxx,v 1.84 2004-11-29 13:39:56 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.85 2004-11-29 13:45:49 rudi Exp $       $Id: TMrbConfig.cxx,v 1.85 2004-11-29 13:45:49 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4203,8 +4203,9 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 			Long_t dmy, modTime;
 			Long64_t dmy64;
 			TString suffix = "+g";
-			TString timeStamp = aclic;
-			timeStamp.Prepend(".");
+			TString timeStamp;
+			ux.GetDirName(timeStamp, aclic.Data());
+			timeStamp += "/.UserMacro";
 			if (gSystem->GetPathInfo(timeStamp.Data(), &dmy, &dmy64, &dmy, &aclicTime) == 0) {
 				for (Int_t i = 0; i < nofLibs; i++) {
 					TString fName = ((TObjString *) lofLibs[i])->GetString();
