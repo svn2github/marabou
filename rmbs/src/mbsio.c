@@ -22,7 +22,6 @@
 #define FALSE	0
 
 #include "mbsio.h"
-#include "mbsio_protos.h"
 
 /* include files needed by m.muench's tcp package */
 
@@ -38,7 +37,7 @@
 
 extern int errno;
 
-char loc_errbuf[MBS_L_STR]; 		/* where to store error messages */
+char loc_errbuf[MBS_L_STR]; 		// where to store error messages
 char *rem_errbuf = NULL;
 
 char loc_logbuf[MBS_L_STR];
@@ -73,13 +72,13 @@ void _mbs_show_sev_9000_2();
 unsigned int *_mbs_unpack_sev_9000_X();
 
 static MBSBufferElem buffer_types[] = {
-				{	MBS_BTYPE_HEADER,		/* [subtype,type] */
-					"File header",			/* description */
-					sizeof(s_filhe),		/* size */
-					0,						/* hits */
-					NULL,					/* proc to unpack */
-					_mbs_show_fheader,		/* proc to show data */
-					_mbs_copy_fheader		/* proc to convert data */
+				{	MBS_BTYPE_HEADER,		// [subtype,type]
+					"File header",			// description
+					sizeof(s_filhe),		// size
+					0,						// hits
+					NULL,					// proc to unpack
+					_mbs_show_fheader,		// proc to show data
+					_mbs_copy_fheader		// proc to convert data
 				},
 				{	MBS_BTYPE_VME,
 					"VME buffer",
@@ -203,6 +202,38 @@ static MBSBufferElem sevent_types[] = {
 				},
 				{	MBS_STYPE_VME_CAEN_2,
 					"Caen VME ADCs/TDCs (2)",
+					sizeof(s_veshe),
+					0,
+					_mbs_unpack_sev_10_11,
+					_mbs_show_sev_10_11,
+					_mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_CAEN_3,
+					"Caen VME ADCs/TDCs (3)",
+					sizeof(s_veshe),
+					0,
+					_mbs_unpack_sev_10_11,
+					_mbs_show_sev_10_11,
+					_mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_1,
+					"SIS VME modules (1)",
+					sizeof(s_veshe),
+					0,
+					_mbs_unpack_sev_10_11,
+					_mbs_show_sev_10_11,
+					_mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_2,
+					"SIS VME modules (2)",
+					sizeof(s_veshe),
+					0,
+					_mbs_unpack_sev_10_11,
+					_mbs_show_sev_10_11,
+					_mbs_convert_sheader
+				},
+				{	MBS_STYPE_VME_SIS_3,
+					"SIS VME modules (3)",
 					sizeof(s_veshe),
 					0,
 					_mbs_unpack_sev_10_11,
@@ -575,13 +606,13 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 
 		sc = mbs->show_elems[MBS_X_FHEADER].redu;
 		if (sc > 0) {
-			s = (mbs->buftype)->show;			/* show file header */
+			s = (mbs->buftype)->show;			// show file header
 			if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_FHEADER].out);
 		}
 	} else {
 		sc = mbs->show_elems[MBS_X_BUFFER].redu;
 		if (sc > 0 && ((mbs->nof_buffers % sc) == 0)) {
-			s = (mbs->buftype)->show;			/* show buffer header */
+			s = (mbs->buftype)->show;			// show buffer header
 			if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_BUFFER].out);
 		}
 
@@ -1050,6 +1081,8 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 
 	int sc;
 	unsigned int (*s)();
+	unsigned int stype;
+	unsigned int stp, sstp;
 
 	(mbs->sevttype)->hit++;
 	mbs->sevt_wc = 0;
@@ -1059,11 +1092,20 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 
 	sc = mbs->show_elems[MBS_X_SUBEVENT].redu;
 	if (sc > 0 && ((mbs->nof_events % sc) == 0)) {
-		s = (mbs->sevttype)->show;			/* show subevent */
+		s = (mbs->sevttype)->show;			// show subevent
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_SUBEVENT].out);
 	}
 
-	return((mbs->sevttype)->type);
+	stype = (mbs->sevttype)->type;
+	if (stype == MBS_STYPE_ERROR) {
+		sstp = (mbs->sevt_otype >> 16) & 0xffff;
+		stp = mbs->sevt_otype & 0xffff;
+		sprintf(loc_errbuf,
+		"?EVTERR-[mbs_next_sevent]- %s (buf %d, evt %d, sevt %d): Not a legal subevent type - [%d, %d]",
+					mbs->device, mbs->cur_bufno, mbs->evtno, mbs->sevtno, stp, sstp);
+		_mbs_output_error();
+	}
+	return(stype);
 }
 
 unsigned int mbs_next_sdata_raw(MBSDataIO *mbs) {
@@ -1159,7 +1201,7 @@ int mbs_pass_sevent(MBSDataIO *mbs, unsigned short *data) {
 	return(mbs->sevt_wc);
 }
 
-void mbs_set_sevt_minwc(MBSDataIO *mbs, int wc) {
+void mbs_set_sevt_minwc(MBSDataIO *mbs, unsigned int wc) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_sevt_minwc

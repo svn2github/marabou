@@ -123,30 +123,35 @@ int extractSubevents(MBSDataIO * mbs) {
 			case kMrbSevtClu7:				/* subevent clu7: dgf cluster 7, id=7 */
 			case kMrbSevtClu8:				/* subevent clu8: dgf cluster 8, id=8 */
 			case kMrbSevtClu9:				/* subevent clu9: dgf cluster 9 (time stamping dgf), id=9 */
+			case kMrbSevtClu10:				/* subevent clu10: dgf cluster 10 (beam dump dgf), id=9 */
 				sts = decodeDgfData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
-			case kMrbSevtSd1e:				/* subevent sd1e: strip detector energy, id=10 */
-			case kMrbSevtSd2e:				/* subevent sd2e: detector 2 energy, id=11 */
+ 			case kMrbSevtCdf1:				/* caen adc data id=11 */
+ 			case kMrbSevtCdf2:				/* caen adc data id=12 */
+ 			case kMrbSevtCdb1:				/* caen adc data id=13 */
+ 			case kMrbSevtCdb2:				/* caen adc data id=14 */
+ 			case kMrbSevtCdb3:				/* caen adc data id=15 */
+ 			case kMrbSevtCde:				/* caen adc data id=16 */
 				sts = decodeCaenAdcData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
-			case kMrbSevtSd1t:				/* subevent sd1t: strip detector time, id=12 */
-			case kMrbSevtSd2t:				/* subevent sd2t: detector 2 time, id=13 */
+			case kMrbSevtCdt1:				/* caen tdc data, id=17 */
+			case kMrbSevtCdt2:				/* caen tdc data, id=18 */
 				sts = decodeCaenTdcData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
-			case kMrbSevtIoData:			/* subevent ioData: I/O reg "mpiorl", id=14 */
-				sts = decodeIoRegData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
-				if (sts == FALSE) return(FALSE);
-				continue;
-			case kMrbSevtScData:			/* subevent scData: scaler data, id=15 */
+			case kMrbSevtScData:			/* subevent scData: scaler data, id=19 */
 				sts = decodeScalerData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
-			case kMrbSevtDsca1:				/* subevent dsca1: dgf counters crate 1, id=16 */
-			case kMrbSevtDsca2:				/* subevent dsca2: dgf counters crate 2, id=17 */
-			case kMrbSevtDsca3:				/* subevent dsca3: dgf counters crate 3, id=18 */
+			case kMrbSevtPuData:			/* subevent puData: pattern unit id=20 */
+				sts = decodeScalerData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				if (sts == FALSE) return(FALSE);
+				continue;
+			case kMrbSevtDsca1:				/* subevent dsca1: dgf counters crate 1, id=21 */
+			case kMrbSevtDsca2:				/* subevent dsca2: dgf counters crate 2, id=22 */
+			case kMrbSevtDsca3:				/* subevent dsca3: dgf counters crate 3, id=23 */
 				sts = decodeDgfCounters(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
 				if (sts == FALSE) return(FALSE);
 				continue;
@@ -186,8 +191,8 @@ int decodeCaenTdcData(int sevtId, int sevtWc, unsigned short * sevtData) {
 }
 
 /* subevent 14, type [10,11]: i/o reg bits, 1 word */
-int decodeIoRegData(int sevtId, int sevtWc, unsigned short * sevtData) {
-	printf("Subevent %d: i/o reg data, wc=%d\n", sevtId, sevtWc);
+int decodePuData(int sevtId, int sevtWc, unsigned short * sevtData) {
+	printf("Subevent %d: pattern data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
