@@ -3245,6 +3245,7 @@ Int_t TUsrHitBuffer::AllocClonesArray(Int_t NofEntries, Int_t HighWater) {
 	fOffset = 0;		// no longer in use -> see class TUsrHBX
 	fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater;
 	fHits = new TClonesArray("TUsrHit", NofEntries);
+   cout << "AllocClonesArray, NofEntries: " << NofEntries << endl;
 	this->Reset();
 	return(fNofEntries);
 }
@@ -3333,6 +3334,29 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Cha
 																			Data, NofData);
 	fNofHits++;
 	return(hit);
+}
+Bool_t  TUsrHitBuffer::AddHit(TUsrHit * hit_to_add) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::AddHit
+// Purpose:        Add a hist to hit buffer
+// Arguments:      TUsrHit * Hit 
+// Results:        true / false
+// Exceptions:
+// Description:    Adds a new item to hit list.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fNofHits >= fNofEntries) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddHit");
+		return(kFALSE);
+	}
+	TClonesArray &hits = * fHits;
+	TUsrHit * hit = new(hits[fNofHits]) TUsrHit();
+   * hit = *hit_to_add;
+ 	fNofHits++;
+	return kTRUE;
 }
 
 Bool_t TUsrHitBuffer::RemoveHit(TUsrHit * Hit) {
@@ -3543,7 +3567,7 @@ TUsrHit * TUsrHBX::FindNextEvent() {
 	Int_t evtNo;
 
 	Int_t nofHits = this->GetNofHits();
-
+//   cout << "fCurIndex " <<fCurIndex << " nofHits " <<nofHits << endl;
 	if (nofHits && fCurIndex < nofHits) {
 		if (fResetDone) evtNo = -1;
 		else			evtNo = ((TUsrHit *) fHits->At(fCurIndex))->GetEventNumber();
@@ -3612,6 +3636,7 @@ TUsrHit * TUsrHBX::CurHit() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TUsrHit * hit = (fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL;
+	fResetDone = kFALSE;
 	return(hit);
 }
 

@@ -432,11 +432,23 @@ public:
 class TUsrHitBuffer : public TObject {
 
 	public:
-		TUsrHitBuffer() {};
-		~TUsrHitBuffer() {};										// default dtor
+		TUsrHitBuffer(Int_t maxent = 2500) {
+   		fNofEntries = maxent;
+   		fNofHits = 0;
+   		fHits = NULL;
 
-		inline void SetName(const Char_t * BufferName) { fBufName = BufferName; };
-		inline const Char_t * GetName() { return(fBufName.Data()); };
+ //  		fHits = new TClonesArray("TUsrHit", fNofEntries);
+   		cout << "ctor TUsrHitBuffer, no new TClonesArray: " << this << endl;
+		};
+		~TUsrHitBuffer() {
+         cout << "~~~~~~dtor TUsrHitBuffer " << this << endl;
+         if (fHits) delete fHits;
+      };										// default dtor
+
+		inline void SetName(const Char_t * BufferName) { };
+		inline const Char_t * GetName() { return "xxxx"; };
+//		inline void SetName(const Char_t * BufferName) { fBufName = BufferName; };
+//		inline const Char_t * GetName() { return(fBufName.Data()); };
 
 		Int_t AllocClonesArray(Int_t NofEntries, Int_t HighWater);	// allocate TClonesArray to store hits
 
@@ -448,6 +460,7 @@ class TUsrHitBuffer : public TObject {
 		TUsrHit * AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
 										UShort_t * ChannelTime,
 										UShort_t * Data, Int_t NofData);
+		Bool_t AddHit(TUsrHit * Hit);					   //  add ready made hit
 		Bool_t RemoveHit(TUsrHit * Hit);					// remove hit
 		Bool_t RemoveHit(Int_t Index);
 
@@ -466,16 +479,17 @@ class TUsrHitBuffer : public TObject {
 		inline void Print(Int_t Begin = 0, Int_t End = -1) { Print(cout, Begin, End); };
 		
 	protected:
-		TString fBufName;						// buffer name
-		Int_t fNofEntries;						// max number of entries
+//		TString fBufName;						// buffer name
+		Int_t fNofEntries;				   // max number of entries
 		Int_t fNofHits; 						// current number of hits
 		Int_t fOffset;							// [obsolete, for compatibility reasons only]
 		Int_t fHighWater;						// high water margin
-		TClonesArray * fHits;					//-> array containing hit data
+		TClonesArray * fHits;			   // array containing hit data
+//		TClonesArray * fHits;			   //-> array containing hit data
 			
 	ClassDef(TUsrHitBuffer, 1)					// [Analyze] Hit buffer
 };
-	
+
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHBX
