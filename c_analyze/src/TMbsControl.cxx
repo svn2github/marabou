@@ -222,29 +222,32 @@ Bool_t  TMbsControl::StartMbs(){
    else trnode = prnode;
    cout << " StartMbs() trnode: " << trnode.Data() << endl;
 
-   if(!strncmp(prnode.Data(),"ppc",3)){
-      cout << "Later: Got " << fNodeNames->GetSize() << " node"<< endl; 
+	if(!strncmp(prnode.Data(),"ppc",3)){
+		cout << "Later: Got " << fNodeNames->GetSize() << " node"<< endl; 
    
-      rshCmd = "/usr/bin/rsh ";
-      rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
+		if (gEnv->GetValue("TMbsSetup.ConfigVSB", kTRUE)) {
+			rshCmd = "/usr/bin/rsh ";
+			rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
               " /bin/ces/vsbini "+ kReadoutVSBAddress;
-      cout << setmagenta<< rshCmd << setblack<< endl;
-      gSystem->Exec(rshCmd.Data());
-      if(fNodeNames->GetSize() > 1){
-         rshCmd = "/usr/bin/rsh ";
-         rshCmd = rshCmd  + prnode.Data() + " -l " + fUserName.Data() +
+      		cout << setmagenta<< rshCmd << setblack<< endl;
+     	 	gSystem->Exec(rshCmd.Data());
+      		if(fNodeNames->GetSize() > 1){
+				rshCmd = "/usr/bin/rsh ";
+				rshCmd = rshCmd  + prnode.Data() + " -l " + fUserName.Data() +
                  " /bin/ces/vsbini "+ kEvbVSBAddress;
-         cout << setmagenta<< rshCmd << setblack<< endl;
-            gSystem->Exec(rshCmd.Data());
-      }
-      if(fNodeNames->GetSize() == 1){
-         rshCmd = "/usr/bin/rsh ";
-         rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
-                 " /bin/ces/vmeconfig -a /mbs/driv/trig-vme_2.5_RIO2/vmetab";
-         cout << setmagenta<< rshCmd << setblack<< endl;
-         gSystem->Exec(rshCmd.Data());
-      } 
-   }
+				cout << setmagenta<< rshCmd << setblack<< endl;
+				gSystem->Exec(rshCmd.Data());
+     		}
+		}
+		if(fNodeNames->GetSize() == 1){
+			rshCmd = "/usr/bin/rsh ";
+			rshCmd = rshCmd  + trnode.Data() + " -l " + fUserName.Data() +
+                " /bin/ces/vmeconfig -a /mbs/driv/trig-vme_2.5_RIO2/vmetab";
+			cout << setmagenta<< rshCmd << setblack<< endl;
+			gSystem->Exec(rshCmd.Data());
+		} 
+	}
+
    rshCmd = "/usr/bin/rsh ";
    rshCmd = rshCmd  + fCurNode.Data() + " -l " + fUserName.Data() + 
             " /mbs/" + fMBSVersion.Data() + "/script/mbsstartup.sc " + 
