@@ -427,9 +427,11 @@ void TMrbAnalyze::SetScaleDown(Int_t ScaleDown) {
 %%EVT_SET_SCALEDOWN%%
 }
 
-%%SEVT_CLASS_METHODS%%					include user-specific SUBEVENT methods here
+%%SEVT_CLASS_METHODS%%					include SUBEVENT methods here
 
-%%EVT_CLASS_METHODS%%					include user-specific EVENT methods here
+%%EVT_CLASS_METHODS%%					include EVENT methods here
+
+%%EVT_USER_CLASS_METHODS%%				include methods for user-defined event classes here
 
 Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 //________________________________________________________________[C++ METHOD]

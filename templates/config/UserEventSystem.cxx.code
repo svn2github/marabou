@@ -1,57 +1,3 @@
-//__________________________________________________[C++ CLASS IMPLEMENTATION]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           %%USER_EVENT_NAME_UC%%.cxx
-// Purpose:        Implement user-specific class methods
-// Description:    
-//
-// Author:         %%AUTHOR%%
-// Revision:         
-// Date:           %%CREATION_DATE%%
-// URL:            
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-#include "TEnv.h"
-#include "%%USER_EVENT_NAME_UC%%.h"
-#include "SetColor.h"
-#include <pthread.h>
-
-// implement class defs
-ClassImp(%%USER_EVENT_NAME_UC%%)
-
-extern TMrbAnalyze * gMrbAnalyze;
-extern TMrbLogger * gMrbLog;
-extern pthread_mutex_t global_data_mutex;
-
-Bool_t %%USER_EVENT_NAME_UC%%::Analyze() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           %%USER_EVENT_NAME_UC%%::Analyze
-// Purpose:        User's analysis code
-// Arguments:      --
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-}
-
-void %%USER_EVENT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           %%USER_EVENT_NAME_UC%%::Reset
-// Purpose:        Reset event data
-// Arguments:      Int_t InitValue  -- initialization value
-//                 Bool_t DataOnly  -- reset data only if kTRUE
-// Results:        --
-// Exceptions:     
-// Description:    
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-}
-
 Bool_t %%USER_EVENT_NAME_UC%%::CreateTree() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -75,6 +21,12 @@ Bool_t %%USER_EVENT_NAME_UC%%::CreateTree() {
 		autoSave = gEnv->GetValue(gMrbAnalyze->GetResource("Event.%%USER_EVENT_NAME_UC%%.AutoSave"), 10000000);
 				
 		fTreeOut->SetAutoSave(autoSave);
+
+		Int_t bufSize = gMrbAnalyze->GetBranchSize();
+		Int_t splitMode = gMrbAnalyze->GetSplitLevel();
+
+		fMyAddr = (TObject *) this; 		// we need a '**' ref to this object
+		fTreeOut->Branch("%%USER_EVENT_NAME_LC%%", this->ClassName(), &fMyAddr, bufSize, splitMode);
 	}
 	return(kTRUE);
 }
@@ -108,6 +60,9 @@ Bool_t %%USER_EVENT_NAME_UC%%::InitializeTree(TFile * RootFile) {
 	fTreeIn = (TTree *) obj;
 	fReplayMode = kTRUE;
 
+	fBranch = fTreeIn->GetBranch("%%USER_EVENT_NAME_LC%%");
+	fMyAddr = this;
+	fBranch->SetAddress(&fMyAddr);
 	return(kTRUE);
 }
 

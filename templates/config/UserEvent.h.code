@@ -46,12 +46,18 @@ class %%USER_EVENT_NAME_UC%% : public TUsrEvent {
 		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
 		void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE);	// reset event data
 
+	protected:
+		TObject * fMyAddr;					//! ptr to subevent to be used in TTree::Branch() (online)
+		TBranch * fBranch;					//! branch address (replay only)
+
 	public:
 	// --- user-specific methods for event %%USER_EVENT_NAME_LC%% go here ---
 
 	protected:
 	// --- used-specific data members for event %%USER_EVENT_NAME_LC%% go here ---
 		
+		TObject * fMyAddr;		//! to store branch addr
+
 	ClassDef(%%USER_EVENT_NAME_UC%%, 1) 	// [Analyze] User-defined event class
 };
 #endif
