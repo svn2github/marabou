@@ -483,6 +483,7 @@ class TMrbConfig : public TNamed {
 		void Print(ostream & OutStrm, const Char_t * Prefix = "");			// show data
 		inline virtual void Print() { Print(cout, ""); };
 
+		Int_t GetNofErrors();							// number of errors
 		Int_t PrintErrors(); 							// print error summary
 		
 		inline void AddEvent(TObject * Evt) {				 				// add a new event

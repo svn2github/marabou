@@ -790,7 +790,9 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	s = (mbs->evttype)->convert;
 	(*s)(mbs);
 
-	if (frag1 != evl) {
+	frag2 = 0;
+
+	while (frag1 < evl) {
 		btype = _mbs_next_buffer(mbs);
 		if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_EOF) return(btype);
 		bh = mbs->bufpt;
@@ -810,19 +812,17 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 		bto_get_long(&frag2, &eh->l_dlen, 1, bo);
 		frag2 *= sizeof(unsigned short);
 
-		if (frag1 + frag2 != evl) {
-			sprintf(loc_errbuf,
-			"?EVTERR-[mbs_next_event]- %s (buf %d, evt %d): Illegal event fragmentation (%d + %d != %d)",
-						mbs->device, mbs->cur_bufno, mbs->evtno,
-						frag1 / sizeof(unsigned short),
-						frag2 / sizeof(unsigned short),
-						evl / sizeof(unsigned short));
-			_mbs_output_error();
-			return(MBS_ETYPE_ABORT);
-		}
-
 		memcpy(mbs->evt_data + frag1, mbs->evtpt + sizeof(s_evhe), frag2);
 		mbs->evtno = 1;
+		frag1 += frag2;
+	}
+
+	if (frag1 + frag2 != evl) {
+		sprintf(loc_errbuf,
+		"?EVTERR-[mbs_next_event]- %s (buf %d, evt %d): Illegal event fragmentation",
+					mbs->device, mbs->cur_bufno, mbs->evtno);
+		_mbs_output_error();
+		return(MBS_ETYPE_ABORT);
 	}
 
 	mbs->nof_events++;

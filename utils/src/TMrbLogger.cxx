@@ -276,6 +276,27 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 	return(kTRUE);
 }
 
+Int_t TMrbLogger::GetNofEntries(UInt_t Type) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLogger::GetNofEntries
+// Purpose:        Return number of entries of given type
+// Arguments:      UInt_t Type           -- message type
+// Results:        Int_t NofEntries      -- number of entries found
+// Exceptions:     
+// Description:    Returns number of entries
+// Keywords:
+////////////////////////////////////////////////////////////////////////Lof//////
+
+	Int_t nofEntries = 0;
+	TMrbLogMessage * msg = (TMrbLogMessage *) fLofMessages.At(0);
+	while (msg) {
+		if (msg->GetType() & Type) nofEntries++;
+		msg = (TMrbLogMessage *) fLofMessages.After(msg);
+	}
+	return(nofEntries);
+}
+
 Int_t TMrbLogger::GetEntriesByType(TObjArray & MsgArr, Int_t Start, UInt_t Type) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

@@ -3843,6 +3843,21 @@ Int_t TMrbConfig::PrintErrors() {
 	return(nofErrors);
 }
 
+Int_t TMrbConfig::GetNofErrors() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::GetNofErrors
+// Purpose:        Return number of errors
+// Arguments:      --
+// Results:        Int_t NofErrors   -- number of errors
+// Exceptions:
+// Description:    Returns number of errors
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	return(gMrbLog->GetNofEntries(TMrbLogMessage::kMsgError);
+}
+
 void TMrbConfig::Version() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

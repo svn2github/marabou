@@ -103,6 +103,7 @@ class TMrbLogger: public TNamed {
 		void SetProgName(const Char_t * ProgName);
 		inline const Char_t * GetProgName() { return(fProgName.Data()); };
 		
+		Int_t GetNofEntries(UInt_t Type = TMrbLogMessage::kMrbMsgAny); 	// number of entries
 		inline Int_t GetEntries(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgAny)); };
 		inline Int_t GetMessages(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgMessage)); };
 		inline Int_t GetErrors(TObjArray & MsgArr, Int_t Start = 0) { return(GetEntriesByType(MsgArr, Start, TMrbLogMessage::kMrbMsgError)); };
