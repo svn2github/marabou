@@ -18,7 +18,7 @@
 #define SIS_3801_R_CLEAR_FIFO		0x20L
 #define SIS_3801_R_NEXT_CLOCK		0x24L
 #define SIS_3801_R_CLOCK_ENABLE		0x28L
-#define SIS_3801_R_CLOCK_DISBALE	0x2cL
+#define SIS_3801_R_CLOCK_DISABLE	0x2cL
 #define SIS_3801_R_PULSER_ENABLE	0x50L
 #define SIS_3801_R_PULSER_DISABLE	0x54L
 #define SIS_3801_R_RESET			0x60L
@@ -39,7 +39,7 @@
 #define SIS_3801_A_CLEAR_FIFO(module)		((unsigned long *) (module + SIS_3801_R_CLEAR_FIFO))
 #define SIS_3801_A_NEXT_CLOCK(module)		((unsigned long *) (module + SIS_3801_R_NEXT_CLOCK))
 #define SIS_3801_A_CLOCK_ENABLE(module) 	((unsigned long *) (module + SIS_3801_R_CLOCK_ENABLE))
-#define SIS_3801_A_CLOCK_DISBALE(module)		((unsigned long *) (module + SIS_3801_R_CLOCK_DISBALE))
+#define SIS_3801_A_CLOCK_DISABLE(module)		((unsigned long *) (module + SIS_3801_R_CLOCK_DISABLE))
 #define SIS_3801_A_PULSER_ENABLE(module)		((unsigned long *) (module + SIS_3801_R_PULSER_ENABLE))
 #define SIS_3801_A_PULSER_DISABLE(module)		((unsigned long *) (module + SIS_3801_R_PULSER_DISABLE))
 #define SIS_3801_A_RESET(module)		((unsigned long *) (module + SIS_3801_R_RESET))
@@ -49,7 +49,7 @@
 
 #define SIS_3801_READ_STATUS(module)			*SIS_3801_A_STATUS(module)
 #define SIS_3801_DISABLE_COPY(module, b)		*SIS_3801_A_COPY_DISABLE(module) = b
-#define SIS_3801_SET_CTRL_BIT(module, b)		*SIS_3801_A_STATUS(module) |= b
+#define SIS_3801_SET_CTRL_BIT(module, b)		*SIS_3801_A_STATUS(module) = b
 #define SIS_3801_RESET(module)					*SIS_3801_A_RESET(module) = 0
 #define SIS_3801_CLEAR_FIFO(module)				*SIS_3801_A_CLEAR_FIFO(module) = 0
 #define SIS_3801_ENABLE_NEXT_CLOCK(module)		*SIS_3801_A_CLOCK_ENABLE(module) = 0
@@ -82,13 +82,13 @@
 %%BeginOfCode%%
 %SH%					$mnemoLC_sts = SIS_3801_READ_STATUS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
 %SH%					if (($mnemoLC_sts & SIS_3801_B_FIFO_EMPTY) == 0) {
-%SH%						rdoinp = SIS_3801_A_READ_FIFO($moduleName);
+%SH%						RDO_SETUP_VME($moduleName, SIS_3801_R_READ_FIFO);
 %SH%						RDO_BLT_32(32);
 %SH%					} else {
 %SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
 %SH%						evt.out32 += 32;
 %SH%					}
-%MH%					rdoinp = SIS_3801_A_READ_FIFO($moduleName); 	/* scaler $moduleName runs in multi-hit mode */
+%MH%					RDO_SETUP_VME($moduleName, SIS_3801_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3801_READ_STATUS($moduleName);
 %MH%						if (($mnemoLC_sts & SIS_3801_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);

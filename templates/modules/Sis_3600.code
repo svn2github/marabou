@@ -19,7 +19,7 @@
 #define SIS_3600_R_CLEAR_FIFO		0x20L
 #define SIS_3600_R_NEXT_CLOCK		0x24L
 #define SIS_3600_R_CLOCK_ENABLE		0x28L
-#define SIS_3600_R_CLOCK_DISBALE	0x2cL
+#define SIS_3600_R_CLOCK_DISABLE	0x2cL
 #define SIS_3600_R_FCLEAR_ENABLE	0x50L
 #define SIS_3600_R_FCLEAR_DISABLE	0x54L
 #define SIS_3600_R_RESET			0x60L
@@ -31,6 +31,10 @@
 #define SIS_3600_B_FIFO_FULL		(0x1 << 12)
 
 #define SIS_3600_CS_B_ENA_EXT_NEXT		(0x1 << 16)
+#define SIS_3600_CS_B_DIS_EXT_NEXT		(0x1 << 24)
+
+#define SIS_3600_CS_B_SET_COINC_MODE	(0x1 << 19)
+#define SIS_3600_CS_B_SET_STROBE_MODE	(0x1 << 27)
 
 #define SIS_3600_A_STATUS(module)			((unsigned long *) (module + SIS_3600_R_STATUS))
 #define SIS_3600_A_IDENT(module)		((unsigned long *) (module + SIS_3600_R_IDENT))
@@ -40,7 +44,7 @@
 #define SIS_3600_A_CLEAR_FIFO(module)		((unsigned long *) (module + SIS_3600_R_CLEAR_FIFO))
 #define SIS_3600_A_NEXT_CLOCK(module)		((unsigned long *) (module + SIS_3600_R_NEXT_CLOCK))
 #define SIS_3600_A_CLOCK_ENABLE(module) 	((unsigned long *) (module + SIS_3600_R_CLOCK_ENABLE))
-#define SIS_3600_A_CLOCK_DISBALE(module)		((unsigned long *) (module + SIS_3600_R_CLOCK_DISBALE))
+#define SIS_3600_A_CLOCK_DISABLE(module)		((unsigned long *) (module + SIS_3600_R_CLOCK_DISABLE))
 #define SIS_3600_A_FCLEAR_ENABLE(module)		((unsigned long *) (module + SIS_3600_R_FCLEAR_ENABLE))
 #define SIS_3600_A_FCLEAR_DISABLE(module)		((unsigned long *) (module + SIS_3600_R_FCLEAR_DISABLE))
 #define SIS_3600_A_RESET(module)		((unsigned long *) (module + SIS_3600_R_RESET))
@@ -49,7 +53,7 @@
 
 #define SIS_3600_READ_STATUS(module)			*SIS_3600_A_STATUS(module)
 #define SIS_3600_WRITE_FCLEAR_WINDOW(module, w)		*SIS_3600_A_FAST_CLEAR(module) = w;
-#define SIS_3600_SET_CTRL_BIT(module, b)		*SIS_3600_A_STATUS(module) |= b
+#define SIS_3600_SET_CTRL_BIT(module, b)		*SIS_3600_A_STATUS(module) = b
 #define SIS_3600_RESET(module)					*SIS_3600_A_RESET(module) = 0
 #define SIS_3600_CLEAR_FIFO(module)				*SIS_3600_A_CLEAR_FIFO(module) = 0
 #define SIS_3600_ENABLE_NEXT_CLOCK(module)		*SIS_3600_A_CLOCK_ENABLE(module) = 0
@@ -64,7 +68,10 @@
 					SIS_3600_RESET($moduleName);
 					SIS_3600_CLEAR_FIFO($moduleName);
 					SIS_3600_SET_CTRL_BIT($moduleName, SIS_3600_CS_B_ENA_EXT_NEXT);
+					SIS_3600_SET_CTRL_BIT($moduleName, SIS_3600_CS_B_SET_STROBE_MODE);
 					sis_3600_module_info($moduleName);
+					sprintf(msg, "  SIS 3600 status: %#lx", SIS_3600_READ_STATUS($moduleName));
+					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 
 %%EndOfCode%%
 %%INIT_MODULE%%
@@ -82,13 +89,13 @@
 %%BeginOfCode%%
 %SH%					$mnemoLC_sts = SIS_3600_READ_STATUS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
 %SH%					if (($mnemoLC_sts & SIS_3600_B_FIFO_EMPTY) == 0) {
-%SH%						rdoinp = SIS_3600_A_READ_FIFO($moduleName);
+%SH%						RDO_SETUP_VME($moduleName, SIS_3600_R_READ_FIFO);
 %SH%						RDO_BLT_32(32);
 %SH%					} else {
 %SH%						memset(evt.out32, 0, 32 * sizeof(unsigned long));
 %SH%						evt.out32 += 32;
 %SH%					}
-%MH%					rdoinp = SIS_3600_A_READ_FIFO($moduleName); 	/* scaler $moduleName runs in multi-hit mode */
+%MH%					RDO_SETUP_VME($moduleName, SIS_3600_R_READ_FIFO); 	/* scaler $moduleName runs in multi-hit mode */
 %MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
 %MH%						$mnemoLC_sts = SIS_3600_READ_STATUS($moduleName);
 %MH%						if (($mnemoLC_sts & SIS_3600_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
