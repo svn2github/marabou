@@ -102,10 +102,6 @@
 %BN%// Keywords:       
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%
-%BN%	Int_t i;
-%BN%	TMrbString hName, hTitle;
-%BN%	TString paramName;
-%BN%
 %BP%Bool_t TUsrSevt$sevtNameUC::Book$evtNameUCHistograms() {
 %BP%//________________________________________________________________[C++ METHOD]
 %BP%//////////////////////////////////////////////////////////////////////////////
@@ -120,17 +116,14 @@
 %BP%// Keywords:       
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
-%BP%	TMrbString hName, hTitle;
-%BP%	TString paramNameLC, paramNameLC;
-%BP%
 %S%	if (h$prefix$paramNameUC == NULL) {
 %S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
 %S% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %S% 	}
 %X%	for (Int_t ii = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
-%X% 			hName = "h$prefix$paramNameUC"; hName += i;
-%X% 			hTitle = "$sevtNameLC$paramNameLC"; hTitle += i;
+%X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
+%X% 			TMrbString hTitle = "$sevtNameLC$paramNameLC"; hTitle += i;
 %X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, 0.0, $hUpperLim.0);
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
@@ -158,8 +151,6 @@
 %BN%// Description:    Performs add-one to histograms.
 %BN%// Keywords:       
 %BN%//////////////////////////////////////////////////////////////////////////////
-%BN%
-%BN%	Int_t i;
 %BN%
 %BN%// add-one to histograms
 %BP%Bool_t TUsrSevt$sevtNameUC::Fill$evtNameUCHistograms() {

@@ -15,6 +15,12 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+enum EMrbSevt_10_12	{	kMrbSevt_10_12_B_Header 		=	(0x1 << 15),
+						kMrbSevt_10_12_M_ModuleNumber	=	0xFF,
+						kMrbSevt_10_12_M_ModuleId		=	0x7F,
+						kMrbSevt_10_12_SH_ModuleId		=	8
+					};
+
 enum EMrbTriggerId	{
 %%BeginOfCode%%
 						kMrbTrigger$evtNameUC = $trigNo,		// event $evtNameLC, trigger $trigNo
@@ -50,6 +56,13 @@ enum EMrbSevtBits	 {
 %E%						};
 %%EndOfCode%%
 %%SEVT_INDICES_ENUM%%
+
+enum EMrbModuleID {
+%%BeginOfCode%%
+						kMrbModId$moduleType = $moduleID,			// type $moduleType ($moduleTitle)
+%%EndOfCode%%
+%%MODULE_ID_ENUM%%
+					};
 
 enum EMrbModuleSerial {
 %%BeginOfCode%%

@@ -1,4 +1,142 @@
 %%BeginOfCode%%
+%B%Bool_t TUsrSevt$sevtNameUC::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp) {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:		   TUsrSevt$sevtNameUC::FillSubevent
+%B%// Purpose: 	   Decode DGF data read from MBS (MAXEVENTS == 1)
+%B%// Arguments:	   const UShort_t * SevtData   -- pointer to unpacked subevent data
+%B%//  			   Int_t SevtWC 			   -- word count
+%B%//  			   Int_t TimeStamp  		   -- time since last start
+%B%//  											  in units of 100 microsecs
+%B%// Results: 	   kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Assigns MBS data to corresponding data members.
+%B%//  			   Special version to be used for data from XIA DGF-4C modules.
+%B%// Keywords:	   
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%B%	DgfEventBufferHeader * bufHdr;
+%B%	DgfEventHeader * evtHdr;
+%B%	DgfEventChannelHeader * chnHdr;
+%B%	Int_t bufWC, wc;
+%B%	Int_t moduleNumber;
+%B%	UInt_t formatDescr;
+%B%	UInt_t runTask;
+%B%	Int_t nofWordsPerChn;
+%B%	UInt_t hitPattern;
+%B%	Char_t * dataPtr;
+%B%	Int_t chn;
+%B%	Int_t * paramAddr;
+%B%	Int_t origSevtWC, wordsProcessed;
+%B%						
+%C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
+%C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
+%C%
+%C%	dataPtr = (Char_t *) SevtData;
+%C%	recNo++;						// count this record
+%C%	origSevtWC = SevtWC;			// save original subevent wc
+%C%		
+%C%	wordsProcessed = 0; 			// words processed so far
+%C%	while (SevtWC) {									// subevent may contain several dgf buffers
+%C%		bufHdr = (DgfEventBufferHeader *) dataPtr;		// points to start of buffer
+%C%		bufWC = bufHdr->nofWords;						// buffer length
+%C%		runTask = bufHdr->formatDescr & 0x3;			// 0x100, 0x101, 0x200, 0x201 --> variable channel size
+%C%		if (runTask == 2) nofWordsPerChn = 4;			// 0x102, 0x202 --> 4 words per chn	
+%C%		else if (runTask == 3) nofWordsPerChn = 2;		// 0x103, 0x203 --> 2 words per chn
+%C%		wc = bufWC;
+%C%		if (bufWC <= 0) {
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong bufWC", SevtData, SevtWC);
+%C%			cerr	<< setred
+%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong buffer WC - " << bufWC
+%C%					<< setblack << endl;
+%C%			return(kTRUE);
+%C%		}					// reject neg buffer wcs
+%C%		if (wc >= (sizeof(DgfEventBufferHeader) + sizeof(DgfEventHeader)) / sizeof(Short_t)) {	// ignore header fragments
+%C%			moduleNumber = bufHdr->moduleNumber;		// module number
+%C%			dataPtr += sizeof(DgfEventBufferHeader);	// points to start of 1st event
+%C%			wc -= sizeof(DgfEventBufferHeader) / sizeof(Short_t);
+%C%			while (wc) {								// dgf buffer may contain several events
+%C%				evtHdr = (DgfEventHeader *) dataPtr;	// points to event header
+%C%				hitPattern = evtHdr->hitPattern;		// get hit pattern
+%C%				if (hitPattern & 0xFFFFFFF0) {
+%C%					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong hit pattern", SevtData, SevtWC);
+%C%					cerr	<< setred
+%C%							<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%							<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong hit pattern - 0x"
+%C%							<< setbase(16) << hitPattern << setbase(10)
+%C%							<< setblack << endl;
+%C%					return(kTRUE);
+%C%				}
+%C%				dataPtr += sizeof(DgfEventHeader);		// points to start of 1st channel
+%C%				wc -= sizeof(DgfEventHeader) / sizeof(Short_t);
+%C%				for (chn = 0; chn < kDgfNofChannels; chn++) {	// up to 4 channels
+%C%					if (hitPattern == 0) break; 		// no more hits in this event
+%C%					if (hitPattern & 1) {				// channel fired?
+%C%						if (runTask <= 1) {
+%C%							nofWordsPerChn = *((UShort_t *) dataPtr);
+%C%							dataPtr += sizeof(UShort_t);
+%C%							if (nofWordsPerChn <= 0 || nofWordsPerChn > kDgfMaxNofChannelWords) {
+%C%								gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong channel wc", SevtData, SevtWC);
+%C%								cerr	<< setred
+%C%										<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%										<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong channel wc - 0x"
+%C%										<< setbase(16) << nofWordsPerChn << setbase(10)
+%C%										<< setblack << endl;
+%C%								return(kTRUE);
+%C%							}
+%C%							nofWordsPerChn--;
+%C%							wc--;
+%C%						}
+%C%						chnHdr = (DgfEventChannelHeader *) dataPtr;
+%C%						paramAddr = gMrbAnalyze->GetParamAddr(moduleNumber, chn);	// calculate param address
+%C%						if (paramAddr) {
+%C%							*paramAddr = (Int_t) chnHdr->energy;	// assign energy value to param
+%C%						} else {
+%C%							gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, SevtWC);
+%C%							if (gMrbAnalyze->GetModuleName(moduleNumber)) {
+%C%								cerr	<< setred
+%C%										<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%										<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - "
+%C%										<< gMrbAnalyze->GetModuleName(moduleNumber) << " (chn " << chn << ")"
+%C%										<< setblack << endl;
+%C%							} else {
+%C%								cerr	<< setred
+%C%										<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+%C%										<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - module serial "
+%C%										<< moduleNumber << " (chn " << chn << ")"
+%C%										<< setblack << endl;
+%C%							}
+%C%							return(kTRUE);
+%C%						}
+%C%						dataPtr += nofWordsPerChn * sizeof(Short_t);
+%C%						wc -= nofWordsPerChn; 		// continue with next channel
+%C%					}
+%C%					hitPattern >>= 1;
+%C%				}
+%C%			}
+%C%		} else	dataPtr += bufWC * sizeof(Short_t); 	// skip over buffer fragment
+%C%		SevtWC -= bufWC;								// remaining subevent data
+%C%		wordsProcessed += bufWC;
+%C%		if (bufWC & 1) {								// dgf buffers are aligned to 32 bit (even number of shorts)
+%C%			dataPtr += sizeof(Short_t); 				// word count is odd -> skip over filler
+%C%			SevtWC--;
+%C%			wordsProcessed++;
+%C%		}					
+%C%	}
+%C%	return(kTRUE);
+%E%}
+//- dummy prefixes, never used
+%VR%
+%SS%
+%AL%
+%XS%
+%XI%
+%MD%
+%%EndOfCode%%
+%%SEVT_FILL_SUBEVENT%%
+
+%%BeginOfCode%%
 %BN%Bool_t TUsrSevt$sevtNameUC::BookHistograms() {
 %BN%//________________________________________________________________[C++ METHOD]
 %BN%//////////////////////////////////////////////////////////////////////////////
@@ -11,9 +149,6 @@
 %BN%//                 Each histogram will be booked only once.
 %BN%// Keywords:       
 %BN%//////////////////////////////////////////////////////////////////////////////
-%BN%
-%BN%	Int_t i;
-%BN%	ostringstream * hName, * hTitle;
 %BN%
 %BP%Bool_t TUsrSevt$sevtNameUC::Book$evtNameUCHistograms() {
 %BP%//________________________________________________________________[C++ METHOD]
@@ -29,20 +164,15 @@
 %BP%// Keywords:       
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
-%BP%	Int_t i;
-%BP%	ostringstream * hName, * hTitle;
-%BP%
 %S%	if (h$prefix$paramNameUC == NULL) {
 %S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
 %S% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %S% 	}
-%X%	for (i = 0; i < $indexRange; i++) {
+%X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
-%X% 			hName = new ostringstream();
-%X% 			hTitle = new ostringstream();
-%X% 			*hName << "h$prefix$paramNameUC" << i << ends;
-%X% 			*hTitle << "$sevtNameLC.$paramNameLC" << i << ends;
-%X% 			h$prefix$paramNameUC[i] = new TH1F(hName->str(), hTitle->str(), $hBinSize, 0.0, $hUpperLim.0);
+%X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
+%X% 			TMrbString hTitle = "$sevtNameLC.$paramNameLC"; hTitle += i;
+%X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, 0.0, $hUpperLim.0);
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
 %X% 	}
@@ -70,13 +200,10 @@
 %B%// Keywords: 	  
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B% 	ostringstream * pName;
-%B%
 %S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
-%X% 		pName = new ostringstream();
-%X% 		*pName << "$paramNameLC" << i << ends;
-%X% 		if (gMrbAnalyze->FindParam(pName->str()) == NULL) gMrbAnalyze->AddParamToList(pName->str(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%X% 		TMrbString pName = "$paramNameLC"; pName += i;
+%X% 		if (gMrbAnalyze->FindParam(pName.Data()) == NULL) gMrbAnalyze->AddParamToList(pName.Data(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 	}
 %A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
 %E%

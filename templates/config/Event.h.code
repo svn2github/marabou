@@ -38,8 +38,8 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
 		void Reset(Int_t InitValue = 0);						// reset event data
 
-		inline UInt_t GetSubeventPattern() { return(fSubeventPattern); };
-		inline Bool_t ThereIsSubevent(UInt_t SubeventBit) { return((fSubeventPattern & SubeventBit) != 0); };
+		inline UInt_t GetSubeventPattern() const { return(fSubeventPattern); };
+		inline Bool_t ThereIsSubevent(UInt_t SubeventBit) const { return((fSubeventPattern & SubeventBit) != 0); };
 
 //%%EVT_USER_METHODS%%			user-specific methods may be included here
 		

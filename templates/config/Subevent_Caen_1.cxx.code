@@ -36,9 +36,9 @@
 %C%		header = (*dataPtr++) << 16; 							// header word
 %C%		header |= *dataPtr++; 							// header word
 %C%		if ((header & CAEN_V7X5_D_HDR) == 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong header", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, SevtWC);
 %C%			cerr	<< setred
-%C%					<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
+%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
 %C%					<< SevtWC << " (relWC = " << wordsProcessed
 %C%					<< ") : Wrong header - 0x" << setbase(16) << header << setbase(10)
 %C%					<< setblack << endl;
@@ -47,9 +47,9 @@
 %C%		wc = (header >> CAEN_V7X5_SH_WC) & CAEN_V7X5_M_WC;				// extract wc
 %C% 		wcs = wc;
 %C%		if (wc <= 0 || wc > 32) {				// max 32 data words
-%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong word count", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
 %C%			cerr	<< setred
-%C%					<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
+%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
 %C%					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong word count - " << wc
 %C%					<< setblack << endl;
 %C%			return(kTRUE);
@@ -93,16 +93,16 @@
 %C%				if (paramAddr) {
 %C%					*paramAddr = (Int_t) (data & CAEN_V7X5_M_ADCDATA);	// assign data value to param
 %C%				} else {
-%C%					gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "No such param", SevtData, SevtWC);
+%C%					gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "No such param", SevtData, SevtWC);
 %C%					if (gMrbAnalyze->GetModuleName(moduleNumber)) {
 %C% 					cerr	<< setred
-%C%								<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
+%C%								<< this->ClassName() << "::FillSubevent(): At SevtWC = "
 %C%								<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - "
 %C%								<< gMrbAnalyze->GetModuleName(moduleNumber) << " (chn " << chn << ")"
 %C%								<< setblack << endl;
 %C% 				} else {
 %C% 					cerr	<< setred
-%C%								<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
+%C%								<< this->ClassName() << "::FillSubevent(): At SevtWC = "
 %C%								<< SevtWC << " (relWC = " << wordsProcessed << ") : No such param - module serial "
 %C%								<< moduleNumber << " (chn " << chn << ")"
 %C%								<< setblack << endl;
@@ -114,9 +114,9 @@
 %C%		trailer = (*dataPtr++) << 16; 					// trailer word (MBS)
 %C%		trailer |= *dataPtr++; 							// trailer word (LSB)
 %C%		if ((trailer & CAEN_V7X5_D_EOB) == 0) {
-%C%			gMrbAnalyze->DumpData("sevt", recNo, "TUsrSevt$sevtNameUC", "FillSubevent", "Wrong EOB", SevtData, SevtWC);
+%C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOB", SevtData, SevtWC);
 %C%			cerr	<< setred
-%C%					<< "TUsrSevt$sevtNameUC::FillSubevent(): At SevtWC = "
+%C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
 %C%					<< SevtWC << " (relWC = " << wordsProcessed
 %C%					<< ") : Wrong EOB - 0x" << setbase(16) << trailer << setbase(10)
 %C%					<< setblack << endl;
@@ -151,9 +151,6 @@
 %BN%// Keywords:       
 %BN%//////////////////////////////////////////////////////////////////////////////
 %BN%
-%BN%	Int_t i;
-%BN%	ostringstream * hName, * hTitle;
-%BN%
 %BP%Bool_t TUsrSevt$sevtNameUC::Book$evtNameUCHistograms() {
 %BP%//________________________________________________________________[C++ METHOD]
 %BP%//////////////////////////////////////////////////////////////////////////////
@@ -168,19 +165,15 @@
 %BP%// Keywords:       
 %BP%//////////////////////////////////////////////////////////////////////////////
 %BP%
-%BP%	ostringstream * hName, * hTitle;
-%BP%
 %S%	if (h$prefix$paramNameUC == NULL) {
 %S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
 %S% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %S% 	}
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
-%X% 			hName = new ostringstream();
-%X% 			hTitle = new ostringstream();
-%X% 			*hName << "h$prefix$paramNameUC" << i << ends;
-%X% 			*hTitle << "$sevtNameLC.$paramNameLC" << i << ends;
-%X% 			h$prefix$paramNameUC[i] = new TH1F(hName->str(), hTitle->str(), $hBinSize, 0.0, $hUpperLim.0);
+%X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
+%X% 			TMrbString hTitle = "$sevtNameLC.$paramNameLC"; hTitle += i;
+%X% 			h$prefix$paramNameUC[i] = new TH1F(hName.Data(), hTitle.Data(), $hBinSize, 0.0, $hUpperLim.0);
 %X% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 		}
 %X% 	}
@@ -208,13 +201,10 @@
 %B%// Keywords: 	  
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B% 	ostringstream * pName;
-%B%
 %S% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &$paramNameLC, kMrbModule$moduleNameUC, $paramIndex);
 %X%	for (Int_t i = 0; i < $indexRange; i++) {
-%X% 		pName = new ostringstream();
-%X% 		*pName << "$paramNameLC" << i << ends;
-%X% 		if (gMrbAnalyze->FindParam(pName->str()) == NULL) gMrbAnalyze->AddParamToList(pName->str(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
+%X% 		TMrbString pName = "$paramNameLC"; pName += i;
+%X% 		if (gMrbAnalyze->FindParam(pName.Data()) == NULL) gMrbAnalyze->AddParamToList(pName.Data(), (TObject *) &$paramNameLC[i], kMrbModule$moduleNameUC, $paramIndex + i);
 %X% 	}
 %A% 	if (gMrbAnalyze->FindParam("$paramNameLC") == NULL) gMrbAnalyze->AddParamToList("$paramNameLC", (TObject *) &fData[k$paramNameUC], kMrbModule$moduleNameUC, $paramIndex);
 %E%
@@ -235,8 +225,6 @@
 %BN%// Description:    Performs add-one to histograms.
 %BN%// Keywords:       
 %BN%//////////////////////////////////////////////////////////////////////////////
-%BN%
-%BN%	Int_t i;
 %BN%
 %BN%// add-one to histograms
 %BP%Bool_t TUsrSevt$sevtNameUC::Fill$evtNameUCHistograms() {

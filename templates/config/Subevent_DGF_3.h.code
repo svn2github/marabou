@@ -7,7 +7,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_DGF_3 {
+class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_DGF {
 
 // declare all parent events as friends
 // so user may address subevent data directly from event level
@@ -22,8 +22,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_DGF_3 {
 		};
 		~TUsrSevt%%SEVT_NAME_UC%%() {};			// default dtor
 
-		inline const Char_t * GetName() { return(fSevtName.Data()); };
-		inline Int_t GetSerial() { return(kMrbSevt%%SEVT_NAME_UC%%); };
+		inline const Char_t * GetName() const { return(fSevtName.Data()); };
+		inline Int_t GetSerial() const { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
 		Bool_t BookParams();					// book params
 %%BeginOfCode%%
@@ -36,7 +36,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_DGF_3 {
 %%SEVT_PRIVATE_HISTOGRAMS%%
 		Bool_t AddBranch(TTree * Tree);				// add a branch to the tree
 		Bool_t InitializeBranch(TTree * Tree);		// init branch addresses (replay mode only)
-		inline Int_t GetTimeStamp() { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
+		inline Int_t GetTimeStamp() const { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
 
 //%%SEVT_USER_METHODS%%			user-specific methods may be included here
 
@@ -48,8 +48,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_DGF_3 {
 %%EndOfCode%%
 %%SEVT_DEFINE_ADDR%%
 
-		inline Int_t GetIndex() { return(kMrbSevt%%SEVT_NAME_UC%%); };			// subevent index
-		inline UInt_t GetIndexBit() { return(kMrbSevtBit%%SEVT_NAME_UC%%); };	// subevent index bit
+		inline Int_t GetIndex() const { return(kMrbSevt%%SEVT_NAME_UC%%); };			// subevent index
+		inline UInt_t GetIndexBit() const { return(kMrbSevtBit%%SEVT_NAME_UC%%); };	// subevent index bit
 
 	protected:
 		TString fSevtName;						//! subevent name

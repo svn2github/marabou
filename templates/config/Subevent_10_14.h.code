@@ -22,8 +22,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
 		};
 		~TUsrSevt%%SEVT_NAME_UC%%() {};			// default dtor
 
-		inline const Char_t * GetName() { return(fSevtName.Data()); };
-		inline Int_t GetSerial() { return(kMrbSevt%%SEVT_NAME_UC%%); };
+		inline const Char_t * GetName() const { return(fSevtName.Data()); };
+		inline Int_t GetSerial() const { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 		Bool_t BookParams();					// book params
@@ -37,18 +37,18 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
 %%SEVT_PRIVATE_HISTOGRAMS%%
 		Bool_t AddBranch(TTree * Tree);				// add a branch to the tree
 		Bool_t InitializeBranch(TTree * Tree);		// init branch addresses (replay mode only)
-		inline Int_t GetTimeStamp() { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
+		inline Int_t GetTimeStamp() const { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
 
 //%%SEVT_USER_METHODS%%			user-specific methods may be included here
 
 												// get param addr (method needed to access params from outside, eg. in macros)
 %%BeginOfCode%%
 %S%		inline $dataType * GetAddr$paramNameUC() { return(&$paramNameLC); };	// addr of $paramNameLC
-%S%		inline $dataType Get$paramNameUC() { return($paramNameLC); };	// value of $paramNameLC
+%S%		inline $dataType Get$paramNameUC() const { return($paramNameLC); };	// value of $paramNameLC
 %X%		inline $dataType * GetAddr$paramNameUC() { return($paramNameLC); };	// addr of $paramNameLC
-%X%		inline $dataType Get$paramNameUC(Int_t Offset) { return($paramNameLC[Offset]); };	// value of $paramNameLC[n]
+%X%		inline $dataType Get$paramNameUC(Int_t Offset) const { return($paramNameLC[Offset]); };	// value of $paramNameLC[n]
 %A%		inline $dataType * GetAddr(Int_t Offset) { return(&fData[Offset]); };	// addr of subevent data
-%A%		inline $dataType Get(Int_t Offset) { return(fData[Offset]); };		// value of data[n]
+%A%		inline $dataType Get(Int_t Offset) const { return(fData[Offset]); };		// value of data[n]
 %%EndOfCode%%
 %%SEVT_DEFINE_ADDR%%
 

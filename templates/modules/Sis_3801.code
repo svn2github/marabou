@@ -80,8 +80,8 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-%SH%					sisSts = SIS_3801_READ_STATUS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
-%SH%					if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) {
+%SH%					$mnemoLC_sts = SIS_3801_READ_STATUS($moduleName); 	/* scaler $moduleName runs in single-hit mode */
+%SH%					if (($mnemoLC_sts & SIS_3801_B_FIFO_EMPTY) == 0) {
 %SH%						rdoinp = SIS_3801_A_READ_FIFO($moduleName);
 %SH%						RDO_BLT_32(32);
 %SH%					} else {
@@ -89,15 +89,15 @@
 %SH%						evt.out32 += 32;
 %SH%					}
 %MH%					rdoinp = SIS_3801_A_READ_FIFO($moduleName); 	/* scaler $moduleName runs in multi-hit mode */
-%MH%					for (sisHit = 0; sisHit < $fifoDepth; sisHit++) {
-%MH%						sisSts = SIS_3801_READ_STATUS($moduleName);
-%MH%						if ((sisSts & SIS_3801_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
+%MH%					for ($mnemoLC_hit = 0; $mnemoLC_hit < $fifoDepth; $mnemoLC_hit++) {
+%MH%						$mnemoLC_sts = SIS_3801_READ_STATUS($moduleName);
+%MH%						if (($mnemoLC_sts & SIS_3801_B_FIFO_EMPTY) == 0) RDO_BLT_32(32);
 %MH%						else break;
 %MH%					}
-%MH%					sisHit = ($fifoDepth - sisHit) * 32;
-%MH%					if (sisHit > 0) {
-%MH%						memset(evt.out32, 0, sisHit * sizeof(unsigned long));
-%MH%						evt.out32 += sisHit;
+%MH%					$mnemoLC_hit = ($fifoDepth - $mnemoLC_hit) * 32;
+%MH%					if ($mnemoLC_hit > 0) {
+%MH%						memset(evt.out32, 0, $mnemoLC_hit * sizeof(unsigned long));
+%MH%						evt.out32 += $mnemoLC_hit;
 %MH%					}
 %%EndOfCode%%
 %%READ_MODULE%%
@@ -194,7 +194,7 @@ void sis_3801_module_info(volatile unsigned char * module);
 %%DEFINE_LOCAL_VARS_INIT%%
 
 %%BeginOfCode%%
-	unsigned long sisSts;
-	int sisHit;
+	unsigned long $mnemoLC_sts;
+	int $mnemoLC_hit;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%

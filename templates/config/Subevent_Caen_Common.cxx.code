@@ -14,29 +14,18 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 // Keywords:	   
 //////////////////////////////////////////////////////////////////////////////
 
-		UInt_t header;
-		UInt_t trailer;
-	Int_t wcs, wc;
-	Int_t moduleNumber;
-	Int_t chn;
-	UShort_t * dataPtr;
-	Int_t data;
-	Int_t * paramAddr;
-	Int_t wordsProcessed, eventsProcessed;
-	UShort_t evtData[2];
-							
 	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 
 	this->GetHitBuffer()->Reset();			// clear hit buffer
 
 	recNo++;						// count this record	
-	wordsProcessed = 0; 			// words processed so far
-	dataPtr = (UShort_t *) SevtData;
-	eventsProcessed = 0;
+	Int_t wordsProcessed = 0; 			// words processed so far
+	UShort_t * dataPtr = (UShort_t *) SevtData;
+	Int_t eventsProcessed = 0;
 	while (SevtWC > 0) {									// subevent may contain several CAEN modules
-		header = (*dataPtr++) << 16; 					// header word (MSB)
-		header |= *dataPtr++; 							// header word (LSB)
+		Int_t header = (*dataPtr++) << 16; 					// header word (MSB)
+		header |= *dataPtr++; 								// header word (LSB)
 		if ((header & CAEN_V7X5_D_HDR) == 0) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong header", SevtData, SevtWC);
 			cerr	<< setred
@@ -46,8 +35,8 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 					<< setblack << endl;
 			return(kTRUE);
 		}
-		wc = (header >> CAEN_V7X5_SH_WC) & CAEN_V7X5_M_WC;				// extract wc
-		wcs = wc;
+		Int_t wc = (header >> CAEN_V7X5_SH_WC) & CAEN_V7X5_M_WC;				// extract wc
+		Int_t wcs = wc;
 		if (wc <= 0 || wc > 32) {				// max 32 data words
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
 			cerr	<< setred
@@ -56,7 +45,7 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 					<< setblack << endl;
 			return(kTRUE);
 		}
-		moduleNumber = header & CAEN_V7X5_M_MSERIAL;	// extract module number
+		Int_t moduleNumber = header & CAEN_V7X5_M_MSERIAL;	// extract module number
 		if (moduleNumber <= 0) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong module number", SevtData, SevtWC);
 					cerr	<< setred
@@ -75,8 +64,9 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 			return(kTRUE);
 		}
 
+		UShort_t evtData[2];
 		for (; wc; wc--) {
-			data = (*dataPtr++) << 16;		// data (MSB)
+			Int_t data = (*dataPtr++) << 16;		// data (MSB)
 			data |= *dataPtr++; 			// data (LSB)
 			if ((data & CAEN_V7X5_M_ID) != CAEN_V7X5_D_DATA) {
 				if ((data & CAEN_V7X5_M_ID) == CAEN_V7X5_D_EOB) {
@@ -99,7 +89,7 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 					return(kTRUE);
 				}
 			}
-			chn = (data >> CAEN_V7X5_SH_CHN) & CAEN_V7X5_M_CHN;
+			Int_t chn = (data >> CAEN_V7X5_SH_CHN) & CAEN_V7X5_M_CHN;
 			if (moduleNumber > 0) {
 				evtData[0] = 0;
 				if (data & CAEN_V7X5_B_OVERFLOW) evtData[1] = CAEN_V7X5_B_OVERFLOW;
@@ -112,8 +102,8 @@ Bool_t TMrbSubevent_Caen::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, 
 													evtData, 2);
 			}
 		}
-		trailer = (*dataPtr++) << 16; 					// trailer word (MSB)
-		trailer |= *dataPtr++; 							// trailer word (LSB)
+		Int_t trailer = (*dataPtr++) << 16; 					// trailer word (MSB)
+		trailer |= *dataPtr++; 									// trailer word (LSB)
 		if ((trailer & CAEN_V7X5_D_EOB) == 0) {
 			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong EOB", SevtData, SevtWC);
 			cerr	<< setred
