@@ -33,6 +33,7 @@
 #pragma link C++ class TMrbLogMessage;
 #pragma link C++ class TMrbLogger;
 #pragma link C++ class TMrbSerialComm;
+#pragma link C++ class TMrbWildcard;
 #pragma link C++ class TMrbTail;
 #pragma link C++ class TMrbNamedArrayC+;
 #pragma link C++ class TMrbNamedArrayI+;

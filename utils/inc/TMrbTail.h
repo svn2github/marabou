@@ -8,7 +8,7 @@
 // Class:          TMrbTail    -- tail utility
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTail.h,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbTail.h,v 1.7 2004-12-14 11:46:51 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -28,8 +28,8 @@ namespace std {} using namespace std;
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTail
-// Purpose:        MARaBOU's message/error logger
-// Description:    Methods to output (error) messages to different output channels.
+// Purpose:        Tail utility for MARaBOU
+// Description:    Methods to implement a tail function in MARaBOU
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
