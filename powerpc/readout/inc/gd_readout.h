@@ -67,6 +67,7 @@
 //                 RDO_BLT_16(wc)
 //                 RDO_BLT_24(wc)
 //                 RDO_BLT_32(wc)
+//                 RDO_BLT_32_SW(wc)
 //                 RDO_BLT_16_M(wc,mask)
 //                 RDO_BLT_32_M(wc,mask)
 //                 RDO_BLTI_16(wc)
@@ -96,6 +97,7 @@
 //                 RDO_C2MI_nn           -- store data, increment input & output ptrs
 //                 RDO_C2MI_nn_M         -- apply a data mask before storing data.
 //                 RDO_BLT_nn            -- block xfer, input ptr stays const
+//                 RDO_BLT_nn_SW         -- block xfer, swapped, input ptr stays const
 //                 RDO_BLT_nn_M          -- block xfer with mask, input ptr const
 //                 RDO_BLTI_xxxx         -- block xfer, input ptr incremented
 //                 RDO_BLT_nn_M          -- block xfer with mask, input ptr incremented
@@ -131,12 +133,18 @@
 #define RDO_BLT_16_M(wc,mask)	{ int i; for (i = 0; i < wc; i++) *evt.out16++ = (unsigned short) (*rdoinp & mask);	}
 #define RDO_BLT_32_M(wc,mask)	{ int i; for (i = 0; i < wc; i++) *evt.out32++ = (unsigned long) (*rdoinp & mask);	}
 
+#define RDO_BLT_32_SW(wc)	{ int i; unsigned long d; for (i = 0; i < wc; i++) { d = (unsigned long) *rdoinp; *evt.out16++ = d & 0xFFFF; *evt.out16++ = (d >> 16) & 0xFFFF;} }
+#define RDO_BLT_32_M_SW(wc,mask)	{ int i; unsigned long d; for (i = 0; i < wc; i++) d = (unsigned long) (*rdoinp & mask); *evt.out16++ = d & 0xFFFF; *evt.out16++ = (d >> 16) & 0xFFFF; }
+
 #define RDO_BLTI_16(wc)	{ int i; for (i = 0; i < wc; i++) *evt.out16++ = (unsigned short) *rdoinp++;	}
 #define RDO_BLTI_24(wc)	{ int i; for (i = 0; i < wc; i++) *evt.out32++ = (unsigned long) (*rdoinp++ & 0xffffff);	}
 #define RDO_BLTI_32(wc)	{ int i; for (i = 0; i < wc; i++) *evt.out32++ = (unsigned long) *rdoinp++;	}
 
 #define RDO_BLTI_16_M(wc,mask)	{ int i; for (i = 0; i < wc; i++) *evt.out16++ = (unsigned short) (*rdoinp++ & mask);	}
 #define RDO_BLTI_32_M(wc,mask)	{ int i; for (i = 0; i < wc; i++) *evt.out32++ = (unsigned long) (*rdoinp++ & mask);	}
+
+#define RDO_BLTI_32_SW(wc)	{ int i; unsigned long d; for (i = 0; i < wc; i++) d = (unsigned long) *rdoinp++; *evt.out16++ = d & 0xFFFF; *evt.out16++ = (d >> 16) & 0xFFFF; }
+#define RDO_BLTI_32_M_SW(wc,mask)	{ int i; unsigned long d; for (i = 0; i < wc; i++) d = (unsigned long) (*rdoinp++ & mask); *evt.out16++ = d & 0xFFFF; *evt.out16++ = (d >> 16) & 0xFFFF; }
 
 #define RDO_READ_16()	(unsigned short) *rdoinp
 #define RDO_READ_24()	(unsigned long) (*rdoinp & 0xffffff)
