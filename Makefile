@@ -22,10 +22,10 @@ include config/Makefile.$(ARCH)
 
 MODULES       = build utils gutils \
 				expconf analyze \
-                macrobrowser helpbrowser hpr c_analyze \
+                helpbrowser hpr c_analyze \
 				camcli esone mbssetup mbsio transport \
 				xiadgf dgfcontrol \
-				polar
+				polar snake
 
 ##### ROOT libraries #####
 
@@ -53,7 +53,9 @@ else
 endif
 
 ROOTCFLAGS    := $(shell root-config --cflags)
+#ROOTLIBS      := $(shell root-config --libs)
 ROOTLIBS      := $(shell root-config --new --libs)
+#ROOTGLIBS     := $(shell root-config --glibs)
 ROOTGLIBS     := $(shell root-config --new --glibs)
 
 ROOTCINT      :=rootcint

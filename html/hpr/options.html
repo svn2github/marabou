@@ -1,5 +1,9 @@
 <!DOCTYPE HTML>
 <HTML>
+<style type="text/css">
+  body { margin-left: +10%; margin-right: +10%; }
+</style>
+<link type="text/css" rel="stylesheet" href="style.css">
 <TITLE>Setting options and parameters</TITLE>
 <PRE>
 <H3>What to display for histogram</H3>
@@ -18,6 +22,8 @@ like boxes all sorts of lego plots etc.
 
 <H3>Various HistPresent options</H3>
 These options are described in some detail below.
+Also this widget provides its own <b>Help</b> button.
+
 <a href=#Help_on_ShowFitted>Help_on_ShowFitted</a> 
 <a href=#Help_on_RemParTrees>Help_on_RemParTrees</a> 
 <a href=#Help_on_RememberLastSettings>Help_on_RememberLastSettings</a> 
@@ -28,12 +34,23 @@ These options are described in some detail below.
 <a href=#Help_on_Auto_2dim>Help_on_Auto_2dim</a> 
 
 <H3>HistPresent numerical options</H3>
+
 <b> LogScale_Minimum </b>  
     This allows to set the minimum when logarithmic sales 
-    are used
+    are used with 2-dim histograms
+<b> LinScale_Minimum </b>  
+    This allows to set the minimum when linear sales 
+    are used with 2-dim histograms
 <b> AutoUpdateDelay</b>
     This is the update frequency when using the 
     <a href=showlists.html#Help_on_ShowSelected>automatic update</a> option.
+<b> Max Entries in Histlists</b>
+    When very many histograms are in one file this
+    parameter avoids crashing some X-implementations,
+    default value 333
+<b>Width + threshold in fpeak</b>
+    HistPresent implements a simple peakfinder.
+    Here the two relevant parameters may be set.
 
 <H3>Default window sizes and positions</H3>
 Default sizes of windows for 1-dim and 2-dim histograms 
@@ -41,8 +58,8 @@ may be adjusted seperately. Units are in pixels.
 Each new window is shifted according to the values of
 Window_Shift_X and Y starting at Window_Top_X and Y.
 
-The window size of histgram lists can be adjusted
-by the value of <b>WindowXWidth_List</b> as follows:
+The window size of histogram lists can be adjusted
+by the value of <b>Window_X_Width_List</b> as follows:
 
 > 0 : take value as it is in units of pixels
 = 0 : take default value (250)
@@ -55,6 +72,21 @@ the Display action <b>ProjectBoth</b> is used.
 
 <H3>Default colors and fonts</H3>
 This allows to set various colors and fonts.
+
+<H3>Graphics Attr (Canvas, Pad..)</H3>
+This menu gives access to most parameters in the ROOT class
+<b>TStyle</b>.
+E.g. From here one can set the Pad right margin to give more
+space if a color palette with long numbers are drawn in 
+2-dim hist with <b>colz</b> option.
+To control the numbers of digits used in labels (i.e. before
+powers of ten are used) select the <b>X axis attributes</b>
+and then <b>Max digits used in labels</b>
+N.b.: X, Y, Z axis attributes my be changed seperately or
+      all at time from the <b>X axis attributes</b> widget
+      when pressing <b>Set Y, Z axis to same value</b>.
+Caveat: By setting color values to "0" you may make parts
+        or all the picture invisible.
 
 <a NAME=Help_on_ShowFitted></a> 
 <H3>Display fitted curves</H3>
