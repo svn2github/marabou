@@ -539,6 +539,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fDeadTimeInterval = 0;
 
 		fConfigChecked = kFALSE;	// consistency check has to be done
+		fConfigOk = kFALSE;
 
 		fCrateTable.Set(TMrbConfig::kNofCrates);				// init crate table
 		fControllerTable.Set(TMrbConfig::kNofCrates);			// init controller table
@@ -1280,7 +1281,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		gMrbLog->Flush(this->ClassName(), "MakeReadoutCode");
 	}
 
-	this->CheckConfig();		// check if config consistent
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetReadoutOptions() & kRdoOptVerbose) != 0);
 
@@ -2003,7 +2004,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		return(kFALSE);
 	}
 
-	this->CheckConfig();		// check if config consistent
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetAnalyzeOptions() & kAnaOptVerbose) != 0) ;
 
@@ -3113,7 +3114,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 
 	if (gMrbLofUserVars == NULL) return(kFALSE);
 
-	this->CheckConfig();		// check if config consistent
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	obj = gMrbLofUserVars->First();
 	while (obj) {
@@ -3231,7 +3232,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 	
 	TMrbTemplate anaTmpl;
 	
-	this->CheckConfig();		// check if config consistent
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
 
@@ -3371,7 +3372,7 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 		return(kFALSE);
 	}
 
-	this->CheckConfig();		// check if config consistent
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetConfigOptions() & kCfgOptVerbose) != 0);
 
@@ -3727,7 +3728,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	fRcFileOptions = rcOptions.CheckPatternShort(this->ClassName(), "MakeRcFile", Options, kMrbRcFileOptions);
 	if (fRcFileOptions == TMrbLofNamedX::kIllIndexBit) return(kFALSE);
 
-	this->CheckConfig();		// check if config consistent
+	if (!this->CheckConfig()) return(kFALSE);		// check if config consistent
 
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetRcFileOptions() & kRcOptVerbose) != 0);
 
@@ -6283,7 +6284,7 @@ Bool_t TMrbConfig::CheckConfig() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fConfigChecked) return(kTRUE);		// all done
+	if (fConfigChecked) return(fConfigOk);		// all done
 
 	Int_t nofErrors = 0;
 
@@ -6380,10 +6381,11 @@ Bool_t TMrbConfig::CheckConfig() {
 		gMrbLog->Out()	<< "Check done: No inconsistencies encountered" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig", setblue);
 	} else {
-		gMrbLog->Err()	<< "Check done: " << nofErrors << " inconsistencies encountered" << endl;
+		gMrbLog->Err()	<< "Check done: " << nofErrors << " inconsistencies encountered - config step aborted" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig");
 	}
 
 	fConfigChecked = kTRUE;
-	return(nofErrors == 0);
+	fConfigOk = (nofErrors == 0);
+	return(fConfigOk);
 }

@@ -827,6 +827,7 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofHistoArrays;			// list of histogram arrays
 		
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
+		Bool_t fConfigOk;					// kTRUE config consistent
 
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	
