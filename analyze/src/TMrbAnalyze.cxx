@@ -517,9 +517,11 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Err()	<< "[" << ioSpec->GetInputFile() << "] Start event != 0" << endl;
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
+               this->WriteRootTree(ioSpec);
 					gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
 					if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
 					else									gMrbTransport->CloseLMDFile();
+					this->CloseRootTree(ioSpec);
 					if (this->SaveHistograms("*", ioSpec) != -1) {
 						this->ClearHistograms("*", ioSpec);
 					}
