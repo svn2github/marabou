@@ -382,11 +382,11 @@ public:
 		inline void SetChannel(Int_t Channel) { fChannel = Channel; };
 		inline long long SetChannelTime(UShort_t * ChannelTime) {
 			fChannelTime = 0;
-			for (Int_t i = 0; i < 3; i++) fChannelTime = (fChannelTime << 16) + *ChannelTime++;
+			for (Int_t i = 0; i < 3; i++) fChannelTime = (fChannelTime << 16) | *ChannelTime++;
 			return(fChannelTime);
 		};
 		inline long long SetChannelTime(UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime) {
-			fChannelTime = ((BufferTimeHi << 16) + EventTimeHi) << 16 + FastTrigTime;
+			fChannelTime = ((unsigned long long)BufferTimeHi << 32) | ((unsigned long long)EventTimeHi << 16) | (unsigned long long)FastTrigTime;
 			return(fChannelTime);
 		};
 		inline long long SetChannelTime(TUsrHit * Hit) {
