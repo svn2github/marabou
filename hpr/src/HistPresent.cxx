@@ -1136,7 +1136,7 @@ void HistPresent::ComposeList(const char* bp)
 //   ClearSelect();
    wstream.close();
 };
-//________________________________________________________________________________________
+//_______________________________ShowList_________________________________________________________
 // Show List 
   
 void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
@@ -1191,10 +1191,17 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
          if (fRootFile) fRootFile->Close();
          fRootFile=new TFile(fname);
          hist = (TH1*)fRootFile->Get(line.Data());
-      } else {
+      } else if  (strstr(fname, ".map")) {
          mfile = TMapFile::Create(fname);
          hist=0;
          hist    = (TH1 *) mfile->Get(line.Data(), hist);
+
+      } else if (strstr(fname, "Socket")) {
+         if(!fComSocket){
+            cout << setred << "No connection open"  << setblack << endl;
+            return;
+         }
+         hist = gethist(line.Data(), fComSocket); 
       }
       if (!hist) {
          cout << "Warning: " << line.Data() << " in" 
