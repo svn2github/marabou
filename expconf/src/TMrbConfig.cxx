@@ -6,11 +6,9 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.77 2004-09-28 13:34:04 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.78 2004-09-28 13:37:52 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
-
-#pragma ident
 
 #include <cstdlib>
 #include <iostream>
