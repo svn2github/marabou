@@ -3106,8 +3106,8 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 	if (curIndex >= this->GetNofHits()) return(NULL);
 
 	hit = (TUsrHit *) fHits->At(curIndex);
-	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - fOffset[hit->GetModuleNumber()])
-						- (ushort2ll48(Hit0->GetChannelTime()) - fOffset[Hit0->GetModuleNumber()]);
+	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - fOffset[hit->GetModuleNumber() - 1])
+						- (ushort2ll48(Hit0->GetChannelTime()) - fOffset[Hit0->GetModuleNumber() - 1]);
 	if (tDiff < 0) tDiff = -tDiff;
 	return(tDiff <= (long long) fWindow);
 }		
