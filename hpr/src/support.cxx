@@ -5,6 +5,8 @@
 #include "TFrame.h"
 #include "TLatex.h"
 #include "TText.h"
+#include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
 #include "TH1.h"
 #include "TF1.h"
 #include "TRegexp.h"
@@ -522,6 +524,16 @@ void WarnBox(const char *message, TGWindow * win)
    int retval = 0;
    new TGMsgBox(gClient->GetRoot(), win,
                 "Warning", message,
+                kMBIconExclamation, kMBDismiss, &retval);
+}
+
+//__________________________________________________________________
+
+void InfoBox(const char *message, TGWindow * win)
+{
+   int retval = 0;
+   new TGMsgBox(gClient->GetRoot(), win,
+                "Info", message,
                 kMBIconExclamation, kMBDismiss, &retval);
 }
 
@@ -1511,8 +1523,245 @@ Bool_t CreateDefaultsDir(TRootCanvas * mycanvas, Bool_t checkonly)
    }
    return fok;
 }
+//______________________________________________________________________________________
 
+TGraph * FindGraph(HTCanvas * c) 
+{
+   cout << "FindGraph(HTCanvas * c) " << c << endl;
+   TIter next(c->GetListOfPrimitives());
+   TObject * obj;
+   TGraph * graph = 0;
+   while ( (obj = next()) ) {
+      obj->Print();
+      if (obj->InheritsFrom("TGraph")) {
+        if (graph) cout << "Warning: more than 1 TGraph found" << endl;
+        else graph = (TGraph *)obj;
+      }
+   }
+   return graph;
+}
+   
+//______________________________________________________________________________________
 
+void WriteGraphasASCII(TGraph * g,  TRootCanvas * mycanvas)
+{
+   TString fname = g->GetName();
+   fname += ".ascii";
+   Bool_t ok;
+   fname =
+       GetString("Write ASCII-file with name", fname.Data(), &ok, mycanvas);
+   if (!ok) {
+      cout << " Cancelled " << endl;
+      return;
+   }
+   if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
+//      cout << fname << " exists" << endl;
+      int buttons = kMBOk | kMBDismiss, retval = 0;
+      EMsgBoxIcon icontype = kMBIconQuestion;
+      new TGMsgBox(gClient->GetRoot(), mycanvas,
+                   "Question", "File exists, overwrite?",
+                   icontype, buttons, &retval);
+      if (retval == kMBDismiss)
+         return;
+   }
+   ofstream outfile;
+   outfile.open((const char *) fname);
+//   ofstream outfile((const char *)fname);
+   Double_t * x = 0;
+   Double_t * y = 0;
+   Double_t * ex = 0;
+   Double_t * ey = 0;
+   Double_t * exl = 0;
+   Double_t * exh = 0;
+   Double_t * eyl = 0;
+   Double_t * eyh = 0;
 
+   if (outfile) {
+      x = g->GetX();
+      y = g->GetY();
+      if (g->IsA() == TGraphErrors::Class()) {
+         ex = ((TGraphErrors *)g)->GetEX();
+         ey = ((TGraphErrors *)g)->GetEY();
+      }
+      if (g->IsA() == TGraphAsymmErrors::Class()) {
+         exl = ((TGraphAsymmErrors *)g)->GetEXlow();
+         exh = ((TGraphAsymmErrors *)g)->GetEXhigh();
+         eyl = ((TGraphAsymmErrors *)g)->GetEYlow();
+         eyh = ((TGraphAsymmErrors *)g)->GetEYhigh();
+      }
+      for (Int_t i = 0; i < g->GetN(); i++) {
+         outfile << x[i] << "\t" << y[i];
+         if (ex)  outfile << "\t" << ex[i] << "\t" << ey[i];
+         if (exl) outfile << "\t" << exl[i] << "\t" << exh[i] 
+                       << "\t" << eyl[i] << "\t" << eyh[i];
+         outfile << endl;
+      }
+      outfile.close();
+      cout << g->GetN() << " lines written to: "
+          << (const char *) fname << endl;
+   } else {
+      cout << " Cannot open: " << fname << endl;
+   }
+}
+//______________________________________________________________________________________
+
+void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas)
+{
+   if (g) {
+      TString name = g->GetName();
+      Bool_t ok;
+      name =
+          GetString("Save hist with name", name.Data(), &ok, mycanvas);
+      if (!ok)
+         return;
+      g->SetName(name.Data());
+      if (OpenWorkFile(mycanvas)) {
+         g->Write();
+         CloseWorkFile();
+      }
+   }
+}
+//______________________________________________________________________________________
+
+Bool_t fixnames(TFile * * infile, Bool_t checkonly)
+{
+   TFile * outfile = 0;
+   TString outfile_n((*infile)->GetName());
+   if (!checkonly) {
+      if (outfile_n.EndsWith(".root")) outfile_n.Resize(outfile_n.Length()-5);
+      else                             cout << "Warning: " << outfile_n 
+                                    << " doesnt end with .root" << endl;
+      outfile_n += "_cor.root";
+      outfile = new TFile(outfile_n, "RECREATE");
+   }
+   TIter next((*infile)->GetListOfKeys());
+   TKey* key;
+   TNamed * obj;
+   TString name;
+   Bool_t needsfix = kFALSE;
+//   cout << "enter fixnames" << endl;
+   TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
+   while( (key = (TKey*)next()) ){
+      (*infile)->cd();
+      obj = (TNamed*)key->ReadObj(); 
+      name = obj->GetName();
+      Bool_t changed = kFALSE;
+      while (name.Index(notascii) >= 0) {
+         name(notascii) = "_";
+         changed = kTRUE;
+      }
+      if (changed) {
+         if (checkonly) {
+            cout << "Orig name: " << obj->GetName() << endl;
+            cout << "New  name: " << name << endl;
+         }
+         needsfix = kTRUE;
+         obj->SetName(name);
+      }
+      if (!checkonly) {
+         outfile->cd();
+         obj->Write();
+      }
+   }
+   if (outfile) {
+//      cout << "new file ++++++++++++++++++++++++++++++++++++++++++++=" <<endl;
+ //     outfile->ls();
+      outfile->Close();
+      if (needsfix) {
+//          cout << "new file: " <<outfile_n<<endl;
+         (*infile)->Close();
+         *infile = new TFile(outfile_n, "READ");
+//         (*infile)->ls();
+      }
+   }
+   return needsfix;
+}
+//______________________________________________________________________________________
+
+TPolyLine * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color) 
+{
+   Int_t nbins = binh - binl + 1;
+   cout << "PaintArea " << binl << " " << binh << endl;
+   TPolyLine * pl  = new TPolyLine(2 * nbins + 3);
+   Int_t ip = 0;
+   for (Int_t bin = binl; bin <= binh; bin++) {
+      pl->SetPoint(ip, h->GetBinLowEdge(bin), h->GetBinContent(bin));
+      pl->SetPoint(ip + 1 , h->GetBinLowEdge(bin) + h->GetBinWidth(bin), h->GetBinContent(bin));
+      ip += 2;
+   }
+   pl->SetPoint(ip, (pl->GetX())[ip-1], h->GetMinimum());
+   pl->SetPoint(ip+1, (pl->GetX())[0],  h->GetMinimum());   
+   pl->SetPoint(ip+2, (pl->GetX())[0],  (pl->GetY())[1]);   
+   pl->SetFillColor(color);
+   pl->SetOption("F");
+   return pl;
+}
+//______________________________________________________________________________________
+
+Int_t getcol() 
+{
+//   TString hexcol;
+   TNamed * colobj = new TNamed("colobj", "colobj");
+   gROOT->GetListOfSpecials()->Add(colobj);
+   colobj->SetUniqueID(0);
+   TString scol;
+   TString cmd;
+   TCanvas * ccol = new TCanvas("colcol", "rgb colors", 400, 20, 800, 400);
+   Float_t dx = 1./10.2 , dy = 1./10.2 ;
+   Float_t x0 = 0.1 * dx,  y0 =0.1 *  dy; 
+   Float_t x = x0, y = y0;;
+   TButton * b;
+   TColor  * c;
+   Int_t maxcolors = 100;
+   Int_t basecolor = 1;
+   Int_t colindex = basecolor;
+//   Int_t palette = new Int_t[maxcolors];
+   for (Int_t i=basecolor; i<= maxcolors; i++) {
+      scol = Form("%d", colindex);
+      cmd = "gROOT->GetListOfSpecials()->FindObject(\"colobj\")->SetUniqueID(";
+      cmd += colindex;
+      cmd += ");";
+      b = new TButton(scol.Data(), cmd.Data(), x, y, x + .9*dx , y + .9*dy );
+      b->SetFillColor(colindex);
+      b->SetTextAlign(22);
+      b->SetTextFont(100);
+      b->SetTextSize(0.8);
+      c = GetColorByInd(colindex);
+      if (c) {
+        if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
+         else                   b->SetTextColor(1);
+      } else {
+         cout << "color not found " << colindex << endl;
+      }
+//      if (colindex == 1) b->SetTextColor(10); 
+//      else               b->SetTextColor(1);
+      if ( (colindex++ >= maxcolors + basecolor) ) {
+         cout << "Too many colors " << maxcolors << endl;
+         break;
+      }
+      b->Draw();
+      y += dy;
+      if ( y >= 1 - dy ){
+         y = y0;
+         x+= dx;
+      }
+   }
+   Int_t ind = 0;
+   while ( colobj->GetUniqueID() == 0) {
+      if (gSystem->ProcessEvents())
+         break;
+      gSystem->Sleep(50);
+      if (!gROOT->GetListOfCanvases()->FindObject("colcol")) {
+         gROOT->GetListOfSpecials()->Remove(colobj);
+         delete colobj;
+         return 0;
+      }
+   }
+   ind = colobj->GetUniqueID();
+   gROOT->GetListOfSpecials()->Remove(colobj);
+   delete colobj;
+   delete ccol;
+   return ind; 
+}
 
 

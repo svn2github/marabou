@@ -650,8 +650,22 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          nstat = 0;
           cout << "Skip hists in file, show hist lists only" << endl;
       } else {
-      	TFile * rfile =0;
+      	TFile * rfile = 0;
       	rfile = new TFile(fname);
+         if ( (fixnames(&rfile, kTRUE) )) {
+            if (QuestionBox("File contains objects with illegal names\n\
+(see transcript output)\n\
+Should we create a new file with corrected names?", maincanvas)) { 
+               fixnames(&rfile, kFALSE);
+//               rfile->ls();
+               TString mess("A new file: ");
+               mess += rfile->GetName();
+               mess += "\nhas been created\n Please redisplay filelist";
+               InfoBox(mess.Data(), maincanvas); 
+               rfile->Close();
+               return;
+            }
+         }   
       	st = (TMrbStatistics*)rfile->Get("TMrbStatistics");
       	if (!st) {
          	st=new TMrbStatistics(fname);
@@ -1065,7 +1079,7 @@ void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
    ndeleted += DeleteOnFile(fname, fSelectGraph, GetMyCanvas());
    cout << ndeleted << " object";
    if (ndeleted !=1) cout << "s";
-   cout << " ndeleted on " << fname << endl;
+   cout << " deleted on " << fname << endl;
 }
  //________________________________________________________________________________________
 
@@ -2177,21 +2191,34 @@ void HistPresent::ShowContour(const char* fname, const char* name, const char* b
   
 void HistPresent::ShowGraph(const char* fname, const char* name, const char* bp)
 {
-   TGraphErrors * gr;
+   TGraphErrors * graph;
    if (strstr(fname,".root")) {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile(fname);
-      gr = (TGraphErrors*)fRootFile->Get(name);
+      graph = (TGraphErrors*)fRootFile->Get(name);
 //      func->SetDirectory(gROOT);
 //      fRootFile->Close();
    } else {
-      gr = (TGraphErrors*)gROOT->FindObject(name);
+      graph = (TGraphErrors*)gROOT->FindObject(name);
    }
-//  gROOT->ls();
-   if (gr) {
-//      PrintGraph(gr);
-      gr->Draw("A*");  
-   } else     WarnBox("Graph not found");
+   if (graph) {
+      TString cname = name;
+      cname.Prepend("C_");
+      if (fNwindows>0) {       // not the 1. time
+         if (fWinshiftx != 0 && fNwindows%2 != 0) fWincurx += fWinshiftx;
+         else   {fWincurx = fWintopx; fWincury += fWinshifty;}
+      }
+      fNwindows++;
+      HTCanvas * cg = new HTCanvas(cname, cname, fWincurx, fWincury,
+                                 fWinwidx_1dim, fWinwidy_1dim, this, 0, 0, graph);
+      fCanvasList->Add(cg);
+//      graph->SetName(hname);
+//      graph->SetTitle(htitle);
+      graph->Draw(fDrawOptGraph);
+      graph->GetHistogram()->SetStats(kFALSE);
+   } else {
+      WarnBox("Graph not found");
+   }
    if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________

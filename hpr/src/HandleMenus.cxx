@@ -97,6 +97,7 @@ enum ERootCanvasCommands {
    kFHClearMarks,
    kFHPrintMarks,
    kFHSet2Marks,
+   kFHColorMarked,
    kFHSelectInside,
    kFHKeepPar,
    kFHCallMinos,
@@ -134,6 +135,8 @@ enum ERootCanvasCommands {
 //   kFHProjectY,
    kFHOutputStat,
    kFHHistToFile,
+   kFHGraphToFile,
+   kFHGraphToASCII,
    kFHCanvasToFile,
    kFHHistToASCII,
    kFHPictToPSplain,
@@ -148,6 +151,7 @@ enum ERootCanvasCommands {
    kFH2dimHistWeight, 
    kFHGraph, 
    kFHGraphError,
+   kFHGraphAsymmError,
 
    kFHCut,
    kFHInitCut,
@@ -239,9 +243,9 @@ static const char *gSaveAsTypes[] = { "PostScript",   "*.ps",
 
 ClassImp (HandleMenus)
 
-HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh) 
+HandleMenus::HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph * graph) 
               : TGFrame(gClient->GetRoot(), 10 ,10),
-                fHCanvas(c),fHistPresent(hpr), fFitHist(fh)
+                fHCanvas(c),fHistPresent(hpr), fFitHist(fh), fGraph(graph)
 {
    fRootCanvas = (TRootCanvas*)fHCanvas->GetCanvasImp();
    fRootsMenuBar = fRootCanvas->GetMenuBar();
@@ -640,6 +644,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHSet2Marks:
                      fFitHist->Set2Marks(); 
                      break;
+                  case kFHColorMarked:
+                     fFitHist->ColorMarked(); 
+                     break;
                   case kFHSelectInside:
                      if(fFitHist->InsideState()) {
                          fFitHist->SetInside(kFALSE);
@@ -732,6 +739,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      fFitHist->ProjectX(); 
                      break;
                   case kFHProjectY:
+
                      fFitHist->ProjectY(); 
                      break;
                   case kFHProjectF:
@@ -745,6 +753,12 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFHHistToFile:
                       fFitHist->WriteOutHist(); 
+                     break;
+                  case kFHGraphToFile:
+                     WriteOutGraph(fGraph, fRootCanvas); 
+                     break;
+                  case kFHGraphToASCII:
+                     WriteGraphasASCII(fGraph, fRootCanvas); 
                      break;
                   case kFHCanvasToFile:
 //                      fFitHist->WriteOutCanvas(); 
@@ -777,6 +791,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFHGraphError:
                      fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kGraphError); 
+                     break;
+                  case kFHGraphAsymmError:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kGraphAsymmError); 
                      break;
 
                   case  kFHMarksToCut:
@@ -1109,6 +1126,11 @@ void HandleMenus::BuildMenus()
          fFileMenu->AddEntry("Hist_to_ASCII-File"              ,kFHHistToASCII);
       }
 //      fFileMenu->AddSeparator();
+//      fGraph = FindGraph(fHCanvas);
+      if (fGraph) {
+         fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
+         fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
+      }
       TGPopupMenu * HfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
       HfromAMenu->AddEntry("Channel contents, (Spectrum)",   kFHSpectrum); 
       HfromAMenu->AddEntry("Channel contents, error",   kFHSpectrumError); 
@@ -1120,6 +1142,7 @@ void HandleMenus::BuildMenus()
       TGPopupMenu * GfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
       GfromAMenu->AddEntry("X, Y of TGraph (without errors)",	kFHGraph); 
       GfromAMenu->AddEntry("X, Y, ErrorX, ErrorY of TGraphErrors",	kFHGraphError);
+      GfromAMenu->AddEntry("X, Y, EXlow, EXhigh, EYlow, EYhigh of TGraphAsymmErrors",	kFHGraphAsymmError);
       fFileMenu->AddPopup("ASCII data from file to histogram ",  HfromAMenu);
       fFileMenu->AddPopup("ASCII data from file to graph",  GfromAMenu);
 
@@ -1222,6 +1245,7 @@ void HandleMenus::BuildMenus()
       	fViewMenu->AddEntry("ClearMarks",   kFHClearMarks);
       	fViewMenu->AddEntry("PrintMarks",   kFHPrintMarks);
       	fViewMenu->AddEntry("Set2Marks",    kFHSet2Marks);
+      	fViewMenu->AddEntry("Color marked area",    kFHColorMarked);
 	//      fViewMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
       	fViewMenu->AddSeparator();
         

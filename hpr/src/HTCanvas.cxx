@@ -42,8 +42,9 @@ HTCanvas::HTCanvas():TCanvas(){};
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr, FitHist * fh,
-           TList * hlist)
-           :  TCanvas(kFALSE), fHistPresent(hpr), fFitHist(fh), fHistList(hlist)
+           TList * hlist, TGraph * graph)
+           :  TCanvas(kFALSE), fHistPresent(hpr), fFitHist(fh), 
+              fHistList(hlist),fGraph(graph)
             {
 
 //*-*-*-*-*-*-*-*-*-*-*-*Canvas constructor*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
@@ -91,7 +92,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
-   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist);         
+   fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);         
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
    fHandleMenus->BuildMenus(); 
    ToggleEventStatus();
@@ -328,7 +329,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //OS end
 
       fSelected->ExecuteEvent(event, px, py);
-
+//      fSelected->Dump();
       if (fAutoExec)        RunAutoExec();
 
       break;

@@ -4,6 +4,7 @@
 #include "TEnv.h"
 #include "TFile.h"
 #include "TCanvas.h"
+#include "TGraph.h"
 #include "TRootCanvas.h"
 #include "TColor.h"
 #include "HTCanvas.h"
@@ -20,6 +21,7 @@
 #include "TMapFile.h"
 #include "TGWindow.h"
 #include "TGraphErrors.h"
+#include "TPolyLine.h"
 #include "HistPresent.h"
 #include "TMrbStatistics.h"
 
@@ -59,6 +61,7 @@ Stat_t Content(TH1*, Axis_t xlow, Axis_t xup, Stat_t * mean,  Stat_t * sigma);
 
 void  WarnBox( const char * message, TGWindow* win = 0);
 Bool_t  QuestionBox( const char * message, TGWindow* win = 0);
+void  InfoBox( const char * message, TGWindow* win = 0);
 extern Bool_t OpenWorkFile(TGWindow* win = 0);
 extern void CloseWorkFile(TGWindow* win = 0);
 extern Int_t GetUsedSize(TMapFile *);
@@ -91,6 +94,12 @@ void DrawColors();
 void DrawFillStyles();
 void DrawLineStyles();
 Bool_t CreateDefaultsDir(TRootCanvas * mycanvas = 0, Bool_t checkonly = kFALSE);
+TGraph * FindGraph(HTCanvas * c); 
+void WriteGraphasASCII(TGraph * g, TRootCanvas * mycanvas = 0);
+void WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
+Bool_t fixnames(TFile * * infile, Bool_t checkonly);
+TPolyLine * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color); 
+Int_t getcol();
 
 inline void nothing();
 #endif

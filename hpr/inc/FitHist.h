@@ -254,6 +254,8 @@ public:
    void RecursiveRemove(TObject * obj);
    void handle_mouse();
    void DrawTopAxis();
+   void ColorMarked(); 
+
    void ClearTofl() {
 //      cout << "ClearTofl()" << endl; 
       fTofLabels = 0;

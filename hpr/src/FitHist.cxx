@@ -1228,28 +1228,29 @@ void FitHist::SaveUserContours()
    Int_t ncont = fSelHist->GetContour();
    if (ncont <= 0) {
       WarnBox("No Contours defined");
-//      return;
+      return;
    }
    TMrbNamedArrayI * colors = 0;
    colors = dynamic_cast<TMrbNamedArrayI*>(fSelHist->
               GetListOfFunctions()->FindObject("Pixel"));
    if (!colors) {
       WarnBox("No User Colors defined");
-//      return;
+      return;
    }
    FhContour * contour = new FhContour(hname.Data(), "User contours", ncont);
    Double_t * values = contour->GetLevelArray()->GetArray();
    
-   if (fSetLevels) { 
+//   if (fSetLevels) { 
       fSelHist->GetContour(values);
-   } else {
-      contour->GetLevelArray()->Reset();
-   }
-   if (fSetColors) { 
+//   } else {
+//      contour->GetLevelArray()->Reset();
+//   }
+//   if (fSetColors) { 
       *(contour->GetColorArray()) = *colors;
-   } else {
-      contour->GetLevelArray()->Reset();
-   }
+//   } else {
+//      contour->GetLevelArray()->Reset();
+//
+//   }
    contour->Print();
    if (OpenWorkFile(mycanvas)) {
       contour->Write();
@@ -1409,10 +1410,8 @@ void FitHist::SetUserContours()
    cHist->Modified(kTRUE);
    cHist->Update();
 }
+//_______________________________________________________________________________________
 
-//------------------------------------------------------ 
-
-//void  FitHist::WriteHistasASCII(const char * fname, Bool_t contonly){
 void FitHist::WriteHistasASCII()
 {
 
@@ -1470,8 +1469,7 @@ activated.";
       cout << " Cannot open: " << fname << endl;
    }
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::PictToPSFile(Int_t plain_flag)
 {
@@ -1504,8 +1502,7 @@ void FitHist::PictToPSFile(Int_t plain_flag)
       cHist->SaveAs(hname.Data());
    }
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::PictToLP()
 {
@@ -1536,8 +1533,7 @@ void FitHist::PictToLP()
       }
    }
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::WriteFunctions()
 {
@@ -1548,8 +1544,7 @@ void FitHist::WriteFunctions()
       }
    }
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::WriteFunctionList()
 {
@@ -1571,8 +1566,8 @@ void FitHist::WriteFunctionList()
       }
    }
 };
+//_______________________________________________________________________________________
 
-//------------------------------------------------------  
 void FitHist::WriteOutCanvas()
 {
    if (fSelHist) {
@@ -1629,8 +1624,8 @@ void FitHist::WriteOutCanvas()
       }
    }
 };
+//_______________________________________________________________________________________
 
-//------------------------------------------------------  
 void FitHist::WriteOutHist()
 {
    if (fSelHist) {
@@ -1647,8 +1642,7 @@ void FitHist::WriteOutHist()
       }
    }
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::Set2Marks()
 {
@@ -1686,8 +1680,8 @@ void FitHist::Set2Marks()
    }
    PaintMarks();
 };
+//_______________________________________________________________________________________
 
-//------------------------------------------------------ 
 void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
 {
    Float_t x, y;
@@ -1710,10 +1704,8 @@ void FitHist::AddMark(TPad * pad, Int_t px, Int_t py)
    m->Paint();
 //   m->Print();
    markers->Add(m);
-//   cout << " x " << x << " y " << y << "binx "<< binx  << " biny " << biny << endl;
 }
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::ClearMarks()
 {
@@ -1730,8 +1722,7 @@ void FitHist::ClearMarks()
    fSelPad->Modified(kTRUE);
    fSelPad->Update();
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 Int_t FitHist::GetMarks(TH1 * hist)
 {
@@ -1774,8 +1765,7 @@ Int_t FitHist::GetMarks(TH1 * hist)
    markers->Sort();
    return nval;
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::PrintMarks()
 {
@@ -1791,8 +1781,7 @@ void FitHist::PrintMarks()
       cout << "--- No marks set ---" << endl;
    }
 };
-
-//------------------------------------------------------ 
+//_______________________________________________________________________________________
 
 void FitHist::PaintMarks()
 {
@@ -3026,4 +3015,23 @@ void FitHist::UpdateDrawOptions()
       fSelHist->SetFillStyle(0);
    fSelHist->SetOption(drawopt.Data());
    fSelHist->SetDrawOption(drawopt.Data());
+}
+//______________________________________________________________________________________
+  
+void FitHist::ColorMarked() 
+{
+   if (fSelHist->GetDimension() != 1) {
+      cout << "Currently only 1-dim supported" << endl;
+      return;
+   }
+   GetLimits();
+   Int_t color = getcol();
+   if (color <= 0) return;
+   TPolyLine * pl = PaintArea(fSelHist, fBinX_1, fBinX_2, color);
+   if (pl) {
+      pl->Draw();
+      fSelHist->GetListOfFunctions()->Add(pl);
+   }
+   cHist->Modified();
+   cHist->Update();
 }

@@ -1,5 +1,6 @@
 #include "TArrayD.h"
 #include "TGraphErrors.h"
+#include "TGraphAsymmErrors.h"
 #include "TH1D.h"
 #include "TH2F.h"
 #include "TString.h"
@@ -20,7 +21,7 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
 {
    const Char_t helpText[] = "Read values from ASCII file and fill histogram";
 //   char temp[100];
-   TArrayD xval(100), yval(100), zval(100), wval(100);
+   TArrayD xval(100), yval(100), zval(100), wval(100), eyl(100), eyh(100);
 
    TRegexp endwithasc("asc$");
    Bool_t ok = kTRUE;
@@ -42,13 +43,14 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
    Int_t n = 0;
 //   Double_t x, y, w;
    ok = kTRUE;
-   Double_t x[4];
+   Double_t x[6];
    Int_t nval;
    if      (mode == kSpectrum || mode == k1dimHist)  nval = 1;
    else if (mode == kSpectrumError || mode == k1dimHistWeight 
          || mode == k2dimHist || mode == kGraph)     nval = 2;
    else if (mode == k2dimHistWeight)                 nval = 3;
    else if (mode == kGraphError)                     nval = 4;
+   else if (mode == kGraphAsymmError)                nval = 6;
    else {
       cout << "Invalid mode: " << mode << endl;
       return;
@@ -78,10 +80,20 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
          if      (i == 0) xval.AddAt(x[i], n);
          else if (i == 1) yval.AddAt(x[i], n);
          else if (i == 2) zval.AddAt(x[i], n);
-         else             wval.AddAt(x[i], n);
+         else if (i == 3) wval.AddAt(x[i], n);
+         else if (i == 4) eyl.AddAt(x[i], n);
+         else if (i == 5) eyh.AddAt(x[i], n);
       }
       if (!ok) break;
       n++;
+      if (n >= xval.GetSize()){
+         xval.Set(n+100);
+         if (nval > 1) yval.Set(n+100);
+         if (nval > 2) zval.Set(n+100);
+         if (nval > 3) wval.Set(n+100);
+         if (nval > 4) eyl.Set(n+100);
+         if (nval > 5) eyh.Set(n+100);
+      }
    }
    infile.close();
 
@@ -222,15 +234,20 @@ tryagain:
       if (hist) ShowHist(hist);
       return;
    } 
-   if (mode == kGraph || mode == kGraphError) {
+   if (mode == kGraph || mode == kGraphError|| mode == kGraphAsymmError) {
       TGraph * graph = 0;
       if (mode == kGraph) {
          graph = new TGraph(n, xval.GetArray(), yval.GetArray()); 
-         hname.Prepend("g_");
+         hname.Prepend("graph_");
       } else if (mode == kGraphError) {
          graph = new TGraphErrors(n, xval.GetArray(), yval.GetArray(),
-                                             zval.GetArray(), wval.GetArray());
-         hname.Prepend("ge_");
+                                     zval.GetArray(), wval.GetArray());
+         hname.Prepend("graph_err_");
+      } else if (mode == kGraphAsymmError) {
+         graph = new TGraphAsymmErrors(n, xval.GetArray(), yval.GetArray(),
+                                          zval.GetArray(), wval.GetArray(),
+                                          eyl.GetArray(),  eyh.GetArray());
+         hname.Prepend("graph_asymm_err_");
       }
       if (graph) {
          TString cname = hname;
@@ -241,11 +258,12 @@ tryagain:
          }
          fNwindows++;
          HTCanvas * cg = new HTCanvas(cname, htitle, fWincurx, fWincury,
-                                    fWinwidx_1dim, fWinwidy_1dim, this);
+                                    fWinwidx_1dim, fWinwidy_1dim, this, 0, 0, graph);
          fCanvasList->Add(cg);
          graph->SetName(hname);
          graph->SetTitle(htitle);
          graph->Draw(fDrawOptGraph);
+         graph->GetHistogram()->SetStats(kFALSE);
       }
    }
    return;

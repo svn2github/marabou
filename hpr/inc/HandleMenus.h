@@ -4,6 +4,7 @@
 #include "TList.h"
 #include "TCanvas.h"
 #include "TGMenu.h"
+#include "TGraph.h"
 #include "TGStatusBar.h"
 #include "TRootCanvas.h"
 #include <iostream>
@@ -19,6 +20,7 @@ private:
    HTCanvas       * fHCanvas;
    HistPresent    * fHistPresent; 
    FitHist        * fFitHist;
+   TGraph         * fGraph;
 //  from HTRootCanvas
    TRootCanvas        * fRootCanvas;
    TGMenuBar           *fRootsMenuBar;       // menubar
@@ -40,7 +42,7 @@ private:
    TGStatusBar         *fStatusBar;          // statusbar widget
    TGLayoutHints       *fStatusBarLayout;    // layout hints for statusbar
 public:
-   HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh);
+   HandleMenus(HTCanvas * c, HistPresent * hpr, FitHist * fh, TGraph * graph = 0);
    ~HandleMenus();
    Bool_t   ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void BuildMenus();

@@ -271,7 +271,7 @@ protected:
 
 public:
 enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimHistWeight,
-                       k2dimHist, k2dimHistWeight, kGraph, kGraphError};
+                       k2dimHist, k2dimHistWeight, kGraph, kGraphError, kGraphAsymmError};
 
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();

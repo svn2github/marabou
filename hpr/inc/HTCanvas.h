@@ -15,6 +15,7 @@
 //*KEEP,TPad.
 #include "TList.h"
 #include "TCanvas.h"
+#include "TGraph.h"
 #include "TGMenu.h"
 #include "TGStatusBar.h"
 #include "TRootCanvas.h"
@@ -36,8 +37,9 @@ friend class HandleMenus;
 private:
    HistPresent    * fHistPresent; 
    FitHist        * fFitHist;
-   HTimer         * fTimer;
    TList          * fHistList;
+   TGraph         * fGraph;
+   HTimer         * fTimer;
    TRootCanvas    * fRootCanvas;
    HandleMenus * fHandleMenus;
    Double_t       fGridX;
@@ -49,7 +51,7 @@ public:
    HTCanvas();
    HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr = 0, FitHist * fh = 0,
-           TList * hlist = 0);
+           TList * hlist = 0, TGraph * graph = 0);
    virtual ~HTCanvas();
    virtual void      HandleInput(EEventType button, Int_t x, Int_t y);
    virtual void DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected);
