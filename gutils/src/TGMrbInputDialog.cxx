@@ -2,8 +2,10 @@ namespace std {} using namespace std;
 
 #include <cstdlib>
 #include <iostream>
+#include <fstream>
 
 #include <TROOT.h>
+#include <TSystem.h>
 #include <TApplication.h>
 #include <TVirtualX.h>
 #include "TRootHelpDialog.h"
@@ -20,7 +22,6 @@ namespace std {} using namespace std;
 #include <TGComboBox.h>
 #include <TGTab.h>
 #include <TGSlider.h>
-#include <TGFileDialog.h>
 #include <TList.h>
 #include "TGMrbInputDialog.h"
 #include "TGMrbHelpWindow.h"
@@ -44,11 +45,15 @@ namespace std {} using namespace std;
 // TGWindow *win       : pointer to parent window                        //  
 // const char *YNPrompt: Prompt for Checkbutton                          //
 // Bool_t * YesNo:       truth value of Checkbutton                      //
-// const char *HelpText: help text                                       //   
+// const char *HelpText: help text                                       //
+// const char *YNPrompt1:Prompt for second Checkbutton                   //   
+// Bool_t * YesNo1:      truth value of second Checkbutton               //
+// const char *FileName: a file containing lines from which a selection  //
+//                       may be made, a TGListBox is used in this case   //
 //                                                                       //
 // This class is normally accessed via the following utility functions:  //
 //                                                                       //
-// const char * GetString(const char *Prompt, const char * DefVal,        //
+// const char * GetString(const char *Prompt, const char * DefVal,       //
 // 							 Bool_t * Ok = 0, TGWindow *win=0,					 //
 // 							 const char *ynprompt=0, Bool_t * yn=0,			 //
 // 							 const char *helptext=0);								 //
@@ -73,7 +78,8 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
                          Int_t * Return, char *retstr,const TGWindow *Win,
                          const char *YNPrompt, Bool_t * YesNo,
                          const char *HelpText,
-                         const char *YNPrompt1, Bool_t * YesNo1):
+                         const char *YNPrompt1, Bool_t * YesNo1,
+                         const char * FileName):
 							    TGTransientFrame(gClient->GetRoot(), Win, 10, 10)
 {
    // Create  input dialog.
@@ -82,6 +88,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    gClient->GetColorByName("firebrick", brown);
 
    fWidgets = new TList;
+   fListBox = NULL;
    const TGWindow * main = gClient->GetRoot();
    if(Win != 0)fMyWindow = Win;
    else        fMyWindow = main;
@@ -90,7 +97,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    TGLabel *label = new TGLabel(this, Prompt);
    fWidgets->AddFirst(label);
 
-   TGTextBuffer *tbuf = new TGTextBuffer(256);  //will be deleted by TGtextEntry
+   TGTextBuffer *tbuf = new TGTextBuffer(256);  // will be deleted by TGtextEntry
    tbuf->AddText(0, DefVal);
 
    fTE = new TGTextEntry(this, tbuf);
@@ -99,7 +106,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    fTE->Resize(tewidth, fTE->GetDefaultHeight());
    fTE->Associate(this);
    fWidgets->AddFirst(fTE);
-//   fTE->Associate(this);
+
    TGLayoutHints *l1 = new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 0);
    TGLayoutHints *l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5);
    fWidgets->AddFirst(l1);
@@ -108,7 +115,34 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    this->AddFrame(label, l1);
    this->AddFrame(fTE, l2);
 
+   // optionally create a ListBox from which items can be selected
+
+   fFileName = FileName;         // remember
+   if (FileName != NULL) {
+      if (gSystem->AccessPathName(FileName)) {
+         cout << "Warning: File with selections not found: " << FileName << endl;
+      } else {
+         ifstream selections(FileName);
+         TString line;
+         Int_t id = 0;
+         fListBox = new TGListBox(this, 99);  
+         while (1) {
+            line.ReadLine(selections);
+            if (selections.eof()) break;
+            fListBox->AddEntry(line.Data(), id);
+            id++;
+         }
+         selections.close();
+         cout << "Entries: " << id << endl;
+         fListBox->Resize(320, TMath::Min(200, id*20));
+         fListBox->Layout();
+         fListBox->Associate(this);
+         fWidgets->AddFirst(fListBox);
+         this->AddFrame(fListBox, l2);
+      }
+   }
    // create frame and layout hints for Ok and Cancel buttons
+
    TGHorizontalFrame *hf = new TGHorizontalFrame(this, 60, 20, kFixedWidth);
    fWidgets->AddFirst(hf);
    TGLayoutHints     *l3 = new TGLayoutHints(kLHintsCenterY | kLHintsExpandX, 5, 5, 0, 0);
@@ -129,6 +163,7 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
       this->AddFrame(fCheckYesNo1, l2);
    }
    // create OK and Cancel buttons in their own frame (hf)
+
    UInt_t  nb = 0, width = 0, height = 0;
    TGTextButton *b;
 
@@ -236,6 +271,7 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                    case 1:
                       // here copy the string from text buffer to return variable
                       strcpy(fRetStr, fTE->GetBuffer()->GetString());
+                      if (fFileName.Length() > 0) this->SaveList();
                       if(fRetYesNo){
                          if(fCheckYesNo->GetState() == kButtonUp) *fRetYesNo = kFALSE;
                          else                                     *fRetYesNo = kTRUE;
@@ -250,7 +286,8 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 
                     case 2:
                       // here copy the string from text buffer to return variable
-                      strcpy(fRetStr, fDefVal);
+                      strcpy(fRetStr, fTE->GetBuffer()->GetString());
+                      if (fFileName.Length() > 0) this->SaveList();
                       *fReturn = -1;
                       delete this;
                       break;
@@ -258,7 +295,19 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                       new TGMrbHelpWindow(this, "HistPresent Help", fHelpText, 550, 500);
                       break;
                  }
-              default:
+             case kCM_LISTBOX:
+                {
+//                cout << "LISTBOX: " << parm1 << " " << parm2 << endl;
+                if (parm1 != 99) break;
+                TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(parm2);
+
+                const TString * text = tge->GetText();
+                fTE->GetBuffer()->RemoveText(0, (Int_t)fTE->GetBuffer()->GetTextLength());
+                fTE->GetBuffer()->AddText(0, text->Data());
+                gClient->NeedRedraw(fTE);
+                break;
+                }
+             default:
                  break;
           }
           break;
@@ -268,6 +317,7 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
              case kTE_ENTER:
                 // here copy the string from text buffer to return variable
                 strcpy(fRetStr, fTE->GetBuffer()->GetString());
+                if (fFileName.Length() > 0) this->SaveList();
                 if(fRetYesNo){
                    if(fCheckYesNo->GetState() == kButtonUp) *fRetYesNo = kFALSE;
                    else                                     *fRetYesNo = kTRUE;
@@ -292,15 +342,48 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 
 //_______________________________________________________________________________________
 
+void TGMrbInputDialog::SaveList()
+{
+   if (fListBox == NULL) {
+      fListBox = new TGListBox(this, 99);           
+      fListBox->AddEntry(fTE->GetBuffer()->GetString(), 0);
+      fWidgets->AddFirst(fListBox);
+   }
+   if (!(gSystem->AccessPathName(fFileName.Data()))) {
+      TString bak(fFileName);
+      bak += ".bak";
+      gSystem->Rename(fFileName.Data(), bak.Data());
+   }
+   ofstream outfile(fFileName.Data());
+   TString sel(fTE->GetBuffer()->GetString());
+   Int_t ne = fListBox->GetNumberOfEntries();
+//   cout << "Selected: " << sel << endl;
+   outfile << sel << endl;
+   if (ne > 1) {
+      const TString * temp;
+      for (Int_t i =0; i < ne; i++) {
+         TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(i);
+         temp = tge->GetText();
+//         cout << "Ent: " << temp->Data() << endl;
+         if (*temp != sel) outfile <<temp->Data() << endl;
+      }
+   }
+   outfile.close();
+}
+
+//_______________________________________________________________________________________
+
 const char *GetString(const char *Prompt, const char *DefVal, Bool_t * Ok,
                       TGWindow *Win,  const char *YNPrompt, Bool_t * YesNo,
-                      const char *HelpText, const char *YNPrompt1, Bool_t * YesNo1)
+                      const char *HelpText, 
+                      const char *YNPrompt1, Bool_t * YesNo1, const char *FileName)
 {
    // Prompt for string. The typed in string is returned.
 
    static char answer[128];
    Int_t ret;
-   new TGMrbInputDialog(Prompt, DefVal, &ret, answer,Win, YNPrompt, YesNo, HelpText, YNPrompt1, YesNo1);
+   new TGMrbInputDialog(Prompt, DefVal, &ret, answer,Win, YNPrompt, YesNo, 
+       HelpText, YNPrompt1, YesNo1, FileName);
    if(Ok){
       if(ret == 0) *Ok = kTRUE;
       else         *Ok = kFALSE;
