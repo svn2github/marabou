@@ -57,6 +57,7 @@ extern pthread_mutex_t global_data_mutex;
 // Globals
 TMrbAnalyze * u_analyze;
 TMrbTransport * gMrbTransport;
+TMrbIOSpec * ioSpec;
 
 TServerSocket *ss = 0;
 
@@ -399,9 +400,7 @@ int main(int argc, char **argv) {
 	PutPid(TMrbAnalyze::M_STARTING);
 
    if ( gComSocket > 0 ) ss = new TServerSocket(gComSocket, kTRUE);
-//	TMrbIOSpec * ioSpec = new TMrbIOSpec();
-//	u_analyze = new TMrbAnalyze(ioSpec);
-//	u_analyze->AddIOSpec(ioSpec);
+
    TString  * new_name = NULL;
    TFile * save_map = NULL;
    const char * hname = NULL;
@@ -441,7 +440,7 @@ int main(int argc, char **argv) {
 //		if ( verboseMode ) M_prod->Print();
    }
 // pass unix args to i/o spec
-	TMrbIOSpec * ioSpec = new TMrbIOSpec();
+	ioSpec = new TMrbIOSpec();
 	if (!ioSpec->SetStartStop(start_event, stop_event)) exit(1);
 	ioSpec->SetInputFile(data_source.Data(), input_mode);
 	ioSpec->SetOutputFile(root_file.Data(), output_mode);
@@ -842,7 +841,7 @@ void * msg_handler(void * dummy) {
 
       sock->Recv(mess);
       if (mess == 0) {
-//  client exited withoput 
+//  client exited without message
          cout << "M_analyze::msg_handler(): mess == 0" << endl;
          mon->Remove(sock);
          if (sock == s0) s0 = 0;
@@ -887,6 +886,9 @@ void * msg_handler(void * dummy) {
 
          } else if(cmd == "reload") {
              u_analyze->ReloadParams(arg.Data());
+
+         } else if(cmd == "savehists") {
+             u_analyze->SaveHistograms("*", ioSpec);	// save histos
 
          } else if ( cmd == "gethist" ) {
 			   pthread_mutex_lock(&global_data_mutex);
@@ -941,6 +943,13 @@ void * msg_handler(void * dummy) {
            Int_t result = u_analyze->HandleUserMessage(smess.Data());
            if ( verboseMode ) cout << "UserMessage called, result: " 
                             << result << endl;                
+         } else if ( cmd == "exit" ){
+            send_ack = kFALSE;
+         	cout << "M_analyze::msg_handler(): M_client exit" << endl;
+         	mon->Remove(sock);
+         	if (sock == s0) s0 = 0;
+         	if (sock == s1) s1 = 0;
+         	continue;
          } else {
             cerr << setred
 				<< "M_analyze::msg_handler(): Invalid function request - " << str
