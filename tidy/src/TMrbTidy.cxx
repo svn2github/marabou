@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.9 2004-11-18 12:14:31 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.10 2005-04-05 07:24:56 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -224,6 +224,7 @@ TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNo
 	fLofAttr.Delete();
 	fLofAttr.SetName("Node Attributes");
 	this->ReadAttr();
+	this->CheckMnode();
 }
 
 TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyAttr AttrHandle, TObject * Node)
@@ -270,8 +271,16 @@ void TMrbTidyDoc::Reset(Bool_t Release) {
 	fTidyHtml = NULL;
 	fTidyHead = NULL;
 	fTidyBody = NULL;
+
 	fLofOptions.Delete();							// empty list of options
 	fLofOptions.SetName("Tidy Options");
+
+	fLofMnodes.Delete();								// empty list of marabou nodes
+	fLofMnodes.SetName("Special MARaBOU Tags");
+	fLofMnodes.AddNamedX(TidyTag_MNODE_MH, "mh", "header"); 		// define special nodes
+	fLofMnodes.AddNamedX(TidyTag_MNODE_MB, "mb", "body");
+	fLofMnodes.AddNamedX(TidyTag_MNODE_MX, "mx", "expand");
+	fLofMnodes.AddNamedX(TidyTag_MNODE_MC, "mc", "code");
 }
 
 void TMrbTidyDoc::InitErrorBuffer() {
@@ -426,6 +435,7 @@ Bool_t TMrbTidyDoc::ParseBuffer(const Char_t * Buffer, Bool_t Repair) {
 	TidyNode node = tidyGetRoot(fHandle);
 	fTidyRoot = new TMrbTidyNode(tidyNodeGetId(node), "root", NULL, node, this);
 	fTidyRoot->SetType(TidyNode_Root);
+	fTidyRoot->CheckEndTag();
 	fTidyRoot->FillTree();
 	fTidyHtml = (TMrbTidyNode *) fTidyRoot->GetLofChilds()->FindByIndex((Int_t) TidyTag_HTML);
 	if (fTidyHtml) {
@@ -590,6 +600,7 @@ void TMrbTidyNode::FillTree() {
 		}
 		TMrbTidyNode * node = new TMrbTidyNode(tidyNodeGetId(child), nodeName, this, child, this->GetTidyDoc());
 		node->SetType(tidyNodeGetType(child));
+		node->CheckEndTag();
 		node->SetTreeLevelFromParent();
 		node->FillTree();
 		fLofChilds.Add(node);
@@ -619,7 +630,7 @@ void TMrbTidyNode::DeleteTree() {
 Int_t TMrbTidyNode::ReadAttr() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:          TMrbTidyNode::ReadAttr
+// Name:           TMrbTidyNode::ReadAttr
 // Purpose:        Read tidy attributes
 // Arguments:      --
 // Results:        Int_t NofAttr   -- number of attributes read
@@ -638,6 +649,61 @@ Int_t TMrbTidyNode::ReadAttr() {
 	return(fLofAttr.GetEntriesFast());
 }
 
+Bool_t TMrbTidyNode::CheckMnode() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::CheckMnode
+// Purpose:        Check if special marabou node
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if node is one of special marabou nodes (<mh>, <mb>, ...)
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->GetIndex() == TidyTag_UNKNOWN) {
+		TMrbNamedX * nx = ((TMrbTidyDoc *) this->GetTidyDoc())->GetLofMnodes()->FindByName(this->GetName());
+		if (nx == NULL) {
+			fIsMnode = kFALSE;
+		} else {
+			fIsMnode = kTRUE;
+			this->ChangeIndex(nx->GetIndex());
+			((TMrbTidyDoc *) this->GetTidyDoc())->SetMnodeFlag();
+		}
+	} else {
+		fIsMnode = kFALSE;
+	}
+	return(fIsMnode);
+}
+	
+Bool_t TMrbTidyNode::CheckEndTag() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::CheckEndTag
+// Purpose:        Check if node has end tag
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if node needs to have an end tag
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->GetType() == TidyNode_StartEnd) {
+		fHasEndTag = kFALSE;
+	} else if (this->IsText()) {
+		fHasEndTag = kFALSE;
+	} else if (this->IsComment()) {
+		fHasEndTag = kFALSE;
+	} else if (this->IsMETA()) {
+		fHasEndTag = kFALSE;
+	} else if (this->IsLINK()) {
+		fHasEndTag = kFALSE;
+	} else {
+		fHasEndTag = kTRUE;
+	}
+	return(fHasEndTag);
+}
+	
 void TMrbTidyOption::Print(ostream & Out, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -948,58 +1014,6 @@ Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
 Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
 Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
 
-Bool_t TMrbTidyDoc::Save(const Char_t * DocFile) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTidyDoc::Save
-// Purpose:        Save tidy code
-// Arguments:      const Char_t * DocFile   -- output file
-// Results:        --
-// Exceptions:
-// Description:    Saves (tidied) code to file.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Bool_t ok;
-	if (this->HasNodes()) {
-		TString saveFile = DocFile;
-		gSystem->ExpandPathName(saveFile);
-		tidySaveFile(fHandle, (Char_t *) saveFile.Data());				
-		ok = kTRUE;
-	} else {
-		gMrbLog->Err() << "Document tree empty - nothing to save" << endl;
-		gMrbLog->Flush(this->ClassName(), "Save");
-		ok = kFALSE;
-	}
-	return(ok);
-}
-
-Bool_t TMrbTidyDoc::Save(ostream & Out) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTidyDoc::Save
-// Purpose:        Save tidy code
-// Arguments:      ostream & Out   -- output stream
-// Results:        --
-// Exceptions:
-// Description:    Saves (tidied) code to stream (stdout).
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Bool_t ok;
-	if (this->HasNodes()) {
-		TidyBuffer tbuf = {0};
-		tidySaveBuffer(fHandle, &tbuf);				
-		Out << tbuf.bp << endl;
-		ok = kTRUE;
-	} else {
-		gMrbLog->Err() << "Document tree empty - nothing to save" << endl;
-		gMrbLog->Flush(this->ClassName(), "Save");
-		ok = kFALSE;
-	}
-	return(ok);
-}
-
 void TMrbTidyDoc::Print(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1021,6 +1035,76 @@ void TMrbTidyDoc::Print(ostream & Out) {
 	}
 }
 
+Bool_t TMrbTidyDoc::OutputHtml(const Char_t * HtmlFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::OutputHtml
+// Purpose:        Output HTML code
+// Arguments:      Char_t * HtmlFile    -- output file
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Outputs html code to file
+//                 including special code for marabou nodes
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok;
+	if (this->HasNodes()) {
+		TString htmlFile = HtmlFile;
+		gSystem->ExpandPathName(htmlFile);
+		if (this->HasMnodes()) {
+			ofstream of(htmlFile.Data(), ios::out);
+			if (!of.good()) {
+				gMrbLog->Err() << gSystem->GetError() << " - " << HtmlFile << endl;
+				gMrbLog->Flush(this->ClassName(), "OutputHtml");
+				ok = kFALSE;
+			} else {
+				fTidyRoot->OutputHtmlTree(of);
+				of.close();
+				ok = kTRUE;
+			}
+		} else {
+			tidySaveFile(fHandle, (Char_t *) htmlFile.Data());				
+		}
+	} else {
+		gMrbLog->Err() << "Document tree empty - no html code to process" << endl;
+		gMrbLog->Flush(this->ClassName(), "OutputHtml");
+		ok = kFALSE;
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyDoc::OutputHtml(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::OutputHtml
+// Purpose:        Output HTML code
+// Arguments:      ostream & Out    -- output stream
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Outputs html code to stream
+//                 including special code for marabou nodes
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok;
+	if (this->HasNodes()) {
+		if (this->HasMnodes()) {
+			fTidyRoot->OutputHtmlTree(Out);
+			ok = kTRUE;
+		} else {
+			TidyBuffer tbuf = {0};
+			tidySaveBuffer(fHandle, &tbuf);				
+			Out << tbuf.bp << endl;
+		}
+	} else {
+		gMrbLog->Err() << "Document tree empty - no html code to process" << endl;
+		gMrbLog->Flush(this->ClassName(), "OutputHtml");
+		ok = kFALSE;
+	}
+	return(ok);
+}
+
 void TMrbTidyNode::PrintTree(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1033,10 +1117,10 @@ void TMrbTidyNode::PrintTree(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->Print();
+	this->Print(Out);
 	TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
 	while (node) {
-		node->PrintTree();
+		node->PrintTree(Out);
 		node = (TMrbTidyNode *) fLofChilds.After(node);
 	}
 }
@@ -1090,7 +1174,13 @@ void TMrbTidyNode::Print(ostream & Out) {
 	if (ty) tyStr = Form("%s(%d)", ty->GetName(), ty->GetIndex()); else tyStr = this->GetType();
 	TMrbNamedX * tag = (TMrbNamedX *) lofTagIds.FindByIndex(this->GetIndex());
 	TString tagStr;
-	if (tag) tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex()); else tagStr = this->GetIndex();
+	if (tag) {
+		tagStr = Form("%s(%d)", tag->GetName(), tag->GetIndex());
+	} else if (this->IsMnode()) {
+		tagStr = Form("MNODE(%d)", this->GetIndex());
+	} else {
+		tagStr = this->GetIndex();
+	}
 	Out << "node " << this->GetName()
 		<< " type=" << tyStr.Data();
 	if (this->GetIndex() != TidyTag_UNKNOWN) Out << " tagid=" << tagStr.Data();
@@ -1103,10 +1193,261 @@ void TMrbTidyNode::Print(ostream & Out) {
 	}
 	TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
 	while (a) {
-		Out << " " << a->GetName() << "=" << a->GetValue();
+		TString aValue = a->GetValue();
+		TString aQuote = (aValue.Index("\"", 0) >= 0) ? "'" : "\"";
+		Out << " " << a->GetName() << "=" << aQuote << a->GetValue() << aQuote;
 		a = (TMrbTidyAttr *) fLofAttr.After(a);
 	}
 	Out << endl;
+}
+
+void TMrbTidyNode::OutputHtmlTree(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlTree
+// Purpose:        Output html data recursively
+// Arguments:      ostream & Out    -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Outputs node data in html format
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t popUp = kFALSE;
+	if (!this->IsRoot()) popUp = this->OutputHtml(Out);
+	if (!popUp) {
+		TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
+		while (node) {
+			node->OutputHtmlTree(Out);
+			node = (TMrbTidyNode *) fLofChilds.After(node);
+		}
+	}
+	if (!this->IsRoot() && this->HasEndTag()) Out << "</" << this->GetName() << ">" << endl;
+}
+
+Bool_t TMrbTidyNode::OutputHtml(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtml
+// Purpose:        Output html data
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data.
+//                 Special treatment for marabou nodes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t popUp = kFALSE;
+
+	TMrbLofNamedX lofNodeTypes;
+	lofNodeTypes.AddNamedX(kMrbTidyNodeTypes);
+	TMrbLofNamedX lofTagIds;
+	lofTagIds.AddNamedX(kMrbTidyTagIds);
+
+	if (this->IsComment()) {
+		TString text;
+		Out << this->GetText(text) << endl;
+	} else if (this->IsText()) {
+		TString text;
+		this->GetText(text);
+		if (fParent->IsMnode()) {
+			text = text.Strip(TString::kBoth);
+			if (text.IsNull()) {
+				Out << "<br>" << endl;
+			} else {
+				TString code = "code";
+				Int_t level = fTreeLevel - 5;
+				if (level > 0) {
+					code += "-level";
+					code += level;
+				}
+				Out << "<pre class=\"" << code << "\">" << this->GetText(text) << "</pre><br>" << endl;
+			}
+		} else {
+			Out << text << endl;
+		}
+	} else if (this->IsMnode()) {
+		popUp = this->OutputHtmlForMnodes(Out);
+	} else {
+		Out << "<" << this->GetName();
+		TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
+		while (a) {
+			TString aValue = a->GetValue();
+			TString aQuote = (aValue.Index("\"", 0) >= 0) ? "'" : "\"";
+			Out << " " << a->GetName() << "=" << aQuote << a->GetValue() << aQuote;
+			a = (TMrbTidyAttr *) fLofAttr.After(a);
+		}
+		if (this->GetType() == TidyNode_StartEnd) Out << " /";
+		Out << ">" << endl;
+	}
+	return(popUp);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMnodes(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMnodes
+// Purpose:        Special html output for marabou nodes
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for marabou nodes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t popUp = kFALSE;
+	if (this->GetIndex() == TidyTag_MNODE_MH) {
+		popUp = this->OutputHtmlForMH(Out);
+	} else if (this->GetIndex() == TidyTag_MNODE_MX) {
+		popUp = this->OutputHtmlForMX(Out);
+	} else if (this->GetIndex() == TidyTag_MNODE_MC) {
+		popUp = this->OutputHtmlForMC(Out);
+	}
+	return(popUp);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMH(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMH
+// Purpose:        Special html output for node <mh>
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for <mh>...</mh> [header]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ProcessMnodeHeader(Out, "header1", 0);
+	TString hdata;
+	if (this->CollectTextFromChilds(hdata)) {
+		Out << "<pre class=\"code\">" << hdata << "</pre><br>" << endl;
+	} else {
+		Out << "<br>" << endl;
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMX
+// Purpose:        Special html output for node <mx>
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for <mx> [expand]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t level = fTreeLevel - 4;
+	this->ProcessMnodeHeader(Out, "header2", level);
+	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
+	if (aString) {
+		TString code = "code";
+		if (level > 0) {
+			code += "-level";
+			code += level;
+		}
+		Out << "<pre class=\"" << code << "\">" << aString->GetValue() << "</pre><br>" << endl;
+	} else {
+		Out << "<br>" << endl;
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMC(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMC
+// Purpose:        Special html output for node <mc>
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for <mc>...</mc> [code]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
+	return(kFALSE);
+}
+
+void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMC
+// Purpose:        Special html output for node <mc>
+// Arguments:      ostream & Out     -- output stream
+//                 Char_t * CssClass -- class name in css style
+//                 Int_t Level       -- tree level as compared to <mb> tag
+// Results:        --
+// Exceptions:
+// Description:    Outputs html header for marabou nodes
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString cssClass = CssClass;
+	if (Level > 0) {
+		cssClass += "-level";
+		cssClass += Level;
+	}
+	Out << "<div class=\"" << cssClass << "\">" << endl;
+	TMrbNamedX * nx = ((TMrbTidyDoc *) this->GetTidyDoc())->GetLofMnodes()->FindByName(this->GetName());
+	if (nx) {
+		Out << "<b>[" << fTreeLevel << "] &lt;" << this->GetName() << "&gt; [" << nx->GetTitle() << "]</b><br>" << endl;
+	} else {
+		Out << "<b>&lt;" << this->GetName() << "&gt;</b><br>" << endl;
+	}
+	Out << "<table><tr><td width=\"20%\"></td><td width=\"20%\"></td><td width=\"40%\"></td></tr>" << endl;
+	TMrbTidyAttr * aHline = (TMrbTidyAttr *) fLofAttr.FindByName("hline");
+	if (aHline) {
+		TString hstr = aHline->GetValue();
+		if (hstr.BeginsWith("//")) hstr = hstr(2, 1000);
+		hstr = hstr.Strip(TString::kBoth);
+		Out << "<tr><td>Purpose:</td><td colspan=\"2\">" << hstr << "</td></tr>" << endl;
+	}
+	TMrbTidyAttr * stdTag = (TMrbTidyAttr *) fLofAttr.FindByName("tag");
+	if (stdTag) {
+		TMrbTidyAttr * altTag = (TMrbTidyAttr *) fLofAttr.FindByName("atag");
+		if (altTag) {
+			Out << "<tr><td>Tag:</td><td><pre class=\"tag\">" << stdTag->GetValue()
+				<< "</pre></td><td><pre class=\"tag\">(" << altTag->GetValue() << ")</pre></td></tr>" << endl;
+		} else {
+			Out << "<tr><td>Tag:</td><td><pre class=\"tag\">" << stdTag->GetValue()
+				<< "</pre></td></tr>" << endl;
+		}
+	}
+	TMrbTidyAttr * xcase = (TMrbTidyAttr *) fLofAttr.FindByName("case");
+	if (xcase) {
+		Out << "<tr><td>Case:</td><td><pre class=\"tag\">" << xcase->GetValue()
+			<< "</pre></td></tr>" << endl;
+	}
+	TMrbTidyAttr * aSubst = (TMrbTidyAttr *) fLofAttr.FindByName("subst");
+	Int_t nSubst = 0;
+	if (aSubst) {
+		TObjArray sarr;
+		TMrbString subst = aSubst->GetValue();
+		nSubst = subst.Split(sarr, ",");
+		if (nSubst) {
+			for (Int_t i = 0; i < nSubst; i++) {
+				TString sstr = ((TObjString *) sarr[i])->GetString();
+				Int_t n = sstr.Index(":", 0);
+				Out << (i == 0 ? "<tr><td>Substitution:</td>" : "<tr><td></td>");
+				if (n > 0) {
+					TString sdescr = sstr(n + 1, 1000);
+					sdescr = sdescr.Strip(TString::kBoth);
+					sstr.Resize(n);
+					Out << "<td><pre class=\"arg1\">" << sstr << "</pre></td><td>" << sdescr << "</td></tr>" << endl;
+				} else {
+					Out << "<td><pre class=\"arg1\">" << sstr << "</pre></td></tr>" << endl;
+				}
+			}
+		}
+	}
+	TMrbTidyAttr * aIter = (TMrbTidyAttr *) fLofAttr.FindByName("iter");
+	if (aIter) Out << "<tr><td>Iteration:</td><td colspan=\"2\">" << aIter->GetValue() << "</td></tr>" << endl;
+	Out << "</table></div>" << endl;
 }
 
 TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, const Char_t * NodeAttributes, Bool_t Recursive) {

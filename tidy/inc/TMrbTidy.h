@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.7 2004-11-18 12:14:31 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.8 2005-04-05 07:24:56 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -273,6 +273,9 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t IsU();
 		Bool_t IsMENU();
 
+		inline Bool_t IsRoot() { return(this->GetType() == TidyNode_Root); };
+		inline Bool_t IsComment() { return(this->GetType() == TidyNode_Comment); };
+
 		inline TMrbTidyAttr * GetAttribute(TidyAttrId AttrId) { return((TMrbTidyAttr *) fLofAttr.FindByIndex((Int_t) AttrId)); };
 		inline TMrbTidyAttr * GetAttrFirst() { return((TMrbTidyAttr *) fLofAttr.First()); };
 		inline TMrbTidyAttr * GetAttrNext(TMrbTidyAttr * Attr) { return((TMrbTidyAttr *) fLofAttr.After((TObject *) Attr)); };
@@ -325,6 +328,11 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		inline TidyNode GetHandle() { return(fHandle); };
 
+		Bool_t CheckMnode();
+		Bool_t IsMnode() { return(fIsMnode); };
+		Bool_t CheckEndTag();
+		Bool_t HasEndTag() { return(fHasEndTag); };
+
 		TMrbTidyNode * Find(const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
 		TMrbTidyNode * Find(const Char_t * NodeName, TObjArray & LofAttr, Bool_t Recursive = kFALSE);
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
@@ -336,6 +344,10 @@ class TMrbTidyNode : public TMrbNamedX {
 		void Print(ostream & Out = cout);
 		void PrintTree(ostream & Out = cout);
 
+		Bool_t OutputHtml(ostream & Out = cout);
+		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
+		void OutputHtmlTree(ostream & Out = cout);
+
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
 
 	protected:
@@ -343,10 +355,19 @@ class TMrbTidyNode : public TMrbNamedX {
 		Int_t DecodeAttrString(TObjArray & LofAttr, const Char_t * AttrStr);
 		Bool_t CompareAttributes(TObjArray & LofAttr);
 
+		Bool_t OutputHtmlForMH(ostream & Out = cout);
+		Bool_t OutputHtmlForMX(ostream & Out = cout);
+		Bool_t OutputHtmlForMC(ostream & Out = cout);
+
+		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
+
 	protected:
 		TidyNode fHandle; 				// tidy node handle
 		TidyNodeType fType; 			// type
 		Int_t fTreeLevel;				// tree level
+
+		Bool_t fIsMnode; 				// is special marabou node
+		Bool_t fHasEndTag;				// kTRUE if end tag needed
 
 		TMrbTidyNode * fParent; 		// parent node
 		TObject * fTidyDoc;				// associated tidy document
@@ -405,6 +426,8 @@ class TMrbTidyDoc : public TNamed {
 		};
 		inline TMrbLofNamedX * GetLofOptions() { return(&fLofOptions); };
 
+		inline TMrbLofNamedX * GetLofMnodes() { return(&fLofMnodes); };
+
 		Bool_t ParseFile(const Char_t * DocFile, Bool_t Repair = kFALSE);
 		Bool_t ParseBuffer(const Char_t * Buffer, Bool_t Repair = kFALSE);
 		inline Bool_t ParseBuffer(TString & Buffer, Bool_t Repair = kFALSE) { return(this->ParseBuffer(Buffer.Data(), Repair)); };
@@ -434,8 +457,11 @@ class TMrbTidyDoc : public TNamed {
 		inline TMrbTidyNode * GetHead() { return(fTidyHead); };
 		inline TMrbTidyNode * GetBody() { return(fTidyBody); };
 
-		Bool_t Save(const Char_t * DocFile);
-		Bool_t Save(ostream & Out = cout);
+		inline void SetMnodeFlag(Bool_t Flag = kTRUE) { fHasMnodes = Flag; };
+		inline Bool_t HasMnodes() { return(fHasMnodes); };
+
+		Bool_t OutputHtml(const Char_t * HtmlFile);
+		Bool_t OutputHtml(ostream & Out = cout);
 
 	protected:
 		Int_t ReadOptions();
@@ -447,13 +473,14 @@ class TMrbTidyDoc : public TNamed {
 		TString fCfgFile;				// name of configuration file
 		Bool_t fRepair; 				// kTRUE if 'clean and repair' is to be called
 		Bool_t fStripText;				// kTRUE if <cr>s surrounding text have to be stripped
-
+		Bool_t fHasMnodes;				// kTRUE if special marabou nodes exist
 		TMrbTidyNode * fTidyRoot;		// ptr to whole document
 		TMrbTidyNode * fTidyHtml;		// ptr to <html>...</html>
 		TMrbTidyNode * fTidyHead;		// prt to <head>...</head>
 		TMrbTidyNode * fTidyBody;		// ptr to <body>...</body>
 	
-		TMrbLofNamedX fLofOptions;		// list of options
+		TMrbLofNamedX fLofOptions;			// list of options
+		TMrbLofNamedX fLofMnodes;			// list of special marabou nodes
 
 		TidyBuffer fErrorBuffer;		// internal error buffer
 
