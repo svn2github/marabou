@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.45 2004-12-03 08:13:43 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.46 2004-12-03 08:51:22 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4334,12 +4334,9 @@ TUsrHit * TUsrHBX::FindHit(Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TUsrHit * hit;
-	Int_t n;
-		
 	Int_t curIndex = fCurIndex;
 	while (++curIndex < this->GetNofHits()) {
-		hit = (TUsrHit *) fHits->At(curIndex);
+		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
 		if (hit->GetChannel() == Channel) {
 			fCurIndex = curIndex;
 			return(hit);
