@@ -365,10 +365,10 @@ Bool_t TMrbEsoneCnaf::SetData(Int_t Data, EMrbEsoneCnafType Type) {
 		if (this->IsRead()) 			fDataRead = Data;
 		else if (this->IsWrite())		fDataWrite = Data;
 		else if (this->IsControl()) {
-			gMrbLog->Err()	<< "[" << this->Int2Ascii()
-							<< "] Wrong CNAF def - CONTROL cnaf can't take data" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetData");
-			return(kFALSE);
+//			gMrbLog->Err()	<< "[" << this->Int2Ascii()
+//							<< "] Wrong CNAF def - CONTROL cnaf can't take data" << endl;
+//			gMrbLog->Flush(this->ClassName(), "SetData");
+//			return(kFALSE);
 		} else {
 			gMrbLog->Err()	<< "[" << this->Int2Ascii()
 							<< "] Wrong CNAF def - neither READ nor WRITE" << endl;
