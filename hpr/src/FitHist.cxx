@@ -1458,7 +1458,7 @@ void FitHist::SetUserContours()
 }
 //_______________________________________________________________________________________
 
-void FitHist::WriteHistasASCII()
+void FitHist::WriteHistasASCII(Int_t what)
 {
 
 // *INDENT-OFF* 
@@ -1480,8 +1480,8 @@ activated.";
    Bool_t ok;
    fname =
        GetString("Write ASCII-file with name", fname.Data(), &ok, mycanvas,
-                 "Output also Channel Numbers", &chan_and_cont, helpText,
-                 "Output also Bin Centers", &chan_and_cont_and_bc);
+                 "Channel Numbers", &chan_and_cont, helpText,
+                 "Bin Centers    ", &chan_and_cont_and_bc);
    if (!ok) {
       cout << " Cancelled " << endl;
       return;
@@ -1506,7 +1506,12 @@ activated.";
             outfile << i << "\t";
          if (chan_and_cont_and_bc)
             outfile << fSelHist->GetBinCenter(i) << "\t";
-         outfile << fSelHist->GetBinContent(i) << endl;
+         outfile << fSelHist->GetBinContent(i); 
+         if (what&1) {
+            outfile << "\t" << 0.5 * fSelHist->GetBinWidth(i);
+            outfile << "\t" << fSelHist->GetBinError(i);
+         }
+         outfile << endl;
       }
       outfile.close();
       cout << fSelHist->GetNbinsX() << " bins written to: "

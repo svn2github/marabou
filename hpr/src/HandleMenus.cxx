@@ -28,6 +28,10 @@
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbTableFrame.h" 
 
+void EditFitMacroG(TGWindow * win);
+void ExecFitMacroG(TGraph * graph, TGWindow * win);
+
+
 enum ERootCanvasCommands {
    kFileNewCanvas,
    kFileOpen,
@@ -149,6 +153,7 @@ enum ERootCanvasCommands {
    kFHGraphToASCII,
    kFHCanvasToFile,
    kFHHistToASCII,
+   kFHHistToASCII_E,
    kFHPictToPSplain,
    kFHPictToPS,
    kFHPictToLP,
@@ -182,6 +187,8 @@ enum ERootCanvasCommands {
    kFHFitGBgTailHigh,
    kFHFitGTailLow,
    kFHFitGTailHigh,
+   kFHFitUserG,
+   kFHEditUserG,
    kFHFitUser,
    kFHEditUser,
    kFHEditSlicesYUser,
@@ -971,7 +978,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      Canvas2RootFile((TCanvas*)fHCanvas, fRootCanvas); 
                      break;
                   case kFHHistToASCII:
-                     fFitHist->WriteHistasASCII(); 
+                     fFitHist->WriteHistasASCII(0); 
+                     break;
+                  case kFHHistToASCII_E:
+                     fFitHist->WriteHistasASCII(1); 
                      break;
 
                   case kFHSpectrum:
@@ -1052,6 +1062,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHFitGTailHigh:
                      fFitHist->FitGBg(2, 1); 
                      break;
+                  case kFHFitUserG:
+                     ExecFitMacroG(fGraph, fRootCanvas);   // global function !! 
+                     break;
                   case kFHFitUser:
                      fFitHist->ExecFitMacro(); 
                      break;
@@ -1063,6 +1076,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFHEditSlicesYUser:
                      fFitHist->EditFitSliceYMacro(); 
+                     break;
+                  case kFHEditUserG:
+                     EditFitMacroG(fRootCanvas);    // global function !!
                      break;
                   case kFHEditUser:
                      fFitHist->EditFitMacro(); 
@@ -1339,8 +1355,9 @@ void HandleMenus::BuildMenus()
 //   fFileMenu->AddEntry("&New Canvas",         kFileNewCanvas);
    if(fHistPresent){
       if (fFitHist) {
-         fFileMenu->AddEntry("Hist_to_ROOT-File",               kFHHistToFile);
-         fFileMenu->AddEntry("Hist_to_ASCII-File"              ,kFHHistToASCII);
+         fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
+         fFileMenu->AddEntry("Hist_to_ASCII-File, no errors", kFHHistToASCII);
+         fFileMenu->AddEntry("Hist_to_ASCII-File, with error", kFHHistToASCII_E);
       }
 //      fFileMenu->AddSeparator();
 //      fGraph = FindGraph(fHCanvas);
@@ -1416,8 +1433,8 @@ void HandleMenus::BuildMenus()
    fAttrMenu->AddEntry("X axis attributes", kOptionXaxis);
    fAttrMenu->AddEntry("Y axis attributes", kOptionYaxis);
    fAttrMenu->AddEntry("Z axis attributes", kOptionZaxis);
-   fAttrMenu->AddEntry("Line- Text- Fill attributes", kOptionGeneral);
-   fAttrMenu->AddEntry("Feynman diagram attributes", kOptionFeynman);
+   fAttrMenu->AddEntry("Line - Text - Markers - Fill", kOptionGeneral);
+   fAttrMenu->AddEntry("Feynman diagrams", kOptionFeynman);
    fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
    fOptionMenu->AddPopup("Graphics Attr (Canvas, Pads, Hist, Axis, etc)",  fAttrMenu);
 
@@ -1444,7 +1461,7 @@ void HandleMenus::BuildMenus()
    fViewMenu->AddEntry("Show Markers",            kViewMarkers);
    fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
    fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
-
+   
    if (fh_menus || fHCanvas->GetHistList()) {
    	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
    	if (fh_menus) {
@@ -1636,8 +1653,14 @@ void HandleMenus::BuildMenus()
       fCutsMenu->Associate((TGWindow*)this);
       fCascadeMenu1->Associate((TGWindow*)this);
       fCascadeMenu2->Associate((TGWindow*)this);
-      fFitMenu->Associate((TGWindow*)this);
 //      fCascadeMenu1->Associate(this);
+   }
+
+   if (fGraph) {
+      fFitMenu     = new TGPopupMenu(fRootCanvas->GetParent());
+      fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUserG);
+      fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUserG);
+      fFitMenu->AddSeparator();
    }
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
@@ -1679,6 +1702,7 @@ void HandleMenus::BuildMenus()
 //      fEditMenu->AddEntry("Show Line Attr",          kViewLineStyles);
       fEditMenu->Associate((TGWindow*)this);
    }
+   if (fFitMenu)   fFitMenu->Associate((TGWindow*)this);
    if (fDisplayMenu) fDisplayMenu->Associate((TGWindow*)this);
    if (fViewMenu) fViewMenu->Associate((TGWindow*)this);
 // this main frame will process the menu commands
@@ -1698,6 +1722,9 @@ void HandleMenus::BuildMenus()
    if(edit_menus){
          fRootsMenuBar->AddPopup("Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
    }
+   if (fGraph) {
+      fRootsMenuBar->AddPopup("Fit", fFitMenu,   fMenuBarItemLayout, pmi);
+   } 
    if(hbrowser) {
       fHelpMenu     = new TGPopupMenu(fRootCanvas->GetParent());
       hbrowser->DisplayMenu(fHelpMenu, "*.html");

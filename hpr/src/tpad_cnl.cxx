@@ -89,12 +89,16 @@ void TPad::CreateNewLine(Int_t event, Int_t px, Int_t py, Int_t mode)
          Int_t    awid  = gEnv->GetValue("HistPresent.CurlyWidth", 1);
          Int_t    asty  = gEnv->GetValue("HistPresent.CurlyStyle", 1);
          Int_t    iscurly = gEnv->GetValue("HistPresent.IsCurly",0);
+//            cout << "TPad::CreateNewLine: x0, y0 " << x0 << " " << y0 << endl;
          if (mode == kCurlyLine) {
             cline = new TCurlyLine(x0,y0,x1,y1, wl, rd);
          } else {
-            radius = TMath::Sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
+//            radius = TMath::Sqrt((x1-x0)*(x1-x0) + (y1-y0)*(y1-y0));
+// calculate radius in pixels and convert to users x
+            radius = fPixeltoX * TMath::Sqrt((Double_t)((px-px0)*(px-px0) + (py-py0)*(py-py0)));
             phimin = 0;
             phimax = 360;
+//            cout << "TPad::CreateNewLine Arc: x0, y0 " << x0 << " " << y0 << endl;
             cline = new TCurlyArc(x0,y0,radius,phimin,phimax, wl, rd);
          }
          if (iscurly) cline->SetCurly();

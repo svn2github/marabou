@@ -385,6 +385,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    Double_t nbin[4] = {0, 0, 0, 0};
    Double_t vmin[4] = {0, 0, 0, 0};
    Double_t vmax[4] = {0, 0, 0, 0};
+   static Int_t first_event = 0;
+   static Int_t nof_events = 0;
+
 //   cout << "leafname " << leafname << " " << strlen(leafname) 
 //    << " nent " << fSelectLeaf->GetSize() << endl;
    if (strlen(leafname)>0) {
@@ -590,6 +593,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
             }
 
          }
+         first_event = env->GetValue("FirstEvent", 0);
+         nof_events =  env->GetValue("NofEvents", 0);
       }
    }
 //  look if we need to redefine limits
@@ -622,16 +627,20 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       TOrdCollection *row_lab = new TOrdCollection(); 
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString("Nbins"));
-      col_lab->Add(new TObjString("Min"));
-      col_lab->Add(new TObjString("Max"));
+      col_lab->Add(new TObjString("Min or 1. Ev"));
+      col_lab->Add(new TObjString("Max or NofEv"));
       row_lab->Add(new TObjString((*leaf[0]).Data()));
       if (nent > 1 ) row_lab->Add(new TObjString((*leaf[1]).Data()));
       if (nent == 3) row_lab->Add(new TObjString((*leaf[2]).Data()));
-      TArrayD xyvals(3*nent);
+      row_lab->Add(new TObjString("Event Select"));
+      TArrayD xyvals(3*(nent + 1));
       Int_t p = 0;
       for(Int_t i = 0; i < nent; i++) { xyvals[p] = nbin[i]; p++;}
+      xyvals[p] = 0; p++;
       for(Int_t i = 0; i < nent; i++) { xyvals[p] = vmin[i]; p++;}
+      xyvals[p] = (Double_t)first_event; p++;
       for(Int_t i = 0; i < nent; i++) { xyvals[p] = vmax[i]; p++;}
+      xyvals[p] = (Double_t)nof_events;
 // show values to caller and let edit
       TButton * b;
       b = (TButton *)strtoul(bp, 0, 16);
@@ -644,7 +653,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 
       Int_t ret,  itemwidth=120, precission = 5; 
       TGMrbTableOfDoubles(pwin, &ret, "Set axis ranges", 
-                        itemwidth,3, nent, xyvals, precission,
+                        itemwidth,3, nent + 1, xyvals, precission,
                        col_lab, row_lab);
       delete row_lab; delete col_lab;
       if (ret < 0) {
@@ -660,6 +669,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          } 
          p++;
       }
+      p++;      // skip
       for(Int_t i = 0; i < nent; i++) { 
          if   (vmin[i] != xyvals[p]) {
             vmin[i] = xyvals[p];
@@ -667,6 +677,12 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          } 
          p++;
       }
+
+      if (first_event != (Int_t)xyvals[p]) {
+         first_event = (Int_t)xyvals[p];
+         modified = kTRUE;
+      } 
+      p++;
       for(Int_t i = 0; i < nent; i++) { 
          if   (vmax[i] != xyvals[p]) {
             vmax[i] = xyvals[p];
@@ -674,6 +690,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          } 
          p++;
       }
+      if (nof_events != (Int_t)xyvals[p]) {
+         nof_events = (Int_t)xyvals[p];
+         modified = kTRUE;
+      } 
 //      delete [] xyvals;
       if (modified && fRememberTreeHists) {
          Int_t buttons= kMBYes | kMBNo, retval;
@@ -690,6 +710,8 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
                tag = *leaf[i]; tag += ".max";
                env->SetValue(tag.Data(),vmax[i]);
             }
+            env->SetValue("FirstEvent", first_event);
+            env->SetValue("NofEvents", nof_events);
             env->SaveLevel(kEnvLocal);
          }
       }
@@ -709,9 +731,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    if (env) delete env;
 
    
-   TEnv rootenv(".rootrc");		// inspect ROOT's environment
-   Int_t max_events = 10000000;
-   max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
+//   TEnv rootenv(".rootrc");		// inspect ROOT's environment
+//   Int_t max_events = 10000000;
+//   max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
 //   cout << cmd << endl;
    if (fApplyLeafCut) {
       TString cut = *fLeafCut;
@@ -731,17 +753,21 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
            return;
         } else { while (cut.Index(a3)>=0) {cut(a3)=leaf2.Data();}}
       }  
-      cout << "Execute: " << cmd << " Cut: " << cut << endl;
-      tree->Draw((const char*)cmd, cut.Data(),option.Data(),max_events,0);
+      cout << "Execute: " << cmd << " Cut: " << cut << "1.Ev, NofEv: " 
+                          << first_event << " " <<nof_events << endl;
+      tree->Draw((const char*)cmd, cut.Data(),option.Data(), nof_events, first_event);
    } else if (fApplyGraphCut && nent == 2) {
-      tree->Draw((const char*)cmd, fGraphCut->Data(),option.Data(),max_events,0); 
-      cout << "Execute: " << cmd << endl;
+      tree->Draw((const char*)cmd, fGraphCut->Data(),option.Data(),
+                  nof_events, first_event); 
+      cout << "Execute: " << cmd << "1.Ev, NofEv: " 
+                          << first_event << " " <<nof_events << endl;
       cout << "Apply graphical cut: " <<  fGraphCut->Data() << 
       " with X :" << fCutVarX->Data() <<   
       " and Y :" << fCutVarX->Data() <<  endl;  
    } else {
-      cout << "Execute: " << cmd << endl;
-      tree->Draw((const char*)cmd,"",option.Data(),max_events,0);
+      cout << "Execute: " << cmd << "1.Ev, NofEv: " 
+                          << first_event << " " <<nof_events << endl;
+      tree->Draw((const char*)cmd,"",option.Data(), nof_events, first_event);
    }
    fRootFile->Close();
    fRootFile=NULL;

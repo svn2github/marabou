@@ -186,7 +186,9 @@ protected:
    Bool_t  fAnyFromSocket;
    TGWindow * fLastWindow;
 //  Graphics attributes
-
+   
+   Float_t      fDivMarginX;
+   Float_t      fDivMarginY;
    Int_t         fLabelMaxDigits;  
 
    Int_t        fNdivisionsX; 
@@ -287,6 +289,9 @@ protected:
    Color_t    fLineColor;           //line color
    Style_t    fLineStyle;           //line style
    Width_t    fLineWidth;           //line width
+   Color_t    fMarkerColor;           //Marker color
+   Style_t    fMarkerStyle;           //Marker style
+   Float_t    fMarkerSize;           //Marker width
 
    Float_t    fTextSize ;            //Text size
    Short_t    fTextAlign;           //Text alignment

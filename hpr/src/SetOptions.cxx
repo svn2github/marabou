@@ -11,6 +11,7 @@
 #include "TF1.h"
 #include "TPaveStats.h"
 #include "TArrow.h"
+#include "TMarker.h"
 #include "TLatex.h"
 #include "TCurlyLine.h"
 
@@ -305,8 +306,9 @@ void HistPresent::RestoreOptions()
    fShowAllAsFirst    = env.GetValue("HistPresent.ShowAllAsFirst", 1);
    fRealStack         = env.GetValue("HistPresent.RealStack", 1);
    fUseRegexp         = env.GetValue("HistPresent.UseRegexp", 0);
-   fProjectBothRatio  =
-       atof(env.GetValue("HistPresent.ProjectBothRatio", "0.6"));
+   fProjectBothRatio  = env.GetValue("HistPresent.ProjectBothRatio", 0.6);
+   fDivMarginX        = env.GetValue("HistPresent.DivMarginX", 0.05);
+   fDivMarginY        = env.GetValue("HistPresent.DivMarginY", 0.05);
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
    fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
    fAutoUpdateDelay =
@@ -451,6 +453,9 @@ void HistPresent::RestoreOptions()
 	fCanvasDefW		   = env.GetValue("HistPresent.CanvasDefW",	    0);  
 	fCanvasDefX		 	= env.GetValue("HistPresent.CanvasDefX",	    0);
 	fCanvasDefY		 	= env.GetValue("HistPresent.CanvasDefY",		 0);
+	fMarkerColor      = env.GetValue("HistPresent.MarkerColor",       1);
+	fMarkerStyle      = env.GetValue("HistPresent.MarkerStyle",       7);
+	fMarkerSize       = env.GetValue("HistPresent.MarkerSize",       1);
 	fLineColor        = env.GetValue("HistPresent.LineColor",       1);
 	fLineStyle        = env.GetValue("HistPresent.LineStyle",       1);
 	fLineWidth        = env.GetValue("HistPresent.LineWidth",       1);
@@ -607,6 +612,8 @@ void HistPresent::SaveOptions()
 //   env.SetValue("HistPresent.ProjectBothRatio"   ,kEnvUser);
 //   env.SetValue("HistPresent.LogScaleMin"        ,kEnvUser);
 //   env.SetValue("HistPresent.AutoUpdateDelay"    ,kEnvUser);
+   env.SetValue("HistPresent.DivMarginX", fDivMarginX);
+   env.SetValue("HistPresent.DivMarginY", fDivMarginY);
    env.SetValue("HistPresent.ProjectBothRatio", fProjectBothRatio);
    env.SetValue("HistPresent.LinScaleMin", fLinScaleMin);
    env.SetValue("HistPresent.LogScaleMin", fLogScaleMin);
@@ -713,6 +720,9 @@ void HistPresent::SaveOptions()
 	env.SetValue("HistPresent.CanvasDefW", 	  fCanvasDefW  	 );  
 	env.SetValue("HistPresent.CanvasDefX", 	  fCanvasDefX  	 );
 	env.SetValue("HistPresent.CanvasDefY", 	  fCanvasDefY  	 );
+	env.SetValue("HistPresent.MarkerColor",     fMarkerColor     );
+	env.SetValue("HistPresent.MarkerStyle",     fMarkerStyle     );
+	env.SetValue("HistPresent.MarkerSize",      fMarkerSize      );
 	env.SetValue("HistPresent.LineColor",       fLineColor       );
 	env.SetValue("HistPresent.LineStyle",       fLineStyle       );
 	env.SetValue("HistPresent.LineWidth",       fLineWidth       );
@@ -885,6 +895,9 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
       kTextFont      ,
       kFillColor     ,
       kFillStyle     ,
+      kMarkerColor   ,
+      kMarkerStyle   ,
+      kMarkerSize    ,
    };
 
    TOrdCollection *row_lab = new TOrdCollection();
@@ -897,6 +910,9 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TextFont "));         
    row_lab->Add(new TObjString("FillColor"));         
    row_lab->Add(new TObjString("FillStyle"));         
+   row_lab->Add(new TObjString("MarkerColor"));     
+   row_lab->Add(new TObjString("MarkerStyle"));     
+   row_lab->Add(new TObjString("MarkerSize"));         
 
    Int_t nrows = row_lab->GetSize();
    TArrayD values(nrows);
@@ -911,7 +927,10 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    values[vp++] = fTextFont ;
    values[vp++] = fFillColor;
    values[vp++] = fFillStyle;
-
+   values[vp++] = fMarkerColor;     
+   values[vp++] = fMarkerStyle;     
+   values[vp++] = fMarkerSize;
+ 
    TOrdCollection *col_lab = new TOrdCollection();
    col_lab->Add(new TObjString("Value"));     
    col_lab->Add(new TObjString("Set all"));     
@@ -936,6 +955,9 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    fTextFont      = (Int_t)values[vp++];
    fFillColor     = (Int_t)values[vp++];
    fFillStyle     = (Int_t)values[vp++];
+   fMarkerColor   = (Int_t)values[vp++];
+   fMarkerStyle   = (Int_t)values[vp++];
+   fMarkerSize    =        values[vp++];
    SaveOptions();
    SetGeneralAtt();
 
@@ -967,6 +989,12 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
                if (flag[kTextFont]  != 0)      a->SetTextFont(fTextFont);
                if (flag[kTextAlign] != 0)      a->SetTextAlign(fTextAlign);
             }
+            if (obj->InheritsFrom("TMarker")) {
+               TMarker * tc = (TMarker*)obj;
+               if (flag[kMarkerSize] != 0)       tc->SetMarkerSize(fMarkerSize);
+               if (flag[kMarkerColor] != 0)      tc->SetMarkerColor(fMarkerColor);
+               if (flag[kMarkerStyle] != 0)      tc->SetMarkerStyle(fMarkerStyle);
+            }
          }
          canvas->Modified();
          canvas->Update();
@@ -986,6 +1014,9 @@ void HistPresent::SetGeneralAtt()
    gStyle->SetTextFont (fTextFont );    
    gStyle->SetFillColor(fFillColor);    
    gStyle->SetFillStyle(fFillStyle);    
+   gStyle->SetMarkerColor(fMarkerColor);    
+   gStyle->SetMarkerStyle(fMarkerStyle);    
+   gStyle->SetMarkerSize(fMarkerSize);    
 }
 //_______________________________________________________________________
 
@@ -2283,7 +2314,7 @@ Auto exec project Y \n\
 
 void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 10;
+   Int_t nopt = 12;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
@@ -2302,6 +2333,9 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Window_Top_Y"));
    row_lab->Add(new TObjString("Window_X_Width_List"));
    row_lab->Add(new TObjString("Project_Both_Ratio"));
+   row_lab->Add(new TObjString("X - Margin in ShowSelected"));
+   row_lab->Add(new TObjString("Y - Margin in ShowSelected"));
+
 
    values[vp++] = fWinwidx_1dim;
    values[vp++] = fWinwidy_1dim;
@@ -2313,6 +2347,8 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    values[vp++] = fWintopy;
    values[vp++] = fWinwidx_hlist;
    values[vp++] = fProjectBothRatio;
+   values[vp++] = fDivMarginX;
+   values[vp++] = fDivMarginY;
    Int_t ret, itemwidth = 240, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "Default window sizes and positions",
                        itemwidth, 1, nopt, values, precission, 0, row_lab);
@@ -2327,7 +2363,9 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
       fWintopx = (Int_t) values[vp++];
       fWintopy = (Int_t) values[vp++];
       fWinwidx_hlist = (Int_t) values[vp++];
-      fProjectBothRatio = values[vp];
+      fProjectBothRatio = values[vp++];
+      fDivMarginX = values[vp++];
+      fDivMarginY = values[vp++];
       fWincury = fWintopy;
       fWincurx = fWintopx;
    }

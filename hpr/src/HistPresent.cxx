@@ -606,10 +606,10 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    TString hint;
    TString sel;
    Int_t maxkey = 0;
-   if (fMaxListEntries > 500) {
-      cout << "Warning: Max number of entries in list of histograms set to: 500" 
+   if (fMaxListEntries > 1500) {
+      cout << "Warning: Max number of entries in list of histograms set to: 1500" 
            << endl;
-      fMaxListEntries = 500;
+      fMaxListEntries = 1500;
    }
 //   TurnButtonGreen(&activeFile);
 
@@ -654,6 +654,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    if (strstr(fname,".root")) {
       TFile * rfile = NULL;
       rfile = new TFile(fname);
+/*
       if ( (fixnames(&rfile, kTRUE) )) {
          if (QuestionBox("File contains objects with illegal names\n\
 (see transcript output)\n\
@@ -667,7 +668,8 @@ Should we create a new file with corrected names?", maincanvas)) {
             rfile->Close();
             return;
          }
-      }   
+      } 
+*/  
       if (fShowListsOnly > 0) {  
          st = NULL;
          nstat = 0;
@@ -3036,7 +3038,7 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
    fWincurx = fWintopx; fWincury += fWinshifty;
 
    fCanvasList->Add(cmany);
-   cmany->Divide(nx, ny);
+   cmany->Divide(nx, ny, fDivMarginX, fDivMarginY);
 //   cmany->SetEditable(kTRUE);
    TEnv * lastset = 0;
    TString hname;
@@ -3060,6 +3062,8 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
 
       Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
       if(last_us >0)hname.Remove(last_us);
+      TRegexp sem(";");
+      hname(sem) ="_"; 
 //      cout << "Aft: "  << hname << endl;
       lastset = GetDefaults(hname);
       if (lastset) {
@@ -3101,6 +3105,7 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
       } else {
          if (lastset && lastset->GetValue("LogY", 0) )p->SetLogy();
          TString drawopt;
+         hist->Draw(drawopt.Data());
          gStyle->SetOptTitle(GetShowTitle());
          if (fShowContour) drawopt = "hist";
          if (fShowErrors)  drawopt += "e1";
@@ -3108,21 +3113,20 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
             hist->SetFillStyle(1001);
             hist->SetFillColor(44);
          } else hist->SetFillStyle(0);
-         hist->Draw(drawopt.Data());
 //         hist->Draw(fDrawOpt2Dim->Data());
    		TString cmd1("((HistPresent*)gROOT->FindObject(\""); 
    		cmd1 += GetName();
    		cmd1 += "\"))->auto_exec_1()";
          p->AddExec("ex1", cmd1.Data());
 //
-         p->SetRightMargin(0.05);
-         p->SetLeftMargin(0.05);
+         p->SetRightMargin(0.01);
+//         p->SetLeftMargin(0.01);
          TAxis * xa = hist->GetXaxis();
          TAxis * ya = hist->GetYaxis();
-         ya->SetLabelSize(gStyle->GetLabelSize("Y") * 0.8 * ny); // nb y det text size
-         xa->SetLabelSize(gStyle->GetLabelSize("X") * 0.8 * ny);
-         xa->SetTitleSize(gStyle->GetTitleSize("X") * 0.8 * ny);
-         ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.8 * ny);
+         ya->SetLabelSize(gStyle->GetLabelSize("Y") * 0.5 * ny); // nb y det text size
+         xa->SetLabelSize(gStyle->GetLabelSize("X") * 0.5 * ny);
+         xa->SetTitleSize(gStyle->GetTitleSize("X") * 0.5 * ny);
+         ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.5 * ny);
           
 //        hist->SetTitleSize(gStyle->GetTitleSize("C") * 0.8 * ny);
       }  
@@ -3142,7 +3146,7 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
       }
    }
    if (firstpad) { 
-      if (fShowAllAsFirst) 
+      if (fShowAllAsFirst || (fDivMarginX <= 0 && fDivMarginY <= 0)) 
          ShowAllAsSelected(firstpad, cmany, 0, NULL);
       firstpad->cd();
    }

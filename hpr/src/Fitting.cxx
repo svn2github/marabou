@@ -2021,6 +2021,7 @@ void FitHist::ExecFitMacro()
       WarnBox("Macro not found");
 }
 //____________________________________________________________________________________ 
+//____________________________________________________________________________________ 
 
 void FitHist::EditFitSliceYMacro()
 {
@@ -2077,6 +2078,7 @@ void FitHist::ExecFitSliceYMacro()
       fFirstUse = 0;
    }
    if (!gSystem->AccessPathName(fFitSliceYMacroName.Data(), kFileExists)) {
+//      fFitSliceYMacroName += "+";
       gROOT->LoadMacro(fFitSliceYMacroName.Data());
       TString cmd = "fit_slice_function";
 //      Int_t p = cmd.Index(".");
@@ -2086,6 +2088,20 @@ void FitHist::ExecFitSliceYMacro()
       WarnBox("Not enough marks");
       return;
    }
+   TString hname;
+   TString sel;
+   for (Int_t ipar = 0; ipar < 100; ipar++) {
+      hname = fSelHist->GetName();
+      hname += "_";
+      hname += ipar;
+      TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
+      if (parhist) delete parhist; 
+      else        break;
+   }
+   hname = fSelHist->GetName();
+   hname += "_chi2";
+   TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
+   if (parhist) delete parhist;
  //  	cout << "ExecFitSliceYMacro ----------------" << endl;
  //  	markers->Print();
 
@@ -2108,33 +2124,36 @@ void FitHist::ExecFitSliceYMacro()
       cout << cmd << endl;
       cHist->cd();
       gROOT->ProcessLine((const char *) cmd);
-      TString hname;
-      TString sel;
       if (hp) {
          hp->ClearSelect();
+         hname = fSelHist->GetName();
+         hname += "_chi2";
+
+         TH1 * chi2hist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
+         if (chi2hist){ 
+            hname += " ";
+            hname.Prepend("Memory ");
+            hp->fSelectHist->Add(new TObjString((const char *)hname));
+         }
          for (Int_t ipar = 0; ipar < 100; ipar++) {
             hname = fSelHist->GetName();
             hname += "_";
             hname += ipar;
             TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
             if (parhist){ 
-//               sel = "memory ";
-//               sel += hname.Data();
                hname.Prepend("Memory ");
                hname += " ";
                hp->fSelectHist->Add(new TObjString((const char *)hname));
+               if (chi2hist) {
+                  for (Int_t bin = 1; bin <= chi2hist->GetNbinsX(); bin++) {
+                     if (chi2hist->GetBinContent(bin) > 10) {
+                        parhist->SetBinContent(bin, 0);
+                        parhist->SetBinError(bin, 0);
+                     }
+                  }
+               }
             }
             else break;
-         }
-         hname = fSelHist->GetName();
-         hname += "_chi2";
-         TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
-         if (parhist){ 
- //           sel = "memory ";
- //           sel += hname.Data();
-            hname += " ";
-            hname.Prepend("Memory ");
-            hp->fSelectHist->Add(new TObjString((const char *)hname));
          }
          hp->ShowSelectedHists(hp->fSelectHist, "Fitted values");
       }
