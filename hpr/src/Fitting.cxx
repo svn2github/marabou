@@ -222,7 +222,13 @@ fit_user_function(const char *hname)\n\
    Double_t gaus1_const= 10000;\n\
    Double_t gaus1_sigma= 12;\n\
    TF1* f = new TF1(\"two_gaus\",TwoGauss,from,to, 7);\n\
-   f->SetParameters(0, 0, 20, 10000, 2, 10000, 4);\n\
+   f->SetParameters(lin_const  ,\n\
+                    lin_slope  ,\n\
+                    gaus_mean  ,\n\
+                    gaus0_const,\n\
+                    gaus0_sigma,\n\
+                    gaus1_const,\n\
+                    gaus1_sigma);\n\
    f->SetParName(0,\"lin_const  \");\n\
    f->SetParName(1,\"lin_slope  \");\n\
    f->SetParName(2,\"gaus_mean  \");\n\
@@ -235,7 +241,7 @@ fit_user_function(const char *hname)\n\
 //  Fill a histogram randomly using function\n\
 //   Int_t entries = gaus0_const  + gaus1_const ;\n\
 //   TH1F * twogran = new TH1F(\"twogran\",\n\
-                               \"Two gaussians with common mean\",\n\
+//                               \"Two gaussians with common mean\",\n\
 //                              400, 0, 100);\n\
 //   twogran->FillRandom(\"two_gaus\", entries);\n\
 //   twogran->Draw();\n\

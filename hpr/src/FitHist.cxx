@@ -195,6 +195,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
    
+   RestoreDefaults();   
    cout << "FitMacroName " << fFitMacroName.Data()<< endl;
 
    fTemplateMacro = "TwoGaus";
@@ -303,6 +304,7 @@ void FitHist::SaveDefaults(Bool_t recalculate)
    TString defname("defaults/Last");
    TEnv env(".rootrc");         // inspect ROOT's environment
    env.SetValue("HistPresent.FitMacroName", fFitMacroName);
+
    Bool_t checkonly = kTRUE;
    if ( (!CreateDefaultsDir(mycanvas, checkonly)) ) return;
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
@@ -326,6 +328,8 @@ void FitHist::SaveDefaults(Bool_t recalculate)
            << defname << endl;
       return;
    }
+   wstream << "FitMacroName: " << fFitMacroName << endl;
+
    if (TCanvas * ca =
        (TCanvas *) gROOT->FindObject(GetCanvasName())) {
       wstream << "LogX:  " << ca->GetLogx() << endl;
@@ -413,6 +417,7 @@ void FitHist::RestoreDefaults()
 {
    TEnv *lastset = 0;
    if (hp && (hp->fRememberLastSet || hp->fRememberZoom) && (lastset = GetDefaults(fHname)) ) {
+      fFitMacroName = lastset->GetValue("FitMacroName",fFitMacroName.Data());
       fLogy = lastset->GetValue("LogY", fLogy);
       fRangeLowX = fSelHist->GetXaxis()->GetXmin();
       fRangeUpX = fSelHist->GetXaxis()->GetXmax();
@@ -892,7 +897,6 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    }
    fOrigHist = hist;
   
-   RestoreDefaults();   
 //  construct name of canvas and pad
    fCname = "C_";
    fCname += GetName();
