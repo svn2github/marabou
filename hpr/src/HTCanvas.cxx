@@ -43,7 +43,6 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //     if wtopx < 0) the menubar is not shown.
 //  ww is the canvas size in pixels along X
 //  wh is the canvas size in pixels along Y
-
    if(!gHTGuiFactory) gHTGuiFactory = new HTRootGuiFactory();
 
    fSelected     = 0;
@@ -774,7 +773,7 @@ void HTCanvas::UpdateHists()
 {
    if (!fHistPresent) return;
    if (!fHistList)    return; 
-   if (fHistPresent->fAnyFromSocket && !(fHistPresent->fSocketIsOpen)) return;
+   if (fHistPresent->fAnyFromSocket && !(fHistPresent->fComSocket)) return;
 //      TList * hlist = fHistPresent->GetSelectedHist();
    Int_t nhist = fHistList->GetSize();
    if(nhist <= 0)return;
@@ -792,7 +791,7 @@ void HTCanvas::UpdateHists()
             cout << "Deleting existing timer" << endl;
             delete fTimer;
             fTimer = 0;
-            fHistPresent->fSocketIsOpen = kFALSE;
+//            fHistPresent->fSocketIsOpen = kFALSE;
          }
           cout << setblack << endl;
 
