@@ -48,6 +48,14 @@ long long ushort2ll64(UShort_t N1, UShort_t N2, UShort_t N3, UShort_t N4) {
 	return(ull);
 }
 
+long long uint2ll48(UInt_t * Array) {
+	long long ull;
+	ull = (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array;
+	return(ull);
+}
+
 UShort_t * ll2ushort48(UShort_t * Array, long long N) {
 	UShort_t * ap = Array + 2;
 	*ap-- = N & 0xFFFF; N >>= 16;
