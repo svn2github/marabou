@@ -52,6 +52,8 @@ extern TMrbLogger * gMrbLog;					// message logger
 
 extern TMrbLofUserVars * gMrbLofUserVars;		// list of user's vars and wdws
 
+extern TMrbTransport * gMrbTransport;			// transport data from MBS
+
 ClassImp(TMrbAnalyze)							// implementation of user-specific classes
 ClassImp(TMrbIOSpec)
 ClassImp(TUsrEvent)
@@ -224,6 +226,10 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		return(kFALSE);
 	}
 
+	TRegexp rxroot("\\.root$");
+	TRegexp rxmed("\\.med$");
+	TRegexp rxlmd("\\.lmd$");
+
 	errCnt = 0;
 	lerrCnt = 0;
 	lineCnt = 0;
@@ -246,7 +252,13 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 // input file
 		decode >> inputFile;	
 		gSystem->ExpandPathName(inputFile);
-		if (inputFile.Index(".root", 0) == -1) {
+		if (inputFile.Index(rxroot, 0) != -1) {
+			inputMode = TMrbIOSpec::kInputRoot;
+		} else if (inputFile.Index(rxmed, 0) != -1) {
+			inputMode = TMrbIOSpec::kInputMED;
+		} else if (inputFile.Index(rxlmd, 0) != -1) {
+			inputMode = TMrbIOSpec::kInputLMD;
+		} else {
 			if (!lineHdr) {
 				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
 				gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -255,7 +267,8 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			gMrbLog->Err()	<< "Input Illegal extension - " << inputFile << " (should be .root)" << endl;
 			gMrbLog->Flush(this->ClassName(), "OpenFileList");
 			errCnt++;
-		} else if (gSystem->AccessPathName(inputFile.Data(), kFileExists)) {
+		}
+		if (gSystem->AccessPathName(inputFile.Data(), kFileExists)) {
 			if (!lineHdr) {
 				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
 				gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -474,20 +487,46 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			cout << "        "; ioSpec->Print(cout);
 			cout	<< setblack << endl;
 		}
-		if (this->OpenRootFile(ioSpec)) {
-//			this->ExecFilterMacro();					*** no longer in use RL 12-2000 ***
-			this->ReloadParams(ioSpec);
-			if (this->WriteRootTree(ioSpec)) {
-				this->ReplayEvents(ioSpec);
-				this->CloseRootTree(ioSpec);
-				if (this->SaveHistograms("*", ioSpec) != -1) {
-					this->ClearHistograms("*", ioSpec);
+		TMrbIOSpec::EMrbInputMode inputMode = ioSpec->GetInputMode();
+
+		if (inputMode == TMrbIOSpec::kInputRoot) {
+			if (this->OpenRootFile(ioSpec)) {
+				this->ReloadParams(ioSpec);
+				if (this->WriteRootTree(ioSpec)) {
+					this->ReplayEvents(ioSpec);
+					this->CloseRootTree(ioSpec);
+					if (this->SaveHistograms("*", ioSpec) != -1) {
+						this->ClearHistograms("*", ioSpec);
+					}
+					nofEntries++;
+				}
+				if (!fFakeMode) {
+					fRootFileIn->Close();
+					fRootFileIn=NULL;
+				}
+			}
+		} else if (inputMode == TMrbIOSpec::kInputMED || inputMode == TMrbIOSpec::kInputLMD) {
+			if (gMrbTransport == NULL) {
+				gMrbTransport = new TMrbTransport("M_analyze", "Connection to MBS");
+				gMrbTransport->Version();
+			}
+			if (gMrbTransport) {
+			 	if (gMrbTransport->Open(ioSpec->GetInputFile(), "F")) {
+					gMrbTransport->OpenLogFile("M_analyze.log");
+					this->ReloadParams(ioSpec);
+					if (ioSpec->GetStartEvent() != 0) {
+						gMrbLog->Err()	<< "[" << ioSpec->GetInputFile() << "] Start event != 0" << endl;
+						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
+					}
+					gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
+					if (this->SaveHistograms("*", ioSpec) != -1) {
+						this->ClearHistograms("*", ioSpec);
+					}
 				}
 				nofEntries++;
-			}
-            if (!fFakeMode) {
-				fRootFileIn->Close();
-				fRootFileIn=NULL;
+			} else {
+				gMrbLog->Err()	<< "[" << ioSpec->GetInputFile() << "] Can't open MBS transport" << endl;
+				gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 			}
 		}
 		ioSpec = (TMrbIOSpec *) fLofIOSpecs.After(ioSpec);
@@ -964,6 +1003,9 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 	}
 	hf->cd();
 
+	cout	<< setblue
+			<< this->ClassName() << "::SaveHistograms(): Saving histogram(s) to file "
+			<< histoFile << " - wait ..." << setblack << endl;
 	pthread_mutex_lock(&global_data_mutex);
    if(kUseMap){
 		fMapFile->Update();		// force update

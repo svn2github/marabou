@@ -246,6 +246,7 @@ int main(int argc, char **argv) {
 	TRegexp rxroot("\\.root$");
 	TRegexp rxmed("\\.med$");
 	TRegexp rxlmd("\\.lmd$");
+	TRegexp rxlist("\\.list$");
 
 	switch (input_type(0)) {
 		case 'f':
@@ -274,7 +275,7 @@ int main(int argc, char **argv) {
 		case 'l':
 		case 'L':	input_type = "LIST";
 					input_mode = TMrbIOSpec::kInputList;
-					if (data_source.Index(".list", 0) > 0) {
+					if (data_source.Index(rxlist, 0) > 0) {
 						input_mode = TMrbIOSpec::kInputList;
 					} else {
 						cerr	<< setred
@@ -576,14 +577,10 @@ int main(int argc, char **argv) {
 
 			u_analyze->SetFileSize(file_size);
 
-			if ((input_mode & TMrbIOSpec::kInputMBS) != 0) {
-				if (output_mode & TMrbIOSpec::kOutputWriteMEDFormat) {
-					if (!gMrbTransport->OpenMEDFile(output_file)) exit(1);
-				} else if (output_mode & TMrbIOSpec::kOutputWriteLMDFormat) {
-					if (!gMrbTransport->OpenLMDFile(output_file)) exit(1);
-				} else if (output_mode & TMrbIOSpec::kOutputWriteRootTree) {
-					if (u_analyze->WriteRootTree(ioSpec)) exit(1);
-				}
+			if (output_mode & TMrbIOSpec::kOutputWriteMEDFormat) {
+				if (!gMrbTransport->OpenMEDFile(output_file)) exit(1);
+			} else if (output_mode & TMrbIOSpec::kOutputWriteLMDFormat) {
+				if (!gMrbTransport->OpenLMDFile(output_file)) exit(1);
 			} else if (output_mode & TMrbIOSpec::kOutputWriteRootTree) {
 				if (u_analyze->WriteRootTree(ioSpec)) exit(1);
 			} else {
@@ -596,7 +593,7 @@ int main(int argc, char **argv) {
 	} else if (input_mode == TMrbIOSpec::kInputList) {
 		Int_t nofEntries = u_analyze->OpenFileList(data_source, ioSpec);
 		if (nofEntries == 0) exit (1);
-		if ( verboseMode ) cout	<< "M_analyze: Replaying ROOT data according to file list " << data_source
+		if ( verboseMode ) cout	<< "M_analyze: Replaying data according to file list " << data_source
 								<< " (" << nofEntries << " entries)"
 								<< endl;
 	}
