@@ -603,6 +603,7 @@ Int_t TMrbString::CheckDouble() const {
 		Bool_t dot = kFALSE;
 		for (Int_t i = lng - 1; i >= 0; i--) {
 			Char_t code = fData[i];
+			if (code == '-') { idx = i; break; }
 			if (code >= '0' && code <= '9')	{
 				idx = i;
 			} else if (code == '.') {
