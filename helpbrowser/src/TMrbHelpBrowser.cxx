@@ -57,14 +57,19 @@ ClassImp(TMrbHelpBrowser)
 //More files / directories may be added using the method: AddHtml
 //
 //It chops text between references (<a href=..) into help items. 
-//Text before the the first reference gets the name of the the file
+//Text before the the first anchor gets the name of the the file
 //as name of the help item. This is useful to construct an index which
 //works also for a normal browser like netscape.
 //If a reference is clicked on only the text for this item is displayed. 
 //The window size is adjusted to the number of lines.
 //It is assumed that the help text is preformatted, so no formatting
-//is done except optionally breaking lines at fMaxLineLenght.
+//is done except optionally breaking lines at fMaxLineLength.
 //A possible image is displayed in a separate window.
+//
+//To display the helptext the method: DrawText(anchor_name, xpos, ypos)
+//should be used.
+//When help items should be added to a popup menu the method
+//DrawText(index, xpos, ypos)
 //
 //As an extension ROOT-files containing canvases may be 
 //defined. If an image with name "pict.canvas.gif" appears
@@ -99,11 +104,11 @@ ClassImp(TMrbHelpBrowser)
 //      fDefaultFont = 100;        // courier bold (+10 italic)
 //      fDefaultFont = 40;         // helvetica
 //      fDefaultFont = 60;         // helvetica bold
-      fMaxLineLength = -1;    // -1: dont wrap lines as default
+      fMaxLineLength = 75;    // -1: dont wrap lines as default
       fHelpList = new TList();
       fCanvasList = new TList();
       fRootFile = 0;
-	  fGifViewer = "xv";
+	   fGifViewer = "xv";
       gROOT->Append(this);
       if(!InputFile){
          cout << "WARNING: No input file given" << endl;
@@ -207,7 +212,10 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
             }
          } else if(tag.Index("<aNAME", 6, 0,  TString::kIgnoreCase) >= 0){
             if(helptext.Length() > 1){
-               fHelpList->Add(new TNamedString(anchor, helptext));
+               if (anchor.BeginsWith("index"))
+                  fHelpList->AddFirst(new TNamedString(anchor, helptext));
+               else
+                  fHelpList->Add(new TNamedString(anchor, helptext));
                helptext = "";
             }
             line.Remove(tag_start, tag.Length());
@@ -218,6 +226,8 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
       }
       if(helptext.Length() > 1 || line.Length() > 1){
 //         if line longer 64 chars try to chop it
+ //        cout << "in AddHtmlFile " << line.Length() << " " << fMaxLineLength<< endl;
+          
          if(fMaxLineLength > 0){
          	TString subline;
          	Int_t fnb = -1;       // first non blank
@@ -226,6 +236,7 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
          	Bool_t intag = kFALSE;
          	Int_t len = 0;
          	Int_t nl = 0;
+ //           cout << "in chop line, len: " << line.Length() << endl;
          	for(Int_t i=0; i < line.Length(); i++){
             	if     (line[i] == '<')intag = kTRUE;
             	else if(line[i] == '>')intag = kFALSE;
@@ -241,7 +252,7 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
                   	}
                   	from = lblank+1;
                   	helptext += subline; helptext += "\n";
-                  	cout << "subline:" <<  subline << endl;      
+ //                 	cout << "subline:" <<  subline << endl;      
                   	nl++;
                   	len = 0;
                	}
@@ -253,7 +264,7 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
                	for(Int_t j=0; j< fnb; j++)subline.Prepend(" ");
             	}
             	helptext += subline; helptext += "\n";          
-            	if(nl > 0)cout << "Lastline:" << subline << endl;
+ //           	if(nl > 0)cout << "Lastline:" << subline << endl;
          	}
       	} else {
             helptext += line; helptext += "\n";          
@@ -261,8 +272,12 @@ Int_t TMrbHelpBrowser::AddHtmlFile(const char * HtmlFile, Bool_t keep_references
       } 
    }  
 //  anything left over?  
-   if(anchor.Length() > 0) 
-   fHelpList->Add(new TNamedString(anchor, helptext));
+   if(anchor.Length() > 0) { 
+   	if (anchor.BeginsWith("index"))
+      	fHelpList->AddFirst(new TNamedString(anchor, helptext));
+   	else
+      	fHelpList->Add(new TNamedString(anchor, helptext));
+   }
    infile.close();
    return 1; 
 }
@@ -660,7 +675,7 @@ void TMrbHelpBrowser::PreScan(TString & text, Bool_t keep_references){
          tag.Index("<H3>"    , 4, 0,  TString::kIgnoreCase) >= 0 ||       
          tag.Index("</H1>"   , 5, 0,  TString::kIgnoreCase) >= 0 || 
          tag.Index("</H2>"   , 5, 0,  TString::kIgnoreCase) >= 0 || 
-         tag.Index("</H2>"   , 5, 0,  TString::kIgnoreCase) >= 0  ) {
+         tag.Index("</H3>"   , 5, 0,  TString::kIgnoreCase) >= 0  ) {
 //           cout << "Prescan: " << tag.Data() << endl;
            text.Insert(tag_start, tag.Data());     
            start = tag_start + tag.Length();
@@ -763,7 +778,10 @@ void TMrbHelpBrowser::DisplayImage(TString & img_name){
 }
 //________________________________________________________________________________
 
-void TMrbHelpBrowser::DrawText(const Int_t ind,  Int_t xoff, Int_t yoff){
+void TMrbHelpBrowser::DrawText(const Int_t ind,  Int_t xoff, Int_t yoff)
+{
+//Retrieve and display helptext by index, this is used when the help item are
+//automatically added to a popup menu
    if(!fHelpList){
       cout << "Retrieve by index not possible (yet) with root file" <<endl;
       return;
@@ -779,7 +797,8 @@ void TMrbHelpBrowser::DrawText(const Int_t ind,  Int_t xoff, Int_t yoff){
 
 //________________________________________________________________________________
 
-void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff){
+void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
+{
 
 //   This method produces the canvas with the help text:
 //
@@ -839,9 +858,13 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff){
 //   optimized for char height 18 x 11
    Int_t wwx_max = (Int_t)((Float_t) fWwX * (Float_t)char_width / 11.);
 
+   TString canvas_title(hname);
+   if (canvas_title.EndsWith(".html"))
+     canvas_title.Resize(canvas_title.Length() - 5);
+      
    if(nl <= 36 && longest_line <= line_length){
 //     default size, no scroll bar in x  and y required
-      ca = new TCanvas(hname, hname, -fX0, fY0, wwx_max, wwy + 60);
+      ca = new TCanvas(hname, canvas_title, -fX0, fY0, wwx_max, wwy + 60);
    } else { 
       if(wwy < fWwY)fWwY = wwy;
       Int_t wwx =wwx_max;
@@ -849,7 +872,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff){
       if(longest_line > line_length) {
          wwx = (Int_t) (fWwX * (Float_t)longest_line / line_length);
       }
-      ca = new TCanvas(hname, hname, -fX0, fY0, wwx_max, fWwY + 60);
+      ca = new TCanvas(hname, canvas_title, -fX0, fY0, wwx_max, fWwY + 60);
 
       if(longest_line <= line_length) wwx = ca->GetWw() + 2 * ca->GetBorderSize();
 //      cout << "wwx  " << wwx << endl;
@@ -976,6 +999,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff){
 //   TRootCanvas * rc = (TRootCanvas *)ca->GetCanvasImp();
 //   rc->RaiseWindow();
    ca->Update(); 
+   ca->SetEditable(kFALSE);
 //   cout << "Exit DrawText ---------------------------" << endl;
 }
 
@@ -1011,20 +1035,68 @@ void TMrbHelpBrowser::HandleMouseClicks()
 
 Int_t TMrbHelpBrowser::DisplayMenu(TGPopupMenu * menu, const char * pattern)
 {
+//Add an entry to a popup menu, pattern may contain wildcards,
+//The menu text is taken from a <TITLE> entry in the helptext if found
+//otherwise it is the anchor name with a possible extension .html replaced
+//by _help
+//in the ProcessMessage method for the TGPopupMenu the corresponding code
+//should be as e.g. follows (assume hbrowser points to a TMrbHelpBrowser:
+//
+//Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
+//...
+//   switch (GET_MSG(msg)) {
+//      case kC_COMMAND:
+//         switch (GET_SUBMSG(msg)) {
+//            case kCM_MENU:
+//
+//               if(parm1 >= 100000){
+//                  Int_t ind = parm1 - 100000;
+//                  if( hbrowser && ind >= 0 && ind < hbrowser->GetNofItems())
+//                     hbrowser->DrawText(ind);
+//                  break;
+//               }
+
+
    const Int_t offset = 100000;
    Int_t ind = -1;   
    TRegexp pat(pattern, kTRUE);
    TRegexp html(".html");
    Int_t patlen = strlen(pattern);
    TString sname;
+   ifstream * infile;
    TIter next(fHelpList);
+   TString * text;
    while(TNamedString * ns = (TNamedString *)next()){
       ind++;
       sname = ns->GetName();
+    
       if(patlen > 0){
          if(sname.Index(pat) < 0)continue;
       }  
-      sname(html) = "_help";
+      Int_t is = -1;
+      Int_t ie = -1;
+      TString htmlfile(fHtmlDir.Data());
+      htmlfile += "/";
+      htmlfile += sname.Data();
+     
+ //     cout << htmlfile.Data() << endl;
+      infile = new ifstream(htmlfile.Data());
+      if (infile->good()){
+         text = new TString();
+         text->ReadFile(*infile);
+         Int_t is = text->Index("<TITLE>", 0, TString::kIgnoreCase);
+//         cout << " is " << is << endl;
+         if (is >=0) {
+            ie = text->Index("</TITLE>", 0, TString::kIgnoreCase);
+            is += 7;
+            if (is < ie - 1) sname = (*text)(is, ie - is);
+            else ie = -1;
+         }
+         delete text;
+      }
+      infile->close();
+      if (ie == -1) 
+         sname(html) = "_help";
       menu->AddEntry(sname.Data(), offset + ind);
 //      cout << ind << " - " <<sname << endl;
       
