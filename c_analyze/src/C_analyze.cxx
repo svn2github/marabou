@@ -1774,7 +1774,7 @@ Bool_t FhMainFrame::MbsCompile(){
          if(rp){
 			rp->SetCodeName(fCodeName->Data());
 			   rp->CopyMakefile();
-            rp->CompileReadout("deve");
+            rp->CompileReadout(gEnv->GetValue("TMbsSetup.MbsVersion", "deve"));
          } else {WarnBox("No ReadoutProc defined", this); return kFALSE;}
       } else {WarnBox("No Makefile found to compile readout function", this); return kFALSE;}
    } else {WarnBox("No setup done", this); return kFALSE;}
