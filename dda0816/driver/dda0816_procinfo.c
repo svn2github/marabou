@@ -191,6 +191,9 @@ int dda0816_procinfo (char *buf, char **start, off_t fpos,
 		    }
 		  }
 		  */
+		  p += sprintf(p, "%d Cycles run, Stop after %d\n",
+			dda0816_resource[n].cycle.curcycl,
+			dda0816_resource[n].cycle.cycles);
 		}
 		retval = p - buf;
         

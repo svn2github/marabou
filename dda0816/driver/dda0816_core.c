@@ -75,7 +75,9 @@ int init_module(void)
 	dda0816_resource[n].curve.points = (int *)NULL;	
 	dda0816_resource[n].curve.size = 0;
 	dda0816_resource[n].curve.SoftScale = 0;
-	dda0816_resource[0].irq = 0;
+	dda0816_resource[n].irq = 0;
+	dda0816_resource[n].cycle.cycles = 0;
+	dda0816_resource[n].cycle.curcycl = 0; 
   }
   for (n=0; n < 8; n++) {
 	outb(n, DDA08_BASE+DDA08_DP);

@@ -10,3 +10,5 @@
 #define CLEAROUTPUTCLOCKGENERATION 		 8
 #define STARTPACER 		 9
 #define STOPPACER 		 10
+#define GETPACER		 11
+#define SETCYCLE 		 12

@@ -15,6 +15,7 @@ dda0816_StartPacer( struct inode *inode  )
 
   for (i=0; i < 8 ; i++) {
 	if (dda0816_resource[i].curve.points) {
+	  dda0816_resource[i].cycle.curcycl = 0;
 	  outb(i, DDA08_BASE+DDA08_DP);
 	  data = dda0816_resource[i].curve.points[dda0816_resource[i].step++];
 	  outb(data, DDA08_BASE+DDA08_DATAL);

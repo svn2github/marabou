@@ -95,10 +95,16 @@
 		int SoftScale;
 	};
 
+	struct dda0816_cycle {
+		int cycles;
+		int curcycl;
+	};
+
 	struct dda0816_kernel {
 		struct dda0816_curve	curve;
 		int	scaler;
 		int	step;
 		int irq;
+		struct dda0816_cycle	cycle;
 	};
 
