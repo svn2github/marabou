@@ -1630,6 +1630,8 @@ void FitHist::WriteOutHist()
 {
    if (fSelHist) {
       TString hname = fSelHist->GetName();
+      Int_t pp = hname.Index(";");
+      if (pp > 0) hname.Resize(pp);
       Bool_t ok;
       hname =
           GetString("Save hist with name", hname.Data(), &ok, mycanvas);

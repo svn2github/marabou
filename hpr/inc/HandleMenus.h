@@ -26,6 +26,7 @@ private:
    TGMenuBar           *fRootsMenuBar;       // menubar
    TGPopupMenu         *fFileMenu;           // file menu
    TGPopupMenu         *fCutsMenu;           // edit menu
+   TGPopupMenu         *fDisplayMenu;           // view menu
    TGPopupMenu         *fViewMenu;           // view menu
    TGPopupMenu         *fOptionMenu;         // option menu
    TGPopupMenu         *fAttrMenu;         // option menu

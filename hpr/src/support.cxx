@@ -1344,21 +1344,54 @@ TGraph * FindGraph(TCanvas * ca)
 void Show_Fonts()
 {
    const char text[] = "The big brown fox jumps over the lazy dog.";
-   new TCanvas("ct", "Text fonts used by root", 100, 100, 600, 400);
-   Float_t x0 = 0.05, y = 0.9, dy = 0.07;
+   new TCanvas("ct", "Text fonts used by root", 100, 100, 600, 600);
+   Float_t x0 = 0.05, y = 0.9, dy = 0.05;
    TText *t1;
    TText *t;
    for (Int_t i = 10; i <= 120; i += 10) {
       t1 = new TText(x0, y, Form("%d", i));
       t = new TText(x0 + 0.1, y, text);
-      t1->SetTextSize(0.05);
+      t1->SetTextSize(0.035);
       t1->SetTextFont(i);
-      t->SetTextSize(0.05);
+      t->SetTextSize(0.035);
       t->SetTextFont(i);
       t1->Draw();
       t->Draw();
       y -= dy;
    }
+   t = new TText(0.45, y, "TextAlign");
+   t->SetTextSize(0.04);
+   t->SetTextAlign(22);
+   t->SetTextFont(60);
+   t->Draw();
+  
+   TPad * pp = new TPad("apad", "apad", 0.3, 0.01, 0.6 ,0.25);
+   pp->SetLineWidth(2);
+   pp->SetFillColor(11);
+   pp->SetFillStyle(1001);
+   pp->Draw();
+   pp->cd();
+   
+   t = new TText(0.05, 0.05, "11"); t->SetTextAlign(11);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.05, 0.5, "12");  t->SetTextAlign(12);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.05, 0.95, "13"); t->SetTextAlign(13);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+
+   t = new TText(0.5, 0.05, "21");   t->SetTextAlign(21);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.5, 0.5, "22");   t->SetTextAlign(22);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.5, 0.95, "23");   t->SetTextAlign(23);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+
+   t = new TText(0.95, 0.05, "31");   t->SetTextAlign(31);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.95, 0.5, "32");   t->SetTextAlign(32);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
+   t = new TText(0.95, 0.95, "33");   t->SetTextAlign(33);
+   t->SetTextSize(0.2); t->SetTextFont(60); t->Draw();
 };
 
 //______________________________________________________________________________________

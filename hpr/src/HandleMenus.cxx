@@ -46,6 +46,7 @@ enum ERootCanvasCommands {
    kEditClearPad,
    kEditClearCanvas,
 
+   kViewEventStatus,
    kViewColors,
    kViewFonts,
    kViewMarkers,
@@ -230,6 +231,8 @@ enum ERootCanvasCommands {
    kFH_DrawGrid,  
    kFH_RemoveGrid,
    kOptionPad,
+   kOptionGeneral,
+   kOptionFeynman,
    kOptionTitle,
    kOptionHist,
    kOptionStat,
@@ -386,14 +389,14 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHActivateTimer:
                      if (fHCanvas->GetHTimer()) {
                         fHCanvas->ActivateTimer(-1);    // deactivate
-                        fViewMenu->UnCheckEntry(kFHActivateTimer);
+                        fDisplayMenu->UnCheckEntry(kFHActivateTimer);
                      } else { 
                      	Int_t tms = 0;
                      	if(fHistPresent)tms = (Int_t)(1000 * fHistPresent->GetAutoUpdateDelay());
                      	if(tms <= 0) tms = 2000;
                      	cout << "Setting AutoUpdateDelay to " << tms << endl;
                      	fHCanvas->ActivateTimer(tms);    // in milli second
-                     	fViewMenu->CheckEntry(kFHActivateTimer);
+                     	fDisplayMenu->CheckEntry(kFHActivateTimer);
                      }
                      break;            
                   case kFHRebinAll:
@@ -413,10 +416,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHAllAsFirst:
                      if (fHistPresent->fShowAllAsFirst) {
                         fHistPresent->fShowAllAsFirst = 0;
-                        fViewMenu->UnCheckEntry(kFHAllAsFirst);
+                        fDisplayMenu->UnCheckEntry(kFHAllAsFirst);
                      } else {
                         fHistPresent->fShowAllAsFirst = 1;
-                        fViewMenu->CheckEntry(kFHAllAsFirst);
+                        fDisplayMenu->CheckEntry(kFHAllAsFirst);
                      }
                      break;
 
@@ -427,14 +430,14 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      fHCanvas->cd();
                      if (fHistPresent->fRealStack) {
                         fHistPresent->fRealStack = 0;
-                        fViewMenu->UnCheckEntry(kFHStack);
+                        fDisplayMenu->UnCheckEntry(kFHStack);
                         if (st) {
                            st->SetDrawOption("nostack");
 //                           cout << "nostack" << endl;
                         }
                      } else {
                         fHistPresent->fRealStack = 1;
-                        fViewMenu->CheckEntry(kFHStack);
+                        fDisplayMenu->CheckEntry(kFHStack);
                         if (st) { 
                           st->SetDrawOption("");
  //                         cout << "stack" << endl;
@@ -541,6 +544,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
 
                   // Handle View menu items...
+                  case kViewEventStatus:
+                     fHCanvas->ToggleEventStatus();
+                     fRootCanvas->ShowStatusBar(fHCanvas->GetShowEventStatus());
+                     break;
                   case kViewColors:
                      DrawColors(); 
                      break;
@@ -638,6 +645,22 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      }
                      }
                      break;
+                  case kOptionGeneral:
+                     {
+                     if(fHistPresent){
+                        fHistPresent->SetGeneralAttributes(fRootCanvas, fFitHist);
+                        if(fFitHist)fFitHist->UpdateCanvas();
+                     }
+                     }
+                     break;
+                  case kOptionFeynman:
+                     {
+                     if(fHistPresent){
+                        fHistPresent->SetCurlyAttributes(fRootCanvas, fFitHist);
+                        if(fFitHist)fFitHist->UpdateCanvas();
+                     }
+                     }
+                     break;
                   case kOptionPad:
                      {
                      if(fHistPresent){
@@ -722,10 +745,10 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHSelectInside:
                      if(fFitHist->InsideState()) {
                          fFitHist->SetInside(kFALSE);
-                         fViewMenu->UnCheckEntry(kFHSelectInside);
+                         fDisplayMenu->UnCheckEntry(kFHSelectInside);
                      } else {
                          fFitHist->SetInside(kTRUE);
-                         fViewMenu->CheckEntry(kFHSelectInside);
+                         fDisplayMenu->CheckEntry(kFHSelectInside);
                      }
                      break;
                   case  kFHMarksToWindow:
@@ -780,18 +803,18 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      if (is2dim(fFitHist->GetSelHist())) {
                      	if (fFitHist->GetLogz()) {
                         	 fFitHist->SetLogz(0);
-                        	 fViewMenu->UnCheckEntry(kFHLogY);
+                        	 fDisplayMenu->UnCheckEntry(kFHLogY);
                      	} else {
                         	 fFitHist->SetLogz(1);
-                        	 fViewMenu->CheckEntry(kFHLogY);
+                        	 fDisplayMenu->CheckEntry(kFHLogY);
                      	}
                      } else {
                      	if (fFitHist->GetLogy()) {
                         	 fFitHist->SetLogy(0);
-                        	 fViewMenu->UnCheckEntry(kFHLogY);
+                        	 fDisplayMenu->UnCheckEntry(kFHLogY);
                      	} else {
                         	 fFitHist->SetLogy(1);
-                        	 fViewMenu->CheckEntry(kFHLogY);
+                        	 fDisplayMenu->CheckEntry(kFHLogY);
                      	}
                      }
                      fFitHist->SaveDefaults();
@@ -1087,7 +1110,7 @@ void HandleMenus::BuildMenus()
    }
    if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) { 
      fh_menus = kTRUE;
-     edit_menus = kTRUE;
+//     edit_menus = kTRUE;
    }
    TGPopupMenu * pm; 
    const TList * l;
@@ -1176,12 +1199,13 @@ void HandleMenus::BuildMenus()
          }
       }
    }
-   fCascadeMenu1  = 0;
-   fCutsMenu     = 0;
-   fViewMenu     = 0;
-   fFitMenu  = 0; 
-   fOptionMenu  = 0; 
-   fAttrMenu  = 0; 
+   fCascadeMenu1 = NULL;
+   fCutsMenu     = NULL;
+   fViewMenu     = NULL;
+   fDisplayMenu  = NULL;
+   fFitMenu      = NULL; 
+   fOptionMenu   = NULL; 
+   fAttrMenu     = NULL; 
   
    Bool_t is2dim = kFALSE;   
    TGPopupMenu * pmo = fRootsMenuBar->GetPopup("Options");
@@ -1246,6 +1270,9 @@ void HandleMenus::BuildMenus()
       fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
       fFileMenu->AddEntry("Open DinA4 canvas (portrait)",    kFH_Portrait);
       fFileMenu->AddEntry("Open DinA4 canvas (landscape)",   kFH_Landscape);
+   } else {
+      fFileMenu->AddSeparator();
+    	fFileMenu->AddEntry("Write objects to file",  kFH_WritePrim);
    }
    fFileMenu->AddSeparator();
    fFileMenu->AddEntry("Terminate program",          kFileQuit);
@@ -1268,19 +1295,14 @@ void HandleMenus::BuildMenus()
    fAttrMenu->AddEntry("X axis attributes", kOptionXaxis);
    fAttrMenu->AddEntry("Y axis attributes", kOptionYaxis);
    fAttrMenu->AddEntry("Z axis attributes", kOptionZaxis);
+   fAttrMenu->AddEntry("Line- Text- Fill attributes", kOptionGeneral);
+   fAttrMenu->AddEntry("Feynman diagram attributes", kOptionFeynman);
    fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
    fOptionMenu->AddPopup("Graphics Attr (Canvas, Pads, Hist, Axis, etc)",  fAttrMenu);
 
    fAttrMenuDef = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenuDef->AddEntry("Take and set Stat box defaults", kOptionStatDef);
    fOptionMenu->AddPopup(" Take and set defaults",  fAttrMenuDef);
-
-   fOptionMenu->AddSeparator();
-   fOptionMenu->AddEntry("Show Colors",             kViewColors);
-   fOptionMenu->AddEntry("Show Fonts",              kViewFonts);
-   fOptionMenu->AddEntry("Show Markers",            kViewMarkers);
-   fOptionMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
-   fOptionMenu->AddEntry("Show Line Attr",          kViewLineStyles);
 
    fOptionMenu->CheckEntry(kOptionAutoResize);
    fOptionMenu->CheckEntry(kOptionStatistics);
@@ -1291,95 +1313,105 @@ void HandleMenus::BuildMenus()
       fOptionMenu->UnCheckEntry(kOptionAutoExec);
    }
 
+   fViewMenu = new TGPopupMenu(fRootCanvas->GetParent());
+   if (!edit_menus)fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
+   fViewMenu->AddEntry("Event &Status", kViewEventStatus);
+   fViewMenu->AddSeparator();
+   fViewMenu->AddEntry("Show Colors",             kViewColors);
+   fViewMenu->AddEntry("Show Fonts",              kViewFonts);
+   fViewMenu->AddEntry("Show Markers",            kViewMarkers);
+   fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+   fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
+
    if (fh_menus || fHCanvas->GetHistList()) {
-   	fViewMenu = new TGPopupMenu(fRootCanvas->GetParent());
+   	fDisplayMenu = new TGPopupMenu(fRootCanvas->GetParent());
    	if (fh_menus) {
       	fFitHist->SetMyCanvas(fRootCanvas);
       	is2dim = fFitHist->Its2dim();
 
-      	fViewMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
-      	fViewMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
-      	if(!is2dim)fViewMenu->AddEntry("Rebin",       kFHRebinOne);
+      	fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
+      	fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
+      	if(!is2dim)fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
       	if (is2dim) {
-      	   fViewMenu->AddSeparator();
-            fViewMenu->AddEntry("Set User Contours",   kFHUserCont);
-            fViewMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
-            fViewMenu->AddEntry("Clear User Contours",   kFHUserContClear);
-            fViewMenu->AddEntry("Save User Contours",   kFHUserContSave);
+      	   fDisplayMenu->AddSeparator();
+            fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);
+            fDisplayMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
+            fDisplayMenu->AddEntry("Clear User Contours",   kFHUserContClear);
+            fDisplayMenu->AddEntry("Save User Contours",   kFHUserContSave);
          }
-      	fViewMenu->AddSeparator();
-      	fViewMenu->AddEntry("ClearMarks",   kFHClearMarks);
-      	fViewMenu->AddEntry("PrintMarks",   kFHPrintMarks);
-      	fViewMenu->AddEntry("Set2Marks",    kFHSet2Marks);
-      	fViewMenu->AddEntry("Highlight marked area",    kFHColorMarked);
-	//      fViewMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
-      	fViewMenu->AddSeparator();
+      	fDisplayMenu->AddSeparator();
+      	fDisplayMenu->AddEntry("ClearMarks",   kFHClearMarks);
+      	fDisplayMenu->AddEntry("PrintMarks",   kFHPrintMarks);
+      	fDisplayMenu->AddEntry("Set2Marks",    kFHSet2Marks);
+      	fDisplayMenu->AddEntry("Highlight marked area",    kFHColorMarked);
+	//      fDisplayMenu->AddEntry("Help On Marks",         kFH_Help_Mark);
+      	fDisplayMenu->AddSeparator();
         
       	if(is2dim) {
-            fViewMenu->AddEntry("ProjectX",    kFHProjectX   );
-      	   fViewMenu->AddEntry("ProjectY",    kFHProjectY   );
-      	   fViewMenu->AddEntry("ProjectBoth", kFHProjectB   );
-      	   fViewMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
-      	   fViewMenu->AddEntry("ProfileX",    kFHProfileX   );
-      	   fViewMenu->AddEntry("ProfileY",    kFHProfileY   );
-      	   fViewMenu->AddEntry("Transpose",   kFHTranspose  );
+            fDisplayMenu->AddEntry("ProjectX",    kFHProjectX   );
+      	   fDisplayMenu->AddEntry("ProjectY",    kFHProjectY   );
+      	   fDisplayMenu->AddEntry("ProjectBoth", kFHProjectB   );
+      	   fDisplayMenu->AddEntry("ProjectAlongFunction",    kFHProjectF   );
+      	   fDisplayMenu->AddEntry("ProfileX",    kFHProfileX   );
+      	   fDisplayMenu->AddEntry("ProfileY",    kFHProfileY   );
+      	   fDisplayMenu->AddEntry("Transpose",   kFHTranspose  );
          }
-      	fViewMenu->AddEntry("Superimpose", kFHSuperimpose);
-      	if(!is2dim)fViewMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
-      	fViewMenu->AddEntry("Show in same Range",    kFHGetRange   );
+      	fDisplayMenu->AddEntry("Superimpose", kFHSuperimpose);
+      	if(!is2dim)fDisplayMenu->AddEntry("Superimpose scaled", kFHSuperimposeScale);
+      	fDisplayMenu->AddEntry("Show in same Range",    kFHGetRange   );
 
-      	fViewMenu->AddSeparator();
-      	fViewMenu->AddEntry("Show Statistics only",  kFHOutputStat );
-      	fViewMenu->AddEntry("SelectInside",  kFHSelectInside);
-      	if(fFitHist->InsideState()) fViewMenu->CheckEntry(kFHSelectInside);
-      	else                        fViewMenu->UnCheckEntry(kFHSelectInside);
-      	fViewMenu->AddSeparator();
-      	if(!is2dim)fViewMenu->AddEntry("Show Peaks",     kFHShowPeaks);
-      	fViewMenu->AddSeparator();
-      	fViewMenu->AddEntry("Magnify",     kFHMagnify    );
-      	fViewMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
-      	fViewMenu->AddEntry("Add new X axis",     kFHAddAxisX);
-      	fViewMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
+      	fDisplayMenu->AddSeparator();
+      	fDisplayMenu->AddEntry("Show Statistics only",  kFHOutputStat );
+      	fDisplayMenu->AddEntry("SelectInside",  kFHSelectInside);
+      	if(fFitHist->InsideState()) fDisplayMenu->CheckEntry(kFHSelectInside);
+      	else                        fDisplayMenu->UnCheckEntry(kFHSelectInside);
+      	fDisplayMenu->AddSeparator();
+      	if(!is2dim)fDisplayMenu->AddEntry("Show Peaks",     kFHShowPeaks);
+      	fDisplayMenu->AddSeparator();
+      	fDisplayMenu->AddEntry("Magnify",     kFHMagnify    );
+      	fDisplayMenu->AddEntry("Redefine Axis",     kFHRedefineAxis);
+      	fDisplayMenu->AddEntry("Add new X axis",     kFHAddAxisX);
+      	fDisplayMenu->AddEntry("Add new Y axis",     kFHAddAxisY);
 
       	if (fFitHist->GetSelHist()->GetDimension() == 1) {
-         	fViewMenu->AddEntry("Log Y scale",  kFHLogY);
-         	if (fFitHist->GetLogy()) fViewMenu->CheckEntry(kFHLogY);
-         	else                   fViewMenu->UnCheckEntry(kFHLogY);
+         	fDisplayMenu->AddEntry("Log Y scale",  kFHLogY);
+         	if (fFitHist->GetLogy()) fDisplayMenu->CheckEntry(kFHLogY);
+         	else                   fDisplayMenu->UnCheckEntry(kFHLogY);
       	} else if (fFitHist->GetSelHist()->GetDimension() == 2) {
-         	fViewMenu->AddEntry("Log Z scale",  kFHLogY);
-         	if (fFitHist->GetLogz()) fViewMenu->CheckEntry(kFHLogY);
-         	else                   fViewMenu->UnCheckEntry(kFHLogY);
+         	fDisplayMenu->AddEntry("Log Z scale",  kFHLogY);
+         	if (fFitHist->GetLogz()) fDisplayMenu->CheckEntry(kFHLogY);
+         	else                   fDisplayMenu->UnCheckEntry(kFHLogY);
       	}
 
 
-      	if(hbrowser)hbrowser->DisplayMenu(fViewMenu, "display.html");
-	//      fViewMenu->AddEntry("ProjectY",    kFHProjectY, );
+      	if(hbrowser)hbrowser->DisplayMenu(fDisplayMenu, "display.html");
+	//      fDisplayMenu->AddEntry("ProjectY",    kFHProjectY, );
    	} else if (fHCanvas->GetHistList()) {
          if (!strncmp(fHCanvas->GetName(), "cmany", 5)) {
-      	   fViewMenu->AddEntry("Show now all as selected, Range only", kFHAllAsSelRangeOnly);
-      	   fViewMenu->AddEntry("Show now all as selected, Range, Min, Max ",  kFHAllAsSel);
-      	   fViewMenu->AddEntry("Calibrate all as selected",  kFHCalAllAsSel);
-      	   fViewMenu->AddEntry("Show always all as First", kFHAllAsFirst);
-            if (fHistPresent->fShowAllAsFirst) fViewMenu->CheckEntry(kFHAllAsFirst);
-            else                      fViewMenu->UnCheckEntry(kFHAllAsFirst);
-      	   fViewMenu->AddEntry("Rebin all",  kFHRebinAll);
-         	fViewMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
+      	   fDisplayMenu->AddEntry("Show now all as selected, Range only", kFHAllAsSelRangeOnly);
+      	   fDisplayMenu->AddEntry("Show now all as selected, Range, Min, Max ",  kFHAllAsSel);
+      	   fDisplayMenu->AddEntry("Calibrate all as selected",  kFHCalAllAsSel);
+      	   fDisplayMenu->AddEntry("Show always all as First", kFHAllAsFirst);
+            if (fHistPresent->fShowAllAsFirst) fDisplayMenu->CheckEntry(kFHAllAsFirst);
+            else                      fDisplayMenu->UnCheckEntry(kFHAllAsFirst);
+      	   fDisplayMenu->AddEntry("Rebin all",  kFHRebinAll);
+         	fDisplayMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
          } else if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
-      	   fViewMenu->AddEntry("Real stack", kFHStack);
-            if (fHistPresent->fRealStack) fViewMenu->CheckEntry(kFHStack);
-            else                          fViewMenu->UnCheckEntry(kFHStack);
+      	   fDisplayMenu->AddEntry("Real stack", kFHStack);
+            if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
+            else                          fDisplayMenu->UnCheckEntry(kFHStack);
             
          }
-      	fViewMenu->AddSeparator();
-	//      fViewMenu->AddEntry("Help",  kFH_Help_ShowSelected);
+      	fDisplayMenu->AddSeparator();
+	//      fDisplayMenu->AddEntry("Help",  kFH_Help_ShowSelected);
    	}
-   	fViewMenu->AddSeparator();
-   	fViewMenu->AddEntry("Show Colors",             kViewColors);
-   	fViewMenu->AddEntry("Show Fonts",              kViewFonts);
-      fViewMenu->AddEntry("Show Markers",            kViewMarkers);
-      fViewMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
-      fViewMenu->AddEntry("Show Line Attr",          kViewLineStyles);
-   	fViewMenu->AddEntry("Graph Editor",            kEditEditor);
+   	fDisplayMenu->AddSeparator();
+   	fDisplayMenu->AddEntry("Show Colors",             kViewColors);
+   	fDisplayMenu->AddEntry("Show Fonts",              kViewFonts);
+      fDisplayMenu->AddEntry("Show Markers",            kViewMarkers);
+      fDisplayMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+      fDisplayMenu->AddEntry("Show Line Attr",          kViewLineStyles);
+   	fDisplayMenu->AddEntry("Graph Editor",            kEditEditor);
    }
    if(fh_menus){
       fCutsMenu     = new TGPopupMenu(fRootCanvas->GetParent());
@@ -1480,15 +1512,14 @@ void HandleMenus::BuildMenus()
    }
    if(edit_menus){
       fEditMenu     = new TGPopupMenu(fRootCanvas->GetParent());
-   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
+//   	fEditMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write objects to file",  kFH_WritePrim);
 //   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
      
-      fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
-   	fEditMenu->AddEntry("Clear Canvas",           kEditClearCanvas);
-      fEditMenu->AddEntry("Refresh",                kOptionRefresh);
+//   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
+//   	fEditMenu->AddEntry("Clear Canvas",           kEditClearCanvas);
+//      fEditMenu->AddEntry("Refresh",                kOptionRefresh);
 
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
@@ -1499,22 +1530,28 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Draw Edit Grid",           kFH_DrawGrid  );
    	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
       fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Show Colors",  			  kViewColors);
-   	fEditMenu->AddEntry("Show Fonts",				  kViewFonts);
-   	fEditMenu->AddEntry("Show Markers", 			  kViewMarkers);
-      fEditMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
-      fEditMenu->AddEntry("Show Line Attr",          kViewLineStyles);
+      fEditMenu->AddEntry("Line- Text- Fill attributes", kOptionGeneral);
+      fEditMenu->AddEntry("Feynman diagram attributes", kOptionFeynman);
+      fEditMenu->AddSeparator();
+//   	fEditMenu->AddEntry("Show Colors",  			  kViewColors);
+//   	fEditMenu->AddEntry("Show Fonts",				  kViewFonts);
+//   	fEditMenu->AddEntry("Show Markers", 			  kViewMarkers);
+//      fEditMenu->AddEntry("Show Fillstyles",         kViewFillStyles);
+//      fEditMenu->AddEntry("Show Line Attr",          kViewLineStyles);
       fEditMenu->Associate((TGWindow*)this);
    }
+   if (fDisplayMenu) fDisplayMenu->Associate((TGWindow*)this);
    if (fViewMenu) fViewMenu->Associate((TGWindow*)this);
 // this main frame will process the menu commands
    fFileMenu->Associate((TGWindow*)this);
    fOptionMenu->Associate((TGWindow*)this);
    fAttrMenu->Associate((TGWindow*)this);
+   fAttrMenu->Associate((TGWindow*)this);
 
    fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
+   if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
-   if (fViewMenu) fRootsMenuBar->AddPopup("&Display", fViewMenu,  fMenuBarItemLayout, pmi);
+   if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
    if(fh_menus){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
       fRootsMenuBar->AddPopup("Fit / Calibrate", fFitMenu,   fMenuBarItemLayout, pmi);
@@ -1538,8 +1575,8 @@ void HandleMenus::BuildMenus()
 //______________________________________________________________________________
 void HandleMenus::SetLog(Int_t state)
 {
-    if(state > 0) fViewMenu->CheckEntry(kFHLogY);
-    else          fViewMenu->UnCheckEntry(kFHLogY);
+    if(state > 0) fDisplayMenu->CheckEntry(kFHLogY);
+    else          fDisplayMenu->UnCheckEntry(kFHLogY);
 }
 //______________________________________________________________________________
 

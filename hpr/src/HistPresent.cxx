@@ -3686,7 +3686,7 @@ void HistPresent::WarnBox(const char *message)
 
 void HistPresent::DinA4Page(Int_t form)
 {
-   gROOT->SetStyle("Plain");
+//   gROOT->SetStyle("Plain");
    HTCanvas *c1; 
    if (form == 1) {
       c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
@@ -3706,7 +3706,8 @@ void HistPresent::DinA4Page(Int_t form)
    c1->Modified(kTRUE);
    c1->Update();
    c1->SetEditable(kTRUE);
-//   c1->ToggleEditor();
+   c1->GetCanvasImp()->ShowEditor();
+   c1->GetCanvasImp()->ShowToolBar();
 }
 //________________________________________________________________________________________
 // Show Canvas
@@ -3723,6 +3724,10 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    }
    if (c) {
       TString tempname(c->GetName());
+      if (!tempname.Contains("dina4page")) {
+         c->Draw();
+         return;
+      }
       c->SetName("abcxyz");
       UInt_t ww, wh;
       ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
@@ -3776,7 +3781,8 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    	c1->Modified(kTRUE);
    	c1->Update();
    	c1->SetEditable(kTRUE);
-
+      c1->GetCanvasImp()->ShowEditor();
+      c1->GetCanvasImp()->ShowToolBar();
    }
    if (fRootFile) fRootFile->Close();
 }

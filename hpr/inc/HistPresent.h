@@ -265,7 +265,34 @@ protected:
    Float_t       fTitleX;         
    Float_t       fTitleY;         
    Float_t       fTitleW;         
-   Float_t       fTitleH;  
+   Float_t       fTitleH; 
+
+   Color_t    fLineColor;           //line color
+   Style_t    fLineStyle;           //line style
+   Width_t    fLineWidth;           //line width
+
+   Float_t    fTextSize ;            //Text size
+   Short_t    fTextAlign;           //Text alignment
+   Color_t    fTextColor;           //Text color index
+   Font_t     fTextFont ;            //Text font number
+   Color_t    fFillColor;           //fill area color
+   Style_t    fFillStyle;           //fill area style
+
+   Float_t    fArrowAngle ;     // Arrow opening angle (degrees)
+   Float_t    fArrowSize  ;     // Arrow Size
+   Int_t      fArrowFill  ;     // Arrow fill style
+   Color_t    fArrowColor ;     // Arrow color (line + fill)
+   Int_t      fArrowWidth ;     // Arrow line width    
+   Int_t      fArrowStyle ;     // Arrow line style
+   TString    fArrowOption;     // Arrow shapes (e.g. -|>-)
+   Double_t   fCurlyWaveLength; // wavelength of sinusoid in percent of pad height
+   Double_t   fCurlyAmplitude;  // amplitude of sinusoid in percent of pad height
+   Color_t    fCurlyColor ;     // C  urly line color 
+   Int_t      fCurlyWidth ;     // Curly line width
+   Int_t      fCurlyStyle ;     // Curly line style
+   Int_t      fIsCurly    ;     // true: Gluon, false: Gamma
+
+ 
    Int_t         fForceStyle;  
                        
     Float_t fXXXXX;
@@ -292,12 +319,15 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void OperateHist(Int_t);               // 
    void SetOperateVal();               // 
    void ListSelect(); 
+   void SetGeneralAtt();
    void SetPadAtt();
    void SetTitleAtt();
    void SetHistAtt();
    void SetStatAtt();
    void SetAxisAtt();
+   void SetCurlyAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetGeneralAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetTitleAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetHistAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetStatAttributes(TGWindow * win = 0, FitHist * fh = 0);

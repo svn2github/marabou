@@ -316,7 +316,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
-      if(fUseGrid && !(fSelected->IsA() == TPad::Class())){
+
+      if(fUseGrid && 
+       !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
+        ){
 //         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
          if(fGridX !=0){
             x = gPad->AbsPixeltoX(px);
@@ -340,6 +343,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             }
 //         cout << "x y grid " << x << " " << y << endl;
       }
+
 //OS end
 
       fSelected->ExecuteEvent(event, px, py);
@@ -353,7 +357,11 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
-         if(fUseGrid && !(fSelected->IsA() == TPad::Class())){
+
+//         if(fUseGrid && !(fSelected->IsA() == TPad::Class())){
+         if(fUseGrid && 
+          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
+           ){
             if(fGridX !=0){
                x = gPad->AbsPixeltoX(px);
                n = (Int_t)((x + TMath::Sign(0.5*fGridX, x)) / fGridX);
@@ -371,6 +379,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
                if(py > (Int_t)gPad->GetWh())py = gPad->GetWh()-1;
             }
          }
+
 //OS end
 //         cout << ", " << px << " " << py ;
          fSelected->ExecuteEvent(event, px, py);
@@ -821,7 +830,7 @@ void HTCanvas::DrawHist()
    TPad * selected = (TPad *)gROOT->GetSelectedPad();
    if (selected) {
 //      cout << selected << endl;
-      GetListOfPrimitives()->ls();
+//      GetListOfPrimitives()->ls();
  //     cout << GetListOfPrimitives()->FindObject("newpad") << endl;
       if (GetListOfPrimitives()->Contains(selected)) {
          if (fHistPresent->fSelectHist->GetSize() != 1) {
@@ -830,7 +839,7 @@ void HTCanvas::DrawHist()
          } else {
             TH1* hist = fHistPresent->GetSelHistAt(0);
             if (hist) {
-               hist->Print();
+//               hist->Print();
                selected->cd();
                hist->Draw();
                TString drawopt;
