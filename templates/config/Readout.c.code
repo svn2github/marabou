@@ -224,7 +224,7 @@ int f_user_init (unsigned char  bh_crate_nr,
 	clock_resolution = res.tv_nsec; 		/* and save it for WRITE_TIME_STAMP macro */
 
 %%BeginOfCode%%
-	root_env_read(".rootrc");				/* read ROOT's environment file */
+	root_env_read("$wDir/.rootrc");			/* read ROOT's environment file */
  	root_env_read("$envFile");				/* and experiment's configuration data */
 %%EndOfCode%%
 %%INIT_ENVIRONMENT%%

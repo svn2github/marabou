@@ -1600,8 +1600,8 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						expName.Prepend("/.");
 						expName.Prepend(gSystem->WorkingDirectory());
 						expName += "Config.rc";
+						rdoTmpl.Substitute("$wDir", gSystem->WorkingDirectory());
 						rdoTmpl.Substitute("$envFile", expName.Data());
-						cout << "@@ " << expName.Data() << endl;
 						rdoTmpl.WriteCode(rdoStrm);
 						break;
 					case TMrbConfig::kRdoInitCommonCode:
