@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.7 2004-09-28 13:47:34 rudi Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.8 2005-02-23 12:55:57 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1002,6 +1002,12 @@ Bool_t TMrbDGFData::CheckXiaRelease() {
 		return(kTRUE);
 	} else if (release.Index("v2.7mb", 0) == 0) {
 		fXiaRelease = 271;
+		return(kTRUE);
+	} else if (release.Index("v3.00", 0) == 0) {
+		fXiaRelease = 300;
+		return(kTRUE);
+	} else if (release.Index("v3.04", 0) == 0) {
+		fXiaRelease = 304;
 		return(kTRUE);
 	} else {
 		gMrbLog->Err() << "Malformed release - TMrbDGF.XiaRelease = " << release << endl;
