@@ -275,6 +275,7 @@ void HistPresent::RestoreOptions()
    fTitleFont = env.GetValue("HistPresent.TitleBoxFont", 60);
    fFitOptUseLinBg = env.GetValue("HistPresent.FitOptUseLinBg", 0);
    fMaxListEntries= env.GetValue("HistPresent.MaxListEntries", 333);
+   fDisplayCalibrated= env.GetValue("HistPresent.DisplayCalibrated", 1);
    *fHostToConnect =
        env.GetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    fSocketToConnect =
@@ -393,6 +394,7 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.FitOptKeepPara", fFitOptKeepParameters);
    SetIntValue(env, "HistPresent.FitOptUseLinBg", fFitOptUseLinBg);
    SetIntValue(env, "HistPresent.MaxListEntries", fMaxListEntries);
+   SetIntValue(env, "HistPresent.DisplayCalibrated", fDisplayCalibrated);
    SetIntValue(env, "HistPresent.AutoExec_1", fAutoExec_1);
    SetIntValue(env, "HistPresent.AutoExec_2", fAutoExec_2);
    SetIntValue(env, "HistPresent.AutoProj_X", fAutoProj_X);
@@ -814,14 +816,15 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 12;
-   enum e_opt { e_psfile, e_enablecal, e_fitted, e_treehists, e_savelast,
+   Int_t nopt = 13;
+   enum e_opt { e_psfile, e_enablecal, e_displaycal, e_fitted, e_treehists, e_savelast,
       e_savezoom, e_useattr, e_allasfirst, e_useregexp, e_auto_1, e_auto_2,
       e_auto_x, e_auto_y
    };
    const char *opt[] = {
       "Show PS file after creation",
       "Enable calibration",
+      "Auto Display calibrated hist",
       "Display compents of fit function",
       "Remember hist limits if showing trees",
       "Remember Expand settings (Marks)",
@@ -848,6 +851,14 @@ The X - scale of of a 1-dim histogram may be recalibrated
 providing (more than 1) x-y-points. If this option is active
 the user is asked after a fit to a peak if the mean value 
 should be added to the list of calibration points.
+_____________________________________________________________
+Auto Display calibrated hist
+----------------------------
+Display automatically a calibrated histogram if calibration
+data are storteed in defaulsts file
+_____________________________________________________________
+
+Draw a fitted curve into the histogram.
 _____________________________________________________________
 Display fitted curves
 ---------------------
@@ -919,6 +930,8 @@ Auto exec project Y
       flags[i] = 0;
       if (i == e_enablecal && fEnableCalibration)
          flags[i] = 1;
+      else if (i == e_displaycal && fDisplayCalibrated)
+         flags[i] = 1;
       else if (i == e_psfile && fShowPSFile)
          flags[i] = 1;
       else if (i == e_fitted && fShowFittedCurves)
@@ -957,6 +970,7 @@ Auto exec project Y
    }
 
    fEnableCalibration = 0;
+   fDisplayCalibrated = 0;
    fShowFittedCurves = 0;
    fShowPSFile = 0;
    fRememberTreeHists = 0;
@@ -973,6 +987,8 @@ Auto exec project Y
       if (flags[i] != 0) {
          if (i == e_enablecal)
             fEnableCalibration = 1;
+         else if (i == e_displaycal)
+             fDisplayCalibrated= 1;
          else if (i == e_psfile)
             fShowPSFile = 1;
          else if (i == e_fitted)

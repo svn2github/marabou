@@ -171,9 +171,11 @@ enum ERootCanvasCommands {
    kFHFit,
    kFHSetLinBg,
    kFHFitGOnly,
-   kFHFitGBgOnly,
+   kFHFitGBg,
    kFHFitGBgTailLow,
    kFHFitGBgTailHigh,
+   kFHFitGTailLow,
+   kFHFitGTailHigh,
    kFHFitUser,
    kFHEditUser,
    kFHMacroBreitW,
@@ -529,10 +531,12 @@ void HTRootCanvas::CreateCanvas(const char *name)
       if(is2dim){
          fInspectMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
       } else {
-         fInspectMenu->AddEntry("FitGaussOnly", kFHFitGOnly);
-         fInspectMenu->AddEntry("FitGauss+BgOnly", kFHFitGBgOnly);
-         fInspectMenu->AddEntry("FitGauss+Low Tail",   kFHFitGBgTailLow);
-         fInspectMenu->AddEntry("FitGauss+High Tail",   kFHFitGBgTailHigh);
+         fInspectMenu->AddEntry("Fit Gauss Only",             kFHFitGOnly);
+         fInspectMenu->AddEntry("Fit Gauss + Bg",             kFHFitGBg);
+         fInspectMenu->AddEntry("Fit Gauss + Low Tail",       kFHFitGTailLow);
+         fInspectMenu->AddEntry("Fit Gauss + High Tail",      kFHFitGTailHigh);
+         fInspectMenu->AddEntry("Fit Gauss + Bg + Low Tail",  kFHFitGBgTailLow);
+         fInspectMenu->AddEntry("Fit Gauss + Bg + High Tail", kFHFitGBgTailHigh);
          fInspectMenu->AddEntry("Determine linear background", kFHSetLinBg);
          fInspectMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
          fInspectMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
@@ -613,7 +617,7 @@ void HTRootCanvas::CreateCanvas(const char *name)
    if(oFitHist){
 //      fMenuBar->AddPopup("&In_Output",   fClassesMenu,  fMenuBarItemLayout);
       fMenuBar->AddPopup("Cuts/Windows",    fEditMenu,  fMenuBarItemLayout);
-      fMenuBar->AddPopup("Fit/Functions",     fInspectMenu,  fMenuBarItemLayout);
+      fMenuBar->AddPopup("Fit / Calibrate",     fInspectMenu,  fMenuBarItemLayout);
    }
 //   fMenuBar->AddPopup("&Inspect", fInspectMenu, fMenuBarItemLayout);
 //   fMenuBar->AddPopup("&Classes", fClassesMenu, fMenuBarItemLayout);
@@ -1393,16 +1397,22 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
 
                   case kFHFitGOnly:
-                     oFitHist->FitGBg(-1); 
+                     oFitHist->FitGBg(0, 1); 
                      break;
-                   case kFHFitGBgOnly:
-                     oFitHist->FitGBgOnly(); 
+                   case kFHFitGBg:
+                     oFitHist->FitGBg(0, 0); 
                      break;
                  case kFHFitGBgTailLow:
-                     oFitHist->FitGBgTailLow(); 
+                     oFitHist->FitGBg(1, 0); 
                      break;
                   case kFHFitGBgTailHigh:
-                     oFitHist->FitGBgTailHigh(); 
+                     oFitHist->FitGBg(2, 0); 
+                     break;
+                 case kFHFitGTailLow:
+                     oFitHist->FitGBg(1, 1); 
+                     break;
+                  case kFHFitGTailHigh:
+                     oFitHist->FitGBg(2, 1); 
                      break;
                   case kFHFitUser:
                      oFitHist->ExecFitMacro(); 

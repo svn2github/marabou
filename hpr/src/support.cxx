@@ -1247,3 +1247,32 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
    }
    return hist_cal;
 }
+//_______________________________________________________________________________________
+
+void PrintGraph(TGraphErrors * gr) 
+{
+	cout << endl << "Graph Object, Npoints: " << gr->GetN()<< endl;
+	cout << "           X" << "    Error(X)" 
+   	  << "           Y" << "    Error(Y)" << endl;
+	for (Int_t i = 0; i < gr->GetN(); i++) {
+   	cout << setw(12) << (gr->GetX())[i] << setw(12) << (gr->GetEX())[i]
+      	  << setw(12) << (gr->GetY())[i] << setw(12) << (gr->GetEY())[i]
+      	  << endl;
+	}
+	TIter next(gr->GetListOfFunctions());
+	while (TObject * obj = next()) {
+   	if (obj->InheritsFrom("TF1")) {
+      	TF1 * f = (TF1*)obj;
+      	cout << endl << "Fitted function name: " << f->GetName()
+         	  << " Type: " << f->GetTitle() 
+         	  << " Chi2/NDF: " << f->GetChisquare() 
+         	  << "/" << f->GetNDF() << endl << endl;
+
+      	for (Int_t i = 0; i < f->GetNpar(); i++) {
+         	cout << "Par_" << i << setw(12) << f->GetParameter(i)
+            	  << " +- " << setw(12) << f->GetParError(i)  << endl;
+      	}
+      	cout << endl;
+   	}
+	}
+}

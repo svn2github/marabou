@@ -121,6 +121,9 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fUserContourLevels = 0;
    datebox = 0;
    fSelHist = hist;
+   fCalHist = NULL;
+   fCalFitHist = NULL;
+   fCalFunc = NULL;
    fSelPad = NULL;
    cHist   = NULL;
    expHist = NULL;
@@ -241,6 +244,9 @@ FitHist::~FitHist()
       delete expHist;
       expHist = 0;
    }
+   if (fCalFitHist) delete fCalFitHist;
+   if (fCalHist) delete fCalHist;
+   if (fCalFunc) delete fCalFunc;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||
        cHist->TestBit(0xf0000000)) {
       cout << "~FitHist: Canvas is deleted" << endl;
@@ -410,6 +416,17 @@ void FitHist::SaveDefaults(Bool_t recalculate)
          	wstream << "fRangeUpY:   " << fSelHist->GetYaxis()->GetXmax() << endl;
       	}
    	}
+      if (fCalFunc && fCalHist) {
+         wstream << "CalFuncName:  " << fCalFunc->GetName()  << endl;
+         wstream << "CalFuncForm:  " << fCalFunc->GetTitle()  << endl;
+         wstream << "CalFuncNpar:  " << fCalFunc->GetNpar()  << endl;
+         for (Int_t i =0; i < fCalFunc->GetNpar(); i++) {
+           wstream << "CalFuncPar" << i << ":   " << fCalFunc->GetParameter(i)  << endl;
+         }
+         wstream << "CalHistNbin:  " << fCalHist->GetNbinsX()  << endl;
+         wstream << "CalHistXmin:  " << fCalHist->GetXaxis()->GetXmin()  << endl;
+         wstream << "CalHistXmax:  " << fCalHist->GetXaxis()->GetXmax()  << endl;
+      }
    }
    return;
 }
@@ -613,8 +630,31 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
       }
    }
    cHist->Update();
+//  look if there exists a calibrated version of this histogram
+   TEnv *lastset = 0;
+   if (hp && hp->fDisplayCalibrated && (lastset = GetDefaults(fHname)) ) {
+      if (lastset->Lookup("CalFuncName")) {
+         fCalFunc = new TF1(lastset->GetValue("CalFuncName", "xx"), lastset->GetValue("CalFuncForm", "xx"));
+         Int_t npar = lastset->GetValue("CalFuncNpar", 2);
+//          cout << "npar " << npar << endl;
+         TString parname;
+         for (Int_t i = 0; i < npar; i++) {
+            parname = "CalFuncPar";
+            parname += Form("%d", i);
+            fCalFunc->SetParameter(i, (Axis_t)(lastset->GetValue(parname.Data(), 0.)));
+//            cout << parname  << (Axis_t)(lastset->GetValue(parname.Data(), 0.)) << endl;
+         }
+         Int_t nbin_cal = lastset->GetValue("CalHistNbin", 0);
+         Axis_t low_cal = lastset->GetValue("CalHistXmin", 0);
+         Axis_t up_cal  = lastset->GetValue("CalHistXmax", 0);
+         fCalHist = calhist(fSelHist,   fCalFunc, nbin_cal, 
+                              low_cal, (up_cal - low_cal) / nbin_cal,(const char *)fHname);
+         hp->ShowHist(fCalHist);
+      }
+      if (lastset) delete lastset;
+   } 
 };
-
+  
 //------------------------------------------------------ 
 // Magnify
 

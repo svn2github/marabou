@@ -567,36 +567,10 @@ Double_t gausf(Double_t * x, Double_t * par)
    return gBinW * fitval;
 }
 
-//____________________________________________________________________________________ 
-// Fit a pol1 + 1or 2 or 3 gaus +  tails
-
-void FitHist::FitGBgTailLow()
-{
-   FitGBg(1);
-}
-
+// Fit a pol1 + 1 or 2 or 3 gaus + optionally tails
 //____________________________________________________________________________________ 
 
-// Fit a pol1 + 1or 2 or 3 gaus +  tails
-
-void FitHist::FitGBgTailHigh()
-{
-   FitGBg(2);
-}
-
-//____________________________________________________________________________________ 
-
-// Fit a pol1 + 1or 2 or 3 gaus +  tails
-
-void FitHist::FitGBgOnly()
-{
-   FitGBg(0);
-}
-
-// Fit a pol1 + 1or 2 or 3 gaus + optionally tails
-//____________________________________________________________________________________ 
-
-void FitHist::FitGBg(Int_t with_tail)
+void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
 {
 
 //   Int_t GetGaussEstimate(TH1*, Double_t, Int_t, Double_t *);
@@ -717,7 +691,7 @@ void FitHist::FitGBg(Int_t with_tail)
  //        upar[6] = gpar[1];
          Double_t dx = edgeux - edgelx;
          Double_t dy = upval - lowval;
-         if (with_tail >=0) {
+         if (force_zero_bg == 0) {
          	if (dx > 0) {
             	upar[3] = dy / dx;
             	upar[2] = upval - upar[3] * edgeux;
@@ -769,7 +743,7 @@ void FitHist::FitGBg(Int_t with_tail)
          upar[0] = 1.;
          upar[npar] = -.00001;
          upar[2 * npar] = 0.5;
-         upar[1] = gpar[2];
+         upar[1] = upar[4];
       } else {
          npar -= 2;
          for (int i = 0; i < npar; i++) {
@@ -845,7 +819,7 @@ void FitHist::FitGBg(Int_t with_tail)
 // show values to caller and let edit
    TString title("Start parameters");
 //  if fixed linear background  requested fiz const + slope
-   if (hp->fFitOptUseLinBg || with_tail < 0) {
+   if (hp->fFitOptUseLinBg || force_zero_bg > 0) {
       cout << "Fixed linear background selected" << endl;
       if (with_tail > 0) {          // with tail
          upar[2] = fLinBgConst;

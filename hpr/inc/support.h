@@ -18,6 +18,7 @@
 #include "TString.h"
 #include "TMapFile.h"
 #include "TGWindow.h"
+#include "TGraphErrors.h"
 #include "HistPresent.h"
 #include "TMrbStatistics.h"
 
@@ -80,6 +81,7 @@ Int_t DeleteOnFile(const char * fname, TList * list, TGWindow * win =0);
 TH1 * calhist(TH1 * hist, TF1 * calfunc,
               Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
               const char * origname =0);
+void PrintGraph(TGraphErrors * gr); 
 
 inline void nothing();
 #endif

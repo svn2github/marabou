@@ -121,6 +121,7 @@ protected:
    TString * f2DimColorPalette;    
    Int_t fShowErrors;  
    Int_t fEnableCalibration;
+   Int_t fDisplayCalibrated;
    Int_t fShowPSFile;
    Int_t fShowFittedCurves;
    Int_t fRememberTreeHists;

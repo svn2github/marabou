@@ -44,8 +44,11 @@ private:
    Bool_t fSetRange;
    Bool_t fKeepParameters;
    Bool_t fCallMinos;
-   Int_t fOldMode;
-   TH1         *fSelHist, *fOrigHist;          // pointer to the selected histogram 
+   Int_t  fOldMode;
+   TH1    *fSelHist, *fOrigHist;          // pointer to the selected histogram 
+   TH1    *fCalHist;
+   FitHist  *fCalFitHist;
+   TF1    *fCalFunc;
    HistPresent* hp;
    HTCanvas *cHist;
    TH1     *expHist, *projHist, *projHistX, *projHistY,*projHistF;
@@ -193,10 +196,7 @@ public:
    void ClearCut();                   // 
    void UpdateCut();                  // 
    Bool_t Its2dim(){return fOrigHist->InheritsFrom("TH2");};               // 
-   void FitGBgOnly();                      // fit gaus + lin bg
-   void FitGBgTailLow();                      // fit gaus + lin bg + tail
-   void FitGBgTailHigh();                      // fit gaus + lin bg + tail
-   void FitGBg(Int_t);                     // do the fit 
+   void FitGBg(Int_t tail, Int_t force_zero_bg =0);                      // fit gaus + lin bg
    Int_t Fit1dim(Int_t, Int_t);            // fit polynoms
    Int_t Fit2dim(Int_t, Int_t);            // fit polynoms
    Int_t FitPolyHist(Int_t);               // fit polynoms hist 

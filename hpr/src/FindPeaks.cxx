@@ -204,7 +204,8 @@ use Clear calibration and redisplay");
       while ( (peak = (FhPeak*)next()) ) {
          xyvals[counter] = peak->GetMean();
          xyvals[counter+npeaks] = peak->GetWidth();
-         counter ++;
+          xyvals[counter+ 2 * npeaks] = peak->GetNominalEnergy();
+        counter ++;
       }
    } else {
       xyvals[1] = 1;               // mean
@@ -216,9 +217,19 @@ use Clear calibration and redisplay");
    TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, "Calibration values", 
                          itemwidth, ncols, npeaks, xyvals, precission,
                         col_lab, row_lab, &useflag);
+   if(npeaks_def > 0){
+      TIter next(fPeaks);
+      FhPeak * peak;
+      Int_t counter = 0;
+      while ( (peak = (FhPeak*)next()) ) {
+         peak->SetNominalEnergy(xyvals[counter + 2 * npeaks]);
+        counter ++;
+      }
+   }
    ok = kFALSE;
    if(ret >= 0){
-      Int_t used = 0;
+     TGraphErrors * gr = 0;
+     Int_t used = 0;
       for(Int_t i=0; i<npeaks; i++)used += useflag[i];
       cout << "used " << used << endl;
 //      if(used != 2) {
@@ -269,37 +280,39 @@ use Clear calibration and redisplay");
 
 tryagain:
          formula=GetString("Formula",(const char *)formula, &ok, mycanvas);
-         TF1 * calfunc = new TF1(funcname,formula.Data(), oldlow, oldup);
+         if (fCalFunc) {delete fCalFunc; fCalFunc = NULL;}
+         fCalFunc = new TF1(funcname,formula.Data(), oldlow, oldup);
          if (!ok) return ok;
-         if(calfunc->GetNpar() < 2){
+         if(fCalFunc->GetNpar() < 2){
             WarnBox("Need at least pol1");
-            delete calfunc;
+            delete fCalFunc; fCalFunc = NULL;
             goto tryagain;
          }       
-         if(calfunc->GetNpar() > 2)
+         if(fCalFunc->GetNpar() > 2  && flag == 0)
             WarnBox("Only first 2 parameters\n will be used for calib");
         
-         TGraphErrors * gr = new TGraphErrors(used,xv,yv, xe, ye);
+         gr = new TGraphErrors(used,xv,yv, xe, ye);
          b = (y1 - y0)/(x1 - x0);
          a = y1 - b * x1;
          cout << "Number of points: " << used << " start a,b " << a << " " << b << endl;
-         calfunc->SetParameters(a,b);
-         if (calfunc->GetNpar() > 2) {
-            for (Int_t i = 2; i < calfunc->GetNpar(); i++) {
-               calfunc->SetParameter(i, 0);
+         fCalFunc->SetParameters(a,b);
+         if (fCalFunc->GetNpar() > 2) {
+            for (Int_t i = 2; i < fCalFunc->GetNpar(); i++) {
+               fCalFunc->SetParameter(i, 0);
             }
          }
          gr->Fit(funcname);
-         a = calfunc->GetParameter(0);
-         b = calfunc->GetParameter(1);
+         a = fCalFunc->GetParameter(0);
+         b = fCalFunc->GetParameter(1);
          cout << endl << "Fitted values a: " 
-              << a << " +- " << calfunc->GetParError(0) << " b: " 
-              << b << " +- " << calfunc->GetParError(1) << endl;
+              << a << " +- " << fCalFunc->GetParError(0) << " b: " 
+              << b << " +- " << fCalFunc->GetParError(1) << endl;
          TCanvas * cc = new TCanvas("cc","cc");
          gr->Draw("A*");
-         calfunc->Draw("SAME"); 
-         calfunc->SetLineWidth(1);
-         calfunc->SetLineColor(7);
+         PrintGraph(gr);
+         fCalFunc->Draw("SAME"); 
+         fCalFunc->SetLineWidth(1);
+         fCalFunc->SetLineColor(7);
          cc->Update();
          if (flag == 0) {
          	Axis_t newlow = a + b * oldlow;
@@ -335,8 +348,9 @@ tryagain:
          	ok = kTRUE;
          	cHist->Modified(kTRUE);
          	cHist->Update();
-         	SaveDefaults();
          } else if (flag == 1) {
+            if (fCalFitHist) {delete fCalFitHist; fCalFitHist = 0;}
+   
             col_lab->Delete();
             row_lab->Delete();
             row_lab->Add(new TObjString("Nbins"));
@@ -344,7 +358,7 @@ tryagain:
             row_lab->Add(new TObjString("Bin width"));
             xyvals[0] = 1000;
             xyvals[1] = 0;
-            xyvals[2] = (a + b * oldup) / 1000;
+            xyvals[2] = TMath::Abs((a + b * oldup) / 1000);
             ncols = 1; 
             Int_t nrows = 3;
             TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, 
@@ -357,15 +371,18 @@ tryagain:
    				Int_t  nbin_cal = (Int_t)xyvals[0];
    				Axis_t low_cal  = (Axis_t)xyvals[1];
    				Axis_t binw_cal = (Axis_t)xyvals[2];
-               TH1F * hist_cal = (TH1F *) calhist(hist, calfunc, nbin_cal, 
-                                 low_cal, binw_cal,(const char *)fHname);
+               if (fCalHist) {delete fCalHist; fCalHist = 0;}
+               fCalHist = calhist(hist, fCalFunc, nbin_cal, 
+                                  low_cal, binw_cal,(const char *)fHname);
 
    				if (hp) {
-                  FitHist * fh = hp->ShowHist(hist_cal);
-                  window_for_cal = fh->GetMyCanvas();
+                  fCalFitHist = hp->ShowHist(fCalHist);
+                  fCalFitHist->Entire();
+                  window_for_cal = fCalFitHist->GetMyCanvas();
                }                  
             }
          }
+         SaveDefaults();
 //
          TGWindow * parent;
          if (window_for_cal) parent = window_for_cal;
@@ -376,16 +393,17 @@ tryagain:
    		new TGMsgBox(gClient->GetRoot(), parent,
    		"Qustion",(const char *)question,
    		icontype, buttons, &retval);
-   		if(retval == kMBYes){
-            TString funcname(calfunc->GetName());
-            funcname=GetString("Function name",(const char *)funcname, &ok, mycanvas);
-            calfunc->SetName((const char *)funcname);
+   		if (retval == kMBYes) {
+
+            TString funcname(fCalFunc->GetName());
+//            funcname=GetString("Function name",(const char *)funcname, &ok, mycanvas);
+//            fCalFunc->SetName((const char *)funcname);
             funcname+="_graph";
             gr->SetName((const char *)funcname);
             gr->SetTitle((const char *)funcname);
            
-       		if(OpenWorkFile(mycanvas)){
-         		calfunc->Write();
+       		if(OpenWorkFile(parent)){
+         		fCalFunc->Write();
                gr->Write();
          		CloseWorkFile();
       		}
@@ -393,6 +411,7 @@ tryagain:
      
       }
       if(xv) {delete [] xv; delete [] yv;delete [] xe; delete []  ye;};
+      if (gr) delete gr;
    }
 //   if (xyvals) delete [] xyvals;
    if(col_lab){ col_lab->Delete(); delete col_lab;}
