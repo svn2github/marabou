@@ -1,0 +1,36 @@
+########################################################################
+# Copyright:
+#   GSI, Gesellschaft fuer Schwerionenforschung mbH
+#   Planckstr. 1
+#   D-64291 Darmstadt
+#   Germany
+########################################################################
+# Informations how to create the ROOT event client for MBS on Linux
+# last update: 18.12.2001, Horst Goeringer
+########################################################################
+
+V11: 18.12.2001: works with GSI remote event servers V10 and V20
+
+
+To create and run the ROOT event client for MBS, perform the following 
+steps:
+
+(1) initialize the ROOT environment (Version 222-10 or later)
+    setting ROOTSYS, ...
+
+(2) execute make file to create shared library MRevLib.so containing
+    event client class:
+
+    make -f MRevLib.make
+
+(3) start ROOT session and load shared library MRevLib.so
+
+    gSystem.Load("MRevLib.so");
+
+(4) use event client functions according to sample ROOT macro
+    MRevCli.C
+
+For more information and for information on the MBS event server see
+
+http://www-aix.gsi.de/~goeri/mbsnew/online.html
+
