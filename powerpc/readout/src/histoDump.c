@@ -140,6 +140,11 @@ int main(int argc, char * argv[]) {
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
+	enum	{	kNofChannels	=	4	};
+	enum	{	kNofPages		=	8	};
+	enum	{	kPageSize		=	8192	};
+	enum	{	kDataPerChannel	=	kNofChannels * kPageSize	};
+
 	int i, idx;
 	int crate;
 	int station;
@@ -151,7 +156,7 @@ int main(int argc, char * argv[]) {
 	int ascii, beQuiet;
 	FILE * f;
 	int errCnt;
-	unsigned int data[8192], data32[4 * 8192], d;
+	unsigned int data[kPageSize], data32[kDataPerChannel], d;
 
 	volatile unsigned long * dgf;
 
@@ -208,19 +213,20 @@ int main(int argc, char * argv[]) {
 
 	nofWords = 0;
 	nofChannels = 0;
-	for (chn = 0; chn < 4; chn++) {
+	for (chn = 0; chn < kNofChannels; chn++) {
 		if (chnPattern & (1 << chn)) {
-			memset(data32, 0, sizeof(int) * 8 * 1024);
+			memset(data32, 0, kDataPerChannel * sizeof(int));
 			idx = 0;
 			nofChannels++;
 			dgf_set_par_value(dgf, -1, DGF_OFFS_HOSTIO, chn);
-			for (page = 0; page < 8; page++) {
+			for (page = 0; page < kNofPages; page++) {
 				dgf_set_par_value(dgf, -1, DGF_OFFS_RUNTASK, DGF_RUN_CONTROL);
 				cTask = (page == 0) ? DGF_CTRL_READ_HISTO_FIRST : DGF_CTRL_READ_HISTO_NEXT;
 				dgf_set_par_value(dgf, -1, DGF_OFFS_CONTROLTASK, cTask);
 				dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA);
 				dgf_wait_active(dgf);
 				DGF_WRITE_TSAR(dgf, addr);
+				memset(data, 0, kPageSize * sizeof(int));
 				for (i = 0; i < wc; i++) data[i] = DGF_READ_DSP_FAST(dgf);
 				nofWords += wc / 2;
 				for (i = 0; i < wc; i++) {
