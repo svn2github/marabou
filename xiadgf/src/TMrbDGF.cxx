@@ -3988,50 +3988,56 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 	}
 	Buffer.SetNofChannels(nofChannels);
 
+	nofWords = TMrbDGFData::kMCAPageSize * nofChannels;
+	Buffer.SetSize(nofWords);		// size of energy region
+	Buffer.Set(nofWords);			// reset data region
+	
 	TString datFile = this->GetName();			// store binary data in file <dgf>.histoDump.dat
 	datFile += ".histoDump.dat";
-
-	TString hsFile = ".";						// use file .<dgf>.histoDump.dat.ok for handshake
-	hsFile += datFile;
-	hsFile += ".ok";
-	
-	TString cmd = "rm -rf .";
-	cmd += hsFile;
-	gSystem->Exec(cmd.Data());					// remove handshake file
 
 	TString hdPgm = gEnv->GetValue("TMrbDGF.ProgramToDumpHistos", "/nfs/mbssys/standalone/histoDump");
 	if (gMrbDGFData->fVerboseMode) {
 		gMrbLog->Out()	<< "Calling program \"" << fCamacHost << ":" << hdPgm << "\" via rsh" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
 	}
-	gSystem->Exec(Form("rsh %s 'cd %s; %s %d %d %#x %s'",
+	gSystem->Exec(Form("rsh %s 'cd %s; %s %d %d %#x %s b'",
 							fCamacHost.Data(),
 							gSystem->WorkingDirectory(),
 							hdPgm.Data(),
 							this->GetCrate(),
 							this->GetStation(),
 							ChannelPattern,
-							fName.Data(),
-							"b"));
+							datFile.Data()));
 
 	Bool_t fileOk = kFALSE;
-	for (Int_t i = 0; i < 10; i++) {			// wait for handshake file
+	TString hsFile = ".";
+	hsFile += datFile;
+	hsFile += ".ok";
+	for (Int_t i = 0; i < 100; i++) {			// wait for handshake file
 		if (!gSystem->AccessPathName(hsFile.Data(), (EAccessMode) F_OK)) {
 			fileOk = kTRUE;
 			break;
 		}
+		usleep(1000);
 	}
 	if (!fileOk) {
-		gMrbLog->Err()	<< "Handshake error - can't open file " << datFile << endl;
+		gMrbLog->Err()	<< "Handshake error - can't open file " << hsFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
 		return(-1);
 	}
 	TEnv * hdEnv = new TEnv(hsFile.Data());
+	if (hdEnv->GetValue("HistoDump.Errors", 0) != 0) {
+		gMrbLog->Err()	<< "Reading MCA data failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
+		delete hdEnv;
+		return(-1);
+	}
 	nofWords = hdEnv->GetValue("HistoDump.NofDataWords", 0);
 	if (nofWords != nofChannels * 32 * 1024) {
 		gMrbLog->Err()	<< "Number of data words unexpected -  " << nofWords
 						<< " (should be " << nofChannels << " * 32k = " << nofChannels * 32 * 1024 << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
+		delete hdEnv;
 		return(-1);
 	}
 	FILE * f = fopen(datFile.Data(), "r");
@@ -4040,6 +4046,7 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh");
 	}
 	fread(Buffer.GetArray(), nofChannels, 32 * 1024, f);
+	delete hdEnv;
 	return(nofWords);
 }
 
