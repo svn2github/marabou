@@ -656,7 +656,8 @@ class TMrbAnalyze : public TObject {
 		TH1 * GetHistoAddr(const Char_t * HistoName);				// get histogram addr by name
 		TH1 * GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get histogram addr by relative param index
 		TH1 * GetHistoAddr(Int_t AbsParamIndex);					// get histogram addr by absolute param index
-		TH1 * GetHistoFromList(TObjArray HistoList, Int_t ModuleNumber, Int_t RelParamIndex);	// take histo from list
+		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t ModuleNumber, Int_t RelParamIndex);	// take histo from list
+		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex);	// take histo from list
 		TMrbHistoListEntry * GetHistoListEntry(const Char_t * HistoName);	// get entry in histo list by name
 		Int_t * GetParamAddr(const Char_t * ParamName); 			// get param addr by name
 		Int_t * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index

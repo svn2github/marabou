@@ -2163,7 +2163,7 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(((TMrbHistoListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-TH1 * TMrbAnalyze::GetHistoFromList(TObjArray HistoList, Int_t ModuleIndex, Int_t RelParamIndex) {
+TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t ModuleIndex, Int_t RelParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoFromList
@@ -2188,6 +2188,23 @@ TH1 * TMrbAnalyze::GetHistoFromList(TObjArray HistoList, Int_t ModuleIndex, Int_
 	px = mle->GetIndexOfFirstParam() + RelParamIndex;
 	if (px < 0 || px > HistoList.GetEntriesFast()) return(NULL);
 	return((TH1F *) HistoList[px]);
+}
+
+TH1 * TMrbAnalyze::GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetHistoFromList
+// Purpose:        Get histogram from list
+// Arguments:      TObjArray HistoList    -- array containing histograms
+//                 Int_t AbsParamIndex    -- absolute param index
+// Results:        TH1 * HistoAddr        -- histogram address
+// Exceptions:     
+// Description:    Calculates absolute param index. Returns histo from list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (AbsParamIndex < 0 || AbsParamIndex > HistoList.GetEntriesFast()) return(NULL);
+	return((TH1F *) HistoList[AbsParamIndex]);
 }
 
 TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) {
@@ -2231,7 +2248,7 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) {
 	TMrbNamedX * nx;
 
 	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
-	nx = (TMrbNamedX *) fHistoList[AbsParamIndex];
+	nx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
 	if (nx == NULL) return(NULL);
 	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
 }
