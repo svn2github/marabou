@@ -3855,7 +3855,7 @@ Int_t TMrbConfig::GetNofErrors() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	return(gMrbLog->GetNofEntries(TMrbLogMessage::kMsgError);
+	return(gMrbLog->GetNofEntries(TMrbLogMessage::kMrbMsgError));
 }
 
 void TMrbConfig::Version() {
