@@ -20,7 +20,6 @@
 %B%	DgfEventChannelHeader * chnHdr;
 %B%	Int_t bufWC, wc;
 %B%	Int_t moduleNumber;
-%B%	UInt_t formatDescr;
 %B%	UInt_t runTask;
 %B%	Int_t nofWordsPerChn;
 %B%	UInt_t hitPattern;
@@ -40,7 +39,7 @@
 %C%	while (SevtWC) {									// subevent may contain several dgf buffers
 %C%		bufHdr = (DgfEventBufferHeader *) dataPtr;		// points to start of buffer
 %C%		bufWC = bufHdr->nofWords;						// buffer length
-%C% 	UInt_t runTask = bufHdr->formatDescr;				// check buffer format
+%C% 	runTask = bufHdr->formatDescr;					// check buffer format
 %C% 	UInt_t listMode = runTask & 0x300;					// list mode descriptor
 %C% 	if (listMode != 0x100 && listMode != 0x200) {		// normal or fast list mode
 %C% 		gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong format descr", SevtData, SevtWC);
