@@ -440,7 +440,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 									listFile.open("mca.histlist", ios::out);
 									mcaFile = new TFile("mca.root", "RECREATE");
 								}
-								histoBuffer.FillHistogram(chn);
+								histoBuffer.FillHistogram(chn, kFALSE);
 								TH1F * h = histoBuffer.Histogram(chn);
 								h->Write();
 								listFile << h->GetName() << endl;

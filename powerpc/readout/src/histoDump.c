@@ -140,10 +140,10 @@ int main(int argc, char * argv[]) {
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
-	enum	{	kNofChannels	=	4	};
-	enum	{	kNofPages		=	8	};
-	enum	{	kPageSize		=	8192	};
-	enum	{	kDataPerChannel	=	kNofChannels * kPageSize	};
+	enum	{	kNofChannels		=	4		};
+	enum	{	kNofPages			=	8		};
+	enum	{	kPageSize_16		=	8192	};
+	enum	{	kDataPerChannel_32	=	kNofPages * (kPageSize_16 / 2)	};
 
 	int i, idx;
 	int crate;
@@ -156,7 +156,8 @@ int main(int argc, char * argv[]) {
 	int ascii, beQuiet;
 	FILE * f;
 	int errCnt;
-	unsigned int data[kPageSize], data32[kDataPerChannel], d;
+	unsigned int data[kNofChannels * kDataPerChannel_32], dlow, dhigh;
+	unsigned int * dp;
 
 	volatile unsigned long * dgf;
 
@@ -213,10 +214,9 @@ int main(int argc, char * argv[]) {
 
 	nofWords = 0;
 	nofChannels = 0;
+	memset(data, 0, kNofChannels * kDataPerChannel_32);
 	for (chn = 0; chn < kNofChannels; chn++) {
 		if (chnPattern & (1 << chn)) {
-			memset(data32, 0, kDataPerChannel * sizeof(int));
-			idx = 0;
 			nofChannels++;
 			dgf_set_par_value(dgf, -1, DGF_OFFS_HOSTIO, chn);
 			for (page = 0; page < kNofPages; page++) {
@@ -226,23 +226,11 @@ int main(int argc, char * argv[]) {
 				dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA);
 				dgf_wait_active(dgf);
 				DGF_WRITE_TSAR(dgf, addr);
-				memset(data, 0, kPageSize * sizeof(int));
-				for (i = 0; i < wc; i++) data[i] = DGF_READ_DSP_FAST(dgf);
-				nofWords += wc / 2;
-				for (i = 0; i < wc; i++) {
-					if (i & 1) {
-						d |= data[i];
-						data32[idx] = d;
-						idx++;
-					} else {
-						d = data[i] << 8;
-					}
+				for (i = 0; i < wc; i += 2) {
+					dlow = DGF_READ_DSP_FAST(dgf);
+					dhigh = DGF_READ_DSP_FAST(dgf);
+					data[nofWords++] = (dhigh & 0xFF) << 16 | dlow;
 				}
-			}
-			if (ascii == 0) {
-				fwrite(data32, sizeof(unsigned int), idx, f);
-			} else {
-				for (i = 0; i < idx; i++) fprintf(f, "%6d%10d\n", i, data32[i]);
 			}
 		}
 	}
@@ -252,6 +240,11 @@ int main(int argc, char * argv[]) {
 								crate, station, fileName, nofChannels, nofWords, mode);
 	}
 	
+	if (ascii == 0) {
+		fwrite(data, nofWords * sizeof(unsigned int), 1, f);
+	} else {
+		for (i = 0; i < nofWords; i++) fprintf(f, "%6d%10d\n", i, data[i]);
+	}
 	fclose(f);
 	
 	f = fopen(handshake, "w");					/* write handshake file */

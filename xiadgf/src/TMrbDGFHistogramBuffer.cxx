@@ -218,6 +218,7 @@ Bool_t TMrbDGFHistogramBuffer::FillHistogram(Int_t Channel, Bool_t DrawIt) {
 
 	k = fHistNo[Channel] * fSizePerChannel;
 	for (i = 1; i <= fSizePerChannel; i++, k++) h->SetBinContent(i, (Stat_t) fArray[k]);
+	h->SetEntries(h->Integral());
 	if (DrawIt) h->Draw();
 	fHistogram[Channel] = h;
 	return(kTRUE);
