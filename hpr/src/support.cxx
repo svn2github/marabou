@@ -5,6 +5,7 @@
 #include "TFrame.h"
 #include "TLatex.h"
 #include "TText.h"
+#include "TArc.h"
 #include "TGraphErrors.h"
 #include "TGraphAsymmErrors.h"
 #include "TH1.h"
@@ -1406,7 +1407,7 @@ void DrawColors()
 //   TString hexcol;
    TString scol;
 //   TString cmd;
-   new TCanvas("colors", "rgb colors", 400, 20, 800, 400);
+   new TCanvas("rgb_colors", "Predefined RGB colors", -400, 20, 800, 400);
    Float_t dx = 1./10.2 , dy = 1./10.2 ;
    Float_t x0 = 0.1 * dx,  y0 =0.1 *  dy; 
    Float_t x = x0, y = y0;;
@@ -1441,6 +1442,43 @@ void DrawColors()
          x+= dx;
       }
    }
+ 
+   new TCanvas("hue_colors", "Hue values", -400,450, 400, 400);
+   TArc * a;
+   TColor * col; 
+   Int_t hue;
+   Double_t x1, y1, radius, phi1, phi2;
+   Float_t red,green,blue;
+   x1= 0.5;
+   y1= 0.5;
+   radius = 0.4;
+   Int_t ind =1001;
+   for (hue = 1; hue < 360; hue += 2) {
+      phi1 = hue - 1;
+      phi2 = hue + 1;
+      TColor::HLS2RGB((Float_t)hue, 0.5, 1, red, green, blue);
+
+      col = GetColorByInd(ind);
+      if (col) delete col;
+      col = new TColor(ind, red,green,blue);
+      a = new TArc(x1, y1, radius, phi1, phi2);
+ //     col->Print();
+      a->SetFillColor(ind);
+      a->SetLineColor(0);
+      a->SetLineWidth(0);
+      ind++;
+      a->Draw();
+   }
+    a = new TArc(x1, y1, radius / 3);
+    a->SetFillColor(10);
+    a->SetFillStyle(1001);
+    a->Draw();
+    TText * tt = new TText();
+    tt->SetTextAlign(22);
+    tt->DrawText(x1 + 0.45, y1,  "0");
+    tt->DrawText(x1 , y1 + 0.43, "90");
+    tt->DrawText(x1 - 0.45 , y1 , "180");
+    tt->DrawText(x1 , y1 - 0.43, "270");
 }
 //______________________________________________________________________________________
   

@@ -3157,8 +3157,8 @@ void FitHist::SetBrightness(TGWindow * win)
 
    Int_t ret;
    Int_t id  = 1;
-   TGMrbSliders * sl = new TGMrbSliders("Set Brightness", min, max, val, lab, 3, 
-   id, &ret, mycanvas);
+   TGMrbSliders * sl = new TGMrbSliders("Set Brightness", 3, min, max, val, lab, NULL, 
+   mycanvas, id, &ret);
    sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
                "AdjustBrightness(Int_t, Int_t, Int_t)");
 //   this->Connect("AdjustBrightness(Int_t, Int_t, Int_t)", "TGMrbSliders", sl, 
@@ -3201,6 +3201,7 @@ void FitHist::SetHLS(TGWindow * win)
    static Int_t val[NVAL];
    static Int_t max[NVAL];
    static Int_t min[NVAL];
+   static Int_t flags[NVAL];
    min[0] = 0;
    min[1] = 0;
    min[0] = 0;
@@ -3213,15 +3214,18 @@ void FitHist::SetHLS(TGWindow * win)
    val[1] = (Int_t)hp->fEndHue;
    val[2] = (Int_t)(100 * hp->fLightness);
    val[3] = (Int_t)(100 * hp->fSaturation);
+   flags[0] = 1;
+   flags[1] = 1;
+   flags[2] = 0;
+   flags[3] = 0;
 
    Int_t ret;
    Int_t id  = 1;
-   TGMrbSliders * sl = new TGMrbSliders("Set HLS", min, max, val, lab, NVAL, 
-   id, &ret, mycanvas);
+   TGMrbSliders * sl = new TGMrbSliders("Set HLS", NVAL, 
+                       min, max, val, lab, flags, 
+                       mycanvas, id, &ret);
    sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName() , this, 
                "AdjustHLS(Int_t, Int_t, Int_t)");
-//   this->Connect("AdjustBrightness(Int_t, Int_t, Int_t)", "TGMrbSliders", sl, 
-//                 "SliderEvent(Int_t, Int_t, Int_t)");
 }
 //___________________________________________________________________________________________
 
