@@ -18,7 +18,7 @@ enum CAnalyzeCommandIdentifiers {
    ,M_RUNNR, M_INPUT, M_DIR, M_MAPF, M_MAPS, M_HISTF, M_ROOTF, M_PARF
    ,M_QUIT, M_AVERAGE, M_SAVESETUP, M_AUTOSETUP, M_WHICHHIST, M_RESETLIST
    ,M_PAUSE_RESET, M_WARNHWM, M_HARDHWM, M_VERBLEV, M_CHKQUOTA, M_RELOAD
-   ,M_DEBUG,M_MADEBUG, M_AUTORESTART};
+   ,M_DEBUG,M_MADEBUG, M_AUTORESTART, M_HSAVEINTERVALL};
 enum M_status {M_ABSENT, M_STARTING, M_RUNNING, 
                M_PAUSING, M_STOPPING, M_STOPPED, M_DIRTY, M_DIED, 
                M_CONFIGURED, M_CONFIGURING};
@@ -83,7 +83,8 @@ private:
    Int_t   fEvents_before;
    Int_t   fBufSize, fBuffers, fGateLength, fDownscale, 
            fStartEvent, fStopEvent, fMapSize, fMaxFileSize,
-           fVerbLevel, fHardHWM, fWarnHWM, fAutoRestart, fWaitedForStop;
+           fVerbLevel, fHardHWM, fWarnHWM, fAutoRestart, 
+			  fWaitedForStop, fHsaveIntervall;
    Float_t fMax_time_no_event;
    Float_t fTotal_time_no_event;
    Float_t fTotal_time_elapsed;

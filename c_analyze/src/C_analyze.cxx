@@ -517,6 +517,7 @@ trying to attach?",
    fMenuMbs->AddEntry("Use m_read_meb debug version", M_DEBUG);
 
    fMenuHist = new TGPopupMenu(fClient->GetRoot());
+   fMenuHist->AddEntry("Histogram Autosave Intervall", M_HSAVEINTERVALL);
    fMenuHist->AddEntry("Set Histogram Fill downscale factor", M_DOWNSCALE);
    fMenuHist->AddEntry("Reset all histograms", M_RESETALL);
    fMenuHist->AddEntry("Reset selected histograms", M_RESETSEL);
@@ -1945,6 +1946,8 @@ Bool_t FhMainFrame::StartDAQ()
 //     socket for communication
       startCmd += " ";
       startCmd += fSockNr;
+      startCmd += " ";
+      startCmd += fHsaveIntervall;
 
       cout << "Startdaq, fSockNr " << fSockNr << endl;
       cout << "startCmd: " << startCmd << endl;
@@ -2212,6 +2215,9 @@ Bool_t FhMainFrame::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                      *fHelpFile = GetString("HelpFile (html) name",fHelpFile->Data(), &ok, this);
                      }
                   break;
+						case M_HSAVEINTERVALL:
+						   fHsaveIntervall = GetInteger("Histo Autosave Intervall", fHsaveIntervall, &ok, this);
+                     break;
                   case M_DOWNSCALE:
                       if(fM_Status == M_RUNNING){
                           WarnBox("Not allowed during RUNNING", this);
@@ -2846,6 +2852,7 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "TOTIME: "      <<  fToTime->Data()      << endl;
    wstream << "RESETLIST: "   <<  fResetList->Data()   << endl;
    wstream << "MBSLOGLEVEL: " <<  fMbsLogLevel         << endl;
+   wstream << "HSAVEINTERVALL: " <<  fHsaveIntervall   << endl;
    wstream << "AVERAGE:  "    <<  fAverage             << endl;
    if(fWriteOutput) wout = "TRUE"; 
    else             wout = "FALSE";
@@ -2945,6 +2952,7 @@ Bool_t FhMainFrame::GetDefaults(){
    fStartEvent        = 0;
    fStopEvent         = 0;
    fMaxFileSize       = 0;
+	fHsaveIntervall    = 0;
    fWriteOutput       = kFALSE;
    fAutoSave          = kFALSE;
    fShowRate          = kTRUE;
@@ -3014,6 +3022,7 @@ Bool_t FhMainFrame::GetDefaults(){
          	if(parName == "FROMTIME")   *fFromTime     = parValue;
          	if(parName == "TOTIME"  )   *fToTime       = parValue;
          	if(parName == "MBSLOGLEVEL"  ) fMbsLogLevel   = atoi(parValue.Data());
+         	if(parName == "HSAVEINTERVALL") fHsaveIntervall   = atoi(parValue.Data());
          	if(parName == "AVERAGE"  )   fAverage   = atoi(parValue.Data());
          	if(parName == "WRITEOUTPUT" && parValue.Index("TRUE") >= 0)
             	fWriteOutput=kTRUE;
