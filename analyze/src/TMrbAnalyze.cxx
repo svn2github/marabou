@@ -480,7 +480,7 @@ Int_t TMrbAnalyze::ProcessFileList() {
 
 	ioSpec = (TMrbIOSpec *) fLofIOSpecs.First();
 	nofEntries = 0;
-	while (ioSpec) {
+	while (ioSpec && this->TestRunStatus()) {
 		if (this->IsVerbose()) {
 			cout	<< setblue << this->ClassName() << "::ProcessFileList(): " << endl;
 			cout << "        "; ioSpec->Print(cout);
@@ -609,7 +609,7 @@ Bool_t TMrbAnalyze::TestRunStatus() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fRunStatus == TMrbAnalyze::M_STOPPING) {
-		cout << this->ClassName() << "::TestRunStatus(): Termination flag detected" << endl;
+		cout << setred << this->ClassName() << "::TestRunStatus(): Termination flag detected" << setblack << endl;
 		return(kFALSE);
 	} else if (fRunStatus == TMrbAnalyze::M_PAUSING) { 
         PutPid(TMrbAnalyze::M_PAUSING);
