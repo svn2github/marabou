@@ -112,6 +112,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fRangeUpX = 0;
    fRangeLowY = 0;
    fRangeUpY = 0;
+   fLinBgConst = fLinBgSlope = 0;
    fOrigLowX = hist->GetXaxis()->GetXmin();
    fOrigUpX  = hist->GetXaxis()->GetXmax();
    fOrigLowY = hist->GetYaxis()->GetXmin();
@@ -130,6 +131,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    cHist   = NULL;
    expHist = NULL;
    projHist = NULL;
+   fTofLabels = NULL;
    fSelInside = kTRUE;
    fDeleteCalFlag = kFALSE;
 
@@ -190,6 +192,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    TEnv env(".rootrc");         // inspect ROOT's environment
    fFitMacroName =
        env.GetValue("HistPresent.FitMacroName", "fit_user_function.C");
+   if (env.GetValue("HistPresent.LiveGauss", 0) == 1) fLiveGauss = kTRUE;
+   else                                                 fLiveGauss = kFALSE;
+   if (env.GetValue("HistPresent.LiveBG", 0) == 1)    fLiveBG = kTRUE;
+   else                                                 fLiveBG = kFALSE;
    fTemplateMacro = "TwoGaus";
    fFirstUse = 1;
    fSerialPx = 0;
@@ -247,6 +253,7 @@ FitHist::~FitHist()
       expHist = 0;
    }
    if (fCalFitHist) delete fCalFitHist;
+   if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
    if (fCalHist) delete fCalHist;
    if (fCalFunc) delete fCalFunc;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||
@@ -518,27 +525,315 @@ void FitHist::RestoreDefaults()
 
 void FitHist::handle_mouse()
 {   
-   if (hp && !(hp->fRememberZoom)) return;
+//   Bool_t fLiveGauss = kTRUE;
+//   Bool_t fLiveBG    = kTRUE;
+   static TF1 * gFitFunc;
+   Double_t cont, sum;
+   static Double_t gconst, center, sigma, bwidth,  esigma;
+   static Double_t startbinX_lowedge, startbinY_lowedge; 
+   static Double_t chi2 = 0;
+   static Int_t startbinX, startbinY;
+   static Double_t ratio1, ratio2;
+   static Int_t px1old, py1old, px2old, py2old;
+
+   static Bool_t is2dim = kFALSE;
+   static Bool_t first_fit = kFALSE;
+   static TH1 * hist = 0;
+   static Int_t npar = 0;
+   static TLine * lowedge = 0;
+   static TLine * upedge = 0;
+   static TBox * box = 0;
+   Int_t nrows;
 
    Int_t event = gPad->GetEvent();
-//   cout << "Event " << event << endl;
    TObject *select = gPad->GetSelected();
    if (!select) return;
-   if (gPad->GetLogx() !=  fLogx ||
-       gPad->GetLogy() !=  fLogy ||
-       gPad->GetLogz() !=  fLogz ) {
-       fLogx = gPad->GetLogx();
-       fLogy = gPad->GetLogy();
-       fLogz = gPad->GetLogz();
-       if      (fDimension == 1) mycanvas->SetLog(fLogy);
-       else if (fDimension == 2) mycanvas->SetLog(fLogz);
-       SaveDefaults();
-   }
-   if (event != kButton1Up) return;
-   if (select->IsA() == TAxis::Class()) {
+//  check if lin / log scale changed
+   if (hp && hp->fRememberZoom) {
+   	if (gPad->GetLogx() !=  fLogx ||
+      	 gPad->GetLogy() !=  fLogy ||
+      	 gPad->GetLogz() !=  fLogz ) {
+      	 fLogx = gPad->GetLogx();
+      	 fLogy = gPad->GetLogy();
+      	 fLogz = gPad->GetLogz();
+      	 if      (fDimension == 1) mycanvas->SetLog(fLogy);
+      	 else if (fDimension == 2) mycanvas->SetLog(fLogz);
+      	 SaveDefaults();
+   	}
+      if (event == kButton1Up) {
+         if (select->IsA() == TAxis::Class()) {
 //      cout << "handle_mouse " << GetSelHist()->GetName() << endl;
-      if (is2dim(GetSelHist()) || !strncmp(select->GetName(), "xaxis", 5)) {
-         SaveDefaults();
+            if (fDimension == 2 || !strncmp(select->GetName(), "xaxis", 5)) {
+               SaveDefaults();
+            }
+            return;
+         }
+      }
+   }
+   Int_t px = gPad->GetEventX();
+   Int_t py = gPad->GetEventY();
+   if (event == kButton1Down) {
+      if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")){
+         TList * lofp = gPad->GetListOfPrimitives();
+         if (!lofp) return;
+         TIter next(lofp);
+         TObject * obj = 0; 
+         while (obj = next()) {
+            if (obj->InheritsFrom("TH1")) hist = (TH1*)obj;
+         }
+         if (!hist) {
+            cout << "No histogram found" << endl;
+            return;
+         }
+         if (hist->GetDimension() == 3) {
+            cout << "3d histogram not supported" << endl;
+            return;
+         } else if (hist->GetDimension() == 2){
+            is2dim = kTRUE;
+         } else {
+            is2dim = kFALSE;
+         }
+         
+         if (lowedge) {
+            delete lowedge; lowedge = 0;
+            delete upedge; upedge = 0;
+         }
+         if (box) {delete box; box = 0;};
+         if (gFitFunc) { delete gFitFunc; gFitFunc = 0;}
+         first_fit = kFALSE;
+         Axis_t xx = gPad->AbsPixeltoX(px);
+         startbinX = hist->GetXaxis()->FindBin(xx);
+         startbinX_lowedge = hist->GetXaxis()->GetBinLowEdge(startbinX);
+         if (is2dim) {
+            Axis_t yy = gPad->AbsPixeltoY(py);
+            startbinY = hist->GetYaxis()->FindBin(yy);
+            startbinY_lowedge = hist->GetYaxis()->GetBinLowEdge(startbinY);
+            cont = hist->GetBinContent(startbinX, startbinY);
+            nrows = 4;
+         } else {
+            bwidth = hist->GetBinWidth(startbinX);
+            esigma = hist->GetBinWidth(startbinX) * TMath::Sqrt(12.);
+            cont = hist->GetBinContent(startbinX);
+            gconst = cont * bwidth / TMath::Sqrt(2*TMath::Pi() * esigma);
+            center = hist->GetBinCenter(startbinX);
+
+            if (fLiveGauss) {
+               if (fLiveBG) {
+                  gFitFunc = new TF1("fitfunc", "pol1+gaus(2)");
+                  npar = 5;
+ //                 gFitFunc ->SetParLimits(0, fLinBgConst, fLinBgConst);
+//                  gFitFunc ->SetParLimits(1, fLinBgSlope, fLinBgSlope);
+//                  gFitFunc ->SetParameters(fLinBgConst, fLinBgSlope, gconst, center, esigma);
+//                  gFitFunc ->SetParameters(cont, 0, gconst, center, esigma);
+                  nrows = 6;
+               } else {
+                  gFitFunc = new TF1("fitfunc", "gaus");
+ //                 gFitFunc ->SetParameters(gconst, center, esigma);
+                 npar = 3;
+                 nrows = 5;
+               }
+            }
+         }
+         if (!fTofLabels) {
+            TOrdCollection rowlabels;
+            if (is2dim) {       
+               rowlabels.Add(new TObjString("Low left Bin: Number (x,y), Low edge (x,y)"));
+               rowlabels.Add(new TObjString("Up right Bin: Number (x,y), Up edge (x,y)"));
+            } else {
+               rowlabels.Add(new TObjString("Low left Bin: Number, Low edge"));
+               rowlabels.Add(new TObjString("Up right Bin: Number, Up edge"));
+            }
+            rowlabels.Add(new TObjString("Current Bin: Content "));
+            rowlabels.Add(new TObjString("Integral"));
+            TOrdCollection values;
+            if (is2dim) {
+               values.Add(new TObjString(Form("%d, %d, %7.1f, %7.1f", 
+                         startbinX, startbinY, startbinX_lowedge , startbinY_lowedge)));
+               values.Add(new TObjString(Form("%d, %d, %7.1f, %7.1f", 
+                         startbinX, startbinY, 
+                         startbinX_lowedge + hist->GetBinWidth(startbinX),
+                         startbinY_lowedge + hist->GetYaxis()->GetBinWidth(startbinY))));
+               values.Add(new TObjString(Form("%9.3f", cont)));
+               values.Add(new TObjString(Form("%9.3f", cont)));
+
+            } else {
+               values.Add(new TObjString(Form("%d, %9.3f", startbinX, startbinX_lowedge )));
+               values.Add(new TObjString(Form("%d, %9.3f", startbinX, startbinX_lowedge
+                       + hist->GetBinWidth(startbinX))));
+               values.Add(new TObjString(Form("%9.3f", cont)));
+               values.Add(new TObjString(Form("%9.3f", cont)));
+                if (fLiveGauss) {
+                   if (fLiveBG) {
+                      rowlabels.Add(new TObjString("Background: const, slope"));
+                      values.Add(new TObjString("no fit done yet"));
+                   }
+                   rowlabels.Add(new TObjString("Gaus: Cont, Mean, Sigma"));
+                   values.Add(new TObjString("no fit done yet"));
+               }
+            }
+            TString title("Statistics for: ");
+            title += fHname.Data();
+            Int_t xw = gPad->GetCanvas()->GetWindowTopX();
+            Int_t yw = gPad->GetCanvas()->GetWindowTopY() + gPad->GetCanvas()->GetWindowHeight() + 28;
+            fTofLabels = new TableOfLabels(0, &title, 1, nrows, &values, 
+                          0, &rowlabels, xw, yw);
+            fTofLabels->Connect("Destroyed()", "FitHist", this, "ClearTofl()");
+//            pressed = kTRUE;
+         } else {
+            fTofLabels->SetLabelText(0,0,Form("%d", startbinX));   
+            fTofLabels->SetLabelText(0,1,Form("%d", startbinX));   
+            fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
+            fTofLabels->SetLabelText(0,3,Form("%9.3f", cont));   
+         }
+         ratio1 = (gPad->AbsPixeltoX(px) - gPad->GetUxmin())/(gPad->GetUxmax() - gPad->GetUxmin());
+         px1old = gPad->XtoAbsPixel(gPad->GetUxmin()+ratio1*(gPad->GetUxmax() - gPad->GetUxmin()));
+         if (is2dim) {
+            px2old = gPad->XtoAbsPixel(gPad->GetUxmax());
+            Double_t yru = gPad->GetUymax() - gPad->GetUymin();
+            ratio1 = (gPad->AbsPixeltoY(py) - gPad->GetUymin()) / yru ;
+            Double_t yu = gPad->GetUymin() + ratio1 * yru;
+            py1old = gPad->YtoAbsPixel(yu);
+            py2old = gPad->YtoAbsPixel(gPad->GetUymax());
+         } else {
+            px2old = px1old;
+            py1old = gPad->YtoAbsPixel(gPad->GetUymin());
+            py2old = gPad->YtoAbsPixel(gPad->GetUymax());
+         }
+         gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
+         gVirtualX->SetLineColor(-1);
+      }
+   }  else if (event == kButton1Motion || event == kButton1Up) {
+      if(!hist || !fTofLabels) return;
+      if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")){
+         Int_t px = gPad->GetEventX();
+         Axis_t xx = gPad->AbsPixeltoX(px);
+         Axis_t yy = gPad->AbsPixeltoY(py);
+         Int_t binX = hist->GetXaxis()->FindBin(xx);
+         Int_t binY;
+         Int_t binXlow, binXup, binYlow, binYup;
+         Axis_t XlowEdge, XupEdge, YlowEdge, YupEdge; 
+         binXlow = TMath::Min(startbinX, binX);
+         binXup  = TMath::Max(startbinX, binX);
+         XlowEdge = hist->GetXaxis()->GetBinLowEdge(binXlow);
+         XupEdge  = hist->GetXaxis()->GetBinLowEdge(binXup) + hist->GetXaxis()->GetBinWidth(binXup);
+
+         if (is2dim) {
+            binY = hist->GetYaxis()->FindBin(yy);
+            cont = hist->GetBinContent(binX, binY);
+            binYlow = TMath::Min(startbinY, binY);
+            binYup  = TMath::Max(startbinY, binY);
+            YlowEdge = hist->GetYaxis()->GetBinLowEdge(binYlow);
+            YupEdge  = hist->GetYaxis()->GetBinLowEdge(binYup) + hist->GetYaxis()->GetBinWidth(binYup);
+ 
+            sum = hist->Integral(binXlow, binXup, binYlow, binYup);
+            fTofLabels->SetLabelText(0,0,Form("%d, %d, %7.1f, %7.1f", binXlow, binYlow, XlowEdge, XupEdge));     
+            fTofLabels->SetLabelText(0,1,Form("%d, %d, %7.1f, %7.1f", binXup,  binYup,  YlowEdge, YupEdge));  
+            fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
+            fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
+         } else {
+            cont = hist->GetBinContent(binX);
+            sum = hist->Integral(binXlow, binXup);
+            fTofLabels->SetLabelText(0,0,Form("%d, %9.3f", binXlow, XlowEdge));   
+            fTofLabels->SetLabelText(0,1,Form("%d, %9.3f", binXup, XupEdge ));
+            fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
+            fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
+            Int_t ndf = binXup - binXlow - npar;
+            if (fLiveGauss &&  (binXup - binXlow - npar) > 0) {
+               Int_t ndf = binXup - binXlow - npar;
+               if (first_fit) chi2 = gFitFunc->GetChisquare();
+               if (fLiveBG) {
+                  if (!first_fit                    ||
+                      gFitFunc->GetParameter(2) < 0 ||
+                      gFitFunc->GetParameter(4) < 0 ||
+                      chi2 / ndf > 5) {
+                     	 cout << " old par at bin " << binX << ": ";
+                     	 for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
+                        	cout  << gFitFunc->GetParameter(i) << " ";
+                     	 cout << chi2 << " " << ndf << endl;
+                     	 gFitFunc->SetParameter(0, cont);
+                      	 gFitFunc->SetParameter(1, 0);
+                    		 gFitFunc->SetParameter(2, sum * bwidth);
+                     	 gFitFunc->SetParameter(3, 0.5 * (XupEdge + XlowEdge));
+                     	 gFitFunc->SetParameter(4, 0.25 * (XupEdge - XlowEdge) );
+                     	 cout << " new par: " << cont << " 0.0 "  << sum * bwidth << " " 
+                        	  << 0.5 * (XupEdge + XlowEdge)<< " "                            
+                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
+                  }
+               } else {
+                  if (!first_fit                   ||
+                     gFitFunc->GetParameter(0) < 0 ||
+                     gFitFunc->GetParameter(3) < 0 ||
+                     chi2 / ndf > 5) {
+                        cout << " old par at bin " << binX << ": ";
+                     	for (Int_t i = 0; i < gFitFunc->GetNpar(); i++)
+                        	cout  << gFitFunc->GetParameter(i) << " ";
+                     	cout << chi2 << " " << ndf << endl;
+                    		gFitFunc->SetParameter(0, sum * bwidth);
+                     	gFitFunc->SetParameter(1, 0.5 * (XupEdge + XlowEdge));
+                     	gFitFunc->SetParameter(2, 0.5 * (XupEdge - XlowEdge));
+                        cout << " new par: " << sum * bwidth << " " 
+                        	  << 0.5 * (XupEdge + XlowEdge)<< " "                            
+                        	  << 0.5 * (XupEdge - XlowEdge)<< endl;
+                  }
+               }
+               hist->Fit(gFitFunc, "RnlQ", "",XlowEdge ,XupEdge );
+               first_fit = kTRUE;
+               gFitFunc->Draw("same");
+               gPad->Update();
+               gPad->GetCanvas()->GetFrame()->SetBit(TBox::kCannotMove);
+               if (fLiveBG) { 
+                  sigma = gFitFunc->GetParameter(4);
+                  gconst = gFitFunc->GetParameter(2) * 
+                              TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
+                  center = gFitFunc->GetParameter(3);
+                  fTofLabels->SetLabelText(0,4,Form("%7.1f, %7.1f", 
+                     gFitFunc->GetParameter(0), gFitFunc->GetParameter(1)));
+                  fTofLabels ->SetLabelText(0,5, Form("%7.1f, %7.1f, %7.1f", 
+                               gconst, center, sigma));
+               } else {
+                  sigma = gFitFunc->GetParameter(2);
+                  gconst = gFitFunc->GetParameter(0) * 
+                              TMath::Sqrt(2*TMath::Pi() * sigma) / bwidth;
+                  center = gFitFunc->GetParameter(1);
+                  fTofLabels ->SetLabelText(0, 4, Form("%7.1f, %7.1f, %7.1f", 
+                               gconst, center, sigma));
+               }
+            }
+         }
+
+         if ( event == kButton1Motion) {  
+      	   gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
+         	ratio2 = (gPad->AbsPixeltoX(px) - gPad->GetUxmin())/(gPad->GetUxmax() - gPad->GetUxmin());
+      	   px2old = gPad->XtoAbsPixel(gPad->GetUxmin()+ratio2*(gPad->GetUxmax() - gPad->GetUxmin()));
+            if (is2dim) {
+               Double_t yru = gPad->GetUymax() - gPad->GetUymin();
+         	   ratio2 = (gPad->AbsPixeltoY(py) - gPad->GetUymin()) / yru;
+      	      py2old = gPad->YtoAbsPixel(gPad->GetUymin() + ratio2 * yru );
+            }
+      	   gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
+      	   gVirtualX->SetLineColor(-1);
+         } else {
+            if (is2dim) {
+               box = new TBox(XlowEdge, YlowEdge, XupEdge, YupEdge);
+               box->SetLineColor(-1);
+               box->SetFillStyle(0);
+               box->Draw();
+               ClearMarks();
+               markers->Add(new FhMarker(XlowEdge, YlowEdge, 28));
+               markers->Add(new FhMarker(XupEdge,  YupEdge, 28));
+               PaintMarks();
+            } else {
+            	lowedge = new TLine(XlowEdge, hist->GetMinimum(), XlowEdge, hist->GetMaximum());  
+         	   upedge  = new TLine(XupEdge, hist->GetMinimum(),  XupEdge, hist->GetMaximum());
+         	   lowedge->SetLineColor(4); lowedge->Draw();  
+         	   upedge->SetLineColor(4); upedge->Draw(); 
+               ClearMarks();
+               markers->Add(new FhMarker(XlowEdge, yy, 28));
+               markers->Add(new FhMarker(XupEdge,  yy, 28));
+               PaintMarks();
+            }
+         }
+         fTofLabels->RaiseWindow();
       }
    }
 }
@@ -655,6 +950,7 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
       }
    }
    cHist->Update();
+   cHist->GetFrame()->SetBit(TBox::kCannotMove);
 //  look if there exists a calibrated version of this histogram
    TEnv *lastset = 0;
    if (hp && hp->fDisplayCalibrated && (lastset = GetDefaults(fHname)) ) {
@@ -709,7 +1005,7 @@ void FitHist::Magnify()
    cHist->SetCanvasSize(newx, newy);
    cHist->Modified(kTRUE);
    cHist->Update();
-
+   cHist->GetFrame()->SetBit(TBox::kCannotMove);
 }
 //_______________________________________________________________________________________
 
@@ -747,6 +1043,7 @@ void FitHist::Entire()
    }
    cHist->Modified(kTRUE);
    cHist->Update();
+   cHist->GetFrame()->SetBit(TBox::kCannotMove);
 };
 //_______________________________________________________________________________________
 

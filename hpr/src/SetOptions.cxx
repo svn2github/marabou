@@ -263,6 +263,8 @@ void HistPresent::RestoreOptions()
        atof(env.GetValue("HistPresent.AutoUpdateDelay", "2"));
    fPeakMwidth = env.GetValue("HistPresent.fPeakMwidth", 11);
    fPeakThreshold = env.GetValue("HistPresent.fPeakThreshold", 3.);
+   fLiveGauss = env.GetValue("HistPresent.LiveGauss", 0);
+   fLiveBG = env.GetValue("HistPresent.LiveBG", 0);
 
    fFitOptLikelihood = env.GetValue("HistPresent.FitOptLikelihood", 0);
    fFitOptQuiet = env.GetValue("HistPresent.FitOptQuiet", 0);
@@ -420,6 +422,8 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.AutoUpdateDelay", fAutoUpdateDelay);
    env.SetValue("HistPresent.fPeakMwidth", fPeakMwidth);
    env.SetValue("HistPresent.fPeakThreshold", fPeakThreshold);
+   env.SetValue("HistPresent.LiveGauss", fLiveGauss);
+   env.SetValue("HistPresent.LiveBG", fLiveBG);
 
    env.SaveLevel(kEnvUser);
    env.Save();
@@ -431,13 +435,16 @@ void HistPresent::SaveOptions()
 
 void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 4;
-   enum e_opt { e_contour, e_filled, e_errors, e_axisattop };
+   Int_t nopt = 6;
+   enum e_opt { e_contour, e_filled, e_errors, e_axisattop,
+                e_livegauss, e_livebg };
    const char *opt[] = {
       "Show contour",
       "Fill histogram",
       "Show error bars",
-      "Extra Xaxis (channels) at top"
+      "Extra Xaxis (channels) at top",
+      "Do live Gauss fit",
+      "Use linear background in live fit"
    };
 
    TArrayI flags(nopt);
@@ -452,6 +459,10 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
       else if (i == e_errors && fShowErrors)
          flags[i] = 1;
       else if (i == e_axisattop && fDrawAxisAtTop)
+         flags[i] = 1;
+      else if (i == e_livegauss && fLiveGauss)
+         flags[i] = 1;
+      else if (i == e_livebg && fLiveBG)
          flags[i] = 1;
    }
    Int_t retval;
@@ -478,8 +489,13 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
             fFill1Dim = 1;
          else if (i == e_axisattop)
             fDrawAxisAtTop = 1;
+         else if (i == e_livegauss) 
+           fLiveGauss = 1;
+         else if (i == e_livebg) 
+           fLiveBG = 1;
       }
    }
+   SaveOptions();
    if (fh) {
       fh->SetSelectedPad();
       TString drawopt;

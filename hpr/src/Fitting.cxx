@@ -1055,6 +1055,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
    fSelPad->cd();
    fSelPad->Modified(kTRUE);
    fSelPad->Update();
+   fSelPad->GetFrame()->SetBit(TBox::kCannotMove);
 };
 
 //____________________________________________________________________________
@@ -1206,6 +1207,7 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
       }
    }
    fSelPad->Update();
+   fSelPad->GetFrame()->SetBit(TBox::kCannotMove);
 
    TString question = "Write function to workfile?";
    int buttons = kMBYes | kMBNo, retval = 0;

@@ -149,6 +149,9 @@ protected:
    Double_t fAutoUpdateDelay;
    Double_t fPeakThreshold;
    Int_t    fPeakMwidth;
+   Int_t    fLiveGauss;
+   Int_t    fLiveBG;
+
    TButton * fRebin2;
    TButton * fRebin4;
    TButton * fRebinOth;

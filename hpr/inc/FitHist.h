@@ -20,6 +20,7 @@
 //#include "TMrbWdw.h"
 //#include "TMrbVarWdwCommon.h"
 #include "FhPeak.h"
+#include "TableOfLabels.h"
 
 namespace std {} using namespace std;
 
@@ -101,6 +102,9 @@ private:
    Double_t fLinBgConst;
    Double_t fLinBgSlope;
    HTCanvas * fCutPanel;
+   TableOfLabels * fTofLabels;
+   Bool_t fLiveGauss;
+   Bool_t fLiveBG;
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5, 
@@ -245,6 +249,10 @@ public:
    void RecursiveRemove(TObject * obj);
    void handle_mouse();
    void DrawTopAxis();
+   void ClearTofl() {
+      cout << "ClearTofl()" << endl; 
+      fTofLabels = 0;
+   }
   ClassDef(FitHist,0)      // A histogram presenter
 };
 #endif
