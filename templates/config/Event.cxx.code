@@ -166,7 +166,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::InitializeTree(TFile * RootFile) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	register TObject * obj;
+	TObject * obj;
 
 	obj = RootFile->Get("%%EVT_NAME_LC%%");
 	if (obj == NULL) {
@@ -206,7 +206,7 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 	Int_t nofEntries, nofEvents, nofBytes, nbytes;
 	Int_t startEvent, stopEvent;
 	TString startTime, stopTime;
-	register Int_t i;
+	Int_t i;
 	TMrbAnalyze::EMrbRunStatus rsts;
 	Int_t timeStamp;
 
