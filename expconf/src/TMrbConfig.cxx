@@ -126,7 +126,8 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 								{TMrbConfig::kRdoInclude,				"READOUT_INCLUDE"			},
 								{TMrbConfig::kRdoLibs,					"READOUT_LIBS"				},
 								{TMrbConfig::kRdoPosix,					"READOUT_POSIX"				},
-								{TMrbConfig::kRdoLynxPlatform,			"GSI_LYNX_PLATFORM"			},
+								{TMrbConfig::kRdoPosixLib,				"POSIX_LIB"				},
+								{TMrbConfig::kRdoLynxPlatform,				"GSI_LYNX_PLATFORM"			},
 								{TMrbConfig::kRdoDebug,					"DEBUG_READOUT"				},
 								{TMrbConfig::kRdoNameLC, 				"EXP_NAME_LC"				},
 								{TMrbConfig::kRdoNameUC, 				"EXP_NAME_UC"				},
@@ -1388,6 +1389,19 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								else								posixFlags = "-D_THREADS_POSIX4ad4 -mthreads";
 							}
 							rdoStrm << rdoTmpl.Encode(line, posixFlags.Data()) << endl;
+						}
+						break;
+					case TMrbConfig::kRdoPosixLib:
+						{
+							TString posixLib = gEnv->GetValue("TMrbConfig.ReadoutPosixLib", "");
+							if (posixLib.Length() == 0) {
+								TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
+								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
+								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v2.2-deve");
+								if (mbsVersion.Index("v2", 0) == 0)	posixLib = "";
+								else					posixLib = "-lposix-pre1c";
+							}
+							rdoStrm << rdoTmpl.Encode(line, posixLib.Data()) << endl;
 						}
 						break;
 					case TMrbConfig::kRdoLynxPlatform:

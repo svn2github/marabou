@@ -31,12 +31,13 @@ C_CTRL	= %%CAMAC_CONTROLLER%%
 CC	= gcc
 
 POSIX   = %%READOUT_POSIX%%
+POSIX_LIB = %%POSIX_LIB%%
 
 CFLAGS  = $(POSIX) -DLynx -D$(C_CTRL) -DMBS -DPPC -DBIGENDIAN -I$(RPATH) -I$(INC) -I$(RDO_INCL) 
 LIBS    =	/lib/ces/libvme.a $(LIB)/lib_mbs.a \
 			$(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
 			$(RDO_LIBS) \
-			$(LIB)/libedit.a -lnetinet
+			$(LIB)/libedit.a $(POSIX_LIB) -lnetinet
 
 all:	m_read_meb %%DEBUG_READOUT%%
 
