@@ -1,0 +1,136 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       LeCroy_1176.code
+// @(#)Purpose:    VME code for adc LECROY 1176
+// Description:    Contains pieces of code to operate an adc LECROY 1176
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* bit definitions for VME TDC LECROY 1176 */
+#define LECROY_1176_R_DATA							0x0
+#define LECROY_1176_R_CSR							0x8000
+
+#define LECROY_1176_SH_CHN							17
+
+#define LECROY_1176_M_DATA							0x0000FFFF
+#define LECROY_1176_M_HIT_PHASE						0x00010000
+#define LECROY_1176_M_CHANNEL						0x001E0000
+#define LECROY_1176_M_VALID							0x00200000
+#define LECROY_1176_M_LAST_WORD						0x00800000
+
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+%B%
+%B%									/* init module $moduleName at addr $baseAddr */
+%B%					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+%STA%					LECROY_1176_COMMON_START_ON($moduleName); 			/* runs in COMMON START mode */
+%STO%					LECROY_1176_COMMON_STOP_ON($moduleName);  			/* runs in COMMON STOP mode */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

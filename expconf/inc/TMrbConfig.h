@@ -435,6 +435,7 @@ class TMrbConfig : public TNamed {
 									kModuleMpiHD_IOReg 		=	kManufactMpiHD + 23,
 									kModuleSis_3600 		=	kManufactSis + 24,
 									kModuleSis_3801 		=	kManufactSis + 25,
+									kModuleLeCroy_1176		=	kManufactLeCroy + 26,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
