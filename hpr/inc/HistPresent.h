@@ -350,7 +350,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
 //   void ShowMap(const char* , const char*);  
    void ShowHist(const char * fname , const char* dir, const char  * hname, const char* bp =0); 
    void SelectHist(const char*  fname , const char* dir , const char * hname, const char* bp =0); 
-   void ShowStatOfAll(const char* , const char* bp =0); 
+   void ShowStatOfAll(const char* , const char* , const char* bp =0); 
    void PurgeEntries(const char* , const char* bp =0); 
    void DeleteSelectedEntries(const char* , const char* bp =0); 
    void ShowSelectedHists(const char* bp =0);

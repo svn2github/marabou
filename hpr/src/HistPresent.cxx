@@ -1052,7 +1052,7 @@ Should we create a new file with corrected names?", maincanvas)) {
    	fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
    }
    cmd = "mypres->ShowStatOfAll(\"";
-   cmd = cmd + fname +  "\")";
+   cmd = cmd + fname + "\",\"" + dir + "\")";
    title = "Show Stats of all";
    hint = "Show statistics of all histograms and save to file";
    sel.Resize(0);
@@ -1120,7 +1120,7 @@ void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
 }
  //________________________________________________________________________________________
 
-void HistPresent::ShowStatOfAll(const char * fname, const char * bp)
+void HistPresent::ShowStatOfAll(const char * fname, const char * dir, const char * bp)
 {
   Int_t nstat;
    TString sname(fname);
@@ -1142,10 +1142,14 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * bp)
       sname(rname) = "";      
       TFile * rfile =0;
       rfile = new TFile(fname);
-      st = (TMrbStatistics*)rfile->Get("TMrbStatistics");
+
+      if (strlen(dir) > 0) rfile->cd(dir);
+      st = (TMrbStatistics*)gDirectory->Get("TMrbStatistics");
       if (!st) {
-         st=new TMrbStatistics(fname);
-         nstat = st->Fill(rfile);
+         TString sname(fname);
+         if (strlen(dir) > 0) sname = sname + " Dir: " + dir;
+         st=new TMrbStatistics(sname);
+         nstat = st->Fill(gDirectory);
       } else nstat = st->GetListOfEntries()->GetSize();
       if (rfile )rfile->Close();
    } else if (sname.Index(mname) > 0) {
@@ -2522,7 +2526,14 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
 
    TString hname = obj->String();
    hname.Remove(0,pp+1);
+   TString dname = hname.Data();
+   pp = hname.Index(" ");
+   hname.Resize(pp);
+   dname.Remove(0,pp+1);
+//   cout << fname << " " << hname << " " << dname << " " << endl;
+
    hname = hname.Strip(TString::kBoth);
+   dname = dname.Strip(TString::kBoth);
    TH1* hist;
 //   cout << "GetSelHistAt: " << hname << " Fn: " << fname <<  endl;
    hist = (TH1*)gROOT->GetList()->FindObject(hname);
@@ -2562,7 +2573,8 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
    } else {
       if (fRootFile) fRootFile->Close();
       fRootFile=new TFile((const char *)fname);
-      hist = (TH1*)fRootFile->Get(hname);
+      if (dname.Length() > 0)fRootFile->cd(dname);
+      hist = (TH1*)gDirectory->Get(hname);
       if (hist) hist->SetDirectory(gROOT);
       else      cout << "Histogram: " << hname << " not found" << endl;
       if (fRootFile) {fRootFile->Close(); fRootFile=NULL;};

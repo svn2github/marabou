@@ -436,7 +436,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                         fHistPresent->fRealStack = 1;
                         fViewMenu->CheckEntry(kFHStack);
                         if (st) { 
-                          st->SetDrawOption("stack");
+                          st->SetDrawOption("");
  //                         cout << "stack" << endl;
                         }
                      }

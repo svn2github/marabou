@@ -443,7 +443,7 @@ void HistPresent::RestoreOptions()
       fNofColorLevels = 50;
       fPalette = NULL;
    }
-   gStyle->SetPalette(fNofGreyLevels, fPalette);
+   gStyle->SetPalette(fNofColorLevels, fPalette);
 //   CheckAutoExecFiles();
 //
    if (fShowStatBox) {
