@@ -97,7 +97,7 @@ Bool_t TMrbSubevent_DGF_2::FillSubevent(const UShort_t * SevtData, Int_t SevtWC,
 																chn,
 																bufHdr->startTime[0],
 																evtHdr->eventTime[0],
-																evtHdr->eventTime[1],
+																chnHdr->fastTriggerTime,
 																&chnHdr->fastTriggerTime,
 																nofWordsPerChn);
 						dataPtr += nofWordsPerChn * sizeof(Short_t);

@@ -2551,7 +2551,7 @@ const Char_t * TMrbAnalyze::GetResource(const Char_t * Resource) {
 }
 
 TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
-										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Data, Int_t NofData) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -2563,7 +2563,7 @@ TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_
 //                 Int_t Channel          -- channel number
 //                 UShort_t BufferTimeHi  -- event time, hi order
 //                 UShort_t EventTimeHi   -- ..., middle
-//                 UShort_t EventTimeLo   -- ..., low
+//                 UShort_t FastTrigTime  -- ..., low
 //                 Int_t NofData          -- number of data words
 //                 UShort_t * Data        -- hit data, length depending on format
 // Results:        --
@@ -2576,13 +2576,13 @@ TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_
 	this->SetEventNumber(EventNumber);
 	this->SetModuleNumber(ModuleNumber);
 	this->SetChannel(Channel);
-	this->SetEventTime(BufferTimeHi, EventTimeHi, EventTimeLo);
+	this->SetChannelTime(BufferTimeHi, EventTimeHi, FastTrigTime);
 	this->ClearData();
 	if (Data) this->CopyData(Data, NofData);
 }
 
 TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
-										UShort_t * EventTime,
+										UShort_t * ChannelTime,
 										UShort_t * Data, Int_t NofData) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -2592,7 +2592,7 @@ TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_
 //                 Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
 //                 Int_t Channel          -- channel number
-//                 UShort_t * EventTime   -- event time (48 bit)
+//                 UShort_t * ChannelTime -- channel time (48 bit)
 //                 Int_t NofData          -- number of data words
 //                 UShort_t * Data        -- hit data, length depending on format
 // Results:        --
@@ -2601,10 +2601,10 @@ TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (EventTime) {
-		this->SetEventTime(*EventTime, *(EventTime + 1), *(EventTime + 2));
+	if (ChannelTime) {
+		this->SetChannelTime(*ChannelTime, *(ChannelTime + 1), *(ChannelTime + 2));
 	} else {
-		this->SetEventTime(0, 0, 0);
+		this->SetChannelTime(0, 0, 0);
 	}
 	this->SetBufferNumber(BufferNumber);
 	this->SetEventNumber(EventNumber);
@@ -2627,8 +2627,8 @@ Int_t TUsrHit::Compare(const TObject * Hit) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	long long t1, t2;
-	t1 = ushort2ll48(((TUsrHit *) this)->GetEventTime());
-	t2 = ushort2ll48(((TUsrHit *) Hit)->GetEventTime());
+	t1 = ushort2ll48(((TUsrHit *) this)->GetChannelTime());
+	t2 = ushort2ll48(((TUsrHit *) Hit)->GetChannelTime());
 	if (t1 == t2) {
 		return(0);
 	} else {
@@ -2636,12 +2636,12 @@ Int_t TUsrHit::Compare(const TObject * Hit) const {
 	}
 }
 
-Int_t TUsrHit::Compare(UShort_t * EventTime) {
+Int_t TUsrHit::Compare(UShort_t * ChannelTime) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Compare
 // Purpose:        Compare time stamps
-// Arguments:      UShort_t * EventTime   -- evetn time
+// Arguments:      UShort_t * ChannelTime   -- channel time
 // Results:        -1 / 0 / 1
 // Exceptions:
 // Description:    Compares event time with given value.
@@ -2649,8 +2649,8 @@ Int_t TUsrHit::Compare(UShort_t * EventTime) {
 //////////////////////////////////////////////////////////////////////////////
 
 	long long t1, t2;
-	t1 = ushort2ll48(((TUsrHit *) this)->GetEventTime());
-	t2 = ushort2ll48(EventTime);
+	t1 = ushort2ll48(((TUsrHit *) this)->GetChannelTime());
+	t2 = ushort2ll48(ChannelTime);
 	if (t1 == t2) {
 		return(0);
 	} else {
@@ -2699,7 +2699,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 						moduleName.Data(),
 						fEventNumber,
 						paramName.Data(),
-						ushort2ll48(fEventTime),
+						ushort2ll48(fChannelTime),
 						fData[kHitEnergy]);
 	} else {
 		Out << Form("      %13d%13d%13d%13d%18lld%13d\n",
@@ -2707,7 +2707,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 						fModuleNumber,
 						fEventNumber,
 						fChannel,
-						ushort2ll48(fEventTime),
+						ushort2ll48(fChannelTime),
 						fData[kHitEnergy]);
 	}
 }
@@ -2752,7 +2752,7 @@ void TUsrHitBuffer::Reset() {
 }
 
 TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
-										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Data, Int_t NofData) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -2763,7 +2763,7 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Cha
 //                 Int_t Channel          -- channel number
 //                 UShort_t BufferTimeHi  -- event time, hi order
 //                 UShort_t EventTimeHi   -- ..., middle
-//                 UShort_t EventTimeLo   -- ..., low
+//                 UShort_t FastTrigTime  -- ..., low
 //                 Int_t NofData          -- number of data words
 //                 UShort_t * Data        -- hit data, length depending on format
 // Results:        TUsrHit * Hit          -- pointer to hit object
@@ -2781,14 +2781,14 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Cha
 	TUsrHit * hit = new(hits[fNofHits]) TUsrHit(gMrbAnalyze->GetEventsProcessed(),
 																			EventNumber,
 																			ModuleNumber, Channel,
-																			BufferTimeHi, EventTimeHi, EventTimeLo,
+																			BufferTimeHi, EventTimeHi, FastTrigTime,
 																			Data, NofData);
 	fNofHits++;
 	return(hit);
 }
 
 TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
-										UShort_t * EventTime,
+										UShort_t * ChannelTime,
 										UShort_t * Data, Int_t NofData) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -2797,9 +2797,7 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Cha
 // Arguments:      Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
 //                 Int_t Channel          -- channel number
-//                 UShort_t BufferTimeHi  -- event time, hi order
-//                 UShort_t EventTimeHi   -- ..., middle
-//                 UShort_t EventTimeLo   -- ..., low
+//                 UShort_t ChannelTime   -- channel time
 //                 Int_t NofData          -- number of data words
 //                 UShort_t * Data        -- hit data, length depending on format
 // Results:        TUsrHit * Hit          -- pointer to hit object
@@ -2817,7 +2815,7 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Cha
 	TUsrHit * hit = new(hits[fNofHits]) TUsrHit(gMrbAnalyze->GetEventsProcessed(),
 																			EventNumber,
 																			ModuleNumber, Channel,
-																			EventTime,
+																			ChannelTime,
 																			Data, NofData);
 	fNofHits++;
 	return(hit);
@@ -2929,10 +2927,10 @@ void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) {
 	}
 }
 
-const Char_t * TUsrHit::EventTime2Ascii(TString & TimeString) {
+const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::EventTime2Ascii
+// Name:           TUsrHitBuffer::ChannelTime2Ascii
 // Purpose:        Convert 48-bit time to ascii
 // Arguments:      TString & TimeString  -- where to store event time
 // Results:        Char_t * TimeString   -- same as arg#1
@@ -2941,7 +2939,7 @@ const Char_t * TUsrHit::EventTime2Ascii(TString & TimeString) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TimeString = Form("%18lld", ushort2ll48(fEventTime));
+	TimeString = Form("%18lld", ushort2ll48(fChannelTime));
 	TimeString = TimeString.Strip(TString::kBoth);
 	return(TimeString.Data());
 }
@@ -3108,8 +3106,8 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 	if (curIndex >= this->GetNofHits()) return(NULL);
 
 	hit = (TUsrHit *) fHits->At(curIndex);
-	long long tDiff =	(ushort2ll48(hit->GetEventTime()) - fOffset[hit->GetModuleNumber()])
-						- (ushort2ll48(Hit0->GetEventTime()) - fOffset[Hit0->GetModuleNumber()]);
+	long long tDiff =	(ushort2ll48(hit->GetChannelTime()) - fOffset[hit->GetModuleNumber()])
+						- (ushort2ll48(Hit0->GetChannelTime()) - fOffset[Hit0->GetModuleNumber()]);
 	if (tDiff < 0) tDiff = -tDiff;
 	return(tDiff <= (long long) fWindow);
 }		
