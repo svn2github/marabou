@@ -309,13 +309,12 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += " ";
 	rCmd += setupPath;
 	rCmd += " m_remote reset -l";
+	if (!this->IsVerbose()) rCmd += " >>/dev/null";
+	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
-	} else {
-		rCmd += " >>/dev/null";
 	}
-	rCmd += "\"";
 	gSystem->Exec(rCmd.Data());
 
 	rCmd = "rsh ";
@@ -367,13 +366,12 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += " \"cp ";
 	rCmd += setupPath;
 	rCmd += "/.tcshrc .";
+	if (!this->IsVerbose()) rCmd += " >>/dev/null";
+	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< endl << "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
-	} else {
-		rCmd += " >>/dev/null";
 	}
-	rCmd += "\"";
 	gSystem->Exec(rCmd.Data());
 
 	prmOrDsp = startPrompter ? "m_prompt" : "m_dispatch";
@@ -393,13 +391,12 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += "/";
 	rCmd += fController.GetName();
 	rCmd += "/startup";
+	if (!this->IsVerbose()) rCmd += " >>/dev/null";
+	rCmd += "\"";
 	if (this->IsVerbose()) {
 		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
-	} else {
-		rCmd += " >>/dev/null";
 	}
-	rCmd += "\"";
 	gSystem->Exec(rCmd.Data());
 
 	rCmd = "rsh ";
