@@ -92,7 +92,6 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		fRunId = 0;
 		fBranchSize = gEnv->GetValue("TMrbAnalyze.BranchSize", TMrbAnalyze::kBranchBufferSize);
 		fSplitLevel = gEnv->GetValue("TMrbAnalyze.SplitLevel", TMrbAnalyze::kBranchSplitLevel);
-		TTree::SetBranchStyle(0);
 		fRunStatus = TMrbAnalyze::M_ABSENT;
 		fUpdateFlag = 0;
 		fEventsProcessed = 0;
