@@ -5648,12 +5648,7 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gSystem->AccessPathName(".mbssetup")) {
-		gMrbLog->Err() << "No such file - .mbssetup" << endl;
-		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
-		gMrbLog->Err() << "Generating DEFAULT version (to be edited or to be updated via C_analyze)" << endl;
-		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
-	}
+	gSystem->Exec("rm -f .mbssetup");
 
 	TMbsSetup * mbsSetup = new TMbsSetup();
 

@@ -732,6 +732,7 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 				rcTmpl.Substitute("$moduleNameLC", this->GetName());
 				rcTmpl.Substitute("$moduleNameUC", moduleNameUC.Data());
 				rcTmpl.Substitute("$clusterSerial", this->GetClusterSerial());
+				rcTmpl.Substitute("$clusterHexNum", this->GetClusterHexNum(), 16);
 				rcTmpl.Substitute("$clusterColor", this->GetClusterColor());
 				rcTmpl.Substitute("$clusterSegments", this->GetClusterSegments());
 				rcTmpl.Substitute("$maxEvents", this->GetMaxEvents());

@@ -488,7 +488,7 @@ class TMrbConfig : public TNamed {
 			fLofUserClasses.Delete();
 		};
 
-		TMrbConfig(const TMrbConfig &) {};				// default copy ctor
+		TMrbConfig(const TMrbConfig &) : TNamed() {};				// default copy ctor
 
 														// generate user-defined readout code
 		Bool_t MakeReadoutCode(const Char_t * CodeFile = "", Option_t * Options = "");

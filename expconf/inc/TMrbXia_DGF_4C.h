@@ -83,10 +83,11 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		inline void ActivateUserPSACode(Bool_t ActiveFlag = kTRUE) { fActivateUserPSA = ActiveFlag; };
 		inline Bool_t UserPSAIsActive() const { return(fActivateUserPSA); };
 
-		inline void SetClusterID(Int_t Serial, const Char_t * Color, const Char_t * Segments) { // cluster ids
-			fClusterID.Set(Serial, Color, Segments);
+		inline void SetClusterID(Int_t Serial, const Char_t * Color, const Char_t * Segments, Int_t HexNum = 0) { // cluster ids
+			fClusterID.Set((Int_t) (Serial << 12) + HexNum, Color, Segments);
 		};
-		inline Int_t GetClusterSerial() const { return(fClusterID.GetIndex()); }; 		// use TMrbNamedX object:
+		inline Int_t GetClusterSerial() const { return((Int_t) (fClusterID.GetIndex() >> 12)); }; 		// use TMrbNamedX object:
+		inline Int_t GetClusterHexNum() const { return(fClusterID.GetIndex() & 0xFFF); }; 		// use TMrbNamedX object:
 		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
 		inline const Char_t * GetClusterSegments() const { return(fClusterID.GetTitle()); };	// title <- segment info
 
