@@ -1,10 +1,23 @@
-static const Char_t setblack[]	=	"\033[30m";
-static const Char_t setred[]		=	"\033[31m";
-static Bool_t onceOnly = kFALSE;
+#include "iostream.h"
+#include "iomanip.h"
+#include "TEnv.h"
+#include "TObject.h"
+#include "TMrbConfig.h"
+#include "TMrbNamedX.h"
+#include "TMrbLofNamedX.h"
+#include "TMrbTemplate.h"
+#include "TMrbLogger.h"
+#include "SetColor.h"
+
+//_______________________________________________________________[PROTO TYPES]
+//////////////////////////////////////////////////////////////////////////////
+void UserMacro(ofstream * Strm, TMrbConfig * CfgBase, TObject * CfgObject, const Char_t * TagWord, Bool_t * Result);
+Bool_t ProcessUserTemplate(ofstream * Strm, const Char_t * TmplFile, TMrbConfig * CfgBase, TObject * CfgObject, Int_t TagIndex);
+
 
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// Name:             %%USER_MACRO_NAME_UC%%UserMacro.C
+// Name:             UserMacro.C
 // Purpose:          User macro to be called when generating code
 // Description:      ROOT macro to be called by methods TMrbConfig::Make<XXX>Code().
 //                   May be used to insert user-specific code
@@ -18,12 +31,17 @@ static Bool_t onceOnly = kFALSE;
 enum	EUserTags	{	kUserTagXXX 	= 0
 					};
 					
-TMrbLofNamedX userTags;
+TMrbLofNamedX UserTags;
 
-void %%USER_MACRO_NAME%%UserMacro(ofstream * Strm, Bool_t * Result, TMrbConfig * CfgBase, TObject * CfgObject, const Char_t * TagWord, Bool_t * Result) {
+
+void UserMacro(	ofstream * Strm,
+				TMrbConfig * CfgBase,
+				TObject * CfgObject,
+				const Char_t * TagWord,
+				Bool_t * Result 			) {
 //________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:             %%USER_MACRO_NAME%%UserMacro
+// Name:             UserMacro
 // Purpose:          Generate user-specific code
 // Arguments:        ofstream * Strm         -- output stream
 //                   TMrbConfig * CfgBase    -- pointer to config base class
@@ -51,9 +69,10 @@ void %%USER_MACRO_NAME%%UserMacro(ofstream * Strm, Bool_t * Result, TMrbConfig *
 
 	TMrbNamedX * nx;
 
+	static Bool_t onceOnly = kFALSE;
 	TMrbLogger * msgLog = CfgBase->GetMessageLogger();
 	
-	if (nx = userTags.FindByName(TagWord)) {
+	if (nx = UserTags.FindByName(TagWord)) {
 		switch (nx->GetIndex()) {
 			case kUserTagXXX:
 			default:	break;
@@ -62,17 +81,20 @@ void %%USER_MACRO_NAME%%UserMacro(ofstream * Strm, Bool_t * Result, TMrbConfig *
 	// no code implemented - remove once-only code after having added your own code ...
 	if (!onceOnly) {
 		msgLog->Err()	<< setred << "No user code present (file has to be edited first!)" << setblack << endl;
-		msgLog->Flush("%%USER_MACRO_FILE%%");
+		msgLog->Flush("UserMacro.C");
 		onceOnly = kTRUE;
 	}
 	*Result = kFALSE;			// code will be generated via system templates
 }
 
-void %%USER_MACRO_NAME%%ProcessUserTemplate(ofstream * Strm, const Char_t * TmplFile,
-						TMrbConfig * CfgBase, TObject * CfgObject, Int_t TagIndex) {
+Bool_t ProcessUserTemplate(	ofstream * Strm,
+							const Char_t * TmplFile,
+							TMrbConfig * CfgBase,
+							TObject * CfgObject,
+							Int_t TagIndex			 ) {
 //________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:             %%USER_MACRO_NAME%%ProcessUserTemplate
+// Name:             ProcessUserTemplate
 // Purpose:          Generate user-specific code according to template file
 // Arguments:        ofstream * Strm         -- output stream
 //                   Char_t * TmplFile       -- name of template file to be processed
@@ -81,76 +103,75 @@ void %%USER_MACRO_NAME%%ProcessUserTemplate(ofstream * Strm, const Char_t * Tmpl
 //                                                 i.e. TMrbEvent, TMrbSubevent,
 //                                                      TMrbModule ...
 //                   Int_t TagIndex          -- tag word index
-// Results:          --
+// Results:          kTRUE/kFALSE
 // Exceptions:       
 // Description:      Generates code according to template file & tag word index.
 //                       (a)  Opens template file
 //                       (b1) TagIndex >= 0:  Searches for given TagIndex and processes it.
 //                       (b2) TagIndex == -1: Loops thru template file and processes ALL tags
+//                       (c1) Returns Result=kTRUE if generated code REPLACES system code
+//                       (c2) Returns Result=kFALSE on error or if code is add-on to existing
+//                            systemn code
 // Keywords:         
 /////////////////////////////////////////////////////////////////////////////
 
-	TMrbTemplate tmpl;
-	TMrbNamedX * tag;
-	Int_t tagIdx;
-	TString line;
-
-	TString tf;
-	TString tmplPath;
-	const Char_t * fp;
-	TString macroName;
-	
 	TMrbLogger * msgLog = CfgBase->GetMessageLogger();
-	
-	tmplPath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
-	tf = TmplFile;
+	TString tmplPath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
+	TString tf = TmplFile;
 	gSystem->ExpandPathName(tmplPath);
-	fp = gSystem->Which(tmplPath.Data(), tf.Data());
+
+	const Char_t * fp = gSystem->Which(tmplPath.Data(), tf.Data());
 	if (fp == NULL) {
-		msgLog->Err()	<< setred << "Template file not found -" << endl
-						<< "                  Searching on path " << tmplPath << endl
-						<< "                  for file          " << tf << setblack << endl;
-		msgLog->Flush("%%USER_MACRO_FILE%%");
-		return;
+		msgLog->Err()	<< "Template file not found -" << endl
+						<<           "                 Searching on path " << tmplPath << endl
+						<<           "                 for file          " << tf << endl;
+		msgLog->Flush("UserMacro.C");
+		return(kFALSE);
 	} else if (CfgBase->IsVerbose()) {
 		msgLog->Out()	<< "Using template file " << fp << endl;
-		msgLog->Flush("%%USER_MACRO_FILE%%");
+		msgLog->Flush("UserMacro.C");
 	}
 	
 	tf = fp;
 	
-	if (tmpl.Open(tf.Data(), &DgfTags)) {
+	TMrbTemplate tmpl;
+	TString line;
+	if (tmpl.Open(tf.Data(), &UserTags)) {
 		if (TagIndex == -1) {
 			for (;;) {
-				tag = tmpl.Next(line);
+				TMrbNamedX * tag = tmpl.Next(line);
 				if (tmpl.IsEof()) break;
 				if (tmpl.IsError()) continue;
 				if (tmpl.Status() & TMrbTemplate::kNoTag) {
 					if (line.Index("//-") != 0) *Strm << line << endl;
 				} else {
-					switch (tagIdx = tag->GetIndex()) {
-						default:	break;
+					switch (tag->GetIndex()) {
+						default:	return(kFALSE);
 					}
 				}
 			}
 		} else {
 			for (;;) {
-				tag = tmpl.Next(line);
+				TMrbNamedX * tag = tmpl.Next(line);
 				if (tmpl.IsEof()) break;
 				if (tmpl.IsError()) continue;
-				if ((!tmpl.Status() & TMrbTemplate::kNoTag)) {
+				if (!(tmpl.Status() & TMrbTemplate::kNoTag)) {
 					if (TagIndex == tag->GetIndex()) {
+						switch (TagIndex) {
+							default:	return(kTRUE);
+						}
 					}
 				}
 			}
 		}
 	}
+	return(kTRUE);
 }
 
-void %%USER_MACRO_NAME%%UserMacroInit() {
+void UserMacroInit() {
 //________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:             %%USER_MACRO_NAME%%UserMacroInit
+// Name:             UserMacroInit
 // Purpose:          Initialize user macro
 // Arguments:        --
 // Results:          --
@@ -163,6 +184,7 @@ void %%USER_MACRO_NAME%%UserMacroInit() {
 // Keywords:         
 /////////////////////////////////////////////////////////////////////////////
 
-	userTags.SetName("User Tags");
-	userTags.AddNamedX(kUserTagXXX, "USER_TAG_XXX");										
+	UserTags.SetName("User Tags");
+	UserTags.AddNamedX(kUserTagXXX, "USER_TAG_XXX");									
 }
+

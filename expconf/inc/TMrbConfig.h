@@ -122,6 +122,7 @@ class TMrbConfig : public TNamed {
 									kAnaEventClassDef,
 									kAnaEventClassMethods,
 									kAnaEventClassInstance,
+									kAnaEventUserClassInstance,
 									kAnaEventDefinePointers,
 									kAnaEventNameLC,
 									kAnaEventNameUC,
@@ -251,6 +252,16 @@ class TMrbConfig : public TNamed {
 									kUmaCreationDate
 								};
 
+		enum EMrbUserEventTag  	{	kUevFile				=	1,		// user event tags
+									kUevNameLC,
+									kUevNameUC,
+									kUevConfigLC,
+									kUevConfigUC,
+									kUevTitle,
+									kUevAuthor,
+									kUevCreationDate
+								};
+
 		enum					{	kNoOptionSpecified		= 0x80000000	};
 
 		enum EMrbReadoutOptions	{	kRdoOptOverwrite		=	BIT(0),
@@ -285,16 +296,18 @@ class TMrbConfig : public TNamed {
 									kIclOptUserMethod			=	BIT(1),
 									kIclOptClassTMrbAnalyze		=	BIT(2),
 									kIclOptClassTUsrEvent		=	BIT(3),
-									kIclOptUserClass			=	BIT(4),
-									kIclOptInitialize			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(5),
-									kIclOptReloadParams			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(6),
-									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(7),
-									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(8),
-									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
-									kIclOptAnalyze				=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
-									kIclOptBuildEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
-									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
-									kIclOptUtilities			=	BIT(13)
+									kIclOptUserLib				=	BIT(4),
+									kIclOptUserClass			=	BIT(5),
+									kIclOptInitialize			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(6),
+									kIclOptReloadParams			=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(7),
+									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(8),
+									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
+									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
+									kIclOptAnalyze				=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
+									kIclOptBuildEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
+									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(13),
+									kIclOptUserDefinedEvent		=	kIclOptUserClass | BIT(14),
+									kIclOptUtilities			=	BIT(15)
 								};
 
 		enum					{	kNofCrates			=	100			};	// max number of crates
@@ -644,9 +657,9 @@ class TMrbConfig : public TNamed {
 		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() >= 0); };
 		inline TMrbLofNamedX * GetLofUserLibs() { return(&fLofUserLibs); };
 
-		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass);
-		inline Bool_t IncludeUserClass(const Char_t * UserClass) {
-			return(this->IncludeUserClass("", UserClass));
+		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass, Bool_t UserDefinedEvent = kFALSE);
+		inline Bool_t IncludeUserClass(const Char_t * UserClass, Bool_t UserDefinedEvent = kFALSE) {
+			return(this->IncludeUserClass("", UserClass, UserDefinedEvent));
 		}
 		inline Bool_t UserClassesToBeIncluded() const { return(fLofUserClasses.Last() >= 0); };
 		inline TMrbLofNamedX * GetLofUserClasses() { return(&fLofUserClasses); };
@@ -759,6 +772,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofConfigTags;			//! ... config tags
 		TMrbLofNamedX fLofRcFileTags;			//! ... rc file tags
 		TMrbLofNamedX fLofUserMacroTags;		//! ... user macro tags
+		TMrbLofNamedX fLofUserEventTags;		//! ... user event tags
 		TMrbLofNamedX fCNAFNames;				//! ... cnaf key words
 		TMrbLofNamedX fLofModuleTags;			//! ... camac tags
 		TMrbLofNamedX fLofModuleIDs;			//! ... camac modules available
@@ -767,7 +781,9 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
 
 	protected:
-		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
+		Bool_t CreatePrototypeForUserMacro();
+		Bool_t CreatePrototypeForUserEvent(const Char_t * Path);
+		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);
 		Bool_t WriteUtilityProtos();
 		Bool_t CheckConfig();
 		

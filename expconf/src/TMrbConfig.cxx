@@ -215,6 +215,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventClassDef, 			"EVT_CLASS_DEFINITION"			},
 								{TMrbConfig::kAnaEventClassMethods, 		"EVT_CLASS_METHODS" 			},
 								{TMrbConfig::kAnaEventClassInstance,		"EVT_CLASS_INSTANCE"			},
+								{TMrbConfig::kAnaEventUserClassInstance,	"EVT_USER_CLASS_INSTANCE"		},
 								{TMrbConfig::kAnaEventDefinePointers,		"EVT_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaEventNameLC,				"EVT_NAME_LC"					},
 								{TMrbConfig::kAnaEventNameUC,				"EVT_NAME_UC"					},
@@ -347,7 +348,7 @@ const SMrbNamedXShort kMrbLofRcFileTags[] =
 								{0, 										NULL							}
 							};
 
-//_________________________________________________________________________________________________________ tag words in CallUserMacro()
+//_________________________________________________________________________________________________________ tag words in CreatePrototypeForUserMacro()
 
 const SMrbNamedXShort kMrbLofUserMacroTags[] =
 							{
@@ -357,6 +358,21 @@ const SMrbNamedXShort kMrbLofUserMacroTags[] =
 								{TMrbConfig::kUmaTitle, 					"USER_MACRO_TITLE" 				},
 								{TMrbConfig::kUmaCreationDate,				"CREATION_DATE" 				},
 								{TMrbConfig::kUmaAuthor,					"AUTHOR"						},
+								{0, 										NULL							}
+							};
+
+//_________________________________________________________________________________________________________ tag words in CreatePrototypeForUserEvent()
+
+const SMrbNamedXShort kMrbLofUserEventTags[] =
+							{
+								{TMrbConfig::kUevFile,						"USER_EVENT_FILE"				},
+								{TMrbConfig::kUevNameLC,					"USER_EVENT_NAME_LC"			},
+								{TMrbConfig::kUevNameUC,					"USER_EVENT_NAME_UC"			},
+								{TMrbConfig::kUevConfigLC,					"USER_EVENT_CONFIG_LC"			},
+								{TMrbConfig::kUevConfigUC,					"USER_EVENT_CONFIG_UC"			},
+								{TMrbConfig::kUevTitle, 					"USER_EVENT_TITLE" 				},
+								{TMrbConfig::kUevCreationDate,				"CREATION_DATE" 				},
+								{TMrbConfig::kUevAuthor,					"AUTHOR"						},
 								{0, 										NULL							}
 							};
 
@@ -576,6 +592,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofUserMacroTags.SetName("UserMacro Tags");  			// ... user macro tags
 		fLofUserMacroTags.AddNamedX(kMrbLofUserMacroTags);
+
+		fLofUserEventTags.SetName("UserEvent Tags");  			// ... user event tags
+		fLofUserEventTags.AddNamedX(kMrbLofUserEventTags);
 
 		fCNAFNames.SetName("CNAF Names"); 						// ... cnaf key words
 		fCNAFNames.SetPatternMode();
@@ -2223,7 +2242,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
 							while (ucl) {
-								if (ucl->GetIndex() == 0) {
+								if (ucl->GetIndex() & kIclOptUserClass) {
 									anaTmpl.InitializeCode();
 									anaTmpl.Substitute("$className", ucl->GetName());
 									anaTmpl.WriteCode(anaStrm);
@@ -2565,26 +2584,53 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						anaStrm << anaTmpl.Encode(line, fUseMapFile ? "--new" : "") << endl;
 						break;						
 					case TMrbConfig::kAnaEventClassInstance:
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							evtNameLC = evt->GetName();
-							evtNameUC = evtNameLC;
-							evtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode("%C%");
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-							anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-							anaTmpl.WriteCode(anaStrm);
-							anaTmpl.InitializeCode("%HB%");
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.WriteCode(anaStrm);
-							anaTmpl.InitializeCode("%E%");
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.WriteCode(anaStrm);
-							evt = (TMrbEvent *) fLofEvents.After(evt);
+						{
+							Bool_t first = kTRUE;
+							evt = (TMrbEvent *) fLofEvents.First();
+							while (evt) {
+								if (first) {
+									anaTmpl.InitializeCode("%B%");
+									anaTmpl.WriteCode(anaStrm);
+								}
+								first = kFALSE;
+								evtNameLC = evt->GetName();
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode("%C%");
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								anaTmpl.WriteCode(anaStrm);
+								anaTmpl.InitializeCode("%HB%");
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.WriteCode(anaStrm);
+								anaTmpl.InitializeCode("%E%");
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.WriteCode(anaStrm);
+								evt = (TMrbEvent *) fLofEvents.After(evt);
+							}
+						}
+						break;
+					case TMrbConfig::kAnaEventUserClassInstance:
+						{
+							Bool_t first = kTRUE;
+							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
+							while (ucl) {
+								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
+									if (first) {
+										anaTmpl.InitializeCode("%B%");
+										anaTmpl.WriteCode(anaStrm);
+									}
+									first = kFALSE;
+									anaTmpl.InitializeCode("%C%");
+									anaTmpl.Substitute("$className", ucl->GetName());
+									anaTmpl.WriteCode(anaStrm);
+								}
+								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
+							}
 						}
 						break;
 					case TMrbConfig::kAnaEventDefinePointers:
@@ -2594,6 +2640,31 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaEventSetReplayMode:
 					case TMrbConfig::kAnaEventReplayTree:
 					case TMrbConfig::kAnaEventSetScaleDown:
+						{
+							evt = (TMrbEvent *) fLofEvents.First();
+							while (evt) {
+								evtNameLC = evt->GetName();
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode("%E%");
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								anaTmpl.WriteCode(anaStrm);
+								evt = (TMrbEvent *) fLofEvents.After(evt);
+							}
+							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
+							while (ucl) {
+								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
+									anaTmpl.InitializeCode("%U%");
+									anaTmpl.Substitute("$className", ucl->GetName());
+									anaTmpl.WriteCode(anaStrm);
+								}
+								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
+							}
+						} 
+						break;
 					case TMrbConfig::kAnaEventIdEnum:
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
@@ -3989,24 +4060,12 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString macroPath;
-	TString templatePath;
-	const Char_t * fp;
-	TMrbTemplate macroTmpl;
-	ofstream macroStrm;
-		
-	TMrbNamedX * macroTag;
-	TMrbConfig::EMrbUserMacroTag tagIdx;
-	
-	TString line;
-	TString macroName;
-	
 	fUserMacro = MacroName;
 	if (fUserMacro.Length() == 0) fUserMacro = "UserMacro.C";
 	
-	macroPath = gEnv->GetValue("Root.MacroPath", ".:$HOME/rootmacros:$MARABOU/macros");
+	TString macroPath = gEnv->GetValue("Root.MacroPath", ".:$HOME/rootmacros:$MARABOU/macros");
 	gSystem->ExpandPathName(macroPath);
-	fp = gSystem->Which(macroPath.Data(), fUserMacro.Data());
+	Char_t * fp = gSystem->Which(macroPath.Data(), fUserMacro.Data());
 	if (fp == NULL) {
 		gMrbLog->Err()	<< "User macro not found -" << endl;
 		gMrbLog->Flush(this->ClassName(), "CallUserMacro");
@@ -4015,48 +4074,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 		gMrbLog->Err()	<< "            for file " << fUserMacro << endl;
 		gMrbLog->Flush();
 		fUserMacroToBeCalled = kFALSE;
-		templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
-		gSystem->ExpandPathName(templatePath);
-		fp = gSystem->Which(templatePath.Data(), "UserMacro.C.code");
-		if (fp) {
-			macroStrm.open(fUserMacro.Data(), ios::out);
-			if (macroStrm.good() && macroTmpl.Open(fp, &fLofUserMacroTags)) {			
-				for (;;) {
-					macroTag = macroTmpl.Next(line);
-					if (macroTmpl.IsEof()) break;
-					if (macroTmpl.IsError()) continue;
-					if (macroTmpl.Status() & TMrbTemplate::kNoTag) {
-						if (line.Index("#-") != 0) macroStrm << line << endl;
-					} else {
-						switch (tagIdx = (TMrbConfig::EMrbUserMacroTag) macroTag->GetIndex()) {
-							case TMrbConfig::kUmaFile:
-								macroStrm << macroTmpl.Encode(line, fUserMacro.Data()) << endl;
-								break;
-							case TMrbConfig::kUmaNameLC:
-								macroStrm << macroTmpl.Encode(line, this->GetName()) << endl;
-								break;
-							case TMrbConfig::kUmaNameUC:
-								macroName = this->GetName();
-								macroName(0,1).ToUpper();
-								macroStrm << macroTmpl.Encode(line, macroName) << endl;
-								break;
-							case TMrbConfig::kUmaTitle:
-								macroStrm << macroTmpl.Encode(line, this->GetTitle()) << endl;
-								break;
-							case TMrbConfig::kUmaAuthor:
-								macroStrm << macroTmpl.Encode(line, fAuthor) << endl;
-								break;
-							case TMrbConfig::kUmaCreationDate:
-								macroStrm << macroTmpl.Encode(line, fCreationDate) << endl;
-								break;
-						}
-					}
-				}
-				macroStrm.close();
-				gMrbLog->Out() << "Generating prototype for user macro \"" << fUserMacro << "\" (has to be edited)" << endl;
-				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
-			}	
-		}
+		this->CreatePrototypeForUserMacro();
 	} else {
 		fUserMacroCmd = fUserMacro;
 		fUserMacroCmd.Remove(fUserMacroCmd.Index(".C"), 100);
@@ -4099,6 +4117,72 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 		gROOT->ProcessLine(cmd.Data());
 	}
 	return(fUserMacroToBeCalled);
+}
+	
+Bool_t TMrbConfig::CreatePrototypeForUserMacro() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::CreatePrototypeForUserMacro
+// Purpose:        Create prototype of an user macro if none exists
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Creates a prototype of an user macro.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
+	gSystem->ExpandPathName(templatePath);
+	Char_t * fp = gSystem->Which(templatePath.Data(), "UserMacro.C.code");
+	if (fp) {
+		ofstream macroStrm(fUserMacro.Data(), ios::out);
+		TMrbTemplate macroTmpl;
+		if (macroStrm.good() && macroTmpl.Open(fp, &fLofUserMacroTags)) {			
+			for (;;) {
+				TString line;
+				TMrbNamedX * macroTag = macroTmpl.Next(line);
+				if (macroTmpl.IsEof()) break;
+				if (macroTmpl.IsError()) continue;
+				if (macroTmpl.Status() & TMrbTemplate::kNoTag) {
+					if (line.Index("#-") != 0) macroStrm << line << endl;
+				} else {
+					switch (macroTag->GetIndex()) {
+						case TMrbConfig::kUmaFile:
+							macroStrm << macroTmpl.Encode(line, fUserMacro.Data()) << endl;
+							break;
+						case TMrbConfig::kUmaNameLC:
+							macroStrm << macroTmpl.Encode(line, this->GetName()) << endl;
+							break;
+						case TMrbConfig::kUmaNameUC:
+							{
+								TString macroName = this->GetName();
+								macroName(0,1).ToUpper();
+								macroStrm << macroTmpl.Encode(line, macroName) << endl;
+							}
+							break;
+						case TMrbConfig::kUmaTitle:
+							macroStrm << macroTmpl.Encode(line, this->GetTitle()) << endl;
+							break;
+						case TMrbConfig::kUmaAuthor:
+							macroStrm << macroTmpl.Encode(line, fAuthor) << endl;
+							break;
+						case TMrbConfig::kUmaCreationDate:
+							macroStrm << macroTmpl.Encode(line, fCreationDate) << endl;
+							break;
+					}
+				}
+			}
+			macroStrm.close();
+			gMrbLog->Out() << "Generating prototype for user macro \"" << fUserMacro << "\" (has to be edited)" << endl;
+			gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserMacro");
+			return(kTRUE);
+		}	
+	} else {
+		gMrbLog->Err() << "Can't generate prototype for user macro \"" << fUserMacro << "\" - file \"UserMacro.C.code\" not found" << endl;
+		gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserMacro");
+		return(kFALSE);
+	}
+	return(kFALSE);
 }
 	
 Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Char_t * TagWord) const {
@@ -4537,7 +4621,7 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 				Int_t n2 = line.Index(":", n1);
 				TString userClass = line(n1, n2 - n1);
 				userClass = userClass.Strip(TString::kBoth);
-				this->AddUserClass(TMrbConfig::kIclOptUserClass, userClass.Data());
+				this->AddUserClass(TMrbConfig::kIclOptUserLib, userClass.Data());
 			}
 		}
 	}
@@ -4545,25 +4629,26 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 	fLofUserLibs.AddNamedX(0, userLib.Data(), userPath.Data());
 	if (verboseMode) {
 		gMrbLog->Out()  << "Using user library " << libSoPath << endl;
-		gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	}
 
 	fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, libH.Data(), userPath.Data());
 	if (verboseMode) {
 		gMrbLog->Out()  << "Using header file " << libHPath << endl;
-		gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	}
 
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserFile) {
+Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserFile, Bool_t UserDefinedEvent) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::IncludeUserClass
 // Purpose:        Specify user class to be included
 // Arguments:      const Char_t * IclPath      -- where to find user's includes
 //                 Char_t * UserFile           -- name of user file
+//                 Bool_t UserDefinedEvent     -- if kTRUE: use as event class
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Specifies user-definded class to be included.
@@ -4580,64 +4665,78 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 
 	const Char_t * fp = gSystem->Which(userPath.Data(), userFile.Data());
 
+	EMrbIncludeOptions classOpt = UserDefinedEvent ? TMrbConfig::kIclOptUserDefinedEvent : TMrbConfig::kIclOptUserClass;
+
+	TString ptPath;
+
 	if (fp == NULL || *fp == '\0') {
-		gMrbLog->Err()	<< "User code file not found - " << userPath << "/" << userFile << endl;
+		if (UserDefinedEvent) {
+			ptPath = userPath;
+			ptPath += "/";
+			ptPath += userFile;
+			fp = ptPath.Data();
+		} else {
+			gMrbLog->Err()	<< "User code file not found - " << userPath << "/" << userFile << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+			return(kFALSE);
+		}
+	} else {
+		ptPath = fp;
+	}
+
+	ptPath.ReplaceAll(".cxx", ".h");
+	if (gSystem->AccessPathName(ptPath.Data()) != 0) {
+		gMrbLog->Err() << "Can't include user class - prototype file \"" << ptPath << "\" missing" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+		if (UserDefinedEvent)	return(this->CreatePrototypeForUserEvent(ptPath.Data()));
+		else					return(kFALSE);
+	} else if (verboseMode) {
+		gMrbLog->Out()  << "Using prototype file " << ptPath << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+	}
+
+	ptPath = fp;
+	ptPath.ReplaceAll(".h", ".cxx");
+	if (gSystem->AccessPathName(ptPath.Data()) != 0) {
+		gMrbLog->Err() << "Can't include user class - code file \"" << ptPath << "\" missing" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+		if (UserDefinedEvent)	return(this->CreatePrototypeForUserEvent(ptPath.Data()));
+		else					return(kFALSE);
+	} else if (verboseMode) {
+		gMrbLog->Out()  << "Using code file " << userPath << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+	}
+
+	TMrbSystem ux;
+	userPath = ux.GetRelPath(userPath);
+	userFile.ReplaceAll(".h", ".cxx");
+	fLofUserIncludes.AddNamedX(classOpt, userFile.Data(), userPath.Data());
+	userFile.ReplaceAll(".cxx", ".h");
+	fLofUserIncludes.AddNamedX(TMrbConfig::kIclOptHeaderFile, userFile.Data(), userPath.Data());
+
+	ptPath = fp;
+	ptPath.ReplaceAll(".cxx", ".h");
+	ifstream f(ptPath.Data(), ios::in);
+	if (!f.good()) {
+		gMrbLog->Err() << gSystem->GetError() << " - "  << userFile << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 		return(kFALSE);
 	} else {
-		TString ptPath = fp;
-		ptPath.ReplaceAll(".cxx", ".h");
-		if (gSystem->AccessPathName(ptPath.Data()) != 0) {
-			gMrbLog->Err() << "Prototype file missing - " << ptPath << endl;
-			gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
-			return(kFALSE);
-		} else if (verboseMode) {
-			gMrbLog->Out()  << "Using prototype file " << ptPath << endl;
-			gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
-		}
-
-		ptPath = fp;
-		ptPath.ReplaceAll(".h", ".cxx");
-		if (gSystem->AccessPathName(ptPath.Data()) != 0) {
-			gMrbLog->Err() << "User code file missing - " << ptPath << endl;
-			gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
-			return(kFALSE);
-		} else if (verboseMode) {
-			gMrbLog->Out()  << "Using code file " << userPath << endl;
-			gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
-		}
-
-		TMrbSystem ux;
-		userPath = ux.GetRelPath(userPath);
-		userFile.ReplaceAll(".h", ".cxx");
-		fLofUserIncludes.AddNamedX(TMrbConfig::kIclOptUserClass, userFile.Data(), userPath.Data());
-		userFile.ReplaceAll(".cxx", ".h");
-		fLofUserIncludes.AddNamedX(TMrbConfig::kIclOptHeaderFile, userFile.Data(), userPath.Data());
-
-		ptPath = fp;
-		ptPath.ReplaceAll(".cxx", ".h");
-		ifstream f(ptPath.Data(), ios::in);
-		if (!f.good()) {
-			gMrbLog->Err() << gSystem->GetError() << " - "  << userFile << endl;
-			gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
-			return(kFALSE);
-		} else {
-			TString line;
-			for (;;) {
-				line.ReadLine(f, kFALSE);
-				if (f.eof()) {
-					f.close();
-					break;
-				}
-				if (line.Contains("class ")) {
-					Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
-					Int_t n2 = line.Index(":", n1);
-					if (n2 == -1) n2 = line.Index("{", n1);
-					if (n2 == -1) n2 = line.Length();
-					TString userClass = line(n1, n2 - n1);
-					userClass = userClass.Strip(TString::kBoth);
-					this->AddUserClass(userClass.Data());
-				}
+		TString line;
+		for (;;) {
+			line.ReadLine(f, kFALSE);
+			if (f.eof()) {
+				f.close();
+				break;
+			}
+			if (line.Contains("class ")) {
+				Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
+				Int_t n2 = line.Index(":", n1);
+				if (n2 == -1) n2 = line.Index("{", n1);
+				if (n2 == -1) n2 = line.Length();
+				TString userClass = line(n1, n2 - n1);
+				userClass = userClass.Strip(TString::kBoth);
+				this->AddUserClass(classOpt, userClass.Data());
 			}
 		}
 	}
@@ -4645,6 +4744,96 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 	return(kTRUE);
 }
 
+Bool_t TMrbConfig::CreatePrototypeForUserEvent(const Char_t * Path) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::CreatePrototypeForUserEvent
+// Purpose:        Create prototype files for an user-defined event class
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Creates a prototype files for an user-defined event.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbSystem ux;
+	TString uevtName;
+	TString uevtFile;
+
+	TString uevtPath = Path;
+	ux.GetBaseName(uevtFile, uevtPath.Data());
+
+	uevtName = uevtFile;
+	if (uevtPath.EndsWith(".cxx"))	uevtName.Resize(uevtName.Length() - 4);
+	else							uevtName.Resize(uevtName.Length() - 2);
+
+	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
+	gSystem->ExpandPathName(templatePath);
+	TString tmplFile = uevtPath.EndsWith(".cxx") ? "UserEvent.cxx.code" : "UserEvent.h.code";
+	Char_t * fp = gSystem->Which(templatePath.Data(), tmplFile.Data());
+	if (fp) {
+		ofstream uevtStrm(uevtPath.Data(), ios::out);
+		TMrbTemplate uevtTmpl;
+		if (uevtStrm.good() && uevtTmpl.Open(fp, &fLofUserEventTags)) {			
+			for (;;) {
+				TString line;
+				TMrbNamedX * uevtTag = uevtTmpl.Next(line);
+				if (uevtTmpl.IsEof()) break;
+				if (uevtTmpl.IsError()) continue;
+				if (uevtTmpl.Status() & TMrbTemplate::kNoTag) {
+					if (line.Index("#-") != 0) uevtStrm << line << endl;
+				} else {
+					switch (uevtTag->GetIndex()) {
+						case TMrbConfig::kUevFile:
+							uevtStrm << uevtTmpl.Encode(line, uevtFile.Data()) << endl;
+							break;
+						case TMrbConfig::kUevNameLC:
+							{
+								uevtStrm << uevtTmpl.Encode(line, uevtName.Data()) << endl;
+							}
+							break;
+						case TMrbConfig::kUevNameUC:
+							{
+								TString nameUC = uevtName;
+								nameUC(0,1).ToUpper();
+								uevtStrm << uevtTmpl.Encode(line, nameUC) << endl;
+							}
+							break;
+						case TMrbConfig::kUevConfigLC:
+							uevtStrm << uevtTmpl.Encode(line, this->GetName()) << endl;
+							break;
+						case TMrbConfig::kUevConfigUC:
+							{
+								TString nameUC = this->GetName();
+								nameUC(0,1).ToUpper();
+								uevtStrm << uevtTmpl.Encode(line, nameUC) << endl;
+							}
+							break;
+						case TMrbConfig::kUevTitle:
+							uevtStrm << uevtTmpl.Encode(line, this->GetTitle()) << endl;
+							break;
+						case TMrbConfig::kUevAuthor:
+							uevtStrm << uevtTmpl.Encode(line, fAuthor) << endl;
+							break;
+						case TMrbConfig::kUevCreationDate:
+							uevtStrm << uevtTmpl.Encode(line, fCreationDate) << endl;
+							break;
+					}
+				}
+			}
+			uevtStrm.close();
+			gMrbLog->Out() << "Generating file \"" << uevtPath << "\" for user event \"" << uevtName << "\" (has to be edited)" << endl;
+			gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserEvent");
+			return(kTRUE);
+		}	
+	} else {
+		gMrbLog->Err() << "Can't generate file \"" << uevtFile << "\" for user event \"" << uevtName << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserEvent");
+		return(kFALSE);
+	}
+	return(kFALSE);
+}
+	
 void TMrbConfig::AddToTagList(const Char_t * CodeFile, Int_t TagIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
