@@ -3167,6 +3167,8 @@ void FhMainFrame::Runloop(){
    Long_t id, size, flags, modtime;
    static TH1 * hrate     = 0;
    static TH1 * hdeadt    = 0;
+   static TH1 * htemp     = 0;
+   static TH1 * hnew      = 0;
    TCanvas *c1 = fRateHist->GetCanvas();
    TString stime;
    TMessage * message;
@@ -3229,7 +3231,8 @@ void FhMainFrame::Runloop(){
             	  delete str0;
          	  }
       	  } else if ( message->What() == kMESS_OBJECT ) {
-      	   	hrate = (TH1*) message->ReadObject(message->GetClass());
+//               if (hrate) delete hrate;
+      	   	hnew = (TH1*) message->ReadObject(message->GetClass());
       	  } else {
          	  cout << "Unknown message type" << endl;
       	  }
@@ -3237,6 +3240,13 @@ void FhMainFrame::Runloop(){
 //so      	  sock->Close();
 //so      	  delete sock;
    	  }
+     }
+     if ( hnew ) {
+        htemp  = hrate;
+        hrate  = hnew;
+        hdeadt = hnew;
+     } else {
+        htemp = 0;
      }
      if ( hrate ) {
 //        hrate->Print();
@@ -3306,6 +3316,9 @@ void FhMainFrame::Runloop(){
                c1->Modified();
                c1->Update();
             }
+            if (htemp) {delete htemp; htemp = 0;}
+            hnew = 0;
+
 //
             Float_t etime = fStopwatch->RealTime();
             if(total == 0) etime = 0;      //wait for first events to arrive
