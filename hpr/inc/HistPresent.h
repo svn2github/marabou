@@ -133,12 +133,16 @@ protected:
    Int_t fRealStack; 
 
    Int_t fNofColorLevels;
+   Int_t fStartColorIndex;
    Int_t * fPalette;
 
    Int_t   fNofTransLevels;
    Int_t * fTransPalette;
    Int_t   fStartColor;
    Int_t   fEndColor;
+   Float_t fEnhenceRed;
+   Float_t fEnhenceGreen;
+   Float_t fEnhenceBlue;
 
    Int_t   fNofGreyLevels;
    Int_t * fGreyPalette;
@@ -332,6 +336,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
    void SetAxisAtt();
    void SetGreyLevels();
    void SetTransLevels();
+   void SetColorPalette();
    void SetCurlyAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetGeneralAttributes(TGWindow * win = 0, FitHist * fh = 0);

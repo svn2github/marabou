@@ -244,53 +244,57 @@ void HistPresent::RestoreOptions()
        env.GetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim->Data());
    *f2DimColorPalette =
        env.GetValue("HistPresent.ColorPalette", f2DimColorPalette->Data());
-   fShowErrors = env.GetValue("HistPresent.ShowErrors", fShowErrors);
+   fShowErrors    = env.GetValue("HistPresent.ShowErrors", fShowErrors);
    fDrawAxisAtTop = env.GetValue("HistPresent.DrawAxisAtTop", fDrawAxisAtTop);
-   fFill1Dim = env.GetValue("HistPresent.Fill1Dim", fFill1Dim);
-   fShowContour = env.GetValue("HistPresent.ShowContour", fShowContour);
-   fOptStat = env.GetValue("HistPresent.OptStat", 1001111);
-   fShowDateBox = env.GetValue("HistPresent.ShowDateBox", 21);
-   fShowStatBox = env.GetValue("HistPresent.ShowStatBox", 1);
-   fUseTimeOfDisplay = env.GetValue("HistPresent.UseTimeOfDisplay", 0);
-   fShowTitle = env.GetValue("HistPresent.ShowTitle", 1);
+   fFill1Dim      = env.GetValue("HistPresent.Fill1Dim", fFill1Dim);
+   fShowContour   = env.GetValue("HistPresent.ShowContour", fShowContour);
+   fOptStat       = env.GetValue("HistPresent.OptStat", 1001111);
+   fShowDateBox   = env.GetValue("HistPresent.ShowDateBox", 21);
+   fShowStatBox   = env.GetValue("HistPresent.ShowStatBox", 1);
+   fUseTimeOfDisplay  = env.GetValue("HistPresent.UseTimeOfDisplay", 0);
+   fShowTitle         = env.GetValue("HistPresent.ShowTitle", 1);
    fEnableCalibration = env.GetValue("HistPresent.EnableCalibration", 0);
-   fShowFitBox = env.GetValue("HistPresent.ShowFitBox", 1);
-   fShowFittedCurves = env.GetValue("HistPresent.ShowFittedCurves", 1);
-   fShowPSFile = env.GetValue("HistPresent.AutoShowPSFile", 1);
-   fShowListsOnly= env.GetValue("HistPresent.ShowListsOnly", 0);
+   fShowFitBox        = env.GetValue("HistPresent.ShowFitBox", 1);
+   fShowFittedCurves  = env.GetValue("HistPresent.ShowFittedCurves", 1);
+   fShowPSFile        = env.GetValue("HistPresent.AutoShowPSFile", 1);
+   fShowListsOnly     = env.GetValue("HistPresent.ShowListsOnly", 0);
    fRememberTreeHists = env.GetValue("HistPresent.RememberTreeHists", 0);
-   fAlwaysNewLimits    = env.GetValue("HistPresent.AlwaysNewLimits", 0);
-   fRememberLastSet = env.GetValue("HistPresent.RememberLastSet", 1);
-   fRememberZoom = env.GetValue("HistPresent.RememberZoom", 0);
+   fAlwaysNewLimits   = env.GetValue("HistPresent.AlwaysNewLimits", 0);
+   fRememberLastSet   = env.GetValue("HistPresent.RememberLastSet", 1);
+   fRememberZoom      = env.GetValue("HistPresent.RememberZoom", 0);
    fUseAttributeMacro = env.GetValue("HistPresent.UseAttributeMacro", 1);
-   fShowAllAsFirst = env.GetValue("HistPresent.ShowAllAsFirst", 1);
-   fRealStack = env.GetValue("HistPresent.RealStack", 1);
-   fUseRegexp = env.GetValue("HistPresent.UseRegexp", 0);
-   fProjectBothRatio =
+   fShowAllAsFirst    = env.GetValue("HistPresent.ShowAllAsFirst", 1);
+   fRealStack         = env.GetValue("HistPresent.RealStack", 1);
+   fUseRegexp         = env.GetValue("HistPresent.UseRegexp", 0);
+   fProjectBothRatio  =
        atof(env.GetValue("HistPresent.ProjectBothRatio", "0.6"));
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
    fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
    fAutoUpdateDelay =
        atof(env.GetValue("HistPresent.AutoUpdateDelay", "2"));
-   fPeakMwidth = env.GetValue("HistPresent.fPeakMwidth", 11);
-   fPeakThreshold = env.GetValue("HistPresent.fPeakThreshold", 3.);
-   fLiveStat1dim= env.GetValue("HistPresent.LiveStat1dim", 0);
-   fLiveStat2dim= env.GetValue("HistPresent.LiveStat2dim", 0);
-   fLiveGauss = env.GetValue("HistPresent.LiveGauss", 0);
-   fLiveBG = env.GetValue("HistPresent.LiveBG", 0);
+   fPeakMwidth       = env.GetValue("HistPresent.fPeakMwidth", 11);
+   fPeakThreshold    = env.GetValue("HistPresent.fPeakThreshold", 3.);
+   fLiveStat1dim     = env.GetValue("HistPresent.LiveStat1dim", 0);
+   fLiveStat2dim     = env.GetValue("HistPresent.LiveStat2dim", 0);
+   fLiveGauss        = env.GetValue("HistPresent.LiveGauss", 0);
+   fLiveBG           = env.GetValue("HistPresent.LiveBG", 0);
 
    fFitOptLikelihood = env.GetValue("HistPresent.FitOptLikelihood", 0);
-   fFitOptQuiet = env.GetValue("HistPresent.FitOptQuiet", 0);
-   fFitOptVerbose = env.GetValue("HistPresent.FitOptVerbose", 0);
-   fFitOptMinos = env.GetValue("HistPresent.FitOptMinos", 0);
-   fFitOptErrors1 = env.GetValue("HistPresent.FitOptErrors1", 0);
-   fFitOptIntegral = env.GetValue("HistPresent.FitOptIntegral", 0);
-   fFitOptNoDraw = env.GetValue("HistPresent.FitOptNoDraw", 0);
-   fFitOptAddAll = env.GetValue("HistPresent.FitOptAddAll", 0);
+   fFitOptQuiet      = env.GetValue("HistPresent.FitOptQuiet", 0);
+   fFitOptVerbose    = env.GetValue("HistPresent.FitOptVerbose", 0);
+   fFitOptMinos      = env.GetValue("HistPresent.FitOptMinos", 0);
+   fFitOptErrors1    = env.GetValue("HistPresent.FitOptErrors1", 0);
+   fFitOptIntegral   = env.GetValue("HistPresent.FitOptIntegral", 0);
+   fFitOptNoDraw     = env.GetValue("HistPresent.FitOptNoDraw", 0);
+   fFitOptAddAll     = env.GetValue("HistPresent.FitOptAddAll", 0);
    fFitOptKeepParameters = env.GetValue("HistPresent.FitOptKeepPara", 0);
-   fNofTransLevels = env.GetValue("HistPresent.NofTransLevels", 20);
-   fStartColor = env.GetValue("HistPresent.StartColor", 2);
-   fEndColor   = env.GetValue("HistPresent.EndColor", 3);
+   fNofTransLevels   = env.GetValue("HistPresent.NofTransLevels", 20);
+   fStartColor       = env.GetValue("HistPresent.StartColor", 2);
+   fEndColor         = env.GetValue("HistPresent.EndColor", 3);
+   fEnhenceRed       = env.GetValue("HistPresent.EnhenceRed", 1.);
+   fEnhenceGreen     = env.GetValue("HistPresent.EnhenceGreen", 1.);
+   fEnhenceBlue      = env.GetValue("HistPresent.EnhenceBlue", 1.);
+
    f2DimBackgroundColor =
        env.GetValue("HistPresent.2DimBackgroundColor", 0);
    f1DimFillColor = env.GetValue("HistPresent.1DimFillColor", 46);
@@ -442,26 +446,8 @@ void HistPresent::RestoreOptions()
    fTransPalette = NULL;
    fNofGreyLevels = 20;
    SetGreyLevels();
-   fNofTransLevels = 20;
    SetTransLevels();
-
-   if (f2DimColorPalette->Contains("MONO")) {
-      fNofColorLevels = fNofGreyLevels;
-      fPalette = fGreyPalette;
-   } else if (f2DimColorPalette->Contains("MINV")) {
-      fNofColorLevels = fNofGreyLevels;
-      fPalette = fGreyPaletteInv;
-   } else if (f2DimColorPalette->Contains("TRANS")) {
-      fNofColorLevels = fNofTransLevels;
-      fPalette = fTransPalette;
-   } else if (f2DimColorPalette->Contains("REGB")) {
-      fNofColorLevels = 1;
-      fPalette = NULL;
-   } else {
-      fNofColorLevels = 50;
-      fPalette = NULL;
-   }
-   gStyle->SetPalette(fNofColorLevels, fPalette);
+   SetColorPalette();
 //   CheckAutoExecFiles();
 //
    if (fShowStatBox) {
@@ -503,67 +489,70 @@ void SetIntValue(TEnv & env, const Char_t * name, Int_t value)
 void HistPresent::SaveOptions()
 {
    TEnv env(".rootrc");
-   SetIntValue(env, "HistPresent.WindowXWidth_2dim", fWinwidx_2dim);
-   SetIntValue(env, "HistPresent.WindowYWidth_2dim", fWinwidy_2dim);
-   SetIntValue(env, "HistPresent.WindowXWidth_1dim", fWinwidx_1dim);
-   SetIntValue(env, "HistPresent.WindowYWidth_1dim", fWinwidy_1dim);
-   SetIntValue(env, "HistPresent.WindowXShift", fWinshiftx);
-   SetIntValue(env, "HistPresent.WindowYShift", fWinshifty);
-   SetIntValue(env, "HistPresent.WindowX", fWintopx);
-   SetIntValue(env, "HistPresent.WindowY", fWintopy);
-   SetIntValue(env, "HistPresent.WindowXWidth_List", fWinwidx_hlist);
-   SetIntValue(env, "HistPresent.ShowErrors", fShowErrors);
-   SetIntValue(env, "HistPresent.DrawAxisAtTop", fDrawAxisAtTop);
-   SetIntValue(env, "HistPresent.Fill1Dim", fFill1Dim);
-   SetIntValue(env, "HistPresent.NofTransLevels", fNofTransLevels);
-   SetIntValue(env, "HistPresent.StartColor", fStartColor);
-   SetIntValue(env, "HistPresent.EndColor", fEndColor);
-   SetIntValue(env, "HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
-   SetIntValue(env, "HistPresent.1DimFillColor", f1DimFillColor);
-   SetIntValue(env, "HistPresent.StatBoxFont", fStatFont);
-   SetIntValue(env, "HistPresent.TitleBoxFont", fTitleFont);
-   SetIntValue(env, "HistPresent.ShowContour", fShowContour);
-   SetIntValue(env, "HistPresent.OptStat", fOptStat);
-   SetIntValue(env, "HistPresent.ShowDateBox", fShowDateBox);
-   SetIntValue(env, "HistPresent.ShowStatBox", fShowStatBox);
-   SetIntValue(env, "HistPresent.UseTimeOfDisplay", fUseTimeOfDisplay);
-   SetIntValue(env, "HistPresent.ShowTitle", fShowTitle);
-   SetIntValue(env, "HistPresent.EnableCalibration", fEnableCalibration);
-   SetIntValue(env, "HistPresent.ShowFitBox", fShowFitBox);
-   SetIntValue(env, "HistPresent.ShowFittedCurves", fShowFittedCurves);
-   SetIntValue(env, "HistPresent.AutoShowPSFile", fShowPSFile);
-   SetIntValue(env, "HistPresent.ShowListsOnly", fShowListsOnly);
-   SetIntValue(env, "HistPresent.RememberTreeHists", fRememberTreeHists);
-   SetIntValue(env, "HistPresent.AlwaysNewLimits", fAlwaysNewLimits);
-   SetIntValue(env, "HistPresent.RememberLastSet", fRememberLastSet);
-   SetIntValue(env, "HistPresent.RememberZoom", fRememberZoom);
-   SetIntValue(env, "HistPresent.UseAttributeMacro", fUseAttributeMacro);
-   SetIntValue(env, "HistPresent.ShowAllAsFirst",    fShowAllAsFirst);
-   SetIntValue(env, "HistPresent.RealStack",    fRealStack);
-   SetIntValue(env, "HistPresent.UseRegexp", fUseRegexp);
-   SetIntValue(env, "HistPresent.FitOptLikelihood", fFitOptLikelihood);
-   SetIntValue(env, "HistPresent.FitOptQuiet", fFitOptQuiet);
-   SetIntValue(env, "HistPresent.FitOptVerbose", fFitOptVerbose);
-   SetIntValue(env, "HistPresent.FitOptMinos", fFitOptMinos);
-   SetIntValue(env, "HistPresent.FitOptErrors1", fFitOptErrors1);
-   SetIntValue(env, "HistPresent.FitOptIntegral", fFitOptIntegral);
-   SetIntValue(env, "HistPresent.FitOptNoDraw", fFitOptNoDraw);
-   SetIntValue(env, "HistPresent.FitOptAddAll", fFitOptAddAll);
-   SetIntValue(env, "HistPresent.FitOptKeepPara", fFitOptKeepParameters);
-   SetIntValue(env, "HistPresent.FitOptUseLinBg", fFitOptUseLinBg);
-   SetIntValue(env, "HistPresent.MaxListEntries", fMaxListEntries);
-   SetIntValue(env, "HistPresent.DisplayCalibrated", fDisplayCalibrated);
-   SetIntValue(env, "HistPresent.AutoExec_1", fAutoExec_1);
-   SetIntValue(env, "HistPresent.AutoExec_2", fAutoExec_2);
-   SetIntValue(env, "HistPresent.AutoProj_X", fAutoProj_X);
-   SetIntValue(env, "HistPresent.AutoProj_Y", fAutoProj_Y);
+   env.SetValue("HistPresent.WindowXWidth_2dim", fWinwidx_2dim);
+   env.SetValue("HistPresent.WindowYWidth_2dim", fWinwidy_2dim);
+   env.SetValue("HistPresent.WindowXWidth_1dim", fWinwidx_1dim);
+   env.SetValue("HistPresent.WindowYWidth_1dim", fWinwidy_1dim);
+   env.SetValue("HistPresent.WindowXShift", fWinshiftx);
+   env.SetValue("HistPresent.WindowYShift", fWinshifty);
+   env.SetValue("HistPresent.WindowX", fWintopx);
+   env.SetValue("HistPresent.WindowY", fWintopy);
+   env.SetValue("HistPresent.WindowXWidth_List", fWinwidx_hlist);
+   env.SetValue("HistPresent.ShowErrors", fShowErrors);
+   env.SetValue("HistPresent.DrawAxisAtTop", fDrawAxisAtTop);
+   env.SetValue("HistPresent.Fill1Dim", fFill1Dim);
+   env.SetValue("HistPresent.NofTransLevels", fNofTransLevels);
+   env.SetValue("HistPresent.StartColor", fStartColor);
+   env.SetValue("HistPresent.EndColor", fEndColor);
+   env.SetValue("HistPresent.EnhenceRed",fEnhenceRed);
+   env.SetValue("HistPresent.EnhenceGreen",fEnhenceGreen);
+   env.SetValue("HistPresent.EnhenceBlue",fEnhenceBlue);
+   env.SetValue("HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
+   env.SetValue("HistPresent.1DimFillColor", f1DimFillColor);
+   env.SetValue("HistPresent.StatBoxFont", fStatFont);
+   env.SetValue("HistPresent.TitleBoxFont", fTitleFont);
+   env.SetValue("HistPresent.ShowContour", fShowContour);
+   env.SetValue("HistPresent.OptStat", fOptStat);
+   env.SetValue("HistPresent.ShowDateBox", fShowDateBox);
+   env.SetValue("HistPresent.ShowStatBox", fShowStatBox);
+   env.SetValue("HistPresent.UseTimeOfDisplay", fUseTimeOfDisplay);
+   env.SetValue("HistPresent.ShowTitle", fShowTitle);
+   env.SetValue("HistPresent.EnableCalibration", fEnableCalibration);
+   env.SetValue("HistPresent.ShowFitBox", fShowFitBox);
+   env.SetValue("HistPresent.ShowFittedCurves", fShowFittedCurves);
+   env.SetValue("HistPresent.AutoShowPSFile", fShowPSFile);
+   env.SetValue("HistPresent.ShowListsOnly", fShowListsOnly);
+   env.SetValue("HistPresent.RememberTreeHists", fRememberTreeHists);
+   env.SetValue("HistPresent.AlwaysNewLimits", fAlwaysNewLimits);
+   env.SetValue("HistPresent.RememberLastSet", fRememberLastSet);
+   env.SetValue("HistPresent.RememberZoom", fRememberZoom);
+   env.SetValue("HistPresent.UseAttributeMacro", fUseAttributeMacro);
+   env.SetValue("HistPresent.ShowAllAsFirst",    fShowAllAsFirst);
+   env.SetValue("HistPresent.RealStack",    fRealStack);
+   env.SetValue("HistPresent.UseRegexp", fUseRegexp);
+   env.SetValue("HistPresent.FitOptLikelihood", fFitOptLikelihood);
+   env.SetValue("HistPresent.FitOptQuiet", fFitOptQuiet);
+   env.SetValue("HistPresent.FitOptVerbose", fFitOptVerbose);
+   env.SetValue("HistPresent.FitOptMinos", fFitOptMinos);
+   env.SetValue("HistPresent.FitOptErrors1", fFitOptErrors1);
+   env.SetValue("HistPresent.FitOptIntegral", fFitOptIntegral);
+   env.SetValue("HistPresent.FitOptNoDraw", fFitOptNoDraw);
+   env.SetValue("HistPresent.FitOptAddAll", fFitOptAddAll);
+   env.SetValue("HistPresent.FitOptKeepPara", fFitOptKeepParameters);
+   env.SetValue("HistPresent.FitOptUseLinBg", fFitOptUseLinBg);
+   env.SetValue("HistPresent.MaxListEntries", fMaxListEntries);
+   env.SetValue("HistPresent.DisplayCalibrated", fDisplayCalibrated);
+   env.SetValue("HistPresent.AutoExec_1", fAutoExec_1);
+   env.SetValue("HistPresent.AutoExec_2", fAutoExec_2);
+   env.SetValue("HistPresent.AutoProj_X", fAutoProj_X);
+   env.SetValue("HistPresent.AutoProj_Y", fAutoProj_Y);
 //  char options
    env.SetValue("HistPresent.ColorPalette", f2DimColorPalette->Data());
    env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
    env.SetValue("HistPresent.DrawOptGraph", fDrawOptGraph.Data());
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim->Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
-   SetIntValue(env, "HistPresent.SocketToConnect", fSocketToConnect);
+   env.SetValue("HistPresent.SocketToConnect", fSocketToConnect);
 //  double
 //   env.SetValue("HistPresent.ProjectBothRatio"   ,kEnvUser);
 //   env.SetValue("HistPresent.LogScaleMin"        ,kEnvUser);
@@ -1651,36 +1640,16 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 
    if (flags[nopt - 5] != 0) {
       *f2DimColorPalette = "TRANS";
-      fNofColorLevels = fNofTransLevels;
-      fPalette = fTransPalette;
-//      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
-      cout << "Setting TRANS" << endl;
    } else if (flags[nopt - 4] != 0) {
       *f2DimColorPalette = "MONO";
-      fNofColorLevels = fNofGreyLevels;
-      fPalette = fGreyPalette;
-//      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
-      cout << "Setting MONO " << endl;
    } else if (flags[nopt - 3] != 0) {
       *f2DimColorPalette = "MINV";
-      fNofColorLevels = fNofGreyLevels;
-      fPalette = fGreyPaletteInv;
-
-//      gStyle->SetPalette(fNofGreyLevels, fGreyPaletteInv);
-      cout << "Setting MINV " << endl;
    } else if (flags[nopt - 2] != 0) {
       *f2DimColorPalette = "REGB";
-      fNofColorLevels = 1;
-      fPalette = 0;
-
-//      gStyle->SetPalette(1, 0); // violet - red 
    } else {
       *f2DimColorPalette = "DEFA";
-      fNofColorLevels = 50;
-      fPalette = 0;
- //     gStyle->SetPalette(50, 0);	// default palette
    }
-      gStyle->SetPalette(fNofColorLevels, fPalette);
+   SetColorPalette();
 
    if (fh) {
       fh->SetSelectedPad();
@@ -2220,7 +2189,7 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 7;
+   Int_t nopt = 10;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
@@ -2229,6 +2198,9 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Nof transition levels"));
    row_lab->Add(new TObjString("Color transition start"));
    row_lab->Add(new TObjString("Color transition end"));
+   row_lab->Add(new TObjString("Enhence red (gamma)"));
+   row_lab->Add(new TObjString("Enhence green (gamma)"));
+   row_lab->Add(new TObjString("Enhence blue (gamma)"));
    row_lab->Add(new TObjString("1_Dim_FillColor"));
    row_lab->Add(new TObjString("2_Dim_BackgroundColor"));
    row_lab->Add(new TObjString("StatBox font"));
@@ -2237,6 +2209,9 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
    values[vp++] = fNofTransLevels;
    values[vp++] = fStartColor;
    values[vp++] = fEndColor;
+   values[vp++] = fEnhenceRed;
+   values[vp++] = fEnhenceGreen;
+   values[vp++] = fEnhenceBlue;
    values[vp++] = f1DimFillColor;
    values[vp++] = f2DimBackgroundColor;
    values[vp++] = fStatFont;
@@ -2249,13 +2224,22 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
       Int_t tl = (Int_t) values[vp++];
       Int_t ts = (Int_t) values[vp++];
       Int_t te = (Int_t) values[vp++];
+      Float_t er = values[vp++];
+      Float_t eg = values[vp++];
+      Float_t eb = values[vp++];
 
-      if (ts != fStartColor || te != fEndColor || tl != fNofTransLevels) {
+      if (ts != fStartColor || te != fEndColor || tl != fNofTransLevels
+          || er != fEnhenceRed || eg != fEnhenceGreen || eb != fEnhenceBlue) {
          fStartColor = ts; 
          fEndColor = te; 
          fNofTransLevels = tl;
+         fEnhenceRed   = er;
+         fEnhenceGreen = eg;
+         fEnhenceBlue  = eb;
          SetTransLevels();
+         SetColorPalette();
       }
+
       f1DimFillColor = (Int_t) values[vp++];
       if (values[vp] != f2DimBackgroundColor) {
          f2DimBackgroundColor = (Int_t) values[vp];
@@ -2297,15 +2281,17 @@ void HistPresent::SetGreyLevels()
       Float_t frac = 1 / (Float_t) fNofGreyLevels;
       for (Int_t i = 0; i < fNofGreyLevels; i++) {
          Float_t x = (Float_t) i;
+         fStartColorIndex = 331;
          color =
-             new TColor(331 + i, 1 - x * frac, 1 - x * frac, 1 - x * frac,
+             new TColor(fStartColorIndex + i, 1 - x * frac, 1 - x * frac, 1 - x * frac,
                         "");
-         fGreyPaletteInv[i] = 331 + i;
-         color = new TColor(301 + i, x * frac, x * frac, x * frac, "");
-         fGreyPalette[i] = 301 + i;
+         fGreyPaletteInv[i] = fStartColorIndex + i;
+
+         fStartColorIndex = 301;
+         color = new TColor(fStartColorIndex + i, x * frac, x * frac, x * frac, "");
+         fGreyPalette[i] = fStartColorIndex + i;
       }
    }
-   gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
 }
 //___________________________________________________________________________________________
 
@@ -2328,16 +2314,77 @@ void HistPresent::SetTransLevels()
    Float_t start_b = sc->GetBlue(); 
    Float_t step_b = (ec->GetBlue() - start_b) / (Float_t)(fNofTransLevels - 1);
    Float_t frac_b = 0;
+//   Float_t nof2 = fNofTransLevels / 2.;
+   fStartColorIndex = 361;
    for (Int_t i = 0; i < fNofTransLevels; i++) {
-      color = GetColorByInd(361 + i);
+      color = GetColorByInd(fStartColorIndex + i);
       if (color) delete color;
-      color = new TColor(361 + i, start_r + frac_r, start_g + frac_g , start_b + frac_b,"");
-      color->Print();
-      fTransPalette[i] = 361 + i;
+//      Float_t dc = 1 + 2. * (1. - 2. * TMath::Abs((i - nof2) / fNofTransLevels ));
+      Float_t rgb[3];
+      rgb[0] = start_r + frac_r;
+      rgb[1] = start_g + frac_g;
+      rgb[2] = start_b + frac_b;
+//    adjust to same lightness
+//      Float_t max = TMath::MaxElement(3, rgb);
+//      if (max > 0) max = 1. / max;
+//      for (Int_t j = 0; j < 3; j++) rgb[j] *= max;
+      rgb[0] *= fEnhenceRed;           
+      rgb[1] *= fEnhenceGreen;           
+      rgb[2] *= fEnhenceBlue;
+      for (Int_t jj = 0; jj < 1; jj++) {
+         if (rgb[0] > 1.) {
+            rgb[1] += 0.5 * (rgb[0] - 1.);            
+            rgb[2] += 0.5 * (rgb[0] - 1.);
+            rgb[0] = 1.;
+         }            
+         if (rgb[1] > 1.) {
+            rgb[0] += 0.5 * (rgb[1] - 1.);            
+            rgb[2] += 0.5 * (rgb[1] - 1.);
+            rgb[1] = 1.;
+         }            
+         if (rgb[2] > 1.) {
+            rgb[0] += 0.5 * (rgb[2] - 1.);            
+            rgb[1] += 0.5 * (rgb[2] - 1.);
+            rgb[2] = 1.;
+         } 
+      }           
+      color = new TColor(fStartColorIndex + i, rgb[0], rgb[1], rgb[2],"");
+//      color->Print();
+      fTransPalette[i] = fStartColorIndex + i;
       frac_r += step_r;
       frac_g += step_g;
       frac_b += step_b;
    }
-   cout <<fNofTransLevels << " "  << fTransPalette << endl;
-   gStyle->SetPalette(fNofTransLevels, fTransPalette);
+}
+//___________________________________________________________________________________________
+
+void HistPresent::SetColorPalette()
+{
+   if (f2DimColorPalette->Contains("MONO")) {
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPalette;
+      fStartColorIndex = 301;
+   } else if (f2DimColorPalette->Contains("MINV")) {
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPaletteInv;
+      fStartColorIndex = 331;
+   } else if (f2DimColorPalette->Contains("TRANS")) {
+      fNofColorLevels = fNofTransLevels;
+      fPalette = fTransPalette;
+      fStartColorIndex = 361;
+   } else if (f2DimColorPalette->Contains("REGB")) {
+      fNofColorLevels = 50;
+      fStartColorIndex = 51;
+      fPalette = NULL;
+   } else {
+      fNofColorLevels = 50;
+      fPalette = NULL;
+      fStartColorIndex = 1;
+   }
+//   cout << "SetColorPalette: " << *f2DimColorPalette << " " 
+//        << fNofColorLevels << " " <<  fPalette << " " << fStartColorIndex << endl;
+   if ( f2DimColorPalette->Contains("REGB"))
+      gStyle->SetPalette(1, NULL);
+   else
+      gStyle->SetPalette(fNofColorLevels, fPalette);
 }

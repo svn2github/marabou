@@ -149,9 +149,6 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
       fAllFunctions = hp->GetFunctionList();
       fAllWindows = hp->GetWindowList();
       fAllCuts = hp->GetCutList();
-      gStyle->SetPalette(hp->fNofColorLevels, hp->fPalette);
- //     cout << "hp->fNofColorLevels " <<hp->fNofColorLevels 
- //           << " hp->fPalette" << hp->fPalette << endl;
    }
    markers = new TObjArray(0);
    peaks = new TObjArray(0);
@@ -1332,7 +1329,9 @@ void FitHist::ClearUserContours()
 {
    TH2 * h2 = (TH2*)fSelHist;
    h2->SetContour(20);
-   if (hp) gStyle->SetPalette(hp->fNofColorLevels, hp->fPalette);
+   if (hp) hp->SetColorPalette();
+   else    gStyle->SetPalette(1, NULL);
+
    TObject * nai;
    while ( (nai = fSelHist->GetListOfFunctions()->FindObject("Pixel")) ){
       cout << " Removing user contour" << endl;
@@ -1388,8 +1387,16 @@ void FitHist::SetUserContours()
          (*colors)[i] = oldcol->At(i);
       } else {
 //    assume colorindeces 51 - 100 ( rainbow colors)
-         Int_t colind = Int_t( (i + 1)* (50 / (Float_t)ncont)) + 50;
-//         cout << "colind " << colind<< endl;
+         Int_t startIndex = 51;
+         Int_t nofLevels = 50;
+         if (hp) {
+            startIndex= hp->fStartColorIndex;
+            nofLevels= hp->fNofColorLevels;
+         } 
+//         Int_t colind = Int_t( (i + 1)* (50 / (Float_t)ncont)) + 50;
+         Int_t colind = TMath::Nint( i * ( nofLevels / (Float_t)(ncont))) + startIndex;
+         colind = TMath::Min(colind, startIndex + nofLevels - 1); 
+         cout << "colind " << colind << endl;
          TColor * col = GetColorByInd(colind);
          if (col) (*colors)[i] = col->GetPixel();
       }
@@ -1401,7 +1408,7 @@ void FitHist::SetUserContours()
    TH2 * h2 = (TH2*)fSelHist;
    fSetLevels = set_levels;
    fSetColors = set_colors;
-//   Int_t   allcolors = 0;;
+//   Int_t   allcolors = 0;
 //   Double_t allconts = 0;
 //   for (Int_t i=0; i< ncont; i++) {
 //      allcolors += (*colors)[i];
