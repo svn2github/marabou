@@ -68,21 +68,18 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
 
 	TUsrHitBuffer * eventTimeBuffer = NULL;
 
-	Int_t nofEntriesE, highWaterE, nofEntriesS, highWaterS;
-	UInt_t offsetE, offsetS;
+	Int_t nofEntriesE, highWaterE, nofEntriesS, highWaterS, offsetE, offsetS;
 
 %%BeginOfCode%%
+%H%// get dimension of hit buffer
 %H% 	nofEntriesE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.NofEntries"), $nofEntries);
 %H% 	highWaterE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.HighWater"), $highWater);
-%H% 	offsetE = (UInt_t) gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.Offset"), (Int_t) $offset);
 %H%
+%S%// alloc hit buffer for subevent $sevtNameLC
 %S% 	nofEntriesS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.NofEntries"), nofEntriesE);
 %S% 	highWaterS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.HighWater"), highWaterE);
-%S% 	offsetS = (UInt_t) gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.Offset"), (Int_t) offsetE);
-%S% 	$sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS, offsetS);
+%S% 	$sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS);
 %S%
-%PEV%	eventTimeBuffer = $sevtNameLC.GetHitBuffer();
-%NEV%	$sevtNameLC.ConnectToEventTimeBuffer(eventTimeBuffer);
 %%EndOfCode%%
 %%EVT_ALLOC_HITBUFFER%%
 
@@ -415,6 +412,35 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, const MBSData
 }
 
 %%BeginOfCode%%
+%B%Bool_t TUsrEvt$evtNameUC::BuildEvent() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:           TUsrEvt$evtNameUC::BuildEvent
+%B%// Purpose:        Event builder for $evtNameLC
+%B%//                 (Trigger $evtTrigger)
+%B%// Arguments:      --
+%B%// Results:        kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Event builder for trigger $evtNameLC to be called before analysis
+%B%// Keywords:       
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%IUC%
+%IUC%//++++++++ Special event builder code goes here +++++++++++++
+%IUC%
+%IUC%#include "$iclFile"
+%IUC%
+%N%
+%N% this->Analyze();
+%N%
+%E%	if (gMrbAnalyze->TreeToBeWritten()) fTreeOut->Fill();
+%E%
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%EVT_BUILD_EVENT%%
+
+%%BeginOfCode%%
 %B%Bool_t TUsrEvt$evtNameUC::Analyze() {
 %B%//________________________________________________________________[C++ METHOD]
 %B%//////////////////////////////////////////////////////////////////////////////
@@ -429,16 +455,19 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, const MBSData
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B% 	Bool_t treeToBeFilled = kTRUE;			// may be changed by user's analysis
-%B%
-%N%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
-%P%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
-%C%
-%C%//++++++++ User's analyzing code goes here +++++++++++++
-%C%
+%WTF% 	Bool_t treeToBeFilled = kTRUE;			// may be changed by user's analysis
+%WTF%
+%FHBN%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
+%FHBP%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
+%AC%
+%AC%//++++++++ User's analyzing code goes here +++++++++++++
+%AC%
 %IUC%#include "$iclFile"
-%E%
-%E%	if (gMrbAnalyze->TreeToBeWritten() && treeToBeFilled) fTreeOut->Fill();
+%IUC%
+%FHAN%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
+%FHAP%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
+%WT%
+%WT%	if (gMrbAnalyze->TreeToBeWritten() && treeToBeFilled) fTreeOut->Fill();
 %E%
 %E%	return(kTRUE);
 %E%}

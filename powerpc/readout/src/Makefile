@@ -24,7 +24,7 @@ SRCS		=	\
 				cc32_init.c \
 				cc32.c
 
-ULIB 		=	../lib/libutils.a
+ULIB 		=	../lib/lib_utils.a
 INC 		=	$(MBSROOT)/inc
 GD_INCL		=	/mbssys/include
 

@@ -145,6 +145,8 @@ enum ERootCanvasCommands {
    kFHRebinOne,
    kFHUserCont,
    kFHUserContClear,
+   kFHUserContSave,
+   kFHUserContUse,
 //   kFHProjectY,
    kFHOutputStat,
    kFHHistToFile,
@@ -167,6 +169,7 @@ enum ERootCanvasCommands {
 
    kFHFit,
    kFHSetLinBg,
+   kFHFitGOnly,
    kFHFitGBgOnly,
    kFHFitGBgTailLow,
    kFHFitGBgTailHigh,
@@ -380,6 +383,9 @@ void HTRootCanvas::CreateCanvas(const char *name)
    fOptionMenu->AddEntry("HistPresent Numerical Options", kOptionNum);
    fOptionMenu->AddEntry("Default window sizes", kOptionWin);
    fOptionMenu->AddEntry("Default colors and fonts", kOptionCol);
+   fOptionMenu->AddSeparator();
+   fOptionMenu->AddEntry("Show Colors",             kViewColors);
+   fOptionMenu->AddEntry("Show Fonts",              kViewFonts);
 //   fOptionMenu->AddEntry("&Statistics",         kOptionStatistics);
 //   fOptionMenu->AddEntry("&Histogram Title",    kOptionHistTitle);
 //   fOptionMenu->AddEntry("Show &Fit Params",    kOptionFitParams);
@@ -403,8 +409,11 @@ void HTRootCanvas::CreateCanvas(const char *name)
       	fViewMenu->AddEntry("Entire",      kFHEntire     );
       	if(!is2dim)fViewMenu->AddEntry("Rebin",       kFHRebinOne);
       	if (is2dim) {
+      	   fViewMenu->AddSeparator();
             fViewMenu->AddEntry("Set User Contours",   kFHUserCont);
+            fViewMenu->AddEntry("Use Selected Contours",   kFHUserContUse);
             fViewMenu->AddEntry("Clear User Contours",   kFHUserContClear);
+            fViewMenu->AddEntry("Save User Contours",   kFHUserContSave);
          }
       	fViewMenu->AddSeparator();
       	fViewMenu->AddEntry("ClearMarks",   kFHClearMarks);
@@ -517,6 +526,7 @@ void HTRootCanvas::CreateCanvas(const char *name)
       if(is2dim){
          fInspectMenu->AddPopup("FitPolyMarks", fCascadeMenu2);
       } else {
+         fInspectMenu->AddEntry("FitGaussOnly", kFHFitGOnly);
          fInspectMenu->AddEntry("FitGauss+BgOnly", kFHFitGBgOnly);
          fInspectMenu->AddEntry("FitGauss+Low Tail",   kFHFitGBgTailLow);
          fInspectMenu->AddEntry("FitGauss+High Tail",   kFHFitGBgTailHigh);
@@ -1254,11 +1264,17 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHRebinOne:
                      oFitHist->RebinOne(); 
                      break;
+                  case kFHUserContUse:
+                     oFitHist->UseSelectedContour(); 
+                     break;
                   case kFHUserCont:
                      oFitHist->SetUserContours(); 
                      break;
                   case kFHUserContClear:
                      oFitHist->ClearUserContours(); 
+                     break;
+                  case kFHUserContSave:
+                     oFitHist->SaveUserContours(); 
                      break;
                   case kFHMagnify:
                      oFitHist->Magnify(); 
@@ -1369,10 +1385,13 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      gApplication->Terminate(0);
                      break;
 
-                  case kFHFitGBgOnly:
+                  case kFHFitGOnly:
+                     oFitHist->FitGBg(-1); 
+                     break;
+                   case kFHFitGBgOnly:
                      oFitHist->FitGBgOnly(); 
                      break;
-                  case kFHFitGBgTailLow:
+                 case kFHFitGBgTailLow:
                      oFitHist->FitGBgTailLow(); 
                      break;
                   case kFHFitGBgTailHigh:
@@ -1492,7 +1511,8 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      oFitHist->Calibrate(); 
                      break;
                   case kFHDeleteCal:
-                     oFitHist->SetDeleteCalFlag(); 
+                     oFitHist->ClearCalibration(); 
+//                     oFitHist->SetDeleteCalFlag(); 
                      break;
                   case kFHFindPeaks:
                      np=oFitHist->FindPeaks(); 

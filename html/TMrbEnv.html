@@ -31,8 +31,12 @@
 <!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbEnv:Class">Class</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEnv:CopyDefaults">CopyDefaults</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ExactMatch = kTRUE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> OverWrite = kFALSE)
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEnv:CopyDefaults">CopyDefaults</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TRegexp.html">TRegexp</a>&amp; Regexp, <a href="ListOfTypes.html#Bool_t">Bool_t</a> OverWrite = kFALSE)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEnv:Find">Find</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* LofPrefixes, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, <a href="ListOfTypes.html#Int_t">Int_t</a> <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEnv:Find">Find</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LofPrefixes, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) const
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEnv:Find">Find</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* LofPrefixes, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) const
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEnv:Get">Get</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, <a href="ListOfTypes.html#Int_t">Int_t</a> <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>)
 <!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEnv:Get">Get</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) const
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEnv:Get">Get</a><!--PLAIN-->(<a href="./TMrbNamedX.html">TMrbNamedX</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) const
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEnv:GetDefault">GetDefault</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, <a href="ListOfTypes.html#Int_t">Int_t</a> <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>)
 <!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbEnv:GetDefault">GetDefault</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) const
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEnv:HasDefaults">HasDefaults</a><!--PLAIN-->()
@@ -66,6 +70,7 @@
 <!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEnv:fCurFile">fCurFile</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fCurFile">path to current resource file</a></i>
 <!--TAB6-->        <a href="http://root.cern.ch/root/html/TEnv.html">TEnv</a>* <!--TAB--><!--BOLD--><a name="TMrbEnv:fCurEnv">fCurEnv</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fCurEnv">current resource data base </a></i>
 <!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbEnv:fIsModified">fIsModified</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fIsModified">kTRUE, if at least 1 entry modified</a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbEnv:fIsSystemEnv">fIsSystemEnv</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fIsSystemEnv">if mapped to gEnv</a></i>
 <!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEnv:fDefaultsFile">fDefaultsFile</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDefaultsFile">path to default resource file</a></i>
 <!--TAB6-->        <a href="http://root.cern.ch/root/html/TEnv.html">TEnv</a>* <!--TAB--><!--BOLD--><a name="TMrbEnv:fDefaultsEnv">fDefaultsEnv</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fDefaultsEnv">defaults data base</a></i>
 <!--TAB6-->      <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TMrbEnv:fResourceName">fResourceName</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fResourceName">resource name</a></i>
@@ -220,6 +225,64 @@
  Keywords:
 
 </pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEnv:Get" href="src/TMrbEnv.cxx.html#TMrbEnv:Get">Get</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEnv.html#TMrbEnv:Get">TMrbEnv::Get</a>
+ Purpose:        Read an ascii resource from database
+ Arguments:      <a href="./TMrbNamedX.html">TMrbNamedX</a> &amp; Result   -- where to store resulting value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource     -- resource name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>      -- default value
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Value        -- ascii value (same as Result.Data())
+ Exceptions:
+ Description:    Reads a given resource from database.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEnv:Find" href="src/TMrbEnv.cxx.html#TMrbEnv:Find">Find</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * LofPrefixes, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource, <a href="ListOfTypes.html#Int_t">Int_t</a> <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEnv.html#TMrbEnv:Find">TMrbEnv::Find</a>
+ Purpose:        Search for an <a href="ListOfTypes.html#int">int</a> resource in database
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * LofPrefixes  -- prefixes to be tried out
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource     -- resource name
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>         -- default value
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Value           -- integer value
+ Exceptions:
+ Description:    Searches for a given resource trying different prefixes.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEnv:Find" href="src/TMrbEnv.cxx.html#TMrbEnv:Find">Find</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * LofPrefixes, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEnv.html#TMrbEnv:Find">TMrbEnv::Find</a>
+ Purpose:        Find an ascii resource in database
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Result      -- where to store resulting value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * LofPrefixes  -- prefixes to be tried out
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource     -- resource name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>      -- default value
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Value        -- ascii value (same as Result.Data())
+ Exceptions:
+ Description:    Searches for a given resource  trying different prefixes.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEnv:Find" href="src/TMrbEnv.cxx.html#TMrbEnv:Find">Find</a>(<a href="./TMrbNamedX.html">TMrbNamedX</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * LofPrefixes, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEnv.html#TMrbEnv:Find">TMrbEnv::Find</a>
+ Purpose:        Find an ascii resource in database
+ Arguments:      <a href="./TMrbNamedX.html">TMrbNamedX</a> &amp; Result   -- where to store resulting value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * LofPrefixes  -- prefixes to be tried out
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource     -- resource name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>      -- default value
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * Value        -- ascii value (same as Result.Data())
+ Exceptions:
+ Description:    Searches for a given resource  trying different prefixes.
+ Keywords:
+
+</pre><hr>
 <!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbEnv:GetDefault" href="src/TMrbEnv.cxx.html#TMrbEnv:GetDefault">GetDefault</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource, const <a href="ListOfTypes.html#Char_t">Char_t</a> * <a href="http://root.cern.ch/root/html/TStyle.html">Default</a>) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
@@ -370,7 +433,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Wed Feb 12 14:35:15 2003
+Last update: Fri Mar  7 14:19:28 2003
 <br>
 <address>
 <hr>

@@ -14,67 +14,52 @@
 
 #include "Rtypes.h"
 
-unsigned long long ushort2ll48(UShort_t * Array) {
-	unsigned long long ull;
-	ull = (unsigned long long) *Array++;
-	ull = (ull << 16) + (unsigned long long) *Array++;
-	ull = (ull << 16) + (unsigned long long) *Array;
-	return(ull);
-}
-
-unsigned long long ushort2ll48(UShort_t N1, UShort_t N2, UShort_t N3) {
-	unsigned long long ull;
-	ull = (unsigned long long) N1;
-	ull = (ull << 16) + (unsigned long long) N2;
-	ull = (ull << 16) + (unsigned long long) N3;
-	return(ull);
-}
-
-unsigned long long uint2ll48(UInt_t * Array) {
-	unsigned long long ull;
-	ull = (unsigned long long) (*Array++ & 0xFFFF);
-	ull = (ull << 16) + (unsigned long long) (*Array++ & 0xFFFF);
-	ull = (ull << 16) + (unsigned long long) (*Array & 0xFFFF);
-	return(ull);
-}
-
-unsigned long long uint2ll48(UInt_t N1, UInt_t N2, UInt_t N3) {
-	unsigned long long ull;
-	ull = (unsigned long long) (N1 & 0xFFFF);
-	ull = (ull << 16) + (unsigned long long) (N2 & 0xFFFF);
-	ull = (ull << 16) + (unsigned long long) (N3 & 0xFFFF);
-	return(ull);
-}
-
-unsigned long long ushort2ll64(UShort_t * Array) {
-	unsigned long long ull;
-	ull = (unsigned long long) *Array++;
-	ull = (ull << 16) + (unsigned long long) *Array++;
-	ull = (ull << 16) + (unsigned long long) *Array++;
-	ull = (ull << 16) + (unsigned long long) *Array;
-	return(ull);
-}
-
-unsigned long long ushort2ll64(UShort_t N1, UShort_t N2, UShort_t N3, UShort_t N4) {
-	unsigned long long ull;
-	ull = (unsigned long long) N1;
-	ull = (ull << 16) + (unsigned long long) N2;
-	ull = (ull << 16) + (unsigned long long) N3;
-	ull = (ull << 16) + (unsigned long long) N4;
-	return(ull);
-}
-
-unsigned long long us2ll64(UInt_t * Array) {
+long long ushort2ll48(UShort_t * Array) {
 	long long ull;
-	ull = (unsigned long long) *Array++;
-	ull = (ull << 32) + (unsigned long long) *Array;
+	ull = (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array;
 	return(ull);
 }
 
-unsigned long long us2ll64(UInt_t N1, UInt_t N2) {
-	unsigned long long ull;
-	ull = (unsigned long long) N1;
-	ull = (ull << 32) + (unsigned long long) N2;
+long long ushort2ll48(UShort_t N1, UShort_t N2, UShort_t N3) {
+	long long ull;
+	ull = (long long) N1;
+	ull = (ull << 16) + (long long) N2;
+	ull = (ull << 16) + (long long) N3;
 	return(ull);
 }
 
+long long ushort2ll64(UShort_t * Array) {
+	long long ull;
+	ull = (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array++;
+	ull = (ull << 16) + (long long) *Array;
+	return(ull);
+}
+
+long long ushort2ll64(UShort_t N1, UShort_t N2, UShort_t N3, UShort_t N4) {
+	long long ull;
+	ull = (long long) N1;
+	ull = (ull << 16) + (long long) N2;
+	ull = (ull << 16) + (long long) N3;
+	ull = (ull << 16) + (long long) N4;
+	return(ull);
+}
+
+UShort_t * ll2ushort48(UShort_t * Array, long long N) {
+	UShort_t * ap = Array + 2;
+	*ap-- = N & 0xFFFF; N >>= 16;
+	*ap-- = N & 0xFFFF; N >>= 16;
+	*ap-- = N & 0xFFFF;
+}
+
+
+UShort_t * ll2ushort64(UShort_t * Array, long long N) {
+	UShort_t * ap = Array + 3;
+	*ap-- = N & 0xFFFF; N >>= 16;
+	*ap-- = N & 0xFFFF; N >>= 16;
+	*ap-- = N & 0xFFFF; N >>= 16;
+	*ap = N & 0xFFFF;
+}

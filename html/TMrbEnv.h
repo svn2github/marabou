@@ -21,6 +21,7 @@
 #include "TSystem.h"
 #include "TRegexp.h"
 
+#include "TMrbNamedX.h"
 #include "TMrbString.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -38,7 +39,7 @@ class TMrbEnv : public TObject {
 		TMrbEnv(const Char_t * ResourceFile = "", const Char_t * DefaultsFile = "");	// explicit ctor: names of resource files
 
 		~TMrbEnv() {								// dtor: delete heap objects
-			delete fCurEnv;
+			if (!fIsSystemEnv) delete fCurEnv;
 			delete fDefaultsEnv;
 		};
 
@@ -54,7 +55,13 @@ class TMrbEnv : public TObject {
 
 																				// get resource value
 		Int_t Get(const Char_t * Resource, Int_t Default);						// ... integer
-		const Char_t * Get(TString & Result, const Char_t * Resource, const Char_t * Default = "");	// ... ascii
+		const Char_t * Get(TString & Result, const Char_t * Resource, const Char_t * Default = ""); 	// ... ascii
+		const Char_t * Get(TMrbNamedX & Result, const Char_t * Resource, const Char_t * Default = "");	// ... ascii(int)
+
+																				// find resource value
+		Int_t Find(const Char_t * LofPrefixes, const Char_t * Resource, Int_t Default);			// ... integer
+		const Char_t * Find(TString & Result, const Char_t * LofPrefixes, const Char_t * Resource, const Char_t * Default = ""); 	// ... ascii
+		const Char_t * Find(TMrbNamedX & Result, const Char_t * LofPrefixes, const Char_t * Resource, const Char_t * Default = "");	// ... ascii(int)
 
 																				// get default resource value
 		Int_t GetDefault(const Char_t * Resource, Int_t Default);				// ... integer
@@ -89,6 +96,7 @@ class TMrbEnv : public TObject {
 		TEnv * fCurEnv;					// current resource data base 
 
 		Bool_t fIsModified; 			// kTRUE, if at least 1 entry modified
+		Bool_t fIsSystemEnv;			// if mapped to gEnv
 
 		TString fDefaultsFile;			// path to default resource file
 		TEnv * fDefaultsEnv;			// defaults data base

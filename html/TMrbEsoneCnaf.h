@@ -50,7 +50,8 @@ class TMrbEsoneCnaf : public TObject {
 									kCnafTypeRead		=	BIT(0),
 									kCnafTypeControl	=	BIT(1),
 									kCnafTypeWrite		=	BIT(2),
-									kCnafTypeReadStatus =	BIT(3)
+									kCnafTypeReadStatus =	BIT(3),
+									kCnafTypeAny		=	kCnafTypeRead | kCnafTypeControl | kCnafTypeWrite
 								};
 
 		enum EMrbCamacFunction	{	kCF_RD1,        /* read group 1 register */
@@ -100,14 +101,14 @@ class TMrbEsoneCnaf : public TObject {
 		Bool_t Ascii2Int(const Char_t * Cnaf); 				// decode C.N.A.F from ascii to int values
 		const Char_t * Int2Ascii(Bool_t DataFlag = kTRUE);	// convert to ascii
 
-		Bool_t Set(Int_t Crate, Int_t Station = -1, Int_t Subaddr = -1, Int_t Function = -1, Int_t Data = -1);	// set cnaf
+		Bool_t Set(Int_t Crate, Int_t Station = -1, Int_t Subaddr = -1, Int_t Function = -1, Int_t Data = kEsoneNoData);	// set cnaf
 		Bool_t SetC(Int_t Crate);
 		Bool_t SetN(Int_t Station);
 		Bool_t SetA(Int_t Addr);
 		Bool_t SetF(Int_t Function);
-		Bool_t SetData(Int_t Data);
+		Bool_t SetData(Int_t Data, EMrbCnafType Type = kCnafTypeUndefined);
 		inline void ClearStatus() { fStatus = 0; };
-		inline void ClearData() { fData = 0; };
+		Bool_t ClearData(EMrbCnafType Type = kCnafTypeUndefined);
 		inline void SetX() { fStatus |= kEsoneX; };
 		inline void SetQ() { fStatus |= kEsoneQ; };
 		inline void SetXQ() { fStatus |= (kEsoneQ|kEsoneX); };
@@ -117,7 +118,8 @@ class TMrbEsoneCnaf : public TObject {
 		inline Int_t GetN() { return(fStation); };
 		inline Int_t GetA() { return(fAddr); };
 		inline Int_t GetF() { return(fFunction); };
-		inline Int_t GetData() { return(fData & kEsoneDataMask); };
+		Int_t GetData(EMrbCnafType Type = kCnafTypeUndefined);
+		Bool_t GetData(Int_t & DataRead, Int_t & DataWrite);
 		inline Bool_t GetX() { return(IS_X(fStatus)); };
 		inline Bool_t GetQ() { return(IS_Q(fStatus)); };
 		inline Bool_t IsError() { return(IS_ERROR(fStatus)); };
@@ -145,7 +147,8 @@ class TMrbEsoneCnaf : public TObject {
 		Int_t fStation; 				// Camac station: N1 .. N31
 		Int_t fAddr;					// Camac subaddress: A0 .. A15
 		Int_t fFunction;				// Camac function: F0 .. F31
-		Int_t fData;					// Camac data
+		Int_t fDataRead;				// Camac data (read)
+		Int_t fDataWrite;				// Camac data (write)
 
 		UInt_t fStatus;					// X, Q, error
 

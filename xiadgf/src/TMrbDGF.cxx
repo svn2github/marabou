@@ -436,7 +436,6 @@ Bool_t TMrbDGF::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 			return(kFALSE);
 		}
 		this->Wait();															// wait for reset to complete
-		cData.Set(size);
 		this->CopyData(cData, dp, size);										// copy FPGA data to camac buffer
 		if (fCamac.BlockXfer(fCrate, fStation, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[" << sysfip << " FPGA] "
@@ -503,12 +502,13 @@ Bool_t TMrbDGF::DownloadFPGACode(const Char_t * FPGAType) {
 	return(this->DownloadFPGACode((TMrbDGFData::EMrbFPGAType) sysfip->GetIndex()));
 }
 
-Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag) {
+Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::SetSwitchBusDefault
 // Purpose:        Set switch bus register to default value
-// Arguments:      Bool_t IndiFlag     -- kTRUE if switch bus to be set individually
+// Arguments:      Bool_t IndiFlag            -- kTRUE if switch bus to be set individually
+//                 Char_t * Prefix            -- resource prefix
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets switchbus bits:
@@ -525,14 +525,16 @@ Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag) {
 	if (!this->CheckConnect("SetSwitchBusDefault")) return(kFALSE);
 
 	if (IndiFlag) {
+		if (Prefix == NULL || *Prefix == '\0') Prefix = "TMrbDGF";
 		resource = this->GetName();
 		resource(0,1).ToUpper();
-		resource.Prepend("TMrbDGF.");
+		resource.Prepend(".Module.");
+		resource.Prepend(Prefix);
 		resource += ".SwitchBusTerm";
 		terminate = gEnv->GetValue(resource.Data(), kFALSE);
 	} else {
 		segmentID = this->GetClusterID()->GetTitle();
-		terminate = segmentID.Index("c", 0) == -1;
+		terminate = (segmentID.Index("c", 0) >= 0);
 	}
 
 	if (terminate)	switchBus = TMrbDGFData::kTerminateDSP | TMrbDGFData::kTerminateFast;
@@ -683,7 +685,6 @@ Bool_t TMrbDGF::DownloadDSPCode(Int_t Retry, Bool_t TriedOnce) {
 			this->Wait();																// wait for reset to complete
 
 			size = fDGFData->fDSPSize;											// size of DSP data
-			cData.Set(size);
 			this->CopyData(cData, fDGFData->fDSPCode.GetArray(), size); 		// copy DSP data to camac buffer
 			if (!downloadFailed) {
 				if (this->WriteTSAR(1)) {											// start with addr 1
@@ -1047,7 +1048,6 @@ Bool_t TMrbDGF::WriteParamMemory(Bool_t Reprogram) {
 	if (this->ParamValuesRead()) {
 		this->WriteTSAR(TMrbDGFData::kDSPInparStartAddr);				// where to write to
 		nofParams = TMrbDGFData::kNofDSPInputParams;					// size of params section (input only)
-		cData.Set(nofParams);
 		this->CopyData(cData, fParams.GetArray(), nofParams);			// xfer param data to camac buffer
 		if (fCamac.BlockXfer(fCrate, fStation, A(0), F(16), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
@@ -2008,8 +2008,31 @@ Int_t TMrbDGF::LoadParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 			}
 		}
 		pf.close();
+	} else if (uxSys.CheckExtension(paramFile.Data(), ".pdmp")) {
+		pf.open(paramFile, ios::in);
+		if (!pf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadParams");
+			return(-1);
+		}
+
+		line = 0;
+		nofParams = 0;
+		for (;;) {
+			pLine.ReadLine(pf, kFALSE);
+			if (pf.eof()) break;
+			pLine = pLine.Strip(TString::kBoth);
+			if (pLine.Length() == 0) continue;						// empty line
+			if (pLine(0) == '#') continue;							// comment
+			nofParams++;
+			pStr = pLine;
+			pStr.ToInteger(pValue);				
+			fParams[line] = pValue;
+			line++;
+		}
+		pf.close();
 	} else {
-		gMrbLog->Err() << "Wrong file extension - " << paramFile << " (should be .par)" << endl;
+		gMrbLog->Err() << "Wrong file extension - " << paramFile << " (should be .par or .pdmp)" << endl;
 		gMrbLog->Flush(this->ClassName(), "LoadParams");
 		return(-1);
 	}
@@ -2434,7 +2457,6 @@ Bool_t TMrbDGF::RestoreParams(TArrayS & TempStorage) {
 
 	this->WriteTSAR(TMrbDGFData::kDSPInparStartAddr);				// where to write to
 	nofParams = TMrbDGFData::kNofDSPInputParams;					// size of params section (input only)
-	cData.Set(nofParams);
 	this->CopyData(cData, TempStorage.GetArray(), nofParams);
 	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(16), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
@@ -3140,10 +3162,12 @@ Int_t TMrbDGF::SetGain(Int_t Channel, Double_t Gain, Bool_t UpdateDSP) {
 	if (UpdateDSP && !this->CheckConnect("SetGain")) return(-1);
 	if (!this->CheckChannel("SetGain", Channel)) return(-1);
 
-	if (Gain < 0.01) return(32768); 	// gain negative?
-
+//	if (Gain < 0.01) return(32768); 	// gain negative?
+	if (Gain < 0.1639) Gain = 0.1639;
+	cout << "@@ 1.SetGain Gain=" << Gain << endl;
 	dacVal = 65535 - 32768 * log10(Gain / 0.1639);
 	idacVal = (Int_t) (dacVal + 0.5);
+	cout << "@@ 2.SetGain DAC (dbl)=" << dacVal << " (int)=" << idacVal << endl;
 
 	this->SetParValue(Channel, "GAINDAC", idacVal, UpdateDSP);
 	return(idacVal);
@@ -3168,7 +3192,9 @@ Double_t TMrbDGF::GetGain(Int_t Channel, Bool_t ReadFromDSP) {
 	if (!this->CheckChannel("GetGain", Channel)) return(-1);
 
 	gainVal = (Double_t) (65535 - this->GetParValue(Channel, "GAINDAC", ReadFromDSP)) / 32768;
+	cout << "@@ 1.GetGain Gain=" << gainVal << endl;
 	gainVal = 0.1639 * pow(10, gainVal);
+	cout << "@@ 2.GetGain Gain=" << gainVal << endl;
 	return(gainVal);
 }
 
@@ -3615,9 +3641,10 @@ Bool_t TMrbDGF::SetFastPeakTime(Int_t Channel, Double_t PeakTime, Bool_t UpdateD
 
 	gap = this->GetParValue(Channel, "FASTGAP");
 	length = (Int_t) (PeakTime * 40. + .5);
-	if (length < 1) length = 1;
-	if (length > 4) length = 4;
-	if (gap + length > 31) gap = 31 - length;
+//	if (length < 1) length = 1;
+//	if (length > 4) length = 4;
+//	if (gap + length > 31) gap = 31 - length;
+	if (gap + length > 31) length = 31 - gap;
    
 	this->SetParValue(Channel, "FASTLENGTH", length, UpdateDSP);
 	this->SetParValue(Channel, "FASTGAP", gap, UpdateDSP);
@@ -3676,7 +3703,10 @@ Bool_t TMrbDGF::SetFastGapTime(Int_t Channel, Double_t GapTime, Bool_t UpdateDSP
 
 	length = this->GetParValue(Channel, "FASTLENGTH");
 	gap = (Int_t) (GapTime * 40. + .5);
-	if (gap + length > 31) length = 31 - gap;
+//	if (gap < 1) gap = 1;
+//	if (gap > 4) gap = 4;
+//	if (gap + length > 31) length = 31 - gap;
+	if (gap + length > 31) gap = 31 - length;
    
 	this->SetParValue(Channel, "FASTLENGTH", length, UpdateDSP);
 	this->SetParValue(Channel, "FASTGAP", gap, UpdateDSP);

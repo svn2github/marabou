@@ -101,7 +101,7 @@ class TMrbEsoneCnaf : public TObject {
 		Bool_t Ascii2Int(const Char_t * Cnaf); 				// decode C.N.A.F from ascii to int values
 		const Char_t * Int2Ascii(Bool_t DataFlag = kTRUE);	// convert to ascii
 
-		Bool_t Set(Int_t Crate, Int_t Station = -1, Int_t Subaddr = -1, Int_t Function = -1, Int_t Data = -1);	// set cnaf
+		Bool_t Set(Int_t Crate, Int_t Station = -1, Int_t Subaddr = -1, Int_t Function = -1, Int_t Data = kEsoneNoData);	// set cnaf
 		Bool_t SetC(Int_t Crate);
 		Bool_t SetN(Int_t Station);
 		Bool_t SetA(Int_t Addr);

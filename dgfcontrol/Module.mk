@@ -67,7 +67,7 @@ $(DGFCLIB):     $(DGFCDO) $(DGFCO)
 $(DGFCDS):     $(DGFCDH) $(DGFCL)
 		@echo "includes: $(DGFCDH)"
 		@echo "Generating dictionary $@..."
-		$(ROOTCINT) -f $@ -c -Iinclude $(DGFCDH)
+		$(ROOTCINT) -f $@ -c -Iinclude $(DGFCDH) $(DGFCL)
 
 $(DGFCDO):     $(DGFCDS)
 		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<

@@ -19,6 +19,7 @@ private:
    Float_t fWidth;
    Float_t fTailContent;
    Float_t fTailWidth;
+   Bool_t  fUsed;
    FhRegion *fRegion;    //!dont stream
 public:
    FhPeak(){};
@@ -31,6 +32,7 @@ public:
    Float_t GetMean() const             {return fMean;};
    Float_t GetWidth() const            {return fWidth;};
    Float_t GetTailContent() const      {return fTailContent;};
+   Bool_t  GetUsed() const             {return fUsed;};
 
 
    void SetNominalEnergy(Float_t val)   {fNominalEnergy=val;};
@@ -39,6 +41,7 @@ public:
    void SetMean(Float_t val)            {fMean=val;};
    void SetWidth(Float_t val)           {fWidth=val;};
    void SetTailContent(Float_t val)     {fTailContent=val;};
+   void SetUsed(Bool_t  used)           {fUsed = used;};
 
    Bool_t IsEqual(TObject *obj) 
                  {return GetMean() == ((FhPeak*)obj)->GetMean();};

@@ -46,6 +46,7 @@ TMrbEnv::TMrbEnv(const Char_t * ResourceFile, const Char_t * DefaultsFile) {
 
 	fCurEnv = NULL;
 	fDefaultsEnv = NULL;
+	fIsSystemEnv = kFALSE;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
@@ -67,6 +68,13 @@ TMrbEnv::TMrbEnv(const Char_t * ResourceFile, const Char_t * DefaultsFile) {
 			gMrbLog->Flush(this->ClassName());
 			this->MakeZombie();
 		}
+	} else {
+		fIsSystemEnv = kTRUE;
+		fCurEnv = gEnv;
+		fCurFile = ".rootrc";
+		fIsModified = kFALSE;
+		fResourceName = "";
+		this->SetPrefix("");
 	}				
 }
 
@@ -104,7 +112,7 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 	
 	fileExists = !gSystem->AccessPathName(resFile.Data(), (EAccessMode) F_OK);		// file existing?
 
-	if (fCurEnv != NULL) delete fCurEnv;
+	if (!fIsSystemEnv && fCurEnv != NULL) delete fCurEnv;
 	fCurEnv = new TEnv(resFile.Data());
 
 	fCurFile = resFile;
@@ -118,6 +126,7 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 	}
 
 	fIsModified = kFALSE;
+	fIsSystemEnv = kFALSE;
 	fResourceName = "";
 	this->SetPrefix("");
 	return(kTRUE);
@@ -168,7 +177,7 @@ void TMrbEnv::Save(Bool_t Verbose) {
 	if (IsModified()) { 				// some modifications?
 		pfs = fPrefix;
 		this->SetPrefix("");
-		this->Set("TMrbEnv.Info.Modified", dt.AsString());
+		if (!fIsSystemEnv) this->Set("TMrbEnv.Info.Modified", dt.AsString());
 		fCurEnv->SaveLevel(kEnvLocal);	// write to file
 		if (Verbose) {
 			gMrbLog->Out()	<< "Resource data saved to file " << fCurFile << endl;
@@ -398,7 +407,152 @@ const Char_t * TMrbEnv::Get(TMrbNamedX & Result, const Char_t * Resource, const 
 		}
 	}
 
-	return(resVal.Data());
+	return(Result.GetName());
+}
+
+Int_t TMrbEnv::Find(const Char_t * LofPrefixes, const Char_t * Resource, Int_t Default) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Find
+// Purpose:        Search for an int resource in database
+// Arguments:      Char_t * LofPrefixes  -- prefixes to be tried out
+//                 Char_t * Resource     -- resource name
+//                 Int_t Default         -- default value
+// Results:        Int_t Value           -- integer value
+// Exceptions:
+// Description:    Searches for a given resource trying different prefixes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString lofPrefixes;
+	TObjArray lPrefs;
+	Int_t nPrefs;
+	TEnv * dEnvSave;
+	TString prefSave;
+
+	TString resValue;
+	Int_t intVal;
+
+	lofPrefixes = LofPrefixes;
+	nPrefs = lofPrefixes.Split(lPrefs);
+	if (nPrefs <= 0) return(Default);
+
+	dEnvSave = fDefaultsEnv; 	// turn off defaults
+	fDefaultsEnv = NULL;
+	prefSave = fPrefix;
+	for (Int_t i = 0; i < nPrefs; i++) {
+		fPrefix = ((TObjString *) lPrefs[i])->GetString();
+		fPrefix += ".";
+		this->Get(resValue, Resource, "<undef>");
+		if (resValue.CompareTo("<undef>") != 0) {
+			intVal = this->Get(Resource, Default);
+			fPrefix = prefSave;
+			fDefaultsEnv = dEnvSave;
+			return(intVal);
+		}
+	}
+	fPrefix = "";
+	fDefaultsEnv = dEnvSave;
+	intVal = this->GetDefault(Resource, Default);
+	fPrefix = prefSave;
+	return(intVal);
+}
+
+const Char_t * TMrbEnv::Find(TString & Result, const Char_t * LofPrefixes, const Char_t * Resource, const Char_t * Default) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Find
+// Purpose:        Find an ascii resource in database
+// Arguments:      TString & Result      -- where to store resulting value
+//                 Char_t * LofPrefixes  -- prefixes to be tried out
+//                 Char_t * Resource     -- resource name
+//                 Char_t * Default      -- default value
+// Results:        Char_t * Value        -- ascii value (same as Result.Data())
+// Exceptions:
+// Description:    Searches for a given resource  trying different prefixes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString lofPrefixes;
+	TObjArray lPrefs;
+	Int_t nPrefs;
+	TEnv * dEnvSave;
+	TString prefSave;
+
+	TString resValue;
+
+	lofPrefixes = LofPrefixes;
+	nPrefs = lofPrefixes.Split(lPrefs);
+	if (nPrefs <= 0) return(Default);
+
+	dEnvSave = fDefaultsEnv; 	// turn off defaults
+	fDefaultsEnv = NULL;
+	prefSave = fPrefix;
+	for (Int_t i = 0; i < nPrefs; i++) {
+		fPrefix = ((TObjString *) lPrefs[i])->GetString();
+		fPrefix += ".";
+		this->Get(resValue, Resource, "<undef>");
+		if (resValue.CompareTo("<undef>") != 0) {
+			this->Get(Result, Resource, Default);
+			fPrefix = prefSave;
+			fDefaultsEnv = dEnvSave;
+			return(Result.Data());
+		}
+	}
+	fPrefix = "";
+	fDefaultsEnv = dEnvSave;
+	this->GetDefault(Result, Resource, Default);
+	fPrefix = prefSave;
+	return(Result.Data());
+}
+
+const Char_t * TMrbEnv::Find(TMrbNamedX & Result, const Char_t * LofPrefixes, const Char_t * Resource, const Char_t * Default) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Find
+// Purpose:        Find an ascii resource in database
+// Arguments:      TMrbNamedX & Result   -- where to store resulting value
+//                 Char_t * LofPrefixes  -- prefixes to be tried out
+//                 Char_t * Resource     -- resource name
+//                 Char_t * Default      -- default value
+// Results:        Char_t * Value        -- ascii value (same as Result.Data())
+// Exceptions:
+// Description:    Searches for a given resource  trying different prefixes.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString lofPrefixes;
+	TObjArray lPrefs;
+	Int_t nPrefs;
+	TEnv * dEnvSave;
+	TString prefSave;
+
+	TString resValue;
+
+	lofPrefixes = LofPrefixes;
+	nPrefs = lofPrefixes.Split(lPrefs);
+	if (nPrefs <= 0) return(Default);
+
+	dEnvSave = fDefaultsEnv; 	// turn off defaults
+	fDefaultsEnv = NULL;
+	prefSave = fPrefix;
+	for (Int_t i = 0; i < nPrefs; i++) {
+		fPrefix = ((TObjString *) lPrefs[i])->GetString();
+		fPrefix += ".";
+		this->Get(resValue, Resource, "<undef>");
+		if (resValue.CompareTo("<undef>") != 0) {
+			this->Get(Result, Resource, Default);
+			fPrefix = prefSave;
+			fDefaultsEnv = dEnvSave;
+			return(Result.GetName());
+		}
+	}
+	fPrefix = "";
+	fDefaultsEnv = dEnvSave;
+	this->GetDefault(resValue, Resource, Default);
+	fPrefix = prefSave;
+	Result.Set(-1, resValue.Data());
+	return(Result.GetName());
 }
 
 const Char_t * TMrbEnv::GetDefault(TString & Result, const Char_t * Resource, const Char_t * Default) {
@@ -715,6 +869,12 @@ Int_t TMrbEnv::Purge(Bool_t Verbose) {
 	TObjArray lofResources;
 	TObjString *ostr;
 
+	if (fIsSystemEnv) {
+		gMrbLog->Err()	<< "Can't call method \"Purge()\" for ROOT's system environment" << endl;
+		gMrbLog->Flush(this->ClassName(), "Remove");
+		return(0);
+	}
+
 	this->Save(kFALSE);
 
 	iFile.open(fCurFile.Data(), ios::in);
@@ -778,11 +938,13 @@ void TMrbEnv::PrintInfo() {
 	TString pfs;
 	TString res;
 
-	pfs = fPrefix;
-	this->SetPrefix("");
+	if (!fIsSystemEnv) {
+		pfs = fPrefix;
+		this->SetPrefix("");
 
-	cout	<< "File          : " <<  this->Get(res, "TMrbEnv.Info.File") << endl;
-	cout	<< "Created       : " <<  this->Get(res, "TMrbEnv.Info.Created") << endl;
-	cout	<< "Modified      : " <<  this->Get(res, "TMrbEnv.Info.Modified") << endl;
-	fPrefix = pfs;
+		cout	<< "File          : " <<  this->Get(res, "TMrbEnv.Info.File") << endl;
+		cout	<< "Created       : " <<  this->Get(res, "TMrbEnv.Info.Created") << endl;
+		cout	<< "Modified      : " <<  this->Get(res, "TMrbEnv.Info.Modified") << endl;
+		fPrefix = pfs;
+	}
 }

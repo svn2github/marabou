@@ -56,7 +56,6 @@ class TMrbSubevent_Caen_2 : public TMrbSubevent {
 		};
 				
 		inline Bool_t NeedsHitBuffer() { return(kTRUE); };  					// allocate hit buffer
-		inline Bool_t NeedsEventTime() { return(kTRUE); };						// has to be connected to event time buffer
 		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() { return("Subevent_Caen_Common"); };

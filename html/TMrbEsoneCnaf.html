@@ -32,12 +32,13 @@
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:CheckCnaf">CheckCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> CnafBits = <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:kEsoneCnafBits">kEsoneCnafBits</a>)
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:CheckCnaf">CheckCnaf</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> CnafBit, <a href="ListOfTypes.html#Int_t">Int_t</a> Data)
 <!--TAB6-->                      static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:Class">Class</a><!--PLAIN-->()
-<!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:ClearData">ClearData</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:ClearData">ClearData</a><!--PLAIN-->(<a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> Type = <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:kCnafTypeUndefined">kCnafTypeUndefined</a>)
 <!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:ClearStatus">ClearStatus</a><!--PLAIN-->()
 <!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetA">GetA</a><!--PLAIN-->()
 <!--TAB6-->      <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacAction">TMrbEsoneCnaf::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetAction">GetAction</a><!--PLAIN-->()
 <!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetC">GetC</a><!--PLAIN-->()
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetData">GetData</a><!--PLAIN-->()
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetData">GetData</a><!--PLAIN-->(<a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> Type = <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:kCnafTypeUndefined">kCnafTypeUndefined</a>)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetData">GetData</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; DataRead, <a href="ListOfTypes.html#Int_t">Int_t</a>&amp; DataWrite)
 <!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetF">GetF</a><!--PLAIN-->()
 <!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetN">GetN</a><!--PLAIN-->()
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:GetQ">GetQ</a><!--PLAIN-->()
@@ -52,11 +53,11 @@
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:IsReadStatus">IsReadStatus</a><!--PLAIN-->()
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:IsWrite">IsWrite</a><!--PLAIN-->()
 <!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:Reset">Reset</a><!--PLAIN-->()
-<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Function = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Data = -1)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate, <a href="ListOfTypes.html#Int_t">Int_t</a> Station = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Subaddr = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Function = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Data = kEsoneNoData)
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetA">SetA</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Addr)
 <!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetAction">SetAction</a><!--PLAIN-->(<a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacAction">TMrbEsoneCnaf::EMrbCamacAction</a> Action)
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetC">SetC</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
-<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetData">SetData</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Data)
+<!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetData">SetData</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Data, <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> Type = <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:kCnafTypeUndefined">kCnafTypeUndefined</a>)
 <!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetError">SetError</a><!--PLAIN-->()
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetF">SetF</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Function)
 <!--TAB6-->                              <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbEsoneCnaf:SetN">SetN</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Station)
@@ -72,15 +73,16 @@
 <pre>
 
 <!--TAB4-->    <b>protected:</b><br>
-<!--TAB6-->                          <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fAscii">fAscii</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fAscii">ascii representation</a></i>
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fCrate">fCrate</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fCrate">Camac crate: Cxx</a></i>
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fStation">fStation</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fStation">Camac station: N1 .. N31</a></i>
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fAddr">fAddr</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fAddr">Camac subaddress: A0 .. A15</a></i>
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fFunction">fFunction</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFunction">Camac function: F0 .. F31</a></i>
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fData">fData</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fData">Camac data</a></i>
-<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fStatus">fStatus</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fStatus">X, Q, error</a></i>
-<!--TAB6-->      <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacAction">TMrbEsoneCnaf::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fAction">fAction</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fAction">Camac action</a></i>
-<!--TAB6-->         <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fType">fType</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fType">Camac read / control / write</a></i>
+<!--TAB6-->                          <a href="./TMrbString.html">TMrbString</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fAscii">fAscii</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fAscii">ascii representation</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fCrate">fCrate</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fCrate">Camac crate: Cxx</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fStation">fStation</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fStation">Camac station: N1 .. N31</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fAddr">fAddr</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fAddr">Camac subaddress: A0 .. A15</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fFunction">fFunction</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fFunction">Camac function: F0 .. F31</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fDataRead">fDataRead</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fDataRead">Camac data (read)</a></i>
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fDataWrite">fDataWrite</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDataWrite">Camac data (write)</a></i>
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fStatus">fStatus</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fStatus">X, Q, error</a></i>
+<!--TAB6-->      <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacAction">TMrbEsoneCnaf::EMrbCamacAction</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fAction">fAction</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fAction">Camac action</a></i>
+<!--TAB6-->         <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:fType">fType</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fType">Camac read / control / write</a></i>
 
 <!--TAB4-->    <b>public:</b><br>
 <!--TAB6-->          static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbEsoneCnaf">TMrbEsoneCnaf::EMrbEsoneCnaf</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCnafBranch">kCnafBranch</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kCnafBranch"></a></i>
@@ -97,6 +99,7 @@
 <!--TAB6-->           static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCnafTypeControl">kCnafTypeControl</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kCnafTypeControl"></a></i>
 <!--TAB6-->           static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCnafTypeWrite">kCnafTypeWrite</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kCnafTypeWrite"></a></i>
 <!--TAB6-->           static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCnafTypeReadStatus">kCnafTypeReadStatus</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kCnafTypeReadStatus"></a></i>
+<!--TAB6-->           static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCnafType">TMrbEsoneCnaf::EMrbCnafType</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCnafTypeAny">kCnafTypeAny</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kCnafTypeAny"></a></i>
 <!--TAB6-->      static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacFunction">TMrbEsoneCnaf::EMrbCamacFunction</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCF_RD1">kCF_RD1</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCF_RD1"></a></i>
 <!--TAB6-->      static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacFunction">TMrbEsoneCnaf::EMrbCamacFunction</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCF_RD2">kCF_RD2</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCF_RD2"></a></i>
 <!--TAB6-->      static const <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:EMrbCamacFunction">TMrbEsoneCnaf::EMrbCamacFunction</a> <!--TAB--><!--BOLD--><a name="TMrbEsoneCnaf:kCF_RC1">kCF_RC1</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kCF_RC1"></a></i>
@@ -233,15 +236,53 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:SetData" href="src/TMrbEsoneCnaf.cxx.html#TMrbEsoneCnaf:SetData">SetData</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Data) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:SetData" href="src/TMrbEsoneCnaf.cxx.html#TMrbEsoneCnaf:SetData">SetData</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Data, EMrbCnafType Type) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:SetData">TMrbEsoneCnaf::SetData</a>
  Purpose:        Set data
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Data    -- data word
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Data         -- data word
+                 EMrbCnafType Type  -- type of data (read / write)
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Defines camac data.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:ClearData" href="src/TMrbEsoneCnaf.cxx.html#TMrbEsoneCnaf:ClearData">ClearData</a>(EMrbCnafType Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:ClearData">TMrbEsoneCnaf::ClearData</a>
+ Purpose:        Clear data
+ Arguments:      EMrbCnafType Type  -- type of data (read / write)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Clears data field.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsoneCnaf:GetData" href="src/TMrbEsoneCnaf.cxx.html#TMrbEsoneCnaf:GetData">GetData</a>(EMrbCnafType Type) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:GetData">TMrbEsoneCnaf::GetData</a>
+ Purpose:        Get data
+ Arguments:      EMrbCnafType Type  -- type of data (read / write)
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Data         -- data word
+ Exceptions:
+ Description:    Returns data.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:GetData" href="src/TMrbEsoneCnaf.cxx.html#TMrbEsoneCnaf:GetData">GetData</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> &amp; DataRead, <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; DataWrite) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbEsoneCnaf.html#TMrbEsoneCnaf:GetData">TMrbEsoneCnaf::GetData</a>
+ Purpose:        Get data
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; DataRead         -- data word (read)
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> &amp; DataWrite        -- data word (write)
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Returns data.
  Keywords:
 
 </pre><hr>
@@ -290,7 +331,6 @@
 <pre>
 <!--INLINE FUNCTION--><!--TAB6-->                         <a href="./TMrbEsoneCnaf.html">TMrbEsoneCnaf</a> <a name="TMrbEsoneCnaf:TMrbEsoneCnaf" href="TMrbEsoneCnaf.h">TMrbEsoneCnaf</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsoneCnaf:ClearStatus" href="TMrbEsoneCnaf.h">ClearStatus</a>()
-<!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsoneCnaf:ClearData" href="TMrbEsoneCnaf.h">ClearData</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsoneCnaf:SetX" href="TMrbEsoneCnaf.h">SetX</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsoneCnaf:SetQ" href="TMrbEsoneCnaf.h">SetQ</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbEsoneCnaf:SetXQ" href="TMrbEsoneCnaf.h">SetXQ</a>()
@@ -299,7 +339,6 @@
 <!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsoneCnaf:GetN" href="TMrbEsoneCnaf.h">GetN</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsoneCnaf:GetA" href="TMrbEsoneCnaf.h">GetA</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsoneCnaf:GetF" href="TMrbEsoneCnaf.h">GetF</a>()
-<!--INLINE FUNCTION--><!--TAB6-->                                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbEsoneCnaf:GetData" href="TMrbEsoneCnaf.h">GetData</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:GetX" href="TMrbEsoneCnaf.h">GetX</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:GetQ" href="TMrbEsoneCnaf.h">GetQ</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbEsoneCnaf:IsError" href="TMrbEsoneCnaf.h">IsError</a>()
@@ -325,7 +364,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Wed Feb 12 14:35:22 2003
+Last update: Fri Mar  7 14:19:34 2003
 <br>
 <address>
 <hr>

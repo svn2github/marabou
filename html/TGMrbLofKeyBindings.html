@@ -29,7 +29,7 @@
 <!--TAB6-->             virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:~TGMrbLofKeyBindings">~TGMrbLofKeyBindings</a><!--PLAIN-->()
 <!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:BindKey">BindKey</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Key, <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:EGMrbKeyAction">TGMrbLofKeyBindings::EGMrbKeyAction</a> Action = <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:kGMrbKeyActionAllDone">TGMrbLofKeyBindings::kGMrbKeyActionAllDone</a>)
 <!--TAB6-->           static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:Class">Class</a><!--PLAIN-->()
-<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:HandleKey">HandleKey</a><!--PLAIN-->(Event_t* Event)
+<!--TAB6-->                   <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:HandleKey">HandleKey</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/Event_t.html">Event_t</a>* Event)
 <!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:Help">Help</a><!--PLAIN-->()
 <!--TAB6-->          virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:IsA">IsA</a><!--PLAIN-->() const
 <!--TAB6-->                     <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbLofKeyBindings:SetParent">SetParent</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent)
@@ -107,12 +107,12 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLofKeyBindings:HandleKey" href="src/TGMrbLofKeyBindings.cxx.html#TGMrbLofKeyBindings:HandleKey">HandleKey</a>(Event_t * Event) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TGMrbLofKeyBindings:HandleKey" href="src/TGMrbLofKeyBindings.cxx.html#TGMrbLofKeyBindings:HandleKey">HandleKey</a>(<a href="http://root.cern.ch/root/html/Event_t.html">Event_t</a> * Event) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TGMrbLofKeyBindings.html#TGMrbLofKeyBindings:HandleKey">TGMrbLofKeyBindings::HandleKey</a>
  Purpose:        Handle a key
- Arguments:      Event_t * Event  -- key event
+ Arguments:      <a href="http://root.cern.ch/root/html/Event_t.html">Event_t</a> * Event  -- key event
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Handles a key. Calls ProcessMessage(kC_KEY, ...) for this window.
@@ -137,7 +137,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Wed Feb 12 14:33:11 2003
+Last update: Fri Mar  7 14:18:07 2003
 <br>
 <address>
 <hr>

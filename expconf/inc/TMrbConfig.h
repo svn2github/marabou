@@ -134,7 +134,7 @@ class TMrbConfig : public TNamed {
 									kAnaEventSetBranchStatus,
 									kAnaEventReplayTree,
 									kAnaEventFirstSubevent,
-									kAnaEventBuildRootEvent,
+									kAnaEventBuildEvent,
 									kAnaEventAnalyze,
 									kAnaEvtResetData,
 									kAnaSevtNameLC,
@@ -166,6 +166,7 @@ class TMrbConfig : public TNamed {
 									kAnaModuleSerialEnum,
 									kAnaHistoDefinePointers,
 									kAnaHistoInitializeArrays,
+									kAnaHistoBookUserDefined,
 									kAnaVarDefinePointers,
 									kAnaVarClassInstance,
 									kAnaVarArrDefinePointers,
@@ -232,7 +233,9 @@ class TMrbConfig : public TNamed {
 									kAnaOptLeaves			=	BIT(3),
 									kAnaOptOverwrite		=	BIT(4),
 									kAnaOptReplayMode		=	BIT(5),
-									kAnaOptVerbose			=	BIT(6)
+									kAnaOptEventBuilder 	=	BIT(6),
+									kAnaOptFillHistosAfter	=	BIT(7),
+									kAnaOptVerbose			=	BIT(8)
 								};
 		enum					{	kAnaOptDefault			=	kAnaOptSubevents |
 																kAnaOptParamsByName |
@@ -256,9 +259,10 @@ class TMrbConfig : public TNamed {
 									kIclOptBookParams			=	BIT(4),
 									kIclOptBuildRootEvent		=	BIT(5),
 									kIclOptAnalyze				=	BIT(6),
-									kIclOptUtilities			=	BIT(7),
-									kIclOptDefsAndProtos		=	BIT(8),
-									kIclOptHandleUserMessages	=	BIT(9),
+									kIclOptEventBuilder			=	BIT(7),
+									kIclOptUtilities			=	BIT(8),
+									kIclOptDefsAndProtos		=	BIT(9),
+									kIclOptHandleUserMessages	=	BIT(10),
 									kIclOptByEventName			=	BIT(13)
 								};
 		enum					{	kIclOptDefault			=	kIclOptGlobals
@@ -343,6 +347,22 @@ class TMrbConfig : public TNamed {
 		enum EMrbControllerType {	kControllerUnused	=	0,			// controller types (camac)
 									kControllerCBV 		=	5,			// (see MBS manual!)
 									kControllerCC32		=	20
+								};
+
+		enum EMrbHistoType  	{	kHistoTH1			=	BIT(10), 	// histogram types
+									kHistoTH2			=	BIT(11),
+									kHistoTHC			=	BIT(1),
+									kHistoTHS			=	BIT(2),
+									kHistoTHF			=	BIT(3),
+									kHistoTHD			=	BIT(4),
+									kHistoTH1C			=	kHistoTH1 | kHistoTHC,
+									kHistoTH1S			=	kHistoTH1 | kHistoTHS,
+									kHistoTH1F			=	kHistoTH1 | kHistoTHF,
+									kHistoTH1D			=	kHistoTH1 | kHistoTHD,
+									kHistoTH2C			=	kHistoTH2 | kHistoTHC,
+									kHistoTH2S			=	kHistoTH2 | kHistoTHS,
+									kHistoTH2F			=	kHistoTH2 | kHistoTHF,
+									kHistoTH2D			=	kHistoTH2 | kHistoTHD
 								};
 
 		enum EMrbModuleType  	{	kModuleRaw			=	TMrbConfig::kCrateUnused,		// module types
@@ -599,6 +619,11 @@ class TMrbConfig : public TNamed {
 		void AddToTagList(const Char_t * CodeFile, Int_t TagIndex); 		// add file:tag to be processed once
 		Bool_t TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex);	// check if tag has already been processed
 
+		Bool_t BookHistogram(const Char_t * Type, const Char_t * Name, const Char_t * Title,
+									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
+									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
+
+
 		inline Int_t GetNofModules() { return(fNofModules); };
 		
 		inline TMrbLofNamedX * GetLofEvents() { return(&fLofEvents); };		// get address of ...
@@ -608,6 +633,7 @@ class TMrbConfig : public TNamed {
 		inline TMrbLofNamedX * GetLofModuleIDs() { return(&fLofModuleIDs); };
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
+		inline TMrbLofNamedX * GetLofHistoTypes() { return(&fLofHistoTypes); };
 
 		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName);	// check if name is legal within MARaBOU
 
@@ -626,6 +652,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fCNAFNames;				// ... cnaf key words
 		TMrbLofNamedX fLofModuleTags;			// ... camac tags
 		TMrbLofNamedX fLofModuleIDs;			// ... camac modules available
+		TMrbLofNamedX fLofHistoTypes;			// ... histogram types
 
 	protected:
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
@@ -679,6 +706,7 @@ class TMrbConfig : public TNamed {
 				
 		TList fLofUserClasses; 				// list of classes added by user
 		TList fLofOnceOnlyTags; 			// list of tags already processed
+		TList fLofUserHistograms;			// list of user-defined histograms
 		
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	

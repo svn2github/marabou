@@ -39,7 +39,6 @@ Bool_t TMrbSubevent_DGF_2::FillSubevent(const UShort_t * SevtData, Int_t SevtWC,
 	origSevtWC = SevtWC;					// save original subevent wc
  
 	wordsProcessed = 0;			 // words processed so far
-	eventsProcessed = 0;			 // events processed so far
 	while (SevtWC) {									 // subevent may contain several dgf buffers
 		bufHdr = (DgfEventBufferHeader *) dataPtr; 	 // points to start of buffer
 		bufWC = bufHdr->nofWords;  					 // buffer length
@@ -59,6 +58,7 @@ Bool_t TMrbSubevent_DGF_2::FillSubevent(const UShort_t * SevtData, Int_t SevtWC,
 			moduleNumber = bufHdr->moduleNumber;		 // module number
 			dataPtr += sizeof(DgfEventBufferHeader);	 // points to start of 1st event
 			wc -= sizeof(DgfEventBufferHeader) / sizeof(Short_t);
+			eventsProcessed = 0;						// events processed for this module so far
 			while (wc) {								 // dgf buffer may contain several events
 				evtHdr = (DgfEventHeader *) dataPtr;	 // points to event header
 				hitPattern = evtHdr->hitPattern;		 // get hit pattern

@@ -26,29 +26,43 @@
 
 <!--TAB4-->    <b>public:</b><br>
 <!--TAB6-->        <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:TUsrHitBuffer">TUsrHitBuffer</a><!--PLAIN-->()
-<!--TAB6-->        <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:TUsrHitBuffer">TUsrHitBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Offset = 0)
+<!--TAB6-->        <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:TUsrHitBuffer">TUsrHitBuffer</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater = 0)
 <!--TAB6-->        <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:TUsrHitBuffer">TUsrHitBuffer</a><!--PLAIN-->(const <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a>&amp;)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:~TUsrHitBuffer">~TUsrHitBuffer</a><!--PLAIN-->()
-<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:AddHit">AddHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Bool_t">Bool_t</a> SubOffs = kTRUE)
-<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:AddHit">AddHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Bool_t">Bool_t</a> SubOffs = kTRUE)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:AddHit">AddHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:AddHit">AddHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:After">After</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>* Hit)
 <!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:At">At</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
 <!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:Class">Class</a><!--PLAIN-->()
-<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:FindHit">FindHit</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>&amp; Hit, <a href="./TUsrHit.html">TUsrHit</a>* After = NULL)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:FindEvent">FindEvent</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:FindHit">FindHit</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>&amp; HitProfile)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:FindNextEvent">FindNextEvent</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:First">First</a><!--PLAIN-->()
 <!--TAB6-->        <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetCA">GetCA</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetHighWater">GetHighWater</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetIndex">GetIndex</a><!--PLAIN-->()
 <!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetName">GetName</a><!--PLAIN-->() const
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetNofEntries">GetNofEntries</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetNofHits">GetNofHits</a><!--PLAIN-->()
-<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetOffset">GetOffset</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetOffset">GetOffset</a><!--PLAIN-->()
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:GetWindow">GetWindow</a><!--PLAIN-->()
 <!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:IsA">IsA</a><!--PLAIN-->() const
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:IsHighWater">IsHighWater</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Verbose = kFALSE)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:NextHit">NextHit</a><!--PLAIN-->()
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:NextHitInWindow">NextHitInWindow</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* Time0)
+<!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:NextHitInWindow">NextHitInWindow</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>* Hit0)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:Print">Print</a><!--PLAIN-->(ostream&amp; Out, <a href="ListOfTypes.html#Int_t">Int_t</a> Begin = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> End = -1)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Begin = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> End = -1)
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:RemoveHit">RemoveHit</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>* Hit)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:RemoveHit">RemoveHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:Reset">Reset</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:ResetIndex">ResetIndex</a><!--PLAIN-->()
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:SetHighWater">SetHighWater</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> HighWater)
-<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:SetOffset">SetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Offset)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:SetIndex">SetIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:SetOffset">SetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:SetWindow">SetWindow</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Window)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:Sort">Sort</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> UpTo = kMaxInt)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHitBuffer:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
 </pre>
@@ -60,7 +74,9 @@
 <!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fBufName">fBufName</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fBufName">buffer name</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fNofEntries">fNofEntries</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNofEntries">max number of entries</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fNofHits">fNofHits</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fNofHits">current number of hits</a></i>
-<!--TAB6-->             <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fOffset">fOffset</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fOffset">time stamp offset</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fCurIndex">fCurIndex</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fCurIndex">current index in buffer</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fOffset">fOffset</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fOffset">time stamp offset</a></i>
+<!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fWindow">fWindow</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fWindow">time stamp window</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fHighWater">fHighWater</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fHighWater">high water margin</a></i>
 <!--TAB6-->      <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* <!--TAB--><!--BOLD--><a name="TUsrHitBuffer:fHits">fHits</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fHits">-&gt; array containing hit data</a></i>
 </pre>
@@ -81,7 +97,7 @@
  Date:
 
 </pre><hr>
-<!--FUNCTION--> <a name="TUsrHitBuffer:TUsrHitBuffer" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:TUsrHitBuffer">TUsrHitBuffer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Offset) <br>
+<!--FUNCTION--> <a name="TUsrHitBuffer:TUsrHitBuffer" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:TUsrHitBuffer">TUsrHitBuffer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater) <br>
 <pre>__________________________________________________________________[C++ CTOR]
 
  Name:           <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a>
@@ -89,7 +105,6 @@
  Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * Name         -- name
                  <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries      -- number of entries
                  <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater       -- high water limit
-                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> Offset         -- time stamp offset
  Results:        --
  Exceptions:
  Description:    Class constructor
@@ -108,14 +123,14 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:AddHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:AddHit">AddHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
+<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:AddHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:AddHit">AddHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
 										<a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo,
-										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Bool_t">Bool_t</a> SubOffs) <br>
+										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:AddHit">TUsrHitBuffer::AddHit</a>
  Purpose:        Add data to hit buffer
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex       -- event index within buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- event index within buffer
                  <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber     -- module serial
                  <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi  -- event time, hi order
@@ -123,21 +138,20 @@
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo   -- ..., low
                  <a href="ListOfTypes.html#Int_t">Int_t</a> NofData          -- number of data words
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data        -- hit data, length depending on format
-                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> SubOffs         -- subtract offset if kTRUE (not yet impl)
  Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit          -- pointer to hit object
  Exceptions:
  Description:    Adds a new item to hit list.
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:AddHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:AddHit">AddHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
+<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:AddHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:AddHit">AddHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
 										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * EventTime,
-										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Bool_t">Bool_t</a> SubOffs) <br>
+										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:AddHit">TUsrHitBuffer::AddHit</a>
  Purpose:        Add data to hit buffer
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex       -- event index within buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- event index within buffer
                  <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber     -- module serial
                  <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi  -- event time, hi order
@@ -145,7 +159,6 @@
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo   -- ..., low
                  <a href="ListOfTypes.html#Int_t">Int_t</a> NofData          -- number of data words
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data        -- hit data, length depending on format
-                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> SubOffs         -- subtract offset if kTRUE (not yet impl)
  Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit          -- pointer to hit object
  Exceptions:
  Description:    Adds a new item to hit list.
@@ -158,6 +171,18 @@
  Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:RemoveHit">TUsrHitBuffer::RemoveHit</a>
  Purpose:        Remove a hit from buffer
  Arguments:      <a href="./TUsrHit.html">TUsrHit</a> * Hit    -- hit
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Removes a hit from buffer.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrHitBuffer:RemoveHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:RemoveHit">RemoveHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:RemoveHit">TUsrHitBuffer::RemoveHit</a>
+ Purpose:        Remove a hit from buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Index    -- index
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Removes a hit from buffer.
@@ -190,34 +215,80 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:FindHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:FindHit">FindHit</a>(<a href="./TUsrHit.html">TUsrHit</a> &amp; Profile, <a href="./TUsrHit.html">TUsrHit</a> * After) <br>
+<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:FindHit" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:FindHit">FindHit</a>(<a href="./TUsrHit.html">TUsrHit</a> &amp; HitProfile) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:FindHit">TUsrHitBuffer::FindHit</a>
  Purpose:        Search for a given hit
- Arguments:      <a href="./TUsrHit.html">TUsrHit</a> Profile  -- hit containing search profile
-                 <a href="./TUsrHit.html">TUsrHit</a> * After  -- start search after this entry
- Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit    -- next hit matching given profile
+ Arguments:      <a href="./TUsrHit.html">TUsrHit</a> HitProfile  -- hit containing search profile
+ Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit       -- next hit matching given profile
  Exceptions:
  Description:    Searches for an entry with given profile.
-                 Profile.GetEventNumber() == -1   -&gt; return hits with ANY event number
+                 Profile.GetBufferNumber() == -1  -&gt; return hits with ANY event number
+                 Profile.GetEventNumber() == -1   -&gt; return hits with ANY event index
                  Profile.GetModuleNumber() == -1  -&gt; return hits with ANY module number
                  Profile.GetChannelNumber() == -1 -&gt; return hits with ANY channel number
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:FindEvent" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:FindEvent">FindEvent</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:FindNextEvent">TUsrHitBuffer::FindNextEvent</a>
+ Purpose:        Find first hit of next event in buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber   -- event number
+ Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit       -- next hit with given event number
+ Exceptions:
+ Description:    Searches for next hit with given event number.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:FindNextEvent" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:FindNextEvent">FindNextEvent</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:FindNextEvent">TUsrHitBuffer::FindNextEvent</a>
+ Purpose:        Find first hit of next event in buffer
+ Arguments:      --
+ Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit       -- first hit of next event
+ Exceptions:
+ Description:    Searches for first hit of next event.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:NextHitInWindow" href="src/TUsrHitBuffer.cxx.html#TUsrHitBuffer:NextHitInWindow">NextHitInWindow</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Time0) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:NextHitInWindow">TUsrHitBuffer::NextHitInWindow</a>
+ Purpose:        Find next hit within time window
+ Arguments:      <a href="ListOfTypes.html#UShort_t">UShort_t</a> * Time0    -- time = 0
+ Results:        <a href="./TUsrHit.html">TUsrHit</a> * Hit       -- next hit matching time conditions
+ Exceptions:
+ Description:    Searches for next hit within time window.
  Keywords:
 
 </pre><br><br><br>
 <h3>Inline Functions</h3>
 <hr>
 <pre>
-<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a> <a name="TUsrHitBuffer:TUsrHitBuffer" href="TMrbAnalyze.h">TUsrHitBuffer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater = 0, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Offset = 0)
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TUsrHitBuffer.html">TUsrHitBuffer</a> <a name="TUsrHitBuffer:TUsrHitBuffer" href="TMrbAnalyze.h">TUsrHitBuffer</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, <a href="ListOfTypes.html#Int_t">Int_t</a> NofEntries, <a href="ListOfTypes.html#Int_t">Int_t</a> HighWater = 0)
 <!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TUsrHitBuffer:GetName" href="TMrbAnalyze.h">GetName</a>() const
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHitBuffer:GetNofEntries" href="TMrbAnalyze.h">GetNofEntries</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHitBuffer:GetNofHits" href="TMrbAnalyze.h">GetNofHits</a>()
-<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:SetOffset" href="TMrbAnalyze.h">SetOffset</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Offset)
-<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TUsrHitBuffer:GetOffset" href="TMrbAnalyze.h">GetOffset</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:SetWindow" href="TMrbAnalyze.h">SetWindow</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Window)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHitBuffer:GetWindow" href="TMrbAnalyze.h">GetWindow</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:SetOffset" href="TMrbAnalyze.h">SetOffset</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHitBuffer:GetOffset" href="TMrbAnalyze.h">GetOffset</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:SetIndex" href="TMrbAnalyze.h">SetIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHitBuffer:GetIndex" href="TMrbAnalyze.h">GetIndex</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:ResetIndex" href="TMrbAnalyze.h">ResetIndex</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:SetHighWater" href="TMrbAnalyze.h">SetHighWater</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> HighWater)
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHitBuffer:GetHighWater" href="TMrbAnalyze.h">GetHighWater</a>()
 <!--INLINE FUNCTION--><!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:At" href="TMrbAnalyze.h">At</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:First" href="TMrbAnalyze.h">First</a>()
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:After" href="TMrbAnalyze.h">After</a>(<a href="./TUsrHit.html">TUsrHit</a>* Hit)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:NextHitInWindow" href="TMrbAnalyze.h">NextHitInWindow</a>(<a href="./TUsrHit.html">TUsrHit</a>* Hit0)
+<!--INLINE FUNCTION--><!--TAB6-->             <a href="./TUsrHit.html">TUsrHit</a>* <a name="TUsrHitBuffer:NextHit" href="TMrbAnalyze.h">NextHit</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:Sort" href="TMrbAnalyze.h">Sort</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> UpTo = kMaxInt)
 <!--INLINE FUNCTION--><!--TAB6-->        <a href="http://root.cern.ch/root/html/TClonesArray.html">TClonesArray</a>* <a name="TUsrHitBuffer:GetCA" href="TMrbAnalyze.h">GetCA</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TUsrHitBuffer:Print" href="TMrbAnalyze.h">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Begin = 0, <a href="ListOfTypes.html#Int_t">Int_t</a> End = -1)
 <!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrHitBuffer:Class" href="TMrbAnalyze.h">Class</a>()
@@ -234,7 +305,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Wed Feb 12 14:37:52 2003
+Last update: Fri Mar  7 14:21:31 2003
 <br>
 <address>
 <hr>

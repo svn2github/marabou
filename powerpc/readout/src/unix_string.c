@@ -131,10 +131,10 @@ int unix_string_getval_i(TUnixEntry * Entry, const char * EntryName, int ValueNu
 	ep = Entry;
 	if (ep == NULL) {
 		if ((ep = _unix_find_entry(EntryName, ValueNumber)) == NULL)	return(DefaultValue);
-		else															return(atoi(ep->curval));
+		else															return((int) strtol(ep->curval, NULL, 0));
 	} else {
 		if (_unix_find_value(ep, ValueNumber) == 0)						return(DefaultValue);	
-		else															return(atoi(ep->curval));
+		else															return((int) strtol(ep->curval, NULL, 0));
 	}
 }
 
@@ -159,7 +159,7 @@ double unix_string_getval_f(TUnixEntry * Entry, const char * EntryName, int Valu
 		else															return(atof(ep->curval));
 	} else {
 		if (_unix_find_value(ep, ValueNumber) == 0)						return(DefaultValue);	
-		else																return(atof(ep->curval));
+		else															return(atof(ep->curval));
 	}
 }
 

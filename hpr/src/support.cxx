@@ -29,6 +29,7 @@
 #include "support.h"
 #include "TGMrbInputDialog.h"
 
+TSocket * gSocket = 0;
 //extern HistPresent *hp;
 //----------------------------------------------------------------------- 
 //  a command button
@@ -317,13 +318,14 @@ void SelectButton(TString & cmd,
 
 //______________________________________________________________________________________
 
-HTCanvas *CommandPanel(const char *fname,
-                       TList * fcmdline,
-                       Int_t xpos, Int_t ypos, HistPresent * hpr)
-{
-   Int_t xw = 250;
-   Int_t yw = 600;
+HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
+                       Int_t xpos, Int_t ypos, HistPresent * hpr, Int_t xwid)
+{   
+   Int_t xwid_default = 250;
+   Int_t ywid_default = 600;
 
+   Int_t xw = xwid_default, yw = ywid_default;
+   if (xwid > 0) xwid_default = xwid;
    Int_t Nentries = fcmdline->GetSize();
    Int_t maxlen_tit = 0;
    Int_t maxlen_nam = 0;
@@ -356,14 +358,16 @@ HTCanvas *CommandPanel(const char *fname,
    if(expandx < 1.) expandx=1.;
    Float_t expandy = (Float_t) Nentries / 25;
 
-   Float_t x0, x1, y0, y, dy;
-   if (anysel)
-      x0 = 0.08;
-   else
-      x0 = 0.01;
-   x0 = x0 / expandx;
+   Float_t x1, y0, y, dy;
+   Float_t xcmd_with_sel = 0.08 / expandx;
+   Float_t xcmd_no_sel   = 0.01 / expandx;
+//   if (anysel);
+//      x0 = 0.08;
+//   else
+//      x0 = 0.01;
+//   x0 = x0 / expandx;
 //   x1 = 1.;
-   x1 = 0.98;
+   x1 = 0.99;
 
    if (Nentries <= 3) dy = .99 / (Float_t) (Nentries + 1);
    else               dy = .99 / (Float_t) (Nentries);
@@ -374,11 +378,12 @@ HTCanvas *CommandPanel(const char *fname,
    TString sel;
    TString title;
    for (Int_t i = 0; i < Nentries; i++) {
+      Float_t xcmd = xcmd_no_sel;
       CmdListEntry *cle = (CmdListEntry *) fcmdline->At(i);
 //      cout << "new: " << cle->fCmd << endl;
       if (anysel) {
          sel = cle->fSel;
-         if (sel != "NoOp") {
+         if (sel != "NoOp" && sel.Length() > 0) {
             Bool_t selected;
             if (sel.Index(" YES") > 0) {
                selected = kTRUE;
@@ -386,14 +391,17 @@ HTCanvas *CommandPanel(const char *fname,
             } else {
                selected = kFALSE;
             }
-            SelectButton(sel, 0., y, x0, y + dy, selected);
+            xcmd = xcmd_with_sel;
+            SelectButton(sel, xcmd_no_sel, y, xcmd_with_sel, y + dy, selected);
+         } else {
+            xcmd = xcmd_no_sel;
          }
       }
       title = cle->fNam;
       title.Resize(maxlen_nam + 1);
 //      title += cle->fTit;
 
-      CommandButton(cle->fCmd, title, x0, y, x1, y + dy, kFALSE);
+      CommandButton(cle->fCmd, title, xcmd, y, x1, y + dy, kFALSE);
 //      if((cle->fTit).Length()>0)b->SetToolTipText((const char *)cle->fTit,500);
 
 //      b->SetName((const char *)cle->fNam); 
@@ -402,7 +410,7 @@ HTCanvas *CommandPanel(const char *fname,
    Int_t usedxw = cHCont->GetWw();
    Int_t usedyw = cHCont->GetWh();
 //   Int_t newxw = (Int_t) ((Float_t) usedxw * expandx);
-   Int_t newxw = (Int_t) ((Float_t) usedxw * 1);
+   Int_t newxw = usedxw;
    Int_t newyw;
    if (Nentries > 25)
       newyw = (Int_t) ((Float_t) usedyw * expandy);
@@ -411,9 +419,14 @@ HTCanvas *CommandPanel(const char *fname,
 //   cHCont->SetCanvas(newxw, newyw);
 //   if (newyw > usedyw)
 //      newyw -= 16;
-
-   cHCont->SetWindowSize(250, TMath::Min(610, newyw+20));
-   cHCont->SetCanvasSize(newxw, newyw);
+   if (xwid < 0) {
+      newxw = TMath::Max(xwid_default, newxw);
+      if (newxw > xwid_default) newxw += 20;
+   } else {
+      newxw = xwid_default;
+   } 
+   cHCont->SetWindowSize(newxw, TMath::Min(ywid_default+10, newyw+20));
+   cHCont->SetCanvasSize(usedxw, newyw);
    cHCont->SetEditable(kFALSE);
    cHCont->Update();
    return cHCont;
@@ -423,26 +436,6 @@ HTCanvas *CommandPanel(const char *fname,
 
 int GetPosition(TVirtualPad * pad, UInt_t * xp, UInt_t * yp)
 {
-//
-//  find position of pad in absolute pixel coordinates
-//
-/*
-   if(!pad){
-     *xp=*yp=0;
-     return -1;
-   }
-   TCanvas *c=pad->GetCanvas();
-   UInt_t Wh    = c->GetWh();
-   UInt_t Ww    = c->GetWw();
-   c->SetCanvas(Ww,Wh);              // force update of pos
-   Int_t  WtopX = c->GetWtopX();
-   Int_t  WtopY = c->GetWtopY();
-   float xl=pad->GetXlowNDC();
-   float yl=pad->GetYlowNDC();
-   *xp=(UInt_t)(Ww*xl+WtopX);
-   if(*xp > 800)*xp-=200;
-   *yp=(UInt_t)(Wh*(1.-yl)+WtopY);
-*/
    *xp = 1000;
    *yp = 650;
    return 1;
@@ -628,7 +621,7 @@ Int_t GetUsedSize(TMapFile * mfile)
    }
    return size;
 }
-
+/*
 //------------------------------------------------------   
 TList *GetFunctions(TMapFile * mfile)
 {
@@ -645,6 +638,36 @@ TList *GetFunctions(TMapFile * mfile)
          if (!list)
             list = new TList();
          list->Add(new TObjString(mr->GetName()));
+      }
+      mr = mr->GetNext();
+   }
+   return list;
+}
+//------------------------------------------------------   
+TList *GetWindows(TMapFile * mfile)
+{
+   if (!mfile)
+      return 0;
+   TMapRec *mr = mfile->GetFirst();
+   if (!mr)
+      return 0;
+   TList *list = 0;
+   TString name;
+   while (mfile->OrgAddress(mr)) {
+      if (!mr)
+         break;
+      if (!strncmp(mr->GetClassName(), "TMrbWindow", 10) ||
+          !strncmp(mr->GetClassName(), "TMbsWindow", 10)) {
+         if (!list)
+            list = new TList();
+         if (!strncmp(mr->GetClassName(), "TMrbWindow2D", 12) ||
+             !strncmp(mr->GetClassName(), "TMbsWindow2d", 12)) {
+            name = "w2 ";
+         } else {
+            name = "w1 ";
+         }
+         name += mr->GetName();
+         list->Add(new TObjString(name));
       }
       mr = mr->GetNext();
    }
@@ -696,38 +719,51 @@ TList *GetCanvases(TFile * rfile)
    }
    return list;
 }
-
 //------------------------------------------------------   
-TList *GetWindows(TMapFile * mfile)
+TList *GetGraphs(TFile * rfile)
 {
-   if (!mfile)
+   if (!rfile)
       return 0;
-   TMapRec *mr = mfile->GetFirst();
-   if (!mr)
-      return 0;
+   TIter next(rfile->GetListOfKeys());
    TList *list = 0;
-   TString name;
-   while (mfile->OrgAddress(mr)) {
-      if (!mr)
-         break;
-      if (!strncmp(mr->GetClassName(), "TMrbWindow", 10) ||
-          !strncmp(mr->GetClassName(), "TMbsWindow", 10)) {
+   TKey *key;
+   TString cn;
+   while ( (key = (TKey *) next()) ) {
+      cn = key->GetClassName();
+      if (cn.Contains("TGraph")) {
          if (!list)
             list = new TList();
-         if (!strncmp(mr->GetClassName(), "TMrbWindow2D", 12) ||
-             !strncmp(mr->GetClassName(), "TMbsWindow2d", 12)) {
-            name = "w2 ";
-         } else {
-            name = "w1 ";
-         }
-         name += mr->GetName();
-         list->Add(new TObjString(name));
+         list->Add(new TObjString(key->GetName()));
       }
-      mr = mr->GetNext();
    }
    return list;
 }
+*/
+//------------------------------------------------------   
+Int_t GetObjects(TList & list, TFile * rfile, const char * classname)
+{
+   Int_t maxkey = 0;
+   if (!rfile)
+      return maxkey;
+   TIter next(rfile->GetListOfKeys());
+//   TList *list = 0;
+   TKey *key;
+   TString cn;
+   while ( (key = (TKey *) next()) ) {
+      cn = key->GetClassName();
+//      cout << "GetObjects: " << cn << endl;
+      if (cn.BeginsWith(classname)) {
+         TString kn(key->GetName());
+         kn += ";";
+         kn += key->GetCycle();
+         maxkey = TMath::Max(maxkey, (Int_t)key->GetCycle());
+         list.Add(new TObjString(kn.Data()));
+      }
+   }
+   return maxkey;
+}
 
+/*
 //------------------------------------------------------   
 TList *GetWindows(TFile * rfile)
 {
@@ -745,7 +781,7 @@ TList *GetWindows(TFile * rfile)
          *keybuf << ";" << key->GetCycle() << '\0';
          if (!list)
             list = new TList();
-         if (!strncmp(key->GetClassName(), "TMrbWindow2D", 12) ||
+         if (!strncmp(key->GetClassName(), "TMrbWindow2", 12) ||
              !strncmp(key->GetClassName(), "TMbsWindow2d", 12)) {
             name = "w2 ";
          } else {
@@ -778,7 +814,7 @@ TList *GetTrees(TFile * rfile)
    }
    return list;
 }
-
+*/
 //------------------------------------------------------   
 Int_t contains_filenames(const char *lname)
 {
@@ -1203,27 +1239,15 @@ TEnv *GetDefaults(TString & hname, Bool_t mustexist)
 
 //___________________________________________________________________________________
 
-TH1 *gethist(const char *hname, const char *host, Int_t socket, Bool_t * ok)
+TH1 *gethist(const char *hname, TSocket * sock)
 {
+   if (!sock) return 0;
    Int_t nobs;
-   TH1 *hist = 0;
+   TH1 * hist = 0;
    TMessage *message;
    TString mess("M_client gethist ");
    mess += hname;
-// Open connection to server
-   TSocket *sock = new TSocket(host, socket);
-   *ok = sock->IsValid();
-   if (!(*ok)) {
-      sock->Close();
-      delete sock;
-      return NULL;
-   }
-// Wait till we get the start message
-   nobs = sock->Recv(message);
-
-//   cout << "MessageToM_analyze, send: " << mess << endl;
    sock->Send(mess);            // send message
-//  cout << "Send" << endl;
 
    while ((nobs = sock->Recv(message)))	// receive next message
    {
@@ -1244,36 +1268,20 @@ TH1 *gethist(const char *hname, const char *host, Int_t socket, Bool_t * ok)
          cout << "Unknown message type" << endl;
       }
    }
-// Close the socket
-   sock->Close();
-   delete sock;
-//  cout << "Int_t:" << retval << endl;
    gDirectory = gROOT;
    return hist;
 }
 
 //_______________________________________________________________________________
 
-TMrbStatistics *getstat(const char *host, Int_t socket, Bool_t * ok)
+TMrbStatistics *getstat(TSocket * sock)
 {
+   if (!sock) return 0;
    Int_t nobs;
    TMrbStatistics *stat = 0;
    TMessage *message;
    TString mess("M_client getstat ");
-//  mess += m;
-// Open connection to server
-   TSocket *sock = new TSocket(host, socket);
-   *ok = sock->IsValid();
-   if (!(*ok)) {
-      sock->Close();
-      delete sock;
-      return NULL;
-   }
 
-// Wait till we get the start message
-   nobs = sock->Recv(message);
-
-   cout << "MessageToM_analyze, send: " << mess << endl;
    sock->Send(mess);            // send message
 
    while ((nobs = sock->Recv(message)))	// receive next message
@@ -1295,10 +1303,6 @@ TMrbStatistics *getstat(const char *host, Int_t socket, Bool_t * ok)
          cout << "Unknown message type" << endl;
       }
    }
-// Close the socket
-   sock->Close();
-   delete sock;
-//  cout << "Int_t:" << retval << endl;
    gDirectory = gROOT;
    return stat;
 }
@@ -1333,3 +1337,37 @@ void SetUserPalette(Int_t startindex, TArrayI * pixels)
    	gStyle->SetPalette(ncont, colind.GetArray());  
 	}
 }
+//___________________________________________________________________________
+
+Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
+{
+   Int_t ndeleted = 0;
+   TString name;
+   TIter next(list);
+   TObjString * sel;
+   while ( (sel = (TObjString*)next()) ) {
+   	name = sel->GetString();
+   	if (name.BeginsWith(fname)) {
+      	Int_t start  = name.Index(" ") + 1;
+      	Int_t length = name.Length() - start;
+      	name = name(start,length);
+      	TString question("Delete: ");
+      	question += name.Data();
+      	question += " from ";
+      	question += fname;
+      	if (QuestionBox(question.Data(), win) == kMBYes) {      
+         	TFile * f = new TFile(fname, "update");
+         	if (f->Get(name.Data())) {
+               list->Remove(sel);
+            	f->Delete(name.Data());
+            	ndeleted++;
+         	} else {
+            	cout << name.Data() << " not found  on " << fname << endl;
+         	}
+         	f->Close();
+      	}
+   	}
+   }
+   return ndeleted;
+}
+

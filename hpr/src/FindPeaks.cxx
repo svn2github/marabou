@@ -124,16 +124,39 @@ Int_t FitHist::ShowPeaks(){
 void FitHist::PrintCalib(){
    TIter next(fPeaks);
    FhPeak * peak;
-   if(fPeaks->GetSize() > 0) ((FhPeak*)fPeaks->At(0))->PrintHeadLine();
-   else    WarnBox("No peaks selected");
-   while ( (peak = (FhPeak*)next()) ) {
-      peak->Print();  
+   if(fPeaks->GetSize() > 0) {
+   cout << endl << "Data used for calibration" << endl;
+   cout         << "-------------------------" << endl;
+      ((FhPeak*)fPeaks->At(0))->PrintHeadLine();
+       while ( (peak = (FhPeak*)next()) ) {
+         peak->Print();  
+      }
    }
+//  else    WarnBox("No peaks selected");
 }
 //_____________________________________________________________________
 
+void FitHist::ClearCalibration(){
+   if (expHist) {
+      expHist->GetListOfFunctions()->Clear("nodelete");
+      expHist->Delete();
+      expHist = NULL;
+      fSelHist = fOrigHist;
+      Draw1Dim();
+   }
+   fSetRange = kFALSE;
+   fSelHist->GetXaxis()->SetTitle("");
+   fSelHist->GetYaxis()->SetTitle("");
+   fSelHist->GetXaxis()->Set(fOrigHist->GetNbinsX(), fOrigLowX, fOrigUpX);
+   SaveDefaults();
+   cHist->Modified(kTRUE);
+   cHist->Update();
+}
+   
+//_____________________________________________________________________
+
 Bool_t FitHist::Calibrate(){
-   PrintCalib();
+//   PrintCalib();
    if(fSetRange){
 //       cout << "range was set" << endl;
        WarnBox("Calibration already applied,
@@ -154,12 +177,13 @@ use Clear calibration and redisplay");
 //      return kFALSE;
 //   }
 //   Double_t *xyvals = new Double_t[3*npeaks];
-   TArrayD xyvals(3*npeaks);
+   TArrayD xyvals(4*npeaks);
    TOrdCollection *col_lab = new TOrdCollection(); 
    TOrdCollection *row_lab = new TOrdCollection(); 
    col_lab->Add(new TObjString("Mean"));
-   col_lab->Add(new TObjString("Sigma"));
+   col_lab->Add(new TObjString("Error"));
    col_lab->Add(new TObjString("Nom Value"));
+   col_lab->Add(new TObjString("Error "));
    col_lab->Add(new TObjString("Use it"));
    for(Int_t i=0; i<npeaks; i++)row_lab->Add(new TObjString("Values"));
 
@@ -167,6 +191,7 @@ use Clear calibration and redisplay");
       xyvals[counter] = 0;
       xyvals[counter+npeaks] = 0;
       xyvals[counter+2*npeaks] = 0;
+      xyvals[counter+3*npeaks] = 0;
    }
    if(npeaks_def > 0){
       fPeaks->Sort();
@@ -184,7 +209,7 @@ use Clear calibration and redisplay");
    }
    TArrayI useflag(npeaks);
    for(Int_t i=0; i<npeaks; i++)useflag[i] = 1;
-   Int_t ret, ncols = 3, itemwidth=120, precission = 5; 
+   Int_t ret, ncols = 4, itemwidth=120, precission = 5; 
    TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, "Calibration values", 
                          itemwidth, ncols, npeaks, xyvals, precission,
                         col_lab, row_lab, &useflag);
@@ -205,10 +230,17 @@ use Clear calibration and redisplay");
       Float_t *yv = new Float_t[used];
       Float_t *ye = new Float_t[used];
       Int_t j=0;
+      FhPeak * peak;
+      
       for(Int_t i=0; i<npeaks; i++){ 
+         if (i< fPeaks->GetSize()) {
+           peak = (FhPeak *)fPeaks->At(i);
+           peak->SetNominalEnergy(xyvals[i + npeaks*2]);
+           peak->SetUsed(useflag[i] == 1);
+         }
          if(useflag[i] == 1){
-             yv[j] = xyvals[i + npeaks*2];
-             ye[j] = 0.0001 * xyvals[i + npeaks*2];
+             yv[j] = xyvals[i + 2 * npeaks];
+             ye[j] = xyvals[i + 3 * npeaks];
              xv[j] = xyvals[i];
              xe[j] = xyvals[i + npeaks];
 //              use first and last point as start 
@@ -218,7 +250,7 @@ use Clear calibration and redisplay");
          }
       }
 
-      cout << "x0 " << x0<< " y0 " << y0<< " x1 " << x1<< " y1 " << y1<< endl;
+//      cout << "x0 " << x0<< " y0 " << y0<< " x1 " << x1<< " y1 " << y1<< endl;
       if(x0 == x1 || y0 == y1){
          WarnBox("x0 == x1 or y0 == y1");
       } else {
@@ -241,15 +273,20 @@ tryagain:
          TGraphErrors * gr = new TGraphErrors(used,xv,yv, xe, ye);
          b = (y1 - y0)/(x1 - x0);
          a = y1 - b * x1;
-         cout << "def a,b " << a << " " << b << endl;
+         cout << "Number of points: " << used << " start a,b " << a << " " << b << endl;
          calfunc->SetParameters(a,b);
          gr->Fit("calfunc");
          a = calfunc->GetParameter(0);
          b = calfunc->GetParameter(1);
-         cout << "fit a,b " << a << " " << b << endl;
+         cout << endl << "Fitted values a: " 
+              << a << " +- " << calfunc->GetParError(0) << " b: " 
+              << b << " +- " << calfunc->GetParError(1) << endl;
          TCanvas * cc = new TCanvas("cc","cc");
-         gr->Draw("ALP");
+         gr->Draw("A*");
          calfunc->Draw("SAME"); 
+         calfunc->SetLineWidth(1);
+         calfunc->SetLineColor(7);
+
          cc->Update(); 
          Axis_t newlow = a + b * oldlow;
          Axis_t newup  = a + b * oldup;
@@ -257,6 +294,7 @@ tryagain:
          xaxis->SetRange(lowbin,upbin);
          fXtitle = "Energy[keV]";
          xaxis->SetTitle(fXtitle.Data());
+         PrintCalib();
          cout << "In this hist: nlow " << newlow << " nup "<< newup << endl;
          Float_t epb = (newup  - newlow) / 
                        (Float_t)fOrigHist->GetNbinsX();
@@ -266,19 +304,26 @@ tryagain:
          fSelHist->GetYaxis()->SetTitle(buf.str());
          buf.rdbuf()->freeze(0);
          if(fSelHist != fOrigHist){
-            newlow = a + b * fOrigHist->GetXaxis()->GetXmin();
-            newup  = a + b * fOrigHist->GetXaxis()->GetXmax();
+            
+            Axis_t newlowo = a + b * fOrigHist->GetXaxis()->GetXmin();
+            Axis_t newupo  = a + b * fOrigHist->GetXaxis()->GetXmax();
             fOrigHist->GetXaxis()->SetTitle(fXtitle.Data());
             fOrigHist->GetYaxis()->SetTitle(fYtitle.Data());
-            cout << "In orig hist: nlow " << newlow << " nup "<< newup << endl;
+            fOrigHist->GetXaxis()->Set(fOrigHist->GetNbinsX(), newlowo, newupo);
+    
+            cout << "In orig hist: nbin: " << fOrigHist->GetNbinsX()
+                 << " nlow " << newlowo 
+                 << " nup "<< newupo << endl;
          }
          fRangeLowX = newlow;
          fRangeUpX  = newup;
          fSetRange = kTRUE;
          ok = kTRUE;
-         fSelHist->GetListOfFunctions()->Delete();
-         cHist->cd();
-         fSelHist->Draw();
+
+//         fSelHist->GetListOfFunctions()->Delete();
+
+ //        cHist->cd();
+ //        fSelHist->Draw();
          cHist->Modified(kTRUE);
          cHist->Update();
          SaveDefaults();
@@ -292,8 +337,13 @@ tryagain:
             TString funcname(calfunc->GetName());
             funcname=GetString("Function name",(const char *)funcname, &ok, mycanvas);
             calfunc->SetName((const char *)funcname);
-       		if(OpenWorkFile()){
+            funcname+="_graph";
+            gr->SetName((const char *)funcname);
+            gr->SetTitle((const char *)funcname);
+           
+       		if(OpenWorkFile(mycanvas)){
          		calfunc->Write();
+               gr->Write();
          		CloseWorkFile();
       		}
    		}
@@ -303,5 +353,7 @@ tryagain:
    }
 //   if (xyvals) delete [] xyvals;
    if(col_lab){ col_lab->Delete(); delete col_lab;}
+   cout << fSelHist->GetXaxis()->GetTitle() << endl;
+
    return ok;
 }

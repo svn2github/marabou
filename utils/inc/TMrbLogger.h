@@ -44,6 +44,7 @@ class TMrbLogMessage: public TObject {
 					
 	public:
 
+		TMrbLogMessage() {};
 		TMrbLogMessage(EMrbMsgType Type, const Char_t * Color,
 										const Char_t * ClassName, const Char_t * Method, const Char_t * Text);
 		

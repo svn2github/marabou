@@ -26,6 +26,7 @@
 
 #include "TMrbLofDGFs.h"
 #include "TMrbLogger.h"
+#include "TMrbEnv.h"
 
 #include "TGMsgBox.h"
 
@@ -71,6 +72,8 @@ const SMrbNamedXShort kDGFSetupAccessMode[] =
 
 TMrbEsone * esoneCold = NULL;
 
+Bool_t firstCall = kTRUE;
+
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
 
@@ -107,6 +110,8 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
 	
+	TMrbEnv env;
+
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 
 //	clear focus list
@@ -183,11 +188,13 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	fDGFFrame->Associate(this);
 	fDGFFrame->SetState(gDGFControlData->fStatus);
 
-	gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
+	if (firstCall) {
+		gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
+		gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
+		gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
+	}
 	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
-	gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
 	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
-	gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
 	fDGFFrame->SetState(DGFControlData::kDGFIndivSwitchBusTerm, gDGFControlData->fIndivSwitchBusTerm ? kButtonDown : kButtonUp);
 
 //	CAMAC defs
@@ -214,8 +221,7 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 																frameGC, labelGC, entryGC, labelGC);
 	fCAMACFrame->AddFrame(fCAMACHostEntry, frameGC->LH());
 	camacHost = gDGFControlData->fCAMACHost.Data();
-	if (camacHost.Length() == 0) camacHost = gEnv->GetValue("DGFControl.DefaultHost", "");
-	if (camacHost.Length() == 0) camacHost = gEnv->GetValue("TMrbDGF.HostName", "ppc-0");
+	if (camacHost.Length() == 0) env.Find(camacHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "ppc-0");
 	fCAMACHostEntry->GetEntry()->SetText(camacHost.Data());
 	fCAMACHostEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeCharInt);
 	fCAMACHostEntry->SetRange(0, DGFSetupPanel::kNofPPCs - 1);
@@ -240,9 +246,9 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	fCodeFrame->AddFrame(fBroadCast, groupGC->LH());
 	fBroadCast->SetState(kDGFSetupRemoteShell, kButtonDown);
 	HEAP(fBroadCast);
-	TMrbEsone * e = new TMrbEsone();
-	Bool_t hasBroadCast = e->HasBroadCast();
-	delete e;
+	esoneCold = new TMrbEsone();
+	Bool_t hasBroadCast = esoneCold->HasBroadCast();
+	delete esoneCold;
 	if (!hasBroadCast) {
 		fBroadCast->SetState(DGFSetupPanel::kDGFSetupBroadCast, kButtonDisabled);
 		fBroadCast->SetState(DGFSetupPanel::kDGFSetupRemoteShell, kButtonDisabled);
@@ -323,6 +329,8 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 
 	MapWindow();
 //	gClient->WaitFor(this);
+
+	firstCall = kFALSE;
 }
 
 Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -584,12 +592,13 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 				}
 				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
+
 			for (Int_t cr = 0; cr < kNofCrates; cr++) {
 				if (lofDGFs[cr].GetLast() >= 0) {
 					if (toBeLoaded & kDGFSetupCodeSystemFPGA) {
 						gMrbLog->Out()	<< "Downloading System FPGA for modules in C"
-											<< (cr + 1) << " (broadcast pattern = 0x"
-											<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
+										<< (cr + 1) << " (broadcast pattern = 0x"
+										<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
 						gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
 						if (lofDGFs[cr].DownloadFPGACode(TMrbDGFData::kSystemFPGA)) {
 							systemFPGAok = kTRUE;
@@ -600,8 +609,8 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 					}
 					if (toBeLoaded & kDGFSetupCodeFippiFPGA) {
 						gMrbLog->Out()	<< "Downloading Fippi FPGA for modules in C"
-											<< (cr + 1) << " (broadcast pattern = 0x"
-											<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
+										<< (cr + 1) << " (broadcast pattern = 0x"
+										<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
 						gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
 						if (lofDGFs[cr].DownloadFPGACode(TMrbDGFData::kFippiFPGA)) {
 							fippiFPGAok = kTRUE;
@@ -620,7 +629,7 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 						dgf = dgfModule->GetAddr();
 						if (dgf->IsConnected()) {
 							if (Mode == kDGFSetupConnectReloadDGFs) {
-								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm)) nerr++;
+								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
 							}
 						}
 					}
@@ -632,8 +641,8 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 				if (lofDGFs[cr].GetLast() >= 0) {
 					if (toBeLoaded & kDGFSetupCodeDSP) {
 						gMrbLog->Out()	<< "Downloading DSP for modules in C"
-											<< (cr + 1) << " (broadcast pattern = 0x"
-											<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
+										<< (cr + 1) << " (broadcast pattern = 0x"
+										<< setbase(16) << lofDGFs[cr].GetStationMask() << setbase(10) << ")" << endl;
 						gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
 						if (lofDGFs[cr].DownloadDSPCode()) {
 							DSPok = kTRUE;
@@ -733,7 +742,7 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 								}
 
 								if (systemFPGAok && fippiFPGAok) {
-									if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm)) nerr++;
+									if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
 									if (toBeLoaded & kDGFSetupCodeDSP) {
 										if (dgf->Data()->ReadDSPCode(gDGFControlData->fDSPCodeFile) <= 0) nerr++;
 										if (dgf->DownloadDSPCode()) {

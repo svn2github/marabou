@@ -110,7 +110,7 @@ class TMrbDGF : public TNamed {
 		Bool_t FPGACodeLoaded(TMrbDGFData::EMrbFPGAType FPGAType);		// test if download ok
 		Bool_t FPGACodeLoaded(const Char_t * FPGAType);
 
-		Bool_t SetSwitchBusDefault(Bool_t IndiFlag = kFALSE);			// set switch bus register
+		Bool_t SetSwitchBusDefault(Bool_t IndiFlag = kFALSE, const Char_t * Prefix = NULL);	// set switch bus register
 		Bool_t SetSwitchBus(UInt_t Bits = 0, TMrbDGF::EMrbBitOp BitOp = kBitSet);
 		Bool_t SetSwitchBus(const Char_t * DSPTrigger, const Char_t * FastTrigger = NULL);
 		UInt_t GetSwitchBus(); // get
@@ -363,13 +363,13 @@ class TMrbDGF : public TNamed {
 		Bool_t CheckTriggerPolarity(const Char_t * Method); 			// check if trigger polarity defined
 
 		inline void CopyData(TArrayI & Dest, Short_t * Src, Int_t NofWords) {	// copy back and forth
-			for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Int_t) *Src++;
+			Dest.Set(NofWords); for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Int_t) *Src++;
 		};
 		inline void CopyData(TArrayS & Dest, Int_t * Src, Int_t NofWords) {
-			for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Short_t) *Src++;
+			Dest.Set(NofWords); for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Short_t) *Src++;
 		};
 		inline void CopyData(TArrayI & Dest, UShort_t * Src, Int_t NofWords) {
-			for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Int_t) *Src++;
+			Dest.Set(NofWords); for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Int_t) *Src++;
 		};
 
 																		// write param start addr

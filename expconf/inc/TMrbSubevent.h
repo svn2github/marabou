@@ -147,8 +147,10 @@ class TMrbSubevent : public TNamed {
 		void Print(ostream & OutStrm, const Char_t * Prefix = "");	// show data
 		inline virtual void Print() { Print(cout, ""); };
 
-		inline Bool_t AllocateHistograms(Bool_t Flag = kTRUE) { fHistosToBeAllocated = Flag; return(kTRUE); }; // create histograms?
+		inline void AllocateHistograms(Bool_t Flag = kTRUE) { fHistosToBeAllocated = Flag; }; // create histograms?
 		inline Bool_t HistosToBeAllocated() { return(fHistosToBeAllocated); };
+		inline void FillHistogramsIfTrueHitOnly(Bool_t Flag = kTRUE) { fHistosToBeFilledIfTrueHit = Flag; };
+		inline Bool_t HistosToBeFilledIfTrueHit() { return(fHistosToBeFilledIfTrueHit); };
 
 		virtual inline Bool_t HasFixedLengthFormat() { return(kTRUE); };		// fixed length data
 		virtual inline Bool_t AllowsMultipleModules() { return(kTRUE); };		// format allows multiple modules
@@ -161,9 +163,7 @@ class TMrbSubevent : public TNamed {
 		inline Bool_t IsInArrayMode() { return(fArrayMode); };
 		inline Bool_t HasIndexedParams() { return(fHasIndexedParams); };
 				
-		virtual inline Bool_t ProvidesEventTime() { return(kFALSE); };			// no event time buffer normally
 		virtual inline Bool_t NeedsHitBuffer() { return(kFALSE); }; 			// no hit buffer needed
-		virtual inline Bool_t NeedsEventTime() { return(kFALSE); }; 			// no event time needed
 		virtual inline Bool_t NeedsBranchMode() { return(kFALSE); }; 			// may run with leaves or branches
 
 		virtual inline Bool_t HasPrivateCode() { return(kFALSE); }; 			// normal code generation
@@ -186,7 +186,8 @@ class TMrbSubevent : public TNamed {
 		Int_t fSerial;						// header words: unique subevent id
 		Int_t fCrate;						// crate number
 
-		Bool_t fHistosToBeAllocated;	// kTRUE if histograms to be allocated for all params
+		Bool_t fHistosToBeAllocated;		// kTRUE if histograms to be allocated for all params
+		Bool_t fHistosToBeFilledIfTrueHit;	// fill histograms if is it true hit
 
 		Int_t fNofEvents;					// list of parent events
 		TMrbLofNamedX fLofEvents;

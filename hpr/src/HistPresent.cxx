@@ -36,6 +36,8 @@
 #include "TStyle.h"
 #include "TObjectTable.h"
 #include "TList.h"
+#include "TMessage.h"
+#include "TGraphErrors.h"
 
 //#include "TMapRec.h"
 #include <iostream.h>
@@ -48,6 +50,7 @@
 #include "TGMrbInputDialog.h"
 #include "HistPresent.h"
 #include "FitHist.h"
+#include "FhContour.h"
 #include "FitHist_Help.h"
 #include "support.h"
 //#include "HprDefMacro.cxx"
@@ -225,6 +228,9 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fSelectCut = new TList();
    fSelectWindow = new TList();
    fSelectLeaf = new TList();
+   fSelectContour = new TList();
+   fSelectGraph = new TList();
+   fAllContours = new TList();
 
    gROOT->GetListOfCleanups()->Add(this);
 
@@ -243,10 +249,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 //   fAutoExecName_2 = new TString();
    fHelpDir        = new TString();
    fHostToConnect  = new TString("localhost");
+   fComSocket       = 0;
    fSocketToConnect = 9090;
-   fSocketIsOpen = kFALSE;
-   fAnyFromSocket = kFALSE;
-   fAskedFor = kFALSE;
    fHelpBrowser = NULL;
    fUseHist = kFALSE;
    fApplyGraphCut = kFALSE;
@@ -272,6 +276,9 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 HistPresent::~HistPresent()
 {
    cout<< "enter HistPresents dtor" <<endl;
+   if (fComSocket) {
+      fComSocket->Send("M_client exit");
+   }
    SaveOptions();
    CloseAllCanvases();
    gDirectory->GetList()->Remove(this);
@@ -584,17 +591,20 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
 //   cout << "###ShowContents enter: fCmdLine " << fCmdLine << endl;
    static Int_t ycanvas=5;
    TMrbStatistics * st = 0;
-   TList * lofF = 0;
-   TList * lofW = 0;
-   TList * lofT = 0;
-   TList * lofC = 0;
+   TList lofF;
+   TList lofW1;
+   TList lofW2;
+   TList lofT;
+   TList lofC;
+   TList lofUc;
+   TList lofG;
    Int_t nstat=0;
    Bool_t ok;
    TString cmd;
    TString title;
    TString hint;
    TString sel;
-
+   Int_t maxkey = 0;
 //   TurnButtonGreen(&activeFile);
 
    if (bp) {
@@ -617,36 +627,47 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          st=new TMrbStatistics(fname);
          nstat = st->Fill(rfile);
       } else nstat = st->GetListOfEntries()->GetSize();
-      lofF = GetFunctions(rfile);
-      lofT = GetTrees(rfile);
-      lofW = GetWindows(rfile);
-      lofC = GetCanvases(rfile);
+      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TTree"),        maxkey);
+      maxkey = TMath:: Max(GetObjects(lofT, rfile, "TNtuple"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofF, rfile, "TF1"),          maxkey);
+      maxkey = TMath:: Max(GetObjects(lofC, rfile, "TCanvas"),      maxkey);
+      maxkey = TMath:: Max(GetObjects(lofG, rfile, "TGraph"),       maxkey);
+      maxkey = TMath:: Max(GetObjects(lofUc, rfile, "FhContour"),   maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowF"), maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW1, rfile, "TMrbWindowI"), maxkey);
+      maxkey = TMath:: Max(GetObjects(lofW2, rfile, "TMrbWindow2D"),maxkey);
       rfile->Close();
    } else if (strstr(fname,"Socket")) {
-      if (!fAskedFor) {
+      if (!fComSocket) {
          *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
                         ,&ok,GetMyCanvas());
          fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
                         ,&ok,GetMyCanvas());
-         fAskedFor = kTRUE;
-      }
-      st = getstat(fHostToConnect->Data(), fSocketToConnect, &ok);
-      if (!st || !ok) {
-          cout << setred << 
+         fComSocket = new TSocket(*fHostToConnect, fSocketToConnect);
+         if (!fComSocket->IsValid()) {
+            fComSocket->Close();
+            fComSocket = 0;
+            cout << setred << 
+            "Cant connect to remote M_analyze" << setblack << endl;
+            return;
+         } else {  
+//           Wait till we get the start message
+            TMessage * message;
+            fComSocket->Recv(message);
+            if (message) delete message;
+         }
+      } 
+      st = getstat(fComSocket);
+      if (!st) {
+         cout << setred << 
          "Cant connect to remote M_analyze" << setblack << endl;
-         fSocketIsOpen = kFALSE;
          return;
+      } else {
+         nstat = st->GetListOfEntries()->GetSize();
       }
-//      if (st)st->Print();
-      fSocketIsOpen = kTRUE;
-      nstat = st->GetListOfEntries()->GetSize();
    } else if (strstr(fname,"Memory")) {
       st=new TMrbStatistics();
       nstat = st->Fill();
-//      lofF = GetFunctions(rfile);
-//      lofT = GetTrees(rfile);
-//      lofW = GetWindows(rfile);
-
    } else if (strstr(fname,".map")) {
       TMapFile * mfile =0;
       mfile = TMapFile::Create(fname);
@@ -655,9 +676,9 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          st=new TMrbStatistics(fname);
          nstat = st->Fill(mfile);
       } else nstat = st->GetListOfEntries()->GetSize();
-      lofF = GetFunctions(mfile);
+//      lofF = GetFunctions(mfile);
 //      lofT = GetTrees(rfile);
-      lofW = GetWindows(mfile);
+//      lofW = GetWindows(mfile);
       mfile->Close();
      if (nstat > 0) {
          cmd = "mypres->SaveMap(\"";
@@ -749,36 +770,49 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    }
    if (fHistSelMask->Length() <=0) {
 //  windows
-      if (lofW) {
-         Bool_t hasW2D = kFALSE;
-         TIter next(lofW);
+      if (lofW1.GetSize() > 0) {
+         TIter next(&lofW1);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
-            TString name(title); name.Remove(0,3);         // remove "w1 " or "w2 "
+            TString name(title); 
             cmd = fname;
             cmd = cmd + "\",\"" + name.Data() + "\")";
             sel = cmd;
             cmd.Prepend("mypres->PrintWindow(\"");
             sel.Prepend("mypres->LoadWindow(\"");
+            title.Prepend("w1 ");
             hint =  title;
-            if (hint.Contains("w2 ",TString::kIgnoreCase)) {
-                   hint+=" 2-dim window"; hasW2D = kTRUE;
-            } else   hint+=" 1-dim window";
-            fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
-         }
-         if (hasW2D) {
-            title = "2D Cuts to ASCII";
-            hint = "Write " + title;
-            cmd = "mypres->CutsToASCII(\"";
-            cmd = cmd + fname + "\")";
-            sel = "";
+            hint+=" 1-dim window";
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
          }
       }
+      if (lofW2.GetSize() > 0) {
+         TIter next(&lofW2);
+         TObjString * objs;
+         while ( (objs = (TObjString*)next())) {
+            title = objs->String();
+            TString name(title); 
+            cmd = fname;
+            cmd = cmd + "\",\"" + name.Data() + "\")";
+            sel = cmd;
+            cmd.Prepend("mypres->PrintWindow(\"");
+            sel.Prepend("mypres->LoadWindow(\"");
+            title.Prepend("w2 ");
+            hint =  title;
+            hint+=" 2-dim window";
+            fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+         }
+         title = "2D Cuts to ASCII";
+         hint = "Write " + title;
+         cmd = "mypres->CutsToASCII(\"";
+         cmd = cmd + fname + "\")";
+         sel = "";
+         fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+      }
    //  functions
-      if (lofF) {
-         TIter next(lofF);
+      if (lofF.GetSize() > 0) {
+         TIter next(&lofF);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
@@ -795,8 +829,8 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          }
       }
    //  canvases
-      if (lofC) {
-         TIter next(lofC);
+      if (lofC.GetSize() > 0) {
+         TIter next(&lofC);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
@@ -811,9 +845,45 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
          }
       }
+   //  user contours
+      if (lofUc.GetSize() > 0) {
+         TIter next(&lofUc);
+         TObjString * objs;
+         while ( (objs = (TObjString*)next())) {
+            title = objs->String();
+            cmd = fname;
+            cmd = cmd + "\",\"" + title.Data() + "\")";
+            sel = cmd;
+            cmd.Prepend("mypres->ShowContour(\"");
+            sel.Prepend("mypres->SelectContour(\"");
+//            sel.Resize(0);
+            title.Prepend("U_C ");
+            hint =  title;
+            hint+=" contour";
+            fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+         }
+      }
+   //  graphs
+      if (lofG.GetSize() > 0) {
+         TIter next(&lofG);
+         TObjString * objs;
+         while ( (objs = (TObjString*)next())) {
+            title = objs->String();
+            cmd = fname;
+            cmd = cmd + "\",\"" + title.Data() + "\")";
+            sel = cmd;
+            cmd.Prepend("mypres->ShowGraph(\"");
+            sel.Prepend("mypres->SelectGraph(\"");
+//            sel.Resize(0);
+            title.Prepend("Graph ");
+            hint =  title;
+            hint+=" graph";
+            fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+         }
+      }
    //  trees
-      if (lofT) {
-         TIter next(lofT);
+      if (lofT.GetSize() > 0) {
+         TIter next(&lofT);
          TObjString * objs;
          while ( (objs = (TObjString*)next())) {
             title = objs->String();
@@ -829,9 +899,24 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
       }
    }
 //
+   if (maxkey > 1) {
+   	cmd = "mypres->PurgeEntries(\"";
+   	cmd = cmd + fname +  "\")";
+   	title = "Purge Entries";
+   	hint = "Purge: delete entries, keep last cycl";
+   	sel.Resize(0);
+   	fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+   }
+   cmd = "mypres->DeleteSelectedEntries(\"";
+   cmd = cmd + fname +  "\")";
+   title = "Delete Sel Entries";
+   hint = "Delete selected entries";
+   sel.Resize(0);
+   fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+   
    cmd = "mypres->ShowStatOfAll(\"";
    cmd = cmd + fname +  "\")";
-   title = "Show Statistics of all";
+   title = "Show Stats of all";
    hint = "Show statistics of all histograms and save to file";
    sel.Resize(0);
    fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
@@ -874,7 +959,8 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
       if (fCmdLine->GetSize() > fMaxListEntries) {
       } else {
          ycanvas = 5 + 50 * fHistLists->GetSize();
-         HTCanvas *ccont = CommandPanel(fname, fCmdLine, 260, ycanvas, this);
+         HTCanvas *ccont = CommandPanel(fname, fCmdLine, 
+                           260, ycanvas, this, fWinwidx_hlist);
 //         cout << "fHistLists " << fHistLists << endl;
          if (fHistLists)fHistLists->Add(ccont);
       }
@@ -888,9 +974,36 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
 }
 //________________________________________________________________________________________
 
+void HistPresent::PurgeEntries(const char * fname, const char * bp)
+{
+   TString question(fname);
+   question.Prepend("Purge file: ");
+   if (QuestionBox(question.Data(), mycanvas) == kMBYes) {
+      TFile * f = new TFile(fname, "update");
+      f->Purge();
+      f->Close();
+   }
+}
+//________________________________________________________________________________________
+
+void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
+{
+   Int_t ndeleted = 0;
+   ndeleted += DeleteOnFile(fname, fSelectCut, mycanvas);
+   ndeleted += DeleteOnFile(fname, fSelectHist, mycanvas);
+   ndeleted += DeleteOnFile(fname, fSelectWindow, mycanvas);
+   ndeleted += DeleteOnFile(fname, fSelectContour, mycanvas);
+   ndeleted += DeleteOnFile(fname, fAllFunctions, mycanvas);
+   ndeleted += DeleteOnFile(fname, fSelectGraph, mycanvas);
+   cout << ndeleted << " object";
+   if (ndeleted !=1) cout << "s";
+   cout << " ndeleted on " << fname << endl;
+}
+ //________________________________________________________________________________________
+
 void HistPresent::ShowStatOfAll(const char * fname, const char * bp)
 {
-   Int_t nstat;
+  Int_t nstat;
    TString sname(fname);
    TMrbStatistics * st = 0;
    TRegexp rname("\\.root");
@@ -960,12 +1073,8 @@ void HistPresent::ComposeList(const char* bp)
    if (!gSystem->AccessPathName(listname)) {
       TString question=listname;
       question += " exists, Overwrite?";
-      int buttons= kMBYes | kMBNo, retval=0;
-      EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), mycanvas,
-      "Question",(const char *)question,
-      icontype, buttons, &retval);
-      if (retval == kMBNo) return;
+
+      if (QuestionBox(question.Data(), mycanvas) == kMBNo) return;
    }
    ofstream wstream;
    wstream.open(listname.Data(), ios::out);
@@ -1678,15 +1787,15 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
       }
    }
 
-   if (nent==1) TH1F *h1 = new TH1F(hname.Data(),hname.Data(),
-                               (Int_t)nbin[0],vmin[0], vmax[0]); 
-   if (nent==2) TH2F *h2 = new TH2F(hname.Data(),hname.Data(),
-                              (Int_t)nbin[0],vmin[0], vmax[0], 
-                              (Int_t)nbin[1],vmin[1], vmax[1]); 
-   if (nent==3) TH3F *h3 = new TH3F(hname.Data(),hname.Data(),
-                              (Int_t)nbin[0],vmin[0], vmax[0], 
-                              (Int_t)nbin[1],vmin[1], vmax[1], 
-                              (Int_t)nbin[2],vmin[2], vmax[2]); 
+   if (nent==1) new TH1F(hname.Data(),hname.Data(),
+               	  (Int_t)nbin[0],vmin[0], vmax[0]); 
+   if (nent==2) new TH2F(hname.Data(),hname.Data(),
+               	 (Int_t)nbin[0],vmin[0], vmax[0], 
+               	 (Int_t)nbin[1],vmin[1], vmax[1]); 
+   if (nent==3) new TH3F(hname.Data(),hname.Data(),
+               	 (Int_t)nbin[0],vmin[0], vmax[0], 
+               	 (Int_t)nbin[1],vmin[1], vmax[1], 
+               	 (Int_t)nbin[2],vmin[2], vmax[2]); 
 
    delete [] vmin; delete [] vmax; delete [] nbin;
    if (env) delete env;
@@ -1821,6 +1930,105 @@ void HistPresent::ShowFunction(const char* fname, const char* name, const char* 
       new TCanvas("cccc","cccc");
       func->Draw();   
    } else     WarnBox("Function not found");
+   if (fRootFile) fRootFile->Close();
+}
+//________________________________________________________________________________________
+// Show user contour
+  
+void HistPresent::ShowContour(const char* fname, const char* name, const char* bp)
+{
+   FhContour * co;
+   if (strstr(fname,".root")) {
+      if (fRootFile) fRootFile->Close();
+      fRootFile=new TFile(fname);
+      co = (FhContour*)fRootFile->Get(name);
+//      func->SetDirectory(gROOT);
+      fRootFile->Close();
+   } else {
+      co = (FhContour*)gROOT->FindObject(name);
+   }
+//  gROOT->ls();
+   if (co) {
+      TArrayI colsav(*(co->GetColorArray()));
+      TArrayD levsav(*(co->GetLevelArray()));
+
+      Int_t result = co->Edit(mycanvas); 
+
+      if (result >= 0){
+         Bool_t changed = kFALSE;
+         for (Int_t i = 0l; i < co->GetColorArray()->GetSize(); i++) {
+            if (colsav[i] !=   (*(co->GetColorArray()))[i] ) {
+               changed = kTRUE;
+               break;
+            }
+            if (levsav[i] !=   (*(co->GetLevelArray()))[i]){
+               changed = kTRUE;
+               break;
+            }
+         }
+         if (changed) {
+            cout << "Changed" << endl;
+            int buttons = kMBOk | kMBDismiss, retval = 0;
+            EMsgBoxIcon icontype = kMBIconQuestion;
+            new TGMsgBox(gClient->GetRoot(), mycanvas,
+                   "Question", "Save modified contour?",
+                   icontype, buttons, &retval);
+             if (retval == kMBOk) {
+                fRootFile=new TFile(fname, "UPDATE");
+                co->Write();
+                fRootFile->Close();
+                fRootFile = 0;
+            }
+         }
+      }
+   } else     WarnBox("Contour not found");
+
+//   if (fRootFile) fRootFile->Close();
+}
+//________________________________________________________________________________________
+// Show user contour
+  
+void HistPresent::ShowGraph(const char* fname, const char* name, const char* bp)
+{
+   TGraphErrors * gr;
+   if (strstr(fname,".root")) {
+      if (fRootFile) fRootFile->Close();
+      fRootFile=new TFile(fname);
+      gr = (TGraphErrors*)fRootFile->Get(name);
+//      func->SetDirectory(gROOT);
+//      fRootFile->Close();
+   } else {
+      gr = (TGraphErrors*)gROOT->FindObject(name);
+   }
+//  gROOT->ls();
+   if (gr) {
+//      gr->Print(); 
+      cout << endl << "Graph Object, Npoints: " << gr->GetN()<< endl;
+      cout << "           X" << "    Error(X)" 
+           << "           Y" << "    Error(Y)" << endl;
+      for (Int_t i = 0; i < gr->GetN(); i++) {
+         cout << setw(12) << (gr->GetX())[i] << setw(12) << (gr->GetEX())[i]
+              << setw(12) << (gr->GetY())[i] << setw(12) << (gr->GetEY())[i]
+              << endl;
+      }
+      TIter next(gr->GetListOfFunctions());
+      while (TObject * obj = next()) {
+         if (obj->InheritsFrom("TF1")) {
+            TF1 * f = (TF1*)obj;
+            cout << endl << "Fitted function name: " << f->GetName()
+                 << " Type: " << f->GetTitle() 
+                 << " Chi2/NDF: " << f->GetChisquare() 
+                 << "/" << f->GetNDF() << endl << endl;
+
+            for (Int_t i = 0; i < f->GetNpar(); i++) {
+               cout << "Par_" << i << setw(12) << f->GetParameter(i)
+                    << " +- " << setw(12) << f->GetParError(i)  << endl;
+            }
+            cout << endl;
+         }
+      }
+      gr->Draw("A*");  
+   } else     WarnBox("Graph not found");
    if (fRootFile) fRootFile->Close();
 }
 //________________________________________________________________________________________
@@ -2007,82 +2215,6 @@ void HistPresent::OperateHist(Int_t op)
 }
 //________________________________________________________________________________________
 // Differentiate histogram
-Int_t FoldSqWave(Int_t i, Int_t j,Int_t m) 
-{
-   if      ( i <= j-1 && i >= j-m)     return -1;
-   else if (i <= j+m-1 && i >= j)     return  2;
-   else if (i <= j+2*m-1 && i >= j+m) return -1; 
-   else return 0;
-}
-void HistPresent::FoldSquareWave() 
-{
-   TH1* hist = GetSelHistAt(0);
-   if (!hist) return;
-   if (fSelectHist->GetSize() > 1) {
-      WarnBox("More than 1 selection, take first");
-   } 
-   if (is2dim(hist)) {
-      WarnBox("2 dim not supported yet");
-      return;
-   }       
-//  gROOT->ls();
-   if (hist) {
-      Int_t Mwidth=9;
-      // create a clone of the old histogram
-      TH1F* hnew = (TH1F*)hist->Clone();
-
-      // change name and axis specs
-      TString name = hist->GetName();
-      name += "_peaked";
-      hnew->SetName((const char*)name);
-      TAxis *xold   = hist->GetXaxis();
-      Int_t nbins   = xold->GetNbins();
-
-      // copy merged bin contents (ignore under/overflows)
-      Int_t bin, i, L, start=0, wid;
-      Stat_t fold, var;
-      Float_t threshold=4.;
-      if (fOpfac > 1. && fOpfac < 10) threshold = fOpfac;
-      TH1F* h_width = new TH1F("width","hwidth",50,0,50);
-      for (bin = 1;bin<=nbins-1;bin++) {
-         if (bin < Mwidth+1 || bin >= nbins-2*Mwidth-1) {
-            hnew->SetBinContent(bin,0);
-         } else {
-            fold=0.; var = 0.;
-            for(i=bin-Mwidth; i <= bin+2*Mwidth-1; i++) {
-               L = FoldSqWave(i,bin,Mwidth);
-               fold += L*hist->GetBinContent(i);
-               var += L * L * hist->GetBinContent(i);
-            }
-            if (var) fold = fold /sqrt(var);
-            else    fold = 0.;
-            if (fold < threshold) {
-               fold=0.;
-               if (start) {
-                  wid=bin-start;
-                  h_width->Fill(wid);
-                  if (wid > 12) cout << " bin " << bin << " width " << wid << endl;
-                  start = 0;
-               }
-            } else {
-                if (!start) start = bin;
-            }
-            hnew->SetBinContent(bin,fold);
-         }
-      }
-      TCanvas* cc=new TCanvas("wid","cwid");
-      h_width->Draw();
-      cc->Modified(kTRUE);
-      cc->Update();
-      hnew->SetEntries(nbins);
-      ShowHist(hnew);
-   } else {
-      WarnBox("No hist found"); 
-   }
-   
-}
-//________________________________________________________________________________________
-// Differentiate histogram
   
 void HistPresent::DiffHist() 
 {
@@ -2165,7 +2297,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
       WarnBox("Requested non existing entry");
       return NULL;
    } 
-   Bool_t ok;
+ //  Bool_t ok;
    TObjString * obj = (TObjString *)hlist->At(pos);
 
    TString fname = obj->String();
@@ -2199,20 +2331,15 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
       } 
    } 
    if (strstr(fname,"Socket")) {
-      if(!fSocketIsOpen){
+      if(!fComSocket){
           cout << setred << "No connection open"  << setblack << endl;
           return NULL;
       }
-      hist = gethist(hn, fHostToConnect->Data(), fSocketToConnect, &ok);
+      hist = gethist(hn, fComSocket);
       if (!hist) cout << setred << "Cant get hist" << setblack << endl;
-      if (!ok) { 
-         cout << setred << "Connection broken" << setblack << endl;
-         fSocketIsOpen = kFALSE;
-//         CloseAllCanvases();
-//         CloseHistLists();
-      }
       return hist;
-   }// watch out: is it .map or .root or in memory
+   }
+// watch out: is it .map or .root or in memory
 
    if (fname.Index(".map") >= 0) {
       TMapFile *mfile;
@@ -2257,6 +2384,7 @@ void HistPresent::SelectCut(const char* fname, const char* cname, const char* bp
 
 void HistPresent::CloseHistLists() 
 {  
+   ClearSelect();
    fHistLists->Delete();
 }
 //________________________________________________________________________________________
@@ -2283,6 +2411,70 @@ void HistPresent::SelectHist(const char* fname, const char* hname, const char* b
          fSelectHist->Add(new TObjString((const char *)sel));
          b->SetFillColor(3);
          b->SetBit(kSelected);
+   //      gPad->SetFillColor(3);
+      }
+      b->Modified(kTRUE);b->Update();
+   }
+}
+//________________________________________________________________________________________
+// Select
+  
+void HistPresent::SelectContour(const char* fname, const char* hname, const char* bp)
+{
+//   cout << fname << " " << hname << endl;
+   TString sel = fname;
+   sel = sel + " " + hname;
+   if (bp) {
+      TButton * b;
+      b = (TButton *)strtoul(bp, 0, 16);
+//      cout << "bp " << b << endl;
+      if (b->TestBit(kSelected)) {
+         TObjString tobjs((const char *)sel);
+   //      tobjs.Print(" ");
+         fSelectContour->Remove(&tobjs);
+         b->SetFillColor(16);
+         b->ResetBit(kSelected);
+   //      gPad->SetFillColor(16);
+   //     case not already selected
+      } else {
+/*
+         if (fRootFile) fRootFile->Close();
+         fRootFile=new TFile(fname);
+         FhContour * co = (FhContour*)fRootFile->Get(hname);
+         co->SetDirectory(gROOT);
+         fAllContours->Add(co);
+         fRootFile->Close();
+         gDirectory=gROOT;
+*/
+         fSelectContour->Add(new TObjString((const char *)sel));
+         b->SetFillColor(3);
+         b->SetBit(kSelected);
+   //      gPad->SetFillColor(3);
+      }
+      b->Modified(kTRUE);b->Update();
+   }
+}
+//________________________________________________________________________________________
+// Select
+  
+void HistPresent::SelectGraph(const char* fname, const char* hname, const char* bp)
+{
+//   cout << fname << " " << hname << endl;
+   TString sel = fname;
+   sel = sel + " " + hname;
+   if (bp) {
+      TButton * b;
+      b = (TButton *)strtoul(bp, 0, 16);
+//      cout << "bp " << b << endl;
+      if (b->TestBit(kSelected)) {
+         TObjString tobjs((const char *)sel);
+         fSelectGraph->Remove(&tobjs);
+         b->SetFillColor(16);
+         b->ResetBit(kSelected);
+      } else {
+         b->SetFillColor(3);
+         b->SetBit(kSelected);
+         fSelectGraph->Add(new TObjString((const char *)sel));
    //      gPad->SetFillColor(3);
       }
       b->Modified(kTRUE);b->Update();
@@ -2684,6 +2876,8 @@ void HistPresent::ClearSelect()
       fAllFunctions->Clear();
       fSelectCut->Clear();
       fSelectWindow->Clear();
+      fSelectContour->Clear();
+      fSelectGraph->Clear();
 }; 
 //__________________________________________________________________________________
   
@@ -2738,6 +2932,10 @@ void HistPresent::ListSelect()
    cout << "----------------" << endl;
    fAllFunctions->Print();
    cout << "-------------------- " << endl;
+   fSelectContour->Print();
+   cout << "-------------------- " << endl;
+   fSelectGraph->Print();
+   cout << "-------------------- " << endl;
 };
 //_______________________________________________________________________
   
@@ -2775,21 +2973,13 @@ TH1* HistPresent::GetHist(const char* fname, const char* hname)
 //       else cout << "Use existing: " << hn << endl;
    
    } else if (strstr(fname,"Socket")) {
-      if(!fSocketIsOpen){
+      if(!fComSocket){
           cout << setred << "No connection open"  << setblack << endl;
           return NULL;
       }
-      Bool_t ok;
-      hist = gethist(hname, fHostToConnect->Data(), fSocketToConnect, &ok);
+//      Bool_t ok;
+      hist = gethist(hname, fComSocket);
       if (!hist) cout << setred << "Cant get hist" << setblack << endl;
-      if (!ok) { 
-         cout << setred << "Connection broken" << setblack << endl;
-         fSocketIsOpen = kFALSE;
-//         CloseAllCanvases();
-//         CloseHistLists();
-         return NULL;
-     }
-
    } else if (strstr(fname,".map")) {
 //     look if this hist is in a list of histograms of possibly automatically
 //     updated hists
@@ -3126,4 +3316,3 @@ void HistPresent::WarnBox(const char *message)
                 "Warning", message, kMBIconExclamation, kMBDismiss,
                 &retval);
 }
-

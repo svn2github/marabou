@@ -920,7 +920,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	dblStr = dgf->GetDelay(chn);
 	fTraceDelayEntry->GetEntry()->SetText(dblStr.Data());
 // StatRegModICSREntry:
-	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm);
+	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl");
 	intStr = "0x";
 	intStr.AppendInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
 	fStatRegModICSREntry->GetEntry()->SetText(intStr.Data());
@@ -1368,6 +1368,8 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dblStr = entry->GetText();
 			dblStr.ToDouble(dblVal);
 			dgf->SetGain(chn, dblVal);
+			dblStr = dgf->GetGain(chn);
+			fDACVVEntry->GetEntry()->SetText(dblStr);
 			intStr = dgf->GetParValue(chn, "GAINDAC");
 			fDACGainEntry->GetEntry()->SetText(intStr);
 			break;

@@ -104,6 +104,9 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					fTraceLength = 0;
 					fRunTask = 0x100;
 					fSwitchBusTerm = kFALSE;
+					fSwitchBusIndiv = kFALSE;
+					fSynchWait = 1;
+					fInSynch = 0;
 				} else {
 					this->MakeZombie();
 				}
@@ -243,7 +246,11 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 				sPath.Prepend(gSystem->WorkingDirectory());
 			}
 			seg = this->GetClusterSegments();
-			fCodeTemplates.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? 0 : 0x2400, 16);
+			if (fSwitchBusIndiv) {
+				fCodeTemplates.Substitute("$switchBusTerm", fSwitchBusTerm ? "TRUE" : "FALSE");
+			} else {
+				fCodeTemplates.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? "TRUE" : "FALSE");
+			}
 			fCodeTemplates.Substitute("$settingsPath", sPath.Data());
 			fCodeTemplates.Substitute("$moduleNameLC", this->GetName());
 			fCodeTemplates.Substitute("$moduleNameUC", moduleNameUC.Data());
@@ -254,6 +261,8 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$maxEvents", this->GetMaxEvents());
 			fCodeTemplates.Substitute("$traceLength", this->GetTraceLength());
 			fCodeTemplates.Substitute("$runTask", this->GetRunTask());
+			fCodeTemplates.Substitute("$synchWait", this->GetSynchWait());
+			fCodeTemplates.Substitute("$inSynch", this->GetInSynch());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleReadModule:
@@ -509,7 +518,7 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	TString templatePath;
 	TString moduleNameUC;
 	TString iniTag;
-		
+	TString seg;		
 	TString tf;
 	
 	TMrbTemplate rcTmpl;
@@ -558,7 +567,15 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 				rcTmpl.Substitute("$maxEvents", this->GetMaxEvents());
 				rcTmpl.Substitute("$traceLength", this->GetTraceLength());
 				rcTmpl.Substitute("$runTask", this->GetRunTask());
+				rcTmpl.Substitute("$synchWait", this->GetSynchWait());
+				rcTmpl.Substitute("$inSynch", this->GetInSynch());
 				rcTmpl.Substitute("$isActive", this->IsActive() ? "TRUE" : "FALSE");
+				seg = this->GetClusterSegments();
+				if (fSwitchBusIndiv) {
+					rcTmpl.Substitute("$switchBusTerm", fSwitchBusTerm ? "TRUE" : "FALSE");
+				} else {
+					rcTmpl.Substitute("$switchBusTerm", (seg.Index("c", 0) >= 0) ? "TRUE" : "FALSE");
+				}
 				rcTmpl.WriteCode(RcStrm);
 				return(kTRUE);
 			}

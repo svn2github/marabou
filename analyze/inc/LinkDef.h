@@ -11,8 +11,7 @@
 #pragma link C++ class TUsrDeadTime+;
 #pragma link C++ class TUsrHit+;
 #pragma link C++ class TUsrHitBuffer+;
-#pragma link C++ class TUsrTimeStamp+;
-#pragma link C++ class TUsrTimeStampBuffer+;
+#pragma link C++ class TUsrHBX+;
 #pragma link C++ class TMrbModuleListEntry+;
 #pragma link C++ class TMrbParamListEntry+;
 #pragma link C++ class TMrbHistoListEntry+;

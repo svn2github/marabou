@@ -17,6 +17,7 @@
 #include "TObjString.h"
 
 #include "TMrbNamedX.h"
+#include "TMrbEnv.h"
 #include "TMrbLogger.h"
 
 #include "DGFControlData.h"
@@ -39,6 +40,8 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 // Description:    
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
+
+	TMrbEnv env;
 
 	fCAMACHost = "";
 	fDefaultCrate = -1;
@@ -82,8 +85,7 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	else													fStatus &= ~DGFControlData::kDGFOfflineMode;
 
 // paths and filenames
-	fDataPath = gEnv->GetValue("DGFControl.DataPath", "");
-	if (fDataPath.Length() == 0) fDataPath = gEnv->GetValue("TMrbDGF.DataPath", gSystem->WorkingDirectory());
+	env.Find(fDataPath, "DGFControl:TMrbDGF", "DataPath", gSystem->WorkingDirectory());
 	gSystem->ExpandPathName(fDataPath);
 
 	fRunDataFile = fDataPath;
@@ -91,46 +93,39 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	fRunDataFile += gEnv->GetValue("DGFControl.RunDataFile", "DGFRunData.%T-%R.root");
 	gSystem->ExpandPathName(fRunDataFile);
 
-	fLoadPath = gEnv->GetValue("DGFControl.LoadPath", "");
-	if (fLoadPath.Length() == 0) fLoadPath = gEnv->GetValue("TMrbDGF.LoadPath", "$MARABOU/data/xiadgf/v2.70");
+	env.Find(fLoadPath, "DGFControl:TMrbDGF", "LoadPath", "$MARABOU/data/xiadgf/v2.80");
 	gSystem->ExpandPathName(fLoadPath);
 
 	fDSPCodeFile = fLoadPath;
 	fDSPCodeFile += "/";
-	TString path = gEnv->GetValue("DGFControl.DSPCode", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.DSPCode", "dfgcode.bin");
+	TString path;
+	env.Find(path, "DGFControl:TMrbDGF", "DSPCode", "dsp/DGFcodeE.bin");
 	fDSPCodeFile += path;
 	gSystem->ExpandPathName(fDSPCodeFile);
 
 	fDSPParamsFile = fLoadPath;
 	fDSPParamsFile += "/";
-	path = gEnv->GetValue("DGFControl.ParamNames", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.ParamNames", "dfgcode.var");
+	env.Find(path, "DGFControl:TMrbDGF", "ParamNames", "dsp/dfgcodeE.var");
 	fDSPParamsFile += path;
 	gSystem->ExpandPathName(fDSPParamsFile);
 
 	fSystemFPGAConfigFile = fLoadPath;
 	fSystemFPGAConfigFile += "/";
-	path = gEnv->GetValue("DGFControl.SystemFPGACode", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.SystemFPGACode", "sdgf4c.bin");
+	env.Find(path, "DGFControl:TMrbDGF", "SystemFPGACode", "Firmware/dgf4c.bin");
 	fSystemFPGAConfigFile += path;
 	gSystem->ExpandPathName(fSystemFPGAConfigFile);
 
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fLoadPath;
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += "/";
-	path = gEnv->GetValue("DGFControl.FippiFPGACode.RevD", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.FippiFPGACode.RevD", "");
-	if (path.Length() == 0) path = gEnv->GetValue("DGFControl.FippiFPGACode", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.FippiFPGACode", "dgf4c.bin");
+	env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode.RevD", "");
+	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4D.bin");
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += path;
 	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevD]);
 
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fLoadPath;
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += "/";
-	path = gEnv->GetValue("DGFControl.FippiFPGACode.RevE", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.FippiFPGACode.RevE", "");
-	if (path.Length() == 0) path = gEnv->GetValue("DGFControl.FippiFPGACode", "");
-	if (path.Length() == 0) path = gEnv->GetValue("TMrbDGF.FippiFPGACode", "dgf4c.bin");
+	env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode.RevE", "");
+	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4E.bin");
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += path;
 	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevE]);
 

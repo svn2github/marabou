@@ -17,12 +17,18 @@ FhPeak::FhPeak(Float_t pos) : fEstimate(pos), fMean(pos){
    fTailContent = 0;
    fTailWidth = 0;
    fRegion = 0;
+   fUsed =kFALSE;
 };
 void FhPeak::Print(){
-    cout << setw(12)<< fContent << setw(12)<< fMean << setw(12)<< fWidth << endl;
+    cout << setw(12)<< fContent << setw(12)<< fMean 
+         << setw(12)<< fWidth << setw(12)<< fNominalEnergy;
+    if (fUsed) cout << "  yes";
+    else       cout << "   no";
+    cout << endl;
 };
 void FhPeak::PrintHeadLine(){
-    cout << "     Content" << "        Mean" << "       Width" << endl;
+    cout << "     Content" << "        Mean" 
+         << "       Error" << "     Nom Val" << " Used"<< endl;
 }
 
 Int_t FhPeak::Compare(const TObject *obj) const { 

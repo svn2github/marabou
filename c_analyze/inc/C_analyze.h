@@ -44,7 +44,7 @@ private:
                       *fSaveMapButton, *fDeleteMapButton,
                       *fParButton , *fMbsSetupButton, *fWhichHistButton;
    TGLabel            *fLabel, *fOutSize, *fRunTime, *fTotalEvents, *fRate,
-                      *fStartTime, *fDeadTime, *fStatus, *fNev, *fSockNr;
+                      *fStartTime, *fDeadTime, *fStatus, *fNev, *fTbSockNr;
 
    TGTextEntry        *fTeMap, *fTeMapSize, *fTeFile,
                       *fTeRootFile, *fTeHistFile,*fTeRunNr,
@@ -92,8 +92,10 @@ private:
    Int_t   fDebugMode;
    Int_t   fMessageIntervall;
 
-   Int_t   fComSocket; 
-   UInt_t  fAttachid;
+   Int_t   fSockNr; 
+   TSocket  * fComSocket; 
+   Int_t  fAttachid;
+   Int_t  fAttachsock;
    MessageServer * fMessageServer;
    TMrbHelpBrowser * fHelpBrowser;
    TStopwatch * fStopwatch;
@@ -113,7 +115,8 @@ private:
 
    
 public:
-   FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h, UInt_t attachid=0);
+   FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h, 
+               Int_t attachid = 0, Int_t attachsock = 0);
    virtual ~FhMainFrame();
 
    virtual void CloseWindow();
@@ -136,7 +139,7 @@ public:
    Bool_t StopDAQ();
    Bool_t GetDefaults();
    Bool_t PutDefaults();
-   Bool_t GetComSocket(Int_t attachid = 0);
+   Int_t GetComSocket(Int_t attachid = 0, Int_t attachsock = 0);
    void   SetRadioButtons(Bool_t);
    Int_t IsAnalyzeRunning(Int_t);
    Int_t MessageToM_analyze(TString& mess);

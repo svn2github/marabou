@@ -7,7 +7,9 @@
 #include "TColor.h"
 #include "HTCanvas.h"
 #include "TButton.h"
+#include "TSocket.h"
 #include "TObject.h"
+#include "TObjString.h"
 #include "TVirtualPad.h"
 #include "TList.h"
 #include "TText.h"
@@ -38,33 +40,24 @@ extern Bool_t is_a_file(const char *);
 extern Bool_t is_memory(const char *);
 extern Int_t contains_filenames(const char *);
 extern Int_t CheckList(TList *, const char * cname = "");
-//extern Int_t  GetInteger(const char *, Int_t);
-//extern Float_t GetFloat(const char *, Float_t);
 extern TButton* CommandButton(TString &, TString &,
               Float_t, Float_t, Float_t, Float_t, Bool_t selected = 0); 
 extern TString* GetTitleString(TObject* obj);
 extern void     SelectButton(TString & , Float_t, Float_t, Float_t, Float_t,
                              Bool_t selected = 0);
-HTCanvas*        CommandPanel(const char *, TList *,
-                             Int_t xpos, Int_t ypos, HistPresent * hpr =0);
+HTCanvas*       CommandPanel(const char *, TList *, Int_t xpos, Int_t ypos,
+                              HistPresent * hpr =0, Int_t xwid =0);
 Int_t XBinNumber(TH1*, Axis_t);
 Int_t YBinNumber(TH1*, Axis_t);
 Stat_t Content(TH1*, Axis_t xlow, Axis_t xup, Stat_t * mean,  Stat_t * sigma);
-
-//extern const char *OpenFileDialog();
-//extern const char *SaveFileDialog();
 
 void  WarnBox( const char * message, TGWindow* win = 0);
 Bool_t  QuestionBox( const char * message, TGWindow* win = 0);
 extern Bool_t OpenWorkFile(TGWindow* win = 0);
 extern void CloseWorkFile(TGWindow* win = 0);
 extern Int_t GetUsedSize(TMapFile *);
-extern TList * GetWindows(TFile *);
-extern TList * GetWindows(TMapFile *);
-extern TList * GetFunctions(TMapFile *);
-extern TList * GetFunctions(TFile *);
-extern TList * GetCanvases(TFile *);
-extern TList * GetTrees(TFile *);
+extern Int_t GetObjects(TList &, TFile *, const char *);
+
 extern TH1 * GetTheHist(TVirtualPad * pad);
 
 void Show_Fonts();
@@ -76,10 +69,11 @@ void Canvas2LP(TCanvas * canvas, const Char_t * opt = 0, TGWindow * = 0,
                Bool_t autops = kFALSE);
 void  Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
 TEnv * GetDefaults(TString &, Bool_t mustexist = kTRUE);
-TH1 * gethist( const char * hname, const char * host, Int_t socket, Bool_t * ok);
-TMrbStatistics * getstat(const char * host, Int_t socket, Bool_t * ok);
+TH1 * gethist( const char * hname, TSocket * sock);
+TMrbStatistics * getstat(TSocket * sock);
 TColor * GetColorByInd(Int_t index);   
 void SetUserPalette(Int_t startindex, TArrayI * pixels); 
+Int_t DeleteOnFile(const char * fname, TList * list, TGWindow * win =0);
 
 inline void nothing();
 #endif

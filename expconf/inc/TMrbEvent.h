@@ -90,14 +90,12 @@ class TMrbEvent : public TNamed {
 		inline void AllocPrivateHistograms(Bool_t Flag) { fPrivateHistograms = fPrefix.IsNull() ? kFALSE : Flag; };
 		inline Bool_t HasPrivateHistograms() { return(fPrivateHistograms); };
 
-		inline void SetSizeOfHitBuffer(Int_t NofEntries, Int_t HighWater = 0, UInt_t Offset = 0) {
+		inline void SetSizeOfHitBuffer(Int_t NofEntries, Int_t HighWater = 0) {
 			fSizeOfHitBuffer = NofEntries;
 			fHBHighWaterLimit = HighWater;
-			fHBOffset = Offset;
 		}
 		inline Int_t GetSizeOfHitBuffer() { return(fSizeOfHitBuffer); };
 		inline Int_t GetHBHighWaterLimit() { return(fHBHighWaterLimit); };;
-		inline UInt_t GetHBOffset() { return(fHBOffset); };;
 
 		virtual inline Bool_t HasPrivateCode() { return(kFALSE); }; 				// normal code generation
 		virtual inline const Char_t * GetPrivateCodeFile() { return(NULL); };
@@ -139,7 +137,6 @@ class TMrbEvent : public TNamed {
 
 		Int_t fSizeOfHitBuffer;
 		Int_t fHBHighWaterLimit;
-		UInt_t fHBOffset;
 
 	ClassDef(TMrbEvent, 1)		// [Config] Base class describing a MBS event
 };

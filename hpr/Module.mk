@@ -27,6 +27,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/FitHist.h \
  					$(HPRDIRI)/HistPresent.h \
  					$(HPRDIRI)/FhPeak.h \
+ 					$(HPRDIRI)/FhContour.h \
                $(HPRDIRI)/FhRegion.h \
  					$(HPRDIRI)/EditMarker.h \
                $(HPRDIRI)/HTCanvasImp.h \

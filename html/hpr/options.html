@@ -36,6 +36,15 @@ Default sizes of windows for 1-dim and 2-dim histograms
 may be adjusted seperately. Units are in pixels. 
 Each new window is shifted according to the values of
 Window_Shift_X and Y starting at Window_Top_X and Y.
+
+The window size of histgram lists can be adjusted
+by the value of <b>WindowXWidth_List</b> as follows:
+
+> 0 : take value as it is in units of pixels
+= 0 : take default value (250)
+-1  : calculate width to fit longest item without
+      using a scrollbar
+
 The parameter Project_Both_Ratio determines the
 space left for the original scatter plot when the
 the Display action <b>ProjectBoth</b> is used.

@@ -87,7 +87,13 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    fNrows = Nrows;
    fRet = RetValue;
    fValues = Values;
-   fRadio = Nradio;
+   if (Nradio >= 0) {
+      fRadio = Nradio;
+      fColorSelect = 0;
+   } else {
+      fRadio = 0;
+      fColorSelect = TMath::Abs(Nradio);
+   }
 //   fCheck = fNrows - fRadio;
 	fCheck = 0;
 		
@@ -207,37 +213,42 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if (ColumnLabels) {
       for(Int_t i=0; i <= fNcols; i++) {
          fColLabFrame = new TGCompositeFrame(fColFrame,itemwidth,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
-		fWidgets->Add(fColLabFrame);
-         if(i > 0) {
-            objs = (TObjString *) ColumnLabels->At(i-1);
+		   fWidgets->Add(fColLabFrame);
+         if(i > 0 || (i == 0 && RowLabels == NULL)) {
+            Int_t ioff;                       // if rowlabels defined skip first field
+            if (RowLabels == NULL) ioff = 0;
+            else                    ioff = -1;
+            objs = (TObjString *) ColumnLabels->At(i+ioff);
             s = objs->String();
             fColLabel    = new TGLabel(fColLabFrame, new TGString((const char *) s));
-			fWidgets->Add(fColLabel);
+			   fWidgets->Add(fColLabel);
             fColLabFrame->AddFrame(fColLabel, lo4);
          }
          fColFrame->AddFrame(fColLabFrame,lo2);
       }
       if(fl1 > 0) {
          fColLabFrame = new TGCompositeFrame(fColFrame,(Int_t) (0.5*itemwidth),20,kVerticalFrame | kFixedWidth |kRaisedFrame);
-		fWidgets->Add(fColLabFrame);
+	   	fWidgets->Add(fColLabFrame);
          if (ColumnLabels->GetSize() > fNcols) {
             objs = (TObjString *) ColumnLabels->At(fNcols);
             s = objs->String();
          } else s = "Flags";
          fColLabel    = new TGLabel(fColLabFrame, new TGString((const char *) s));
-		fWidgets->Add(fColLabel);
+		   fWidgets->Add(fColLabel);
          fColLabFrame->AddFrame(fColLabel, lo2);
          fColFrame->AddFrame(fColLabFrame,lo2);
       }
       if(fl2 > 0) {
          fColLabFrame = new TGCompositeFrame(fColFrame, (Int_t) (0.5*itemwidth),20,kVerticalFrame | kFixedWidth |kRaisedFrame);
-		fWidgets->Add(fColLabFrame);
+		   fWidgets->Add(fColLabFrame);
          if(ColumnLabels->GetSize() > fNcols+1) {
             objs = (TObjString *) ColumnLabels->At(fNcols+1);
             s = objs->String();
-         } else s = "Flags";
+         } else {
+            s = "Flags";
+         }
          fColLabel    = new TGLabel(fColLabFrame, new TGString((const char *) s));
-		fWidgets->Add(fColLabel);
+	      fWidgets->Add(fColLabel);
          fColLabFrame->AddFrame(fColLabel, lo2);
          fColFrame->AddFrame(fColLabFrame,lo2);
       }
@@ -245,24 +256,26 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    if (RowLabels) {
       for (Int_t i = 0; i < fNrows; i++) {
          fRowLabFrame = new TGCompositeFrame(fRowFrame,itemwidth,20,kHorizontalFrame);
-		fWidgets->Add(fRowLabFrame);
-            objs = (TObjString *) RowLabels->At(i);
-            s = objs->String();
-            fRowLabel    = new TGLabel(fRowLabFrame, new TGString((const char *) s));
+		   fWidgets->Add(fRowLabFrame);
+         objs = (TObjString *) RowLabels->At(i);
+         s = objs->String();
+         fRowLabel    = new TGLabel(fRowLabFrame, new TGString((const char *) s));
 			fWidgets->Add(fRowLabel);
-            fRowLabFrame->AddFrame(fRowLabel, lo1);
+         fRowLabFrame->AddFrame(fRowLabel, lo1);
          fRowFrame->AddFrame(fRowLabFrame,lo1);
       }
    }
    if (fl1 > 0) {
       for(Int_t i=0; i < fNrows; i++) {
-         if(fRadio > 0 && i < fRadio)	fFlagButton = new TGRadioButton(fFlagFrame1, new TGHotString(""), i);
-         else							fFlagButton = new TGCheckButton(fFlagFrame1, new TGHotString(""), i);
+         if (fColorSelect > 0)               fFlagButton = new TGColorSelect(fFlagFrame1, (*Flags)[i], i);
+         else if (fRadio > 0 && i < fRadio)	fFlagButton = new TGRadioButton(fFlagFrame1, new TGHotString(""), i);
+         else							            fFlagButton = new TGCheckButton(fFlagFrame1, new TGHotString(""), i);
          fWidgets->AddFirst(fFlagButton);
          fFlagFrame1->AddFrame(fFlagButton,lo4);
          fFlags->Add(fFlagButton);
-         if ((*Flags)[i]) fFlagButton->SetState(kButtonDown);
-         fFlagButton->Associate(this);
+
+         if (fColorSelect <= 0 && (*Flags)[i]) fFlagButton->SetState(kButtonDown);
+         if (fColorSelect <= 0) fFlagButton->Associate(this);
       }
       if (fCheck > 0) {
          fBtnAll1 = new TGPictureButton(fFlagFrame1, gClient->GetPicture("cbutton_all.xpm"), kTableFrameAll_1);
@@ -278,13 +291,14 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
  
    if (fl2 > 0) {
       for(Int_t i=0; i < fNrows; i++) {
-         if(fRadio >= fNrows && i < fRadio-fNrows)	fFlagButton = new TGRadioButton(fFlagFrame2, new TGHotString(""), i+fNrows);
+         if (fColorSelect > 0)               fFlagButton = new TGColorSelect(fFlagFrame1, (*Flags)[i], i+fNrows);
+         else if(fRadio >= fNrows && i < fRadio-fNrows)	fFlagButton = new TGRadioButton(fFlagFrame2, new TGHotString(""), i+fNrows);
          else										fFlagButton = new TGCheckButton(fFlagFrame2, new TGHotString(""), i+fNrows);
          fWidgets->AddFirst(fFlagButton);
          fFlagFrame2->AddFrame(fFlagButton,lo4);
          fFlags->Add(fFlagButton);
-         if((*Flags)[i+fNrows]) fFlagButton->SetState(kButtonDown);
-         fFlagButton->Associate(this);
+         if (fColorSelect <= 0 && (*Flags)[i+fNrows]) fFlagButton->SetState(kButtonDown);
+         if (fColorSelect <= 0) fFlagButton->Associate(this);
       }
       if (fCheck > 0) {
          fBtnAll2 = new TGPictureButton(fFlagFrame2, gClient->GetPicture("cbutton_all.xpm"), kTableFrameAll_2);
@@ -370,9 +384,6 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    	ww = (Int_t)wwu;
    	wh = (Int_t)whu;
 
-	//   cout << "ax, ay " << ax << " " << ay << endl;
-	//   cout << "w, h " << w << " " << h << endl;
-	 //  cout << "width, height " << width << " " << height << endl;
    	if(ax < 0) ax = 5;
    	Int_t ovl = ax + width - ww;
    	if(ovl > 0) ax -= ovl;
@@ -412,13 +423,24 @@ void TGMrbTableFrame::StoreValues(){
        objs->SetString((char *)te); 
        i++; 
    }
+//   cout << "StoreValues(), fColorSelect " << fColorSelect << endl;
    if(fFlags){
       TIter nflag(fFlags);
-      TGCheckButton *chkb;
-      Int_t j = 0;
-      while( (chkb = (TGCheckButton*)nflag()) ) {
-        (*fFlagsReturn)[j] = (chkb->GetState() == kButtonDown) ? 1 : 0;
-        j++;
+      if (fColorSelect <= 0) {
+      	TGCheckButton *chkb;
+      	Int_t j = 0;
+      	while( (chkb = (TGCheckButton*)nflag()) ) {
+      	  (*fFlagsReturn)[j] = (chkb->GetState() == kButtonDown) ? 1 : 0;
+      	  j++;
+      	}
+      } else {
+      	TGColorSelect *cols;
+      	Int_t j = 0;
+      	while( (cols = (TGColorSelect*)nflag()) ) {
+ //          cout << cols->GetColor() << endl;
+      	  (*fFlagsReturn)[j] = cols->GetColor();
+      	  j++;
+      	}
       }
    }
 }

@@ -12,6 +12,7 @@
 #include <TControlBar.h>
 #include <TTree.h>
 #include <TList.h>
+#include <TSocket.h>
 #include "TRootCanvas.h"
 #include "iostream.h"
 
@@ -28,7 +29,7 @@ friend class FitHist;
 friend class HTCanvas;
 friend class HTRootCanvas;
 
-private:
+protected:
    TCanvas *cHPr;                 // the main canvas
    TCanvas *filelist;                 // the main canvas
    TFile       *fRootFile;        // root file
@@ -65,8 +66,11 @@ private:
    TList *fSelectCut;
    TList *fSelectWindow;
    TList *fCmdLine;
+   TList *fSelectContour;
+   TList *fSelectGraph;
+   TList *fAllContours;
+
    TMrbHelpBrowser * fHelpBrowser;
-protected:
 
    Float_t fHprGridX;
    Float_t fHprGridY;
@@ -81,6 +85,7 @@ protected:
    Int_t fWinwidy_1dim; 
    Int_t fWinshiftx;
    Int_t fWinshifty;
+   Int_t fWinwidx_hlist; 
    Int_t fSeqNumberMany;
    Int_t fOptStat;
    Int_t fShowDateBox;
@@ -142,6 +147,7 @@ protected:
    TButton * fValButton;
    TString * fHostToConnect;
    Int_t     fSocketToConnect;
+   TSocket * fComSocket;
    Bool_t  fAskedFor;
    Bool_t  fSocketIsOpen;
    Bool_t  fAnyFromSocket;
@@ -162,7 +168,6 @@ public:
    void CloseHistLists();
    void SetRebinValue(Int_t);               // 
    void SetRebinMethod();               // 
-   void FoldSquareWave();               // 
    void DiffHist();                 // 
    void RebinHist();               // 
    void OperateHist(Int_t);               // 
@@ -185,6 +190,8 @@ public:
    void GetHistSelMask(const char* bp =0);               // 
    void SelectHist(const char* , const char*, const char* bp =0); 
    void SelectCut(const char* , const char*, const char* bp =0); 
+   void SelectContour(const char* , const char*, const char* bp =0); 
+   void SelectGraph(const char* , const char*, const char* bp =0); 
    void SelectLeaf(const char*, const char* bp =0); 
    void EditLeafCut(const char* bp = 0); 
    void ToggleLeafCut(const char* bp = 0); 
@@ -199,6 +206,8 @@ public:
    void ShowFunction(const char* , const char*, const char* bp =0); 
    void LoadFunction(const char* , const char*, const char* bp =0); 
    void ShowCanvas(const char* , const char*, const char* bp =0); 
+   void ShowContour(const char* , const char*, const char* bp =0); 
+   void ShowGraph(const char* , const char*, const char* bp =0); 
    void ComposeList(const char* bp =0); 
    void ShowList(const char* , const char*, const char* bp =0); 
    void PrintCut(const char* , const char*, const char* bp =0); 
@@ -209,6 +218,8 @@ public:
 //   void ShowMap(const char* , const char*);  
    void ShowHist(const char* , const char*, const char* bp =0); 
    void ShowStatOfAll(const char* , const char* bp =0); 
+   void PurgeEntries(const char* , const char* bp =0); 
+   void DeleteSelectedEntries(const char* , const char* bp =0); 
    void ShowSelectedHists(const char* bp =0);
    void ShowInOneCanvas(const char* bp =0);
    void ShowTree(const char* , const char*, const char* bp =0);

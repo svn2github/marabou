@@ -104,22 +104,20 @@
 %%BeginOfCode%%
 %A%
 %A%			f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+%R<=2.0%			dgfmod = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA);
+%R<=2.0%			dgfmod &= ~0x1L;
+%R<=2.0%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODCSRA, dgfmod);
 %B%			if (root_env_getval_b("TMrbDGF.ReloadParamsOnDaqInit", 0) == 1) dgf_reload_params($moduleNameLC, "$moduleNameLC", "$settingsPath/$moduleNameLC.par");
 %B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MODNUM, kMrbModule$moduleNameUC);
 %B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_MAXEVENTS, root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents));
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_INSYNCH, root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
 %B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_COINCPATTERN, 0xFFFF);
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_SYNCHWAIT, (root_env_getval_b("DGFControl.StartStopSimultaneously", 0) ? 1 : 0));
-%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_INSYNCH, (root_env_getval_b("DGFControl.SynchronizeClocks", 0) ? 0 : 1));
-%B%			if (root_env_getval_b("DGFControl.TerminateSwitchBusIndividually", 0)) {
-%B%				DGF_WRITE_ICSR($moduleNameLC, (root_env_getval_b("$moduleNameUC.SwitchBusTerm", 0) ? 0x2400 : 0));
-%B%			} else {
-%B%				DGF_WRITE_ICSR($moduleNameLC, $switchBusTerm);
-%B%			}
+%B%			dgf_set_par_value($moduleNameLC, -1, DGF_PAR_SYNCHWAIT, root_env_getval_i("$moduleNameUC.SynchWait", $synchWait));
 %B%#ifdef DEBUG
-%B%			sprintf(msg, "$moduleNameLC: SYNCHWAIT=%d, INSYNCH=%d, SwitchBus=%#x\n",
-%B%					dgf_get_par_value($moduleNameLC, -1, DGF_PAR_SYNCHWAIT),
-%B%					dgf_get_par_value($moduleNameLC, -1, DGF_PAR_INSYNCH),
-%B%					DGF_READ_ICSR($moduleNameLC) & 0x2400);
+%B%			sprintf(msg, "$moduleNameLC: MAXEVENTS=%d, SYNCHWAIT=%d, INSYNCH=%d\n",
+%B%					root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents),
+%B% 					root_env_getval_i("$moduleNameUC.SynchWait", $synchWait),
+%B%					root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
 %B%			f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 %B%#endif
 %B% 			dgfAoutBuf[kMrbModule$moduleNameUC - 1] = dgf_get_par_value($moduleNameLC, -1, DGF_PAR_AOUTBUFFER);
@@ -142,22 +140,38 @@
 %%READ_CHANNEL%%
 
 %%BeginOfCode%%
-				/* read list mode buffer of $moduleNameLC in $modulePosition (XIA release 2.0, Jul 2001) */
-				dgfCSR = DGF_READ_CSR($moduleNameLC);
-				if ((dgfCSR & DGF_CSR_ACTIVE) == 0) {  /* dsp stopped? */
-					dgf_wait();
-					dgfWC = DGF_READ_WCR($moduleNameLC);   /* get word count */
-					if (dgfWC > 6 && dgfWC < 8192) {
-						DGF_WRITE_TSAR($moduleNameLC, dgfAoutBuf[kMrbModule$moduleNameUC - 1] + 1);
-						RDO_SETUP($moduleNameLC, F(0), A(0));  /* setup camac function & subaddr */
-						RDO_2MEM_16(dgfWC); 					 /* write word count (1st word of buffer header) */
-						RDO_BLT_16(dgfWC1); 	 /* block xfer 16 bits, input addr stays const */
-						if (dgfWC & 1) RDO_2MEM_16(0xFFFF); /* align to 32 bits */
-						if (DGF_READ_CSR(dgf) & DGF_CSR_DSP_ERROR) {
-							sprintf(msg, "Module $moduleNameLC: DSP error\n");
-							f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
-						}
-					}
+%R==1.0%					/* read list mode buffer of $moduleNameLC in $modulePosition (XIA release 1.0, Jan 2001) */
+%R==1.0%					dgfCSR = DGF_READ_CSR($moduleNameLC);
+%R==1.0%					if ((dgfCSR & DGF_CSR_ACTIVE) == 0) {	/* dsp stopped? */
+%R==1.0%						dgfWC = DGF_READ_WCR($moduleNameLC); 	/* get word count */
+%R==1.0%						if (dgfWC > 0) {
+%R==1.0%							DGF_WRITE_TSAR($moduleNameLC, $moduleNameLC_bufaddr);
+%R==1.0%							RDO_SETUP($moduleNameLC, F(0), A(0)); 		/* setup camac function & subaddr */
+%R==1.0%							RDO_BLT_16(dgfWC); 		/* block xfer 16 bits, input addr stays const */
+%R==1.0%							if (dgfWC & 1) RDO_2MEM_16(0xFFFF);	/* align to 32 bits */
+%R==1.0%						}
+%R==1.0%					}
+%R>=2.0%					/* read list mode buffer of $moduleNameLC in $modulePosition (XIA release 2.0, Jul 2001) */
+%R>=2.0%					dgfCSR = DGF_READ_CSR($moduleNameLC);
+%R>=2.0%					if ((dgfCSR & DGF_CSR_ACTIVE) == 0) {	/* dsp stopped? */
+%R>=2.0%						dgf_wait();
+%R>=2.0%						dgfWC = DGF_READ_WCR($moduleNameLC); 	/* get word count */
+%R>=2.0%						if (dgfWC > 6 && dgfWC < 8192) {
+%R>=2.0%							DGF_WRITE_TSAR($moduleNameLC, dgfAoutBuf[kMrbModule$moduleNameUC - 1] + 1);
+%R>=2.0% 									/*if ((dgfTSAR = DGF_READ_TSAR(dgf)) != dgfAoutBuf[kMrbModule$moduleNameUC - 1] + 1) {
+%R>=2.0%										sprintf(msg, "Module $moduleNameLC: TSAR = %#x\n", dgfTSAR);
+%R>=2.0%										f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+%R>=2.0%									}*/
+%R>=2.0%							RDO_SETUP($moduleNameLC, F(0), A(0)); 	/* setup camac function & subaddr */
+%R>=2.0%							RDO_2MEM_16(dgfWC);						/* write word count (1st word of buffer header) */
+%R>=2.0%							RDO_BLT_16(dgfWC1); 		/* block xfer 16 bits, input addr stays const */
+%R>=2.0%							if (dgfWC & 1) RDO_2MEM_16(0xFFFF);	/* align to 32 bits */
+%R>=2.0%											if (DGF_READ_CSR(dgf) & DGF_CSR_DSP_ERROR) {
+%R>=2.0%												sprintf(msg, "Module $moduleNameLC: DSP error\n");
+%R>=2.0%												f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
+%R>=2.0%											}
+%R>=2.0%						}
+%R>=2.0%					}
 %%EndOfCode%%
 %%READ_MODULE%%
 
@@ -288,13 +302,13 @@ void dgf_update(volatile unsigned long * dgf, const char * dgfName) {	/* re-prog
 	dgf_modify_csr(dgf, 0, DGF_CSR_RUNENA); 	/* start run */
 	dgf_wait_active(dgf, dgfName, 0, 1);				/* wait for control task to complete */
 
+	addr = dgf_get_par_value(dgf, -1, DGF_PAR_AOUTBUFFER);	/* get buffer addr */
+	DGF_WRITE_TSAR(dgf, addr);
+	DGF_READ_TSAR(dgf);												/* settle down */
 #ifdef DEBUG
  	sprintf(msg, "%s: writing calibration to addr AOUTBUFFER = %#x\n", dgfName, addr);
  	f_ut_send_msg("m_read_meb", msg, ERR__MSG_ERROR, MASK__PRTT);
 #endif
-	addr = dgf_get_par_value(dgf, -1, DGF_PAR_AOUTBUFFER);	/* get buffer addr */
-	DGF_WRITE_TSAR(dgf, addr);
-	DGF_READ_TSAR(dgf);												/* settle down */
 	for (i = 0; i < 1024; i++) DGF_WRITE_DSP(dgf, 0); 
 
 #ifdef DEBUG
@@ -417,8 +431,8 @@ void dgf_wait();
 
 %%BeginOfCode%%
 	int dgfchn; 		/* XIA DGF-4C:	channel number */
-	int dgfenv;			/* XIA DGF-4C: environment */
-	int dgftmp;			/* XIA DGF-4C: temp */
+	int dgfmod; 		/* XIA DGF-4C:	contents of MODCSRA */
+	int dgfswb; 		/* XIA DGF-4C:  switchbus settings */
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_INIT%%
 

@@ -681,6 +681,7 @@ Bool_t TMrbEsone::ExecCnaf(const Char_t * Cnaf, Bool_t D16Flag) {
 	TMrbEsoneCnaf cnaf;
 
 	if (!cnaf.Ascii2Int(Cnaf)) return(kFALSE);			// decode CNAF
+	if (cnaf.IsRead()) cnaf.SetData(kEsoneNoData);
 	return(this->ExecCnaf(cnaf, D16Flag));
 }
 
@@ -752,8 +753,10 @@ Bool_t TMrbEsone::ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Func
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbEsoneCnaf cnaf;
+	Int_t data;
 
-	cnaf.Set(Crate, Station, Subaddr, Function, Data);
+	data = IS_F_READ(Function) ? kEsoneNoData : Data;
+	cnaf.Set(Crate, Station, Subaddr, Function, data);
 	if (!this->ExecCnaf(cnaf, D16Flag)) return(kFALSE);
 	if (cnaf.IsRead()) Data = cnaf.GetData();
 	return(kTRUE);
@@ -777,10 +780,7 @@ Bool_t TMrbEsone::ExecCnaf(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag) {
 	if (!this->CheckConnection("ExecCnaf")) return(kFALSE);
 	if (!Cnaf.CheckCnaf()) return(kFALSE);		// check for completeness & consistency
 
-	cout << "@@ ExecCnaf: before " << Cnaf.Int2Ascii(kTRUE) << endl;
-
 	ok = this->EsoneCXSA(Cnaf, D16Flag);  		// exec single cnaf, 16 or 24 bit
-	cout << "@@ ExecCnaf: after " << Cnaf.Int2Ascii(kTRUE) << endl;
 
 	if (this->IsVerbose()) this->PrintResults("ExecCnaf", Cnaf);
 
@@ -1017,13 +1017,12 @@ Int_t TMrbEsone::BlockXfer(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start, In
 	nofData = 0;
 	repeat = (NofWords + kEsoneNofRepeats) / kEsoneNofRepeats;
 	from = Start;
-	for (; repeat--;) {
-		wc = ((nofData + wc) > NofWords) ? (NofWords - nofData) : kEsoneNofRepeats;
+	for (; repeat--; from += kEsoneNofRepeats, NofWords -= kEsoneNofRepeats) {
+		wc = (NofWords > kEsoneNofRepeats) ? kEsoneNofRepeats : NofWords;
 		nd = this->EsoneCXUBX(Cnaf, Data, from, wc, D16Flag, QXfer);
 		if (this->IsVerbose()) this->PrintResults("BlockXfer", Cnaf);
 		if (this->IsError()) return(kEsoneError);
 		nofData += nd;
-		from += wc;
 	}
 	return(nofData);
 }

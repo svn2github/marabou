@@ -615,7 +615,7 @@ void FitHist::FitGBg(Int_t with_tail)
 
    const char *funcname;
    TString sfunc;
-   if (with_tail)
+   if (with_tail > 0)
       sfunc = "Bg+Gauss_Tail_";
    else
       sfunc = "Bg+Gauss_";
@@ -631,7 +631,7 @@ void FitHist::FitGBg(Int_t with_tail)
    func_numb++;
 
    TOrdCollection *row_lab = new TOrdCollection();
-   if (with_tail) {
+   if (with_tail > 0) {
       row_lab->Add(new TObjString("Ta_Fract"));
       row_lab->Add(new TObjString("Ta_Width"));
    }
@@ -700,7 +700,7 @@ void FitHist::FitGBg(Int_t with_tail)
       Double_t lowval = fSelHist->GetBinContent(inp[0]);
       Double_t upval = fSelHist->GetBinContent(inp[nval - 1]);
 //      Double_t bwidth = fSelHist->GetBinWidth(inp[0]);
-      Int_t centbin, binh;
+      Int_t binh;
       if (nval <= 3) {
          npar = 7;
          nPeaks = 1;
@@ -719,14 +719,18 @@ void FitHist::FitGBg(Int_t with_tail)
  //        upar[6] = gpar[1];
          Double_t dx = edgeux - edgelx;
          Double_t dy = upval - lowval;
-         if (dx > 0) {
-            upar[3] = dy / dx;
-            upar[2] = upval - upar[3] * edgeux;
+         if (with_tail >=0) {
+         	if (dx > 0) {
+            	upar[3] = dy / dx;
+            	upar[2] = upval - upar[3] * edgeux;
+         	} else {            
+            	upar[2] = 0.5 * (lowval + upval);
+            	upar[3] = 0;
+         	}
          } else {
-            upar[2] = 0.5 * (lowval + upval);
-            upar[3] = 0.;
+            upar[2] = 0;
+            upar[3] = 0;
          }
-
          upar[5] = 0;
          upar[4] = 0.25 * (edgeux - edgelx);
          for (Int_t i = inp[0]; i <= inp[nval - 1]; i++){
@@ -763,7 +767,7 @@ void FitHist::FitGBg(Int_t with_tail)
          upar[7] = gpar[0];
          upar[8] = gpar[1];
       }
-      if (with_tail) {          // with tail
+      if (with_tail > 0) {          // with tail
          upar[0] = 1.;
          upar[npar] = -.00001;
          upar[2 * npar] = 0.5;
@@ -789,7 +793,7 @@ void FitHist::FitGBg(Int_t with_tail)
 //      upar[i+npar]  = 0.1 * upar[i];
 //      upar[i+2*npar]= 10. * upar[i];
    }
-   if (with_tail) {             // with tail
+   if (with_tail > 0) {             // with tail
       func = new TF1(funcname, gaus_tail, edgelx, edgeux, npar);
       gTailSide = 1;
       if (with_tail == 2)
@@ -822,7 +826,7 @@ void FitHist::FitGBg(Int_t with_tail)
 //  set errors + step size
 
    int nn = 0, istart = 3;
-   if (with_tail)
+   if (with_tail > 0)
       istart = 5;
    for (int i = istart; i < npar; i += 2) {
       ostrstream *buf = new ostrstream();
@@ -847,20 +851,26 @@ void FitHist::FitGBg(Int_t with_tail)
 // show values to caller and let edit
    TString title("Start parameters");
 //  if fixed linear background  requested fiz const + slope
-   if (hp->fFitOptUseLinBg) {
+   if (hp->fFitOptUseLinBg || with_tail < 0) {
       cout << "Fixed linear background selected" << endl;
-      if (with_tail) {          // with tail
+      if (with_tail > 0) {          // with tail
          upar[2] = fLinBgConst;
          upar[3] = fLinBgSlope;
          fixflag[2] = 1;
          fixflag[3] = 1;
       } else {
-         upar[0] = fLinBgConst;
-         upar[1] = fLinBgSlope;
+         if (with_tail == 0) {
+            upar[0] = fLinBgConst;
+            upar[1] = fLinBgSlope;
+         } else {
+            upar[0] = 0;
+            upar[1] = 0;
+         }
          fixflag[0] = 1;
          fixflag[1] = 1;
       }
    }
+
    TArrayD xyvals(len_upar);
    for (Int_t i = 0; i < len_upar; i++)
       xyvals[i] = upar[i];
@@ -979,6 +989,9 @@ void FitHist::FitGBg(Int_t with_tail)
    func->GetParameters(upar);
    Double_t * errors = func->GetParErrors();
    fSelHist->SetFillColor(hp->f1DimFillColor);
+   fSelPad->cd();
+   fSelPad->Modified(kTRUE);
+   fSelPad->Update();
 
 //   Bool_t enable_calib = kFALSE;
 //                                                                                                                                                                                                                                                             TEnv env(".rootrc");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          // inspect ROOT's environment
@@ -992,7 +1005,7 @@ void FitHist::FitGBg(Int_t with_tail)
                    icontype, buttons, &retval);
       if (retval == kMBYes) {
          Int_t woff = 0;
-         if (with_tail)
+         if (with_tail > 0)
             woff = 2;
          FhPeak *peak = new FhPeak(upar[4 + woff]);
 //         peak->SetWidth(upar[2 + woff]);
@@ -1004,7 +1017,7 @@ void FitHist::FitGBg(Int_t with_tail)
 //  draw components of fit
    if (hp->GetShowFittedCurves()) {
       double fdpar[4];
-      if (with_tail) {
+      if (with_tail > 0) {
          fdpar[0] = upar[2];
          fdpar[1] = upar[3];
       } else {
@@ -1022,7 +1035,7 @@ void FitHist::FitGBg(Int_t with_tail)
 //      if(fOrigHist != fSelHist)fOrigHist->GetListOfFunctions()->Add(back);
 //
       for (Int_t j = 0; j < nPeaks; j++) {
-         if (with_tail) {
+         if (with_tail > 0) {
             fdpar[0] = upar[5 + 2 * j];
             fdpar[1] = upar[6 + 2 * j];
             fdpar[2] = upar[4];
@@ -1050,7 +1063,7 @@ void FitHist::FitGBg(Int_t with_tail)
          g2->SetParent(fOrigHist);
          g2->Save(edgelx, edgeux);
 */
-         if (with_tail) {
+         if (with_tail > 0) {
             fdpar[0] = upar[0] * upar[5 + 2 * j];	// const
             fdpar[1] = upar[6 + 2 * j];	// position
             fdpar[2] = upar[4]; // gaus width

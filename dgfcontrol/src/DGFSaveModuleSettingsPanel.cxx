@@ -29,6 +29,7 @@
 #include "TMrbLogger.h"
 #include "TMrbLofDGFs.h"
 #include "TMrbSystem.h"
+#include "TMrbEnv.h"
 
 #include "DGFControlData.h"
 #include "DGFSaveModuleSettingsPanel.h"
@@ -303,6 +304,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	TGFileInfo fileInfoSave;
 	TString saveLog, saveDir, paramFile, valueFile;
 	TMrbSystem uxSys;
+	TMrbEnv env;
 	Int_t nerr;
 	TString errMsg;
 	TString cmd;
@@ -310,10 +312,12 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	Bool_t verbose;
+	TString sPath;
+	UInt_t modIdx;
+	Int_t cl, modNo;
 			
 	fileInfoSave.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
-	TString sPath = gEnv->GetValue("TMrbDGF.SettingsPath", "");
-	if (sPath.Length() == 0) sPath = gEnv->GetValue("DGFControl.SettingsPath", "../dgfSettings");
+	env.Find(sPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
 	fileInfoSave.fIniDir = StrDup(sPath);
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fileInfoSave);
@@ -360,7 +364,9 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 		verbose = dgfModule->GetAddr()->Data()->IsVerbose();
 		if (!verbose) cout << "[Saving module params - wait " << flush;
 		while (dgfModule) {
-			if (gDGFControlData->ModuleInUse(dgfModule)) {
+			modIdx = gDGFControlData->GetIndex(dgfModule->GetName(), cl, modNo);
+			modIdx &= 0xFFFF;
+			if (gDGFControlData->ModuleInUse(dgfModule) && (fCluster[cl]->GetActive() & modIdx)) {
 				dgf = dgfModule->GetAddr();
 				paramFile = saveDir;
 				paramFile += "/";

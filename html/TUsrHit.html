@@ -26,8 +26,8 @@
 
 <!--TAB4-->    <b>public:</b><br>
 <!--TAB6-->              <a href="./TUsrHit.html">TUsrHit</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:TUsrHit">TUsrHit</a><!--PLAIN-->()
-<!--TAB6-->              <a href="./TUsrHit.html">TUsrHit</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:TUsrHit">TUsrHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
-<!--TAB6-->              <a href="./TUsrHit.html">TUsrHit</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:TUsrHit">TUsrHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--TAB6-->              <a href="./TUsrHit.html">TUsrHit</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:TUsrHit">TUsrHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--TAB6-->              <a href="./TUsrHit.html">TUsrHit</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:TUsrHit">TUsrHit</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
 <!--TAB6-->              <a href="./TUsrHit.html">TUsrHit</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:TUsrHit">TUsrHit</a><!--PLAIN-->(const <a href="./TUsrHit.html">TUsrHit</a>&amp;)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:~TUsrHit">~TUsrHit</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:CalcTimeDiff">CalcTimeDiff</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#Bool_t">Bool_t</a> AbsFlag = kFALSE)
@@ -36,11 +36,15 @@
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:ClearData">ClearData</a><!--PLAIN-->()
 <!--TAB6-->        virtual <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:Compare">Compare</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Hit) const
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:Compare">Compare</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime)
-<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:CopyData">CopyData</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:CopyData">CopyData</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset = 0)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:CopyData">CopyData</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>* Hit, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset = 0)
+<!--TAB6-->            <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrHit:CopyEventTime">CopyEventTime</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime)
+<!--TAB6-->            <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrHit:CopyEventTime">CopyEventTime</a><!--PLAIN-->(<a href="./TUsrHit.html">TUsrHit</a>* Hit)
+<!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrHit:EventTime2Ascii">EventTime2Ascii</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; TimeString) const
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:GetBufferNumber">GetBufferNumber</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:GetChannel">GetChannel</a><!--PLAIN-->()
 <!--TAB6-->             <a href="ListOfTypes.html#UShort_t">UShort_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:GetData">GetData</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
 <!--TAB6-->            <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrHit:GetDataAddr">GetDataAddr</a><!--PLAIN-->()
-<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:GetEventIndex">GetEventIndex</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:GetEventNumber">GetEventNumber</a><!--PLAIN-->()
 <!--TAB6-->            <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <!--TAB--><!--BOLD--><a href="#TUsrHit:GetEventTime">GetEventTime</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:GetModuleNumber">GetModuleNumber</a><!--PLAIN-->()
@@ -48,8 +52,8 @@
 <!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:IsSortable">IsSortable</a><!--PLAIN-->() const
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:Print">Print</a><!--PLAIN-->(ostream&amp; Out, <a href="ListOfTypes.html#Bool_t">Bool_t</a> PrintNames = kFALSE)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> PrintNames = kFALSE)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:SetBufferNumber">SetBufferNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:SetChannel">SetChannel</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
-<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:SetEventIndex">SetEventIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:SetEventNumber">SetEventNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:SetEventTime">SetEventTime</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TUsrHit:SetEventTime">SetEventTime</a><!--PLAIN-->(<a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo)
@@ -63,8 +67,8 @@
 <pre>
 
 <!--TAB4-->    <b>protected:</b><br>
-<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fEventNumber">fEventNumber</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEventNumber">internal event number</a></i>
-<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fEventIndex">fEventIndex</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fEventIndex">event index within buffer</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fBufferNumber">fBufferNumber</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fBufferNumber">buffer number</a></i>
+<!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fEventNumber">fEventNumber</a><!--PLAIN-->   <!--TAB--><i><a name="Title:fEventNumber">event index within buffer</a></i>
 <!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fModuleNumber">fModuleNumber</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fModuleNumber">module serial number</a></i>
 <!--TAB6-->         <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fChannel">fChannel</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fChannel">module channel</a></i>
 <!--TAB6-->      <a href="ListOfTypes.html#UShort_t">UShort_t</a> <!--TAB--><!--BOLD--><a name="TUsrHit:fEventTime">fEventTime[3]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fEventTime">time stamp generated by dgf clock bus (48 bits unsigned!)</a></i>
@@ -100,15 +104,15 @@
  Date:
 
 </pre><hr>
-<!--FUNCTION--> <a name="TUsrHit:TUsrHit" href="src/TUsrHit.cxx.html#TUsrHit:TUsrHit">TUsrHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
+<!--FUNCTION--> <a name="TUsrHit:TUsrHit" href="src/TUsrHit.cxx.html#TUsrHit:TUsrHit">TUsrHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
 										<a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo,
 										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
 <pre>__________________________________________________________________[C++ CTOR]
 
  Name:           <a href="./TUsrHit.html">TUsrHit</a>
  Purpose:        Store data of a single hit
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- internal event number
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex       -- index within buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber     -- buffer number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- event index within buffer
                  <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber     -- module serial
                  <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi  -- event time, hi order
@@ -122,15 +126,15 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--> <a name="TUsrHit:TUsrHit" href="src/TUsrHit.cxx.html#TUsrHit:TUsrHit">TUsrHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
+<!--FUNCTION--> <a name="TUsrHit:TUsrHit" href="src/TUsrHit.cxx.html#TUsrHit:TUsrHit">TUsrHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel,
 										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * EventTime,
 										<a href="ListOfTypes.html#UShort_t">UShort_t</a> * Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData) <br>
 <pre>__________________________________________________________________[C++ CTOR]
 
  Name:           <a href="./TUsrHit.html">TUsrHit</a>
  Purpose:        Store data of a single hit
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- internal event number
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex       -- index within buffer
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber     -- buffer number
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- event index within buffer
                  <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber     -- module serial
                  <a href="ListOfTypes.html#Int_t">Int_t</a> Channel          -- channel number
                  <a href="ListOfTypes.html#UShort_t">UShort_t</a> * EventTime   -- event time (48 bit)
@@ -204,27 +208,42 @@
  Description:    Prints one line of data.
  Keywords:
 
+</pre><hr>
+<!--FUNCTION-->const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TUsrHit:EventTime2Ascii" href="src/TUsrHit.cxx.html#TUsrHit:EventTime2Ascii">EventTime2Ascii</a>(<a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; TimeString) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TUsrHitBuffer.html#TUsrHitBuffer:EventTime2Ascii">TUsrHitBuffer::EventTime2Ascii</a>
+ Purpose:        Convert 48-bit time to ascii
+ Arguments:      <a href="http://root.cern.ch/root/html/TString.html">TString</a> &amp; TimeString  -- where to store event time
+ Results:        <a href="ListOfTypes.html#Char_t">Char_t</a> * TimeString   -- same as arg#1
+ Exceptions:
+ Description:    Converts a 48-bit event time to ascii.
+ Keywords:
+
 </pre><br><br><br>
 <h3>Inline Functions</h3>
 <hr>
 <pre>
-<!--INLINE FUNCTION--><!--TAB6-->            <a href="./TUsrHit.html">TUsrHit</a> <a name="TUsrHit:TUsrHit" href="TMrbAnalyze.h">TUsrHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--INLINE FUNCTION--><!--TAB6-->            <a href="./TUsrHit.html">TUsrHit</a> <a name="TUsrHit:TUsrHit" href="TMrbAnalyze.h">TUsrHit</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime, <a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:Print" href="TMrbAnalyze.h">Print</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> PrintNames = kFALSE)
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHit:GetBufferNumber" href="TMrbAnalyze.h">GetBufferNumber</a>()
 <!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHit:GetEventNumber" href="TMrbAnalyze.h">GetEventNumber</a>()
-<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHit:GetEventIndex" href="TMrbAnalyze.h">GetEventIndex</a>()
 <!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHit:GetModuleNumber" href="TMrbAnalyze.h">GetModuleNumber</a>()
 <!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TUsrHit:GetChannel" href="TMrbAnalyze.h">GetChannel</a>()
 <!--INLINE FUNCTION--><!--TAB6-->          <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TUsrHit:GetEventTime" href="TMrbAnalyze.h">GetEventTime</a>()
 <!--INLINE FUNCTION--><!--TAB6-->          <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TUsrHit:GetDataAddr" href="TMrbAnalyze.h">GetDataAddr</a>()
 <!--INLINE FUNCTION--><!--TAB6-->           <a href="ListOfTypes.html#UShort_t">UShort_t</a> <a name="TUsrHit:GetData" href="TMrbAnalyze.h">GetData</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
 <!--INLINE FUNCTION--><!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TUsrHit:IsSortable" href="TMrbAnalyze.h">IsSortable</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetBufferNumber" href="TMrbAnalyze.h">SetBufferNumber</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BufferNumber)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetEventNumber" href="TMrbAnalyze.h">SetEventNumber</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber)
-<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetEventIndex" href="TMrbAnalyze.h">SetEventIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventIndex)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetModuleNumber" href="TMrbAnalyze.h">SetModuleNumber</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ModuleNumber)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetChannel" href="TMrbAnalyze.h">SetChannel</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetEventTime" href="TMrbAnalyze.h">SetEventTime</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:SetEventTime" href="TMrbAnalyze.h">SetEventTime</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a> BufferTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeHi, <a href="ListOfTypes.html#UShort_t">UShort_t</a> EventTimeLo)
-<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:CopyData" href="TMrbAnalyze.h">CopyData</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:CopyData" href="TMrbAnalyze.h">CopyData</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* Data, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset = 0)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:CopyData" href="TMrbAnalyze.h">CopyData</a>(<a href="./TUsrHit.html">TUsrHit</a>* Hit, <a href="ListOfTypes.html#Int_t">Int_t</a> NofData, <a href="ListOfTypes.html#Int_t">Int_t</a> Offset = 0)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TUsrHit:CopyEventTime" href="TMrbAnalyze.h">CopyEventTime</a>(<a href="ListOfTypes.html#UShort_t">UShort_t</a>* EventTime)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="ListOfTypes.html#UShort_t">UShort_t</a>* <a name="TUsrHit:CopyEventTime" href="TMrbAnalyze.h">CopyEventTime</a>(<a href="./TUsrHit.html">TUsrHit</a>* Hit)
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TUsrHit:ClearData" href="TMrbAnalyze.h">ClearData</a>()
 <!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrHit:Class" href="TMrbAnalyze.h">Class</a>()
 <!--INLINE FUNCTION--><!--TAB6-->            <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TUsrHit:IsA" href="TMrbAnalyze.h">IsA</a>() const
@@ -240,7 +259,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Wed Feb 12 14:37:47 2003
+Last update: Fri Mar  7 14:21:27 2003
 <br>
 <address>
 <hr>

@@ -167,7 +167,7 @@ Bool_t PutPid(TMrbAnalyze::EMrbRunStatus Status) {
 //VoidFuncPtr_t initfuncs[] = { InitGui, 0 };
 
 //TROOT root("M_analyze","Marabous Analysis framework", initfuncs);
-TROOT root("M_analyze","Marabous Analysis framework");
+//TROOT root("M_analyze","Marabous Analysis framework");
 
 
 int main(int argc, char **argv) {
@@ -214,12 +214,8 @@ int main(int argc, char **argv) {
 		exit(0);
 	}
 
-   for(int i=0; i < argc; i++)
-      cout << "arg " << i << ": " << argv[i] << endl;
-   Int_t arg_count = 0;
-   char **arg_vector = NULL;
-	new TRint("App", &arg_count, arg_vector, NULL, 0);
-	gROOT->Reset();
+//   for(int i=0; i < argc; i++)
+//      cout << "arg " << i << ": " << argv[i] << endl;
 
 	verboseMode = (Bool_t) gEnv->GetValue("TMrbAnalyze.VerboseMode", kFALSE);
 
@@ -232,6 +228,7 @@ int main(int argc, char **argv) {
 	argNo++;
 	TString data_source;
 	data_source = argv[argNo];
+	cout << "data_source: " << argv[argNo] << endl;
 
 // input type: FILE, SYNC, ASYNC, LIST
 	argNo++;
@@ -239,6 +236,8 @@ int main(int argc, char **argv) {
 	TMrbIOSpec::EMrbInputMode input_mode;
 	if(argc > argNo)	input_type = argv[argNo];
 	else				input_type = "F";
+	cout << "input_type:  " <<  input_type<< endl;
+
 
 	switch (input_type(0)) {
 		case 'f':
@@ -311,21 +310,25 @@ int main(int argc, char **argv) {
 	argNo++;
 	if(argc > argNo)	start_event = argv[argNo];
 	else				start_event = "0";
+	cout << "start_event: " << start_event << endl;
 	argNo++;
 	if(argc > argNo)	stop_event = argv[argNo];
 	else				stop_event = "0";
+	cout << "stop_event:  " << stop_event << endl;
 
 // run number
 	Int_t runnr;
 	argNo++;
 	if(argc > argNo)	runnr = atoi(argv[argNo]);
 	else				runnr = 0;
+	cout << "run_number:  " << runnr << endl;
 
 // down scale
 	Int_t downscale;
 	argNo++;
 	if(argc > argNo)	downscale = atoi(argv[argNo]);
 	else				downscale = 1;
+	cout << "downscale:   " << downscale << endl;
   
 // output file & size
 	TString root_file;
@@ -333,6 +336,8 @@ int main(int argc, char **argv) {
 	argNo++;
 	if(argc > argNo)	root_file = argv[argNo];
 	else				root_file = "none";
+	cout << "output_file: " << root_file << endl;
+
 	if (root_file.CompareTo("none") == 0)	output_mode = TMrbIOSpec::kOutputNone;
 	else	output_mode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteTree | TMrbIOSpec::kOutputClose);
 
@@ -340,7 +345,8 @@ int main(int argc, char **argv) {
 	argNo++;
 	if(argc > argNo)	file_size = atoi(argv[argNo]);
 	else				file_size = 0;
-  
+	cout << "file_size:   " << file_size << endl;
+
 // param file
 	TString param_file;
 	TMrbIOSpec::EMrbParamMode param_mode;
@@ -357,6 +363,7 @@ int main(int argc, char **argv) {
 				<< setblack << endl;
 		exit(1);
 	}
+	cout << "param_file:  " << param_file << endl;
 
 // histo file
 	TString histo_file;
@@ -366,7 +373,7 @@ int main(int argc, char **argv) {
 	else				histo_file = "none";
 	if (histo_file.CompareTo("none") == 0)	histo_mode = TMrbIOSpec::kHistoNone;
 	else									histo_mode = TMrbIOSpec::kHistoSave;
-//	else									histo_mode = TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear;
+	cout << "histo_file:  " << histo_file << endl;
   
 // mmap file & size
 	TString mmap_name;
@@ -374,17 +381,21 @@ int main(int argc, char **argv) {
 	if(argc > argNo)	mmap_name = argv[argNo];
 	else				mmap_name = "/tmp/M_prod.map";
    if (mmap_name.CompareTo("none") == 0) kUseMap = kFALSE;
+	cout << "mmap_name:   " << mmap_name << endl;
 	Int_t mmap_size;
 	argNo++;
 	if(argc > argNo)	mmap_size = kMB * atoi(argv[argNo]);
 	else				mmap_size = kMB * 12;
+	cout << "mmap_size:   " << mmap_size << endl;
 
 	gComSocket = 0;
 	argNo++;
 	if(argc > argNo)	gComSocket = atoi(argv[argNo]);
    our_pid_file += gComSocket;
+	cout << "ComSocket:   " <<  gComSocket<< endl;
 
    cout << "M_analyze: Reading of arguments done" << endl;
+
 	PutPid(TMrbAnalyze::M_STARTING);
 
    if ( gComSocket > 0 ) ss = new TServerSocket(gComSocket, kTRUE);
@@ -568,12 +579,15 @@ int main(int argc, char **argv) {
 	}
 
 //	start the two pthreads HERE
-   if ( gComSocket > 0 ) pthread_create(&msg_thread, NULL, &msg_handler, NULL);
+
+   if (gComSocket > 0) pthread_create(&msg_thread, NULL, &msg_handler, NULL);
    pthread_create(&update_thread, NULL, &update_handler, NULL);
+
+	gSystem->Sleep(1000);       // give the threads some time 
+
+	cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
 	PutPid(TMrbAnalyze::M_RUNNING);
 	u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
-
-	sleep(1);       // give the threads some time 
 
 //	read a given number of events from MBS (tcp or lmd file)
 	if ((input_mode & TMrbIOSpec::kInputMBS) != 0 ) {
@@ -619,6 +633,7 @@ int main(int argc, char **argv) {
 
 //	read events from root files in a loop
 	} else {
+      cout << "u_analyze->ProcessFileList()"<< endl;
 		u_analyze->ProcessFileList();
 		if ( verboseMode ) cout << "M_analyze: End of replay" << endl;
 	}
@@ -627,12 +642,11 @@ int main(int argc, char **argv) {
 	PutPid(TMrbAnalyze::M_STOPPING);
 	u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
 
-	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate"
-							<< endl;
 	
+	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate"
+						<< endl;
    pthread_join(update_thread, NULL);
-   if ( verboseMode ) cout	<< "M_analyze: update_thread terminated"
-							<< endl;
+   if ( verboseMode ) cout	<< "M_analyze: update_thread terminated" << endl;
 	u_analyze->CloseRootTree();		// close user's output file(s)
 //	if(kUseMap){
 //		if ( verboseMode ) cout << "M_analyze: Will close Mapfile" << endl;   
@@ -777,127 +791,184 @@ void exit_from_analyze(int n) {
 /////////////////////////////////////////////////////////////////////////////
 
 void * msg_handler(void * dummy) {
-//  char parms[10][200];
-//  int rval,buf[1000];
-//   TServerSocket *ss = new TServerSocket(9090, kTRUE);
-//  now done in main thread
-
-   while(1){
-// Accept a connection and return a full-duplex communication socket.
-      TSocket *sock = ss->Accept();
-// tell the clients to start
-      sock->Send("GO");
-//      TMonitor *mon = new TMonitor;
-//      mon->Add(sock);
-      while (1){
-         TMessage *mess;
-//         TSocket  *s;
-//         s = mon->Select();
-//         s->Recv(mess);
-         sock->Recv(mess);
-//         if ( verboseMode ) cout << "M_analyze::msg_handler(): Message type " << mess->What() << endl;
-         if(mess->What() == kMESS_STRING){
-            char str[300];
-            mess->ReadString(str, 250);
-			if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
-    //        no_of_parameters= M.parse(str, parms);
-            TString  smess = str; smess = smess.Strip(TString::kBoth);
-            if(smess(0,9) != "M_client "){               
-               cerr << setred
-					<< "M_analyze::msg_handler(): Illegal client - " << smess(0,9)
-					<< setblack << endl;
-               break;
-            } else smess.Remove(0,9);
-            TString arg; TString cmd; 
-            Int_t nc = smess.Index(" ");
-            if(nc <= 0) cmd = smess;
-            else {
-               cmd = smess(0,nc);
-               smess.Remove(0,nc+1);
-               nc = smess.Index(" ");
-               if(nc <= 0) arg = smess;
-               else arg = smess(0,nc);
-            }
-            Bool_t ok = kTRUE;
-            if     (cmd == "terminate") u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
-            else if(cmd == "pause")     u_analyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
-            else if(cmd == "resume")    u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
-
-            else if(cmd == "downscale") {
-               istrstream inbuf(arg.Data());
-               Int_t downscale; inbuf >> downscale;
-               if(downscale <= 0) downscale = 1;
-                                        u_analyze->SetScaleDown(downscale);
-
-            } else if(cmd == "reload") {
-                u_analyze->ReloadParams(arg.Data());
-
-            } else if ( cmd == "gethist" ) {
-//               gROOT->ls();
-			      pthread_mutex_lock(&global_data_mutex);
-               TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
-               if ( hist ) {
-                  TMessage * message = new  TMessage(kMESS_OBJECT);
-                  message->WriteObject(hist);     // write object in message buffer
-//                  hist->Print();
-			         pthread_mutex_unlock(&global_data_mutex);
-                  sock->Send(*message);          // send message
-                  delete message;
-               } else {
-                  TMessage * message = new  TMessage(kMESS_STRING);
-                  message->WriteString("Histo not found");
-                  cout << setred << "Histo not found |" 
-                  <<arg.Data() << "|" << setblack << endl;
-                  sock->Send(*message);          // send message
-                  delete message;
-               }
-            } else if ( cmd == "getstat" ) {
-               if ( gStat ) {
-                  TMessage * message = new  TMessage(kMESS_OBJECT);
-			         pthread_mutex_lock(&global_data_mutex);
-		            gStat->Update();
-                  message->WriteObject(gStat);     // write object in message buffer
-			         pthread_mutex_unlock(&global_data_mutex);
-                  sock->Send(*message);          // send message
-                  delete message;
-               } else {
-                  TMessage * message = new  TMessage(kMESS_STRING);
-                  message->WriteString("Stat not found");
-                  cout << setred << "Stat not found " << endl;
-                  sock->Send(*message);          // send message
-                  delete message;
-               }
-           } else if ( cmd == "zero" ) {
-              int count;
-              TMessage mess0(kMESS_STRING);
-              count = u_analyze->ClearHistograms(arg.Data());
-		        if (count > 0) u_analyze->SetUpdateFlag();
-              mess0.Reset();          // re-use TMessage object
-              ostrstream buf;
-              buf << "Number of histos cleared: " << count << ends;
-              mess0.WriteString(buf.str());
-              buf.rdbuf()->freeze(0);
-              sock->Send(mess0);
-
-            } else if ( cmd == "user" ){
-              Int_t result = u_analyze->HandleUserMessage(smess.Data());
-              if ( verboseMode ) cout << "UserMessage called, result: " 
-                               << result << endl;                
-            } else {
-               ok = kFALSE;
-               cerr << setred
-					<< "M_analyze::msg_handler(): Invalid function request - " << str
-					<< setblack << endl;
-            }
-//            mon->Remove(s);
-            if(ok)sock->Send("ACK");
-            else  sock->Send("FAILED");
-            break;
-         } else cerr 	<< setred
-						<< "M_analyze::msg_handler(): Unexpected message"
-						<< setblack << endl;
-         delete mess;
-         
-      }
+   cout << "Enter msg_handler, gComSocket = " << gComSocket<< endl;
+//   TServerSocket *ss = new TServerSocket(gComSocket, kTRUE);
+   if (!(ss->IsValid())) {
+      cout << "Invalid: " << gComSocket << endl;
+      return dummy;
    }
+
+   TMonitor *mon = new TMonitor();
+   mon->Add(ss);
+   mon->Print();
+
+   TSocket *s0 = 0, *s1 = 0;
+   TMessage *mess =0;
+   Int_t maxwait = 1000;
+//     TSocket  *sock = ss->Accept();
+//     sock->Send("go 0");
+
+   while (1){
+      TSocket *sock;
+      sock = mon->Select(maxwait);
+      if (sock == (TSocket*)-1) {
+         if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) break;
+         else continue;   
+      }
+      if (sock->IsA() == TServerSocket::Class()) {
+
+         if (!s0) {
+            s0 = ((TServerSocket *)sock)->Accept();
+            s0->Send("go 0");
+            mon->Add(s0);
+            cout << "Added socket s0" << endl;
+         } else if (!s1) {
+            s1 = ((TServerSocket *)sock)->Accept();
+            s1->Send("go 1");
+            mon->Add(s1);
+            cout << "Added socket s1" << endl;
+         } else
+            cout << "only accept two client connections" << endl;
+
+//         if (s0 && s1) {
+ //           mon->Remove(ss);
+//            ss->Close();
+//            ss = NULL;
+//         }
+         continue;
+      }
+
+//      cout << "msg_handler(): socket: " << sock << endl;
+
+      sock->Recv(mess);
+      if (mess == 0) {
+//  client exited withoput 
+         cout << "M_analyze::msg_handler(): mess == 0" << endl;
+         mon->Remove(sock);
+         if (sock == s0) s0 = 0;
+         if (sock == s1) s1 = 0;
+         continue;
+      }
+//      if ( verboseMode ) cout << "M_analyze::msg_handler(): Message type " << mess->What() << endl;
+      if(mess->What() == kMESS_STRING){
+         char str[300];
+         mess->ReadString(str, 250);
+			if ( verboseMode ) cout << 
+           "M_analyze::msg_handler(): Read from client: " << str << endl;
+ //        no_of_parameters= M.parse(str, parms);
+         TString  smess = str; smess = smess.Strip(TString::kBoth);
+         if(smess(0,9) != "M_client "){               
+            cerr << setred
+				<< "M_analyze::msg_handler(): Illegal client - " << smess(0,9)
+				<< setblack << endl;
+//            break;
+         } else smess.Remove(0,9);
+         TString arg; TString cmd; 
+         Int_t nc = smess.Index(" ");
+         if(nc <= 0) cmd = smess;
+         else {
+            cmd = smess(0,nc);
+            smess.Remove(0,nc+1);
+            nc = smess.Index(" ");
+            if(nc <= 0) arg = smess;
+            else arg = smess(0,nc);
+         }
+         Bool_t send_ack = kTRUE;
+
+         if     (cmd == "terminate") u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);         
+         else if(cmd == "pause")     u_analyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
+         else if(cmd == "resume")    u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
+
+         else if(cmd == "downscale") {
+            istrstream inbuf(arg.Data());
+            Int_t downscale; inbuf >> downscale;
+            if(downscale <= 0) downscale = 1;
+                                     u_analyze->SetScaleDown(downscale);
+
+         } else if(cmd == "reload") {
+             u_analyze->ReloadParams(arg.Data());
+
+         } else if ( cmd == "gethist" ) {
+			   pthread_mutex_lock(&global_data_mutex);
+            TH1 * hist = (TH1 *)gROOT->GetList()->FindObject(arg.Data());
+            if ( hist ) {
+               TMessage * message = new  TMessage(kMESS_OBJECT);
+               message->WriteObject(hist);     // write object in message buffer
+//               hist->Print();
+			      pthread_mutex_unlock(&global_data_mutex);
+               sock->Send(*message);          // send message
+               delete message;
+            } else {
+               TMessage * message = new  TMessage(kMESS_STRING);
+               message->WriteString("Histo not found");
+               cout << setred << "Histo not found |" 
+               <<arg.Data() << "|" << setblack << endl;
+			      pthread_mutex_unlock(&global_data_mutex);
+               sock->Send(*message);          // send message
+               delete message;
+            }
+            send_ack = kFALSE;
+         } else if ( cmd == "getstat" ) {
+            if ( gStat ) {
+               TMessage * message = new  TMessage(kMESS_OBJECT);
+			      pthread_mutex_lock(&global_data_mutex);
+		         gStat->Update();
+               message->WriteObject(gStat);     // write object in message buffer
+			      pthread_mutex_unlock(&global_data_mutex);
+               sock->Send(*message);          // send message
+               delete message;
+            } else {
+               TMessage * message = new  TMessage(kMESS_STRING);
+               message->WriteString("Stat not found");
+               cout << setred << "Stat not found " << endl;
+               sock->Send(*message);          // send message
+               delete message;
+            }
+            send_ack = kFALSE;
+        } else if ( cmd == "zero" ) {
+           int count;
+           TMessage mess0(kMESS_STRING);
+           count = u_analyze->ClearHistograms(arg.Data());
+		     if (count > 0) u_analyze->SetUpdateFlag();
+           mess0.Reset();          // re-use TMessage object
+           ostrstream buf;
+           buf << "Number of histos cleared: " << count << ends;
+           mess0.WriteString(buf.str());
+           buf.rdbuf()->freeze(0);
+           sock->Send(mess0);
+
+         } else if ( cmd == "user" ){
+           Int_t result = u_analyze->HandleUserMessage(smess.Data());
+           if ( verboseMode ) cout << "UserMessage called, result: " 
+                            << result << endl;                
+         } else {
+            cerr << setred
+				<< "M_analyze::msg_handler(): Invalid function request - " << str
+				<< setblack << endl; 
+            sock->Send("FAILED");
+            send_ack = kFALSE;
+        }
+//        cout << "mon->Remove(sock) " << endl;
+//        mon->Remove(sock);
+        if(send_ack)sock->Send("ACK");
+        if (u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING) {
+           break;
+        }
+         
+      } else {
+          cerr << setred
+					<< "M_analyze::msg_handler(): Unexpected message"
+					<< setblack << endl;
+         sock->Send("FAILED");
+      }
+      if (mess) { delete mess; mess = 0;};
+   }
+
+   if (s0) s0->Close();
+   if (s1) s1->Close();
+   if (ss) ss->Close();
+
+   if (mess) delete mess;
+   cout << "exit msg_handler" << endl;
+   return dummy;
 }

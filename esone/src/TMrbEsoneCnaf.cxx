@@ -360,8 +360,8 @@ Bool_t TMrbEsoneCnaf::SetData(Int_t Data, EMrbCnafType Type) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Type == kCnafTypeUndefined) {
-		if (this->IsRead()) 			fDataRead = Data & kEsoneDataMask;
-		else if (this->IsWrite())		fDataWrite = Data & kEsoneDataMask;
+		if (this->IsRead()) 			fDataRead = Data;
+		else if (this->IsWrite())		fDataWrite = Data;
 		else if (this->IsControl()) {
 			gMrbLog->Err()	<< "[" << this->Int2Ascii()
 							<< "] Wrong CNAF def - CONTROL cnaf can't take data" << endl;
@@ -373,9 +373,10 @@ Bool_t TMrbEsoneCnaf::SetData(Int_t Data, EMrbCnafType Type) {
 			gMrbLog->Flush(this->ClassName(), "SetData");
 			return(kFALSE);
 		}
+		return(kTRUE);
 	} else {
-		if (Type & (kCnafTypeRead | kCnafTypeControl))	fDataRead = Data & kEsoneDataMask;
-		if (Type & kCnafTypeWrite)						fDataWrite = Data & kEsoneDataMask;
+		if (Type & (kCnafTypeRead | kCnafTypeControl))	fDataRead = Data;
+		if (Type & kCnafTypeWrite)						fDataWrite = Data;
 		return(kTRUE);
 	}
 	return(kFALSE); 	// will never get here ...
@@ -494,13 +495,11 @@ Bool_t TMrbEsoneCnaf::Set(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Funct
 
 	ok = kTRUE;
 
-	cout << "@@ Set: C" << Crate << ".N" << Station << ".A" << Subaddr << ".F" << Function << " Data=" << Data << endl;
 	if (!this->SetC(Crate)) ok = kFALSE;
 	if (!this->SetN(Station)) ok = kFALSE;
 	if (!this->SetA(Subaddr)) ok = kFALSE;
 	if (!this->SetF(Function)) ok = kFALSE;
 	if (!this->SetData(Data)) ok = kFALSE;
-	cout << "@@ Set: " << this->Int2Ascii() << endl;
 	return(ok);
 }
 
@@ -588,7 +587,7 @@ Bool_t TMrbEsoneCnaf::CheckCnaf(UInt_t CnafBits) {
 			gMrbLog->Flush(this->ClassName(), "CheckCnaf");
 			ok = kFALSE;
 		} else if (fType == TMrbEsoneCnaf::kCnafTypeControl) {
-			if (((fDataRead & kEsoneNoData) == 0) || ((fDataRead & kEsoneNoData) == 0)) {
+			if (((fDataRead & kEsoneNoData) == 0) || ((fDataWrite & kEsoneNoData) == 0)) {
 				gMrbLog->Err()	<< "[" << this->Int2Ascii()
 								<< "] Illegal CNAF def - CONTROL cnaf can't take data" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckCnaf");

@@ -12,6 +12,7 @@
 <a href=#Help_on_GetRange>Help_on_Show_in_same_range</a> 
 <a href=#Help_on_Superimpose>Help_on_Superimpose</a> 
 <a href=#Help_on_Rebin>Help_on_Rebin</a> 
+<a href=#Help_on_Contour>Help_on_Contour</a> 
 
 <a NAME=Help_on_Mark></a>
 <H1>Use of marks</H1>
@@ -117,5 +118,26 @@ command uses the sum of the bin contents. There is an
 extended <a href=showlists.html/Help_on_OperRebin>Rebin</a> command provided by HistPresent which
 produces a new histogram with sum or avarage of the
 bin contents selectable.
+
+<a NAME=Help_on_Contour></a>
+<H1>User defined contours</H1>
+Levels and colors in 2-dim histograms using the drawing options
+<b>colz</b> or similiar are normally automatically adjusted 
+using 20 equidistant levels and a color spectrum blue-green-
+yellow-red (rainbow colors).
+Levels and colors can be selected from the <b>Display</b> popup menu.
+Color numbers or levels may all be set to 0, in this case 
+the default colors (e.g. rainbow) or default equidistant
+levels are used. The convention is such that cells with
+content  greater level and less or equal the following level
+get the corresping color. That means cells with content below
+the lowest level are in background color (not visible). So in
+the normal case when no cells with negative content are
+present the lowest level should be 0.
+
+These settings can be saved to a rootfile and reused later.
+Save is done be the command <b>Save User Contours</b>
+Restore is done by selecting the required contour object
+in the <b>File list</b> and pressing <b>Use Selected Contours</b>
 
 </HTML>

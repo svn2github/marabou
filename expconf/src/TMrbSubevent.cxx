@@ -98,8 +98,9 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 
 			fHasIndexedParams = kFALSE; 	// default: single params only
 
-			fPrependPrefix = kFALSE;		// w/o prefix
-			fHistosToBeAllocated = kTRUE;	// allocate histograms
+			fPrependPrefix = kFALSE;				// w/o prefix
+			fHistosToBeAllocated = kTRUE;			// allocate histograms
+			fHistosToBeFilledIfTrueHit = kFALSE;	// fill histos in any case
 
 			fReadoutOptions = TMrbConfig::kNoOptionSpecified;
 			fAnalyzeOptions = TMrbConfig::kNoOptionSpecified;
@@ -705,6 +706,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 					evt = (TMrbEvent *) fLofEvents.First();
 					stdHistosOK = kFALSE;
 					while (evt) {
+						anaTmpl.InitializeCode("%R%");
+						anaTmpl.Substitute("$iniVal", this->HistosToBeFilledIfTrueHit() ? -1 : 0);
+						anaTmpl.WriteCode(AnaStrm);
 						if (evt->HasPrivateHistograms()) {
 							evtNameLC = evt->GetName();
 							evtNameUC = evtNameLC;
@@ -1126,7 +1130,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
 							anaTmpl.WriteCode(AnaStrm);
 							if (this->IsInArrayMode()) {
-								anaTmpl.InitializeCode("%A%");
+								anaTmpl.InitializeCode(this->HistosToBeFilledIfTrueHit() ? "%PA" : "%A%");
 								if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
 								else		anaTmpl.Substitute("$prefix", "");
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
@@ -1163,8 +1167,9 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 												paramNameLC = param->GetName();
 												paramNameUC = paramNameLC;
 												paramNameUC(0,1).ToUpper();
-												if (paramStatus == TMrbConfig::kChannelSingle)	anaTmpl.InitializeCode("%S%");
-												else											anaTmpl.InitializeCode("%X%");
+												iniTag = this->HistosToBeFilledIfTrueHit() ? "%P" : "%";
+												iniTag += (paramStatus == TMrbConfig::kChannelSingle) ? "S%" : "X%";
+												anaTmpl.InitializeCode(iniTag);
 												if (pFlag)	anaTmpl.Substitute("$prefix", pUC);
 												else		anaTmpl.Substitute("$prefix", "");
 												anaTmpl.Substitute("$evtNameLC", evtNameLC);

@@ -39,6 +39,7 @@
 #include "TMrbCamacModule.h"
 #include "TMrbVMEModule.h"
 #include "TMrbCamacScaler.h"
+#include "TMrbNamedArray.h"
 
 #include "SetColor.h"
 
@@ -83,6 +84,21 @@ const SMrbNamedXShort kMrbLofModuleTypes[] =
 								{TMrbConfig::kModuleSingleMode,	"SingleMode"	},
 								{TMrbConfig::kModuleScaler,		"Scaler"		},
 								{TMrbConfig::kModuleControl, 	"Control"		},
+								{0, 							NULL			}
+							};
+
+//_________________________________________________________________________________________________________ histogram types
+
+const SMrbNamedX kMrbLofHistoTypes[] =
+							{
+								{TMrbConfig::kHistoTH1C,		"TH1C", "1-dim histogram with one byte per channel"		},
+								{TMrbConfig::kHistoTH1D,		"TH1D", "1-dim histogram with one double per channel"	},
+								{TMrbConfig::kHistoTH1F,		"TH1F", "1-dim histogram with one float per channel"	},
+								{TMrbConfig::kHistoTH1S,		"TH1S", "1-dim histogram with one short per channel"	},
+								{TMrbConfig::kHistoTH2C,		"TH2C", "2-dim histogram with one byte per channel"		},
+								{TMrbConfig::kHistoTH2D,		"TH2D", "2-dim histogram with one double per channel"	},
+								{TMrbConfig::kHistoTH2F,		"TH2F", "2-dim histogram with one float per channel"	},
+								{TMrbConfig::kHistoTH2S,		"TH2S", "2-dim histogram with one short per channel"	},
 								{0, 							NULL			}
 							};
 
@@ -210,7 +226,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventReplayTree,			"EVT_REPLAY_TREE"				},
 								{TMrbConfig::kAnaEventFirstSubevent,		"EVT_FIRST_SEVT"				},
 								{TMrbConfig::kAnaEventSetBranchStatus,		"EVT_SET_BRANCH_STATUS" 		},
-								{TMrbConfig::kAnaEventBuildRootEvent,		"EVT_BUILD_ROOT_EVENT"			},
+								{TMrbConfig::kAnaEventBuildEvent,			"EVT_BUILD_EVENT"				},
 								{TMrbConfig::kAnaEventAnalyze,				"EVT_ANALYZE"			 		},
 								{TMrbConfig::kAnaEvtResetData,				"EVT_RESET_DATA"				},
 								{TMrbConfig::kAnaSevtNameLC,				"SEVT_NAME_LC"					},
@@ -242,6 +258,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaModuleSerialEnum,			"MODULE_SERIAL_ENUM"			},
 								{TMrbConfig::kAnaHistoDefinePointers,		"HISTO_DEFINE_POINTERS" 		},
 								{TMrbConfig::kAnaHistoInitializeArrays, 	"HISTO_INIT_ARRAYS" 			},
+								{TMrbConfig::kAnaHistoBookUserDefined,	 	"HISTO_BOOK_USER_DEFINED"		},
 								{TMrbConfig::kAnaVarDefinePointers, 		"VAR_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaVarClassInstance,			"VAR_CLASS_INSTANCE"			},
 								{TMrbConfig::kAnaVarArrDefinePointers,		"VARARR_DEFINE_POINTERS"		},
@@ -367,6 +384,8 @@ const SMrbNamedXShort kMrbAnalyzeOptions[] =
 								{~TMrbConfig::kAnaOptLeaves,	 			"BRANCHES"						},
 								{TMrbConfig::kAnaOptOverwrite,				"OVERWRITE" 					},
 								{TMrbConfig::kAnaOptReplayMode, 			"REPLAYMODE"					},
+								{TMrbConfig::kAnaOptEventBuilder,			"EVENTBUILDER"					},
+								{TMrbConfig::kAnaOptFillHistosAfter,		"FILLHISTOSAFTERUSERCODE"		},
 								{TMrbConfig::kAnaOptVerbose,	 			"VERBOSE"						},
 								{TMrbConfig::kAnaOptDefault,				"DEFAULT"						},
 								{0, 										NULL							}
@@ -403,8 +422,8 @@ const SMrbNamedXShort kMrbIncludeOptions[] =
 								{TMrbConfig::kIclOptReloadParams,			"RELOADPARAMS"					},
 								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"				},
 								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"					},
-								{TMrbConfig::kIclOptBuildRootEvent,			"BUILDROOTEVENT"				},
 								{TMrbConfig::kIclOptAnalyze,				"ANALYZE"						},
+								{TMrbConfig::kIclOptEventBuilder,			"EVENTBUILDER"					},
 								{TMrbConfig::kIclOptUtilities,				"UTILITIES"						},
 								{TMrbConfig::kIclOptHandleUserMessages,		"HANDLEUSERMESSAGES"			},
 								{TMrbConfig::kIclOptByEventName,			"BYEVENTNAME"					},
@@ -503,6 +522,10 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofModuleTypes.SetPatternMode();
 		fLofModuleTypes.AddNamedX(kMrbLofModuleTypes);	
 
+		fLofHistoTypes.SetName("Histogram Types");				// ... histogram types
+		fLofHistoTypes.SetPatternMode();
+		fLofHistoTypes.AddNamedX(kMrbLofHistoTypes);	
+
 		fLofReadoutTags.SetName("Readout Tags");				// ... readout tags
 		fLofReadoutTags.AddNamedX(kMrbLofReadoutTags);	
 
@@ -540,8 +563,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		UpdateTriggerTable();									// initialize trigger table								
 
+		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofUserClasses.Delete();								// init list of user-added classes
-		fLofOnceOnlyTags.Delete();							// init list of once-only code files		
+		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
 		gMrbConfig = this; 		// holds addr of current config def
@@ -2098,6 +2122,32 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							}
 						}
 						break;
+					case TMrbConfig::kAnaUserBookHistograms:
+						if (!this->UserCodeToBeIncluded()) break;
+						icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
+						writeCmt = kTRUE;
+						while (icl) {
+							iclFile = icl->GetName();
+							if (iclFile.Length() == 0) iclFile = gMrbConfig->GetName();
+							iclFile(0,1).ToUpper();
+							if (((icl->GetIndex() & TMrbConfig::kIclOptByEventName) == 0)
+							&&	(icl->GetIndex() & TMrbConfig::kIclOptBookHistograms)) {
+								iclFile += "BookHistograms.udc.cxx";
+								if (writeCmt) {
+									anaTmpl.InitializeCode("%B%");
+									anaTmpl.WriteCode(anaStrm);
+								}
+								writeCmt = kFALSE;
+								anaTmpl.InitializeCode("%I%");
+								iclPath = icl->GetTitle();
+								if (iclPath.Length() > 0) iclPath += "/";
+								anaTmpl.Substitute("$iclPath", iclPath);
+								anaTmpl.Substitute("$iclFile", iclFile);
+								anaTmpl.WriteCode(anaStrm);
+							}
+							icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+						}
+						break;
 					case TMrbConfig::kAnaMakeUserHeaders:
 						found = kFALSE;
 						if (this->UserCodeToBeIncluded()) {
@@ -2215,6 +2265,23 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
 									}
 								}
+								if (icl->GetIndex() & TMrbConfig::kIclOptEventBuilder) {
+									if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) {
+										evt = (TMrbEvent *) fLofEvents.First();
+										while (evt) {
+											iclFile = evt->GetName();
+											iclFile(0,1).ToUpper();
+											iclFile.Prepend(iclPrefix.Data());
+											iclFile += "EventBuilder.udc.cxx";
+											if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
+											evt = (TMrbEvent *) fLofEvents.After(evt);
+										}
+									} else {
+										iclFile = iclPrefix;
+										iclFile += "EventBuilder.udc.cxx";
+										if (onceOnly.FindObject(iclFile.Data()) == NULL) onceOnly.Add(new TNamed(iclFile.Data(), icl->GetTitle()));												
+									}
+								}
 								if (icl->GetIndex() & TMrbConfig::kIclOptAnalyze) {
 									if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) {
 										evt = (TMrbEvent *) fLofEvents.First();
@@ -2323,7 +2390,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
 							anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
 							anaTmpl.WriteCode(anaStrm);
-							anaTmpl.InitializeCode("%A%");
+							anaTmpl.InitializeCode(((evt->GetAnalyzeOptions() & TMrbConfig::kAnaOptEventBuilder) == 0) ? "%ANA%" : "%BEV%");
 							anaTmpl.Substitute("$evtNameUC", evtNameUC);
 							anaTmpl.Substitute("$evtNameLC", evtNameLC);
 							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
@@ -2390,12 +2457,58 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						anaTmpl.WriteCode(anaStrm);
 						break;
 					case TMrbConfig::kAnaHistoDefinePointers:
+						if (gMrbConfig->GetAnalyzeOptions() & kAnaOptHistograms) {
+							sevt = (TMrbSubevent *) fLofSubevents.First();
+							while (sevt) {
+								sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
+								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+							}
+						}
+						if (fLofUserHistograms.First()) {
+							anaTmpl.InitializeCode("%UDH%");
+							anaTmpl.WriteCode(anaStrm);
+							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
+							while (h) {
+								anaTmpl.InitializeCode("%UDBH%");
+								anaTmpl.Substitute("$hName", h->GetName());
+								TMrbNamedArrayI * a = (TMrbNamedArrayI *) h->GetAssignedObject();
+								anaTmpl.Substitute("$hType", a->GetName());
+								anaTmpl.WriteCode(anaStrm);
+								h = (TMrbNamedX *) fLofUserHistograms.After(h);
+							}
+						}
+						break;
 					case TMrbConfig::kAnaHistoInitializeArrays:
 						if (gMrbConfig->GetAnalyzeOptions() & kAnaOptHistograms) {
 							sevt = (TMrbSubevent *) fLofSubevents.First();
 							while (sevt) {
 								sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
 								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+							}
+						}
+						break;
+					case TMrbConfig::kAnaHistoBookUserDefined:
+						if (fLofUserHistograms.First()) {
+							anaTmpl.InitializeCode("%B%");
+							anaTmpl.WriteCode(anaStrm);
+							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
+							while (h) {
+								anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+								anaTmpl.Substitute("$hName", h->GetName());
+								anaTmpl.Substitute("$hTitle", h->GetTitle());
+								TMrbNamedArrayI * a = (TMrbNamedArrayI *) h->GetAssignedObject();
+								anaTmpl.Substitute("$hType", a->GetName());
+								Int_t * ap = a->GetArray();
+								anaTmpl.Substitute("$binSizeX", *ap++);
+								anaTmpl.Substitute("$lowerX", *ap++);
+								anaTmpl.Substitute("$upperX", *ap++);
+								if (h->GetIndex() & TMrbConfig::kHistoTH2) {
+									anaTmpl.Substitute("$binSizeY", *ap++);
+									anaTmpl.Substitute("$lowerY", *ap++);
+									anaTmpl.Substitute("$upperY", *ap++);
+								}
+								anaTmpl.WriteCode(anaStrm);
+								h = (TMrbNamedX *) fLofUserHistograms.After(h);
 							}
 						}
 						break;
@@ -3308,7 +3421,6 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 							rcTmpl.Substitute("$evtNameUC", evtNameUC.Data());
 							rcTmpl.Substitute("$nofEntries", evt->GetSizeOfHitBuffer());
 							rcTmpl.Substitute("$highWater", evt->GetHBHighWaterLimit());
-							rcTmpl.Substitute("$offset", (Int_t) evt->GetHBOffset());
 							rcTmpl.WriteCode(rcStrm);
 							evt->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
 							evt = (TMrbEvent *) fLofEvents.After(evt);
@@ -4147,6 +4259,80 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 			}
 		}
 	}
+	return(kTRUE);
+}
+
+Bool_t TMrbConfig::BookHistogram(	const Char_t * Type, const Char_t * Name, const Char_t * Title,
+									Int_t A0, Int_t A1, Int_t A2, Int_t A3,
+									Int_t A4, Int_t A5, Int_t A6, Int_t A7) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistogram
+// Purpose:        Define a histogram to be booked
+// Arguments:      Char_t * Type      -- histo type (TH1X, TH2X)
+//                 Char_t * Name      -- name
+//                 Char_t * Title     -- title
+//                 Int_t Ax           -- arguments
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books user-defined histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString hType;
+	Int_t nofArgs;
+	TArrayI argList(8);
+
+	hType = Type;
+	hType.ToUpper();
+	TMrbNamedX * histoType = fLofHistoTypes.FindByName(hType.Data());
+	if (histoType == NULL) {
+		gMrbLog->Err() << "[" << Name << "] Illegal histogram type - " << Type << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+	argList[0] = A0;
+	argList[1] = A1;
+	argList[2] = A2;
+	argList[3] = A3;
+	argList[4] = A4;
+	argList[5] = A5;
+	argList[6] = A6;
+	argList[7] = A7;
+	for (nofArgs = 0; nofArgs < 8; nofArgs++) { if (argList[nofArgs] == -1.) break; }
+
+	if (histoType->GetIndex() & TMrbConfig::kHistoTH1) {
+		switch (nofArgs) {
+			case 1:	argList[2] = argList[0]; argList[1] = 0; break; 	// (range) -> (range, 0., range)
+			case 2:	argList[2] = argList[1]; argList[1] = 0; break; 	// (binsize, range) -> (binsize, 0., range)
+			case 3:	break;												// (binsize, lower, upper)
+			default:
+				gMrbLog->Err() << "[" << Name << "] Illegal number of args - " << nofArgs << endl;
+				gMrbLog->Flush(this->ClassName(), "BookHistogram");
+				return(kFALSE);
+		}
+	} else if (histoType->GetIndex() & TMrbConfig::kHistoTH2) {
+		switch (nofArgs) {
+			case 1:	argList[5] = argList[0]; argList[4] = 0; argList[3] = argList[0];
+					argList[2] = argList[0]; argList[1] = 0;
+					break;			// (range) -> (rangeX, 0., rangeX, rangeY, 0., rangeY)
+			case 2:	argList[5] = argList[1]; argList[4] = 0; argList[3] = argList[0];
+					argList[2] = argList[1]; argList[1] = 0;
+					break;			// (binsize, range) -> (binsizeX, 0., rangeX, binsizeY, 0., rangeY)
+			case 3:	argList[5] = argList[2]; argList[4] = argList[1]; argList[3] = argList[0];
+					break;			// (binsize, lower, upper) -> (binsizeX, lowerX, upperX, binsizeY, lowerY, upperY)
+			case 4:	argList[5] = argList[3]; argList[4] = 0; argList[3] = argList[2];
+					argList[2] = argList[1]; argList[1] = 0;
+					break;			// (binsizeX, rangeX, binsizeY, rangeY) -> (binsizeX, 0, rangeX, binsizeY, 0, rangeY)
+			case 6:	break;			// (binsizeX, lowerX, upperX, binsizeY, lowerY, upperY)
+			default:
+				gMrbLog->Err() << "[" << Name << "] Illegal number of args - " << nofArgs << endl;
+				gMrbLog->Flush(this->ClassName(), "BookHistogram");
+				return(kFALSE);
+		}
+	}
+	TMrbNamedArrayI * a = new TMrbNamedArrayI(histoType->GetName(), histoType->GetTitle(), 8, argList.GetArray());
+	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), Name, Title, a));
 	return(kTRUE);
 }
 

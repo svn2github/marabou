@@ -51,9 +51,16 @@ void FitHist::MarksToWindow(){
                               &ok, mycanvas);
          if(!ok)return; 
          CheckList(fAllWindows);
-         if(fAllWindows->FindObject(fWdwname.Data())) {
-            WarnBox("Window already exists");
-            return;
+         TMrbWindow * wdw_old = (TMrbWindow *)fAllWindows->FindObject(fWdwname.Data());
+         if(wdw_old) {
+            if (QuestionBox("Window with this name
+already exists, delete it? ", mycanvas)) {
+               fAllWindows->Remove(wdw_old);
+               fActiveWindows->Remove(wdw_old);
+               delete wdw_old;
+            } else {
+               return;
+            }
          }
          TMrbWindowF * wdw = new TMrbWindowF(fWdwname.Data(), x1, x2); 
          wdw->Draw(); 
@@ -136,7 +143,7 @@ void FitHist::DrawWindows(){
 void  FitHist::WriteOutWindows(){
    Int_t nval = CheckList(fActiveWindows);
    if(nval>0){
-      if(OpenWorkFile()){
+      if(OpenWorkFile(mycanvas)){
          fActiveWindows->Write();
          CloseWorkFile();
       }
@@ -244,7 +251,7 @@ void FitHist::UpdateCut(){
 void  FitHist::WriteOutCut(){
    UpdateCut();
    if(Ncuts()){
-      if(OpenWorkFile()){
+      if(OpenWorkFile(mycanvas)){
          fActiveCuts->Write();
          CloseWorkFile();
       }
@@ -302,10 +309,21 @@ void FitHist::InitCut(){
    Bool_t ok;
    fCutname = GetString("Cut will be saved with name",cname.Data(), &ok, mycanvas);
    if(!ok)  return; 
-   if(fAllCuts->FindObject((char *)cname.Data())) {
-      WarnBox("Cut name already exists");
-      return;
+   TMrbWindow * wdw_old = (TMrbWindow *)fAllCuts->FindObject(fWdwname.Data());
+   if(wdw_old) {
+      if (QuestionBox("Window with this name
+already exists, delete it? ", mycanvas)) {
+         fAllCuts->Remove(wdw_old);
+         fActiveCuts->Remove(wdw_old);
+         delete wdw_old;
+      } else {
+         return;
+      }
    }
+//   if(fAllCuts->FindObject((char *)cname.Data())) {
+//      WarnBox("Cut name already exists");
+//      return;
+//   }
    gROOT->SetEditorMode("CutG");
 }
 //______________________________________________________________________________________

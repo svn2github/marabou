@@ -29,6 +29,7 @@
 #include "TGTextBuffer.h"
 #include "TGLayout.h"
 #include "TGLabel.h"
+#include "TGColorSelect.h"
 
 #include "TMrbString.h"
 #include "TMrbLofNamedX.h"
@@ -105,6 +106,7 @@ class TGMrbTableFrame : public TGTransientFrame {
 		TArrayI *fFlagsReturn;
       Int_t fRadio;
       Int_t fCheck;
+      Int_t fColorSelect;
       Bool_t fCancelOk;
       const Char_t * fHelpText;
 

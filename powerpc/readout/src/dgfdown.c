@@ -38,6 +38,7 @@ typedef struct {
 } TUnixEntry;
 
 #define DGF_L_CODE		50000
+#define DGF_A_VC32_BASE 0x550000
 
 /*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 / Prototypes
@@ -72,12 +73,12 @@ unsigned int dgf_get_revision(int crate, int rev);
 void cc32_init(unsigned long * physAddrCrate1, int nofCrates);
 
 
-int main() {
+int main(int argc, char * argv[]) {
 /*________________________________________________________________[C FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           dgfdown
 // Purpose:        Download FGPA & DSP code to DGF-4C
-// Arguments:      
+// Arguments:      CfgFile     -- configuration file
 // Results:        
 // Exceptions:     
 // Description:      
@@ -85,8 +86,10 @@ int main() {
 ///////////////////////////////////////////////////////////////////////////*/
 
 	int i;
+	char cfgFile[256];
 	char loadPath[256];
 	char fileSpec[256];
+	char loadOptions[10];
 	unsigned short sys[DGF_L_CODE];
 	unsigned short fippiRevD[DGF_L_CODE];
 	unsigned short fippiRevE[DGF_L_CODE];
@@ -94,11 +97,28 @@ int main() {
 	unsigned short data[DGF_L_CODE];
 	int sysSize, fippiDsize, fippiEsize, dspSize;
 	int nofCrates, crate;
+	int n;
 	unsigned int smaskD, smaskE;
+	unsigned long * baseAddr;
 
- 	cc32_init((unsigned long *) 0xee550000L, 3);				/* vme addr mapping for crates 1 ... 3 */
+	if (argc >= 2) {
+		strcpy(cfgFile, argv[1]);
+	} else {
+		strcpy(cfgFile, ".DgfDownload.rc");
+	}
 
- 	root_env_read("/d1/miniball/standalone/.DgfDownload.rc");		/* read ROOT's environment file */
+ 	n = root_env_read(cfgFile);			/* read ROOT's environment file */
+	if (n <= 0) {
+		fprintf(stderr, "%sdgf_read_dsp: Cannot open file %s%s\n", setred, cfgFile, setblack);
+		exit(1);
+	}
+
+	nofCrates = root_env_getval_i("NofCrates", 1);
+	baseAddr = (unsigned long *) root_env_getval_i("BaseAddr", DGF_A_VC32_BASE);
+ 	cc32_init(baseAddr, nofCrates);				/* vme addr mapping  */
+
+	strcpy(loadOptions, root_env_getval_s("DownloadOptions", "SFD"));
+	for (i = 0; i < 10; i++) loadOptions[i] = tolower(loadOptions[i]);
 
 	strcpy(loadPath, root_env_getval_s("LoadPath", ""));
 	strcat(loadPath, "/");
@@ -119,16 +139,16 @@ int main() {
 	strcat(fileSpec, root_env_getval_s("DspCode", ""));
 	dspSize = dgf_read_dsp(fileSpec, dsp);
 
-	nofCrates = root_env_getval_i("NofCrates", 1);
-
 	for (crate = 1; crate <= nofCrates; crate++) {
-		dgf_download_fpga(crate, -1, "System", sys, sysSize);
-		smaskD = dgf_get_revision(crate, FIPPI_REVD);
-		smaskE = dgf_get_revision(crate, FIPPI_REVE);
-		if (smaskD) dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize);
-		if (smaskE) dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize);
+		if (strchr(loadOptions, 's') != NULL) dgf_download_fpga(crate, -1, "System", sys, sysSize);
+		if (strchr(loadOptions, 'f') != NULL) {
+			smaskD = dgf_get_revision(crate, FIPPI_REVD);
+			smaskE = dgf_get_revision(crate, FIPPI_REVE);
+			if (smaskD) dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize);
+			if (smaskE) dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize);
+		}
 		dgf_set_switchbus(crate);
-		dgf_download_dsp(crate, dsp, dspSize);
+		if (strchr(loadOptions, 'd') != NULL) dgf_download_dsp(crate, dsp, dspSize);
 	}
 	exit(0);
 }

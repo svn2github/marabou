@@ -52,6 +52,7 @@
 #include "C_analyze_Help.h"
 #include "TGMrbInputDialog.h"
 #include "TGMrbHelpWindow.h"
+#include "TMrbNamedX.h"
 
 #include "SetColor.h"
 
@@ -365,13 +366,16 @@ Int_t chkquota(const char * file, Int_t hard_hwm,
 //_____________________________________________________________________________________
 //_____________________________________________________________________________________
 
-FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h, UInt_t attachid)
+FhMainFrame::FhMainFrame(const TGWindow *p, UInt_t w, UInt_t h, 
+                         Int_t attachid, Int_t attachsock)
              : TGMainFrame(p, w, h){
 
 // if attachid > 0 try to attach to a running M_analyze with Id given on command line
 // otherwise try to find a socket to communicate with M_analyze (9091-9095)
    fOurPidFile = new TString("");
    fAttachid = attachid;
+   fAttachsock = attachsock;
+   cout << "fAttachid " << fAttachid << endl;
 //  on success fComSocket and  fOurPidFile will be defined
 
    fWidgets = new TList();
@@ -605,10 +609,10 @@ trying to attach?",
    fHFr->AddFrame(fLabelFr,fLO2);
 
    fLabelFr = new TGCompositeFrame(fHFr, 150, 20, kHorizontalFrame);
-   fSockNr = new TGLabel(fLabelFr, new TGString("0"));
+   fTbSockNr = new TGLabel(fLabelFr, new TGString("0"));
  //  SetTime();
-   fSockNr->ChangeBackground(white);
-   fLabelFr->AddFrame(fSockNr,fLO2); 
+   fTbSockNr->ChangeBackground(white);
+   fLabelFr->AddFrame(fTbSockNr,fLO2); 
    fHFr->AddFrame(fLabelFr,fLO2);
 
    this->AddFrame(fHFr,fLO1);                // first line
@@ -732,9 +736,18 @@ trying to attach?",
       fCbMaster->AddEntry(masters[k], k+1);
 //      cout << masters[k] << endl;
    }
+   Bool_t gotit = kFALSE;
    for(Int_t k=0; k<NPPC; k++){
-      if(!strcmp(*fMaster, masters[k]))fCbMaster->Select(k+1);
+      if (!strcmp(fMaster->Data(), masters[k])) {
+         fCbMaster->Select(k+1);
+         gotit = kTRUE;
+      }
    }
+   if (!gotit) {
+      fCbMaster->AddEntry(fMaster->Data(), NPPC+1);
+      fCbMaster->Select(NPPC+1);
+      cout << " select: " <<NPPC+1 << " "  << fMaster->Data() << endl;
+    }
    fCbMaster->Resize(150, 20);
    fCbMaster->Associate(this);
 //  Readout
@@ -748,9 +761,17 @@ trying to attach?",
    for(Int_t k=0; k<NPPC; k++){
       fCbReadout->AddEntry(slaves[k], k+1);
    }
-   for(Int_t k=0; k<NPPC; k++){
-      if(!strcmp(*fReadout, slaves[k]))fCbReadout->Select(k+1);
+   gotit = kFALSE;
+   for (Int_t k=0; k<NPPC; k++) {
+      if (!strcmp(*fReadout, slaves[k])) {
+         fCbReadout->Select(k+1);
+         gotit = kTRUE;
+      }
    }
+   if (!gotit) {
+      fCbReadout->AddEntry(fReadout->Data(), NPPC+1);
+      fCbReadout->Select(NPPC+1);
+  }
    fCbReadout->Resize(150, 20);
 
 //  Trigger
@@ -1059,17 +1080,18 @@ FhMainFrame::~FhMainFrame()
 //
 Int_t FhMainFrame::MessageToM_analyze(TString& mess) {
 
-  if(!fComSocket){
+  if (fComSocket == 0){
      cout << setred << "No connection to M_analyze open" << setblack << endl;
      return -1;
   }
   Int_t nobs, retval;
   static TMessage *mess0;
 // Open connection to server
-  TSocket *sock = new TSocket("localhost", fComSocket);
+//so   TSocket *sock = new TSocket("localhost", fComSocket);
+   TSocket *sock = fComSocket;
 
 // Wait till we get the start message
-  nobs= sock->Recv(mess0);
+//  nobs= sock->Recv(mess0);
 //   }
 //  char str[32];
 //  nobs = sock->Recv(str, 32);
@@ -1102,8 +1124,8 @@ Int_t FhMainFrame::MessageToM_analyze(TString& mess) {
     delete str0;    
   }
 // Close the socket
-  sock->Close();
-  delete sock;
+//so  sock->Close();
+//so   delete sock;
 //  cout << "Int_t:" << retval << endl;
   return retval;
 }
@@ -1120,12 +1142,6 @@ void FhMainFrame::StopMessage(){
       wstream.close();
    } 
    wstream.open(logfile, ios::nocreate | ios:: app);
-   if (gSystem->AccessPathName(logfile) != 0) {
-		cerr	<< "C_analyze: "
-				<< "No such file - " << logfile
-				<< endl;
-		   return;
-   }
    if (!wstream.good()) {
 		cerr	<< "C_analyze: "
 				<< gSystem->GetError() << " - " << logfile
@@ -1396,17 +1412,32 @@ Bool_t FhMainFrame::CheckParams()
       WarnBox("No M_analyze found in current working directory", this);
       return kFALSE;
    }
-      
-   if ( !GetComSocket(fAttachid) ) {
+   fSockNr = GetComSocket(fAttachid, fAttachsock);
+   if ( fSockNr <= 0 ) {
       cout << setred
-           << "Could not get free socket, check for running M_analyze"
+           << "Could not get free socket, check for already running M_analyze"
            << setblack << endl;
       return kFALSE;
    }
-
+   if (fAttachid > 0) {
+      cout << "CheckParams: new TSocket,fSockNr " << fSockNr << endl;
+      fComSocket = new TSocket("localhost", fSockNr);
+// Wait till we get the start message
+      TMessage * mess;
+      Int_t nobs= fComSocket->Recv(mess);
+      if (mess->What() == kMESS_STRING) {
+         char str[64];
+         mess->ReadString(str, 64);
+         cout << "CheckParams():" << nobs<< " received: " << str << endl;
+         delete mess;
+      }
+      if (fComSocket->IsValid()) return kTRUE;
+      else                       return kFALSE;
+   }
+   cout << "CheckParams: fSockNr " << fSockNr << endl;
    TString sn;
-   sn += fComSocket;
-   fSockNr->SetText(new TGString(sn.Data()));
+   sn += fSockNr;
+   fTbSockNr->SetText(new TGString(sn.Data()));
  //   ok = CheckHostsUp();
    if(fRNet->GetState() == kButtonDown){
       if(!CheckHostsUp()) ok = kFALSE;
@@ -1803,6 +1834,9 @@ but Lynx processors might need reboot", this);
 Bool_t FhMainFrame::StartDAQ()
 {
    if ( CheckParams() ) {
+
+      if (fAttachid > 0) return kTRUE;
+
       fStartStopButton->SetState(kButtonDisabled);
 
       fStatus->SetText(new TGString("Starting"));
@@ -1871,9 +1905,10 @@ Bool_t FhMainFrame::StartDAQ()
 //     mmap file, size
 
       buf  << fTbMap->GetString() << " " << fTbMapSize->GetString() << " "; 
+      cout << "Startdaq, fSockNr " << fSockNr << endl;
 
 //     socket for communication
-      buf  << fComSocket;
+      buf  << fSockNr;
 
       TString startCmd("./M_analyze ");
       if (fDebugMode > 0){
@@ -1916,7 +1951,7 @@ Bool_t FhMainFrame::StartDAQ()
             cout << setred << "c_ana: M_analyze seems to be dead" << endl;
             cout << "c_ana: Debug and recompile, then try again" 
                  << setblack << endl;
-            fM_Status = M_CONFIGURED;
+            fM_Status = M_DIRTY;
             fStartStopButton->SetState(kButtonUp);
             return kFALSE;
 
@@ -1932,6 +1967,26 @@ Bool_t FhMainFrame::StartDAQ()
               fStartStopButton->SetState(kButtonUp);
               fPauseButton->SetState(kButtonUp);
               fWasStarted = 1;
+              if (fSockNr > 0) {
+retrysocket:
+                 cout << "new TSocket(\"localhost\", fSockNr)" << endl;
+                 fComSocket = NULL;
+                 fComSocket = new TSocket("localhost", fSockNr);
+				// Wait till we get the start message
+                 if (fComSocket && fComSocket->IsValid())
+                    cout << "wait for: " << fSockNr << endl;
+                 else {
+                    cout << "Invalid: " << fSockNr << endl;
+                    fComSocket->Close();
+                    gSystem->Sleep(1000);
+                    goto retrysocket;
+                 }
+		          // Wait till we get the start message
+                 char str[32];
+      			  Int_t nobs= fComSocket->Recv(str,32);
+                 cout << "StartDaq():" << nobs<< " received: " 
+                      << " mess "<< str << endl;
+              }
               return kTRUE;
             } else {
 //               cout << setred << "c_ana: MBS readout didnt start correctly" << setblack<< endl;
@@ -2758,10 +2813,11 @@ Bool_t FhMainFrame::PutDefaults(){
 }
 //________________________________________________________________________________
 
-Bool_t FhMainFrame::GetComSocket(Int_t attachid)
+Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
 {
    Bool_t ok = kFALSE;
-   fComSocket = 0;
+//   fComSocket = 0;
+   Int_t socknr = 0;
    TString pidfile("/tmp/M_analyze.");
    Int_t baselength = pidfile.Length();
    Int_t sock1, sock2;
@@ -2772,7 +2828,10 @@ Bool_t FhMainFrame::GetComSocket(Int_t attachid)
 
    if( *fInputSource == "TcpIp" ) {
       sock1 = MINSOCKET;
-      sock2 = MINSOCKET;
+      sock2 = sock1;
+   } else if (attachsock > 0) {
+      sock1 = attachsock;
+      sock2 = sock1;
    } else {
       sock1 = MINSOCKET+1;
       sock2 = MAXSOCKET;
@@ -2781,6 +2840,7 @@ Bool_t FhMainFrame::GetComSocket(Int_t attachid)
       pidfile.Resize(baselength);
       pidfile += sock;
       if ( !gSystem->AccessPathName(pidfile.Data()) ) {
+//  case pidfile exists
       	ifstream wstream;
 	//      TString wline;
       	Int_t pid, status;
@@ -2795,8 +2855,8 @@ Bool_t FhMainFrame::GetComSocket(Int_t attachid)
          if ( !gSystem->AccessPathName(procs.Data()) ){
             if ( attachid > 0 & attachid == pid ) {
                *fOurPidFile = pidfile;
-               fComSocket = sock;
-               return kTRUE;
+               socknr = sock;
+               return socknr;
             }
 
          } else {
@@ -2818,9 +2878,9 @@ Bool_t FhMainFrame::GetComSocket(Int_t attachid)
          }  
    	}
 //     
-      if ( fComSocket == 0 & gSystem->AccessPathName(pidfile.Data()) ) {
+      if ( socknr == 0 && gSystem->AccessPathName(pidfile.Data()) ) {
          cout << sock << " " << pidfile.Data() << endl;
-         fComSocket = sock; 
+         socknr = sock; 
          *fOurPidFile = pidfile;
          ok = kTRUE;
       }
@@ -2830,10 +2890,10 @@ Bool_t FhMainFrame::GetComSocket(Int_t attachid)
            << setblack << endl;
 
 // try to find a socket to communicate with M_analyze (9091-9095)
-   if ( fComSocket == 0 )
+   if ( socknr == 0 )
       cout << setred << "Cant get free Socket, more than 5 M_analyze running?"
           << setblack << endl;
-    return ok;
+    return socknr;
 }
  //________________________________________________________________________________
 
@@ -2902,105 +2962,122 @@ Bool_t FhMainFrame::GetDefaults(){
       endwithc = ".c$";
       (*fReadoutFunction)(endwithc) = "";
    }
-   fGateLength     = 500;
-   fBufSize      = 0x4000;
-   fBuffers      = 8;
+   fGateLength        = 500;
+   fBufSize           = 0x4000;
+   fBuffers           = 8;
    fMax_time_no_event = 20;
-   fDownscale    = 1;
-   fStartEvent      = 0;
-   fStopEvent        = 0;
-   fMaxFileSize  = 0;
-   fWriteOutput  = kFALSE;
-   fAutoSave     = kFALSE;
-   fShowRate     = kTRUE;
-	fWarnHWM 	  = 200;
-	fHardHWM 	  = 100;
-	fVerbLevel    = 0;
-   fDebugMode    = 0;
-   if(gSystem->AccessPathName(infile.Data())){
-      WarnBox("File for defaults not found", this);
-      return kFALSE;
-   } else {
+   fDownscale         = 1;
+   fStartEvent        = 0;
+   fStopEvent         = 0;
+   fMaxFileSize       = 0;
+   fWriteOutput       = kFALSE;
+   fAutoSave          = kFALSE;
+   fShowRate          = kTRUE;
+	fWarnHWM 	       = 200;
+	fHardHWM 	       = 100;
+	fVerbLevel         = 0;
+   fDebugMode         = 0;
+   if (!gSystem->AccessPathName(infile.Data())) {
       wstream.open(infile, ios::in);
-	   if (!wstream.good()) {
-		cerr	<< "C_analyze: "
+	   if (wstream.good()) {
+	   	ok = kTRUE;
+	   	while (1) {
+	     		wline.ReadLine(wstream, kFALSE);
+	    		if (wstream.eof()) {
+			   	wstream.close();
+			   	break;
+		   	}
+		   	wline.Strip();
+		   	if (wline.Length() <= 0) continue;
+		   	if (wline[0] == '#') continue;
+
+		   	Int_t n = wline.Index(":");
+		   	if (n < 0) {
+			   	cerr	<< "C_analyze: Illegal format" << endl
+						<< ">>" << wline << "<<"
+						<< endl;
+			   	ok = kFALSE;
+		   	}
+		   	parName= wline(0, n);
+		   	parName = parName.Strip(TString::kBoth);
+	//         cout << wline << endl;
+         	wline.Remove(0,n+1);
+		   	parValue = wline;
+	//         cout << parValue << endl;
+		   	parValue = parValue.Strip(TString::kBoth);
+	//         cout << parValue << endl;
+         	if(parName == "INPUTFILE")  *fInputFile   = parValue;
+         	if(parName == "INPUTSOURCE")*fInputSource = parValue;
+         	if(parName == "MMAPFILE")   *fMap     = parValue;
+         	if(parName == "MSAVEFILE")  *fSaveMap = parValue;
+         	if(parName == "MMAPSIZE")   fMapSize      = atoi(parValue.Data());
+         	if(parName == "RUNNR")      *fRunNr       = parValue;
+         	if(parName == "OUTPUTFILE") *fRootFile    = parValue;
+         	if(parName == "HISTFILE")  *fHistFile    = parValue;
+         	if(parName == "HELPFILE")  *fHelpFile    = parValue;
+         	if(parName == "PARFILE")    *fPar         = parValue;
+         	if(parName == "COMMENT")    *fComment     = parValue;
+         	if(parName == "MASTER")     *fMaster      = parValue;
+         	if(parName == "READOUT")    *fReadout     = parValue;
+         	if(parName == "MBSVERS")    *fMbsVersion  = parValue;
+         	if(parName == "DIR")        *fDir         = parValue;
+         	if(parName == "TRIGGER")    *fTrigger     = parValue;
+         	if(parName == "RESETLIST")  *fResetList   = parValue;
+         	if(parName == "DOWNSCALE")  fDownscale    = atoi(parValue.Data());
+         	if(parName == "GATELENGTH") fGateLength   = atoi(parValue.Data());
+         	if(parName == "BUFSIZE")    fBufSize      = atoi(parValue.Data());
+         	if(parName == "BUFFERS")    fBuffers      = atoi(parValue.Data());
+         	if(parName == "MAXNOEVENT") fMax_time_no_event = atoi(parValue.Data());
+         	if(parName == "STARTEVENT" ) fStartEvent      = atoi(parValue.Data());
+         	if(parName == "MAXFILESIZE")fMaxFileSize   = atoi(parValue.Data());
+         	if(parName == "STOPEVENT" ) fStopEvent     = atoi(parValue.Data());
+         	if(parName == "WARNHWM" )   fWarnHWM       = atoi(parValue.Data());
+         	if(parName == "HARDHWM")    fHardHWM       = atoi(parValue.Data());
+         	if(parName == "VERBLEV")    fVerbLevel     = atoi(parValue.Data()); 
+         	if(parName == "DEBUGMODE")  fDebugMode     = atoi(parValue.Data()); 
+         	if(parName == "FROMTIME")   *fFromTime     = parValue;
+         	if(parName == "TOTIME"  )   *fToTime       = parValue;
+         	if(parName == "MBSLOGLEVEL"  ) fMbsLogLevel   = atoi(parValue.Data());
+         	if(parName == "AVERAGE"  )   fAverage   = atoi(parValue.Data());
+         	if(parName == "WRITEOUTPUT" && parValue.Index("TRUE") >= 0)
+            	fWriteOutput=kTRUE;
+         	if(parName == "AUTOSAVE" && parValue.Index("TRUE") >= 0)
+            	 fAutoSave=kTRUE;
+         	if(parName == "SELECTTIME" && parValue.Index("TRUE") >= 0)
+            	 fSelectTime=kTRUE;
+         	if(parName == "SELECTNUMBER" && parValue.Index("TRUE") >= 0)
+            	 fSelectNumber=kTRUE;
+         	if(parName == "AUTOSETUP" && parValue.Index("FALSE") >= 0)
+            	 fAutoSetup=kFALSE;
+      	}
+      } else {   
+		   cerr	<< setred << "C_analyze: "
 				<< gSystem->GetError() << " - " << infile
-				<< endl;
-		   return(kFALSE);
-	   }
-
-	   ok = kTRUE;
-	   for (;;) {
-	     	wline.ReadLine(wstream, kFALSE);
-	    	if (wstream.eof()) {
-			   wstream.close();
-			   return(kTRUE);
-		   }
-		   wline.Strip();
-		   if (wline.Length() <= 0) continue;
-		   if (wline[0] == '#') continue;
-
-		   Int_t n = wline.Index(":");
-		   if (n < 0) {
-			   cerr	<< "C_analyze: Illegal format" << endl
-					<< ">>" << wline << "<<"
-					<< endl;
-			   ok = kFALSE;
-		   }
-		   parName= wline(0, n);
-		   parName = parName.Strip(TString::kBoth);
-//         cout << wline << endl;
-         wline.Remove(0,n+1);
-		   parValue = wline;
-//         cout << parValue << endl;
-		   parValue = parValue.Strip(TString::kBoth);
-//         cout << parValue << endl;
-         if(parName == "INPUTFILE")  *fInputFile   = parValue;
-         if(parName == "INPUTSOURCE")*fInputSource = parValue;
-         if(parName == "MMAPFILE")   *fMap     = parValue;
-         if(parName == "MSAVEFILE")  *fSaveMap = parValue;
-         if(parName == "MMAPSIZE")   fMapSize      = atoi(parValue.Data());
-         if(parName == "RUNNR")      *fRunNr       = parValue;
-         if(parName == "OUTPUTFILE") *fRootFile    = parValue;
-         if(parName == "HISTFILE")  *fHistFile    = parValue;
-         if(parName == "HELPFILE")  *fHelpFile    = parValue;
-         if(parName == "PARFILE")    *fPar         = parValue;
-         if(parName == "COMMENT")    *fComment     = parValue;
-         if(parName == "MASTER")     *fMaster      = parValue;
-         if(parName == "READOUT")    *fReadout     = parValue;
-         if(parName == "MBSVERS")    *fMbsVersion  = parValue;
-         if(parName == "DIR")        *fDir         = parValue;
-         if(parName == "TRIGGER")    *fTrigger     = parValue;
-         if(parName == "RESETLIST")  *fResetList   = parValue;
-         if(parName == "DOWNSCALE")  fDownscale    = atoi(parValue.Data());
-         if(parName == "GATELENGTH") fGateLength   = atoi(parValue.Data());
-         if(parName == "BUFSIZE")    fBufSize      = atoi(parValue.Data());
-         if(parName == "BUFFERS")    fBuffers      = atoi(parValue.Data());
-         if(parName == "MAXNOEVENT") fMax_time_no_event = atoi(parValue.Data());
-         if(parName == "STARTEVENT" ) fStartEvent      = atoi(parValue.Data());
-         if(parName == "MAXFILESIZE")fMaxFileSize   = atoi(parValue.Data());
-         if(parName == "STOPEVENT" ) fStopEvent     = atoi(parValue.Data());
-         if(parName == "WARNHWM" )   fWarnHWM       = atoi(parValue.Data());
-         if(parName == "HARDHWM")    fHardHWM       = atoi(parValue.Data());
-         if(parName == "VERBLEV")    fVerbLevel     = atoi(parValue.Data()); 
-         if(parName == "DEBUGMODE")  fDebugMode     = atoi(parValue.Data()); 
-         if(parName == "FROMTIME")   *fFromTime     = parValue;
-         if(parName == "TOTIME"  )   *fToTime       = parValue;
-         if(parName == "MBSLOGLEVEL"  ) fMbsLogLevel   = atoi(parValue.Data());
-         if(parName == "AVERAGE"  )   fAverage   = atoi(parValue.Data());
-         if(parName == "WRITEOUTPUT" && parValue.Index("TRUE") >= 0)
-            fWriteOutput=kTRUE;
-         if(parName == "AUTOSAVE" && parValue.Index("TRUE") >= 0)
-             fAutoSave=kTRUE;
-         if(parName == "SELECTTIME" && parValue.Index("TRUE") >= 0)
-             fSelectTime=kTRUE;
-         if(parName == "SELECTNUMBER" && parValue.Index("TRUE") >= 0)
-             fSelectNumber=kTRUE;
-         if(parName == "AUTOSETUP" && parValue.Index("FALSE") >= 0)
-             fAutoSetup=kFALSE;
-      }   
-      return ok;
+				<< setblack << endl;
+         ok = kFALSE;
+	   } 
+   } else {
+      cout << setred << "File for defaults not found" << setblack << endl;
+      ok = kFALSE;
    }
+   if (!ok) {
+      cout << setred <<  "Couldnt read C_analyze.def" << setblack << endl;
+   }
+   if (!gSystem->AccessPathName(".mbssetup")) {
+      cout << "Looking for parameters .mbssetup" << endl;
+      TMrbEnv mbssetup(".mbssetup");//      TMrbString temp;
+      TMrbNamedX temp;
+//      TMbsSetup mbssetup;
+      mbssetup.Get(*fMaster,  "TMbsSetup.EvtBuilder.Name",             fMaster->Data());
+      mbssetup.Get(*fReadout, "TMbsSetup.Readout1.Name",               fReadout->Data());
+      mbssetup.Get(temp,      "TMbsSetup.Readout1.TriggerModule.Type", fTrigger->Data());
+      cout << "fTrigger: " << temp.GetName() << endl;
+      cout << "fMaster: "  << fMaster->Data() << endl;
+      cout << "fReadout: "  << fReadout->Data() << endl;
+  } else {
+      cout << "No .mbssetup in cwd" << endl;
+   }
+   return kTRUE;
 }
 //________________________________________________________________________________
 
@@ -3071,6 +3148,7 @@ void FhMainFrame::Runloop(){
    TCanvas *c1 = fRateHist->GetCanvas();
    TString stime;
    TMessage * message;
+   Int_t nobs; 
    if(fWriteOutput && fOutputFile->Length() > 1){
       gSystem->GetPathInfo(fOutputFile->Data(),
                            &id, &size, &flags, &modtime);
@@ -3082,7 +3160,7 @@ void FhMainFrame::Runloop(){
    }
    fM_Status = IsAnalyzeRunning(0);
 
-//   cout << "fM_Status,fWasStarted " <<  fM_Status << " " <<fWasStarted << endl;
+//   cout << "fM_Status,fWasStarted " <<  fM_Status << " " << fWasStarted << endl;
 
 //   if(fM_Status == M_RUNNING || fM_Status == M_PAUSING || fWasStarted){
    if ( fM_Status == M_RUNNING || fM_Status == M_PAUSING ){
@@ -3099,20 +3177,28 @@ void FhMainFrame::Runloop(){
          hdeadt = (TH1 *) fMfile->Get("DeadTime", hdeadt);
 
      } else if ( fComSocket ) {
-        TSocket * sock = new TSocket("localhost", fComSocket);
+//so        TSocket * sock = new TSocket("localhost", fComSocket);
+        TSocket * sock = fComSocket;
         if ( !sock || !sock->IsValid() ) {
             cout << setred << "No connection to M_analyze" << setblack << endl;
         } else {
-      	  Int_t nobs =  sock->Recv(message);
-      	  if ( message ) delete message;
-      	  sock->Send("M_client gethist RateHist");
+//      	  Int_t nobs =  sock->Recv(message);
+//      	  if ( message ) delete message;
+           TString cmd("M_client gethist ");
+           TString which;
+           if (fShowRate) which = "RateHist";
+           else           which = "DeadTime";
+           cmd += which.Data();
+//            cout << "Send: " << cmd.Data() << " to " << sock << endl;
+      	  sock->Send(cmd.Data());
       	  nobs = sock->Recv(message);
 //      	  cout << "M_client gethist RateHist, nobs: " << nobs << endl;
       	  if ( nobs <= 0 || message->What() == kMESS_STRING ){
-         	  cout << setred << "C_analyze: cant get RateHist" << setblack << endl;
+//         	  cout << setred << "C_analyze: cant get "<< which.Data() << setblack << endl;
          	  if ( nobs > 0 ) {
             	  char *str0 = new char[nobs];
             	  message->ReadString(str0, nobs);
+                 cout << "Got string: " << str0 << endl;
             	  delete str0;
          	  }
       	  } else if ( message->What() == kMESS_OBJECT ) {
@@ -3121,26 +3207,8 @@ void FhMainFrame::Runloop(){
          	  cout << "Unknown message type" << endl;
       	  }
       	  if ( message ) delete message;
-
-      	  sock->Send("M_client gethist DeadTime");
-      	  nobs = sock->Recv(message);
-//      	  cout << "M_client gethist DeadTime, nobs: " << nobs << endl;
-      	  if ( nobs <= 0 || message->What() == kMESS_STRING ){
-         	  if ( nobs > 0 ) {
-            	  char *str0 = new char[nobs];
-            	  message->ReadString(str0, nobs);
-	//           cout << setred << "C_analyze: cant get DeadTime: " 
-	//            <<  str0 << setblack << endl;
-            	  delete str0;
-         	  }
-      	  } else if ( message->What() == kMESS_OBJECT ) {
-      	   	hdeadt = (TH1*) message->ReadObject(message->GetClass());
-      	  } else {
-         	  cout << "Unknown message type" << endl;
-      	  }
-      	  if ( message ) delete message;
-      	  sock->Close();
-      	  delete sock;
+//so      	  sock->Close();
+//so      	  delete sock;
    	  }
      }
      if ( hrate ) {
@@ -3382,9 +3450,14 @@ int main(int argc, char **argv)
 {
 //   TRint *theApp = new TRint("App", &argc, argv, NULL, 0);
    TApplication theApp("App", &argc, argv);
-   gROOT->Reset();
-
-   mainWindow = new FhMainFrame(gClient->GetRoot(), 400, 220);
+//   gROOT->Reset();
+   Int_t attachid = 0;
+   Int_t attachsock = 0;
+   if (argc > 2) {
+      attachid = atoi(argv[1]); 
+      attachsock = atoi(argv[2]); 
+   }
+   mainWindow = new FhMainFrame(gClient->GetRoot(), 400, 220, attachid, attachsock);
    cout << "Root Vers." <<  gROOT->GetVersion() << endl;
    Int_t delay;
    if ( kUseMap ) delay = 1000;

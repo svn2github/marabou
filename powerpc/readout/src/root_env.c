@@ -112,7 +112,7 @@ int root_env_getval_i(const char * ResourceName, int DefaultValue) {
 
 	TEnvEntry * ep;
 	if ((ep = _env_find_resource(ResourceName)) == NULL) return(DefaultValue);	
-	return(atoi(ep->value));
+	return((int) strtol(ep->value, NULL, 0));
 }
 
 int root_env_getval_x(const char * ResourceName, int DefaultValue) {

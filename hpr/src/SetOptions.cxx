@@ -207,6 +207,7 @@ void HistPresent::RestoreOptions()
    fWinwidy_2dim = 750;
    fWinshifty = 30;
    fWinshiftx = 0;
+   fWinwidx_hlist = 0; 
    fWinwidx_2dim =
        env.GetValue("HistPresent.WindowXWidth_2dim", fWinwidx_2dim);
    fWinwidy_2dim =
@@ -223,6 +224,7 @@ void HistPresent::RestoreOptions()
       fWinwidx_2dim = 750;
    if (fWinwidy_2dim <= 0)
       fWinwidy_2dim = 750;
+   fWinwidx_hlist = env.GetValue("HistPresent.WindowXWidth_List", fWinwidx_hlist);
    fWintopx = env.GetValue("HistPresent.WindowX", fWintopx);
    fWintopy = env.GetValue("HistPresent.WindowY", fWintopy);
    fWincurx = fWintopx;
@@ -359,6 +361,7 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.WindowYShift", fWinshifty);
    SetIntValue(env, "HistPresent.WindowX", fWintopx);
    SetIntValue(env, "HistPresent.WindowY", fWintopy);
+   SetIntValue(env, "HistPresent.WindowXWidth_List", fWinwidx_hlist);
    SetIntValue(env, "HistPresent.ShowErrors", fShowErrors);
    SetIntValue(env, "HistPresent.Fill1Dim", fFill1Dim);
    SetIntValue(env, "HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
@@ -1006,7 +1009,7 @@ Auto exec project Y
 
 void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 9;
+   Int_t nopt = 10;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
@@ -1023,6 +1026,7 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("Window_Shift_Y"));
    row_lab->Add(new TObjString("Window_Top_X"));
    row_lab->Add(new TObjString("Window_Top_Y"));
+   row_lab->Add(new TObjString("Window_X_Width_List"));
    row_lab->Add(new TObjString("Project_Both_Ratio"));
 
    values[vp++] = fWinwidx_1dim;
@@ -1033,6 +1037,7 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    values[vp++] = fWinshifty;
    values[vp++] = fWintopx;
    values[vp++] = fWintopy;
+   values[vp++] = fWinwidx_hlist;
    values[vp++] = fProjectBothRatio;
    Int_t ret, itemwidth = 240, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "Default window sizes and positions",
@@ -1047,6 +1052,7 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
       fWinshifty = (Int_t) values[vp++];
       fWintopx = (Int_t) values[vp++];
       fWintopy = (Int_t) values[vp++];
+      fWinwidx_hlist = (Int_t) values[vp++];
       fProjectBothRatio = values[vp];
       fWincury = fWintopy;
       fWincurx = fWintopx;
@@ -1127,10 +1133,14 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
       vp++;
       fStatFont = (Int_t) values[vp++];
       fTitleFont = (Int_t) values[vp++];
+//     force high precission
+      fStatFont = fStatFont / 10 * 10 + 2;
+      fTitleFont = fTitleFont / 10 * 10 + 2;
    }
 //   if(values) delete [] values;
 //   cout << "fStatFont " << fStatFont << endl;
    gStyle->SetStatFont(fStatFont);
+   gStyle->SetTitleFont(fTitleFont);
 }
 
 //___________________________________________________________________________________________

@@ -55,6 +55,7 @@ ClassImp(TUsrEvtStop)
 ClassImp(TUsrDeadTime)
 ClassImp(TUsrHit)
 ClassImp(TUsrHitBuffer)
+ClassImp(TUsrHBX)
 ClassImp(TMrbModuleListEntry)
 ClassImp(TMrbParamListEntry)
 ClassImp(TMrbHistoListEntry)
@@ -1846,7 +1847,7 @@ const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
 
 	TMrbNamedX * nx;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleName");
@@ -1876,7 +1877,7 @@ const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) {
 
 	TMrbNamedX * nx;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleTitle");
@@ -1933,7 +1934,7 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex)
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetParamName");
@@ -2047,7 +2048,7 @@ Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) {
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) return(-1);
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(-1);
 	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
 	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
 	if (RelParamIndex >= mle->GetNofParams()) return(-1);
@@ -2101,7 +2102,7 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
 	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
 	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
 	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
@@ -2176,8 +2177,9 @@ Int_t * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
 	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nx == NULL) return(NULL);
 	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
 	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
 	px = mle->GetIndexOfFirstParam() + RelParamIndex;
@@ -2227,7 +2229,7 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 	TMrbNamedX * nx;
 	TMrbModuleListEntry * mle;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "[" << ModuleName << "] Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddModuleToList");
@@ -2286,7 +2288,7 @@ Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, 
 	TMrbParamListEntry * ple;
 	Int_t px;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "[" << ParamName << "] Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddParamToList");
@@ -2334,7 +2336,7 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	TMrbHistoListEntry * hle;
 	Int_t px;
 
-	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "::AddHistoToList(): [" << HistoAddr->GetName()
 						<< "] Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
@@ -2492,7 +2494,7 @@ Bool_t TMrbAnalyze::DumpData(const Char_t * Prefix, Int_t Index,	const Char_t * 
 		gMrbLog->Flush(this->ClassName(), "DumpData");
 		return(kFALSE);
 	}
-	f.write((const Char_t *) DataPtr, DataWC * sizeof(UShort_t));
+	f.write(DataPtr, DataWC * sizeof(UShort_t));
 	f.close();
 	return(kTRUE);
 }
@@ -2548,15 +2550,15 @@ const Char_t * TMrbAnalyze::GetResource(const Char_t * Resource) {
 	}
 }
 
-TUsrHit::TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
+TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
 										UShort_t * Data, Int_t NofData) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit
 // Purpose:        Store data of a single hit
-// Arguments:      Int_t EventNumber      -- internal event number
-//                 Int_t EventIndex       -- index within buffer
+// Arguments:      Int_t BufferNumber     -- buffer number
+//                 Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
 //                 Int_t Channel          -- channel number
 //                 UShort_t BufferTimeHi  -- event time, hi order
@@ -2570,8 +2572,8 @@ TUsrHit::TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	this->SetBufferNumber(BufferNumber);
 	this->SetEventNumber(EventNumber);
-	this->SetEventIndex(EventIndex);
 	this->SetModuleNumber(ModuleNumber);
 	this->SetChannel(Channel);
 	this->SetEventTime(BufferTimeHi, EventTimeHi, EventTimeLo);
@@ -2579,15 +2581,15 @@ TUsrHit::TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t 
 	if (Data) this->CopyData(Data, NofData);
 }
 
-TUsrHit::TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
+TUsrHit::TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t * EventTime,
 										UShort_t * Data, Int_t NofData) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit
 // Purpose:        Store data of a single hit
-// Arguments:      Int_t EventNumber      -- internal event number
-//                 Int_t EventIndex       -- index within buffer
+// Arguments:      Int_t BufferNumber     -- buffer number
+//                 Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
 //                 Int_t Channel          -- channel number
 //                 UShort_t * EventTime   -- event time (48 bit)
@@ -2604,46 +2606,12 @@ TUsrHit::TUsrHit(Int_t EventNumber, Int_t EventIndex, Int_t ModuleNumber, Int_t 
 	} else {
 		this->SetEventTime(0, 0, 0);
 	}
+	this->SetBufferNumber(BufferNumber);
 	this->SetEventNumber(EventNumber);
-	this->SetEventIndex(EventIndex);
 	this->SetModuleNumber(ModuleNumber);
 	this->SetChannel(Channel);
 	this->ClearData();
 	if (Data) this->CopyData(Data, NofData);
-}
-
-Int_t TUsrHit::CalcTimeDiff(TUsrHit * Hit, Bool_t AbsFlag) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHit::CalcTimeDiff
-// Purpose:        Calculate time difference
-// Arguments:      TUsrHit * hit    -- hit to be measured
-//                 Bool_t AbsFlag   -- return absolute value if kTRUE
-// Results:        Int_t TimeDiff   -- time difference (max 32 bit)
-// Exceptions:
-// Description:    Calculates time difference between hits.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	long long tDiff = ushort2ll48(this->GetEventTime()) - ushort2ll48(Hit->GetEventTime());
-	if (AbsFlag && (tDiff < 0)) return((Int_t) -tDiff); else return((Int_t) tDiff);
-}
-
-Int_t TUsrHit::CalcTimeDiff(UShort_t * EventTime, Bool_t AbsFlag) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHit::CalcTimeDiff
-// Purpose:        Calculate time difference
-// Arguments:      UShort * EventTime  -- event time
-//                 Bool_t AbsFlag      -- return absolute value if kTRUE
-// Results:        Int_t TimeDiff      -- time difference (max 32 bit)
-// Exceptions:
-// Description:    Calculates time difference between hits.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	long long tDiff = ushort2ll48(((TUsrHit *) this)->GetEventTime()) - ushort2ll48(EventTime);
-	if (AbsFlag && (tDiff < 0)) return((Int_t) -tDiff); else return((Int_t) tDiff);
 }
 
 Int_t TUsrHit::Compare(const TObject * Hit) const {
@@ -2726,25 +2694,26 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 			moduleName = fModuleNumber;
 			paramName = fChannel;
 		}
-		Out << Form("      %13d%13d%13s%13s%18lld%13d\n",
-						fEventNumber,
-						fEventIndex,
+		Out << Form("      %13d%13s%13d%13s%18lld%13d\n",
+						fBufferNumber,
 						moduleName.Data(),
+						fEventNumber,
 						paramName.Data(),
 						ushort2ll48(fEventTime),
 						fData[kHitEnergy]);
 	} else {
 		Out << Form("      %13d%13d%13d%13d%18lld%13d\n",
-						fEventNumber,
-						fEventIndex,
+						fBufferNumber,
 						fModuleNumber,
+						fEventNumber,
 						fChannel,
 						ushort2ll48(fEventTime),
 						fData[kHitEnergy]);
 	}
 }
 	
-TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater, UInt_t Offset) {
+
+TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer
@@ -2752,7 +2721,6 @@ TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWa
 // Arguments:      Char_t * Name         -- name
 //                 Int_t NofEntries      -- number of entries
 //                 Int_t HighWater       -- high water limit
-//                 UInt_t Offset         -- time stamp offset
 // Results:        --
 // Exceptions:
 // Description:    Class constructor
@@ -2761,7 +2729,7 @@ TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWa
 
 	fBufName = Name;
 	fNofEntries = NofEntries;
-	fOffset = Offset;
+	fOffset = 0;		// no longer in use -> see class TUsrHBX
 	fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater;
 	fHits = new TClonesArray("TUsrHit", NofEntries);
 	this->Reset();
@@ -2783,14 +2751,14 @@ void TUsrHitBuffer::Reset() {
 	fNofHits = 0;
 }
 
-TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
+TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
-										UShort_t * Data, Int_t NofData, Bool_t SubOffs) {
+										UShort_t * Data, Int_t NofData) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::AddHit
 // Purpose:        Add data to hit buffer
-// Arguments:      Int_t EventIndex       -- event index within buffer
+// Arguments:      Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
 //                 Int_t Channel          -- channel number
 //                 UShort_t BufferTimeHi  -- event time, hi order
@@ -2798,7 +2766,6 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 //                 UShort_t EventTimeLo   -- ..., low
 //                 Int_t NofData          -- number of data words
 //                 UShort_t * Data        -- hit data, length depending on format
-//                 Bool_t SubOffs         -- subtract offset if kTRUE (not yet impl)
 // Results:        TUsrHit * Hit          -- pointer to hit object
 // Exceptions:
 // Description:    Adds a new item to hit list.
@@ -2806,13 +2773,13 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fNofHits >= fNofEntries) {
-		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow" << endl;
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddHit");
 		return(NULL);
 	}
 	TClonesArray &hits = * fHits;
 	TUsrHit * hit = new(hits[fNofHits]) TUsrHit(gMrbAnalyze->GetEventsProcessed(),
-																			EventIndex,
+																			EventNumber,
 																			ModuleNumber, Channel,
 																			BufferTimeHi, EventTimeHi, EventTimeLo,
 																			Data, NofData);
@@ -2820,14 +2787,14 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 	return(hit);
 }
 
-TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
+TUsrHit * TUsrHitBuffer::AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t * EventTime,
-										UShort_t * Data, Int_t NofData, Bool_t SubOffs) {
+										UShort_t * Data, Int_t NofData) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::AddHit
 // Purpose:        Add data to hit buffer
-// Arguments:      Int_t EventIndex       -- event index within buffer
+// Arguments:      Int_t EventNumber      -- event index within buffer
 //                 Int_t ModuleNumber     -- module serial
 //                 Int_t Channel          -- channel number
 //                 UShort_t BufferTimeHi  -- event time, hi order
@@ -2835,7 +2802,6 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 //                 UShort_t EventTimeLo   -- ..., low
 //                 Int_t NofData          -- number of data words
 //                 UShort_t * Data        -- hit data, length depending on format
-//                 Bool_t SubOffs         -- subtract offset if kTRUE (not yet impl)
 // Results:        TUsrHit * Hit          -- pointer to hit object
 // Exceptions:
 // Description:    Adds a new item to hit list.
@@ -2843,13 +2809,13 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fNofHits >= fNofEntries) {
-		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow" << endl;
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddHit");
 		return(NULL);
 	}
 	TClonesArray &hits = * fHits;
 	TUsrHit * hit = new(hits[fNofHits]) TUsrHit(gMrbAnalyze->GetEventsProcessed(),
-																			EventIndex,
+																			EventNumber,
 																			ModuleNumber, Channel,
 																			EventTime,
 																			Data, NofData);
@@ -2870,6 +2836,23 @@ Bool_t TUsrHitBuffer::RemoveHit(TUsrHit * Hit) {
 //////////////////////////////////////////////////////////////////////////////
 
 	fHits->Remove(Hit);
+	fNofHits--;
+	return(kTRUE);
+}
+
+Bool_t TUsrHitBuffer::RemoveHit(Int_t Index) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::RemoveHit
+// Purpose:        Remove a hit from buffer
+// Arguments:      Int_t Index    -- index
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Removes a hit from buffer. 
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fHits->RemoveAt(Index);
 	fNofHits--;
 	return(kTRUE);
 }
@@ -2930,32 +2913,95 @@ void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) {
 		return;
 	}
 	
-	Out << "Contents of hit buffer (" << fNofHits << " hit(s), offset = " << fOffset << "):" << endl;
+	Out << "Contents of buffer \"" << this->GetName()
+		<< "\" (" << fNofHits << " hit(s) out of " << fNofEntries << "):" << endl;
 	Out << Form("  Entry      %13s%13s%13s%13s%18s%13s\n",
-									"EventNo",
-									"EventIdx",
+									"Buffer",
 									"Module",
+									"Event",
 									"Chn",
 									"Time",
 									"Energy");
 	for (Int_t i = Begin; i <= End; i++) {
 		hit = (TUsrHit *) fHits->At(i);
-		printf("  %5d", i);
+		Out << Form("  %5d", i);
 		if (hit) hit->Print(Out, kTRUE); else Out << " ... [empty slot]" << endl;
 	}
 }
 
-TUsrHit * TUsrHitBuffer::FindHit(TUsrHit & Profile, TUsrHit * After) {
+const Char_t * TUsrHit::EventTime2Ascii(TString & TimeString) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::FindHit
+// Name:           TUsrHitBuffer::EventTime2Ascii
+// Purpose:        Convert 48-bit time to ascii
+// Arguments:      TString & TimeString  -- where to store event time
+// Results:        Char_t * TimeString   -- same as arg#1
+// Exceptions:
+// Description:    Converts a 48-bit event time to ascii.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TimeString = Form("%18lld", ushort2ll48(fEventTime));
+	TimeString = TimeString.Strip(TString::kBoth);
+	return(TimeString.Data());
+}
+
+TUsrHBX::TUsrHBX(TUsrHitBuffer * HitBuffer, Int_t * OffsetTable, Int_t TableLength, Int_t Window) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX
+// Purpose:        Access hit buffer elements
+// Arguments:      TUsrHitBuffer * HitBuffer  -- hit buffer to be accessed
+//                 Int_t * OffsetTable        -- table containing time offsets (one per module)
+//                 Int_t TableLength          -- table length
+//                 Int_t Window               -- time stamp window
+// Results:        --
+// Exceptions:
+// Description:    Class constructor
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fHitBuffer = HitBuffer;
+	fHits = fHitBuffer->GetCA();
+	fOffset.Set(TableLength);
+	fOffset.Reset(0);
+	fWindow = Window;
+	fCurIndex = -1;
+}
+
+TUsrHBX::TUsrHBX(TUsrHitBuffer * HitBuffer, TArrayI & OffsetTable, Int_t Window) {
+//__________________________________________________________________[C++ CTOR]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX
+// Purpose:        Access hit buffer elements
+// Arguments:      TUsrHitBuffer * HitBuffer  -- hit buffer to be accessed
+//                 TArrayI & OffsetTable      -- table containing time offsets (one per module)
+//                 Int_t Window               -- time stamp window
+// Results:        --
+// Exceptions:
+// Description:    Class constructor
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fHitBuffer = HitBuffer;
+	fHits = fHitBuffer->GetCA();
+	fOffset.Set(OffsetTable.GetSize(), OffsetTable.GetArray());
+	fOffset.Reset(0);
+	fWindow = Window;
+	fCurIndex = -1;
+}
+
+TUsrHit * TUsrHBX::FindHit(TUsrHit & HitProfile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::FindHit
 // Purpose:        Search for a given hit
-// Arguments:      TUsrHit Profile  -- hit containing search profile
-//                 TUsrHit * After  -- start search after this entry
-// Results:        TUsrHit * Hit    -- next hit matching given profile
+// Arguments:      TUsrHit HitProfile  -- hit containing search profile
+// Results:        TUsrHit * Hit       -- next hit matching given profile
 // Exceptions:
 // Description:    Searches for an entry with given profile.
-//                 Profile.GetEventNumber() == -1   -> return hits with ANY event number
+//                 Profile.GetBufferNumber() == -1  -> return hits with ANY event number
+//                 Profile.GetEventNumber() == -1   -> return hits with ANY event index
 //                 Profile.GetModuleNumber() == -1  -> return hits with ANY module number
 //                 Profile.GetChannelNumber() == -1 -> return hits with ANY channel number
 // Keywords:
@@ -2964,25 +3010,112 @@ TUsrHit * TUsrHitBuffer::FindHit(TUsrHit & Profile, TUsrHit * After) {
 	TUsrHit * hit;
 	Int_t n;
 		
-	hit = (After == NULL) ? (TUsrHit *) fHits->First() : (TUsrHit *) fHits->After(After);
-	
-	while (hit) {
-		n = Profile.GetEventNumber();
-		if (n == -1) n = hit->GetEventNumber();
-		if (n == hit->GetEventNumber()) {
-			n = Profile.GetEventIndex();
-			if (n == -1) n = hit->GetEventIndex();
-			if (n == hit->GetEventIndex()) {
-				n = Profile.GetModuleNumber();
-				if (n == -1) n = hit->GetModuleNumber();
-				if (n == hit->GetModuleNumber()) {
-					n = Profile.GetChannel();
-					if (n == -1) n = hit->GetChannel();
-					if (n == hit->GetChannel()) return(hit);
+	Int_t curIndex = fCurIndex;
+	while (++curIndex < this->GetNofHits()) {
+		hit = (TUsrHit *) fHits->At(curIndex);
+		n = HitProfile.GetBufferNumber();
+		if (n == -1 || n == hit->GetBufferNumber()) {
+			n = HitProfile.GetModuleNumber();
+			if (n == -1 || n == hit->GetModuleNumber()) {
+				n = HitProfile.GetEventNumber();
+				if (n == -1 || n == hit->GetEventNumber()) {
+					n = HitProfile.GetChannel();
+					if (n == -1 || n == hit->GetChannel()) {
+						fCurIndex = curIndex;
+						return(hit);
+					}
 				}
 			}
 		}
-		hit = (TUsrHit *) fHits->After(hit);
 	}
 	return(NULL);
 }
+
+TUsrHit * TUsrHBX::FindEvent(Int_t EventNumber) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::FindEvent
+// Purpose:        Find first hit of next event in buffer
+// Arguments:      Int_t EventNumber   -- event number
+// Results:        TUsrHit * Hit       -- next hit with given event number
+// Exceptions:
+// Description:    Searches for next hit with given event number.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TUsrHit * hit;
+
+	Int_t curIndex = fCurIndex;
+	while (++curIndex < this->GetNofHits()) {
+		hit = (TUsrHit *) fHits->At(curIndex);
+		if (hit->GetEventNumber() == EventNumber) {
+			fCurIndex = curIndex;
+			return(hit);
+		}
+	}
+	return(NULL);
+}
+
+TUsrHit * TUsrHBX::FindNextEvent() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::FindNextEvent
+// Purpose:        Find first hit of next event in buffer
+// Arguments:      --
+// Results:        TUsrHit * Hit       -- first hit of next event
+// Exceptions:
+// Description:    Searches for first hit of next event.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TUsrHit * hit;
+	Int_t evtNo;
+
+	Int_t nofHits = this->GetNofHits();
+
+	if (nofHits && fCurIndex < nofHits) {
+		if (fCurIndex == -1) {
+			evtNo = -1;
+		} else {
+			evtNo = ((TUsrHit *) fHits->At(fCurIndex))->GetEventNumber();
+		}
+		Int_t curIndex = fCurIndex;
+		while (++curIndex < nofHits) {
+			hit = (TUsrHit *) fHits->At(curIndex);
+			if (hit->GetEventNumber() > evtNo) {
+				fCurIndex = curIndex;
+				return(hit);
+			}
+		}
+	}
+	return(NULL);
+}
+
+TUsrHit * TUsrHBX::NextHitInWindow(TUsrHit * Hit0) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::NextHitInWindow
+// Purpose:        Find next hit within time window
+// Arguments:      TUsrHit * Hit0      -- hit with time = 0
+// Results:        TUsrHit * Hit       -- next hit matching time conditions
+// Exceptions:
+// Description:    Searches for next hit within time window.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TUsrHit * hit;
+
+	Int_t curIndex = (fCurIndex == -1) ? 0 : fCurIndex;
+	if (curIndex >= this->GetNofHits()) return(NULL);
+
+	hit = (TUsrHit *) fHits->At(curIndex);
+	long long tDiff =	(ushort2ll48(hit->GetEventTime()) - fOffset[hit->GetModuleNumber()])
+						- (ushort2ll48(Hit0->GetEventTime()) - fOffset[Hit0->GetModuleNumber()]);
+	if (tDiff < 0) tDiff = -tDiff;
+	if (tDiff <= (long long) fWindow) {
+		fCurIndex++;
+		return(hit);
+	} else {
+		return(NULL);
+	}
+}		

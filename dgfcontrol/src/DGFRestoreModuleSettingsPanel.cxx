@@ -29,6 +29,7 @@
 #include "TMrbLogger.h"
 #include "TMrbLofDGFs.h"
 #include "TMrbSystem.h"
+#include "TMrbEnv.h"
 
 #include "DGFControlData.h"
 #include "DGFRestoreModuleSettingsPanel.h"
@@ -301,6 +302,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
 	TGFileInfo fileInfoRestore;
 
 	TMrbSystem uxSys;
+	TMrbEnv env;
 	TString errMsg;
 	TString dgfFile;
 
@@ -317,10 +319,12 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
 	TMrbNamedX * param;
 	Int_t parval = 0;
 	Bool_t verbose;
+	TString sPath;
+	UInt_t modIdx;
+	Int_t cl, modNo;
 				
 	fileInfoRestore.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
-	TString sPath = gEnv->GetValue("TMrbDGF.SettingsPath", "");
-	if (sPath.Length() == 0) sPath = gEnv->GetValue("DGFControl.SettingsPath", "../dgfSettings");
+	env.Find(sPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
 	fileInfoRestore.fIniDir = StrDup(sPath);
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fileInfoRestore);
@@ -352,7 +356,9 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
 		verbose = module->GetAddr()->Data()->IsVerbose();
 		if (!verbose) cout << "[Restoring module params - wait " << flush;
 		while (module) {
-			if (gDGFControlData->ModuleInUse(module)) {
+			modIdx = gDGFControlData->GetIndex(module->GetName(), cl, modNo);
+			modIdx &= 0xFFFF;
+			if (gDGFControlData->ModuleInUse(module) && (fCluster[cl]->GetActive() & modIdx)) {
 				dgfName = module->GetName();
 				paramFile = loadDir;
 				paramFile += "/";
@@ -393,7 +399,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase() {
 	}
 
 	if (nofRestored > 0) {
-		gMrbLog->Out()	<< "Settings of " << nofRestored << " DGF modules restored from ROOT file ("
+		gMrbLog->Out()	<< "Settings of " << nofRestored << " DGF module(s) restored from file ("
 						<< nerr << " error(s))" << endl;
 		gMrbLog->Flush(this->ClassName(), "LoadDataBase", setblue);
 		return(kTRUE);

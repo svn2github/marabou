@@ -26,6 +26,7 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		Bool_t BookHistograms();								// book histograms for this event
 		Bool_t AllocHitBuffers();								// allocate hit buffers for subevents if needed
 		Bool_t CreateTree();									// create a tree if needed
+		Bool_t BuildEvent();									// special event builder
 		Bool_t Analyze();										// user's analyzing code
 		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)
 		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data

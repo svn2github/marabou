@@ -37,6 +37,7 @@ private:
    Axis_t  fExplx, fExpux, fExply, fExpuy;     // lower, upper edge in expanded
    Axis_t  fX_1,   fX_2,   fY_1,   fY_2;     // lower, upper lim selected
    Axis_t  fRangeLowX, fRangeUpX, fRangeLowY, fRangeUpY;
+   Axis_t  fOrigLowX, fOrigUpX, fOrigLowY, fOrigUpY;
    Bool_t fSetRange;
    Bool_t fKeepParameters;
    Bool_t fCallMinos;
@@ -77,6 +78,9 @@ private:
    Int_t fLogz;
    Bool_t fSelInside;
    Int_t fUserContourLevels;
+   Bool_t fSetLevels;
+   Bool_t fSetColors;
+
    Float_t fMax, fMin, fXmax, fXmin, fYmax, fYmin;
    HTRootCanvas *mycanvas;
    TPaveText *datebox;
@@ -142,9 +146,11 @@ public:
    void SetLogx(Int_t state) {fLogx = state; cHist->SetLogx(state);};
    void SetLogy(Int_t state) {fLogy = state; cHist->SetLogy(state);};
    void SetLogz(Int_t state);
+   void SaveUserContours();               // 
    void SetUserContours();               // 
    void ClearUserContours();               // 
-
+   void UseSelectedContour();
+  
    Int_t GetLogx() {return fLogx;};
    Int_t GetLogy() {return fLogy;};
    Int_t GetLogz() {return fLogz;};
@@ -215,8 +221,9 @@ public:
    void WarnBox(const char *);
    void PrintCalib();
    void ClearCalib(){fPeaks->Clear();};
-   void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE; SaveDefaults(); DrawHist(); };
+   void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE; SaveDefaults();};
    Bool_t Calibrate();
+   void ClearCalibration();
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
    void SetSelectedPad(){cHist->cd();};
    void UpdateCanvas(){
