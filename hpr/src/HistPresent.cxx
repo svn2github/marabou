@@ -1300,7 +1300,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 //      TString empty;
       tit = line;
       if (is_a_file(fname)) {
- 	      cout << "fn: " << fname  << " dn: " << dname  << " hn: " << hname << endl;
+//      cout << "fn: " << fname  << " dn: " << dname  << " hn: " << hname << endl;
          if (fRootFile) fRootFile->Close();
          fRootFile=new TFile(fname);
 			if (dname.Length() > 0)gDirectory->cd(dname);
