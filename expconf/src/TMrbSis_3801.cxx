@@ -77,6 +77,7 @@ TMrbSis_3801::TMrbSis_3801(const Char_t * ModuleName, UInt_t BaseAddr, Int_t Fif
 				fNofShortsPerChannel = 2;
 				fFifoDepth = FifoDepth; 		// fifo depth per channel
 				fBlockReadout = kTRUE;			// module has block readout
+				fClearAfterRead = kFALSE;		// counter runs thru
 				gMrbConfig->AddModule(this);				// append to list of modules
 				gMrbConfig->AddScaler(this);				// and to list of scalers
 				gDirectory->Append(this);
@@ -166,6 +167,11 @@ Bool_t TMrbSis_3801::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleT
 			fCodeTemplates.Substitute("$mnemoLC", mnemoLC);
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.WriteCode(RdoStrm);
+			if (this->ToBeClearedAfterRead()) {
+				fCodeTemplates.InitializeCode("%CAR%");
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.WriteCode(RdoStrm);
+			}
 			break;
 	}
 	return(kTRUE);

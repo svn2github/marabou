@@ -1460,7 +1460,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						}
 						module = (TMrbModule *) fLofModules.First();
 						while (module) {
-							module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
+							module->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl, NULL);
 							module = (TMrbModule *) fLofModules.After(module);
 						}
 						crate = this->FindCrate();
@@ -5067,15 +5067,17 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	c.Reset(-1);
 	Int_t n = 0;
 	EMrbControllerType ctrlType = kControllerUnused;
+	Bool_t useCamac = kFALSE;
 	for (Int_t bit = 0; bit < 5; bit++) {
 		if (cratePattern & (1 << bit)) {
 			c[n] = bit;
-			if (ctrlType == kControllerUnused) ctrlType = this->GetControllerType(bit);
+			if (bit > 0) useCamac = kTRUE;
+			if (useCamac && (ctrlType == kControllerUnused)) ctrlType = this->GetControllerType(bit);
 			n++;
 		}
 	}
 	mbsSetup->SetNofReadouts(1);
-	mbsSetup->ReadoutProc(0)->SetController((EMbsControllerType) ctrlType);
+	if (ctrlType != kControllerUnused) mbsSetup->ReadoutProc(0)->SetController((EMbsControllerType) ctrlType);
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
 
 	if (fSevtSize > 0) {

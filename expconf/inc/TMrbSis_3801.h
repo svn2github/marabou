@@ -51,11 +51,13 @@ class TMrbSis_3801 : public TMrbVMEScaler {
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
-		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); }; // generate readout code
 
 		virtual inline const Char_t * GetMnemonic() const { return("Sis_3801"); }; 	// module mnemonic
 
 		inline Int_t GetFifoDepth() const { return(fFifoDepth); };
+
+		inline void ClearAfterRead(Bool_t CarFlag = kTRUE) { fClearAfterRead = CarFlag; };
+		inline Bool_t ToBeClearedAfterRead() { return(fClearAfterRead); };
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSis_3801.html&"); };
 
@@ -64,6 +66,7 @@ class TMrbSis_3801 : public TMrbVMEScaler {
 
 	protected:
 		Int_t fFifoDepth;			// fifo depth per channel
+		Bool_t fClearAfterRead; 	// kTRUE if counter is to be cleared after read
 
 	ClassDef(TMrbSis_3801, 1)		// [Config] SIS 3801, 32 x 24 bit VME scaler
 };
