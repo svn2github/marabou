@@ -202,7 +202,8 @@ class TMrbConfig : public TNamed {
 									kAnaMakeUserRules,
 									kAnaMakeLibNew,
 									kAnaIncludeEvtSevtModGlobals,
-									kAnaInitializeEvtSevtMods
+									kAnaInitializeEvtSevtMods,
+									kAnaLoadUserLibs
 								};
 
 		enum EMrbConfigTag  	{	kCfgFile				=	1,		// config tags
@@ -228,7 +229,8 @@ class TMrbConfig : public TNamed {
 		enum EMrbRcFileTag  	{	kRcExpData				=	1,		// rc file tags
 									kRcEvtData,
 									kRcSevtData,
-									kRcModuleData
+									kRcModuleData,
+									kRcUserGlobals
 								};
 
 		enum EMrbUserMacroTag  	{	kUmaFile				=	1,		// user macro tags

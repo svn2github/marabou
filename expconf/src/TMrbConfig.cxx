@@ -296,6 +296,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaMakeLibNew,				"MAKE_LIBNEW"		 			},
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
+								{TMrbConfig::kAnaLoadUserLibs,				"LOAD_USER_LIBS"			 	},
 								{0, 										NULL							}
 							};
 
@@ -331,6 +332,7 @@ const SMrbNamedXShort kMrbLofRcFileTags[] =
 								{TMrbConfig::kRcEvtData,					"EVT_DATA"						},
 								{TMrbConfig::kRcSevtData,					"SEVT_DATA"						},
 								{TMrbConfig::kRcModuleData,					"MODULE_DATA"					},
+								{TMrbConfig::kRcUserGlobals,				"USER_GLOBALS"					},
 								{0, 										NULL							}
 							};
 
@@ -2126,7 +2128,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										case TMrbConfig::kGlobBool:
 											anaTmpl.Substitute("$gSignature", "Bool_t");
 											anaTmpl.Substitute("$gInit",
-												Form("%s = %s", gName.Data(), this->GetGlobD(gName.Data()) ? "kTRUE" : "kFALSE"));
+												Form("%s = %s", gName.Data(), this->GetGlobB(gName.Data()) ? "kTRUE" : "kFALSE"));
 											break;
 										case TMrbConfig::kGlobString:
 											anaTmpl.Substitute("$gSignature", "TString");
@@ -2861,6 +2863,37 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								module = (TMrbModule *) fLofModules.After(module);
 							}
 							onceOnly.Delete();
+						}
+						break;
+					case TMrbConfig::kAnaLoadUserLibs:
+						{
+							TString libName;
+							if (this->UserLibsToBeIncluded()) {
+								TMrbNamedX * icl = (TMrbNamedX *) fLofUserLibs.First();
+								while (icl) {
+									anaTmpl.InitializeCode();
+									TString iclPath = icl->GetTitle();
+									if (iclPath.Length() > 0) {
+										iclPath += "/";
+										anaTmpl.Substitute("$libPath", iclPath);
+									} else {
+										anaTmpl.Substitute("$libPath", "");
+									}
+									libName = "lib";
+									libName += icl->GetName();
+									anaTmpl.Substitute("$userLib", libName);
+									anaTmpl.WriteCode(anaStrm);
+									icl = (TMrbNamedX *) fLofUserLibs.After(icl);
+								}
+							}
+							libName = this->GetName();
+							libName(0,1).ToUpper();
+							libName.Prepend("lib");
+							libName += "Analyze";
+							anaTmpl.InitializeCode();
+							anaTmpl.Substitute("$libPath", "");
+							anaTmpl.Substitute("$userLib", libName);
+							anaTmpl.WriteCode(anaStrm);
 						}
 						break;
 				}
@@ -3691,6 +3724,40 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 							module->MakeRcFile(rcStrm, tagIdx, resourceName.Data());
 							module = (TMrbModule *) fLofModules.After(module);
 							modNo++;
+						}
+						break;
+					case TMrbConfig::kRcUserGlobals:
+						{
+							TMrbNamedX * ug = (TMrbNamedX *) fLofGlobals.First();
+							while (ug) {
+								if ((EMrbGlobalType) ug->GetIndex() != TMrbConfig::kGlobObject) {
+									rcTmpl.InitializeCode();
+									TString ugName = ug->GetName();
+									if (ugName(0) == 'k') ugName = ugName(1, ugName.Length() - 1);
+									ugName(0,1).ToUpper();
+									rcTmpl.Substitute("$resource", resourceName.Data());
+									rcTmpl.Substitute("$globalName", ugName);
+									switch ((EMrbGlobalType) ug->GetIndex()) {
+										case TMrbConfig::kGlobInt:
+											rcTmpl.Substitute("$globalValue", this->GetGlobI(ug->GetName()));
+											break;
+										case TMrbConfig::kGlobFloat:
+											rcTmpl.Substitute("$globalValue", this->GetGlobF(ug->GetName()));
+											break;
+										case TMrbConfig::kGlobDouble:
+											rcTmpl.Substitute("$globalValue", this->GetGlobD(ug->GetName()));
+											break;
+										case TMrbConfig::kGlobBool:
+											rcTmpl.Substitute("$globalValue", this->GetGlobB(ug->GetName()) ? "TRUE" : "FALSE");
+											break;
+										case TMrbConfig::kGlobString:
+											rcTmpl.Substitute("$globalValue", this->GetGlobStr(ug->GetName()));
+											break;
+									}
+								}
+								rcTmpl.WriteCode(rcStrm);
+								ug = (TMrbNamedX *) fLofGlobals.After(ug);
+							}
 						}
 						break;
 				}
@@ -5502,7 +5569,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Int_t & IntVar) const {
 		return(kFALSE);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobInt) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a INTEGER" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
@@ -5530,7 +5597,7 @@ Int_t TMrbConfig::GetGlobI(const Char_t * Name) const {
 		return(0);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobInt) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a INTEGER" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobI");
 		return(0);
@@ -5558,7 +5625,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Float_t & FloatVar) const {
 		return(kFALSE);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobFloat) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a FLOAT" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
@@ -5586,7 +5653,7 @@ Float_t TMrbConfig::GetGlobF(const Char_t * Name) const {
 		return(0.);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobFloat) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a FLOAT" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobF");
 		return(0.);
@@ -5614,7 +5681,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Double_t & DblVar) const {
 		return(kFALSE);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobDouble) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a DOUBLE" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
@@ -5642,7 +5709,7 @@ Double_t TMrbConfig::GetGlobD(const Char_t * Name) const {
 		return(0.);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobDouble) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a DOUBLE" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobD");
 		return(0.);
@@ -5670,7 +5737,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, Bool_t & BoolVar) const {
 		return(kFALSE);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobBool) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a BOOLEAN" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
@@ -5698,7 +5765,7 @@ Bool_t TMrbConfig::GetGlobB(const Char_t * Name) const {
 		return(kFALSE);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobBool) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a BOOLEAN" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobB");
 		return(kFALSE);
@@ -5726,7 +5793,7 @@ Bool_t TMrbConfig::GetGlobal(const Char_t * Name, TString & Str) const {
 		return(kFALSE);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobString) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a STRING" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobal");
 		return(kFALSE);
@@ -5755,7 +5822,7 @@ const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) const {
 		return(NULL);
 	}
 	if (nx->GetIndex() != TMrbConfig::kGlobString) {
-		gMrbLog->Err() << "Illegal data type - (" << Name
+		gMrbLog->Err() << "Illegal data type - " << Name
 						<< " is not a STRING" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetGlobStr");
 		return(NULL);

@@ -87,3 +87,7 @@ $resource.ClassName:					$className
 %NAM%$resource.Module.$moduleNameUC.ChannelPattern:	$channelPattern
 %%EndOfCode%%
 %%MODULE_DATA%%
+%%BeginOfCode%%
+$resource.UserGlobal.$globalName:	$globalValue
+%%EndOfCode%%
+%%USER_GLOBALS%%
