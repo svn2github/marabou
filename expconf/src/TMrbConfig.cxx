@@ -2521,7 +2521,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									objName.ReplaceAll(".cxx", ".o");
 									anaTmpl.InitializeCode();
 									anaTmpl.Substitute("$userObj", objName);
-									anaTmpl.Substitute("$userDir", (iclPath.Length() > 0) ? iclPath : "");
+									anaTmpl.Substitute("$userDir", (iclPath.Length() > 0) ? iclPath.Data() : "");
 									anaTmpl.Substitute("$userCode", srcName);
 									anaTmpl.WriteCode(anaStrm);
 								}
