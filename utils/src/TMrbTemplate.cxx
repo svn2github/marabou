@@ -219,14 +219,7 @@ Bool_t TMrbTemplate::TestIfBeginOrEndOfCode() {
 			}
 		}
 		fOrigLine.ReadLine(fTemplStream, kFALSE);
-		if (fTemplStream.eof()) {
-			Close();							// end of template file
-			gMrbLog->Err() << "Unexpected EOF within code segment" << endl;
-			gMrbLog->Flush(this->ClassName(), "TestIfBeginOrEndOfCode");
-			fTagStatus = TMrbTemplate::kTagError;		// error - template not open
-			return(kFALSE);
-		}
-		fLineCount++;
+		if (!fTemplStream.eof()) fLineCount++;
 	}
 	return(kTRUE);
 }
@@ -276,7 +269,6 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, const Char_t * ArgValue)
 	}
 
 	code = (TObjString *) fExpansionBuffer.First();
-	Int_t n = 0;
 	while (code) {
 		code->String().ReplaceAll(ArgName, ArgValue);
 		code = (TObjString *) fExpansionBuffer.After((TObject *) code);
