@@ -95,6 +95,8 @@ class DGFTraceDisplayPanel : public TGTransientFrame {
 		TGMrbPictureButtonList * fGroupSelect[kNofModulesPerCluster];
 		TGMrbPictureButtonList * fAllSelect;
 		TGHorizontalFrame * fHFrame;
+		TGGroupFrame * fTFrame;
+		TGMrbLabelEntry * fTraceLength;						// trace length
 		TGGroupFrame * fXFrame;
 		TGMrbLabelEntry * fXwait;							// wait states
 		TGMrbCheckButtonGroup * fSelectChannel;		//	channel

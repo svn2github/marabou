@@ -184,6 +184,24 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, const TGWind
  	fSelectChannel->SetState(kDGFChannelMask, kButtonDown);
 	fHFrame->AddFrame(fSelectChannel, frameGC->LH());
 
+	fTFrame = new TGGroupFrame(fHFrame, "TraceLength", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fTFrame);
+	fHFrame->AddFrame(fTFrame, groupGC->LH());
+
+	fTraceLength = new TGMrbLabelEntry(fTFrame, "",
+																200, kDGFTraceDisplayXwait,
+																DGFTraceDisplayPanel::kLEWidth,
+																DGFTraceDisplayPanel::kLEHeight,
+																DGFTraceDisplayPanel::kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fTraceLength);
+	fTFrame->AddFrame(fTraceLength, frameGC->LH());
+	fTraceLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceLength->GetEntry()->SetText("0");
+	fTraceLength->SetRange(0, 8000);
+	fTraceLength->SetIncrement(100);
+	fTraceLength->AddToFocusList(&fFocusList);
+
 	fXFrame = new TGGroupFrame(fHFrame, "WaitStates", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fXFrame);
 	fHFrame->AddFrame(fXFrame, groupGC->LH());
@@ -397,13 +415,25 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 		return(kFALSE);
 	}
 
-	traceLength = 40;
-//	switch (nofChannels) {
-//		case 1: traceLength = 8000; break;
-//		case 2: traceLength = 4000; break;
-//		case 3: traceLength = 2000; break;
-//		case 4: traceLength = 2000; break;
-//	}
+	intStr = fTraceLength->GetEntry()->GetText();
+	intStr.ToInteger(traceLength);
+
+	Int_t tLength;
+	switch (nofChannels) {
+		case 1: tLength = 8000; break;
+		case 2: tLength = 4000; break;
+		case 3: tLength = 2000; break;
+		case 4: tLength = 2000; break;
+	}
+	if (traceLength == 0) traceLength = tLength;
+
+	if (traceLength > tLength) {
+		gMrbLog->Err()	<< "StartTrace(): Tracelength too long - " << traceLength
+						<< " (should be " << tLength << " max for " << nofChannels 
+						<< " channels)" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartTrace");
+		return(kTRUE);
+	}
 
 	intStr = fXwait->GetEntry()->GetText();
 	intStr.ToInteger(xwait);
