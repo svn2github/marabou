@@ -3,44 +3,48 @@
 // @(#)Name:         MBcal.C
 // @(#)Purpose:      Calibrate miniball histograms
 // Syntax:           .x MBcal.C(Int_t CalibSource,
-//                             const Char_t * FirstHisto,
-//                             const Char_t * LastHisto,
-//                             const Char_t * CalFile,
-//                             const Char_t * ResFile,
-//                             Bool_t VerboseFlag,
-//                             Int_t SigmaPeakFind,
-//                             Int_t PercentagePeakFind,
-//                             Bool_t FitFlag,
-//                             Int_t SigmaFit,
-//                             Int_t FitRange,
-//                             Int_t ZeroBins,
-//                             Bool_t DebugFlag,
-//                             Bool_t DebugFlagPeakFind)
+//                               const Char_t * FirstHisto,
+//                               const Char_t * LastHisto,
+//                               const Char_t * CalFile,
+//                               const Char_t * ResFile,
+//                               const Char_t * PrecalFile,
+//                               Bool_t VerboseFlag,
+//                               Int_t SigmaPeakFind,
+//                               Int_t PercentagePeakFind,
+//                               Bool_t FitFlag,
+//                               Int_t SigmaFit,
+//                               Int_t FitRange,
+//                               Int_t HistoLowLim,
+//                               Int_t HistoUpperLim,
+//                               Bool_t DebugFlag,
+//                               Bool_t DebugFlagPeakFind)
 // Arguments:        Int_t CalibSource         -- Calibration source
-//                   Char_t * FirstHisto       -- first histo to calibrate
-//                   Char_t * LastHisto        -- last histo to calibrate
+//                   Char_t * FirstHisto       -- Histo file / first histo
+//                   Char_t * LastHisto        -- Histo file / last histo
 //                   Char_t * CalFile          -- Calibration output file (*.cal)
 //                   Char_t * ResFile          -- Results file (*.res)
+//                   Char_t * PrecalFile       -- Precalibration file (needed if Eu152)
 //                   Bool_t VerboseFlag        -- Verbose output
-//                   Int_t SigmaPeakFind       -- Sigma for PeakFind() (bins)
+//                   Int_t SigmaPeakFind       -- Sigma for PeakFind() [bins]
 //                   Int_t PercentagePeakFind  -- Relative percentage for PeakFind()
 //                   Bool_t FitFlag            -- Peaks to be fitted
 //                   Int_t SigmaFit            -- Sigma for FitSinglePeak()
 //                   Int_t FitRange            -- Fit range (bins)
-//                   Int_t ZeroBins            -- Zero bins in front
+//                   Int_t HistoLowLim         -- Lower limit
+//                   Int_t HistoUpperLim       -- Upper limit
 //                   Bool_t DebugFlag          -- Debug
 //                   Bool_t DebugFlagPeakFind  -- Debug for PeakFind()
 // Description:      Calibrate miniball histograms
 // @(#)Author:       miniball
 // @(#)Revision:     SCCS:  %W%
-// @(#)Date:         Thu Mar 25 09:33:47 2004
+// @(#)Date:         Tue Dec 14 09:17:11 2004
 // URL:              
 // Keywords:
 //+Exec __________________________________________________[ROOT MACRO BROWSER]
 //                   Name:                MBcal.C
 //                   Title:               Calibrate miniball histograms
 //                   Width:               800
-//                   NofArgs:             15
+//                   NofArgs:             16
 //                   Arg1.Name:           CalibSource
 //                   Arg1.Title:          Calibration source
 //                   Arg1.Type:           Int_t
@@ -107,7 +111,7 @@
 //                   Arg7.Base:           dec
 //                   Arg7.Orientation:    horizontal
 //                   Arg8.Name:           SigmaPeakFind
-//                   Arg8.Title:          Sigma for PeakFind() (bins)
+//                   Arg8.Title:          Sigma for PeakFind() [bins]
 //                   Arg8.Type:           Int_t
 //                   Arg8.EntryType:      UpDown
 //                   Arg8.Default:        2
@@ -146,30 +150,38 @@
 //                   Arg12.AddLofValues:  No
 //                   Arg12.Base:          dec
 //                   Arg12.Orientation:   horizontal
-//                   Arg13.Name:          ZeroBins
-//                   Arg13.Title:         Zero bins in front
+//                   Arg13.Name:          HistoLowLim
+//                   Arg13.Title:         Lower limit
 //                   Arg13.Type:          Int_t
 //                   Arg13.EntryType:     UpDown
 //                   Arg13.Default:       100
 //                   Arg13.AddLofValues:  No
 //                   Arg13.Base:          dec
 //                   Arg13.Orientation:   horizontal
-//                   Arg14.Name:          DebugFlag
-//                   Arg14.Title:         Debug
-//                   Arg14.Type:          Bool_t
-//                   Arg14.EntryType:     YesNo
-//                   Arg14.Default:       No
+//                   Arg14.Name:          HistoUpperLim
+//                   Arg14.Title:         Upper limit
+//                   Arg14.Type:          Int_t
+//                   Arg14.EntryType:     UpDown
+//                   Arg14.Default:       0
 //                   Arg14.AddLofValues:  No
 //                   Arg14.Base:          dec
 //                   Arg14.Orientation:   horizontal
-//                   Arg15.Name:          DebugFlagPeakFind
-//                   Arg15.Title:         Debug for PeakFind()
+//                   Arg15.Name:          DebugFlag
+//                   Arg15.Title:         Debug
 //                   Arg15.Type:          Bool_t
 //                   Arg15.EntryType:     YesNo
 //                   Arg15.Default:       No
 //                   Arg15.AddLofValues:  No
 //                   Arg15.Base:          dec
 //                   Arg15.Orientation:   horizontal
+//                   Arg16.Name:          DebugFlagPeakFind
+//                   Arg16.Title:         Debug for PeakFind()
+//                   Arg16.Type:          Bool_t
+//                   Arg16.EntryType:     YesNo
+//                   Arg16.Default:       No
+//                   Arg16.AddLofValues:  No
+//                   Arg16.Base:          dec
+//                   Arg16.Orientation:   horizontal
 //-Exec
 //////////////////////////////////////////////////////////////////////////////
 
@@ -177,20 +189,21 @@
 #include <iomanip.h>
 
 void MBcal(Int_t CalibSource = 0,
-         const Char_t * FirstHisto,
-         const Char_t * LastHisto,
-         const Char_t * CalFile = "MBcal.cal",
-         const Char_t * ResFile = "MBcal.res",
-         const Char_t * PrecalFile = "MBcal.res",
-         Bool_t VerboseFlag = kFALSE,
-         Int_t SigmaPeakFind = 2,
-         Int_t PercentagePeakFind = 3,
-         Bool_t FitFlag = kFALSE,
-         Int_t SigmaFit = 0,
-         Int_t FitRange = 0,
-         Int_t ZeroBins = 100,
-         Bool_t DebugFlag = kFALSE,
-         Bool_t DebugFlagPeakFind = kFALSE)
+           const Char_t * FirstHisto,
+           const Char_t * LastHisto,
+           const Char_t * CalFile = "MBcal.cal",
+           const Char_t * ResFile = "MBcal.res",
+           const Char_t * PrecalFile = "MBcal.cal",
+           Bool_t VerboseFlag = kFALSE,
+           Int_t SigmaPeakFind = 2,
+           Int_t PercentagePeakFind = 3,
+           Bool_t FitFlag = kFALSE,
+           Int_t SigmaFit = 0,
+           Int_t FitRange = 0,
+           Int_t HistoLowLim = 0,
+           Int_t HistoUpperLim = 0,
+           Bool_t DebugFlag = kFALSE,
+           Bool_t DebugFlagPeakFind = kFALSE)
 //>>_________________________________________________(do not change this line)
 //
 {
@@ -214,12 +227,17 @@ void MBcal(Int_t CalibSource = 0,
 	}
 
 	TString hf = LastHisto;
-	idx = hf.Index(":");
-	if (idx > 0) {
-		lastHisto = hf(idx + 1, 1000);
-		lastHisto = lastHisto.Strip(TString::kBoth);
-		hf.Resize(idx);
-		hf = hf.Strip(TString::kBoth);
+	if (hf.Length() == 0) {
+		hf = histoFile;
+		lastHisto = firstHisto;
+	} else {
+		idx = hf.Index(":");
+		if (idx > 0) {
+			lastHisto = hf(idx + 1, 1000);
+			lastHisto = lastHisto.Strip(TString::kBoth);
+			hf.Resize(idx);
+			hf = hf.Strip(TString::kBoth);
+		}
 	}
 
 	if (histoFile.CompareTo(hf.Data()) != 0) {
@@ -266,10 +284,18 @@ void MBcal(Int_t CalibSource = 0,
 	cmd += " ";
 	cmd += FitRange;
 	cmd += " ";
-	cmd += ZeroBins;
+	cmd += HistoLowLim;
+	if (HistoUpperLim > HistoLowLim) {
+		cmd += ":";
+		cmd += HistoUpperLim;
+	}
 	cmd += " ";
 	cmd += DebugFlag ? "1" : "0";
 	cmd += " ";
 	cmd += DebugFlagPeakFind ? "1" : "0";
+	if (VerboseFlag) {
+		cout	<< "MBcal.C: Executing command -" << endl
+				<< "      >> " << cmd << " <<" << endl;
+	}
 	system(cmd.Data());
 }
