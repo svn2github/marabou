@@ -475,8 +475,10 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 											kTRUE, offlineMode);
 						dgfModule->SetHost(camacHost.Data());
 						dgfModule->SetAddr(dgf);
-						TMrbNamedX * clID = dgfModule->GetClusterID();
-						dgf->SetClusterID(clID->GetIndex(), clID->GetName(), clID->GetTitle());
+						dgf->SetClusterID(	dgfModule->GetClusterSerial(),
+											dgfModule->GetClusterColor(),
+											dgfModule->GetClusterSegments(),
+											dgfModule->GetClusterHexNum());
 						if (dgf->IsZombie()) dgfModule->SetActive(kFALSE);
 					}
 					if (!dgf->IsZombie() && dgf->IsConnected()) {
@@ -611,8 +613,10 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 											kTRUE, offlineMode);
 						dgfModule->SetHost(camacHost.Data());
 						dgfModule->SetAddr(dgf);
-						TMrbNamedX * clID = dgfModule->GetClusterID();
-						dgf->SetClusterID(clID->GetIndex(), clID->GetName(), clID->GetTitle());
+						dgf->SetClusterID(	dgfModule->GetClusterSerial(),
+											dgfModule->GetClusterColor(),
+											dgfModule->GetClusterSegments(),
+											dgfModule->GetClusterHexNum());
 						if (dgf->IsZombie()) dgfModule->SetActive(kFALSE);
 					}
 					if (!dgf->IsZombie() && dgf->IsConnected()) {

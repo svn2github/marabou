@@ -140,7 +140,7 @@ class DGFControlData : public TNamed {
 		};
 		
 		const Char_t * GetResource(TString & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
-		Int_t GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
+		Int_t GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource, Int_t Base = 10);
 		Bool_t GetResource(Bool_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
 	
 	protected:

@@ -35,7 +35,7 @@ DGFModule::DGFModule(const Char_t * Name, const Char_t * Host, Int_t Crate, Int_
 
 	SetHost(Host);
 	fAddr = NULL;
-	this->SetClusterID(0, "", "");
+	this->SetClusterID(0, "", "", 0);
 	if (!SetCrate(Crate)) this->MakeZombie();
 	if (!SetStation(Station)) this->MakeZombie();
 };

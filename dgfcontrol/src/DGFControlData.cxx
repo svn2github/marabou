@@ -197,7 +197,7 @@ Int_t DGFControlData::SetupModuleList() {
 	TMrbString sevtName, sevtTitle, sevtClass, sevtLofModules;
 	TMrbString dgfName, dgfTitle, dgfColor, dgfSegment, dgfClass, dgfAddr;
 	TObjArray lofModules;
-	Int_t crate, station, serial;
+	Int_t crate, station, serial, dgfHex;
 	Bool_t isActive;
 	Int_t modNo, cl;
 	Int_t nerr;
@@ -247,13 +247,18 @@ Int_t DGFControlData::SetupModuleList() {
 							dgfTitle = "CLU";
 							dgfTitle += this->GetResource(serial, "DGFControl.Module", i, dgfName.Data(), "ClusterSerial");
 							dgfTitle += " ";
+							this->GetResource(dgfHex, "DGFControl.Module", i, dgfName.Data(), "ClusterHexNum", 16);
+							TMrbString h;
+							h.FromInteger(dgfHex, 0, ' ', 16);
+							dgfTitle += h;
+							dgfTitle += " ";
 							dgfTitle += this->GetResource(dgfColor, "DGFControl.Module", i, dgfName.Data(), "ClusterColor");
 							dgfTitle += " ";
 							dgfTitle += this->GetResource(dgfSegment, "DGFControl.Module", i, dgfName.Data(), "ClusterSegments");
 							dgfName += " (";
 							dgfName += dgfAddr;
 							dgfName += ")";
-							dgfModule->SetClusterID(serial, dgfColor, dgfSegment);
+							dgfModule->SetClusterID(serial, dgfColor, dgfSegment, dgfHex);
 							fLofModules.Add(dgfModule);
 							fLofModuleKeys[cl].AddNamedX(this->ModuleIndex(cl, modNo), dgfName.Data(), dgfTitle.Data(), dgfModule);
 						}
@@ -321,7 +326,7 @@ const Char_t * DGFControlData::GetResource(TString & Result, const Char_t * Pref
 	return(Result.Data());
 }
 
-Int_t DGFControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource) {
+Int_t DGFControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource, Int_t Base) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFControlData::GetResource
@@ -331,6 +336,7 @@ Int_t DGFControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t S
 //                 Int_t Serial       -- serial number
 //                 Char_t * Name      -- name
 //                 Char_t * Resource  -- resource name
+//                 Int_t Base         -- numerical base
 // Results:        Int_t Result       -- resource value
 // Exceptions:     
 // Description:    Reads an integer resource value from ROOT's environment.
@@ -363,7 +369,7 @@ Int_t DGFControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t S
 		resStr += Resource;
 		resVal = gEnv->GetValue(resStr.Data(), "");
 	}
-	resVal.ToInteger(Result);
+	resVal.ToInteger(Result, Base);
 	return(Result);
 }
 

@@ -49,10 +49,14 @@ class DGFModule : public TNamed {
 		inline void SetActive(Bool_t Flag = kTRUE) { fIsActive = Flag; };
 		inline Bool_t IsActive() { return(fIsActive); };
 				
-		inline void SetClusterID(Int_t ClusterSerial = 0, const Char_t * ClusterColor = "", const Char_t * SegmentID = "") {
-			fClusterID.Set(ClusterSerial, ClusterColor, SegmentID);
+		inline void SetClusterID(Int_t ClusterSerial = 0, const Char_t * ClusterColor = "", const Char_t * SegmentID = "", Int_t HexNum = 0) {
+			fClusterID.Set((Int_t) (ClusterSerial << 12) + HexNum, ClusterColor, SegmentID);
 		};
 		inline TMrbNamedX * GetClusterID() { return(&fClusterID); };
+		inline Int_t GetClusterSerial() const { return((Int_t) (fClusterID.GetIndex() >> 12)); }; 		// use TMrbNamedX object:
+		inline Int_t GetClusterHexNum() const { return(fClusterID.GetIndex() & 0xFFF); }; 		// use TMrbNamedX object:
+		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
+		inline const Char_t * GetClusterSegments() const { return(fClusterID.GetTitle()); };	// title <- segment info
 		
 	protected:
 		Bool_t fIsActive;

@@ -282,6 +282,7 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	TString dgfFile;
 
 	TString dgfName, paramFile, psaFile, loadDir;
+	TMrbString altParamFile;
 	TEnv * dgfEnv;
 	TString fileType;
 	DGFModule * module;
@@ -335,13 +336,24 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 			modIdx &= 0xFFFF;
 			if (gDGFControlData->ModuleInUse(module) && (fCluster[cl]->GetActive() & modIdx)) {
 				dgfName = module->GetName();
+				dgf = module->GetAddr();
 				paramFile = loadDir;
 				paramFile += "/";
 				paramFile += dgfName;
 				paramFile += ".par";
+				altParamFile = loadDir;
+				altParamFile += "/dgf_";
+				altParamFile += dgf->GetClusterSerial();
+				altParamFile += "_";
+				TMrbString h;
+				h.FromInteger(dgf->GetClusterHexNum(), 0, ' ', 16, kFALSE);
+				altParamFile += h;
+				altParamFile += "_";
+				TString s = dgf->GetClusterSegments();
+				if (s.Index("c", 0) != -1) altParamFile += "0"; else altParamFile += "3";
+				altParamFile += ".par";
 				dgfEnv = new TEnv(".dgfParams");
-				dgf = module->GetAddr();
-				if (dgf->LoadParamsToEnv(dgfEnv, paramFile.Data())) {
+				if (dgf->LoadParamsToEnv(dgfEnv, paramFile.Data(), altParamFile.Data())) {
 					if (dgf->IsConnected()) {
 						dgf->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0);
 						dgf->Camac()->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
