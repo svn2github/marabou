@@ -2798,7 +2798,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::ChannelTime2Ascii
+// Name:           TUsrHit::ChannelTime2Ascii
 // Purpose:        Convert 48-bit time to ascii
 // Arguments:      TString & TimeString  -- where to store event time
 // Results:        Char_t * TimeString   -- same as arg#1
@@ -2812,26 +2812,26 @@ const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) {
 	return(TimeString.Data());
 }
 
-TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater) {
-//__________________________________________________________________[C++ CTOR]
+Int_t TUsrHitBuffer::AllocClonesArray(Int_t NofEntries, Int_t HighWater) {
+//________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer
-// Purpose:        Keep track of hit data
-// Arguments:      Char_t * Name         -- name
-//                 Int_t NofEntries      -- number of entries
+// Name:           AllocClonesArray
+// Purpose:        Allocate TClonesArray
+// Arguments:      Int_t NofEntries      -- number of entries
 //                 Int_t HighWater       -- high water limit
-// Results:        --
+// Results:        Int_t NofEntries      -- number of entries allocated
 // Exceptions:
-// Description:    Class constructor
+// Description:    Allocates a TClonesArray object for this hitbuffer.
+//                 Resets buffer.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fBufName = Name;
 	fNofEntries = NofEntries;
 	fOffset = 0;		// no longer in use -> see class TUsrHBX
 	fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater;
 	fHits = new TClonesArray("TUsrHit", NofEntries);
 	this->Reset();
+	return(fNofEntries);
 }
 
 void TUsrHitBuffer::Reset() {

@@ -49,9 +49,10 @@ class TMrbIOSpec : public TObject {
 									kInputTCP			=	kInputMBS | 0x4,
 									kInputRoot			=	kInputFile | 0x8,
 									kInputLMD			=	kInputMBS | kInputFile | 0x10,
-									kInputList			=	kInputRoot | 0x20,
-									kInputSync			=	kInputTCP | 0x40,
-									kInputAsync 		=	kInputTCP | 0x80
+									kInputMED			=	kInputMBS | kInputFile | 0x20,
+									kInputList			=	kInputRoot | 0x40,
+									kInputSync			=	kInputTCP | 0x80,
+									kInputAsync 		=	kInputTCP | 0x100
 								};
 
 
@@ -394,12 +395,16 @@ class TUsrHitBuffer : public TObject {
 
 	public:
 		TUsrHitBuffer() {};
-		TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0);		// ctor
 		~TUsrHitBuffer() {};										// default dtor
 
-		void Reset();										// reset hit list
-															// add a new hit		
-		TUsrHit * AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
+		inline void SetName(const Char_t * BufferName) { fBufName = BufferName; };
+		inline const Char_t * GetName() { return(fBufName.Data()); };
+
+		Int_t AllocClonesArray(Int_t NofEntries, Int_t HighWater);	// allocate TClonesArray to store hits
+
+		void Reset();												// reset hit list
+
+		TUsrHit * AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 			// add a new hit
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
 										UShort_t * Data, Int_t NofData);
 		TUsrHit * AddHit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
@@ -407,8 +412,6 @@ class TUsrHitBuffer : public TObject {
 										UShort_t * Data, Int_t NofData);
 		Bool_t RemoveHit(TUsrHit * Hit);					// remove hit
 		Bool_t RemoveHit(Int_t Index);
-
-		inline const Char_t * GetName() { return(fBufName.Data()); };
 
 		inline Int_t GetNofEntries() { return(fNofEntries); };
 		inline Int_t GetNofHits() { return(fNofHits); };
