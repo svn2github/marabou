@@ -572,6 +572,7 @@ int main(int argc, char **argv) {
 //	instance connection to MBS, file or tcp
 		gMrbTransport = new TMrbTransport("M_analyze", "Connection to MBS");
 		gMrbTransport->Version();
+		gMrbTransport->SetStopFlag(kFALSE);
 
 		if (!gMrbTransport->Open(data_source, input_type)) exit(1);
 		if (gMrbTransport->OpenLogFile("M_analyze.log") && verboseMode) {
@@ -934,11 +935,16 @@ void * msg_handler(void * dummy) {
          }
          Bool_t send_ack = kTRUE;
 
-         if     (cmd == "terminate") u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);         
-         else if(cmd == "pause")     u_analyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
-         else if(cmd == "resume")    u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
+         if     (cmd == "terminate") {
+			u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
+            cerr	<< "M_analyze::msg_handler(): Sending STOP to TMrbTransport" << endl;
+			gMrbTransport->SetStopFlag(kTRUE);         
+         } else if(cmd == "pause") {
+			u_analyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
+         } else if(cmd == "resume") {
+			u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
 
-         else if(cmd == "downscale") {
+         } else if(cmd == "downscale") {
             istringstream inbuf(arg.Data());
             Int_t downscale; inbuf >> downscale;
             if(downscale <= 0) downscale = 1;

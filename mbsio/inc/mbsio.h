@@ -55,6 +55,7 @@ DEFINITION
 .	MBS_TY_EVENT			Event type:
 .	MBS_ETYPE_VME		--		VME formatted data
 .	MBS_ETYPE_EOF		--		End of file
+.	MBS_ETYPE_WAIT		--		Wait for write complete
 .	MBS_ETYPE_ERROR		--		Error
 .	MBS_ETYPE_RAW		--		Raw mode
 
@@ -112,6 +113,7 @@ SEE ALSO
 #define MBS_ETYPE_ERROR			MBS_BTYPE_ERROR
 #define MBS_ETYPE_ABORT			MBS_BTYPE_ABORT
 #define MBS_ETYPE_RAW			MBS_BTYPE_RAW
+#define MBS_ETYPE_WAIT			0xfffffffc
 
 #define MBS_TY_SUBEVENT				0x8
 #define MBS_X_SUBEVENT				3

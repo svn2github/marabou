@@ -130,10 +130,12 @@ class TMrbTransport : public TNamed {
 		Bool_t Version();									// show version
 		Bool_t OpenLogFile(const Char_t *);					// open log file
 
-															// public lists of key words:
+		inline void SetStopFlag(Bool_t Flag = kTRUE) { fStopFlag = Flag; };
+		inline Bool_t IsToBeStopped() { return(fStopFlag); };
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTransport.html&"); };
 
+															// public lists of key words:
 	public:
 		TMrbLofNamedX fLofTransportModes;					// ... transport modes
 		TMrbLofNamedX fLofBufferElements;					// ... buffer elements
@@ -148,6 +150,8 @@ class TMrbTransport : public TNamed {
 		const MBSDataIO *fMBSDataIO;						// i/o data base
 
 		Bool_t fErrorFlag;									// error indicator
+
+		Bool_t fStopFlag;									// kTRUE if to be stopped
 
 	ClassDef(TMrbTransport, 0)		// [M_analyze] Connect to MBS transport manager
 };

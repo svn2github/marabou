@@ -212,15 +212,15 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t i;
-	UInt_t EventType = 0;
-	Int_t NofEventsProcessed;
-	Int_t NofErrors;
-	Int_t AbortOnError;
+	Int_t nofEventsProcessed;
+	Int_t nofErrors;
+	Int_t abortOnError;
+	UInt_t eventType;
 
 	ClearError();
 
-	NofEventsProcessed = 0;
-	NofErrors = 0;
+	nofEventsProcessed = 0;
+	nofErrors = 0;
 
 	if (fMBSDataIO == NULL) {
 		gMrbLog->Err()	<< "MBSIO not active" << endl;
@@ -229,30 +229,37 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 		return(kFALSE);
 	}
 
-	AbortOnError = 0;
+	abortOnError = 0;
 	if (NofEvents == 0) {
 		for (;;) {
 //			pthread_mutex_lock(&global_data_mutex);
-			EventType = mbs_next_event(fMBSDataIO);
+			do {
+				eventType = mbs_next_event(fMBSDataIO);
+				if (this->IsToBeStopped()) {
+					gMrbLog->Out()	<< "Detecting STOP flag" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadEvents");
+					eventType = MBS_ETYPE_EOF; break; 
+				}
+			} while (eventType == MBS_ETYPE_WAIT);
 //			pthread_mutex_unlock(&global_data_mutex);
-			if (EventType == MBS_ETYPE_EOF) {
-				gMrbLog->Err()	<< "End of file " << fInputFile << endl;
+			if (eventType == MBS_ETYPE_EOF) {
+				gMrbLog->Out()	<< "End of file " << fInputFile << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadEvents");
 				SetError();
 				Close();
 				break;
-			} else if (EventType == MBS_ETYPE_ERROR) {
-				NofErrors++;
+			} else if (eventType == MBS_ETYPE_ERROR) {
+				nofErrors++;
 				SetError();
-				AbortOnError++;
-				if (AbortOnError > TMrbTransport::kMaxErrors) {
-					gMrbLog->Err()	<< "Aborting after " << AbortOnError << " subsequent errors" << endl;
+				abortOnError++;
+				if (abortOnError > TMrbTransport::kMaxErrors) {
+					gMrbLog->Err()	<< "Aborting after " << abortOnError << " subsequent errors" << endl;
 					gMrbLog->Flush(this->ClassName(), "ReadEvents");
-					EventType = MBS_ETYPE_ABORT;
-         		break;
+					eventType = MBS_ETYPE_ABORT;
+         			break;
 				}
-			} else if (EventType == MBS_ETYPE_ABORT) {
-				NofErrors++;
+			} else if (eventType == MBS_ETYPE_ABORT) {
+				nofErrors++;
 				SetError();
 				PrintMbsIoError("ReadEvents");
 				gMrbLog->Err()	<< "Aborting" << endl;
@@ -260,37 +267,45 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 				break;
 			} else {
 				if (!ProcessEvent((s_vehe *) fMBSDataIO->evt_data)) {
-               EventType = MBS_ETYPE_ERROR;
-               break;
-            }
-				AbortOnError = 0;
-				NofEventsProcessed++;
+					eventType = MBS_ETYPE_ERROR;
+					break;
+				}
+				abortOnError = 0;
+				nofEventsProcessed++;
 			}
 		}
 	} else {
 		for (i = 0; i < NofEvents; i++) {
+			eventType = MBS_ETYPE_WAIT;
 //			pthread_mutex_lock(&global_data_mutex);
-			EventType = mbs_next_event(fMBSDataIO);
+			while (eventType == MBS_ETYPE_WAIT) {
+				eventType = mbs_next_event(fMBSDataIO);
+				if (this->IsToBeStopped()) {
+					gMrbLog->Out()	<< "Detecting STOP flag" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReadEvents");
+					eventType = MBS_ETYPE_EOF; break; 
+				}
+			}
 //			pthread_mutex_unlock(&global_data_mutex);
-			if (EventType == MBS_ETYPE_EOF) {
-				gMrbLog->Err()	<< "End of file " << fInputFile << endl;
+			if (eventType == MBS_ETYPE_EOF) {
+				gMrbLog->Out()	<< "End of file " << fInputFile << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadEvents");
 				Close();
 				SetError();
 				break;
-			} else if (EventType == MBS_ETYPE_ERROR) {
-				NofErrors++;
+			} else if (eventType == MBS_ETYPE_ERROR) {
+				nofErrors++;
 				PrintMbsIoError("ReadEvents");
 				SetError();
-				AbortOnError++;
-				if (AbortOnError > TMrbTransport::kMaxErrors) {
-					gMrbLog->Err()	<< "Aborting after " << AbortOnError << " subsequent errors" << endl;
+				abortOnError++;
+				if (abortOnError > TMrbTransport::kMaxErrors) {
+					gMrbLog->Err()	<< "Aborting after " << abortOnError << " subsequent errors" << endl;
 					gMrbLog->Flush(this->ClassName(), "ReadEvents");
-					EventType = MBS_ETYPE_ABORT;
-               break;
+					eventType = MBS_ETYPE_ABORT;
+					break;
 				}
-			} else if (EventType == MBS_ETYPE_ABORT) {
-				NofErrors++;
+			} else if (eventType == MBS_ETYPE_ABORT) {
+				nofErrors++;
 				PrintMbsIoError("ReadEvents");
 				SetError();
 				gMrbLog->Err()	<< "Aborting" << endl;
@@ -298,25 +313,25 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 				break;
 			} else {
 				if (!ProcessEvent((s_vehe *) fMBSDataIO->evt_data)) {
-               EventType = MBS_ETYPE_ERROR;
-               break;
-            }
-				AbortOnError = 0;
-				NofEventsProcessed++;
+					eventType = MBS_ETYPE_ERROR;
+					break;
+            	}
+				abortOnError = 0;
+				nofEventsProcessed++;
 			}
 		}
 	}
-	if (NofErrors > 0) {
-		gMrbLog->Err()	<< this->ClassName() << "::ReadEvents(): " << NofEventsProcessed
-						<< " event(s), " << NofErrors
+	if (nofErrors > 0) {
+		gMrbLog->Err()	<< this->ClassName() << "::ReadEvents(): " << nofEventsProcessed
+						<< " event(s), " << nofErrors
 						<< " error(s)" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEvents");
 	} else {
-		gMrbLog->Out()	<< this->ClassName() << "::ReadEvents(): " << NofEventsProcessed
+		gMrbLog->Out()	<< this->ClassName() << "::ReadEvents(): " << nofEventsProcessed
 						<< " event(s), " << " no errors" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEvents", setblue);
 	}
-	return(EventType);
+	return(eventType);
 }
 
 UInt_t TMrbTransport::NextSubevent(UShort_t * SevtData) {
