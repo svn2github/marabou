@@ -701,9 +701,10 @@ Bool_t TMrbDGF::ActivateUserPSACode(Bool_t Activate) {
 			csrBit |= 1;
 			this->SetParValue(chn, "CHANCSRB", csrBit);
 		}
-		gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ": User PSA code activated" << endl;
-		gMrbLog->Flush(this->ClassName(), "ActivateUserPSACode", setblue);
+		if (gMrbDGFData->fVerboseMode) {
+			cout	<< fName << " in C" << fCrate << ".N" << fStation
+					<< ": User PSA code activated" << endl;
+		}
 	} else {
 		csrBit = this->GetParValue("MODCSRB");
 		csrBit &= ~1;
@@ -713,9 +714,10 @@ Bool_t TMrbDGF::ActivateUserPSACode(Bool_t Activate) {
 			csrBit &= ~1;
 			this->SetParValue(chn, "CHANCSRB", csrBit);
 		}
-		gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ": User PSA code deactivated" << endl;
-		gMrbLog->Flush(this->ClassName(), "ActivateUserPSACode", setblue);
+		if (gMrbDGFData->fVerboseMode) {
+			cout	<< fName << " in C" << fCrate << ".N" << fStation
+					<< ": User PSA code deactivated" << endl;
+		}
 	}
 	return(kTRUE);
 }
