@@ -41,6 +41,7 @@ void AddMathExpressions(TList * var_list)
    var_list->Add(new TObjString("TMath::Log("));
    var_list->Add(new TObjString("TMath::Log10("));
    var_list->Add(new TObjString("TMath::Abs("));
+   var_list->Add(new TObjString("TMath::Prob("));
    var_list->Add(new TObjString("TMath::Power("));
    var_list->Add(new TObjString("TMath::Pi()"));
    var_list->Add(new TObjString("TMath::TwoPi()"));
@@ -91,7 +92,12 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
 
    cmd = "mypres->ShowLeaf(\"";
    cmd = cmd + fname + "\",\"" + dir + "\",\"" + tname + "\",\"\")";
-   nam = "Show leafs";
+   nam = "Show leaves";
+   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, empty));
+
+   cmd = "mypres->MkClass(\"";
+   cmd = cmd + fname + "\",\"" + dir + "\",\"" + tname + "\",\"\")";
+   nam = "C++ Code (MakeClass)";
    fCmdLine->Add(new CmdListEntry(cmd, nam, empty, empty));
 
    TString cmd_base("mypres->ShowLeaf(\"");
@@ -752,4 +758,21 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    }   
 }
 
+//________________________________________________________________________________________
+
+void HistPresent::MkClass( const char* fname, const char* dir, const char* tname,
+                            const char* leafname, const char* bp)
+{
+   if (fRootFile) fRootFile->Close();
+   fRootFile=new TFile(fname);
+   if (strlen(dir) > 0) fRootFile->cd(dir);
+   TTree *tree = (TTree*)gDirectory->Get(tname);
+   gDirectory = gROOT;
+   Bool_t ok;
+   TString clname(tname);
+   if (clname.Index(";") > 0)clname.Resize(clname.Index(";")); 
+   clname = GetString("Name of generated class", clname.Data(), &ok);
+   if (!ok) return;
+   tree->MakeClass(clname.Data());
+}
 //________________________________________________________________________________________
