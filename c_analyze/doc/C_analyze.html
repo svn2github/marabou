@@ -12,6 +12,7 @@ process of the MBS and ROOT based DAQ suite MARABOU.
 <a href=#Help_on_Output_File>Output File</a>
 <a href=#Help_on_Parameter_File>Parameter File</a>
 <a href=#Help_on_Commands>Commands</a>
+<a href=#Help_on_Parameters>Adjustable parameters</a>
 <a href=#Help_on_Misc>Miscellaneous</a>
 <a href=#Help_on_Session>Picture of a sample session</a>
 
@@ -97,11 +98,14 @@ this file should be adjusted to keep all histograms and
 not wasting too much memory. 
 Use of a memory mapped file can be avoided giving it the
 name <i>none</i>. This saves memory needed for the
-memory mapped file. It also saves CPU needed to update
+memory mapped file. It also saves CPU time needed to update
 the histograms on the mapped file.
-Histograms are saved at the end of a run automatically.
+Histograms are saved at the end of a run automatically
 with the name given. (e.g. hists_RUN.root where RUN 
 will be replaced by the actual run number.)
+Histograms may be saved periodically in intervalls
+control from the <b>Histogram</b> popup menu.
+(Default 300 sec).
 
 If the mapped file exists at start of a new run filling of
 histograms may continue on this file. The current contents
@@ -185,6 +189,45 @@ e.g.
       first_time = 1;
       hxx->Reset(); 
       ....
+<a NAME=Help_on_Parameters></a>
+<H1>Adjustable parameters</H1>
+The following parameters are adjustable from the 
+<b>Parameter</b> popup menu.
+
+<b>No Event Warning Time</b>
+Time in seconds after which a warning is issued if 
+no event arrives, default 20
+<b>Maximum output file size (Mbyte)</b>
+Currently Linux can handle files upto 2 GByte,
+default 1800
+<b>Enable automatic restart after max file size</b>
+
+<b>Time constant (seconds) in Avg Rate</b>
+
+<b>Disk space warn limit (Mbyte)</b>
+A warning is issued at start of run if remaining
+disc space is below this limit, default 200 Mbyte 
+<b>Disk space hard limit (Mbyte)</b>
+Start of run is refused if remaining
+disc space is below this limit, default 100 Mbyte
+ 
+<b>Check disk quota</b>
+Enable above checks
+
+<b>C_analyse Verbose level</b>
+Force some debug printout.
+
+<b>Run M_analyse in debugger (0, 1, 2)</b>
+
+M_analyze can be run in a debugger (gdb). Selecting 
+value 1 justs runs M_analyze within gdb. In case
+of a crash gdb is invoked. Normal control of
+M_analyze is enabled.
+  
+2 puts a breakpoint at main() i.e. the start of program 
+to allow more breakpoints to be set. No control of
+M_analyze is possible after start. This is for hard cases
+normally only used offline.
 
 <a NAME=Help_on_Misc></a>
 <H1>Miscellaneous</H1>
@@ -205,11 +248,6 @@ C_analyze communicates with M_analyze by sending messages.
 M_analyze writes its PID and status into a file
 <i>/var/tmp/M_analyze.PORT</i> where PORT is the socket
 number used for communication.
-
-M_analyze can be run in a debugger (gdb). This is controlled
-in the <b>Parameter</b> popup menu. Selecting value 1 justs
-runs M_analyze within gdb, 2 puts a breakpoint at main()
-i.e. start of program to allow more breakpoints to be set.
 
 C_analyze remembers its parameters in an ASCII file
 <i>C_analyze.def</i> (backed up to <i>C_analyze.def.bck</i>).

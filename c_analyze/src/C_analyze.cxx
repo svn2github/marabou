@@ -2972,8 +2972,8 @@ Bool_t FhMainFrame::GetDefaults(){
    fDownscale         = 1;
    fStartEvent        = 0;
    fStopEvent         = 0;
-   fMaxFileSize       = 0;
-	fHsaveIntervall    = 0;
+   fMaxFileSize       = 1800;     // 1.8 Gbyte
+	fHsaveIntervall    = 300;      // 5 Min
    fWriteOutput       = kFALSE;
    fAutoSave          = kFALSE;
    fShowRate          = kTRUE;
