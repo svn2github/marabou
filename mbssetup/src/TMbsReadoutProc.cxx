@@ -1026,6 +1026,12 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 						<< diagLine
 						<< setblack << endl;
 				isOK = kFALSE;
+			} else if (diagLine.Index("Stop.", 0) != -1) {
+				nofErrors++;
+				cerr	<< setred
+						<< diagLine
+						<< setblack << endl;
+				isOK = kFALSE;
 			}
 		}
 		diag.close();
