@@ -827,6 +827,9 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
       return;
    }
 //
+   Int_t save_optdate = gStyle->GetOptDate();
+   gStyle->SetOptDate(0);
+
    gStyle->SetTextFont(fTextFont + 3);   // char height in pixel
    gStyle->SetTextSize(fTextSize);
    
@@ -848,7 +851,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 // find number of lines
 
    nl = LineCount(text, &longest_line);
-   cout << "longest_line " << longest_line<< endl;
+//   cout << "longest_line " << longest_line<< endl;
 //   max window size (in pixel);
    fWwX = 720;
    fWwY = 720;
@@ -1021,6 +1024,8 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 //   rc->RaiseWindow();
    ca->Update(); 
    ca->SetEditable(kFALSE);
+   gStyle->SetOptDate(save_optdate);
+
 //   cout << "Exit DrawText ---------------------------" << endl;
 }
 
