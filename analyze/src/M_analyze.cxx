@@ -575,6 +575,7 @@ int main(int argc, char **argv) {
 	if ( verboseMode ) gROOT->ls();
 
 //	input from MBS: tcp or lmd
+   gMrbTransport = NULL;
 	if ((input_mode & TMrbIOSpec::kInputMBS) != 0) {
 		if ( verboseMode ) cout	<< "M_analyze: Connecting to MBS - data source is " << data_source
 								<< " (input type \"" << input_type << "\")"
@@ -925,7 +926,7 @@ void * msg_handler(void * dummy) {
       if(mess->What() == kMESS_STRING){
          char str[300];
          mess->ReadString(str, 250);
-//			if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
+			if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
 //        no_of_parameters= M.parse(str, parms);
          TString  smess = str; smess = smess.Strip(TString::kBoth);
          if(smess(0,9) != "M_client "){               
@@ -947,9 +948,11 @@ void * msg_handler(void * dummy) {
          Bool_t send_ack = kTRUE;
 
          if     (cmd == "terminate") {
-			u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
-            cerr	<< "M_analyze::msg_handler(): Sending STOP to TMrbTransport" << endl;
-			gMrbTransport->SetStopFlag(kTRUE);         
+			   u_analyze->SetRunStatus(TMrbAnalyze::M_STOPPING);
+			   if (gMrbTransport) {
+               cerr	<< "M_analyze::msg_handler(): Sending STOP to TMrbTransport" << endl;
+			      gMrbTransport->SetStopFlag(kTRUE);  
+			   }       
          } else if(cmd == "pause") {
 			u_analyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
          } else if(cmd == "resume") {
