@@ -308,6 +308,8 @@ void FitHist::InitCut(){
    UpdateCut();
 //   CheckList(fActiveCuts);
    TString cname = fHname;
+	Int_t p = cname.Index(";");
+	if (p>0) cname.Resize(p);
    fCutNumber++;
    cname.Prepend(Form("%d_", fCutNumber));
    cname.Prepend("Cut");

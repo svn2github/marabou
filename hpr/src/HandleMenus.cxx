@@ -1423,7 +1423,7 @@ void HandleMenus::BuildMenus()
          fCutsMenu->AddEntry("DrawCut",     kFHDrawCut    );
          fCutsMenu->AddEntry("DrawCutName", kFHDrawCutName    );
          fCutsMenu->AddEntry("CutsToHist",  kFHCutsToHist   );
-         fCutsMenu->AddEntry("WriteOutCut", kFHWriteOutCut);
+         fCutsMenu->AddEntry("WriteOutCuts", kFHWriteOutCut);
       } else {
          fCutsMenu->AddEntry("MarksToWindow",   kFHMarksToWindow   );
          fCutsMenu->AddEntry("ListWindows",     kFHListWindows     );
