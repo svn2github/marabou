@@ -226,7 +226,7 @@ public:
    void PrintCalib();
    void ClearCalib(){fPeaks->Clear();};
    void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE; SaveDefaults();};
-   Bool_t Calibrate();
+   Bool_t Calibrate(Int_t flag = 1);
    void ClearCalibration();
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
    void SetSelectedPad(){cHist->cd();};

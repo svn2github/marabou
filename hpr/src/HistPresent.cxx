@@ -212,7 +212,8 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    activeHist= NULL;
    filelist = NULL;
    fControlBar = NULL;
-   mycanvas=0;
+   maincanvas=0;
+   lastcanvas=0;
    
    fByTitle=kFALSE;
 
@@ -303,6 +304,7 @@ void HistPresent::ShowMain()
    nHists=0;
    cHPr = new HTCanvas("cHPr", "Histogram Presenter",5,5, 250, 400, this, 0);
    cHPr->cd();
+   maincanvas = GetMyCanvas();
 
    Float_t  dy=0.068, y=1. - 6.5*dy - 0.001, x0=0.01, x1=0.97;
    TButton *b;
@@ -638,9 +640,9 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    } else if (strstr(fname,"Socket")) {
       if (!fComSocket) {
          *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
-                        ,&ok,GetMyCanvas());
+                        ,&ok,maincanvas);
          fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
-                        ,&ok,GetMyCanvas());
+                        ,&ok,maincanvas);
          fComSocket = new TSocket(*fHostToConnect, fSocketToConnect);
          if (!fComSocket->IsValid()) {
             fComSocket->Close();
@@ -690,16 +692,19 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
        WarnBox("Unknown file");
        return;
    } 
-   if (nstat > fMaxListEntries) { 
-      cout << setred << "Too many entries in list: " << nstat << endl;
-      cout << "this might crash X, please use selection mask"<< endl;
-      cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
-      cout << "WARNING: Only histlists will be shown" << setblack << endl;
-   } else if (nstat <= 0) {
+//   if (nstat > fMaxListEntries) { 
+//      cout << setred << "Too many entries in list: " << nstat << endl;
+//      cout << "this might crash X, please use selection mask"<< endl;
+//      cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
+ //     cout << "WARNING: Only histlists will be shown" << setblack << endl;
+//   } else if (nstat <= 0) {
 //      WarnBox("Nothing found, Check Hist Selection Mask");
-   }
+//   }
 //  list of 1 and 2 dim, histograms
-   if (nstat > 0 && nstat <= fMaxListEntries) { 
+//   if (nstat > 0 && nstat <= fMaxListEntries) { 
+   Int_t not_shown = 0;
+   if (nstat > 0) { 
+      
       TMrbStatEntry * stent;
       TIter nextentry(st->GetListOfEntries());
       while ( (stent = (TMrbStatEntry*)nextentry()) ) {
@@ -764,7 +769,19 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
             cout << "Already selected: " << tmp.Data() << endl;
             sel += " YES";
          }
-         fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+         if (fCmdLine->GetSize() < fMaxListEntries) { 
+            fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+         } else {
+            if (not_shown <= 0){
+               cout << setred << "Too many entries in list: " << nstat << endl;
+               cout << "this might crash X, please use selection mask"<< endl;
+               cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
+               cout << "On your own risk you may increase value: " << fMaxListEntries << endl;
+               cout << "WARNING: the following hists will not be shown" << setblack << endl;
+               not_shown++;
+            }
+            cout << "Not shown: " << stent->GetName() << endl;
+         }
       }
    }
    Int_t anything_to_delete = 0;
@@ -969,14 +986,14 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
          delete obj;
       }
 //      cout << "###ShowContents GetSize(): fCmdLine " << fCmdLine << endl;
-      if (fCmdLine->GetSize() > fMaxListEntries) {
-      } else {
+//      if (fCmdLine->GetSize() > fMaxListEntries) {
+//      } else {
          ycanvas = 5 + 50 * fHistLists->GetSize();
          HTCanvas *ccont = CommandPanel(fname, fCmdLine, 
                            260, ycanvas, this, fWinwidx_hlist);
 //         cout << "fHistLists " << fHistLists << endl;
          if (fHistLists)fHistLists->Add(ccont);
-      }
+//      }
 //      ycanvas += 50;
 //      if (ycanvas >= 500)ycanvas=5;
    }
@@ -991,7 +1008,7 @@ void HistPresent::PurgeEntries(const char * fname, const char * bp)
 {
    TString question(fname);
    question.Prepend("Purge file: ");
-   if (QuestionBox(question.Data(), mycanvas) == kMBYes) {
+   if (QuestionBox(question.Data(), GetMyCanvas()) == kMBYes) {
       TFile * f = new TFile(fname, "update");
       f->Purge();
       f->Close();
@@ -1002,12 +1019,12 @@ void HistPresent::PurgeEntries(const char * fname, const char * bp)
 void HistPresent::DeleteSelectedEntries(const char * fname, const char * bp)
 {
    Int_t ndeleted = 0;
-   ndeleted += DeleteOnFile(fname, fSelectCut, mycanvas);
-   ndeleted += DeleteOnFile(fname, fSelectHist, mycanvas);
-   ndeleted += DeleteOnFile(fname, fSelectWindow, mycanvas);
-   ndeleted += DeleteOnFile(fname, fSelectContour, mycanvas);
-   ndeleted += DeleteOnFile(fname, fAllFunctions, mycanvas);
-   ndeleted += DeleteOnFile(fname, fSelectGraph, mycanvas);
+   ndeleted += DeleteOnFile(fname, fSelectCut, GetMyCanvas());
+   ndeleted += DeleteOnFile(fname, fSelectHist, GetMyCanvas());
+   ndeleted += DeleteOnFile(fname, fSelectWindow, GetMyCanvas());
+   ndeleted += DeleteOnFile(fname, fSelectContour, GetMyCanvas());
+   ndeleted += DeleteOnFile(fname, fAllFunctions, GetMyCanvas());
+   ndeleted += DeleteOnFile(fname, fSelectGraph, GetMyCanvas());
    cout << ndeleted << " object";
    if (ndeleted !=1) cout << "s";
    cout << " ndeleted on " << fname << endl;
@@ -1095,7 +1112,7 @@ void HistPresent::ComposeList(const char* bp)
       TString question=listname;
       question += " exists, Overwrite?";
 
-      if (QuestionBox(question.Data(), mycanvas) == kMBNo) return;
+      if (QuestionBox(question.Data(), GetMyCanvas()) == kMBNo) return;
    }
    ofstream wstream;
    wstream.open(listname.Data(), ios::out);
@@ -1480,7 +1497,7 @@ void HistPresent::GetFileSelMask(const char* bp)
 {
     Bool_t ok;
     *fFileSelMask = GetString(
-    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, GetMyCanvas());
+    "Edit File Selection Mask",(const char *)*fFileSelMask, &ok, maincanvas);
 }
 //________________________________________________________________________________________
   
@@ -1492,7 +1509,7 @@ void HistPresent::GetHistSelMask(const char* bp)
     Bool_t ok;
     *fHistSelMask=GetString(
                   "Edit Hist Selection Mask",(const char *)*fHistSelMask, &ok,
-                  GetMyCanvas(), "Use Regexp syntax", &yesno, 
+                  maincanvas, "Use Regexp syntax", &yesno, 
                   Help_SelectionMask_text);
      if (!ok) return;
      if (yesno) fUseRegexp = 1;
@@ -1769,7 +1786,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
       for(Int_t i = 0; i < nent; i++) { xyvals[p] = vmax[i]; p++;}
 // show values to caller and let edit
       Int_t ret,  itemwidth=120, precission = 5; 
-      TGMrbTableOfDoubles(mycanvas, &ret, "Set axis ranges", 
+      TGMrbTableOfDoubles(lastcanvas, &ret, "Set axis ranges", 
                         itemwidth,3, nent, xyvals, precission,
                        col_lab, row_lab);
       delete row_lab; delete col_lab;
@@ -1997,7 +2014,7 @@ void HistPresent::ShowContour(const char* fname, const char* name, const char* b
       TArrayI colsav(*(co->GetColorArray()));
       TArrayD levsav(*(co->GetLevelArray()));
 
-      Int_t result = co->Edit(mycanvas); 
+      Int_t result = co->Edit(GetMyCanvas()); 
 
       if (result >= 0){
          Bool_t changed = kFALSE;
@@ -2015,7 +2032,7 @@ void HistPresent::ShowContour(const char* fname, const char* name, const char* b
             cout << "Changed" << endl;
             int buttons = kMBOk | kMBDismiss, retval = 0;
             EMsgBoxIcon icontype = kMBIconQuestion;
-            new TGMsgBox(gClient->GetRoot(), mycanvas,
+            new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
                    "Question", "Save modified contour?",
                    icontype, buttons, &retval);
              if (retval == kMBOk) {
@@ -2111,7 +2128,7 @@ void HistPresent::SetRebinValue(Int_t val)
 {
    Bool_t ok; 
    if (val == 0) {
-      Int_t i = GetInteger("Rebin value", fRebin, &ok, GetMyCanvas());
+      Int_t i = GetInteger("Rebin value", fRebin, &ok, maincanvas);
       if (!ok || i <= 0) return;
       fRebinOth->SetTitle(Form("%d", i));
       fRebinOth->SetFillColor(3);
@@ -2555,7 +2572,7 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
    TString fname = name;
    fname(rname) ="wdw2D";
    Bool_t ok;
-   fname = GetString("Write ASCII-file with name",fname.Data(),  &ok, GetMyCanvas(),
+   fname = GetString("Write ASCII-file with name",fname.Data(),  &ok, maincanvas,
    0, 0, helpText);
    if (!ok) {
       cout << " Canceled " << endl;
@@ -2565,7 +2582,7 @@ void HistPresent::CutsToASCII(const char* name, const char* bp)
 //      cout << fname << " exists" << endl;
       int buttons= kMBOk | kMBDismiss, retval=0;
       EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), mycanvas,
+      new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
        "Question", "File exists, overwrite?",
        icontype, buttons, &retval);
       if (retval == kMBDismiss) return;
@@ -3347,7 +3364,7 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
 void HistPresent::WarnBox(const char *message)
 {
    int retval = 0;
-   new TGMsgBox(gClient->GetRoot(), mycanvas,
+   new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
                 "Warning", message, kMBIconExclamation, kMBDismiss,
                 &retval);
 }

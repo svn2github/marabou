@@ -152,13 +152,15 @@ void FitHist::ClearCalibration(){
    cHist->Modified(kTRUE);
    cHist->Update();
 }
-   
+
 //_____________________________________________________________________
 
-Bool_t FitHist::Calibrate(){
-//   PrintCalib();
+Bool_t FitHist::Calibrate(Int_t flag){
+//
+// flag: 0 change scale of current histogram only
+//       1 generate a new histogram wit new binning
+
    if(fSetRange){
-//       cout << "range was set" << endl;
        WarnBox("Calibration already applied,
 use Clear calibration and redisplay");
        return kFALSE;
@@ -166,11 +168,12 @@ use Clear calibration and redisplay");
    Int_t npeaks_def = fPeaks->GetSize();
    Int_t npeaks = npeaks_def;
    Bool_t ok;
+   TGWindow * window_for_cal = 0;
    if(npeaks < 2){
       if(npeaks == 0)cout << "No peaks defined yet" << endl;
       else           cout << "Only one peak defined" << endl;
       npeaks = GetInteger("How many peaks to use", 2, &ok, mycanvas);
-      if(npeaks <= 0 )return kFALSE;
+      if (npeaks < 2)return kFALSE;
    }
 //   if(npeaks != 2) {
 //      WarnBox("Need 2 peaks to calibrate");
@@ -261,21 +264,32 @@ use Clear calibration and redisplay");
          Axis_t oldup  = xaxis->GetXmax();
          Bool_t ok;
          TString formula("pol1");
+         TString funcname(fHname);
+         funcname += "_calfunc";
+
 tryagain:
          formula=GetString("Formula",(const char *)formula, &ok, mycanvas);
-         TF1 * calfunc = new TF1("calfunc",formula.Data(), oldlow, oldup);
+         TF1 * calfunc = new TF1(funcname,formula.Data(), oldlow, oldup);
+         if (!ok) return ok;
          if(calfunc->GetNpar() < 2){
-            cout << "Need at least pol1" << endl;
+            WarnBox("Need at least pol1");
             delete calfunc;
             goto tryagain;
          }       
-         
+         if(calfunc->GetNpar() > 2)
+            WarnBox("Only first 2 parameters\n will be used for calib");
+        
          TGraphErrors * gr = new TGraphErrors(used,xv,yv, xe, ye);
          b = (y1 - y0)/(x1 - x0);
          a = y1 - b * x1;
          cout << "Number of points: " << used << " start a,b " << a << " " << b << endl;
          calfunc->SetParameters(a,b);
-         gr->Fit("calfunc");
+         if (calfunc->GetNpar() > 2) {
+            for (Int_t i = 2; i < calfunc->GetNpar(); i++) {
+               calfunc->SetParameter(i, 0);
+            }
+         }
+         gr->Fit(funcname);
          a = calfunc->GetParameter(0);
          b = calfunc->GetParameter(1);
          cout << endl << "Fitted values a: " 
@@ -286,51 +300,80 @@ tryagain:
          calfunc->Draw("SAME"); 
          calfunc->SetLineWidth(1);
          calfunc->SetLineColor(7);
+         cc->Update();
+         if (flag == 0) {
+         	Axis_t newlow = a + b * oldlow;
+         	Axis_t newup  = a + b * oldup;
+         	xaxis->Set(fSelHist->GetNbinsX(), newlow, newup);
+         	xaxis->SetRange(lowbin,upbin);
+         	fXtitle = "Energy[keV]";
+         	xaxis->SetTitle(fXtitle.Data());
+         	PrintCalib();
+         	cout << "In this hist: nlow " << newlow << " nup "<< newup << endl;
+         	Float_t epb = (newup  - newlow) / 
+                     	  (Float_t)fOrigHist->GetNbinsX();
+         	TString buf ("Events/");
+         	buf += Form("%f", epb);
+         	buf += " keV";
+         	fYtitle = buf.Data();
+         	fSelHist->GetYaxis()->SetTitle(buf.Data());
+         	if(fSelHist != fOrigHist){
 
-         cc->Update(); 
-         Axis_t newlow = a + b * oldlow;
-         Axis_t newup  = a + b * oldup;
-         xaxis->Set(fSelHist->GetNbinsX(), newlow, newup);
-         xaxis->SetRange(lowbin,upbin);
-         fXtitle = "Energy[keV]";
-         xaxis->SetTitle(fXtitle.Data());
-         PrintCalib();
-         cout << "In this hist: nlow " << newlow << " nup "<< newup << endl;
-         Float_t epb = (newup  - newlow) / 
-                       (Float_t)fOrigHist->GetNbinsX();
-         TString buf ("Events/");
-         buf += Form("%f", epb);
-         buf += " keV";
-         fYtitle = buf.Data();
-         fSelHist->GetYaxis()->SetTitle(buf.Data());
-         if(fSelHist != fOrigHist){
-            
-            Axis_t newlowo = a + b * fOrigHist->GetXaxis()->GetXmin();
-            Axis_t newupo  = a + b * fOrigHist->GetXaxis()->GetXmax();
-            fOrigHist->GetXaxis()->SetTitle(fXtitle.Data());
-            fOrigHist->GetYaxis()->SetTitle(fYtitle.Data());
-            fOrigHist->GetXaxis()->Set(fOrigHist->GetNbinsX(), newlowo, newupo);
-    
-            cout << "In orig hist: nbin: " << fOrigHist->GetNbinsX()
-                 << " nlow " << newlowo 
-                 << " nup "<< newupo << endl;
+            	Axis_t newlowo = a + b * fOrigHist->GetXaxis()->GetXmin();
+            	Axis_t newupo  = a + b * fOrigHist->GetXaxis()->GetXmax();
+            	fOrigHist->GetXaxis()->SetTitle(fXtitle.Data());
+            	fOrigHist->GetYaxis()->SetTitle(fYtitle.Data());
+            	fOrigHist->GetXaxis()->Set(fOrigHist->GetNbinsX(), newlowo, newupo);
+
+            	cout << "In orig hist: nbin: " << fOrigHist->GetNbinsX()
+               	  << " nlow " << newlowo 
+               	  << " nup "<< newupo << endl;
+         	}
+         	fRangeLowX = newlow;
+         	fRangeUpX  = newup;
+         	fSetRange = kTRUE;
+         	ok = kTRUE;
+         	cHist->Modified(kTRUE);
+         	cHist->Update();
+         	SaveDefaults();
+         } else if (flag == 1) {
+            col_lab->Delete();
+            row_lab->Delete();
+            row_lab->Add(new TObjString("Nbins"));
+            row_lab->Add(new TObjString("Low edge"));
+            row_lab->Add(new TObjString("Bin width"));
+            xyvals[0] = 1000;
+            xyvals[1] = 0;
+            xyvals[2] = (a + b * oldup) / 1000;
+            ncols = 1; 
+            Int_t nrows = 3;
+            TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, 
+                                "Parameters for calibrated histogram", 
+                                itemwidth, ncols, nrows, xyvals, precission,
+                                0, row_lab);
+            if (ret >= 0) {
+
+   				TH1 * hist = fSelHist;
+   				Int_t  nbin_cal = (Int_t)xyvals[0];
+   				Axis_t low_cal  = (Axis_t)xyvals[1];
+   				Axis_t binw_cal = (Axis_t)xyvals[2];
+               TH1F * hist_cal = (TH1F *) calhist(hist, calfunc, nbin_cal, 
+                                 low_cal, binw_cal,(const char *)fHname);
+
+   				if (hp) {
+                  FitHist * fh = hp->ShowHist(hist_cal);
+                  window_for_cal = fh->GetMyCanvas();
+               }                  
+            }
          }
-         fRangeLowX = newlow;
-         fRangeUpX  = newup;
-         fSetRange = kTRUE;
-         ok = kTRUE;
-
-//         fSelHist->GetListOfFunctions()->Delete();
-
- //        cHist->cd();
- //        fSelHist->Draw();
-         cHist->Modified(kTRUE);
-         cHist->Update();
-         SaveDefaults();
-   		TString question= "Write function to workfile?";
+//
+         TGWindow * parent;
+         if (window_for_cal) parent = window_for_cal;
+         else                parent = mycanvas;
+   		TString question= "Save function to workfile?";
    		int buttons= kMBYes | kMBNo, retval=0;
    		EMsgBoxIcon icontype = kMBIconQuestion;
-   		new TGMsgBox(gClient->GetRoot(), mycanvas,
+   		new TGMsgBox(gClient->GetRoot(), parent,
    		"Qustion",(const char *)question,
    		icontype, buttons, &retval);
    		if(retval == kMBYes){
@@ -353,7 +396,7 @@ tryagain:
    }
 //   if (xyvals) delete [] xyvals;
    if(col_lab){ col_lab->Delete(); delete col_lab;}
-   cout << fSelHist->GetXaxis()->GetTitle() << endl;
+//   cout << fSelHist->GetXaxis()->GetTitle() << endl;
 
    return ok;
 }

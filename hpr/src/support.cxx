@@ -6,6 +6,7 @@
 #include "TLatex.h"
 #include "TText.h"
 #include "TH1.h"
+#include "TF1.h"
 #include "TRegexp.h"
 #include "TKey.h"
 #include "TMapFile.h"
@@ -18,6 +19,8 @@
 #include "TStyle.h"
 #include "TObjString.h"
 #include "TList.h"
+#include "TRandom.h"
+
 #include "CmdListEntry.h"
 #include "FitHist.h"
 // #include "Table.h"
@@ -1198,3 +1201,49 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
    return ndeleted;
 }
 
+TH1 * calhist(TH1 * hist, TF1 * calfunc,
+              Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
+              const char * origname)
+{
+   TString hname_cal;
+   if (origname) hname_cal = origname;
+   else          hname_cal = hist->GetName();
+   hname_cal += "_cal";
+   TString title_cal(hist->GetTitle());
+   title_cal += "_calibrated";
+   title_cal += ";Energy[KeV];Events[";
+   title_cal += Form("%4.2f", binw_cal);
+   title_cal += " KeV]";
+   TH1 * hist_cal;
+   if      (!strcmp(hist->ClassName(), "TH1F"))
+   	hist_cal = new TH1F(hname_cal, title_cal,nbin_cal, 
+                     low_cal, low_cal + binw_cal * nbin_cal);
+   else if (!strcmp(hist->ClassName(), "TH1D"))
+   	hist_cal = new TH1D(hname_cal, title_cal,nbin_cal, 
+                     low_cal, low_cal + binw_cal * nbin_cal);
+   else if (!strcmp(hist->ClassName(), "TH1S"))
+   	hist_cal = new TH1S(hname_cal, title_cal,nbin_cal, 
+                     low_cal, low_cal + binw_cal * nbin_cal);
+   else
+   	hist_cal = new TH1C(hname_cal, title_cal,nbin_cal, 
+                     low_cal, low_cal + binw_cal * nbin_cal);
+
+//   under - overflows of origin hist are taken as they are
+   hist_cal->SetBinContent(0, hist->GetBinContent(0));
+   hist_cal->SetBinContent(hist_cal->GetNbinsX()+1, 
+                           hist->GetBinContent(hist->GetNbinsX()+1));
+//  update number of entries
+   hist_cal->SetEntries(hist->GetBinContent(0) + 
+                        hist->GetBinContent(hist->GetNbinsX()+1));
+// shuffle bins
+   for (Int_t bin = 1; bin <= hist->GetNbinsX(); bin++) {
+      Axis_t binw = hist->GetBinWidth(bin);
+      Axis_t bcent = hist->GetBinCenter(bin);
+      for (Int_t cnt = 0; cnt < hist->GetBinContent(bin); cnt++) {
+         Axis_t bcent_r = bcent + binw  * (gRandom->Rndm() - 0.5);
+         Axis_t bcent_cal = calfunc->Eval(bcent_r);
+         hist_cal->Fill(bcent_cal);
+      }
+   }
+   return hist_cal;
+}

@@ -187,6 +187,7 @@ enum ERootCanvasCommands {
    kFHFitPolyMarks,
    kFHFindPeaks,
    kFHCalibrate,
+   kFHCalibrateNew,
    kFHDeleteCal,
    kFHShowPeaks,
    kFHRedefineAxis,
@@ -562,7 +563,8 @@ void HTRootCanvas::CreateCanvas(const char *name)
       if(!is2dim){
  //        fInspectMenu->AddEntry("Help On Fitting 1-dim",       kFH_Help_Fit1);
          fInspectMenu->AddSeparator();
-         fInspectMenu->AddEntry("Calibrate",         kFHCalibrate);
+         fInspectMenu->AddEntry("Calibrate, Generate new hist",         kFHCalibrateNew);
+         fInspectMenu->AddEntry("Calibrate, change scale only",         kFHCalibrate);
          fInspectMenu->AddEntry("Clear Calibration", kFHDeleteCal);
          fInspectMenu->AddSeparator();
          fInspectMenu->AddEntry("FindPeaks",         kFHFindPeaks);
@@ -1513,7 +1515,10 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
 
                   case kFHCalibrate:
-                     oFitHist->Calibrate(); 
+                     oFitHist->Calibrate(0); 
+                     break;
+                  case kFHCalibrateNew:
+                     oFitHist->Calibrate(1); 
                      break;
                   case kFHDeleteCal:
                      oFitHist->ClearCalibration(); 

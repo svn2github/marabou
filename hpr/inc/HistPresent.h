@@ -37,7 +37,8 @@ protected:
    TCanvas *filelist;                 // the main canvas
    TFile       *fRootFile;        // root file
    TH1 * fCurrentHist;
-   HTRootCanvas *mycanvas;
+   HTRootCanvas *maincanvas;
+   HTRootCanvas *lastcanvas;
    Bool_t fByTitle;
    Int_t fRebin, fRMethod;
    TVirtualPad *activeFile;
@@ -161,8 +162,8 @@ public:
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
    void RecursiveRemove(TObject *);
-   HTRootCanvas* GetMyCanvas(){return mycanvas;};  
-   void  SetMyCanvas(HTRootCanvas *myc){mycanvas = myc;}; 
+   HTRootCanvas* GetMyCanvas(){return lastcanvas;};  
+   void  SetMyCanvas(HTRootCanvas *myc){lastcanvas = myc;}; 
    void SaveOptions();
    void RestoreOptions();
    void EditAttrFile();
