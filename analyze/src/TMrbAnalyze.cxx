@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.47 2004-12-21 07:40:56 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.48 2004-12-22 10:10:41 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2695,7 +2695,14 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 					calName(0,1).ToUpper();
 					calName.Prepend("h");
 				}
-				TF1 * calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
+				TF1 * calFct;
+				TMrbNamedX * nx = fCalibrationList.FindByName(calName.Data());
+				if (nx) {
+					TMrbCalibrationListEntry * cle = (TMrbCalibrationListEntry *) nx->GetAssignedObject();
+					calFct = cle->GetAddress();
+				} else {
+					calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
+				}
 				calFct->SetParameter(0, offset);
 				calFct->SetParameter(1, gain);
 				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
@@ -2704,6 +2711,7 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 		}
 		o = cal->GetTable()->After(o);
 	}
+	delete cal;
 	return(nofCalibs);
 }
 
@@ -3105,7 +3113,6 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t Rel
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
 	ncx = (TMrbNamedX *) fDCorrList[px + RelParamIndex];
-	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << DCorrAddr->GetName() << "] No param assigned to index " << RelParamIndex
@@ -3114,10 +3121,12 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t Rel
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
-	dcle = new TMrbDCorrListEntry(nmx, npx, DCorrAddr);
-	ncx->AssignObject(dcle);
-	fDCorrList.AddAt(ncx, npx->GetIndex());
+	if (ncx == NULL) {
+		ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
+		dcle = new TMrbDCorrListEntry(nmx, npx, DCorrAddr);
+		ncx->AssignObject(dcle);
+		fDCorrList.AddAt(ncx, npx->GetIndex());
+	}
 	ple->SetDCorrAddress(DCorrAddr);
 	return(kTRUE);
 }
@@ -3141,7 +3150,6 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex) {
 	TMrbDCorrListEntry * dcle;
 
 	ncx = (TMrbNamedX *) fDCorrList[AbsParamIndex];
-	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[AbsParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << DCorrAddr->GetName() << "] No param assigned to index "
@@ -3150,10 +3158,12 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex) {
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
-	dcle = new TMrbDCorrListEntry(ple->GetModule(), npx, DCorrAddr);
-	ncx->AssignObject(dcle);
-	fDCorrList.AddAt(ncx, AbsParamIndex);
+	if (ncx == NULL) {
+		ncx = new TMrbNamedX(npx->GetIndex(), DCorrAddr->GetName(), DCorrAddr->GetTitle());
+		dcle = new TMrbDCorrListEntry(ple->GetModule(), npx, DCorrAddr);
+		ncx->AssignObject(dcle);
+		fDCorrList.AddAt(ncx, AbsParamIndex);
+	}
 	ple->SetDCorrAddress(DCorrAddr);
 	return(kTRUE);
 }
@@ -3352,9 +3362,7 @@ Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, TObject * ParamAddr
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
 	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
-	if (npx != NULL) {
-		return(kFALSE);
-	}
+	if (npx != NULL) return(kFALSE);
 	npx = new TMrbNamedX(px + RelParamIndex, ParamName);
 	ple = new TMrbParamListEntry(nmx, (TObject *) ParamAddr, NULL);
 	npx->AssignObject(ple);
@@ -3401,7 +3409,6 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
 	nhx = (TMrbNamedX *) fHistoList[px + RelParamIndex];
-	if (nhx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << HistoAddr->GetName() << "] No param assigned to index " << RelParamIndex
@@ -3410,10 +3417,12 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	nhx = new TMrbNamedX(px, HistoAddr->GetName(), HistoAddr->GetTitle());
-	hle = new TMrbHistoListEntry(nmx, npx, HistoAddr);
-	nhx->AssignObject(hle);
-	fHistoList.AddAt(nhx, px + RelParamIndex);
+	if (nhx == NULL) {
+		nhx = new TMrbNamedX(px, HistoAddr->GetName(), HistoAddr->GetTitle());
+		hle = new TMrbHistoListEntry(nmx, npx, HistoAddr);
+		nhx->AssignObject(hle);
+		fHistoList.AddAt(nhx, px + RelParamIndex);
+	}
 	ple->SetHistoAddress(HistoAddr);
 	if (RelParamIndex == 0) mle->SetFirstHisto(nhx);
 	return(kTRUE);
@@ -3457,7 +3466,6 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
 	px = mle->GetIndexOfFirstParam();
 	ncx = (TMrbNamedX *) fCalibrationList[px + RelParamIndex];
-	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] No param assigned to index " << RelParamIndex
@@ -3466,10 +3474,12 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	ncx = new TMrbNamedX(npx->GetIndex(), CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
-	cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
-	ncx->AssignObject(cle);
-	fCalibrationList.AddAt(ncx, npx->GetIndex());
+	if (ncx == NULL) {
+		ncx = new TMrbNamedX(npx->GetIndex(), CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
+		cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
+		ncx->AssignObject(cle);
+		fCalibrationList.AddAt(ncx, npx->GetIndex());
+	}
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }
@@ -3493,7 +3503,6 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 	TMrbCalibrationListEntry * cle;
 
 	ncx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
-	if (ncx != NULL) return(kFALSE);
 	npx = (TMrbNamedX *) fParamList[AbsParamIndex];
 	if (npx == NULL) {
 		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] No param assigned to index "
@@ -3502,10 +3511,12 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 		return(kFALSE);
 	}
 	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
-	ncx = new TMrbNamedX(npx->GetIndex(), CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
-	cle = new TMrbCalibrationListEntry(ple->GetModule(), npx, CalibrationAddr);
-	ncx->AssignObject(cle);
-	fCalibrationList.AddAt(ncx, AbsParamIndex);
+	if (ncx == NULL) {
+		ncx = new TMrbNamedX(npx->GetIndex(), CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
+		cle = new TMrbCalibrationListEntry(ple->GetModule(), npx, CalibrationAddr);
+		ncx->AssignObject(cle);
+		fCalibrationList.AddAt(ncx, AbsParamIndex);
+	}
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }
