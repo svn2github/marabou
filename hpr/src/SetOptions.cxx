@@ -258,7 +258,8 @@ void HistPresent::RestoreOptions()
    fUseRegexp = env.GetValue("HistPresent.UseRegexp", 0);
    fProjectBothRatio =
        atof(env.GetValue("HistPresent.ProjectBothRatio", "0.6"));
-   fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "1"));
+   fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
+   fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
    fAutoUpdateDelay =
        atof(env.GetValue("HistPresent.AutoUpdateDelay", "2"));
    fPeakMwidth = env.GetValue("HistPresent.fPeakMwidth", 11);
@@ -420,6 +421,7 @@ void HistPresent::SaveOptions()
 //   env.SetValue("HistPresent.LogScaleMin"        ,kEnvUser);
 //   env.SetValue("HistPresent.AutoUpdateDelay"    ,kEnvUser);
    env.SetValue("HistPresent.ProjectBothRatio", fProjectBothRatio);
+   env.SetValue("HistPresent.LinScaleMin", fLinScaleMin);
    env.SetValue("HistPresent.LogScaleMin", fLogScaleMin);
    env.SetValue("HistPresent.AutoUpdateDelay", fAutoUpdateDelay);
    env.SetValue("HistPresent.fPeakMwidth", fPeakMwidth);
@@ -1138,19 +1140,21 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 5;
+   Int_t nopt = 6;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
 
    Int_t vp = 0;
-   row_lab->Add(new TObjString("LogScale_Minimum"));
+   row_lab->Add(new TObjString("LogScale_Minimum (2-dim only)"));
+   row_lab->Add(new TObjString("LinScale_Minimum (2-dim only)"));
    row_lab->Add(new TObjString("AutoUpdateDelay"));
    row_lab->Add(new TObjString("Max_Entries_in_HistList"));
    row_lab->Add(new TObjString("Width of response func in fpeak"));
    row_lab->Add(new TObjString("Threshold in fpeak"));
 
    values[vp++] = fLogScaleMin;
+   values[vp++] = fLinScaleMin;
    values[vp++] = fAutoUpdateDelay;
    values[vp++] = fMaxListEntries;
    values[vp++] = fPeakMwidth;
@@ -1165,6 +1169,7 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
    if (ret >= 0) {
       vp = 0;
       fLogScaleMin     = values[vp++];
+      fLinScaleMin     = values[vp++];
       fAutoUpdateDelay = values[vp++];
       fMaxListEntries  = (Int_t)values[vp++];
       fPeakMwidth      = (Int_t)values[vp++];

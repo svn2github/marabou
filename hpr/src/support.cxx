@@ -1274,7 +1274,10 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
 
 void PrintGraph(TGraphErrors * gr) 
 {
+
 	cout << endl << "Graph Object, Npoints: " << gr->GetN()<< endl;
+   gr->Print();
+/*
 	cout << "           X" << "    Error(X)" 
    	  << "           Y" << "    Error(Y)" << endl;
 	for (Int_t i = 0; i < gr->GetN(); i++) {
@@ -1282,6 +1285,7 @@ void PrintGraph(TGraphErrors * gr)
       	  << setw(12) << (gr->GetY())[i] << setw(12) << (gr->GetEY())[i]
       	  << endl;
 	}
+*/
 	TIter next(gr->GetListOfFunctions());
 	while (TObject * obj = next()) {
    	if (obj->InheritsFrom("TF1")) {

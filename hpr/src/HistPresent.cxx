@@ -2141,7 +2141,7 @@ void HistPresent::ShowGraph(const char* fname, const char* name, const char* bp)
    }
 //  gROOT->ls();
    if (gr) {
-      PrintGraph(gr);
+//      PrintGraph(gr);
       gr->Draw("A*");  
    } else     WarnBox("Graph not found");
    if (fRootFile) fRootFile->Close();
@@ -3183,10 +3183,17 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    const char * origname;
    origname = hname;
    if (origname == 0) origname = hist->GetName();
-   TRegexp msign("-");
    TString FHname("F");
    FHname += hist->GetName();
-   FHname(msign) = "_";
+   cout << "FHname " << FHname<< endl;
+   TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
+   while (FHname.Index(notascii) >= 0) {
+      FHname(notascii) = "_";
+   }
+//   while (FHname.Index(" ") >= 0) {
+//      FHname(mspace) = "_";
+//   }
+   cout << "FHname " << FHname<< endl;
    if (gDirectory) {
       TList *tl=gDirectory->GetList();   
       FitHist *fhist = (FitHist*)tl->FindObject(FHname);

@@ -3,7 +3,6 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
-
 #include "TROOT.h"
 #include "TEnv.h"
 #include "TSystem.h"
@@ -554,7 +553,7 @@ void FitHist::handle_mouse()
       	 fLogy = gPad->GetLogy();
       	 fLogz = gPad->GetLogz();
       	 if      (fDimension == 1) mycanvas->SetLog(fLogy);
-      	 else if (fDimension == 2) mycanvas->SetLog(fLogz);
+      	 else if (fDimension == 2) SetLogz(fLogz);
       	 SaveDefaults();
    	}
       if (event == kButton1Up) {
@@ -595,6 +594,13 @@ void FitHist::handle_mouse()
             delete lowedge; lowedge = 0;
             delete upedge; upedge = 0;
          }
+         if (hp) {
+            fLiveStat1dim = hp->fLiveStat1dim;
+            fLiveStat2dim = hp->fLiveStat2dim;
+            fLiveGauss = hp->fLiveGauss;
+            fLiveBG = hp->fLiveBG;
+         }
+
          if (box) {delete box; box = 0;};
          if (gFitFunc) { delete gFitFunc; gFitFunc = 0;}
          first_fit = kFALSE;
@@ -2890,10 +2896,10 @@ void FitHist::SetLogz(Int_t state)
       if(state > 0)
          fSelHist->SetMinimum(hp->fLogScaleMin);
       else        
-         fSelHist->SetMinimum(fSelHist->GetBinContent(fSelHist->GetMinimumBin())+ 0.001);
+         fSelHist->SetMinimum(hp->fLinScaleMin);
    }
    cHist->SetLogz(state);
-   SaveDefaults();
+//   SaveDefaults();
 }
 //______________________________________________________________________________________
   

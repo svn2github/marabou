@@ -146,6 +146,7 @@ protected:
    Bool_t  fAutoProj_Y;
    Double_t fProjectBothRatio;
    Double_t fLogScaleMin;
+   Double_t fLinScaleMin;
    Double_t fAutoUpdateDelay;
    Double_t fPeakThreshold;
    Int_t    fPeakMwidth;
