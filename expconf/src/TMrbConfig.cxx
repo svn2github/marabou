@@ -4680,10 +4680,9 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 			gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 			return(kFALSE);
 		}
-	} else {
-		ptPath = fp;
 	}
-
+	
+	ptPath = fp;
 	ptPath.ReplaceAll(".cxx", ".h");
 	if (gSystem->AccessPathName(ptPath.Data()) != 0) {
 		gMrbLog->Err() << "Can't include user class - prototype file \"" << ptPath << "\" missing" << endl;
@@ -4703,7 +4702,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 		if (UserDefinedEvent)	return(this->CreatePrototypeForUserEvent(ptPath.Data()));
 		else					return(kFALSE);
 	} else if (verboseMode) {
-		gMrbLog->Out()  << "Using code file " << userPath << endl;
+		gMrbLog->Out()  << "Using code file " << ptPath << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 	}
 
@@ -4717,6 +4716,7 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 	ptPath = fp;
 	ptPath.ReplaceAll(".cxx", ".h");
 	ifstream f(ptPath.Data(), ios::in);
+	Bool_t classOk = kFALSE;
 	if (!f.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - "  << userFile << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
@@ -4729,18 +4729,30 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 				f.close();
 				break;
 			}
-			if (line.Contains("class ")) {
+			line = line.Strip(TString::kBoth);
+			if (line.BeginsWith("class ")) {
 				Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
 				Int_t n2 = line.Index(":", n1);
 				if (n2 == -1) n2 = line.Index("{", n1);
 				if (n2 == -1) n2 = line.Length();
 				TString userClass = line(n1, n2 - n1);
 				userClass = userClass.Strip(TString::kBoth);
+				if (verboseMode) {
+					gMrbLog->Out()  << "[" << userFile << "] Found user class \"" << userClass << "\"" << endl;
+					gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+				}
 				this->AddUserClass(classOpt, userClass.Data());
+				classOk = kTRUE;
 			}
 		}
 	}
 	
+	if (!classOk) {
+		gMrbLog->Err()  << "Prototype file " << ptPath << " doesn't contain any class definition" << endl;
+		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+		return(kFALSE);
+	}
+
 	return(kTRUE);
 }
 
@@ -6452,7 +6464,8 @@ Bool_t TMrbConfig::IsDefined(const Char_t * Name) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nx = fLofDefines.FindByName(Name);
-	return(nx != NULL);
+	if (nx == NULL || nx->GetIndex() == 0)	return(kFALSE);
+	else									return(kTRUE);
 }
 
 Bool_t TMrbConfig::IsDefined(const Char_t * Name, Int_t & Value) const {
@@ -6471,10 +6484,10 @@ Bool_t TMrbConfig::IsDefined(const Char_t * Name, Int_t & Value) const {
 	TMrbNamedX * nx = fLofDefines.FindByName(Name);
 	Value = (Int_t) kFALSE;
 	if (nx == NULL) return(kFALSE);
-	Value = (Int_t) kTRUE;
+	Value = nx->GetIndex();
 	TString name = nx->GetName();
-	if (name.BeginsWith("Int_t")) Value = nx->GetIndex();
-	return(kTRUE);
+	if (name.BeginsWith("Int_t")) return(kTRUE);
+	if (name.BeginsWith("Bool_t")) return(nx->GetIndex() != 0);
 }
 
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {
@@ -6590,18 +6603,21 @@ Bool_t TMrbConfig::CheckConfig() {
 
 	TMrbModule * module = (TMrbModule *) fLofModules.First();
 	while (module) {
-		if (module->GetNofChannelsUsed() == 0) {
-			gMrbLog->Err()	<< "Module \"" << module->GetName()
-							<< "\" (serial " << module->GetSerial()
-							<< "): Not used by any subevent" << endl;
-			gMrbLog->Flush(this->ClassName(), "CheckConfig");
-			nofErrors++;
-		} else if (this->IsVerbose()) {
-			gMrbLog->Out()	<< "Module \"" << module->GetName()
-							<< "\" (serial " << module->GetSerial()
-							<< "): " << module->GetNofChannelsUsed()
-							<< " channel(s) used out of " << module->GetNofChannels() << endl;
-			gMrbLog->Flush(this->ClassName(), "CheckConfig");
+		Int_t mtype = (module->GetType())->GetIndex();
+		if ((mtype & TMrbConfig::kModuleListMode) && !(mtype & TMrbConfig::kModuleScaler)) {
+			if (module->GetNofChannelsUsed() == 0) {
+				gMrbLog->Err()	<< "Module \"" << module->GetName()
+								<< "\" (serial " << module->GetSerial()
+								<< "): Not used by any subevent" << endl;
+				gMrbLog->Flush(this->ClassName(), "CheckConfig");
+				nofErrors++;
+			} else if (this->IsVerbose()) {
+				gMrbLog->Out()	<< "Module \"" << module->GetName()
+								<< "\" (serial " << module->GetSerial()
+								<< "): " << module->GetNofChannelsUsed()
+								<< " channel(s) used out of " << module->GetNofChannels() << endl;
+				gMrbLog->Flush(this->ClassName(), "CheckConfig");
+			}
 		}
 		module = (TMrbModule *)  fLofModules.After(module);
 	}
