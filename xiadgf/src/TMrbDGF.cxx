@@ -3692,14 +3692,13 @@ Bool_t TMrbDGF::SetTraceLength(Int_t Channel, Double_t TraceLength, Bool_t Updat
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::SetTraceLength
-// Purpose:        Set offset
+// Purpose:        Set trace length
 // Arguments:      Int_t Channel        -- channel number
 //                 Double_t TraceLength -- tracelength in us
 //                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
-// Results:        Int_t TraceVal      -- converted TRACKDAC value
+// Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Sets TRACKDAC for a given channel.
-//                 Offset in Volts (after DAC amplification).
+// Description:    Sets TRACKDAC in us for a given channel.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3732,6 +3731,96 @@ Double_t TMrbDGF::GetTraceLength(Int_t Channel, Bool_t ReadFromDSP) {
 
 	traceLength = (Double_t) this->GetParValue(Channel, "TRACELENGTH", ReadFromDSP);
 	return(traceLength / 40);
+}
+
+Bool_t TMrbDGF::SetPSALength(Int_t Channel, Double_t PsaLength, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetPSALength
+// Purpose:        Set psa length
+// Arguments:      Int_t Channel        -- channel number
+//                 Double_t PsaLength   -- psa length in us
+//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets PSALENGTH for given channel. Input is in us.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t psaLength;
+
+	if (UpdateDSP && !this->CheckConnect("SetPSALength")) return(kFALSE);
+	if (!this->CheckChannel("SetPSALength", Channel)) return(kFALSE);
+	psaLength = (Int_t) (PsaLength * 40 +.5);
+	this->SetParValue(Channel, "PSALENGTH", psaLength);
+	return(kTRUE);
+}
+
+Double_t TMrbDGF::GetPSALength(Int_t Channel, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetPSALength
+// Purpose:        Return psa length in us
+// Arguments:      Int_t Channel        -- channel number
+//                 Bool_t ReadFromDSP   -- kTRUE if param to be read from DSP
+// Results:        Double_t PsaLength   -- psa length in us
+// Exceptions:
+// Description:    Returns psa length for a given channel.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t psaLength;
+
+	if (ReadFromDSP && !this->CheckConnect("GetPSALength")) return(-1);
+	if (!this->CheckChannel("GetPSALength", Channel)) return(-1);
+
+	psaLength = (Double_t) this->GetParValue(Channel, "PSALENGTH", ReadFromDSP);
+	return(psaLength / 40);
+}
+
+Bool_t TMrbDGF::SetPSAOffset(Int_t Channel, Double_t PsaOffset, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetPSAOffset
+// Purpose:        Set psa offset
+// Arguments:      Int_t Channel        -- channel number
+//                 Double_t PsaLength   -- psa length in us
+//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets PSAOFFSET for given channel. Input is in us.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t psaOffset;
+
+	if (UpdateDSP && !this->CheckConnect("SetPSAOffset")) return(kFALSE);
+	if (!this->CheckChannel("SetPSAOffset", Channel)) return(kFALSE);
+	psaOffset = (Int_t) (PsaOffset * 40 +.5);
+	this->SetParValue(Channel, "PSAOFFSET", psaOffset);
+	return(kTRUE);
+}
+
+Double_t TMrbDGF::GetPSAOffset(Int_t Channel, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetPSAOffset
+// Purpose:        Return psa offset in us
+// Arguments:      Int_t Channel        -- channel number
+//                 Bool_t ReadFromDSP   -- kTRUE if param to be read from DSP
+// Results:        Double_t PsaOffset   -- psa length in us
+// Exceptions:
+// Description:    Returns psa offset for a given channel.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t psaOffset;
+
+	if (ReadFromDSP && !this->CheckConnect("GetPSAOffset")) return(-1);
+	if (!this->CheckChannel("GetPSAOffset", Channel)) return(-1);
+
+	psaOffset = (Double_t) this->GetParValue(Channel, "PSAOFFSET", ReadFromDSP);
+	return(psaOffset / 40);
 }
 
 Bool_t TMrbDGF::UpdateSlowFilter(Int_t Channel, Bool_t UpdateDSP) {

@@ -266,6 +266,12 @@ class TMrbDGF : public TNamed {
 		Bool_t SetTau(Int_t Channel, Double_t Tau, Bool_t UpdateDSP = kTRUE);					// set tau
 		Double_t GetTau(Int_t Channel, Bool_t ReadFromDSP = kTRUE); 							// get tau value													// get tau value
 
+		Bool_t SetPSALength(Int_t Channel, Double_t PsaLength, Bool_t UpdateDSP = kTRUE);	// set trace length in us
+		Double_t GetPSALength(Int_t Channel, Bool_t ReadFromDSP = kTRUE);						// get trace length
+
+		Bool_t SetPSAOffset(Int_t Channel, Double_t PsaOffset, Bool_t UpdateDSP = kTRUE);	// set trace length in us
+		Double_t GetPSAOffset(Int_t Channel, Bool_t ReadFromDSP = kTRUE);						// get trace length
+
 		Bool_t SetBinning(Int_t Channel, Int_t EnBin, Bool_t UpdateDSP = kTRUE);	// set binning
 
 		// data acquisition
