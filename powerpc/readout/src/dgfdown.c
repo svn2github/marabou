@@ -103,17 +103,19 @@ int main(int argc, char * argv[]) {
 	int errCnt;
 	FILE *fsts;
 
-	unlink(".dgfdown.ok");
-
 	if (argc >= 2) {
 		strcpy(cfgFile, argv[1]);
 	} else {
 		strcpy(cfgFile, ".DgfDownload.rc");
 	}
 
+	errCnt = 0;
+
  	n = root_env_read(cfgFile);			/* read ROOT's environment file */
 	if (n <= 0) {
 		printf("%sdgfdown: Cannot open file %s%s\n", setred, cfgFile, setblack);
+		errCnt++;
+		dgfdown_write_hs(errCnt);
 		exit(1);
 	}
 
@@ -133,11 +135,11 @@ int main(int argc, char * argv[]) {
 		sysSize = dgf_read_fpga(fileSpec, "System", sys);
 		if (sysSize <= 0) {
 			printf("%sdgfdown: Error reading file %s [System]%s\n", setred, fileSpec, setblack);
+			errCnt++;
+			dgfdown_write_hs(errCnt);
 			exit(1);
 		}
 	}
-
-	errCnt = 0;
 
 	if (strchr(loadOptions, 'F') != NULL) {
 		strcpy(fileSpec, loadPath);
@@ -179,6 +181,8 @@ int main(int argc, char * argv[]) {
 			if (smaskD) {
 				if (fippiDsize <= 0) {
 					printf("%sdgfdown: No data [Fippi(D)]%s\n", setred, setblack);
+					errCnt++;
+					dgfdown_write_hs(errCnt);
 					exit(1);
 				}
 				if (dgf_download_fpga(crate, smaskD, "Fippi(D)", fippiRevD, fippiDsize) == 0) {
@@ -190,6 +194,8 @@ int main(int argc, char * argv[]) {
 			if (smaskE) {
 				if (fippiEsize <= 0) {
 					printf("%sdgfdown: No data [Fippi(E)]%s\n", setred, setblack);
+					errCnt++;
+					dgfdown_write_hs(errCnt);
 					exit(1);
 				}
 				if (dgf_download_fpga(crate, smaskE, "Fippi(E)", fippiRevE, fippiEsize) == 0) {
@@ -208,21 +214,23 @@ int main(int argc, char * argv[]) {
 			}
 		}
 	}
+
+	dgfdown_write_hs(errCnt);
 	if (errCnt == 0) {
 		printf("\n%sdgfdown: Download ok - no errors%s\n\n", setblue, setblack);
-		fsts = fopen(".dgfdown.ok", "w");
-		if (fsts) {
-			fprintf(fsts, "Download.Errors:	0\n");
-			close(fsts);
-		}
 		exit(0);
 	} else {
 		printf("\n%sdgfdown: Download finished - %d error(s)%s\n\n", setred, errCnt, setblack);
-		fsts = fopen(".dgfdown.ok", "w");
-		if (fsts) {
-			fprintf(fsts, "Download.Errors:	%d\n", errCnt);
-			close(fsts);
-		}
 		exit(1);
 	}
+}
+
+int dgfdown_write_hs(int errCnt) {
+	FILE * fsts;
+	fsts = fopen(".dgfdown.ok", "w");
+	if (fsts) {
+		fprintf(fsts, "Download.Errors:	%d\n", errCnt);
+		close(fsts);
+	}
+	return(errCnt);
 }

@@ -1281,6 +1281,7 @@ Bool_t TMbsSetup::CheckSetup() {
 	} else {
 
 		this->SetNofReadouts(nofReadouts);
+
 		for (n = 0; n < nofReadouts; n++) {
 
 //			TMbsSetup.ReadoutNNN.Name:

@@ -4659,8 +4659,8 @@ TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t 
 	TObjArray * lofHistos;
 
 	TString arrayName = ArrayName;
-	arrayName(0,1).ToUpper();
 	TString listName = arrayName;
+	arrayName(0,1).ToUpper();
 	arrayName.Prepend("h");
 	arrayName += "Array";
 	listName += ".histlist";
