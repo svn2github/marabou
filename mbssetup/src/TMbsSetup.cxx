@@ -963,12 +963,13 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemMemoryBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryBase"), 0);
+						cout << "@@ " << setbase(16) << memBase << setbase(10) << endl;
 						if (memBase == 0) {
 							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
 							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
 						} 
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemMemoryLength"), 0);
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
@@ -999,7 +1000,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemMemoryLength"), 0);
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
@@ -1020,12 +1021,12 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
 							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
 							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
 						} 
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacLength"), 0);
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
@@ -1056,7 +1057,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						for (crate = 0; crate < kNofCrates; crate++) arrayData[crate] = 0;
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacLength"), 0);
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
@@ -1076,12 +1077,12 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 					{
 						TString res;
 						Int_t ctrl = this->ReadoutProc(ProcID)->GetController()->GetIndex();
-						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacBase"), 0);
+						UInt_t memBase = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacBase"), 0);
 						if (memBase == 0) {
 							if (ctrl == kControllerCBV) memBase = kRemMemoryBaseCBV;
 							else if (ctrl == kControllerCC32) memBase = kRemMemoryBaseCC32;
 						} 
-						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemCamacLength"), 0);
+						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
 							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
