@@ -61,6 +61,12 @@ class TMrbIOSpec : public TObject {
 									kOutputClose		=	0x4
 								};
 
+		enum EMrbOutputFormat 	{	kFormatNone 		=	0,
+									kFormatRoot 		=	0x1,
+									kFormatMED			=	0x2,
+									kFormatLMD			=	0x4
+								};
+
 		enum EMrbHistoMode	 	{	kHistoNone			=	0,
 									kHistoAdd			=	0x1,
 									kHistoSave			=	0x2,

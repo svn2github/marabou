@@ -34,6 +34,7 @@
 #include "TMapFile.h"
 #include "TError.h"
 #include "TEnv.h"
+#include "TRegexp.h"
 #include "TSysEvtHandler.h"
 
 #include "TDirectory.h"
@@ -168,7 +169,7 @@ Bool_t PutPid(TMrbAnalyze::EMrbRunStatus Status) {
 //VoidFuncPtr_t initfuncs[] = { InitGui, 0 };
 
 //TROOT root("M_analyze","Marabous Analysis framework", initfuncs);
-//TROOT root("M_analyze","Marabous Analysis framework");
+//TROOT root("M_analyze","Marabous Analysis froutpututput");
 
 
 int main(int argc, char **argv) {
@@ -178,7 +179,8 @@ int main(int argc, char **argv) {
 // Purpose:        Analyze MARaBOU data
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t writeLMD = kFALSE;
+	TMrbIOSpec::EMrbOutputFormat oFormat = TMrbIOSpec::kFormatNone;
+
 	void exit_from_analyze(int);
 
 	if(argc <= 2) {
@@ -187,7 +189,7 @@ int main(int argc, char **argv) {
 				<<	"Usage: M_analyze data_source [input_type]" << endl
 				<<	"                             [start_event] [stop_event]" << endl
 				<<	"                             [run_number] [down_scale]" << endl
-				<<	"                             [root_file] [file_size]" << endl
+				<<	"                             [output_file] [file_size]" << endl
 				<<	"                             [parm_file] [histo_file]" << endl
 				<<	"                             [mmap_file] [mmap_size]" << endl
 				<< endl
@@ -204,7 +206,7 @@ int main(int argc, char **argv) {
 				<<	"                                       (time stamps are given as :nnn or hh:mm:ss[:xxx])" << endl
 				<<	"       run_number     0                run number (-1)" << endl
 				<<	"       down_scale     1                analysis will be scaled down by this factor" << endl
-				<<	"       root_file      \"none\"             where to write converted MBS raw data" << endl
+				<<	"       output_file    \"none\"             where to write converted MBS raw data" << endl
 				<<	"       file_size      0                approx. size of output file in MB" << endl
 				<<	"       parm_file      \"none\"             name of parameter file (.root / .par) to be loaded at startup" << endl
 				<<	"       histo_file     \"Histos_...\"       name / prefix if histogram file" << endl
@@ -229,7 +231,7 @@ int main(int argc, char **argv) {
 	argNo++;
 	TString data_source;
 	data_source = argv[argNo];
-	cout << "data_source: " << argv[argNo] << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Data source: " << argv[argNo] << endl;
 
 // input type: FILE, SYNC, ASYNC, LIST
 	argNo++;
@@ -237,7 +239,7 @@ int main(int argc, char **argv) {
 	TMrbIOSpec::EMrbInputMode input_mode;
 	if(argc > argNo)	input_type = argv[argNo];
 	else				input_type = "F";
-	cout << "input_type:  " <<  input_type<< endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Input type:  " <<  input_type<< endl;
 
 
 	switch (input_type(0)) {
@@ -246,12 +248,10 @@ int main(int argc, char **argv) {
 					input_mode = TMrbIOSpec::kInputFile;
 					if (data_source.Index(".root", 0) > 0) {
 						input_mode = TMrbIOSpec::kInputRoot;
-					} else if (data_source.Index(".lmd", 0) > 0) {
-						input_mode = TMrbIOSpec::kInputLMD;
 					} else {
 						cerr	<< setred
 								<< "M_analyze: Illegal file extension - " << data_source
-								<< " (sould be .root (standard ROOT) or .lmd (MBS native))"
+								<< " (sould be \".root\")"
 								<< setblack << endl;
 						exit(1);
 					}
@@ -311,42 +311,55 @@ int main(int argc, char **argv) {
 	argNo++;
 	if(argc > argNo)	start_event = argv[argNo];
 	else				start_event = "0";
-	cout << "start_event: " << start_event << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Start event: " << start_event << endl;
 	argNo++;
 	if(argc > argNo)	stop_event = argv[argNo];
 	else				stop_event = "0";
-	cout << "stop_event:  " << stop_event << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Stop event:  " << stop_event << endl;
 
 // run number
 	Int_t runnr;
 	argNo++;
 	if(argc > argNo)	runnr = atoi(argv[argNo]);
 	else				runnr = 0;
-	cout << "run_number:  " << runnr << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Run number:  " << runnr << endl;
 
 // down scale
 	Int_t downscale;
 	argNo++;
 	if(argc > argNo)	downscale = atoi(argv[argNo]);
 	else				downscale = 1;
-	cout << "downscale:   " << downscale << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Downscale:   " << downscale << endl;
   
 // output file & size
-	TString root_file;
+	TString output_file;
 	TMrbIOSpec::EMrbOutputMode output_mode;
 	argNo++;
-	if(argc > argNo)	root_file = argv[argNo];
-	else				root_file = "none";
-	cout << "output_file: " << root_file << endl;
+	if(argc > argNo)	output_file = argv[argNo];
+	else				output_file = "none";
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Output file: " << output_file << endl;
 
-	if (root_file.CompareTo("none") == 0)	output_mode = TMrbIOSpec::kOutputNone;
-	else	output_mode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteTree | TMrbIOSpec::kOutputClose);
+	if (output_file.CompareTo("none") == 0)	output_mode = TMrbIOSpec::kOutputNone;
+	else {
+		output_mode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteTree | TMrbIOSpec::kOutputClose);
+		oFormat = TMrbIOSpec::kFormatNone;
+		TRegexp rxroot("\\.root$");
+		TRegexp rxmed("\\.med$");
+		TRegexp rxlmd("\\.lmd$");
+		if (output_file.Index(rxroot, 0) > 0) oFormat = TMrbIOSpec::kFormatRoot;
+		else if (output_file.Index(rxmed, 0) > 0) oFormat = TMrbIOSpec::kFormatMED;
+		else if (output_file.Index(rxlmd, 0) > 0) oFormat = TMrbIOSpec::kFormatLMD;
+		else {
+			cerr << setred << "M_analyze: Wrong output format - " << output_file << setblack << endl;
+			exit(1);
+		}
+	}
 
 	Int_t file_size;
 	argNo++;
 	if(argc > argNo)	file_size = atoi(argv[argNo]);
 	else				file_size = 0;
-	cout << "file_size:   " << file_size << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] File size:   " << file_size << endl;
 
 // param file
 	TString param_file;
@@ -364,7 +377,7 @@ int main(int argc, char **argv) {
 				<< setblack << endl;
 		exit(1);
 	}
-	cout << "param_file:  " << param_file << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Param file:  " << param_file << endl;
 
 // histo file
 	TString histo_file;
@@ -374,7 +387,7 @@ int main(int argc, char **argv) {
 	else				histo_file = "none";
 	if (histo_file.CompareTo("none") == 0)	histo_mode = TMrbIOSpec::kHistoNone;
 	else									histo_mode = TMrbIOSpec::kHistoSave;
-	cout << "histo_file:  " << histo_file << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Histo file:  " << histo_file << endl;
   
 // mmap file & size
 	TString mmap_name;
@@ -382,20 +395,20 @@ int main(int argc, char **argv) {
 	if(argc > argNo)	mmap_name = argv[argNo];
 	else				mmap_name = "/tmp/M_prod.map";
    if (mmap_name.CompareTo("none") == 0) kUseMap = kFALSE;
-	cout << "mmap_name:   " << mmap_name << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap name:   " << mmap_name << endl;
 	Int_t mmap_size;
 	argNo++;
 	if(argc > argNo)	mmap_size = kMB * atoi(argv[argNo]);
 	else				mmap_size = kMB * 12;
-	cout << "mmap_size:   " << mmap_size << endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap size:   " << mmap_size << endl;
 
 	gComSocket = 0;
 	argNo++;
 	if(argc > argNo)	gComSocket = atoi(argv[argNo]);
    our_pid_file += gComSocket;
-	cout << "ComSocket:   " <<  gComSocket<< endl;
+	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Communication socket:   " <<  gComSocket<< endl;
 
-   cout << "M_analyze: Reading of arguments done" << endl;
+   if (verboseMode) cout << "M_analyze: Reading of arguments done (" << argNo << " args)" << endl;
 
 	PutPid(TMrbAnalyze::M_STARTING);
 
@@ -409,9 +422,9 @@ int main(int argc, char **argv) {
 	//   if mapped file exists,  save histos to temp file for later restore
       	new_name = new TString(mmap_name);
       	new_name->Append("_save.root");
-      	cout	<< setgreen
-				<< "M_analyze: M_prod being opened as READ" << endl
-         	<< "saving histograms to " << new_name->Data() << endl; 
+      	if (verboseMode) cout	<< setgreen
+								<< "M_analyze: M_prod being opened as READ" << endl
+         						<< "           Saving histograms to " << new_name->Data() << endl; 
 	   	M_prod = TMapFile::Create((const Text_t *)mmap_name,"READ");
       	save_map = new TFile(new_name->Data(),"RECREATE");
       	TMapRec *mr = M_prod->GetFirst();
@@ -431,19 +444,18 @@ int main(int argc, char **argv) {
       	RmCmd += (const Text_t *)mmap_name;
       	gSystem->Exec((const char *)RmCmd);
 		} 
-   	cout	<< setgreen
-				<< "M_analyze: M_prod being opened as NEW"
-				<< setblack << endl;
+   		if (verboseMode) cout	<< setgreen
+								<< "M_analyze: M_prod being opened as NEW"
+								<< setblack << endl;
 		TMapFile::SetMapAddress(0x46000000);		// alloc map file in hi mem
 		M_prod = TMapFile::Create((const Text_t *)mmap_name,"RECREATE",
 										mmap_size, "M memory mapped file");
-//		if ( verboseMode ) M_prod->Print();
    }
 // pass unix args to i/o spec
 	ioSpec = new TMrbIOSpec();
 	if (!ioSpec->SetStartStop(start_event, stop_event)) exit(1);
 	ioSpec->SetInputFile(data_source.Data(), input_mode);
-	ioSpec->SetOutputFile(root_file.Data(), output_mode);
+	ioSpec->SetOutputFile(output_file.Data(), output_mode);
 	ioSpec->SetParamFile(param_file.Data(), param_mode);
 	ioSpec->SetHistoFile(histo_file.Data(), histo_mode);
 
@@ -555,16 +567,23 @@ int main(int argc, char **argv) {
 		}
 
 //  create root file to store trees
-		writeLMD = kFALSE;
 		if (output_mode && TMrbIOSpec::kOutputOpen != 0) {
-			if (u_analyze->WriteRootTree(ioSpec))	u_analyze->SetFileSize(file_size);
-			else									exit(1);
-			if ((input_mode & TMrbIOSpec::kInputMBS) != 0 && gEnv->GetValue("TMrbTransport.WriteLMDFile", kFALSE)) {
-				TString lmd_file = root_file;
-				Int_t ext = lmd_file.Index(".root");
-				lmd_file.Resize(ext);
-				gMrbTransport->OpenLMDFile(lmd_file);
-				writeLMD = kTRUE;
+
+			u_analyze->SetFileSize(file_size);
+
+			if ((input_mode & TMrbIOSpec::kInputMBS) != 0) {
+				if (oFormat == TMrbIOSpec::kFormatMED) {
+					if (!gMrbTransport->OpenMEDFile(output_file)) exit(1);
+				} else if (oFormat == TMrbIOSpec::kFormatLMD) {
+					if (!gMrbTransport->OpenLMDFile(output_file)) exit(1);
+				} else if (oFormat == TMrbIOSpec::kFormatRoot) {
+					if (u_analyze->WriteRootTree(ioSpec)) exit(1);
+				}
+			} else if (oFormat == TMrbIOSpec::kFormatRoot) {
+				if (u_analyze->WriteRootTree(ioSpec)) exit(1);
+			} else {
+				cerr << setred << "M_analyze: Wrong output format - " << output_file << setblack << endl;
+				exit(1);
 			}
 		}
 
@@ -623,7 +642,8 @@ int main(int argc, char **argv) {
 			}
 			gMrbTransport->Close();
 			gMrbTransport->FreeBuffers();
-			if ( writeLMD ) gMrbTransport->CloseLMDFile();
+			if (oFormat == TMrbIOSpec::kFormatMED) gMrbTransport->CloseMEDFile();
+			if (oFormat == TMrbIOSpec::kFormatLMD) gMrbTransport->CloseLMDFile();
 		}
 //      cout << " u_analyze->SaveHistograms(*, ioSpec);" << endl;
    	ioSpec->SetHistoFile(histo_file.Data(), histo_mode);
