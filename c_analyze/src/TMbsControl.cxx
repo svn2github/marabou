@@ -106,18 +106,24 @@ Int_t TMbsControl::GetNofMbsProcs(){
 //_________________________________________________________________________________________
 
 Int_t TMbsControl::GetNodeNames(){
-   cout << setblue<< "c_mbs:  Get Node names from node_list.txt"<< setblack << endl;   
+   TString dir; 
+   TString cmd; 
+   FILE *fp;
    char line[60];
-   TString cmd = "/usr/bin/rsh "; cmd += fCurNode; cmd += " pwd";
-   cout << cmd << endl;
-   FILE *fp = gSystem->OpenPipe(cmd.Data(), "r");
-   fgets(line,60,fp); 
-   if(strlen(line)>2) line[strlen(line)-1]='\0';
-   else return -1;
-//   cout << line << " :len:" << strlen(line)<< endl; cin >> iii;
-   TString dir = line; 
-   dir += "/"; dir += fDir;
-   gSystem->ClosePipe(fp);
+   if (!fDir.BeginsWith("/")) {
+      cmd = "/usr/bin/rsh "; cmd += fCurNode; cmd += " pwd";
+      cout << cmd << endl;
+      fp = gSystem->OpenPipe(cmd.Data(), "r");
+      fgets(line,60,fp); 
+      if(strlen(line)>2) line[strlen(line)-1]='\0';
+      else return -1;
+      dir = line; 
+      dir += "/"; dir += fDir;
+      gSystem->ClosePipe(fp);
+   } else {
+      dir = fDir;
+   } 
+   cout << setblue<< "c_mbs:  Get Node names from " << fDir << "/node_list.txt"<< setblack << endl;   
 
    cmd = "/usr/bin/rsh "; cmd += fCurNode;  cmd += " cat ";
    cmd += dir; cmd += "/node_list.txt";
