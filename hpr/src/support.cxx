@@ -1098,6 +1098,7 @@ TH1 *gethist(const char *hname, TSocket * sock)
          cout << "Unknown message type" << endl;
       }
    }
+   if (message) delete message;
    gDirectory = gROOT;
    return hist;
 }
@@ -1133,6 +1134,7 @@ TMrbStatistics *getstat(TSocket * sock)
          cout << "Unknown message type" << endl;
       }
    }
+   if (message) delete message;
    gDirectory = gROOT;
    return stat;
 }

@@ -802,13 +802,14 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
                cout << "this might crash X, please use selection mask"<< endl;
                cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
                cout << "On your own risk you may increase value: " << fMaxListEntries << endl;
-               cout << "WARNING: the following hists will not be shown" << setblack << endl;
-               not_shown++;
+               cout << "WARNING: not all hists will be shown" << setblack << endl;
             }
-            cout << "Not shown: " << stent->GetName() << endl;
+            not_shown++;
+//            cout << "Not shown: " << stent->GetName() << endl;
          }
       }
    }
+   if (not_shown > 0) cout << "Another: " << not_shown << " hists are not shown" << endl;
    Int_t anything_to_delete = 0;
    if (fHistSelMask->Length() <=0) {
 //  windows
