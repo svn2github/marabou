@@ -4130,31 +4130,6 @@ Bool_t  TUsrHitBuffer::AddHit(const TUsrHit * Hit) {
 	return kTRUE;
 }
 
-Bool_t  TUsrHitBuffer::AddHitAt(const TUsrHit * Hit, Int_t Index) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TUsrHitBuffer::AddHit
-// Purpose:        Add a hist to hit buffer
-// Arguments:      TUsrHit * Hit
-//                 Int_t Index   -- where to add the hit
-// Results:        true / false
-// Exceptions:
-// Description:    Adds a new item to hit list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (Index >= fNofEntries) {
-		gMrbLog->Err()	<< "[" << this->GetName() << "] Index out of range - " << Index
-						<< "(" << fNofEntries << " entries max)" << endl;
-		gMrbLog->Flush(this->ClassName(), "AddHitAt");
-		return(kFALSE);
-	}
-	TClonesArray &hits = * fHits;
-	TUsrHit * hit = new(hits[Index]) TUsrHit();
-	*hit = *Hit;
-	return kTRUE;
-}
-
 TUsrHit * TUsrHitBuffer::GetHitAt(Int_t Index) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

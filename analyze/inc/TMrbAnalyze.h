@@ -523,13 +523,11 @@ public:
 class TUsrHitBuffer : public TObject {
 
 	public:
-		TUsrHitBuffer(Int_t maxent = 2500) {
-   		fNofEntries = maxent;
-   		fNofHits = 0;
-   		fHits = NULL;
-
- //  		fHits = new TClonesArray("TUsrHit", fNofEntries);
-};
+		TUsrHitBuffer(Int_t NofEntries = 2500) {
+   			fNofEntries = NofEntries;
+   			fNofHits = 0;
+   			fHits = NULL;
+		};
 
 		virtual ~TUsrHitBuffer() {
 			if (fHits) delete fHits;
@@ -550,7 +548,6 @@ class TUsrHitBuffer : public TObject {
 										UShort_t * Data, Int_t NofData);
 		Bool_t AddHit(const TUsrHit * Hit);					  //  add (append) ready made hit
 
-		Bool_t AddHitAt(const TUsrHit * Hit, Int_t Index);	// add at given index
 		TUsrHit * GetHitAt(Int_t Index);					// get hit at given index
 
 		Bool_t RemoveHit(TUsrHit * Hit);					// remove hit
@@ -573,12 +570,11 @@ class TUsrHitBuffer : public TObject {
 		
 	protected:
 		TString fBufName;						// buffer name
-		Int_t fNofEntries;				   // max number of entries
+		Int_t fNofEntries;						// max number of entries
 		Int_t fNofHits; 						// current number of hits
 		Int_t fOffset;							// [obsolete, for compatibility reasons only]
 		Int_t fHighWater;						// high water margin
-		TClonesArray * fHits;			   // array containing hit data
-//		TClonesArray * fHits;			   //-> array containing hit data
+		TClonesArray * fHits;			    	// array containing hit data
 			
 	ClassDef(TUsrHitBuffer, 1)					// [Analyze] Hit buffer
 };
