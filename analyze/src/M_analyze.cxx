@@ -66,7 +66,7 @@ TMrbIOSpec * ioSpec;
 TServerSocket *ss = 0;
 
 // if Offline (replay) dont use TMapFile
-Bool_t kUseMap = kTRUE;
+extern Bool_t kUseMap;
 Int_t  gComSocket;
 Bool_t verboseMode = kFALSE;
 UInt_t input_mode = TMrbIOSpec::kInputRoot;
@@ -399,13 +399,13 @@ int main(int argc, char **argv) {
 	TString mmap_name;
 	argNo++;
 	if(argc > argNo)	mmap_name = argv[argNo];
-	else				mmap_name = "/tmp/M_prod.map";
+	else				mmap_name = "none";
    if (mmap_name.CompareTo("none") == 0) kUseMap = kFALSE;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap name:   " << mmap_name << endl;
 	Int_t mmap_size;
 	argNo++;
 	if(argc > argNo)	mmap_size = kMB * atoi(argv[argNo]);
-	else				mmap_size = kMB * 12;
+	else				mmap_size = 0;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap size:   " << mmap_size << endl;
 
 	gComSocket = 0;
@@ -601,7 +601,7 @@ int main(int argc, char **argv) {
 //	start the two pthreads HERE
 
    if (gComSocket > 0) pthread_create(&msg_thread, NULL, &msg_handler, NULL);
-   pthread_create(&update_thread, NULL, &update_handler, NULL);
+   if (gComSocket > 0 || kUseMap) pthread_create(&update_thread, NULL, &update_handler, NULL);
 
 	gSystem->Sleep(1000);       // give the threads some time 
 
@@ -664,7 +664,7 @@ int main(int argc, char **argv) {
 	
 	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate"
 						<< endl;
-   pthread_join(update_thread, NULL);
+   if (gComSocket > 0 || kUseMap) pthread_join(update_thread, NULL);
    if ( verboseMode ) cout	<< "M_analyze: update_thread terminated" << endl;
 	u_analyze->CloseRootTree();		// close user's output file(s)
 //	if(kUseMap){
