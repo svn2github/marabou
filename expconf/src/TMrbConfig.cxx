@@ -3690,7 +3690,7 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	cfile += prefix;
 	cfile += "Config";
 
-	packNames arc(cfile.Data(), "Config.rc.code", ".rc", "Environment Settings");
+	packNames arc(cfile.Data(), "Config.rc.code", ".rc", "Environment settings");
 	filesToCreate.Add((TObject *) &arc);
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
@@ -5648,6 +5648,8 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	gMrbLog->Out() << "[.mbssetup: Definitions to perform MBS setup]" << endl;
+	gMrbLog->Flush("", "", setblue);
 	gSystem->Exec("rm -f .mbssetup");
 
 	TMbsSetup * mbsSetup = new TMbsSetup();
@@ -5685,8 +5687,6 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	}
 		
 	mbsSetup->Save();
-	gMrbLog->Out() << "[.mbssetup: MBS setup updated]" << endl;
-	gMrbLog->Flush("", "", setblue);
 	return(kTRUE);
 }
 
