@@ -108,6 +108,7 @@ private:
    Int_t fLiveStat2dim;
    Int_t fLiveGauss;
    Int_t fLiveBG;
+   TText * fDateText;
 public:
    FitHist(const Text_t *name, const Text_t *title, TH1 *hist,
            const Text_t *hname, Int_t win_topx = 520, Int_t win_topy = 5, 
@@ -199,7 +200,7 @@ public:
    void DrawCutName();                      // 
    void MarksToCut();               // 
    void AddCutsToHist();
-//   void DrawDateBox(TH1*, Float_t);                      // 
+   void DrawDate();                      // 
    Bool_t UseCut(TMrbWindow2D *);         // 
    Bool_t UseWindow(TMrbWindow *);         // 
    Bool_t InsideCut(Float_t, Float_t);               // 

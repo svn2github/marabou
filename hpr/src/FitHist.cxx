@@ -131,6 +131,7 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    fSelPad = NULL;
    cHist   = NULL;
    expHist = NULL;
+   fDateText = NULL;
    projHist = NULL;
    fTofLabels = NULL;
    fSelInside = kTRUE;
@@ -257,6 +258,7 @@ FitHist::~FitHist()
    if (fTofLabels) { delete fTofLabels; fTofLabels=NULL;}
    if (fCalHist) delete fCalHist;
    if (fCalFunc) delete fCalFunc;
+   if (fDateText) delete fDateText;
    if (!cHist || !cHist->TestBit(TObject::kNotDeleted) ||
        cHist->TestBit(0xf0000000)) {
       cout << "~FitHist: " << this << " Canvas : " << cHist << " is deleted" << endl;
@@ -2862,16 +2864,7 @@ void FitHist::Draw1Dim()
       ExecDefMacro();
       fSelPad->Modified(kTRUE);
    }
-   cHist->Update();
-   if (hp->fShowDateBox && !hp->fUseTimeOfDisplay) {
-      UInt_t da = fSelHist->GetUniqueID();
-      if (da != 0) {
-        TDatime dat;
-        dat.Set(da);
-        TText * t = (TText*)cHist->GetListOfPrimitives()->FindObject("DATE");
-        if (t) t->SetText(t->GetX(), t->GetY(), dat.AsString());
-      }
-   }
+   DrawDate(); 
    cHist->Update();
 //  add extra axis (channels) at top
    if (hp->fDrawAxisAtTop) {
@@ -2889,7 +2882,24 @@ void FitHist::Draw1Dim()
       cHist->Update();
    }
 }
+//____________________________________________________________________________
 
+void FitHist::DrawDate() 
+{
+   if (hp && hp->fShowDateBox ) {
+      TDatime dt;
+      UInt_t da = fSelHist->GetUniqueID();
+      if (da != 0 && !hp->fUseTimeOfDisplay) dt.Set(da);
+      fDateText = new TText(gStyle->GetDateX(),gStyle->GetDateY(),dt.AsSQLString());
+      fDateText->SetTextSize( gStyle->GetAttDate()->GetTextSize());
+      fDateText->SetTextFont( gStyle->GetAttDate()->GetTextFont());
+      fDateText->SetTextColor(gStyle->GetAttDate()->GetTextColor());
+      fDateText->SetTextAlign(gStyle->GetAttDate()->GetTextAlign());
+      fDateText->SetTextAngle(gStyle->GetAttDate()->GetTextAngle());
+      fDateText->SetNDC();
+      fDateText->Draw();
+   }
+}
 //____________________________________________________________________________
 
 void FitHist::Draw2Dim()
@@ -2947,16 +2957,7 @@ void FitHist::Draw2Dim()
       cHist->GetFrame()->SetFillStyle(1001);
       cHist->GetFrame()->SetFillColor(hp->f2DimBackgroundColor);
    }
-   cHist->Update();
-   if (hp->fShowDateBox && !hp->fUseTimeOfDisplay) {
-      UInt_t da = fSelHist->GetUniqueID();
-      if (da != 0) {
-        TDatime dat;
-        dat.Set(da);
-        TText * t = (TText*)cHist->GetListOfPrimitives()->FindObject("DATE");
-        if (t) t->SetText(t->GetX(), t->GetY(), dat.AsString());
-      }
-   }
+   DrawDate();
    cHist->Update();
 }
 

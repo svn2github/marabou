@@ -431,11 +431,11 @@ void HistPresent::RestoreOptions()
       gStyle->SetOptFit(0);
       gStyle->SetOptStat(0);
    }
-   if (fShowDateBox) {
-      gStyle->SetOptDate(fShowDateBox);
-   } else {
-      gStyle->SetOptDate(0);
-   }
+//   if (fShowDateBox) {
+//      gStyle->SetOptDate(fShowDateBox);
+//   } else {
+//      gStyle->SetOptDate(0);
+//   }
    gStyle->SetOptTitle(fShowTitle);
 //   gStyle->SetStatFont(fStatFont);
 //   gStyle->SetTitleFont(fTitleFont);
@@ -1403,8 +1403,8 @@ void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
       }
    }
 
-   if (fShowDateBox)gStyle->SetOptDate(21);
-   else             gStyle->SetOptDate(0);
+//   if (fShowDateBox)gStyle->SetOptDate(21);
+//   else             gStyle->SetOptDate(0);
 
    if (fShowStatBox) {
       gStyle->SetOptStat(fOptStat);
