@@ -243,6 +243,7 @@ public:
    }; 
    void RecursiveRemove(TObject * obj);
    void handle_mouse();
+   void DrawTopAxis();
   ClassDef(FitHist,0)      // A histogram presenter
 };
 #endif

@@ -237,6 +237,7 @@ void HistPresent::RestoreOptions()
    *f2DimColorPalette =
        env.GetValue("HistPresent.ColorPalette", f2DimColorPalette->Data());
    fShowErrors = env.GetValue("HistPresent.ShowErrors", fShowErrors);
+   fDrawAxisAtTop = env.GetValue("HistPresent.DrawAxisAtTop", fDrawAxisAtTop);
    fFill1Dim = env.GetValue("HistPresent.Fill1Dim", fFill1Dim);
    fShowContour = env.GetValue("HistPresent.ShowContour", fShowContour);
    fOptStat = env.GetValue("HistPresent.OptStat", 1001111);
@@ -366,6 +367,7 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.WindowY", fWintopy);
    SetIntValue(env, "HistPresent.WindowXWidth_List", fWinwidx_hlist);
    SetIntValue(env, "HistPresent.ShowErrors", fShowErrors);
+   SetIntValue(env, "HistPresent.DrawAxisAtTop", fDrawAxisAtTop);
    SetIntValue(env, "HistPresent.Fill1Dim", fFill1Dim);
    SetIntValue(env, "HistPresent.2DimBackgroundColor", f2DimBackgroundColor);
    SetIntValue(env, "HistPresent.1DimFillColor", f1DimFillColor);
@@ -429,12 +431,13 @@ void HistPresent::SaveOptions()
 
 void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 3;
-   enum e_opt { e_contour, e_filled, e_errors };
+   Int_t nopt = 4;
+   enum e_opt { e_contour, e_filled, e_errors, e_axisattop };
    const char *opt[] = {
       "Show contour",
       "Fill histogram",
-      "Show error bars"
+      "Show error bars",
+      "Extra Xaxis (channels) at top"
    };
 
    TArrayI flags(nopt);
@@ -447,6 +450,8 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
       else if (i == e_filled && fFill1Dim)
          flags[i] = 1;
       else if (i == e_errors && fShowErrors)
+         flags[i] = 1;
+      else if (i == e_axisattop && fDrawAxisAtTop)
          flags[i] = 1;
    }
    Int_t retval;
@@ -462,6 +467,7 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
    fShowContour = 0;
    fFill1Dim = 0;
    fShowErrors = 0;
+   fDrawAxisAtTop = 0;
    for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0) {
          if (i == e_contour)
@@ -470,6 +476,8 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
             fShowErrors = 1;
          else if (i == e_filled)
             fFill1Dim = 1;
+         else if (i == e_axisattop)
+            fDrawAxisAtTop = 1;
       }
    }
    if (fh) {

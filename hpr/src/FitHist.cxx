@@ -42,6 +42,7 @@
 #include "TFrame.h"
 #include "TArrayC.h"
 #include "TArrayI.h"
+#include "TExec.h"
 
 #include "TGMsgBox.h"
 #include "TGWidget.h"
@@ -539,6 +540,32 @@ void FitHist::handle_mouse()
          SaveDefaults();
       }
    }
+}
+//_____________________________________________________________________________________
+
+void FitHist::DrawTopAxis() {
+//  add axis (channels) on top
+   TGaxis *naxis;
+   Axis_t x1, y1, x2, y2;
+//      TString side("-");
+   Float_t loff;
+   Float_t lsize;
+   Int_t ndiv;
+
+   x1 = cHist->GetUxmin();
+   x2 = cHist->GetUxmax();
+   y1 = cHist->GetUymax();
+   y2 = y1;
+   loff = 0.0;
+   ndiv = fSelHist->GetXaxis()->GetNdivisions();
+   lsize = fSelHist->GetXaxis()->GetLabelSize();
+   cHist->cd();
+   Axis_t blow = (Axis_t)(fSelHist->GetXaxis()->GetFirst() - 1);
+   Axis_t bup  = (Axis_t)(fSelHist->GetXaxis()->GetLast());
+   naxis = new TGaxis(x1, y1, x2, y2,blow, bup, ndiv, "-");
+   naxis->SetLabelOffset(loff);
+   naxis->SetLabelSize(lsize);
+   naxis->Paint();
 }
 //_____________________________________________________________________________________
 // Show histograms
@@ -2404,7 +2431,41 @@ void FitHist::Draw1Dim()
    if (hp->fUseAttributeMacro) {
       ExecDefMacro();
       fSelPad->Modified(kTRUE);
+   }
+   cHist->Update();
+//  add extra axis (channels) at top
+   if (hp->fDrawAxisAtTop) {
+      TString cmd("((FitHist*)gROOT->FindObject(\""); 
+      cmd += GetName();
+      cmd += "\"))->DrawTopAxis()";
+ //  cout << "cmd: " << cmd << endl;
+      
+      TExec * exec = new TExec("exec", cmd.Data());
+      exec->Draw();
       cHist->Update();
+/*
+      TGaxis *naxis;
+      Axis_t x1, y1, x2, y2;
+      Float_t loff = 0.0;
+      Float_t lsize;
+      Int_t ndiv;
+
+      x1 = cHist->GetFrame()->GetX1();
+      x2 = cHist->GetFrame()->GetX2();
+      y1 = cHist->GetFrame()->GetY2();
+      y2 = y1;
+      ndiv = fSelHist->GetXaxis()->GetNdivisions();
+      lsize = fSelHist->GetXaxis()->GetLabelSize();
+      cHist->cd();
+      Axis_t blow = (Axis_t)(fSelHist->GetXaxis()->GetFirst() - 1);
+      Axis_t bup  = (Axis_t)(fSelHist->GetXaxis()->GetLast() - 1);
+      naxis = new TGaxis(x1, y1, x2, y2, blow, bup, ndiv, "-");
+      naxis->SetLabelOffset(loff);
+      naxis->SetLabelSize(lsize);
+      naxis->Draw();
+      cHist->Modified(kTRUE);
+      cHist->Update();
+*/
    }
 }
 
