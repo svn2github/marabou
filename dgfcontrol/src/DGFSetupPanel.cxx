@@ -680,7 +680,10 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
 				gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 
-				gSystem->Exec(Form("rsh %s 'cd %s; %s %s'", camacHost.Data(), gSystem->WorkingDirectory(), dlPgm.Data(), ".DgfDownload.rc"));
+				TString dlPath = gSystem->Getenv("PWD");
+				if (dlPath.IsNull()) dlPath = gSystem->WorkingDirectory();
+
+				gSystem->Exec(Form("rsh %s 'cd %s; %s %s'", camacHost.Data(), dlPath.Data(), dlPgm.Data(), ".DgfDownload.rc"));
 				for (Int_t i = 0; i < 100; i++) {
 					if (!gSystem->AccessPathName(".dgfdown.ok", (EAccessMode) F_OK)) {
 						TEnv * e = new TEnv(".dgfdown.ok");

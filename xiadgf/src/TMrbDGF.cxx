@@ -4432,9 +4432,11 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 		gMrbLog->Out()	<< "Calling program \"" << fCamacHost << ":" << hdPgm << "\" via rsh" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
 	}
+	TString hdPath = gSystem->Getenv("PWD");
+	if (hdPath.IsNull()) hdPath = gSystem->WorkingDirectory();
 	gSystem->Exec(Form("rsh %s 'cd %s; %s %d %d %#x %s b'",
 							fCamacHost.Data(),
-							gSystem->WorkingDirectory(),
+							hdPath.Data(),
 							hdPgm.Data(),
 							this->GetCrate(),
 							this->GetStation(),
