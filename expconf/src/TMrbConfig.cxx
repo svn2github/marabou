@@ -1873,13 +1873,13 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							while (nx) {
 								TString dName = nx->GetName();
 								TString dMode = nx->GetTitle();
-								if (dMode.CompareTo("Bool_t") == 0) {
+								if (dMode.BeginsWith("Bool_t")) {
 									if ((Bool_t) nx->GetIndex()) {
 										rdoTmpl.InitializeCode("%DB%");
 										rdoTmpl.Substitute("$dName", dName.Data());
 										rdoTmpl.WriteCode(rdoStrm);
 									}
-								} else if (dMode.CompareTo("Int_t") == 0) {
+								} else if (dMode.BeginsWith("Int_t")) {
 									rdoTmpl.InitializeCode("%DV%");
 									rdoTmpl.Substitute("$dName", dName.Data());
 									rdoTmpl.Substitute("$dVal", nx->GetIndex());
@@ -2285,13 +2285,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							while (nx) {
 								TString dName = nx->GetName();
 								TString dMode = nx->GetTitle();
-								if (dMode.CompareTo("Bool_t") == 0) {
+								if (dMode.BeginsWith("Bool_t")) {
 									if ((Bool_t) nx->GetIndex()) {
 										anaTmpl.InitializeCode("%DB%");
 										anaTmpl.Substitute("$dName", dName.Data());
 										anaTmpl.WriteCode(anaStrm);
 									}
-								} else if (dMode.CompareTo("Int_t") == 0) {
+								} else if (dMode.BeginsWith("Int_t")) {
 									anaTmpl.InitializeCode("%DV%");
 									anaTmpl.Substitute("$dName", dName.Data());
 									anaTmpl.Substitute("$dVal", nx->GetIndex());
@@ -6061,13 +6061,14 @@ const Char_t * TMrbConfig::GetGlobStr(const Char_t * Name) const {
 	return(str->Data());
 };
 
-void TMrbConfig::MakeDefined(const Char_t * Name, Int_t Value) {
+void TMrbConfig::MakeDefined(const Char_t * Name, Int_t Value, const Char_t * Comment) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::MakeDefined
 // Purpose:        Provide a #define
 // Arguments:      Char_t * Name     -- variable name
 //                 Int_t Value       -- value
+//                 Char_t * Comment  -- comment
 // Results:        --
 // Exceptions:
 // Description:    Issues a #define statement.
@@ -6077,20 +6078,30 @@ void TMrbConfig::MakeDefined(const Char_t * Name, Int_t Value) {
 	TString dName = Name;
 	if (!dName.BeginsWith("__")) dName.Prepend("__");
 	if (!dName.EndsWith("__")) dName += "__";
-	fLofDefines.AddNamedX(new TMrbNamedX(Value, dName.Data(), "Int_t"));
-	if (this->IsVerbose()) {
-		gMrbLog->Out()  << "Setting cpp #define flag " << dName << " to " << Value << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+	TString dComment = Comment;
+	dComment = dComment.Strip(TString::kBoth);
+	if (dComment.Length() == 0) {
+		dComment = "Int_t";
+		if (this->IsVerbose()) {
+			gMrbLog->Out()  << "Setting cpp #define flag " << dName << " to " << Value << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeDefined");
+		}
+	} else {
+		gMrbLog->Out()  << "[" << dName << "] " << dComment.Data() << " = "<< Value << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeDefined", setgreen);
+		dComment.Prepend("Int_t|");
 	}
+	fLofDefines.AddNamedX(new TMrbNamedX(Value, dName.Data(), dComment.Data()));
 }
 
-void TMrbConfig::MakeDefined(const Char_t * Name, Bool_t Defined) {
+void TMrbConfig::MakeDefined(const Char_t * Name, Bool_t Defined, const Char_t * Comment) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::MakeDefined
 // Purpose:        Provide a #define
 // Arguments:      Char_t * Name     -- variable name
 //                 Bool_t Defined    -- kTRUE/kFALSE
+//                 Char_t * Comment  -- comment
 // Results:        --
 // Exceptions:
 // Description:    Issues a #define statement.
@@ -6100,12 +6111,20 @@ void TMrbConfig::MakeDefined(const Char_t * Name, Bool_t Defined) {
 	TString dName = Name;
 	if (!dName.BeginsWith("__")) dName.Prepend("__");
 	if (!dName.EndsWith("__")) dName += "__";
-	fLofDefines.AddNamedX(new TMrbNamedX((Int_t) Defined, dName.Data(), "Bool_t"));
-	if (this->IsVerbose()) {
-		TString trueOrFalse = Defined ? "TRUE" : "FALSE";
-		gMrbLog->Out()  << "Setting cpp #define flag " << dName << " to " << trueOrFalse << endl;
-		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+	TString dComment = Comment;
+	dComment = dComment.Strip(TString::kBoth);
+	if (dComment.Length() == 0) {
+		dComment = "Bool_t";
+		if (this->IsVerbose()) {
+			gMrbLog->Out()  << "Setting cpp #define flag " << dName << " to " << (Defined ? "TRUE" : "FALSE") << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeDefined");
+		}
+	} else {
+		gMrbLog->Out()  << "[" << dName << "] " << dComment.Data() << " : "<< (Defined ? "TRUE" : "FALSE") << endl;
+		gMrbLog->Flush(this->ClassName(), "MakeDefined", setgreen);
+		dComment.Prepend("Bool_t|");
 	}
+	fLofDefines.AddNamedX(new TMrbNamedX((Int_t) Defined, dName.Data(), dComment.Data()));
 }
 
 Int_t TMrbConfig::GetNofModules(const Char_t * Pattern) const {

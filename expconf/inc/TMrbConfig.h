@@ -735,8 +735,8 @@ class TMrbConfig : public TNamed {
 		Bool_t GetGlobB(const Char_t * Name) const;
 		const Char_t * GetGlobStr(const Char_t * Name) const;
 
-		void MakeDefined(const Char_t * Name, Int_t Value);
-		void MakeDefined(const Char_t * Name, Bool_t Defined = kTRUE);
+		void MakeDefined(const Char_t * Name, Int_t Value, const Char_t * Comment = "");
+		void MakeDefined(const Char_t * Name, Bool_t Defined = kTRUE, const Char_t * Comment = "");
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
 
