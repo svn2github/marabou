@@ -2572,10 +2572,58 @@ TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) const 
 	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
+TMrbCalibrationListEntry * TMrbAnalyze::GetCalibrationListEntry(Int_t ModuleIndex, Int_t RelParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibrationListEntry
+// Purpose:        Get calibration entry from list
+// Arguments:      Int_t ModuleIndex                     -- module index
+//                 Int_t RelParamIndex                   -- relative param index
+// Results:        TMrbCalibrationListEntry * ListEntry  -- entry
+// Exceptions:     
+// Description:    Returns calibration list entry.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
+	px = mle->GetIndexOfFirstParam() + RelParamIndex;
+	if (px < 0 || px > fCalibrationList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fCalibrationList[px];
+	if (nx == NULL) return(NULL);
+	return((TMrbCalibrationListEntry *) nx->GetAssignedObject());
+}
+
+TMrbCalibrationListEntry * TMrbAnalyze::GetCalibrationListEntry(Int_t AbsParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibrationListEntry
+// Purpose:        Get calibration entry from list
+// Arguments:      Int_t AbsParamIndex                   -- absolute param/calib index
+// Results:        TMrbCalibrationListEntry * ListEntry  -- entry
+// Exceptions:     
+// Description:    Returns calibration list entry.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fCalibrationList[AbsParamIndex];
+	if (nx == NULL) return(NULL);
+	return((TMrbCalibrationListEntry *) nx->GetAssignedObject());
+}
+
 Double_t CalibLinear(Double_t * Xvalues, Double_t * Params) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::CalibLinear
+// Name:           CalibLinear
 // Purpose:        Calibrate using a linear polynom
 // Arguments:      Double_t * Xvalues   -- array of x values
 //                 Double_t * Params    -- array of parameters
@@ -2826,10 +2874,58 @@ TF1 * TMrbAnalyze::GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex) const {
 	return(((TMrbDCorrListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
+TMrbDCorrListEntry * TMrbAnalyze::GetDCorrListEntry(Int_t ModuleIndex, Int_t RelParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetDCorrListEntry
+// Purpose:        Get doppler corr entry from list
+// Arguments:      Int_t ModuleIndex                     -- module index
+//                 Int_t RelParamIndex                   -- relative param index
+// Results:        TMrbDCorrListEntry * ListEntry        -- entry
+// Exceptions:     
+// Description:    Returns doppler corr list entry.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
+	px = mle->GetIndexOfFirstParam() + RelParamIndex;
+	if (px < 0 || px > fDCorrList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fDCorrList[px];
+	if (nx == NULL) return(NULL);
+	return((TMrbDCorrListEntry *) nx->GetAssignedObject());
+}
+
+TMrbDCorrListEntry * TMrbAnalyze::GetDCorrListEntry(Int_t AbsParamIndex) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::TMrbDCorrListEntry
+// Purpose:        Get doppler corr entry from list
+// Arguments:      Int_t AbsParamIndex                   -- absolute param/calib index
+// Results:        TMrbDCorrListEntry * ListEntry        -- entry
+// Exceptions:     
+// Description:    Returns calibration list entry.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fDCorrList[AbsParamIndex];
+	if (nx == NULL) return(NULL);
+	return((TMrbDCorrListEntry *) nx->GetAssignedObject());
+}
+
 Double_t DCorrConstFactor(Double_t * Xvalues, Double_t * Params) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::DCorrConstFactor
+// Name:           DCorrConstFactor
 // Purpose:        Doppler correction using a constant factor
 // Arguments:      Double_t * Xvalues   -- array of x values
 //                 Double_t * Params    -- array of parameters
@@ -2846,7 +2942,7 @@ Double_t DCorrConstFactor(Double_t * Xvalues, Double_t * Params) {
 Double_t DCorrFixedAngle(Double_t * Xvalues, Double_t * Params) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::DCorrFixedAnlgeRad
+// Name:           DCorrFixedAnlge
 // Purpose:        Doppler correction using a fixed angle
 // Arguments:      Double_t * Xvalues   -- array of x values
 //                 Double_t * Params    -- array of parameters

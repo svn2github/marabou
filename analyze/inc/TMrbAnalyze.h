@@ -775,6 +775,7 @@ class TMrbAnalyze : public TObject {
 
 		TMrbModuleListEntry * GetModuleListEntry(Int_t ModuleIndex) const;
 		TMrbModuleListEntry * GetModuleListEntry(const Char_t * ModuleName) const;
+
 		void ResetModuleHits(Int_t StartIndex = 0, Int_t StopIndex = 0);
 
 		Int_t ReadCalibrationFromFile(const Char_t * CalibrationFile);		// read calibration data from file
@@ -787,6 +788,9 @@ class TMrbAnalyze : public TObject {
 		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) const;
 		TF1 * GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) const;
 
+		TMrbCalibrationListEntry * GetCalibrationListEntry(Int_t ModuleIndex, Int_t RelParamIndex) const;
+		TMrbCalibrationListEntry * GetCalibrationListEntry(Int_t AbsParamIndex) const;
+
 		Int_t ReadDCorrFromFile(const Char_t * DCorrFile);		// read calibration data from file
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
 		Bool_t AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex);
@@ -798,6 +802,9 @@ class TMrbAnalyze : public TObject {
 		TF1 * GetDCorr(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Beta, Double_t & Angle) const;
 		TF1 * GetDCorr(Int_t AbsParamIndex, Double_t & Factor) const;
 		TF1 * GetDCorr(Int_t AbsParamIndex, Double_t & Beta, Double_t & Angle) const;
+
+		TMrbDCorrListEntry * GetDCorrListEntry(Int_t ModuleIndex, Int_t RelParamIndex) const;
+		TMrbDCorrListEntry * GetDCorrListEntry(Int_t AbsParamIndex) const;
 
 		inline Int_t GetNofModules() const { return(fNofModules); };		// number of modules
 		inline Int_t GetNofParams() const { return(fNofParams); };		// number of params
