@@ -3025,7 +3025,9 @@ Int_t FhMainFrame::GetComSocket(Int_t attachid, Int_t attachsock)
    Bool_t ok = kFALSE;
 //   fComSocket = 0;
    Int_t socknr = 0;
-   TString pidfile("/tmp/M_analyze.");
+   TString pidfile("/tmp/M_analyze_");
+   pidfile += gSystem->Getenv("USER");
+   pidfile += ".";
    Int_t baselength = pidfile.Length();
    Int_t sock1, sock2;
 

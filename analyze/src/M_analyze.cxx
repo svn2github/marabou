@@ -72,7 +72,7 @@ static Bool_t verboseMode = kFALSE;
 
 static unsigned int update_time = TMrbAnalyze::kUpdateTime;
 
-static TString our_pid_file = "/tmp/M_analyze.";
+static TString our_pid_file = "/tmp/M_analyze_";
 
 // global mapped file pointer
 TMapFile * M_prod = 0;
@@ -415,7 +415,9 @@ int main(int argc, char **argv) {
 	gComSocket = 0;
 	argNo++;
 	if(argc > argNo)	gComSocket = atoi(argv[argNo]);
-   our_pid_file += gComSocket;
+        our_pid_file += gSystem->Getenv("USER");
+	our_pid_file += ".";
+	our_pid_file += gComSocket;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Communication socket:   " <<  gComSocket<< endl;
 
    if (verboseMode) cout << "M_analyze: Reading of arguments done (" << argNo << " args)" << endl;

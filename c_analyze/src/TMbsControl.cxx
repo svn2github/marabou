@@ -174,23 +174,31 @@ Int_t TMbsControl::GetMbsNodes(){
 
 Bool_t TMbsControl:: IdentifyMbsNodes(){
   if(!fNodes){cout << setred<< "c_mbs: No nodes known" << setblack<< endl; return kFALSE;};
-  TIter next(fNodes);
-   TMbsNode * mbsnode;
-   while((mbsnode = (TMbsNode*)next())){
-      mbsnode->GetStatus();
-//      mbsnode->PrintHeader(); 
-      if(mbsnode->iTrigger()){
-         fTriggerNode = mbsnode;
-         cout << "c_mbs: TriggerNode: " << mbsnode->GetName()<< endl;
-      }         
-      if(mbsnode->iPrompt()){
-         fPrompterNode = mbsnode;         
-         cout << "c_mbs: PrompterNode: " << mbsnode->GetName()<< endl;
+  TMbsNode * mbsnode;
+  if (fNodes->GetSize() > 1) {
+     TIter next(fNodes);
+     while((mbsnode = (TMbsNode*)next())){
+        mbsnode->GetStatus();
+        mbsnode->PrintHeader(); 
+        if(mbsnode->iTrigger()){
+           fTriggerNode = mbsnode;
+           cout << "c_mbs: TriggerNode: " << mbsnode->GetName()<< endl;
+        }         
+        if(mbsnode->iPrompt()){
+           fPrompterNode = mbsnode;         
+           cout << "c_mbs: PrompterNode: " << mbsnode->GetName()<< endl;
+        }
+        if(mbsnode->iCollector()){
+           fCollectorNode = mbsnode;         
+           cout << "c_mbs: CollectorNode: " << mbsnode->GetName()<< endl;
+        }
       }
-      if(mbsnode->iCollector()){
-         fCollectorNode = mbsnode;         
-         cout << "c_mbs: CollectorNode: " << mbsnode->GetName()<< endl;
-      }
+   } else {
+      mbsnode = (TMbsNode *) fNodes->First();
+      fTriggerNode = fPrompterNode = fCollectorNode = mbsnode;
+      cout << "c_mbs: TriggerNode: " << mbsnode->GetName()<< endl;
+      cout << "c_mbs: PrompterNode: " << mbsnode->GetName()<< endl;
+      cout << "c_mbs: CollectorNode: " << mbsnode->GetName()<< endl;
    }
    return kTRUE;
 };
@@ -475,7 +483,7 @@ TMbsNode::TMbsNode (const Char_t * node) : TNamed(node, "MbsNode") {
 }
 //_________________________________________________________________________________________
 
-Int_t TMbsNode:: GetStatus(){
+Int_t TMbsNode::GetStatus(){
 
    Int_t start = 1;
    Int_t nrec = 0;
@@ -575,6 +583,8 @@ Int_t TMbsNode:: GetStatus(){
 //_________________________________________________________________________________________
 
 void TMbsNode::PrintHeader(){
+      cout << "HEADER"  << endl;
+      cout << "==================================================="  << endl;
       cout << "iE            "   <<fEndian             << endl;
       cout << "iSize         "   <<iSize()           << endl;
       cout << "iSwap         "   <<iSwap()           << endl;
@@ -615,6 +625,27 @@ void TMbsNode::PrintHeader(){
       cout << "iRecSize      "   <<iRecSize()        << endl;
       cout << "iOpenFile     "   <<iOpenFile()       << endl;
       cout << "iTrigger      "   <<iTrigger()        << endl;
+      cout << "RUN TABLE"  << endl;
+      cout << "==================================================="  << endl;
+      cout << "iCollector    "   << fRunTable[1]<< endl;
+      cout << "iTransport    "   << fRunTable[2]<< endl;
+      cout << "iEvServ       "   << fRunTable[3]<< endl;
+      cout << "iStrServ      "   << fRunTable[10]<< endl;
+      cout << "iPrompt       "   << fRunTable[12]<< endl;
+      cout << "SERVER TABLE"  << endl;
+      cout << "==================================================="  << endl;
+      cout << "iStrsrvScale    "   << fServerTable[6]<< endl;
+      cout << "iStrsrvSync     "   << fServerTable[7]<< endl;
+      cout << "iStrsrvNosync   "   << fServerTable[8]<< endl;
+      cout << "iStrsrvKeep     "   << fServerTable[9]<< endl;
+      cout << "iStrsrvNokeep   "   << fServerTable[10]<< endl;
+      cout << "iStrsrvScaled   "   << fServerTable[11]<< endl;
+      cout << "iEvtsrvScale    "   << fServerTable[12]<< endl;
+      cout << "iEvtsrvEvents   "   << fServerTable[13]<< endl;
+      cout << "iEvtsrvMaxcli   "   << fServerTable[14]<< endl;
+      cout << "iEvtsrvAll      "   << fServerTable[15]<< endl;
+      cout << "iEsosrvMaxcli   "   << fServerTable[16]<< endl;
+
 }
 //_________________________________________________________________________________________
 
