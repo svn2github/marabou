@@ -19,6 +19,9 @@
 //*KEND.
 #endif
 
+using namespace std;
+
+
 class HTCanvas;
 
 

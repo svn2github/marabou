@@ -114,7 +114,7 @@ const char TwoGauss[]=
 "Double_t TwoGauss     ( Double_t *x, Double_t *par) 
 {
   // two gaussians with common center
-  Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2);
+  Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);
   Double_t BinW = 0.5;
   Double_t mean = par[2];
 //  force widths /= 0
@@ -406,7 +406,7 @@ Double_t gaus_cbg(Double_t * x, Double_t * par)
   par[7]   gauss2 constant
   par[8]   gauss2 mean
 */
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2);
+   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
 
    if (par[2] == 0)
@@ -440,7 +440,7 @@ Double_t gaus_lbg(Double_t * x, Double_t * par)
   par[7]   gauss2 constant
   par[8]   gauss2 mean
 */
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2);
+   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    Double_t arg;
 
    if (par[2] == 0)
@@ -476,7 +476,7 @@ Double_t gaus_tail(Double_t * x, Double_t * par)
   par[9]   gauss2 constant
   par[10]  gauss2 mean
 */
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2);
+   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
 //  force widths /= 0
    if (par[1] == 0)
       par[1] = 1;
@@ -555,7 +555,7 @@ Double_t backf(Double_t * x, Double_t * par)
 
 Double_t gausf(Double_t * x, Double_t * par)
 {
-   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2);
+   static Float_t sqrt2pi = sqrt(2 * M_PI), sqrt2 = sqrt(2.);
    if (par[2] == 0)
       par[2] = 1;
 

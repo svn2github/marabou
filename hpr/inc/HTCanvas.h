@@ -17,6 +17,9 @@
 #include "TCanvas.h"
 #include "HTCanvasImp.h"
 
+using namespace std;
+
+
 class FitHist;
 class HistPresent;
 class HTimer;

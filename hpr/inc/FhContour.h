@@ -6,6 +6,9 @@
 #include "TArrayI.h"
 #include "TArrayD.h"
 
+using namespace std;
+
+
 //////////////////////////////////////////////////////////////////////////////
 // Name:           FhContour
 // Description:    Store a user contour with name and title.

@@ -22,6 +22,9 @@
 //*KEND.
 #endif
 
+using namespace std;
+
+
 class HTCanvas;
 class TGCanvas;
 class TGMenuBar;

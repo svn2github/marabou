@@ -1,5 +1,8 @@
 #ifndef HPR_FHTOASCII
 #define HPR_FHTOASCII
+
+using namespace std;
+
 class HistPresent;
 class  FhToASCII : public TGTransientFrame {
 

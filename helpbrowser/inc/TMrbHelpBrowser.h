@@ -8,6 +8,8 @@
 #include "TGMenu.h"
 #include <iostream>
 
+using namespace std;
+
 class TMrbHelpBrowser : public TNamed {
 private:
    TFile * fRootFile;

@@ -1,6 +1,9 @@
 #ifndef HPR_FHTOASCII
 #define HPR_FHTOASCII
 //class FitHist;
+
+using namespace std;
+
 class  FhToASCII : public TGTransientFrame {
 
 private:

@@ -1,5 +1,8 @@
 #ifndef HPR_FHCOMMANDS
 #define HPR_FHCOMMANDS
+
+using namespace std;
+
 enum FHCommands {
 //   Ottos stuff
 

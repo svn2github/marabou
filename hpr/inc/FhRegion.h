@@ -6,6 +6,9 @@
 #include "TList.h"
 #include "FhPeak.h"
 
+using namespace std;
+
+
 const Int_t kMAXPEAK = 3;
 
 class FhRegion : public TObject {

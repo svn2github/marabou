@@ -6,6 +6,9 @@
 #include "TList.h"
 //#include "FhRegion.h"
 
+using namespace std;
+
+
 class FhRegion;
 
 class FhPeak : public TObject {

@@ -5,6 +5,9 @@
 //_____________________________________________________________________________________
 
 
+using namespace std;
+
+
 class HTimer : public TTimer {
 
 private:

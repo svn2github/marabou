@@ -2,6 +2,9 @@
 #define CMDLISTENTRY
 #include "TObject.h"
 #include "TString.h"
+
+using namespace std;
+
 class CmdListEntry : public TObject {
 public:
    TString fCmd;

@@ -1,8 +1,11 @@
+
 #include "TSystem.h"
 #include <fstream>
 #include <iostream>
 
 #include "TNamedBytes.h"
+
+using namespace std;
 
 ClassImp(TNamedBytes)
 //_________________________________________________________________________
@@ -15,11 +18,11 @@ TNamedBytes::TNamedBytes(const Char_t * fname):
    Long_t id, size, flags, modtime;
    gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
    if(size <= 0){
-      cout << "File: " << fname << " does not exist of empty" << endl;
+//      cout << "File: " << fname << " does not exist of empty" << endl;
       fIsGood = kFALSE;
       fBuffer = 0;
    } else {
-      cout << "size " << size << endl;
+//      cout << "size " << size << endl;
       fBuffer = new TArrayC(size);
 //         Char_t * b = (Char_t *)&fBuffer[0];
       ifstream inf(fname);

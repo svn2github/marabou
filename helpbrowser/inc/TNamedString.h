@@ -3,6 +3,8 @@
 #include "TString.h"
 #include <iostream>
 
+using namespace std;
+
 class TNamedString : public TNamed {
 
 public:

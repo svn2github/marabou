@@ -21,6 +21,9 @@
 #include "HistPresent.h"
 #include "TMrbStatistics.h"
 
+using namespace std;
+
+
 const Int_t kSelected = BIT(16), kCommand  = BIT(17), kSelection  = BIT(18);
 extern int  GetPosition(TVirtualPad*, UInt_t *, UInt_t *);
 extern TButton * CButton(const char* , const char*, TObject* , 
