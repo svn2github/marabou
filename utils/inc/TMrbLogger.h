@@ -147,6 +147,7 @@ class TMrbLogger: public TNamed {
 		
 		inline ostringstream & Out() { return(*fOut); };
 		inline ostringstream & Err() { return(*fErr); };
+		inline ostringstream & Wrn() { return(*fWrn); };
 		inline ofstream & Log() { return(*fLog); };
 				
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogger.html&"); };
@@ -161,6 +162,7 @@ class TMrbLogger: public TNamed {
 		ofstream * fLog;			//!
 		ostringstream * fOut;		//!
 		ostringstream * fErr;		//!
+		ostringstream * fWrn;		//!
 
 		Int_t fIndexOfLastPrinted;	// index at last printout
 		TObjArray fLofMessages; 	// list of messages

@@ -60,7 +60,7 @@ TMrbEnv::TMrbEnv(const Char_t * ResourceFile, const Char_t * DefaultsFile) {
 					gMrbLog->Flush(this->ClassName());
 					this->MakeZombie();
 				} else if (!this->HasDefaults()) {
-					gMrbLog->Err() << "WARNING - no defaults given" << endl;
+					gMrbLog->Wrn() << "No defaults given" << endl;
 					gMrbLog->Flush(this->ClassName());
 					this->MakeZombie();
 				}
