@@ -341,7 +341,14 @@ class TUsrHit : public TObject {
 		enum	{	kHitLast		=	kHitRaw	};
 		enum	{	kMaxHitData 	=	kHitLast + 1	};
 
-	public:
+		enum	{	kHitPSA1	=	2	};					// martin lauer's PSA array
+		enum	{	kHitPSA2	=	3	};
+		enum	{	kHitPSA3	=	4	};
+		enum	{	kHitPSA4	=	5	};
+		enum	{	kHitPSA5	=	6	};
+		enum	{	kHitPSA6	=	7	};
+
+public:
 		TUsrHit() {};
 		TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
