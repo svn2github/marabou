@@ -53,7 +53,8 @@ GLOBAL($className,$varName,$varName("$varName", $varSize, $varInit));
 %%VARARR_CLASS_INSTANCE%%
 
 %%BeginOfCode%%
-GLOBAL($className *,$varName,$varName = NULL);
+%1D%GLOBAL($className *,$varName,$varName = NULL);
+%2D%GLOBAL($className *,$varName,$varName = NULL);
 %%EndOfCode%%
 %%WDW_DEFINE_POINTERS%%
 

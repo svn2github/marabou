@@ -136,7 +136,8 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 
 %%BeginOfCode%%
 // instantiate windows
-	if ($varName == NULL) $varName = new $className("$varName", $varLower, $varUpper);
+%1D%if ($varName == NULL) $varName = new $className("$varName", $varLower, $varUpper);
+%2D%if ($varName == NULL) $varName = new $className("$varName", 0);
 %%EndOfCode%%
 %%WDW_CLASS_INSTANCE%%
 
