@@ -42,6 +42,7 @@ const SMrbNamedX kDGFMiscActions[] =
 			{
 				{DGFMiscPanel::kDGFMiscSetGFLT,		"Set GFLT",	"Set Global First Level Trigger"	},
 				{DGFMiscPanel::kDGFMiscClearGFLT,	"Clear GFLT",	"Clear Global First Level Trigger"	},
+				{DGFMiscPanel::kDGFMiscSetCoincWait,	"Set CoincWait",	"Set COINCWAIT according to formula"	},
 				{0, 									NULL,			NULL								}
 			};
 
@@ -236,6 +237,9 @@ Bool_t DGFMiscPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) 
 							case kDGFMiscClearGFLT:
 								this->SetGFLT(kFALSE);
 								break;
+							case kDGFMiscSetCoincWait:
+								this->SetCoincWait();
+								break;
 							case kDGFMiscSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
 									fCluster[cl]->SetState(gDGFControlData->GetPatInUse(cl), kButtonDown);
@@ -289,6 +293,9 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
 	selectFlag = kFALSE;
+	Bool_t verbose = gDGFControlData->IsVerbose();
+	TString setOrClear = SetFlag ? "Setting" : "Clearing";
+	if (!verbose) cout << "[" << setOrClear << " GFLT bit - wait " << flush;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
@@ -309,13 +316,67 @@ Bool_t DGFMiscPanel::SetGFLT(Bool_t SetFlag) {
 				selectFlag = kTRUE;
 			}
 		}
+		if (!verbose) cout << "." << flush;
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}				
+	if (!verbose) cout << " done]" << endl;
 
 	if (!selectFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
+	} else if (!verbose) {
+		cout << " done]" << endl;
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMiscPanel::SetCoincWait() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMiscPanel::SetCoincWait
+// Purpose:        Set COINCWAIT
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	DGFModule * dgfModule;
+	Int_t modNo, cl;
+	TMrbDGF * dgf;
+	Bool_t selectFlag;
+	Int_t nofModules;
+					
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+
+	dgfModule = gDGFControlData->FirstModule();
+	nofModules = 0;
+	selectFlag = kFALSE;
+	Bool_t verbose = gDGFControlData->IsVerbose();
+	if (!verbose) cout << "[Setting COINCWAIT properly - wait " << flush;
+	while (dgfModule) {
+		cl = nofModules / kNofModulesPerCluster;
+		modNo = nofModules - cl * kNofModulesPerCluster;
+		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				dgf->SetCoincWait();
+				selectFlag = kTRUE;
+			}
+		}
+		if (!verbose) cout << "." << flush;
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
+	}				
+	if (!verbose) cout << " done]" << endl;
+
+	if (!selectFlag) {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	} else if (!verbose) {
+		cout << " done]" << endl;
 	}
 	return(kTRUE);
 }

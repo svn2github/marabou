@@ -412,7 +412,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 	Int_t accuTime;
 	TString timeScale;
 										
-	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	TMrbNamedX * tp = fTauFitTimeScaleButtons.FindByIndex(fTimeScale->GetActive());

@@ -322,7 +322,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	TArrayI wpc(TMrbDGFData::kNofChannels * kNofTraceBuffers);
 	wpc.Reset();
 
-	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	chnPattern = (fSelectChannel->GetActive() >> 12) & 0xF;

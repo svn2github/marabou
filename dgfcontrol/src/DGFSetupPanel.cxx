@@ -430,7 +430,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
 	gDGFControlData->fCAMACHost = camacHost;
 
-	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
+	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
 		
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	while (dgfModule) {
@@ -464,7 +464,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 		if (!offlineMode) {
 			for (Int_t cr = 0; cr < kNofCrates; cr++) lofDGFs[cr].Delete();
 			DGFModule * dgfModule = gDGFControlData->FirstModule();
-			Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+			Bool_t verbose = gDGFControlData->IsVerbose();
 			if (!verbose) cout << "[Connecting to DGF modules - wait " << flush;
 			while (dgfModule) {
 				if (gDGFControlData->ModuleInUse(dgfModule)) {
@@ -484,7 +484,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 					if (!dgf->IsZombie() && dgf->IsConnected()) {
 						dgf->Camac()->UseBroadCast(kTRUE);
 						lofDGFs[dgf->GetCrate() - 1].AddModule(dgf);
-						dgf->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0);
+						dgf->SetVerboseMode(gDGFControlData->IsVerbose());
 						dgfModule->SetTitle(dgf->GetTitle());
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
@@ -568,7 +568,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 			return(kFALSE);
 	}
 
-	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
+	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
 
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	while (dgfModule) {
@@ -622,7 +622,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 					if (!dgf->IsZombie() && dgf->IsConnected()) {
 						dgf->Camac()->UseBroadCast(kTRUE);
 						lofDGFs[dgf->GetCrate() - 1].AddModule(dgf);
-						dgf->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0);
+						dgf->SetVerboseMode(gDGFControlData->IsVerbose());
 						dgfModule->SetTitle(dgf->GetTitle());
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
@@ -759,7 +759,7 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 	dgfModule = gDGFControlData->FirstModule();
 	Int_t nofModules = 0;
 	isAborted = kFALSE;
-	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	Bool_t verbose = gDGFControlData->IsVerbose();
 	if (!verbose) cout << "[Aborting Busy/sync loops - wait " << flush;
 	while (dgfModule) {
 		Int_t cl = nofModules / kNofModulesPerCluster;
@@ -835,7 +835,7 @@ Bool_t DGFSetupPanel::RestartEsone() {
 		}
 	}
 
-	esoneCold->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
+	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
 		
 	return(kTRUE);
 }
@@ -866,7 +866,7 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 	Int_t nofModules = 0;
 	Bool_t found = kFALSE;
 	TString onoff = ActivateFlag ? "ON" : "OFF";
-	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	Bool_t verbose = gDGFControlData->IsVerbose();
 	if (!verbose) cout << "[Turning user PSA code " << onoff << " - wait " << flush;
 	while (dgfModule) {
 		Int_t cl = nofModules / kNofModulesPerCluster;

@@ -328,8 +328,8 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 
 	nofRestored = 0;
 	module = gDGFControlData->FirstModule();
+	verbose = gDGFControlData->IsVerbose();
 	if (module) {
-		verbose = module->GetAddr()->Data()->IsVerbose();
 		if (!verbose) cout << "[Restoring module params - wait " << flush;
 		while (module) {
 			modIdx = gDGFControlData->GetIndex(module->GetName(), cl, modNo);
@@ -355,8 +355,8 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 				dgfEnv = new TEnv(".dgfParams");
 				if (dgf->LoadParamsToEnv(dgfEnv, paramFile.Data(), altParamFile.Data())) {
 					if (dgf->IsConnected()) {
-						dgf->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0);
-						dgf->Camac()->SetVerboseMode((gDGFControlData->fStatus & DGFControlData::kDGFDebugMode) != 0);
+						dgf->SetVerboseMode(gDGFControlData->IsVerbose());
+						dgf->Camac()->SetVerboseMode(gDGFControlData->IsDebug());
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
 						param = dgf->Data()->FirstParam();
 						while (param) {

@@ -336,8 +336,8 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
+	verbose = gDGFControlData->IsVerbose();
 	if (dgfModule) {
-		verbose = dgfModule->GetAddr()->Data()->IsVerbose();
 		if (!verbose) cout << "[Saving module params - wait " << flush;
 		while (dgfModule) {
 			modIdx = gDGFControlData->GetIndex(dgfModule->GetName(), cl, modNo);

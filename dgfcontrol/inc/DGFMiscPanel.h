@@ -54,6 +54,7 @@ class DGFMiscPanel : public TGCompositeFrame {
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFOffsetsActionId 	{	kDGFMiscSetGFLT,
 										kDGFMiscClearGFLT,
+										kDGFMiscSetCoincWait,
 										kDGFMiscSelectAll,
 										kDGFMiscSelectNone,
 										kDGFMiscSelectColumn
@@ -70,6 +71,7 @@ class DGFMiscPanel : public TGCompositeFrame {
 
 	protected:
 		Bool_t SetGFLT(Bool_t SetFlag = kTRUE);
+		Bool_t SetCoincWait();
 	
 	protected:
 		TList fHeap;								//! list of objects created on heap
