@@ -3634,7 +3634,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 				return(kFALSE);
 			}
-			aclic += "+g";
+			aclic += "+";
 			if (gMrbConfig->IsVerbose()) {
 				gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fp << "\" (option \"+g\")"<< endl;
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
