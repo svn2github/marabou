@@ -17,6 +17,11 @@
 
 %%BeginOfCode%%
 
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					$mnemoLC_init($moduleName, $subDevice, $threshL);	/* init $moduleName in $modulePosition */
 %%EndOfCode%%

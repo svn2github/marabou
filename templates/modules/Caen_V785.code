@@ -129,6 +129,11 @@
 
 %%BeginOfCode%%
 
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
 									/* init module $moduleName at addr $baseAddr */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					caen_v785_module_info(CAEN_V785_A_ROM($moduleName));

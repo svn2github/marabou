@@ -224,10 +224,14 @@ int f_user_init (unsigned char  bh_crate_nr,
 	clock_resolution = res.tv_nsec; 		/* and save it for WRITE_TIME_STAMP macro */
 
 %%BeginOfCode%%
-%B%
-%B% 	root_env_read(".rootrc");				/* read ROOT's environment file */
-%B% 	root_env_read("$envFile");				/* and experiment's configuration data */
-%B%
+	root_env_read(".rootrc");				/* read ROOT's environment file */
+ 	root_env_read("$envFile");				/* and experiment's configuration data */
+%%EndOfCode%%
+%%INIT_ENVIRONMENT%%
+
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
 %B% 	switch (bh_crate_nr) {
 %CB% 		case $crateNo:						/* init modules in crate C$crateNo ($crateType) */
 %CBCBV%					CIO_CTRL_R2B(cam_dwinh_C$crateNo, F(26), A(9));	/* crate C$crateNo: dataway disable */

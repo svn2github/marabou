@@ -17,6 +17,11 @@
 
 %%BeginOfCode%%
 
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
 					$mnemoLC_init($moduleName, $extGate);	/* init scaler $moduleName in $modulePosition */
 					f_ut_send_msg("m_read_meb", "Initializing scaler $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					if ($extGate) f_ut_send_msg("m_read_meb", "Scaler $moduleName in $modulePosition: external gate ENABLED\n", ERR__MSG_INFO, MASK__PRTT);

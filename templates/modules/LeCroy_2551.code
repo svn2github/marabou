@@ -17,6 +17,11 @@
 
 %%BeginOfCode%%
 
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
 									/* init module $moduleName in $modulePosition */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear scaler */

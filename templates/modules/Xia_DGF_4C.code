@@ -74,6 +74,12 @@
 %%MODULE_DEFS%%
 
 %%BeginOfCode%%
+	dgfReadIntSca = root_env_getval_i("TMrbDGF.ReadInternalScalers", 0);
+	dgfIntScaCnt = 0;
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
 %A%
 %A%			f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 %R<=2.0%			dgfmod = dgf_get_par_value($moduleNameLC, -1, kMrbDgfParModCSRA);
@@ -452,6 +458,7 @@ void dgf_set_ref_time(volatile unsigned long * dgf);
 
 %%BeginOfCode%%
 	unsigned int dgfAoutBuf[$nofModules];
+	int dgfReadIntSca, dgfIntScaCnt;
 %%EndOfCode%%
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 
