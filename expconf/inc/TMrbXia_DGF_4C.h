@@ -80,7 +80,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 							fSwitchBusTerm = TermFlag; 
 		};
 		inline Bool_t SwitchBusToBeTerminated() { return(fSwitchBusTerm); };
-		inline void ActivateUserPSA(Bool_t ActiveFlag = kTRUE) { fActivateUserPSA = ActiveFlag; };
+		inline void ActivateUserPSACode(Bool_t ActiveFlag = kTRUE) { fActivateUserPSA = ActiveFlag; };
 		inline Bool_t UserPSAIsActive() { return(fActivateUserPSA); };
 
 		inline void SetClusterID(Int_t Serial, const Char_t * Color, const Char_t * Segments) { // cluster ids

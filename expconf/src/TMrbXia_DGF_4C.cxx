@@ -573,6 +573,8 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 						anaTmpl.Substitute("$parSynchWait", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("INSYNCH");
 						anaTmpl.Substitute("$parInSynch", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("SYNCHDONE");
+						anaTmpl.Substitute("$parSynchDone", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("RUNTASK");
 						anaTmpl.Substitute("$parRunTask", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("COINCPATTERN");
