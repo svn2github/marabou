@@ -301,7 +301,7 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                 if (parm1 != 99) break;
                 TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(parm2);
 
-                const TString * text = tge->GetText();
+                const TString * text = (TString*)tge->GetText();
                 fTE->GetBuffer()->RemoveText(0, (Int_t)fTE->GetBuffer()->GetTextLength());
                 fTE->GetBuffer()->AddText(0, text->Data());
                 gClient->NeedRedraw(fTE);
@@ -359,11 +359,11 @@ void TGMrbInputDialog::SaveList()
    Int_t ne = fListBox->GetNumberOfEntries();
 //   cout << "Selected: " << sel << endl;
    outfile << sel << endl;
-   if (ne > 1) {
+   if (ne > 0) {
       const TString * temp;
       for (Int_t i =0; i < ne; i++) {
          TGTextLBEntry * tge = (TGTextLBEntry *)fListBox->GetEntry(i);
-         temp = tge->GetText();
+         temp = (TString*)tge->GetText();
 //         cout << "Ent: " << temp->Data() << endl;
          if (*temp != sel) outfile <<temp->Data() << endl;
       }
