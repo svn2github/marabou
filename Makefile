@@ -91,6 +91,7 @@ MAKEINFO      = cint/MAKEINFO
 
 ALLHDRS      :=
 ALLLIBS      :=
+HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so
 ALLEXECS     := 
 INCLUDEFILES :=
 ALLOBJ       :=
@@ -120,6 +121,10 @@ all:            marabouexecs
 
 fast:           marabouexecs
 
+hpr:            hprexecs
+
+HistPresent:    hprexecs
+
 include $(patsubst %,%/Module.mk,$(MODULES))
 
 -include MyRules.mk            # allow local rules
@@ -132,7 +137,7 @@ endif
 include build/dummy.d          # must be last include
 endif
 
-
+hprexecs:          compiledata $(HPRLIBS) bin/HistPresent
 
 maraboulibs:       compiledata $(ALLLIBS)
 
