@@ -179,7 +179,7 @@ Bool_t TMbsControl:: IdentifyMbsNodes(){
      TIter next(fNodes);
      while((mbsnode = (TMbsNode*)next())){
         mbsnode->GetStatus();
-        mbsnode->PrintHeader(); 
+//        mbsnode->PrintHeader(); 
         if(mbsnode->iTrigger()){
            fTriggerNode = mbsnode;
            cout << "c_mbs: TriggerNode: " << mbsnode->GetName()<< endl;
