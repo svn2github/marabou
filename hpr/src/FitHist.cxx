@@ -20,6 +20,7 @@
 #include "TTimer.h"
 #include "TProfile.h"
 #include "TPad.h"
+#include "TPaletteAxis.h"
 #include "TPaveText.h"
 #include "TPaveStats.h"
 #include "TPolyLine.h"
@@ -1722,7 +1723,7 @@ void FitHist::ClearMarks()
    FhMarker *ti;
    TIter next(markers);
    while ( (ti = (FhMarker *) next()) ) {
-         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
+//         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
 //         FhMarker *m = new FhMarker(ti->GetValX(), ti->GetValY(), 28);
       cHist->GetListOfPrimitives()->Remove(ti);
    }
@@ -2757,11 +2758,13 @@ void FitHist::ExpandProject(Int_t what)
    }
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {
-      TF1 *p;
       TIter next(lof);
-      while ( (p = (TF1 *) next()) ) {
+		TObject * p;
+      while ( (p = next()) ) {
 //            p->Print();
-         expHist->GetListOfFunctions()->Add(p);
+//  dont add TPaletteAxis
+         if (strcmp(p->GetName(),"palette"))
+            expHist->GetListOfFunctions()->Add(p);
       }
    }
    fSelHist = expHist;
@@ -2927,10 +2930,19 @@ void FitHist::Draw2Dim()
    if (hp && hp->GetShowStatBox()) fSelHist->SetStats(1);
    fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
    DrawCut();
+//   cout << "SelHistHist->GetListOfFunctions()" << endl;
+//	fSelHist->GetListOfFunctions()->ls();
+//   TPaletteAxis *p =
+//   (TPaletteAxis*)fSelHist->GetListOfFunctions()->FindObject("palette"); 
+//	cout << "fSelHist " << fSelHist<< endl;
+//	if (p) p->Dump();
    TList *lof = fOrigHist->GetListOfFunctions();
    if (lof) {
-
-      lof->ls();
+//      cout << "OrigHist->GetListOfFunctions()" << endl;
+//      p = (TPaletteAxis*)fSelHist->GetListOfFunctions()->FindObject("palette");  
+//	   cout << "fOrigHist " << fOrigHist<< endl;
+//	   if (p) p->Dump();
+//      lof->ls();
 //      TF1 *p;
       TObject *p;
       TIter next(lof);
