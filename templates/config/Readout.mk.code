@@ -30,7 +30,7 @@ CC	= gcc
 
 POSIX   = %%READOUT_POSIX%%
 
-CFLAGS  = $(POSIX) -DLynx -D$(C_CTRL) -DMBS -DPPC -I$(RPATH) -I$(INC) -I$(READOUT_INCL) 
+CFLAGS  = $(POSIX) -DLynx -D$(C_CTRL) -DMBS -DPPC -I$(RPATH) -I$(INC) -I$(RDO_INCL) 
 LIBS    =	/lib/ces/libvme.a $(LIB)/lib_mbs.a \
 			$(LIB)/lib_tools.a $(LIB)/lib_mbs.a \
 			$(RDO_LIBS) \

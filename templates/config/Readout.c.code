@@ -32,7 +32,7 @@
 #include "gd_camio.h"
 #include "gd_readout.h"
 #include "gd_tstamp.h"
-#include "vmelib.h"
+#include "ces/vmelib.h"
 
 #include "err_mask_def.h"
 #include "errnum_def.h"
