@@ -99,6 +99,11 @@
 %B% 				dgf_set_par_value($moduleNameLC, dgfchn, kMrbDgfParTraceLength0, root_env_getval_i("$moduleNameUC.TraceLength", $traceLength));
 %B% 			}
 %B%			dgf_update($moduleNameLC, "$moduleNameLC");			/* re-program dacs & fpgas */
+%B%			if (root_env_getval_b("$moduleNameUC.ActivateUserPSACode", $activatePSA) == 1) {
+%B%				dgf_activate_psa($moduleNameLC, "$moduleNameLC", 1);		/* activate user psa code */
+%B% 		} else {
+%B%				dgf_activate_psa($moduleNameLC, "$moduleNameLC", 0);		/* deactivate user psa code */
+%B% 		}
 %B%
 %%EndOfCode%%
 %%INIT_MODULE%%
@@ -190,7 +195,7 @@
 
 %%BeginOfCode%%
 					/* start new run for $moduleNameLC in $modulePosition */
-					dgf_set_par_value($moduleNameLC, -1, kMrbDgfParRunTask, root_env_getval_i("$moduleNameUC.RunTask", DGF_RUN_LINEAR));
+					dgf_set_par_value($moduleNameLC, -1, kMrbDgfParRunTask, root_env_getval_i("$moduleNameUC.RunTask", $runTask));
 					DGF_READ_WCR($moduleNameLC);
 					dgf_modify_csr($moduleNameLC, 0, DGF_CSR_NEWRUN | DGF_CSR_RUNENA | DGF_CSR_ENALAM);	/* clear histos, start run */
 #ifdef DEBUG
@@ -380,6 +385,30 @@ void dgf_reload_params(volatile unsigned long * dgf, const char * dgfName, const
 	}
 }
 
+void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int flag) {
+	unsigned int csrBit;
+	int i;
+	if (flag != 0) {
+		csrBit = dgf_get_par_value(dgf, -1, kMrbDgfParModCSRB);
+		csrBit |= 1;
+		dgf_set_par_value(dgf, -1, kMrbDgfParModCSRB, csrBit);
+		for (i = 0; i < 4; i++) {
+			csrBit = dgf_get_par_value(dgf, i, kMrbDgfParChanCSRB0);
+			csrBit |= 1;
+			dgf_set_par_value(dgf, i, kMrbDgfParChanCSRB0, csrBit);
+		}
+	} else {
+		csrBit = dgf_get_par_value(dgf, -1, kMrbDgfParModCSRB);
+		csrBit &= ~1;
+		dgf_set_par_value(dgf, -1, kMrbDgfParModCSRB, csrBit);
+		for (i = 0; i < 4; i++) {
+			csrBit = dgf_get_par_value(dgf, i, kMrbDgfParChanCSRB0);
+			csrBit &= ~1;
+			dgf_set_par_value(dgf, i, kMrbDgfParChanCSRB0, csrBit);
+		}
+	}
+}
+
 %%EndOfCode%%
 %%UTILITIES%%
 
@@ -394,6 +423,7 @@ void dgf_or_par_value(volatile unsigned long * dgf, int chn, int pidx, unsigned 
 void dgf_update(volatile unsigned long * dgf, const char * dgfName);
 void dgf_modify_csr(volatile unsigned long * dgf, unsigned short bits2clear, unsigned short bits2set);
 int dgf_wait_active(volatile unsigned long * dgf, const char * dgfName, int bitState, int timeout);
+void dgf_activate_psa(volatile unsigned long * dgf, const char * dgfName, int flag);
 void dgf_wait();
 
 %%EndOfCode%%

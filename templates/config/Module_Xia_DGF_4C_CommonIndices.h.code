@@ -3,6 +3,7 @@
 enum EMrbDgfParamOffsets	{
 								kMrbDgfParModNum			=	$parModuleNumber,
 								kMrbDgfParModCSRA			=	$parModCSRA,
+								kMrbDgfParModCSRB			=	$parModCSRB,
 								kMrbDgfParMaxEvents			=	$parMaxEvents,
 								kMrbDgfParSynchWait			=	$parSynchWait,
 								kMrbDgfParInSynch			=	$parInSynch,
@@ -14,6 +15,7 @@ enum EMrbDgfParamOffsets	{
 								kMrbDgfParLoutBuffer		=	$parLengthOfOutputBuffer,
 								kMrbDgfParTraceLength0		=	$parTraceLength0,
 								kMrbDgfParChanCSRA0			=	$parChanCSRA0,
+								kMrbDgfParChanCSRB0			=	$parChanCSRB0,
 
 								kMrbDgfParRealTimeA			=	$parRealTimeA,
 								kMrbDgfParRealTimeB			=	$parRealTimeB,
