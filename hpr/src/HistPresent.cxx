@@ -3140,7 +3140,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* hname)
 void HistPresent::CleanWindowLists(TH1* hist)
 {
    if (!hist) return;
-   cout << "CleanWindowLists" << endl; 
+//   cout << "CleanWindowLists" << endl; 
    TList *lof = hist->GetListOfFunctions();
    if (lof) {
       TObject *p;

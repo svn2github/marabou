@@ -371,7 +371,7 @@ void FitHist::SaveDefaults(Bool_t recalculate)
          cout << "fSelHist already deleted" << endl;
       }
    } else {
-      cout << "take current fBinlx " << endl;
+//      cout << "take current fBinlx " << endl;
       wstream << "fBinlx:  " << fBinlx << endl;
       wstream << "fBinux:  " << fBinux << endl;
       if (is2dim(fSelHist)) {
@@ -447,7 +447,7 @@ void FitHist::RestoreDefaults()
          fRangeUpX = lastset->GetValue("fRangeUpX", fRangeUpX);
          fSelHist->GetXaxis()->Set(fSelHist->GetNbinsX(), fRangeLowX, fRangeUpX);
          fSetRange = kTRUE;
-         cout << "fRangeLowX " << fRangeLowX << endl;
+//         cout << "fRangeLowX " << fRangeLowX << endl;
       }
       fBinlx = fSelHist->GetXaxis()->GetFirst();
       fBinux = fSelHist->GetXaxis()->GetLast();
@@ -538,7 +538,7 @@ void FitHist::handle_mouse()
    static TLine * lowedge = 0;
    static TLine * upedge = 0;
    static TBox * box = 0;
-   Int_t nrows;
+   static Int_t nrows = 4;
 
    Int_t event = gPad->GetEvent();
    TObject *select = gPad->GetSelected();
@@ -573,7 +573,7 @@ void FitHist::handle_mouse()
          if (!lofp) return;
          TIter next(lofp);
          TObject * obj = 0; 
-         while (obj = next()) {
+         while ( (obj = next()) ) {
             if (obj->InheritsFrom("TH1")) hist = (TH1*)obj;
          }
          if (!hist) {
@@ -599,13 +599,13 @@ void FitHist::handle_mouse()
          Axis_t xx = gPad->AbsPixeltoX(px);
          startbinX = hist->GetXaxis()->FindBin(xx);
          startbinX_lowedge = hist->GetXaxis()->GetBinLowEdge(startbinX);
-         nrows = 4;
 
          if (is2dim) {
             Axis_t yy = gPad->AbsPixeltoY(py);
             startbinY = hist->GetYaxis()->FindBin(yy);
             startbinY_lowedge = hist->GetYaxis()->GetBinLowEdge(startbinY);
             cont = hist->GetBinContent(startbinX, startbinY);
+            nrows = 4;
          } else {
             bwidth = hist->GetBinWidth(startbinX);
             esigma = hist->GetBinWidth(startbinX) * TMath::Sqrt(12.);
@@ -619,13 +619,18 @@ void FitHist::handle_mouse()
                if (LiveBG) {
                   gFitFunc = new TF1("fitfunc", "pol1+gaus(2)");
                   npar = 5;
+                  if (nrows != 6) {delete fTofLabels; fTofLabels = 0;}
                   nrows = 6;
                } else {
                   gFitFunc = new TF1("fitfunc", "gaus");
  //                 gFitFunc ->SetParameters(gconst, center, esigma);
                  npar = 3;
+                 if (nrows != 5) {delete fTofLabels; fTofLabels = 0;}
                  nrows = 5;
                }
+            } else {
+               if (nrows != 4) {delete fTofLabels; fTofLabels = 0;}
+               nrows = 4;
             }
          }
          if (!fTofLabels) {
@@ -665,7 +670,7 @@ void FitHist::handle_mouse()
                    values.Add(new TObjString("no fit done yet"));
                }
             }
-            TString title("Statistics for: ");
+            TString title("Stat. in sel. region of: ");
             title += fHname.Data();
             Int_t xw = gPad->GetCanvas()->GetWindowTopX();
             Int_t yw = gPad->GetCanvas()->GetWindowTopY() + gPad->GetCanvas()->GetWindowHeight() + 28;
@@ -731,7 +736,6 @@ void FitHist::handle_mouse()
             fTofLabels->SetLabelText(0,1,Form("%d, %9.3f", binXup, XupEdge ));
             fTofLabels->SetLabelText(0,2,Form("%9.3f", cont));   
             fTofLabels->SetLabelText(0,3,Form("%9.3f", sum));
-            Int_t ndf = binXup - binXlow - npar;
             if (LiveGauss &&  (binXup - binXlow - npar) > 0) {
                Int_t ndf = binXup - binXlow - npar;
                if (first_fit) chi2 = gFitFunc->GetChisquare();
@@ -817,8 +821,10 @@ void FitHist::handle_mouse()
                markers->Add(new FhMarker(XupEdge,  YupEdge, 28));
                PaintMarks();
             } else {
-            	lowedge = new TLine(XlowEdge, hist->GetMinimum(), XlowEdge, hist->GetMaximum());  
-         	   upedge  = new TLine(XupEdge, hist->GetMinimum(),  XupEdge, hist->GetMaximum());
+            	lowedge = new TLine(XlowEdge, hist->GetYaxis()->GetXmin(), 
+                                   XlowEdge, hist->GetYaxis()->GetXmax());  
+         	   upedge  = new TLine(XupEdge, hist->GetYaxis()->GetXmin(), 
+                                   XupEdge, hist->GetYaxis()->GetXmax());
          	   lowedge->SetLineColor(4); lowedge->Draw();  
          	   upedge->SetLineColor(4); upedge->Draw(); 
                ClearMarks();
@@ -1017,8 +1023,8 @@ void FitHist::Entire()
    fSelHist = fOrigHist;
    fSelHist->SetMinimum(-1111);
    fSelHist->SetMaximum(-1111);
-   cout << fSelHist->GetXaxis()->GetTitle() << endl;
-   cout << fSelHist->GetYaxis()->GetTitle() << endl;
+//   cout << fSelHist->GetXaxis()->GetTitle() << endl;
+//   cout << fSelHist->GetYaxis()->GetTitle() << endl;
 
 //   fSelHist->SetMaximum(fMax);  
 //   fSelHist->SetMinimum(fMin);
@@ -1256,7 +1262,7 @@ Take first");
    fname.Resize(pp);
    TString cname = objs->GetString();
    cname.Remove(0,pp+1);
-   cout << "fname " << fname << "cont name " << cname << endl; 
+//   cout << "fname " << fname << "cont name " << cname << endl; 
 //   if (fRootFile) fRootFile->Close();
    TFile * rf =new TFile(fname);
    FhContour * ucont = (FhContour*)rf->Get(cname);
@@ -1265,6 +1271,7 @@ Take first");
    TArrayI * colors = ucont->GetColorArray();
    if (xyvals->GetSum() > 0) { 
       h2->SetContour(xyvals->GetSize(), xyvals->GetArray());
+      AdjustMaximum(h2, xyvals);
       fSetLevels = kTRUE;
    } else {
       h2->SetContour(xyvals->GetSize());
@@ -1356,7 +1363,7 @@ void FitHist::SetUserContours()
    TH2 * h2 = (TH2*)fSelHist;
    fSetLevels = set_levels;
    fSetColors = set_colors;
-//   Int_t   allcolors = 0;
+//   Int_t   allcolors = 0;;
 //   Double_t allconts = 0;
 //   for (Int_t i=0; i< ncont; i++) {
 //      allcolors += (*colors)[i];
@@ -1366,7 +1373,7 @@ void FitHist::SetUserContours()
    if (set_levels) {
       fUserContourLevels = ncont;
       h2->SetContour(ncont, xyvals->GetArray());
-      
+      AdjustMaximum(h2, xyvals);
    }
 //	if (allcolors > 0) {
 //	if (set_colors) {
@@ -1775,12 +1782,12 @@ void FitHist::PaintMarks()
 {
    int nval = markers->GetEntries();
    if (nval > 0) {
-      cout << "--- Current markers --------------" << endl;
+//      cout << "--- Current markers --------------" << endl;
       FhMarker *ti;
       TIter next(markers);
       cHist->cd();
       while ( (ti = (FhMarker *) next()) ) {
-         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
+//         cout << " x, y " << ti->GetX() << "\t" << ti->GetY() << endl;
 //         FhMarker *m = new FhMarker(ti->GetValX(), ti->GetValY(), 28);
          ti->Draw();
       }
@@ -2289,7 +2296,7 @@ void FitHist::ExpandProject(Int_t what)
 {
 //   enum dowhat {expand, projectx, projecty, statonly};
 
-   cout << "enter ExpandProject(Int_t what)" << endl;
+//   cout << "enter ExpandProject(Int_t what)" << endl;
    if (!fSelPad) {
       cout << "Cant find pad, call Debugger" << endl;
    }
@@ -2766,7 +2773,8 @@ void FitHist::Draw1Dim()
 void FitHist::Draw2Dim()
 {
    cHist->cd();
-   SetLogz(cHist->GetLogz());
+//   SetLogz(cHist->GetLogz());
+   SetLogz(fLogz);
    if (hp->GetShowStatBox()) {
       gStyle->SetOptStat(hp->GetOptStat());
       gStyle->SetStatFont(hp->fStatFont);

@@ -1176,6 +1176,20 @@ void SetUserPalette(Int_t startindex, TArrayI * pixels)
 	}
 }
 //___________________________________________________________________________
+void AdjustMaximum(TH1 * h2, TArrayD * xyvals)
+{
+   Int_t nv = xyvals->GetSize();
+   if (nv <= 0) return;
+   Double_t highest_cont = (*xyvals)[0];
+   for (Int_t i = 0; i < nv; i++) {
+      if ((*xyvals)[i] > highest_cont) highest_cont = (*xyvals)[i] ;
+   }
+   if (highest_cont > h2->GetMaximum()) {
+      h2->SetMaximum(highest_cont);
+      cout << "SetMaximum to highest contour level: " << highest_cont << endl; 
+   }     
+}
+//___________________________________________________________________________
 
 Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
 {
@@ -1208,6 +1222,7 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
    }
    return ndeleted;
 }
+//___________________________________________________________________________
 
 TH1 * calhist(TH1 * hist, TF1 * calfunc,
               Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
