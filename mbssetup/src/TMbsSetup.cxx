@@ -930,7 +930,7 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 							if (sevtSize == 0) {
 								if (i == 1 || i == 14 || i == 15) sevtSize = this->ReadoutProc(ProcID)->GetSevtSize();
 							}
-							if (sevtSize > arrayData[i]) {
+							if (sevtSize > arrayData[crate]) {
 								found = kTRUE;
 								arrayData[crate] = sevtSize;
 							}
