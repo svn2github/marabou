@@ -356,6 +356,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton1Down:
 
+//         cout  << px << " " << py << endl;
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
@@ -450,7 +451,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          }
 
 //OS end
-//         cout << ", " << px << " " << py ;
          fSelected->ExecuteEvent(event, px, py);
 
          {

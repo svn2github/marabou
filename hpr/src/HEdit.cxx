@@ -677,6 +677,33 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
          
+      } else if (obj->InheritsFrom("TPad")) {
+         TPad * b = (TPad*)obj;
+         Double_t x1 = b->GetAbsXlowNDC();
+         Double_t y1 = b->GetAbsYlowNDC();
+         Double_t x2 = x1 + b->GetAbsWNDC();
+         Double_t y2 = y1 + b->GetAbsHNDC();
+//         convert to user 
+         x1 = x1 * (GetX2() - GetX1());
+         y1 = y1 * (GetY2() - GetY1());
+         x2 = x2 * (GetX2() - GetX1());
+         y2 = y2 * (GetY2() - GetY1());
+
+         if (cut->IsInside(x1, y1)
+            |cut->IsInside(x1, y2)
+            |cut->IsInside(x2, y1)
+            |cut->IsInside(x2, y2) ) {
+            if (!markonly) {
+               b = (TPad*)obj->Clone();
+               x1 = (x1 - gg->fXLowEdge) / (gg->fXUpEdge - gg->fXLowEdge);
+               x2 = (x2 - gg->fXLowEdge) / (gg->fXUpEdge - gg->fXLowEdge);
+               y1 = (y1 - gg->fYLowEdge) / (gg->fYUpEdge - gg->fYLowEdge);
+               y2 = (y2 - gg->fYLowEdge) / (gg->fYUpEdge - gg->fYLowEdge);
+               b->SetPad(x1, y1, x2, y2);
+            }
+            gg->AddMember(b,  lnk->GetOption());
+         }
+         
       } else if (obj->InheritsFrom("TLine")){
          TLine * b = (TLine*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
@@ -778,7 +805,7 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          } 
       } else {
-         cout << obj->ClassName() << " not yet implemented" << endl;
+//         cout << obj->ClassName() << " not yet implemented" << endl;
       }
       lnk = (TObjOptLink*)lnk->Next();
    }   
@@ -1046,6 +1073,15 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
          b->SetY1(b->GetY1() + yoff);
          b->SetY2(b->GetY2() + yoff);
          
+      } else if (obj->InheritsFrom("TPad")){
+         TPad * b = (TPad*)obj;
+         Double_t x1, y1;
+         Double_t xoffNDC = xoff / (GetX2() - GetX1());
+         Double_t yoffNDC = yoff / (GetY2() - GetY1());
+         x1 = b->GetAbsXlowNDC() + xoffNDC;
+         y1 = b->GetAbsYlowNDC() + yoffNDC;
+         b->SetPad(x1, y1, x1 + b->GetWNDC(), y1 + b->GetHNDC());
+
       } else if (obj->InheritsFrom("TLine")){
          TLine * b = (TLine*)obj;
          b->SetX1(b->GetX1() + xoff);
@@ -1105,7 +1141,7 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
             y[i] += yoff;
          }
       } else {
-         cout << obj->ClassName() << " not yet implemented" << endl;
+//         cout << obj->ClassName() << " not yet implemented" << endl;
       }
    }   
 }
@@ -1128,15 +1164,38 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          b->SetY1(PutOnGridY(b->GetY1()));
          b->SetY2(PutOnGridY(b->GetY2()));
          
+      } else if (obj->InheritsFrom("TPad")) {
+         TPad * b = (TPad*)obj;
+         Double_t x1 = b->GetAbsXlowNDC();
+         Double_t y1 = b->GetAbsYlowNDC();
+         Double_t x2 = x1 + b->GetAbsWNDC();
+         Double_t y2 = y1 + b->GetAbsHNDC();
+//         cout <<  "xyoff: " << xoff << " " << yoff << endl;
+//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+//         convert to user 
+         x1 = (x1 - GetX1()) * (GetX2() - GetX1());
+         y1 = (y1 - GetY1()) * (GetY2() - GetY1());
+         x2 = (x2 - GetX1()) * (GetX2() - GetX1());
+         y2 = (y2 - GetY1()) * (GetY2() - GetY1());
+         x1 = PutOnGridX(x1);
+         y1 = PutOnGridX(y1);
+         x2 = PutOnGridX(x2);
+         y2 = PutOnGridX(y2);
+         x1 = GetX1()+ x1 / (GetX2() - GetX1());
+         y1 = GetY1()+ y1 / (GetY2() - GetY1());
+         x2 = GetX1()+ x2 / (GetX2() - GetX1());
+         y2 = GetY1()+ y2 / (GetY2() - GetY1());
+         b->SetPad(x1, y1, x2, y2);
+
       } else if (obj->InheritsFrom("TLine")){
-      TLine * b = (TLine*)obj;
+         TLine * b = (TLine*)obj;
          b->SetX1(PutOnGridX(b->GetX1()));
          b->SetX2(PutOnGridX(b->GetX2()));
          b->SetY1(PutOnGridY(b->GetY1()));
          b->SetY2(PutOnGridY(b->GetY2()));
 
       } else if (obj->InheritsFrom("TArrow")) {
-      TArrow * b = (TArrow*)obj;
+         TArrow * b = (TArrow*)obj;
          b->SetX1(PutOnGridX(b->GetX1()));
          b->SetX2(PutOnGridX(b->GetX2()));
          b->SetY1(PutOnGridY(b->GetY1()));
@@ -1189,9 +1248,10 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
             y[i] = PutOnGridY(y[i]);
          }
       } else {
-         cout << obj->ClassName() << " not yet implemented" << endl;
+//         cout << obj->ClassName() << " not yet implemented" << endl;
       }
-   }   
+   }
+   Update();   
 }
 //______________________________________________________________________________
 
@@ -1217,6 +1277,27 @@ void HTCanvas::DeleteObjects()
              delete obj;
          }
          
+      } else if (obj->InheritsFrom("TPad")) {
+         TPad * b = (TPad*)obj;
+         Double_t x1 = b->GetAbsXlowNDC();
+         Double_t y1 = b->GetAbsYlowNDC();
+         Double_t x2 = x1 + b->GetAbsWNDC();
+         Double_t y2 = y1 + b->GetAbsHNDC();
+//         cout <<  "xyoff: " << xoff << " " << yoff << endl;
+//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+//         convert to user 
+         x1 = x1 * (GetX2() - GetX1());
+         y1 = y1 * (GetY2() - GetY1());
+         x2 = x2 * (GetX2() - GetX1());
+         y2 = y2 * (GetY2() - GetY1());
+
+         if (cut->IsInside(x1, y1)
+            |cut->IsInside(x1, y2)
+            |cut->IsInside(x2, y1)
+            |cut->IsInside(x2, y2) ) {
+             delete obj;
+         }
+
       } else if (obj->InheritsFrom("TLine")){
          TLine * b = (TLine*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
@@ -1282,7 +1363,7 @@ void HTCanvas::DeleteObjects()
              delete obj;
          } 
       } else {
-         cout << obj->ClassName() << " not yet implemented" << endl;
+//         cout << obj->ClassName() << " not yet implemented" << endl;
       }
    }   
    if (cut) delete cut;  

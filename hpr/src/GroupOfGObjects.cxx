@@ -185,7 +185,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
    else if (align%10 == 3) yoff -= scaleG * dy2;
 
    TList * list_in_cut = 0;
-//   cout << "AddMembersToList: " << xoff << " " << yoff << " " << angle  << " "<< align << endl;
+ //  cout << "AddMembersToList: " << xoff << " " << yoff << " " << angle  << " "<< align << endl;
    if (draw_cut != 0 && this->GetN()){
       clone = this->Clone();
       GroupOfGObjects * cut = (GroupOfGObjects*)clone;
@@ -273,6 +273,40 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
             x[i] = xt;
             y[i] = yt;
          }
+      } else if (clone->InheritsFrom("TPad")) {
+         TPad * b = (TPad*)clone;
+         Double_t x1 = b->GetAbsXlowNDC();
+         Double_t y1 = b->GetAbsYlowNDC();
+         Double_t x2 = x1 + b->GetAbsWNDC();
+         Double_t y2 = y1 + b->GetAbsHNDC();
+
+//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+         Double_t xt2, yt2;
+//         convert to user 
+         x1 = x1 * (fXUpEdge - fXLowEdge);
+         y1 = y1 * (fYUpEdge - fYLowEdge);
+         x2 = x2 * (fXUpEdge - fXLowEdge);
+         y2 = y2 * (fYUpEdge - fYLowEdge); 
+
+//         cout <<  "usr: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+
+         Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt, &yt);  
+         Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt2, &yt2);  
+ //        cout <<  "ust: " << xt << " " << yt << " " << xt2 << " " << yt2 << endl;
+ //        cout <<  "pad: " << pad->GetX1() << " " << pad->GetY1() << " " << pad->GetX2() << " " <<pad->GetY2()  << endl;
+
+         x1 = (xt - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
+         y1 = (yt - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
+         x2 = (xt2 - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
+         y2 = (yt2 - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
+//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+         b->SetPad(x1, y1, x2, y2);
+         if (!pad->InheritsFrom("TCanvas")) {
+            pad->cd();
+            b->Draw();
+         }
+ //        cout << "b, pad, gPad " << b << " " << pad << " " << gPad << endl;
+
       } else if (clone->InheritsFrom("TBox")) {
          TBox * b = (TBox*)clone;
          Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);  
@@ -297,7 +331,8 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
       }
       if (clone) {
 //         cout << "pad, gPad " << pad << " " << gPad << endl;
-         pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
+         if (!clone->InheritsFrom("TPad") || pad->InheritsFrom("TCanvas"))
+            pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
 //         cout << "addmemb: " << endl;
 //         clone->Print();
       }
