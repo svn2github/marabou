@@ -58,10 +58,13 @@ private:
    void Build();
 //
 public:
+   enum {
+      kIsAEditorPage = BIT(23)
+   };
    HTCanvas();
    HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr = 0, FitHist * fh = 0,
-           TList * hlist = 0, TGraph * graph = 0);
+           TList * hlist = 0, TGraph * graph = 0, Int_t flag = 0);
    virtual ~HTCanvas();
    virtual void      HandleInput(EEventType button, Int_t x, Int_t y);
    virtual void DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected);
@@ -80,6 +83,9 @@ public:
    Double_t GetEditGridX() {return fEditGridX;};
    Double_t GetEditGridY() {return fEditGridY;};
    Double_t GetVisibleGridX() {return fVisibleGridX;};
+   void     PutObjectsOnGrid(TList* list = 0);
+   Double_t PutOnGridX(Double_t);
+   Double_t PutOnGridY(Double_t);
    Double_t GetVisibleGridY() {return fVisibleGridY;};
    void    SetEditGrid(Double_t x, Double_t y, Double_t xvis, Double_t yvis);
    void    SetEditGridX(Double_t x) {fEditGridX = x;};
@@ -90,15 +96,18 @@ public:
    Bool_t  GetUseEditGrid() {return fUseEditGrid;};
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
+   void    SetVisibilityOfEnclosingCuts(Bool_t visible);
    void    DrawHist();
    void    InsertImage();
    void    WritePrimitives();
    void    GetPrimitives();
-   Int_t   ExtractGObjects();
+   Int_t   ExtractGObjects(Bool_t markonly = kFALSE);
    void    InsertGObjects(const char * fname = 0);
+   void    DeleteObjects();
    void    WriteGObjects();
    void    ReadGObjects();
    void    ShowGallery();
+   void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

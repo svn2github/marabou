@@ -199,6 +199,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fRebin = 2;
    fRMethod = 0;
    fSeqNumberMany = 0;
+   fPageNumber = 0;
    fNtupleSeqNr = 0;
 
    fNwindows=   0;
@@ -997,7 +998,7 @@ Should we create a new file with corrected names?", maincanvas)) {
             anything_to_delete++; 
          }
       }
-   //  graphs
+   // s
       if (lofG.GetSize() > 0) {
          TIter next(&lofG);
          TObjString * objs;
@@ -3164,26 +3165,63 @@ void HistPresent::WarnBox(const char *message)
 }
 //____________________________________________________________________________
 
+Int_t NofEditorPages() 
+{
+   Int_t n = 0;
+   TIter next(gROOT->GetListOfCanvases());
+   TObject * obj;
+   while ( (obj = next()) ) {
+      if (obj->TestBit(HTCanvas::kIsAEditorPage)) n++;
+   }
+   return n;
+}
+//____________________________________________________________________________
+
 void HistPresent::DinA4Page(Int_t form)
 {
 //   gROOT->SetStyle("Plain");
-   HTCanvas *c1 = NULL; 
-   if (form == 1) {
-      c1= new HTCanvas("dina4page", "A DIN a4 page landscape",
-                  350,40,1004, 759, this);
-//      c1->Range(0, 0, 210. * TMath::Sqrt(2.), 210);
-      c1->Range(0, 0, 260, 180);
-   } else if (form == 0) {
-      c1= new HTCanvas("dina4page", "A DIN a4 page portrait",
-                  750,40,  690, 1052, this);
-//      c1->Range(0, 0, 210, 210. * TMath::Sqrt(2.));
-      c1->Range(0, 0, 180, 260);
+   if (NofEditorPages() > 0) {
+      WarnBox("Currently only 1 open EditorPage allowed");
+      cout << "Currently only 1 open EditorPage allowed" << endl;
+      return;
    }
+   HTCanvas *c1 = NULL; 
+   TString name("page_");
+   Bool_t ok;
+   fPageNumber++;
+   name += fPageNumber;
+   GetString("Name of page", name.Data(), &ok, GetMyCanvas());
+   if (!ok) return;
+
+   Double_t xmin = 0;
+   Double_t xmax = 0;
+   Double_t ymin = 0;
+   Double_t ymax = 0;
+
+   if (form == 1) {
+      c1= new HTCanvas(name.Data(), name.Data(),
+                  350,5,1004, 759, this, NULL, NULL, NULL, 
+                  HTCanvas::kIsAEditorPage);
+      xmax = 260;
+   } else if (form == 0) {
+      c1= new HTCanvas(name.Data(), name.Data(),
+                  550,5,  690, 1052, this, NULL, NULL, NULL, 
+                  HTCanvas::kIsAEditorPage);
+      xmax = 180;
+   }
+   //compute the pad range to get a fix aspect ratio
+   Double_t w = gPad->GetWw()*gPad->GetAbsWNDC();
+   Double_t h = gPad->GetWh()*gPad->GetAbsHNDC();
+   ymax = xmax*h/w;
+   cout << "xmax, ymax " << xmax << " " << ymax << endl;
+   c1->SetFixedAspectRatio();
+   c1->Range(xmin,ymin,xmax,ymax); 
+
    GetCanvasList()->Add(c1);
-//   c1->SetRightMargin(0);
-//   c1->SetLeftMargin(0);
-//   c1->SetBottomMargin(0);
-//   c1->SetTopMargin(0);
+	c1->SetRightMargin(0);
+	c1->SetLeftMargin(0);
+	c1->SetBottomMargin(0);
+	c1->SetTopMargin(0);
    c1->SetEditGrid(5, 5, 10, 10);
    c1->Modified(kTRUE);
    c1->Update();
@@ -3204,62 +3242,98 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    } else {
       c=(HTCanvas*)gROOT->FindObject(name);
    }
-   if (c) {
-      TString tempname(c->GetName());
-      if (!tempname.Contains("dina4page")) {
-         c->Draw();
-         return;
-      }
-      c->SetName("abcxyz");
-      UInt_t ww, wh;
-      ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
-      wh =  c->GetWindowHeight();
-      HTCanvas * c1 = new HTCanvas(tempname.Data(), c->GetTitle(),
-                         c->GetWindowTopX(), c->GetWindowTopY(),
-                         ww, wh, this);
-//                         c->GetWindowWidth(), c->GetWindowHeight(), this);
+   if (!c) return;
+   if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
+      c->Draw();
+      return;
+   }
+   if (NofEditorPages() > 0) {
+      WarnBox("Currently only 1 open EditorPage allowed");
+      cout << "Currently only 1 open EditorPage allowed" << endl;
+      if (fRootFile) fRootFile->Close();
+      return;
+   }
 
-//      c1->SetCanvasSize(c->GetWw(), c->GetWh());
+   TString new_name(c->GetName());
+   if (new_name == "dina4page") {
+      new_name = "page_";
+      fPageNumber ++;
+      new_name += fPageNumber;
+      c->SetBit(HTCanvas::kIsAEditorPage);
+   }
+   HTCanvas* oldc = (HTCanvas*)gROOT->GetListOfCanvases()->FindObject(name); 
+   if (oldc) {
+      cout << new_name << " already exists, please save und delete" << endl;
+      if (fRootFile) fRootFile->Close();
+      return;
+//         gROOT->GetListOfCanvases()->Remove(oldc);
+//         delete oldc;
+   }
+   TString tempname(c->GetName());
+   if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
+      c->Draw();
+      return;
+   }
+   c->SetName("abcxyz");
+   UInt_t ww, wh;
+   ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
+   wh =  c->GetWindowHeight();
+   wh =  c->GetWh();
+//   cout << "ww, wh: " << ww << " " << wh << endl;
+   HTCanvas * c1 = new HTCanvas(name, c->GetTitle(),
+                      c->GetWindowTopX(), c->GetWindowTopY(),
+                      ww, wh, this, NULL, NULL, NULL, HTCanvas::kIsAEditorPage);
 
-      Double_t x1, y1, x2, y2;
-      c->GetRange(x1, y1, x2, y2);
-      c1->Range(x1, y1, x2, y2);
+   Double_t x1, y1, x2, y2;
+   c->GetRange(x1, y1, x2, y2);
+   c1->Range(x1, y1, x2, y2);
 
 //      cout << c->GetWindowWidth() << " " << c->GetWindowHeight() << " "
 //           << c->GetWw() << " " << c->GetWh() << " "
 //           << x1 << " "<<  y1 << " "<<  x2 << " " << y2 << endl;
 
-      TList * l = c->GetListOfPrimitives();
-      TList * l1 = c1->GetListOfPrimitives();
-      TIter next(l);
-      TObject * obj;
-      TH1* h;
-      while ( (obj = (TObject*)next()) ) {
-         if (obj->InheritsFrom(TH1::Class())) {
-            h = (TH1*)obj;
-            h->SetDirectory(gROOT);
+   GetCanvasList()->Add(c1);
+//      TList * l = c->GetListOfPrimitives();
+   TList * l1 = c1->GetListOfPrimitives();
+//      TIter next(l);
+   TObject *obj;
+   TObjOptLink *lnk = (TObjOptLink*)c->GetListOfPrimitives()->FirstLink();
+   TH1* h;
+   while (lnk) {
+      obj = lnk->GetObject();
+ //     cout << "ShowCanvas: " << obj->GetName() << " " << lnk->GetOption() << endl << flush;
+      if (obj->InheritsFrom(TH1::Class())) {
+         h = (TH1*)obj;
+         h->SetDirectory(gROOT);
+      } else {
+         if (obj->InheritsFrom("TPad")){
+            TPad * newp = (TPad * )obj->Clone();
+            l1->Add(newp);
+            newp->SetCanvas(c1);
+            newp->Modified(kTRUE);
+            newp->Update();
+//            cout << "ShowCanvas: Pad " << endl;
+//            newp->GetListOfPrimitives()->ls();
          } else {
-            if (obj->InheritsFrom("TPad")){
-               TPad * newp = (TPad * )obj->Clone();
-               newp->SetCanvas(c1);
-               l1->Add(newp);
-            } else {
-               obj->ResetBit(kCanDelete);
-               l1->Add(obj);
-            }
+            obj->ResetBit(kCanDelete);
+//               l1->Add(obj);
+//               cout << obj->GetName() << " " << obj->GetOption() << endl;
+            obj->SetDrawOption(obj->GetOption());
+            obj->Draw(lnk->GetOption());
          }
       }
-      delete c;
-   	c1->SetRightMargin(0);
-   	c1->SetLeftMargin(0);
-   	c1->SetBottomMargin(0);
-   	c1->SetTopMargin(0);
-   	c1->SetEditGrid(5, 5, 10, 10);
-   	c1->Modified(kTRUE);
-   	c1->Update();
-   	c1->SetEditable(kTRUE);
-      c1->GetCanvasImp()->ShowEditor();
-      c1->GetCanvasImp()->ShowToolBar();
+      lnk = (TObjOptLink*)lnk->Next();
    }
+   delete c;
+   c1->SetRightMargin(0);
+   c1->SetLeftMargin(0);
+   c1->SetBottomMargin(0);
+   c1->SetTopMargin(0);
+   c1->SetEditGrid(5, 5, 10, 10);
+   c1->Modified(kTRUE);
+   c1->Update();
+   c1->SetEditable(kTRUE);
+   c1->GetCanvasImp()->ShowEditor();
+   c1->GetCanvasImp()->ShowToolBar();
    if (fRootFile) fRootFile->Close();
 }

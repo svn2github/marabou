@@ -14,12 +14,12 @@
 #include "TList.h"
 #include "TMarker.h"
 #include "TMath.h"
+#include "TImage.h"
+#include "TError.h"
+#include "TContextMenu.h"
 
 #include "HTCanvas.h"
 #include "HandleMenus.h"
-//*KEEP,TDirectory.
-#include "TContextMenu.h"
-
 #include "FitHist.h"
 #include "HistPresent.h"
 #include "support.h"
@@ -40,7 +40,9 @@ enum ERootCanvasCommands {
    kFileSaveAsC,
    kFileSaveAsPS,
    kFileSaveAsEPS,
+   kFileSaveAsPDF,
    kFileSaveAsGIF,
+   kFileSaveAsJPG,
    kFilePrint,
    kFileCloseCanvas,
    kFileQuit,
@@ -153,7 +155,6 @@ enum ERootCanvasCommands {
    kFHGraphToASCII,
    kFHCanvasToFile,
    kFHHistToASCII,
-   kFHHistToASCII_E,
    kFHPictToPSplain,
    kFHPictToPS,
    kFHPictToLP,
@@ -249,10 +250,14 @@ enum ERootCanvasCommands {
    kFH_DrawGrid,  
    kFH_DrawGridVis,  
    kFH_RemoveGrid,
+   kFH_SetVisEnclosingCut,
+   kFH_PutObjectsOnGrid,
    kFH_ExtractGObjects,
+   kFH_MarkGObjects,
    kFH_InsertGObjectsG,
    kFH_InsertGObjects,
    kFH_WriteGObjects,
+   kFH_DeleteObjects,
    kFH_ReadGObjects,
    kFH_ShowGallery,
    kOptionPad,
@@ -310,6 +315,7 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
       hbrowser=fHistPresent->GetHelpBrowser();
    }
    Int_t np;
+//   fHCanvas->cd();
 //   cout << fCanvasWindow->GetTitle() << endl;
 //   TRootHelpDialog *hd;
 
@@ -382,9 +388,15 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFileSaveAsEPS:
                      fHCanvas->SaveAs(".eps");
                      break;
+                  case kFileSaveAsPDF:
+                     fHCanvas->SaveAs(".pdf");
+                     break;
                   case kFileSaveAsGIF:
                     fHCanvas->SetFillStyle(0);
                      fHCanvas->SaveAs(".gif");
+                     break;
+                  case kFileSaveAsJPG:
+                     fHCanvas->SaveAs(".jpg");
                      break;
                   case kFilePrint:
                     fHCanvas->Print();
@@ -569,6 +581,18 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFH_RemoveGrid:
                         fHCanvas->RemoveEditGrid();
                      break;
+                  case kFH_SetVisEnclosingCut:
+                        if (fEditMenu->IsEntryChecked(kFH_SetVisEnclosingCut)) {
+                           fEditMenu->UnCheckEntry(kFH_SetVisEnclosingCut);
+                           fHCanvas->SetVisibilityOfEnclosingCuts(kFALSE);
+                        } else {
+                           fEditMenu->CheckEntry(kFH_SetVisEnclosingCut);
+                           fHCanvas->SetVisibilityOfEnclosingCuts(kTRUE);
+                        }
+                     break;
+                  case kFH_PutObjectsOnGrid:
+                        fHCanvas->PutObjectsOnGrid();
+                     break;
 
                   case kFH_DrawHist:
                         fHCanvas->DrawHist();
@@ -604,11 +628,17 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      env.SaveLevel(kEnvUser);
                      }                   
                      break;
+                  case kFH_MarkGObjects:
+                       fHCanvas->ExtractGObjects(kTRUE);
+                     break;
                   case kFH_ExtractGObjects:
-                       fHCanvas->ExtractGObjects();
+                       fHCanvas->ExtractGObjects(kFALSE);
                      break;
                   case kFH_WriteGObjects:
                        fHCanvas->WriteGObjects();
+                     break;
+                  case kFH_DeleteObjects:
+                       fHCanvas->DeleteObjects();
                      break;
                   case kFH_ReadGObjects:
                        fHCanvas->ReadGObjects();
@@ -980,9 +1010,6 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHHistToASCII:
                      fFitHist->WriteHistasASCII(0); 
                      break;
-                  case kFHHistToASCII_E:
-                     fFitHist->WriteHistasASCII(1); 
-                     break;
 
                   case kFHSpectrum:
                      fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kSpectrum); 
@@ -1239,7 +1266,7 @@ void HandleMenus::BuildMenus()
    if(fHistPresent){
       autops = fHistPresent->GetShowPSFile();
       hbrowser=fHistPresent->GetHelpBrowser();
-      if (!strcmp(fHCanvas->GetName(), "dina4page")) edit_menus = kTRUE;
+      if (fHCanvas->TestBit(HTCanvas::kIsAEditorPage)) edit_menus = kTRUE;
    }
    if (fFitHist != 0 && fFitHist->GetSelHist()->GetDimension() != 3) { 
      fh_menus = kTRUE;
@@ -1356,8 +1383,7 @@ void HandleMenus::BuildMenus()
    if(fHistPresent){
       if (fFitHist) {
          fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
-         fFileMenu->AddEntry("Hist_to_ASCII-File, no errors", kFHHistToASCII);
-         fFileMenu->AddEntry("Hist_to_ASCII-File, with error", kFHHistToASCII_E);
+         fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
       }
 //      fFileMenu->AddSeparator();
 //      fGraph = FindGraph(fHCanvas);
@@ -1391,9 +1417,21 @@ void HandleMenus::BuildMenus()
    fFileMenu->AddEntry("Picture_to_PS-File (white bg)",  kFHPictToPSplain);
    fFileMenu->AddEntry("Picture_to_PS-File (as it is)",  kFHPictToPS);
 //   fFileMenu->AddEntry("Save As canvas.ps",   kFileSaveAsPS);
-   fFileMenu->AddEntry("Save As canvas.eps",  kFileSaveAsEPS);
-   fFileMenu->AddEntry("Save As canvas.gif",  kFileSaveAsGIF);
-   fFileMenu->AddEntry("Save As canvas.C",    kFileSaveAsC);
+   fFileMenu->AddEntry("Save As .eps",  kFileSaveAsEPS);
+   fFileMenu->AddEntry("Save As .pdf",  kFileSaveAsPDF);
+   fFileMenu->AddEntry("Save As .gif",  kFileSaveAsGIF);
+   static Int_t img = 0;
+
+   if (!img) {
+      Int_t sav = gErrorIgnoreLevel;
+      gErrorIgnoreLevel = kFatal;
+      img = TImage::Create() ? 1 : -1;
+      gErrorIgnoreLevel = sav;
+   }
+   if (img > 0) {
+      fFileMenu->AddEntry("Save As .jpg",  kFileSaveAsJPG);
+   }
+   fFileMenu->AddEntry("Save As .C",    kFileSaveAsC);
    if (!edit_menus) {
 //   if(!fFitHist)fFileMenu->AddEntry("Canvas_to_ROOT-File",     kFHCanvasToFile);
 //   if(!fFitHist)fFileMenu->AddEntry("Save As canvas.root", kFileSaveAsRoot);
@@ -1668,14 +1706,18 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Draw image (gif, jpg) into selected pad", kFH_InsertImage);
    	fEditMenu->AddEntry("Draw selected hist into selected pad",  kFH_DrawHist);
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
-   	fEditMenu->AddEntry("Extract objects as macro",  kFH_ExtractGObjects);
+      fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
-   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
-      if (fHCanvas->fInsertMacrosAsGroup) fEditMenu->CheckEntry(kFH_InsertGObjectsG);
-      else                                fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
+//   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
+//      if (fHCanvas->fInsertMacrosAsGroup) fEditMenu->CheckEntry(kFH_InsertGObjectsG);
+//      else                                fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
    	fEditMenu->AddEntry("Write macro objects to file",  kFH_WriteGObjects);
    	fEditMenu->AddEntry("Read macro objects from file",  kFH_ReadGObjects);
    	fEditMenu->AddEntry("Display list of macro objects",  kFH_ShowGallery);
+      fEditMenu->AddSeparator();
+   	fEditMenu->AddEntry("Mark selected objects as compound",  kFH_MarkGObjects);
+   	fEditMenu->AddEntry("Extract selected objects as compound",  kFH_ExtractGObjects);
+   	fEditMenu->AddEntry("Delete selected objects",  kFH_DeleteObjects);
 //   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
      
 //   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
@@ -1685,12 +1727,15 @@ void HandleMenus::BuildMenus()
       fEditMenu->AddSeparator();
    	fEditMenu->AddEntry("Set Edit Grid",           kFH_SetGrid);
    	fEditMenu->AddEntry("Use Edit Grid",           kFH_UseGrid);
+   	fEditMenu->AddEntry("Put Objects On Grid",     kFH_PutObjectsOnGrid);
       if (fHCanvas->GetUseEditGrid()) fEditMenu->CheckEntry(kFH_UseGrid);
       else                      fEditMenu->UnCheckEntry(kFH_UseGrid);
 //      fEditMenu->AddEntry("Edit User Fit Macro",     kFHEditUser);
    	fEditMenu->AddEntry("Draw visible grid",           kFH_DrawGridVis);
    	fEditMenu->AddEntry("Draw real grid",           kFH_DrawGrid  );
    	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
+   	fEditMenu->AddEntry("Make EnclosingCut visible", kFH_SetVisEnclosingCut);
+      fEditMenu->CheckEntry(kFH_SetVisEnclosingCut);
       fEditMenu->AddSeparator();
       fEditMenu->AddEntry("Line- Text- Fill attributes", kOptionGeneral);
       fEditMenu->AddEntry("Feynman diagram attributes", kOptionFeynman);

@@ -90,6 +90,7 @@ protected:
    Int_t fWinshifty;
    Int_t fWinwidx_hlist; 
    Int_t fSeqNumberMany;
+   Int_t fPageNumber;
    Int_t fOptStat;
    Int_t fShowDateBox;
    Int_t fShowStatBox;
@@ -313,7 +314,11 @@ protected:
    Int_t      fCurlyWidth ;     // Curly line width
    Int_t      fCurlyStyle ;     // Curly line style
    Int_t      fIsCurly    ;     // true: Gluon, false: Gamma
-
+   Color_t    fArcFillColor;
+   Int_t      fArcFillStyle;
+   Color_t    fArcLineColor;
+   Int_t      fArcLineStyle;
+   Int_t      fArcLineWidth;
  
    Int_t         fForceStyle;  
                        

@@ -606,6 +606,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 
    Bool_t modified = kFALSE;
    if (must_find_limits) {
+      cout << setblue << "Do tree->Draw() to find limits" << setblack << endl; 
       tree->Draw(cmd_orig.Data(),"","goff");
       TH1* htemp = (TH1*)gDirectory->FindObject("htemp");
       if (htemp) {
@@ -753,7 +754,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
            return;
         } else { while (cut.Index(a3)>=0) {cut(a3)=leaf2.Data();}}
       }  
-      cout << "Execute: " << cmd << " Cut: " << cut << "1.Ev, NofEv: " 
+      cout << "Execute: " << cmd << " Cut: " << cut << " 1.Ev, NofEv: " 
                           << first_event << " " <<nof_events << endl;
       tree->Draw((const char*)cmd, cut.Data(),option.Data(), nof_events, first_event);
    } else if (fApplyGraphCut && nent == 2) {
@@ -799,6 +800,6 @@ void HistPresent::MkClass( const char* fname, const char* dir, const char* tname
    clname = GetString("Name of generated class", clname.Data(), &ok);
    if (!ok) return;
    tree->MakeClass(clname.Data());
-
+   gDirectory = gROOT;
 }
 //________________________________________________________________________________________

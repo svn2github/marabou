@@ -18,6 +18,7 @@
 #include "HTCanvas.h"
 #include "HandleMenus.h"
 #include "TContextMenu.h"
+#include "TVirtualPadEditor.h"
 
 #include "FitHist.h"
 #include "HistPresent.h"
@@ -48,7 +49,7 @@ HTCanvas::HTCanvas():TCanvas()
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
            Int_t ww, Int_t wh, HistPresent * hpr, FitHist * fh,
-           TList * hlist, TGraph * graph)
+           TList * hlist, TGraph * graph, Int_t flag)
            :  TCanvas(kFALSE), fHistPresent(hpr), fFitHist(fh), 
               fHistList(hlist),fGraph(graph)
             {
@@ -124,6 +125,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    if (temp == 0) fUseEditGrid = kFALSE;
    else  fUseEditGrid = kTRUE;
    
+   if (flag & HTCanvas::kIsAEditorPage) SetBit(HTCanvas::kIsAEditorPage);
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph);         
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
   fHandleMenus->BuildMenus(); 
@@ -145,6 +147,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 HTCanvas::~HTCanvas()
 {
 //   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
+   if ((TVirtualPadEditor::GetPadEditor(kFALSE) != 0))
+      TVirtualPadEditor::Terminate();
 
    if (fHandleMenus) {
       delete fHandleMenus;
@@ -274,7 +278,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TObject      *prevSelObj = 0;
    TPad         *prevSelPad = 0;
 //OS start
-//   static Float_t oldx=0, oldy=0;
+   static Int_t pxB1down, pyB1down;
+   static Double_t xEnclosingCut = 0, yEnclosingCut = 0;
    Double_t x = 0, y = 0;
    Int_t n;
 //OS end
@@ -354,11 +359,19 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          fSelected = pad_of_image;
       }
 //      cout << fSelected  << endl;
-
+   
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
-
-      if(fUseEditGrid && 
+      pxB1down = px;
+      pyB1down = py;
+      
+      if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
+      if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
+          TCutG * cut = (TCutG*)fSelected;
+          xEnclosingCut = (cut->GetX())[0];
+          yEnclosingCut = (cut->GetY())[0];
+      }
+      if(fUseEditGrid && fSelectedPad == this &&
        !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
         ){
 //         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
@@ -390,10 +403,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          fMouseY = gPad->AbsPixeltoY(py);
          fGetMouse = kFALSE;
       }
-
-
 //OS end
-
       fSelected->ExecuteEvent(event, px, py);
       if (fAutoExec)        RunAutoExec();
 
@@ -404,12 +414,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
+      if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
          if (in_image) {
             fSelected = pad_of_image;
 //            fSelected = gPad;
          }
 //         if(fUseEditGrid && !(fSelected->IsA() == TPad::Class())){
-         if(fUseEditGrid && 
+         if(fUseEditGrid && fSelectedPad == this &&
           !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
            ){
             if(fEditGridX !=0){
@@ -457,6 +468,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
  
+         if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
          if (in_image) {
 //            cout << "setting: " << fSelected << endl;
             fSelected = pad_of_image;
@@ -466,7 +478,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 //         cout << "name, px, py, bef " << px << " " << py << endl;
 //         fSelected->Print();
          
-         if(fUseEditGrid){
+         if (fUseEditGrid && fSelectedPad == this &&
+          !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
+           ){
             if(fEditGridX !=0){
                x = gPad->AbsPixeltoX(px);
                n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
@@ -490,7 +504,17 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
          if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
          if (fAutoExec)        RunAutoExec();
-
+      	if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
+         	 TCutG * cut = (TCutG*)fSelected;
+         	 Double_t xshift = (cut->GetX())[0] -  xEnclosingCut;
+         	 Double_t yshift = (cut->GetY())[0] -  yEnclosingCut;
+             ShiftObjects(((GroupOfGObjects*)fSelected)->GetMemberList(), xshift, yshift);
+      	}
+//         if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
+//            Double_t xshift = gPad->AbsPixeltoX(px) - gPad->AbsPixeltoX(pxB1down);
+//            Double_t yshift = - (gPad->AbsPixeltoX(py) - gPad->AbsPixeltoX(pyB1down));
+ //           ShiftObjects(((EnclosingCut*)fSelected)->GetLofGObjects(), xshift, yshift);
+//         }
 //         if (fPadSave->TestBit(kNotDeleted))
 //            gPad = fPadSave;
 //         else {

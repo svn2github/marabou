@@ -1464,28 +1464,70 @@ void FitHist::WriteHistasASCII(Int_t what)
 // *INDENT-OFF* 
   const char helpText[] =
 "As default only the channel contents is written\n\
-to the file. To write also the channel number the\n\
-option \"Output also Channel Number\" should be\n\
-activated.";
+to the file.";
 // *INDENT-ON* 
 
    if (is2dim(fSelHist)) {
       WarnBox(" WriteHistasASCII: 2 dim not supported ");
       return;
    }
-   Bool_t chan_and_cont = kFALSE;
-   Bool_t chan_and_cont_and_bc = kFALSE;
+   static Bool_t channels = kFALSE;
+   static Bool_t bincenters = kTRUE;
+   static Bool_t error_y  = kFALSE;
+   static Bool_t error_x  = kFALSE;
+
+
    TString fname = fSelHist->GetName();
    fname += ".ascii";
-   Bool_t ok;
-   fname =
-       GetString("Write ASCII-file with name", fname.Data(), &ok, mycanvas,
-                 "Channel Numbers", &chan_and_cont, helpText,
-                 "Bin Centers    ", &chan_and_cont_and_bc);
-   if (!ok) {
-      cout << " Cancelled " << endl;
+   TOrdCollection *row_lab = new TOrdCollection(); 
+   TOrdCollection *values  = new TOrdCollection();
+   row_lab->Add(new TObjString("File name"));
+   row_lab->Add(new TObjString("Channel Numbers"));
+   row_lab->Add(new TObjString("Bin Centers"));
+   row_lab->Add(new TObjString("X Errors"));
+   row_lab->Add(new TObjString("Y Errors"));
+
+   values->Add(new TObjString(fname.Data()));
+   if (channels) 
+      values->Add(new TObjString("CheckButton_Down"));
+   else
+      values->Add(new TObjString("CheckButton_Up"));
+   if (bincenters) 
+      values->Add(new TObjString("CheckButton_Down"));
+   else
+      values->Add(new TObjString("CheckButton_Up"));
+   if (error_y) 
+      values->Add(new TObjString("CheckButton_Down"));
+   else
+      values->Add(new TObjString("CheckButton_Up"));
+   if (error_x) 
+      values->Add(new TObjString("CheckButton_Down"));
+   else
+      values->Add(new TObjString("CheckButton_Up"));
+
+   Int_t ret,  itemwidth=150, nrows = values->GetSize(); 
+   new TGMrbTableFrame(mycanvas, &ret, "Write hist as ASCII-file", 
+                        itemwidth, 1, nrows, values,
+                        0, row_lab, 0, 0, helpText);
+   if (ret < 0) {
       return;
    }
+   fname = ((TObjString*)values->At(0))->GetString();
+   TString temp;
+   temp = ((TObjString*)values->At(1))->GetString();
+   if (temp.EndsWith("Down")) channels = kTRUE;
+   else                       channels = kFALSE;
+   temp = ((TObjString*)values->At(2))->GetString();
+   if (temp.EndsWith("Down")) bincenters = kTRUE;
+   else                       bincenters = kFALSE;
+   temp = ((TObjString*)values->At(3))->GetString();
+   if (temp.EndsWith("Down")) error_x = kTRUE;
+   else                       error_x = kFALSE;
+   temp = ((TObjString*)values->At(4))->GetString();
+   if (temp.EndsWith("Down")) error_y = kTRUE;
+   else                       error_y = kFALSE;
+
+
    if (!gSystem->AccessPathName((const char *) fname, kFileExists)) {
 //      cout << fname << " exists" << endl;
       int buttons = kMBOk | kMBDismiss, retval = 0;
@@ -1502,15 +1544,15 @@ activated.";
    if (outfile) {
       Int_t nbins = fSelHist->GetNbinsX();
       for (Int_t i = 1; i <= nbins; i++) {
-         if (chan_and_cont)
+         if (channels)
             outfile << i << "\t";
-         if (chan_and_cont_and_bc)
+         if (bincenters)
             outfile << fSelHist->GetBinCenter(i) << "\t";
          outfile << fSelHist->GetBinContent(i); 
-         if (what&1) {
+         if (error_x) 
             outfile << "\t" << 0.5 * fSelHist->GetBinWidth(i);
+         if (error_y) 
             outfile << "\t" << fSelHist->GetBinError(i);
-         }
          outfile << endl;
       }
       outfile.close();

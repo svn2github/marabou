@@ -32,6 +32,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
 					$(HPRDIRI)/FhContour.h \
                $(HPRDIRI)/FhRegion.h \
                $(HPRDIRI)/GroupOfGObjects.h \
+               $(HPRDIRI)/HprImage.h \
  					$(HPRDIRI)/EditMarker.h 
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

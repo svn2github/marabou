@@ -11,6 +11,7 @@
 #include "TF1.h"
 #include "TPaveStats.h"
 #include "TArrow.h"
+#include "TArc.h"
 #include "TMarker.h"
 #include "TLatex.h"
 #include "TCurlyLine.h"
@@ -479,6 +480,12 @@ void HistPresent::RestoreOptions()
    fCurlyStyle       = env.GetValue("HistPresent.CurlyStyle" ,       1);
 	fIsCurly          = env.GetValue("HistPresent.IsCurly" ,          0);
 
+	fArcFillColor     = env.GetValue("HistPresent.ArcFillColor" , 1);
+	fArcFillStyle     = env.GetValue("HistPresent.ArcFillStyle" , 0);
+   fArcLineColor     = env.GetValue("HistPresent.ArcLineColor" , 1);
+   fArcLineStyle     = env.GetValue("HistPresent.ArcLineStyle" , 1);
+   fArcLineWidth     = env.GetValue("HistPresent.ArcLineWidth" , 2);
+
    fForceStyle     = env.GetValue("HistPresent.ForceStyle",      1);
 
    TString defdir(gSystem->Getenv("MARABOU"));
@@ -735,17 +742,22 @@ void HistPresent::SaveOptions()
 
 	env.SetValue("HistPresent.ArrowAngle" ,    fArrowAngle           );
 	env.SetValue("HistPresent.ArrowSize"  ,    fArrowSize            );
-	env.SetValue("HistPresent.ArrowColor"  ,   fArrowColor            );
-	env.SetValue("HistPresent.ArrowWidth"  ,   fArrowWidth            );
-	env.SetValue("HistPresent.ArrowStyle"  ,   fArrowStyle            );
+	env.SetValue("HistPresent.ArrowColor"  ,   fArrowColor           );
+	env.SetValue("HistPresent.ArrowWidth"  ,   fArrowWidth           );
+	env.SetValue("HistPresent.ArrowStyle"  ,   fArrowStyle           );
 	env.SetValue("HistPresent.ArrowFill"  ,    fArrowFill            );
 	env.SetValue("HistPresent.ArrowOption",    fArrowOption.Data()   );
-	env.SetValue("HistPresent.CurlyWaveLength" ,    fCurlyWaveLength           );
-	env.SetValue("HistPresent.CurlyAmplitude"  ,    fCurlyAmplitude            );
-	env.SetValue("HistPresent.CurlyColor"  ,   fCurlyColor            );
-	env.SetValue("HistPresent.CurlyWidth"  ,   fCurlyWidth            );
-	env.SetValue("HistPresent.CurlyStyle"  ,   fCurlyStyle            );
+	env.SetValue("HistPresent.CurlyWaveLength",fCurlyWaveLength    );
+	env.SetValue("HistPresent.CurlyAmplitude" ,fCurlyAmplitude     );
+	env.SetValue("HistPresent.CurlyColor"  ,   fCurlyColor           );
+	env.SetValue("HistPresent.CurlyWidth"  ,   fCurlyWidth           );
+	env.SetValue("HistPresent.CurlyStyle"  ,   fCurlyStyle           );
 	env.SetValue("HistPresent.IsCurly"    ,    fIsCurly              );
+	env.SetValue("HistPresent.ArcFillColor" ,fArcFillColor);
+	env.SetValue("HistPresent.ArcFillStyle" ,fArcFillStyle);
+   env.SetValue("HistPresent.ArcLineColor" ,fArcLineColor);
+   env.SetValue("HistPresent.ArcLineStyle" ,fArcLineStyle);
+   env.SetValue("HistPresent.ArcLineWidth" ,fArcLineWidth);
 
    env.SetValue("HistPresent.ForceStyle",      fForceStyle     );
  
@@ -832,6 +844,19 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    fCurlyStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
    fCurlyColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
    fIsCurly         = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
+   // check ArrowOption
+   if      (fArrowOption.Contains("->-")) fArrowOption = "->-";
+   else if (fArrowOption.Contains("-<-")) fArrowOption = "-<-";
+   else if (fArrowOption.Contains("-|>-")) fArrowOption = "-|>-";
+   else if (fArrowOption.Contains("-<|-")) fArrowOption = "-<|-";
+   else if (fArrowOption.BeginsWith("<|") && fArrowOption.EndsWith("|>")) fArrowOption = "<|>";
+   else if (fArrowOption.BeginsWith("<")  && fArrowOption.EndsWith(">"))  fArrowOption = "<>";
+   else if (fArrowOption.BeginsWith("<|")) fArrowOption = "<|";
+   else if (fArrowOption.EndsWith("|>"))  fArrowOption = "|>";
+   else if (fArrowOption.BeginsWith("<"))  fArrowOption = "<";
+   else if (fArrowOption.EndsWith(">"))   fArrowOption = ">";
+   else                                   fArrowOption = "|>";
+
    SaveOptions();
    gEnv->SetValue("HistPresent.ArrowAngle" ,fArrowAngle);
    gEnv->SetValue("HistPresent.ArrowSize"  ,fArrowSize );
@@ -873,7 +898,8 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
                if (flag[kArrowFill]  != 0)      a->SetFillStyle(fArrowFill);
                if (flag[kArrowColor] != 0)      a->SetLineColor(fArrowColor);
                if (flag[kArrowColor] != 0)      a->SetFillColor(fArrowColor);
-               if (flag[kArrowOption]!= 0)      a->SetOption(fArrowOption.Data());
+               if (flag[kArrowOption]!= 0)     {a->SetDrawOption(fArrowOption.Data()); 
+                                                a->SetOption(fArrowOption.Data());};
             }
          }
          canvas->Modified();
@@ -898,6 +924,11 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
       kMarkerColor   ,
       kMarkerStyle   ,
       kMarkerSize    ,
+      kArcFillColor  ,
+      kArcFillStyle	,
+      kArcLineColor	,
+      kArcLineStyle	,
+      kArcLineWidth	
    };
 
    TOrdCollection *row_lab = new TOrdCollection();
@@ -913,6 +944,11 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("MarkerColor"));     
    row_lab->Add(new TObjString("MarkerStyle"));     
    row_lab->Add(new TObjString("MarkerSize"));         
+   row_lab->Add(new TObjString("ArcFillColor"));         
+   row_lab->Add(new TObjString("ArcFillStyle"));         
+   row_lab->Add(new TObjString("ArcLineColor"));     
+   row_lab->Add(new TObjString("ArcLineStyle"));     
+   row_lab->Add(new TObjString("ArcLineWidth"));         
 
    Int_t nrows = row_lab->GetSize();
    TArrayD values(nrows);
@@ -930,7 +966,11 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    values[vp++] = fMarkerColor;     
    values[vp++] = fMarkerStyle;     
    values[vp++] = fMarkerSize;
- 
+   values[vp++] = fArcFillColor;
+   values[vp++] = fArcFillStyle;
+   values[vp++] = fArcLineColor;
+   values[vp++] = fArcLineStyle;
+   values[vp++] = fArcLineWidth; 
    TOrdCollection *col_lab = new TOrdCollection();
    col_lab->Add(new TObjString("Value"));     
    col_lab->Add(new TObjString("Set all"));     
@@ -958,6 +998,11 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    fMarkerColor   = (Int_t)values[vp++];
    fMarkerStyle   = (Int_t)values[vp++];
    fMarkerSize    =        values[vp++];
+	fArcFillColor  = (Int_t)values[vp++];
+	fArcFillStyle  = (Int_t)values[vp++];
+	fArcLineColor  = (Int_t)values[vp++];
+	fArcLineStyle  = (Int_t)values[vp++];
+	fArcLineWidth  = (Int_t)values[vp++];
    SaveOptions();
    SetGeneralAtt();
 
@@ -994,6 +1039,14 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
                if (flag[kMarkerSize] != 0)       tc->SetMarkerSize(fMarkerSize);
                if (flag[kMarkerColor] != 0)      tc->SetMarkerColor(fMarkerColor);
                if (flag[kMarkerStyle] != 0)      tc->SetMarkerStyle(fMarkerStyle);
+            }
+            if (obj->InheritsFrom("TEllipse")) {
+               TEllipse * tc = (TEllipse*)obj;
+               if (flag[kArcFillColor] != 0)    tc->SetFillColor(fArcFillColor);
+               if (flag[kArcFillStyle] != 0)    tc->SetFillStyle(fArcFillStyle);
+               if (flag[kArcLineColor] != 0)    tc->SetLineColor(fArcLineColor);
+               if (flag[kArcLineStyle] != 0)    tc->SetLineStyle(fArcLineStyle);
+               if (flag[kArcLineWidth] != 0)    tc->SetLineWidth(fArcLineWidth);
             }
          }
          canvas->Modified();
