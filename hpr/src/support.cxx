@@ -1898,3 +1898,28 @@ TList * BuildList(const char *bp)
    }
 	return hlist;
 }
+//_______________________________________________________
+
+Int_t FindHistsInFile(const char * rootf, const char * listf) 
+{
+   ifstream list(listf);
+	if (!list.good()) {
+	   cout << "Cant open: " << listf << endl;
+		return -1;
+   } 
+	TFile f(rootf);
+	if (!f.IsOpen()) {
+	   cout << "Cant open: " << rootf << endl;
+		return -1;
+   } 
+	char line[100];
+	Int_t nfound = 0;
+	while (1) {
+	   list >> line;
+		if (list.eof()) break;
+		TObject * obj = f.Get(line);
+		if (obj) nfound ++;
+	}
+//   cout << "FindHistsInFile " << rootf<< " " << listf << " : " << nfound<< endl;
+	return nfound;
+}

@@ -102,6 +102,7 @@ TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color);
 Int_t    getcol();
 TString * GetStringArg(TString * arg,  Int_t nth);
 TList * BuildList(const char *bp);
+Int_t FindHistsInFile(const char * rootf, const char * listf); 
 
 inline void nothing();
 #endif

@@ -639,7 +639,13 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    while ( (fn=gSystem->GetDirEntry(dirp)) ) {
       hint = fn;
       if (hint.Index(rsuf) > 0) {
-		if (contains_filenames(fn) > 0) continue;
+			if (contains_filenames(fn) > 0) continue;
+		   if (strstr(fname,".root")) {
+			   if (FindHistsInFile(fname, fn) <= 0) {
+//				   cout << "No hist of: " << fn << " found in: " << fname << endl;
+					continue;
+				}
+			}
          hint(rsuf) = "";
          cmd = "mypres->ShowList(\"";
          cmd = cmd + fname + "\",\"" + hint + "\")";
@@ -1219,10 +1225,11 @@ void HistPresent::ComposeList(const char* bp)
 	}
    for(Int_t i = 0; i < nselect; i++) {
       TString hname  = ((TObjString *)fSelectHist->At(i))->String();
+//		cout << hname << endl;
       Int_t pp = hname.Index(" ");
       hname.Remove(0,pp+1);
-      pp = hname.Index(";");
-      if (pp > 0) hname.Resize(pp);
+		TRegexp vers(";[0-9]*");
+		hname(vers) = "";
       if (put_file) wstream << fname.Data() << " "; 
       wstream << hname.Data() << endl;
    }
@@ -1252,7 +1259,7 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
    TString cmd; TString tit; TString sel;
    if (strstr(fname, "Socket")) 
       cout << "Warning: Validity of entries in list are not checked" << endl;
-   while (  1) {
+   while ( 1) {
       TString line;
       line.ReadLine(wstream, kFALSE);
 	   if (wstream.eof()) {
@@ -1273,22 +1280,35 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
 //      if (is_a_file(fname))cmd += "ShowHist(\"";
 //      else                cmd += "ShowMap(\"";
       cmd += fname; 
-      cmd +=  "\",\"\",\""; 
+		TString hname(line);
+		TString dname;
+		Int_t pp = line.Index(" ");
+		if (pp > 0) {
+		   dname = line;
+			hname.Resize(pp);
+			dname.Remove(0,pp+1);
+		}
+		cmd = cmd + "\",\"" + dname + "\",\"";
+//      cmd +=  "\",\"\",\""; 
       sel = "mypres->SelectHist";
-      sel = sel + "(\"" + fname + "\",\"\",\"";
+//      sel = sel + "(\"" + fname + "\",\"\",\"";
+      sel = sel + "(\"" + fname + "\",\"" + dname + "\",\"";
 
-      cmd = cmd + line + "\")";
-      sel = sel + line + "\")";
+      cmd = cmd + hname + "\")";
+      sel = sel + hname + "\")";
+//		cout << cmd << endl;
 //      TString empty;
       tit = line;
       if (is_a_file(fname)) {
+ 	      cout << "fn: " << fname  << " dn: " << dname  << " hn: " << hname << endl;
          if (fRootFile) fRootFile->Close();
          fRootFile=new TFile(fname);
-         hist = (TH1*)fRootFile->Get(line.Data());
+			if (dname.Length() > 0)gDirectory->cd(dname);
+         hist = (TH1*)gDirectory->Get(hname);
       } else if  (strstr(fname, ".map")) {
          mfile = TMapFile::Create(fname);
          hist=0;
-         hist    = (TH1 *) mfile->Get(line.Data(), hist);
+         hist    = (TH1 *) mfile->Get(hname, hist);
 
       } else if (strstr(fname, "Socket")) {
 //
