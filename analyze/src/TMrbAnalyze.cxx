@@ -31,8 +31,6 @@
 
 #include "SetColor.h"
 
-#include "n2ll.h"
-
 // global pthread mutex to protect TMapped data
 extern pthread_mutex_t global_data_mutex;
 
@@ -3314,26 +3312,26 @@ Int_t TUsrHit::Compare(const TObject * Hit) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	long long t1, t2;
+	Long64_t t1, t2;
 	t1 = ((TUsrHit *) this)->GetChannelTime();
 	t2 = ((TUsrHit *) Hit)->GetChannelTime();
 	if (t1 == t2)	return(0);
 	else			return(t1 > t2 ? 1 : -1);
 }
 
-Int_t TUsrHit::Compare(long long ChannelTime) const {
+Int_t TUsrHit::Compare(Long64_t ChannelTime) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHit::Compare
 // Purpose:        Compare time stamps
-// Arguments:      long long ChannelTime   -- channel time
+// Arguments:      Long64_t ChannelTime   -- channel time
 // Results:        -1 / 0 / 1
 // Exceptions:
 // Description:    Compares event time with given value.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	long long t;
+	Long64_t t;
 	t = ((TUsrHit *) this)->GetChannelTime();
 	if (t == ChannelTime)	return(0);
 	else					return(t > ChannelTime ? 1 : -1);
@@ -3800,10 +3798,10 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) const {
 	if (fCurIndex >= this->GetNofHits()) return(kFALSE);
 
 	hit = (TUsrHit *) fHits->At(fCurIndex);
-	long long tDiff =	(hit->GetChannelTime() - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber()))
+	Long64_t tDiff =	(hit->GetChannelTime() - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber()))
 						- (Hit0->GetChannelTime() - gMrbAnalyze->GetTimeOffset(Hit0->GetModuleNumber()));
 	if (tDiff < 0) tDiff = -tDiff;
-	return(tDiff <= (long long) fWindow);
+	return(tDiff <= (Long64_t) fWindow);
 }		
 
 TUsrHit * TUsrHBX::NextHit() {
