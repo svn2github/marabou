@@ -442,8 +442,6 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	Int_t n;
 	EMbsSetupMode smode;
 
-	ifstream f;
-
 	cout	<< this->ClassName() << "::MakeSetupFiles(): Checking setup data base ..."
 			<< endl;
 	if (!this->CheckSetup()) {
@@ -478,8 +476,8 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 			<< fpath << " -> " << installPath << " ..."
 			<< endl;
 	fname = fpath + "/FILES";
-	f.open(fname.Data(), ios::in);
-	if (!f.good()) {	
+	ifstream f1(fname.Data(), ios::in);
+	if (!f1.good()) {	
 		gMrbLog->Err() << gSystem->GetError() << " - " << fname << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 		nofErrors++;
@@ -487,13 +485,13 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 		lofFiles.Delete();
 		nofFiles = 0;
 		for (;;) {
-			line.ReadLine(f, kFALSE);
+			line.ReadLine(f1, kFALSE);
 			line = line.Strip(TString::kBoth);
-			if (f.eof()) break;
+			if (f1.eof()) break;
 			lofFiles.Add(new TObjString(line.Data()));
 			nofFiles++;
 		}
-		f.close();
+		f1.close();
 		if (nofFiles == 0) {
 			gMrbLog->Err() << "FILES is empty" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
@@ -529,8 +527,9 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 					<< fpath << " -> " << destPath << " ..."
 					<< endl;
 			fname = fpath + "/FILES";
-			f.open(fname.Data(), ios::in);
-			if (!f.good()) {	
+			ifstream f2(fname.Data(), ios::in);
+			f2.open(fname.Data(), ios::in);
+			if (!f2.good()) {	
 				gMrbLog->Err() << gSystem->GetError() << " - " << fname << endl;
 				gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
 				nofErrors++;
@@ -539,13 +538,13 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 				lofFiles.Delete();
 				nofFiles = 0;
 				for (;;) {
-					line.ReadLine(f, kFALSE);
+					line.ReadLine(f2, kFALSE);
 					line = line.Strip(TString::kBoth);
-					if (f.eof()) break;
+					if (f2.eof()) break;
 					lofFiles.Add(new TObjString(line.Data()));
 					nofFiles++;
 				}
-				f.close();
+				f2.close();
 				if (nofFiles == 0) {
 					gMrbLog->Err() << "FILES is empty" << endl;
 					gMrbLog->Flush(this->ClassName(), "MakeSetupFiles");
