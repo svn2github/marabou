@@ -114,6 +114,8 @@ protected:
    Int_t fFitOptAddAll; 
    Int_t fFitOptKeepParameters; 
    Int_t fFitOptUseLinBg;
+   TString  fGraphFile;    
+   TString  fDrawOptGraph;    
    TString * fDrawOpt2Dim;    
    TString * f2DimColorPalette;    
    Int_t fShowErrors;  
@@ -238,6 +240,20 @@ protected:
    Bool_t        fPadGridY;       
    Int_t         fPadTickX;       
    Int_t         fPadTickY;  
+	Color_t       fFrameFillColor;    //pad frame fill color
+	Color_t       fFrameLineColor;    //pad frame line color
+	Style_t       fFrameFillStyle;    //pad frame fill style
+	Style_t       fFrameLineStyle;    //pad frame line style
+	Width_t       fFrameLineWidth;    //pad frame line width
+	Width_t       fFrameBorderSize;   //pad frame border size
+	Int_t         fFrameBorderMode;   //pad frame border mode
+	Color_t       fCanvasColor;       //canvas color
+	Width_t       fCanvasBorderSize;  //canvas border size
+	Int_t         fCanvasBorderMode;  //canvas border mode
+	Int_t         fCanvasDefH;        //default canvas height
+	Int_t         fCanvasDefW;        //default canvas width
+	Int_t         fCanvasDefX;        //default canvas top X position
+	Int_t         fCanvasDefY;        //default canvas top Y position
 
    Color_t       fTitleColor;     
    Color_t       fTitleTextColor; 
@@ -254,6 +270,9 @@ protected:
     Float_t fXXXXX;
 
 public:
+enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimHistWeight,
+                       k2dimHist, k2dimHistWeight, kGraph, kGraphError};
+
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
    void RecursiveRemove(TObject *);
@@ -287,6 +306,7 @@ public:
    void SetDisplayOptions(TGWindow * win = 0, FitHist * fh = 0);  
    void Set1DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
    void Set2DimOptions(TGWindow * win = 0, FitHist * fh = 0);  
+   void SetGraphOptions(TGWindow * win = 0, TCanvas * ca = 0);  
    void SetVariousOptions(TGWindow * win = 0, FitHist * fh = 0);
    void SetWindowSizes(TGWindow * win = 0, FitHist * fh = 0);
    void SetFontsAndColors(TGWindow * win = 0, FitHist * fh = 0);
@@ -337,6 +357,7 @@ public:
    void ShowLeaf(const char* , const char*, const char* l=0, const char* bp =0);  // display hist of leaf
 
    void CutsFromASCII(TGWindow * win = 0); 
+   void HistFromASCII(TGWindow * win = 0, EHfromASCIImode mode = kNotDefined); 
    void SaveMap(const char*, const char* bp =0);  
    void SaveFromSocket(const char*, const char* bp =0);  
    TH1*  GetHist(const char* , const char*); 

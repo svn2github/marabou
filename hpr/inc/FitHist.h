@@ -206,6 +206,7 @@ public:
    Bool_t InsideCut(Float_t, Float_t);               // 
    void ClearCut();                   // 
    void UpdateCut();                  // 
+   void UpdateDrawOptions();                  // 
    Bool_t Its2dim(){return fOrigHist->InheritsFrom("TH2");};               // 
    void FitGBg(Int_t tail, Int_t force_zero_bg =0);                      // fit gaus + lin bg
    Int_t Fit1dim(Int_t, Int_t);            // fit polynoms

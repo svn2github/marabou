@@ -84,6 +84,8 @@ TH1 * calhist(TH1 * hist, TF1 * calfunc,
               Int_t  nbin_cal, Axis_t low_cal, Axis_t binw_cal,
               const char * origname =0);
 void PrintGraph(TGraphErrors * gr); 
+Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py);
+TGraph * FindGraph(TCanvas * ca);
 
 inline void nothing();
 #endif

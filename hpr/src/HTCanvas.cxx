@@ -369,6 +369,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             }
          }
          if (fAutoExec) RunAutoExec();
+//         if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
       }
 
       break;
@@ -515,7 +516,14 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       break;
    }
 
-   if (fPadSave) fPadSave->cd();
+//   if (fPadSave) fPadSave->cd();
+   if (fPadSave && event != kButton2Down)
+      fPadSave->cd();
+
+   if (event != kMouseLeave) { // signal was already emitted for this event
+      ProcessedEvent(event, px, py, fSelected);  // emit signal
+      DrawEventStatus(event, px, py, fSelected);
+   }
 }
 //______________________________________________________________________________
 void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selected)

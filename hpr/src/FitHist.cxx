@@ -581,7 +581,8 @@ void FitHist::handle_mouse()
    Int_t px = gPad->GetEventX();
    Int_t py = gPad->GetEventY();
    if (event == kButton1Down) {
-      if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")){
+      if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
+         ||  (select->InheritsFrom("TCanvas") && IsInsideFrame(cHist, px, py))) {
          TList * lofp = gPad->GetListOfPrimitives();
          if (!lofp) return;
          TIter next(lofp);
@@ -728,14 +729,15 @@ void FitHist::handle_mouse()
       }
    }  else if (event == kButton1Motion || event == kButton1Up) {
       if(!hist || !fTofLabels) return;
-      if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")){
+      if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
+         ||  (select->InheritsFrom("TCanvas") && IsInsideFrame(cHist, px, py))){
          Int_t px = gPad->GetEventX();
          Axis_t xx = gPad->AbsPixeltoX(px);
          Axis_t yy = gPad->AbsPixeltoY(py);
          Int_t binX = hist->GetXaxis()->FindBin(xx);
          Int_t binY;
          Int_t binXlow, binXup, binYlow, binYup;
-         Axis_t XlowEdge, XupEdge, YlowEdge, YupEdge; 
+         Axis_t XlowEdge, XupEdge, YlowEdge = 0, YupEdge = 0; 
          binXlow = TMath::Min(startbinX, binX);
          binXup  = TMath::Max(startbinX, binX);
          XlowEdge = hist->GetXaxis()->GetBinLowEdge(binXlow);
@@ -3036,4 +3038,23 @@ void FitHist::DrawColors()
          x+= dx;
       }
    }
+}
+//______________________________________________________________________________________
+  
+void FitHist::UpdateDrawOptions() 
+{
+   if (!hp) return;
+   SetSelectedPad();
+   TString drawopt;
+   if (hp->fShowContour)
+      drawopt = "";
+   if (hp->fShowErrors)
+      drawopt += "e1";
+   if (hp->fFill1Dim) {
+      fSelHist->SetFillStyle(1001);
+      fSelHist->SetFillColor(hp->f1DimFillColor);
+   } else
+      fSelHist->SetFillStyle(0);
+   fSelHist->SetOption(drawopt.Data());
+   fSelHist->SetDrawOption(drawopt.Data());
 }

@@ -14,6 +14,7 @@
 #include "FitHist.h"
 #include "HistPresent.h"
 #include "TMrbHelpBrowser.h"
+#include "support.h"
 
 #include <iostream>
 #include <fstream>
@@ -233,6 +234,10 @@ void HistPresent::RestoreOptions()
    fWincury = fWintopy;
    fWinshiftx = env.GetValue("HistPresent.WindowXShift", fWinshiftx);
    fWinshifty = env.GetValue("HistPresent.WindowYShift", fWinshifty);
+   fGraphFile =
+       env.GetValue("HistPresent.GraphFile", "gdata.asc");
+   fDrawOptGraph =
+       env.GetValue("HistPresent.DrawOptGraph", "A*");
    *fDrawOpt2Dim =
        env.GetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim->Data());
    *f2DimColorPalette =
@@ -379,6 +384,21 @@ void HistPresent::RestoreOptions()
    fPadGridY       = env.GetValue("HistPresent.PadGridY",       0);
    fPadTickX       = env.GetValue("HistPresent.PadTickX",       0);
    fPadTickY       = env.GetValue("HistPresent.PadTickY",       0);
+	fFrameFillColor   = env.GetValue("HistPresent.FrameFillColor",  0);  
+	fFrameLineColor   = env.GetValue("HistPresent.FrameLineColor",  1);  
+	fFrameFillStyle   = env.GetValue("HistPresent.FrameFillStyle",  0);  
+	fFrameLineStyle   = env.GetValue("HistPresent.FrameLineStyle",  0);  
+	fFrameLineWidth   = env.GetValue("HistPresent.FrameLineWidth",  1);  
+	fFrameBorderSize  = env.GetValue("HistPresent.FrameBorderSize", 1); 
+	fFrameBorderMode  = env.GetValue("HistPresent.FrameBorderMode", 0);
+	fCanvasColor  	 	= env.GetValue("HistPresent.CanvasColor",     0);
+	fCanvasBorderSize = env.GetValue("HistPresent.CanvasBorderSize",1);
+	fCanvasBorderMode = env.GetValue("HistPresent.CanvasBorderMode",0);
+	fCanvasDefH		 	= env.GetValue("HistPresent.CanvasDefH",	    0);  
+	fCanvasDefW		   = env.GetValue("HistPresent.CanvasDefW",	    0);  
+	fCanvasDefX		 	= env.GetValue("HistPresent.CanvasDefX",	    0);
+	fCanvasDefY		 	= env.GetValue("HistPresent.CanvasDefY",		 0);
+
    fForceStyle     = env.GetValue("HistPresent.ForceStyle",      1);
 
    TString defdir(gSystem->Getenv("MARABOU"));
@@ -512,6 +532,8 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.AutoProj_Y", fAutoProj_Y);
 //  char options
    env.SetValue("HistPresent.ColorPalette", f2DimColorPalette->Data());
+   env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
+   env.SetValue("HistPresent.DrawOptGraph", fDrawOptGraph.Data());
    env.SetValue("HistPresent.DrawOpt2Dim", fDrawOpt2Dim->Data());
    env.SetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    SetIntValue(env, "HistPresent.SocketToConnect", fSocketToConnect);
@@ -611,6 +633,21 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.PadGridY",        fPadGridY       );
    env.SetValue("HistPresent.PadTickX",        fPadTickX       );
    env.SetValue("HistPresent.PadTickY",        fPadTickY       );
+	env.SetValue("HistPresent.FrameFillColor",  fFrameFillColor  );  
+	env.SetValue("HistPresent.FrameLineColor",  fFrameLineColor  );  
+	env.SetValue("HistPresent.FrameFillStyle",  fFrameFillStyle  );  
+	env.SetValue("HistPresent.FrameLineStyle",  fFrameLineStyle  );  
+	env.SetValue("HistPresent.FrameLineWidth",  fFrameLineWidth  );  
+	env.SetValue("HistPresent.FrameBorderSize", fFrameBorderSize ); 
+	env.SetValue("HistPresent.FrameBorderMode", fFrameBorderMode );
+	env.SetValue("HistPresent.CanvasColor",	  fCanvasColor 	 );
+	env.SetValue("HistPresent.CanvasBorderSize",fCanvasBorderSize);
+	env.SetValue("HistPresent.CanvasBorderMode",fCanvasBorderMode);
+	env.SetValue("HistPresent.CanvasDefH", 	  fCanvasDefH  	 );  
+	env.SetValue("HistPresent.CanvasDefW", 	  fCanvasDefW  	 );  
+	env.SetValue("HistPresent.CanvasDefX", 	  fCanvasDefX  	 );
+	env.SetValue("HistPresent.CanvasDefY", 	  fCanvasDefY  	 );
+
    env.SetValue("HistPresent.ForceStyle",      fForceStyle     );
  
    env.SaveLevel(kEnvUser);
@@ -683,7 +720,7 @@ void HistPresent::SetTitleAtt()
 
 void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 11;
+   Int_t nopt = 25;
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
    Int_t vp = 0;
@@ -697,7 +734,21 @@ void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("PadGridX"));       
    row_lab->Add(new TObjString("PadGridY"));       
    row_lab->Add(new TObjString("PadTickX"));       
-   row_lab->Add(new TObjString("PadTickY"));  
+   row_lab->Add(new TObjString("PadTickY"));
+   row_lab->Add(new TObjString("FrameFillColor"));   
+   row_lab->Add(new TObjString("FrameLineColor"));   
+   row_lab->Add(new TObjString("FrameFillStyle"));   
+   row_lab->Add(new TObjString("FrameLineStyle"));   
+   row_lab->Add(new TObjString("FrameLineWidth"));   
+   row_lab->Add(new TObjString("FrameBorderSize"));  
+   row_lab->Add(new TObjString("FrameBorderMode"));  
+   row_lab->Add(new TObjString("CanvasColor"));  	 
+   row_lab->Add(new TObjString("CanvasBorderSize")); 
+   row_lab->Add(new TObjString("CanvasBorderMode")); 
+   row_lab->Add(new TObjString("CanvasDefH"));		 
+   row_lab->Add(new TObjString("CanvasDefW"));		 
+   row_lab->Add(new TObjString("CanvasDefX"));		 
+   row_lab->Add(new TObjString("CanvasDefY"));		   
 
    values[vp++] = fPadColor;       
    values[vp++] = fPadBorderSize;  
@@ -709,9 +760,24 @@ void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
    values[vp++] = fPadGridX;       
    values[vp++] = fPadGridY;       
    values[vp++] = fPadTickX;       
-   values[vp++] = fPadTickY;  
+   values[vp++] = fPadTickY; 
+   values[vp++] = fFrameFillColor;  
+   values[vp++] = fFrameLineColor;  
+   values[vp++] = fFrameFillStyle;  
+   values[vp++] = fFrameLineStyle;  
+   values[vp++] = fFrameLineWidth;  
+   values[vp++] = fFrameBorderSize; 
+   values[vp++] = fFrameBorderMode; 
+   values[vp++] = fCanvasColor;  	
+   values[vp++] = fCanvasBorderSize;
+   values[vp++] = fCanvasBorderMode;
+   values[vp++] = fCanvasDefH;		
+   values[vp++] = fCanvasDefW;		
+   values[vp++] = fCanvasDefX;		
+   values[vp++] = fCanvasDefY;	
+	 
    Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Pad attributes", itemwidth,
+   TGMrbTableOfDoubles(win, &ret, "Canvas / Pad / Frame attributes", itemwidth,
                        1, nopt, values, precission, 0, row_lab);
    if (ret >= 0) {
       vp = 0;
@@ -726,6 +792,20 @@ void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
       fPadGridY           = values[vp++];
       fPadTickX           = (Int_t)values[vp++];
       fPadTickY           = (Int_t)values[vp++];
+		fFrameFillColor      = (Int_t)values[vp++];
+		fFrameLineColor      = (Int_t)values[vp++];
+		fFrameFillStyle      = (Int_t)values[vp++];
+		fFrameLineStyle      = (Int_t)values[vp++];
+		fFrameLineWidth      = (Int_t)values[vp++];
+		fFrameBorderSize     = (Int_t)values[vp++];
+		fFrameBorderMode     = (Int_t)values[vp++];
+		fCanvasColor   	   = (Int_t)values[vp++];
+		fCanvasBorderSize    = (Int_t)values[vp++];
+		fCanvasBorderMode    = (Int_t)values[vp++];
+		fCanvasDefH 		   = (Int_t)values[vp++];
+		fCanvasDefW 		   = (Int_t)values[vp++];
+		fCanvasDefX 		   = (Int_t)values[vp++];
+		fCanvasDefY 		   = (Int_t)values[vp++];
       SaveOptions();
       SetPadAtt();
    } 
@@ -745,6 +825,20 @@ void HistPresent::SetPadAtt()
    gStyle->SetPadGridY       (fPadGridY       ); 
    gStyle->SetPadTickX       (fPadTickX       ); 
    gStyle->SetPadTickY       (fPadTickY       ); 
+   gStyle->SetFrameFillColor    (fFrameFillColor  );
+   gStyle->SetFrameLineColor    (fFrameLineColor  );
+   gStyle->SetFrameFillStyle    (fFrameFillStyle  );
+   gStyle->SetFrameLineStyle    (fFrameLineStyle  );
+   gStyle->SetFrameLineWidth    (fFrameLineWidth  );
+   gStyle->SetFrameBorderSize   (fFrameBorderSize );
+   gStyle->SetFrameBorderMode   (fFrameBorderMode );
+   gStyle->SetCanvasColor  	  (fCanvasColor     );
+   gStyle->SetCanvasBorderSize  (fCanvasBorderSize);
+   gStyle->SetCanvasBorderMode  (fCanvasBorderMode);
+   gStyle->SetCanvasDefH		  (fCanvasDefH		  );
+   gStyle->SetCanvasDefW		  (fCanvasDefW		  );
+   gStyle->SetCanvasDefX		  (fCanvasDefX		  );
+   gStyle->SetCanvasDefY		  (fCanvasDefY		  );
 }
 //_______________________________________________________________________
 
@@ -752,6 +846,8 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
 {
    Int_t nopt = 10;
    TArrayD values(nopt);
+   TArrayI colors(2 * nopt);
+   colors.Reset(-1);
    TOrdCollection *row_lab = new TOrdCollection();
    Int_t vp = 0;
    row_lab->Add(new TObjString("HistFillColor")); 
@@ -764,18 +860,47 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("FuncColor    "));
    row_lab->Add(new TObjString("FuncStyle    "));  
    row_lab->Add(new TObjString("FuncWidth    ")); 
-
+   
+   colors[vp] = fHistFillColor;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
    values[vp++] = fHistFillColor;
+
+   colors[vp]   = fHistLineColor;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
    values[vp++] = fHistLineColor;
-   values[vp++] = fHistFillStyle;
-   values[vp++] = fHistLineStyle;
-   values[vp++] = fHistLineWidth;
-   values[vp++] = fEndErrorSize;
-   values[vp++] = fErrorX;      
-   values[vp++] = fFuncColor;   
-   values[vp++] = fFuncStyle;   
-   values[vp++] = fFuncWidth;   
+
+   values[vp] = fHistFillStyle;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagFillStyle;
+   vp++;
+
+   values[vp] = fHistLineStyle;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagLineStyle;
+   vp++;
+
+   values[vp] = fHistLineWidth;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagNoop;
+   vp++;
+   values[vp] = fEndErrorSize;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagNoop;
+   vp++;
+   values[vp] = fErrorX;      
+   colors[vp + nopt] = TGMrbTableFrame::kFlagNoop;
+   vp++;
+   colors[vp]   = fFuncColor;
+   colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
+   values[vp++] = fFuncColor; 
+  
+   values[vp] = fFuncStyle;   
+   colors[vp + nopt] =TGMrbTableFrame::kFlagLineStyle;
+   vp++;
+   values[vp] = fFuncWidth;   
+   colors[vp + nopt] =TGMrbTableFrame::kFlagNoop;
+   vp++;
+
    Int_t ret, itemwidth = 240, precission = 5;
+//   TGMrbTableOfDoubles(win, &ret, "Histogram attributes", itemwidth,
+//                       1, nopt, values, precission, 0, row_lab,
+//                       &colors, -nopt);
    TGMrbTableOfDoubles(win, &ret, "Histogram attributes", itemwidth,
                        1, nopt, values, precission, 0, row_lab);
    if (ret >= 0) {
@@ -1158,24 +1283,57 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
       }
    }
    SaveOptions();
-   if (fh) {
-      fh->SetSelectedPad();
-      TString drawopt;
-      TH1 *hi = fh->GetSelHist();
-      if (fShowContour)
-         drawopt = "";
-      if (fShowErrors)
-         drawopt += "e1";
-      if (fFill1Dim) {
-         hi->SetFillStyle(1001);
-         hi->SetFillColor(f1DimFillColor);
-      } else
-         hi->SetFillStyle(0);
-      hi->SetOption(drawopt.Data());
-      hi->SetDrawOption(drawopt.Data());
-   }
+   if (fh) fh->UpdateDrawOptions();
 }
+//_______________________________________________________________________
 
+void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
+{
+   const Int_t nopt = 8;
+   const char *cdrawopt[] = {"L", "F", "A", "C", "*", "P", "B", "1"};
+   const char *gDrawOptText[] = {
+      "A simple polyline between every points is drawn",
+      "A fill area is drawn ('CF' draw a smooth fill area)",
+      "Axis are drawn around the graph",
+      "A smooth Curve is drawn",
+      "A Star is plotted at each point",
+      "Idem with the current marker",
+      "A Bar chart is drawn at each point",
+      "ylow=rwymin"};
+   TArrayI flags(nopt);
+   TOrdCollection *svalues = new TOrdCollection();
+   for (Int_t i = 0; i < nopt; i++) {
+      if (fDrawOptGraph.Contains(cdrawopt[i]))
+         flags[i] = 1;
+      else
+         flags[i] = 0;
+      svalues->Add(new TObjString(gDrawOptText[i]));
+   }
+   Int_t retval;
+   Int_t itemwidth = 300;
+   new TGMrbTableFrame(win, &retval,
+   						  "How to draw a Graph",
+   						  itemwidth, 1, nopt,
+   						  svalues, 0, 0, &flags);
+   if (retval < 0) {
+//      cout << "canceled" << endl;
+      return;
+   }
+   fDrawOptGraph = "";
+   for (Int_t i = 0; i < nopt; i++) {
+      if (flags[i] != 0)
+         fDrawOptGraph += cdrawopt[i];
+   }
+   if (ca) {
+      TGraph * gr = FindGraph(ca);
+      if (gr) {
+         gr->SetDrawOption(fDrawOptGraph.Data());
+         ca->Modified();
+         ca->Update();
+      }
+   }
+   SaveOptions();
+}
 //_______________________________________________________________________
 void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 {

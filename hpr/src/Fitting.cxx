@@ -1158,7 +1158,8 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
    }
    ClearMarks();
 //   if (hp->fShowErrors) fSelHist->Draw("e1");
-
+   UpdateDrawOptions();
+/*
    TString drawopt;
    if (hp->fShowContour)
       drawopt = "";
@@ -1172,6 +1173,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
    fSelHist->Draw(drawopt.Data());
 
    fSelPad->cd();
+*/
    fSelPad->Modified(kTRUE);
    fSelPad->Update();
    fSelPad->GetFrame()->SetBit(TBox::kCannotMove);

@@ -84,6 +84,7 @@ enum ERootCanvasCommands {
    kOptionDisp,
    kOption1Dim,
    kOption2Dim,
+   kOptionGraph,
    kOptionHpr,
    kOptionNum,
    kOptionWin,
@@ -136,6 +137,15 @@ enum ERootCanvasCommands {
    kFHPictToPSplain,
    kFHPictToPS,
    kFHPictToLP,
+
+   kFHSpectrum, 
+   kFHSpectrumError, 
+   kFH1dimHist, 
+   kFH1dimHistWeight,
+   kFH2dimHist, 
+   kFH2dimHistWeight, 
+   kFHGraph, 
+   kFHGraphError,
 
    kFHCut,
    kFHInitCut,
@@ -511,6 +521,13 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      }
                      }
                      break;
+                  case kOptionGraph:
+                     {
+                     if(fHistPresent){
+                        fHistPresent->SetGraphOptions(fRootCanvas, fHCanvas);
+                     }
+                     }
+                     break;
                   case kOptionHpr:
                      {
                      if(fHistPresent){
@@ -720,6 +737,31 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFHHistToASCII:
                      fFitHist->WriteHistasASCII(); 
+                     break;
+
+                  case kFHSpectrum:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kSpectrum); 
+                     break;
+                  case kFHSpectrumError:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kSpectrumError); 
+                     break;
+                  case kFH1dimHist:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k1dimHist); 
+                     break;
+                  case kFH1dimHistWeight:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k1dimHistWeight); 
+                     break;
+                 case kFH2dimHist:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k2dimHist); 
+                     break;
+                  case kFH2dimHistWeight:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k2dimHistWeight); 
+                     break;
+                  case kFHGraph:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kGraph); 
+                     break;
+                  case kFHGraphError:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kGraphError); 
                      break;
 
                   case  kFHMarksToCut:
@@ -1032,6 +1074,7 @@ void HandleMenus::BuildMenus()
    fFitMenu  = 0; 
    fOptionMenu  = 0; 
    fAttrMenu  = 0; 
+  
    Bool_t is2dim = kFALSE;   
    TGPopupMenu * pmo = fRootsMenuBar->GetPopup("Options");
    if (pmo) {
@@ -1045,10 +1088,28 @@ void HandleMenus::BuildMenus()
   // Create menus
    fFileMenu = new TGPopupMenu(fRootCanvas->GetParent());
 //   fFileMenu->AddEntry("&New Canvas",         kFileNewCanvas);
-   if(fFitHist){
-      fFileMenu->AddEntry("Hist_to_ROOT-File",               kFHHistToFile);
-      fFileMenu->AddEntry("Hist_to_ASCII-File"              ,kFHHistToASCII);
+   if(fHistPresent){
+      if (fFitHist) {
+         fFileMenu->AddEntry("Hist_to_ROOT-File",               kFHHistToFile);
+         fFileMenu->AddEntry("Hist_to_ASCII-File"              ,kFHHistToASCII);
+      }
 //      fFileMenu->AddSeparator();
+      TGPopupMenu * HfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
+      HfromAMenu->AddEntry("Channel contents, (Spectrum)",   kFHSpectrum); 
+      HfromAMenu->AddEntry("Channel contents, error",   kFHSpectrumError); 
+      HfromAMenu->AddEntry("X-values of histogram",   kFH1dimHist); 
+      HfromAMenu->AddEntry("X-values, weights of histogram",	kFH1dimHistWeight);
+      HfromAMenu->AddEntry("X-, Y-values of 2dim histogram",	kFH2dimHist); 
+      HfromAMenu->AddEntry("X-, Y-values, weights values of 2dim histogram",	kFH2dimHistWeight); 
+
+      TGPopupMenu * GfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
+      GfromAMenu->AddEntry("X, Y of TGraph (without errors)",	kFHGraph); 
+      GfromAMenu->AddEntry("X, Y, ErrorX, ErrorY of TGraphErrors",	kFHGraphError);
+      fFileMenu->AddPopup("ASCII data from file to histogram ",  HfromAMenu);
+      fFileMenu->AddPopup("ASCII data from file to graph",  GfromAMenu);
+
+      HfromAMenu->Associate((TGWindow*)this);
+      GfromAMenu->Associate((TGWindow*)this);
 //      fFileMenu->AddEntry("Picture_to_PS-File",    kFHPictToPS);
 //      fFileMenu->AddEntry("Pict_to_PS-File (plain)", kFHPictToPSplain);
 //      fFileMenu->AddEntry("Picture_to_Printer",      kFHPictToLP);
@@ -1091,6 +1152,7 @@ void HandleMenus::BuildMenus()
       fOptionMenu->AddEntry("How to display a 1-dim histgram", kOption1Dim);
    if(!fFitHist || fFitHist->Its2dim())
       fOptionMenu->AddEntry("How to display a 2-dim histgram", kOption2Dim);
+   fOptionMenu->AddEntry("How to display a graph", kOptionGraph);
    fOptionMenu->AddEntry("Various HistPresent Options", kOptionHpr);
    fOptionMenu->AddEntry("HistPresent Numerical Options", kOptionNum);
    fOptionMenu->AddEntry("Default window sizes", kOptionWin);

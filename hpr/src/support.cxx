@@ -1303,3 +1303,39 @@ void PrintGraph(TGraphErrors * gr)
    	}
 	}
 }
+//_______________________________________________________________________________________
+
+Bool_t IsInsideFrame(TCanvas * c, Int_t px, Int_t py)
+{
+//   Bool_t inside = kFALSE;
+   TIter next(c->GetListOfPrimitives());
+   TObject * obj =0;
+   Axis_t x = gPad->AbsPixeltoX(px);
+   Axis_t y = gPad->AbsPixeltoY(py);
+   while ((obj = next())) {
+      if (obj->IsA() == TFrame::Class()) {
+         TFrame * fr = (TFrame*)obj; 
+         if (x < fr->GetX1())return kFALSE;
+         if (x > fr->GetX2())return kFALSE;
+         if (y < fr->GetY1())return kFALSE;
+         if (y > fr->GetY2())return kFALSE;
+         return kTRUE;
+      }
+   }
+   return kFALSE;
+}
+//_______________________________________________________________________________________
+
+TGraph * FindGraph(TCanvas * ca)
+{
+   if (!ca) return NULL;
+   TIter next(ca->GetListOfPrimitives());
+   while (TObject * obj = next()) {
+      if (obj->InheritsFrom("TGraph")) { 
+          TGraph * g = (TGraph*)obj;
+          return g;
+      }
+   }
+   return NULL;
+};
+
