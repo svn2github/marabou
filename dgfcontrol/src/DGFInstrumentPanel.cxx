@@ -728,7 +728,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) : TGComposit
 // initialize data fields
 	this->InitializeValues(kTRUE);
 
-	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 5, 1, 5, 1);
 	HEAP(dgfFrameLayout);
 	TabFrame->AddFrame(this, dgfFrameLayout);
 
@@ -871,7 +871,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	}
 	if (!ok) {
 		gMrbLog->Err()	<< "Can't read param memory from DSP (try to re-connect)" << endl;
-		gMrbLog->Flush(this->ClassName(), "InitializeValues", setblue);
+		gMrbLog->Flush(this->ClassName(), "InitializeValues");
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Can't read param memory from DSP (try to re-connect)", kMBIconStop);
 		return(kFALSE);
 	}

@@ -56,6 +56,7 @@ class DGFParamsPanel : public TGCompositeFrame {
 		enum EDGFParamsActionId 	{	kDGFParamsSelectParam,
 										kDGFParamsRead,
 										kDGFParamsApply,
+										kDGFParamsApplyMarked,
 										kDGFParamsSelectAll,
 										kDGFParamsSelectNone,
 										kDGFParamsSelectColumn
@@ -69,7 +70,7 @@ class DGFParamsPanel : public TGCompositeFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		Bool_t ReadParams();
-		Bool_t ApplyParams();
+		Bool_t ApplyParams(Bool_t Marked = kFALSE);
 		
 	protected:
 		Int_t fActiveParam; 						// index of active param
@@ -77,6 +78,7 @@ class DGFParamsPanel : public TGCompositeFrame {
 		TList fHeap;								//! list of objects created on heap
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectParam; 			//		param
+		TGMrbRadioButtonList * fAlpha;				//		alpha list
 		TGGroupFrame * fModules;			 		// module list
 		TGMrbCheckButtonList * fCluster[kNofClusters];
 		TGHorizontalFrame * fGroupFrame;
@@ -90,8 +92,12 @@ class DGFParamsPanel : public TGCompositeFrame {
 		TMrbLofNamedX fActions;						// text buttons:	actions to be taken
 		
 		TMrbLofNamedX fLofModuleKeys[kNofClusters];
+		TMrbLofNamedX fLofParams;					// param names, sorted
+		TMrbLofNamedX fLofInitials; 				// chars A .. Z
 		
 		TGMrbFocusList fFocusList;
+
+		TMrbDGFData * fDGFData; 					// local data struct
 
 	ClassDef(DGFParamsPanel, 0)		// [DGFControl] Set/display module params
 };

@@ -29,6 +29,8 @@ using namespace std;
 
 #include "TGMsgBox.h"
 
+#include "TMrbLogger.h"
+
 #include "DGFControlData.h"
 #include "DGFParamsPanel.h"
 
@@ -41,10 +43,12 @@ const SMrbNamedX kDGFParamsActions[] =
 			{
 				{DGFParamsPanel::kDGFParamsRead,		"Read",			"Read selected param"			},
 				{DGFParamsPanel::kDGFParamsApply,		"Apply",		"Apply param settings"			},
+				{DGFParamsPanel::kDGFParamsApplyMarked,	"Apply Marked",	"Apply marked value to all"		},
 				{0, 									NULL,			NULL							}
 			};
 
 extern DGFControlData * gDGFControlData;
+extern TMrbLogger * gMrbLog;
 
 ClassImp(DGFParamsPanel)
 
@@ -76,6 +80,8 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 	TMrbLofNamedX allSelect;
 	TMrbLofNamedX lofModuleKeys;
 	
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+
 //	clear focus list
 	fFocusList.Clear();
 
@@ -171,9 +177,9 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 	HEAP(fSelectFrame);
 	this->AddFrame(fSelectFrame, groupGC->LH());
 
-	TMrbDGFData * dgfData = new TMrbDGFData();
-	dgfData->ReadNameTable();
-	TMrbLofNamedX * pNameAddr = dgfData->GetLofParamNames();
+	fDGFData = new TMrbDGFData();
+	fDGFData->ReadNameTable();
+	TMrbLofNamedX * pNameAddr = fDGFData->GetLofParamNames();
 	TObjArray pNames;
 	TMrbNamedX * px = (TMrbNamedX *) pNameAddr->First();
 	while (px) {
@@ -181,14 +187,13 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 		px = (TMrbNamedX *) pNameAddr->After(px);
 	}
 	pNames.Sort();
-	TMrbLofNamedX lofParams;
 	TObjString * ps = (TObjString *) pNames.First();
 	while (ps) {
-		lofParams.AddNamedX(pNameAddr->FindByName(ps->GetString().Data())->GetIndex(), ps->GetString().Data());
+		fLofParams.AddNamedX(pNameAddr->FindByName(ps->GetString().Data())->GetIndex(), ps->GetString().Data());
 		ps = (TObjString *) pNames.After(ps);
 	}	
 
-	fSelectParam = new TGMrbLabelCombo(fSelectFrame,  "Param", &lofParams,
+	fSelectParam = new TGMrbLabelCombo(fSelectFrame,  "Param", &fLofParams,
 													kDGFParamsSelectParam, 2,
 													kTabWidth, kLEHeight,
 													kEntryWidth,
@@ -199,6 +204,22 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 	fSelectParam->Associate(this); 	// get informed if param selection changes
 	fActiveParam = pNameAddr->FindByName("MODNUM")->GetIndex();
 		
+	Char_t c = 'A';
+	Int_t bit = 1;
+	for (Int_t i = 0; i < ((Int_t) 'Z' - (Int_t) 'A' + 1); i++) {
+		TString * x = new TString(c);
+		fLofInitials.AddNamedX(bit, x->Data());
+		c++;
+		bit <<= 1;
+	}
+	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials, 13, 
+													kTabWidth, kLEHeight,
+													frameGC, labelGC, comboGC);
+	HEAP(fAlpha);
+	fAlpha->SetState(1);
+	fAlpha->Associate(this);	// get informed if channel number changes
+	fSelectFrame->AddFrame(fAlpha, frameGC->LH());
+
 // values
 	fValueFrame = new TGGroupFrame(this, "Values", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fValueFrame);
@@ -224,7 +245,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 				bgc = buttonGC;
 			}
 			fParVal[n] = new TGMrbLabelEntry(fClusterVals[cl], dgfName,
-																200, -1,
+																200, n,
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
@@ -238,6 +259,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 				fParVal[n]->GetEntry()->SetText("0");
 				fParVal[n]->SetRange(0, 100000);
 				fParVal[n]->SetIncrement(1);
+				fParVal[n]->Associate(this);
 			}
 		}
 	}
@@ -292,7 +314,10 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 								this->ReadParams();
 								break;
 							case kDGFParamsApply:
-								this->ApplyParams();
+								this->ApplyParams(kFALSE);
+								break;
+							case kDGFParamsApplyMarked:
+								this->ApplyParams(kTRUE);
 								break;
 							case kDGFParamsSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++)
@@ -316,6 +341,24 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 					}
 					break;
 					
+				case kCM_RADIOBUTTON:
+					{
+						fAlpha->SetState(Param1);
+						TMrbNamedX * nx = fLofInitials.FindByIndex(Param1);
+						TString x = nx->GetName();
+						Char_t c = x(0);
+						nx = (TMrbNamedX *) fLofParams.First();
+						while (nx) {
+							x = nx->GetName();
+							if (x(0) == c) {
+								fSelectParam->GetComboBox()->Select(nx->GetIndex());
+								break;
+							}
+							nx = (TMrbNamedX *) fLofParams.After(nx);
+						}
+					}
+					break;
+
 				case kCM_COMBOBOX:
 					fActiveParam = Param2;
 					this->ReadParams();
@@ -323,7 +366,7 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 				default:	break;
 			}
 			break;
-			
+
 	}
 	return(kTRUE);
 }
@@ -345,14 +388,13 @@ Bool_t DGFParamsPanel::ReadParams() {
 
 	if (gDGFControlData->IsOffline()) return(kTRUE);
 
-	DGFModule * dgfModule = gDGFControlData->FirstModule();
-	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
+	TMrbLofNamedX * pNameAddr = fDGFData->GetLofParamNames();
 	TMrbNamedX * px = pNameAddr->FindByIndex(fActiveParam);
 	selectOk = kFALSE;
 	if (px) {
 		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 			for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
-				dgfModule = gDGFControlData->GetModule(cl, modNo);
+				DGFModule * dgfModule = gDGFControlData->GetModule(cl, modNo);
 				Int_t n = modNo + cl * kNofModulesPerCluster;
 				if (dgfModule && dgfModule->IsActive()) {
 					UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
@@ -383,12 +425,12 @@ Bool_t DGFParamsPanel::ReadParams() {
 	return(kTRUE);
 }	
 
-Bool_t DGFParamsPanel::ApplyParams() {
+Bool_t DGFParamsPanel::ApplyParams(Bool_t Marked) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFParamsPanel::ApplyParams
 // Purpose:        Write params to DGF modules
-// Arguments:      --
+// Arguments:      Bool_t Marked   -- kTRUE, if marked value should be taken
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    
@@ -402,32 +444,77 @@ Bool_t DGFParamsPanel::ApplyParams() {
 				
 	if (gDGFControlData->IsOffline()) return(kTRUE);
 
-	DGFModule * dgfModule = gDGFControlData->FirstModule();
-	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
+	TMrbLofNamedX * pNameAddr = fDGFData->GetLofParamNames();
 	TMrbNamedX * px = pNameAddr->FindByIndex(fActiveParam);
 	selectOk = kFALSE;
+	Bool_t foundMarked = kFALSE;
+	Int_t markedVal;
 	if (px) {
+		if (Marked) {
+			for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+				for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
+					DGFModule * dgfModule = gDGFControlData->GetModule(cl, modNo);
+					Int_t n = modNo + cl * kNofModulesPerCluster;
+					if (dgfModule && dgfModule->IsActive()) {
+						UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+						if ((fCluster[cl]->GetActive() & bits) == bits) {
+							TGTextEntry * e = fParVal[n]->GetEntry();
+							if (e->HasMarkedText()) {
+								if (foundMarked) {
+									gMrbLog->Err()	<< "More than one entry MARKED" << endl;
+									gMrbLog->Flush(this->ClassName(), "ApplyParams");
+									new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "More than one entry MARKED", kMBIconStop);
+									return(kFALSE);
+								}
+								foundMarked = kTRUE;
+								intStr = e->GetText();
+								intStr = intStr.Strip();
+								if (intStr.Length() > 0) {
+									idx = intStr.Index("0x", 0);
+									if (idx >= 0) {
+										intStr = intStr(idx + 2, intStr.Length());
+										intStr.ToInteger(markedVal, 16);
+									} else {
+										intStr.ToInteger(markedVal);
+									}
+								}
+							}
+						}
+					}
+				}
+			}
+			if (!foundMarked) {
+				gMrbLog->Err()	<< "No entry MARKED" << endl;
+				gMrbLog->Flush(this->ClassName(), "ApplyParams");
+				new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No entry MARKED", kMBIconStop);
+				return(kFALSE);
+			}
+		}
 		for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 			for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
-				dgfModule = gDGFControlData->GetModule(cl, modNo);
+				DGFModule * dgfModule = gDGFControlData->GetModule(cl, modNo);
 				Int_t n = modNo + cl * kNofModulesPerCluster;
 				if (dgfModule && dgfModule->IsActive()) {
 					UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
 					if ((fCluster[cl]->GetActive() & bits) == bits) {
 						selectOk = kTRUE;
 						TMrbDGF * dgf = dgfModule->GetAddr();
-						intStr = fParVal[n]->GetEntry()->GetText();
-						TString pName = px->GetName();
-						intStr = intStr.Strip();
-						if (intStr.Length() > 0) {
-							idx = intStr.Index("0x", 0);
-							if (idx >= 0) {
-								intStr = intStr(idx + 2, intStr.Length());
-								intStr.ToInteger(parVal, 16);
-							} else {
-								intStr.ToInteger(parVal);
+						if (Marked && foundMarked) {
+							dgf->SetParValue(px->GetName(), markedVal, kTRUE);
+						} else {
+							intStr = fParVal[n]->GetEntry()->GetText();
+							TString pName = px->GetName();
+							intStr = intStr.Strip();
+							if (intStr.Length() > 0) {
+								idx = intStr.Index("0x", 0);
+								if (idx >= 0) {
+									intStr = intStr(idx + 2, intStr.Length());
+									intStr.ToInteger(parVal, 16);
+								} else {
+									intStr.ToInteger(parVal);
+								}
+								dgf->SetParValue(px->GetName(), parVal, kTRUE);
 							}
-							dgf->SetParValue(px->GetName(), parVal, kTRUE);
 						}
 					}
 				}
@@ -438,5 +525,6 @@ Bool_t DGFParamsPanel::ApplyParams() {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
 	}
+	this->ReadParams();
 	return(kTRUE);
 }	
