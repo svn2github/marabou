@@ -1,7 +1,7 @@
 #include "TROOT.h"
 #include "TNamed.h"
 #include "TString.h"
-#include "iostream.h"
+#include <iostream>
 
 class TNamedString : public TNamed {
 

@@ -1,5 +1,5 @@
 #include "TNamedString.h"
-#include "fstream.h"
+#include <fstream>
 
 ClassImp(TNamedString)
 //_________________________________________________________________________

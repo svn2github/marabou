@@ -17,10 +17,9 @@
 #include "TGClient.h"
 #include "TGWindow.h"
 #include "TRegexp.h"
-#include "fstream.h"
-#include "iostream.h"
-#include "strstream.h"
-#include "iomanip.h"
+#include <fstream>
+#include <iostream>
+#include <iomanip>
 
 #include "TNamedString.h"
 #include "TNamedBytes.h"
@@ -747,11 +746,12 @@ void TMrbHelpBrowser::DisplayImage(TString & img_name){
          fCanvasList->Add(c1);
       } else {
          if(good_gif){
-            ostrstream geometry;
-            geometry << " -geometry +" << fX0 << "+" << fY0 << " &";
+//            ostrstream geometry;
+//            geometry << " -geometry +" << fX0 << "+" << fY0 << " &";
             TString xv_cmd(img_name);
-            xv_cmd += geometry.str();
-            geometry.rdbuf()->freeze(0);
+            xv_cmd += Form(" -geometry +%d+%d &", fX0, fY0);
+//            xv_cmd += geometry.str();
+ //           geometry.rdbuf()->freeze(0);
             xv_cmd.Prepend(" ");
             xv_cmd.Prepend(fGifViewer.Data());
       //      cout << "cmd: " << xv_cmd << endl;
