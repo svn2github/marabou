@@ -69,7 +69,6 @@ TServerSocket *ss = 0;
 extern Bool_t kUseMap;
 Int_t  gComSocket;
 static Bool_t verboseMode = kFALSE;
-static UInt_t input_mode = TMrbIOSpec::kInputRoot;
 
 static unsigned int update_time = TMrbAnalyze::kUpdateTime;
 

@@ -3458,7 +3458,7 @@ TUsrHBX::TUsrHBX(TObject * Event, TUsrHitBuffer * HitBuffer, Int_t Window) {
 	fHitBuffer = HitBuffer;
 	fHits = fHitBuffer->GetCA();
 	fWindow = Window;
-	fCurIndex = -1;
+	fCurIndex = 0;
 }
 
 TUsrHit * TUsrHBX::FindHit(TUsrHit & HitProfile) {
@@ -3544,11 +3544,9 @@ TUsrHit * TUsrHBX::FindNextEvent() {
 	Int_t nofHits = this->GetNofHits();
 
 	if (nofHits && fCurIndex < nofHits) {
-		if (fCurIndex == -1) {
-			evtNo = -1;
-		} else {
-			evtNo = ((TUsrHit *) fHits->At(fCurIndex))->GetEventNumber();
-		}
+		if (fResetDone) evtNo = -1;
+		else			evtNo = ((TUsrHit *) fHits->At(fCurIndex))->GetEventNumber();
+		fResetDone = kFALSE;
 		Int_t curIndex = fCurIndex;
 		while (++curIndex < nofHits) {
 			hit = (TUsrHit *) fHits->At(curIndex);
@@ -3574,15 +3572,48 @@ Bool_t TUsrHBX::HitInWindow(TUsrHit * Hit0) {
 
 	TUsrHit * hit;
 
-	Int_t curIndex = (fCurIndex == -1) ? 0 : fCurIndex;
-	if (curIndex >= this->GetNofHits()) return(kFALSE);
+	if (fCurIndex >= this->GetNofHits()) return(kFALSE);
 
-	hit = (TUsrHit *) fHits->At(curIndex);
+	hit = (TUsrHit *) fHits->At(fCurIndex);
 	long long tDiff =	(hit->GetChannelTime() - gMrbAnalyze->GetTimeOffset(hit->GetModuleNumber()))
 						- (Hit0->GetChannelTime() - gMrbAnalyze->GetTimeOffset(Hit0->GetModuleNumber()));
 	if (tDiff < 0) tDiff = -tDiff;
 	return(tDiff <= (long long) fWindow);
 }		
+
+TUsrHit * TUsrHBX::NextHit() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::NextHit
+// Purpose:        Return next hit
+// Arguments:      --
+// Results:        TUsrHit * Hit    -- next hit or NULL
+// Description:    Returns next hit. Returns 1st hit after reset.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TUsrHit * hit;
+	if (fResetDone) hit = (this->GetNofHits() > 0) ? (TUsrHit *) fHits->At(0) : NULL;
+	else			hit = (++fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL;
+	fResetDone = kFALSE;
+	return(hit);
+}
+
+TUsrHit * TUsrHBX::CurHit() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::CurHit
+// Purpose:        Return current hit
+// Arguments:      --
+// Results:        TUsrHit * Hit    -- current hit or NULL
+// Description:    Returns current hit.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TUsrHit * hit;
+	hit = (fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL;
+	return(hit);
+}
 
 TUsrEvent::TUsrEvent() {
 //__________________________________________________________________[C++ CTOR]

@@ -500,7 +500,7 @@ class TUsrHBX : public TObject {
 
 		inline void SetIndex(Int_t Index) { fCurIndex = Index; };
 		inline Int_t GetIndex() { return(fCurIndex); };
-		inline void ResetIndex() { fCurIndex = -1; };
+		inline void ResetIndex() { fCurIndex = 0; fResetDone = kTRUE; };
 
 		TUsrHit * FindHit(TUsrHit & HitProfile);								// search for a given hit
 		TUsrHit * At(Int_t Index) { return ((TUsrHit *) fHits->At(Index)); }; 	// return hit at given index
@@ -512,11 +512,8 @@ class TUsrHBX : public TObject {
 
 		Bool_t HitInWindow(TUsrHit * Hit0); 								// check if hit in time window
 
-		inline TUsrHit * NextHit() { return((++fCurIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(fCurIndex) : NULL); };
-		inline TUsrHit * CurHit() {
-			Int_t curIndex = (fCurIndex == -1) ? 0 : fCurIndex;
-			return((curIndex < this->GetNofHits()) ? (TUsrHit *) fHits->At(curIndex) : NULL);
-		};
+		TUsrHit * NextHit();												// get next hit
+		TUsrHit * CurHit(); 												// get current hit
 
 		inline TUsrHitBuffer * GetHitBuffer() { return(fHitBuffer); };
 
@@ -524,6 +521,7 @@ class TUsrHBX : public TObject {
 		
 	protected:
 		TObject * fEvent;						// event / trigger
+		Bool_t fResetDone;						// kTRUE after ResetIndex()
 		Int_t fCurIndex;						// current index in buffer
 		Int_t fWindow;							// time stamp window
 		TUsrHitBuffer * fHitBuffer; 			//! hit buffer address
