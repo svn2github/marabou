@@ -1379,17 +1379,26 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoPosix:
 						{
-							TString posixFlags = gEnv->GetValue("TMrbConfig.ReadoutPosixFlags", "-mposix4d9 -mthreads");
+							TString posixFlags = gEnv->GetValue("TMrbConfig.ReadoutPosixFlags", "");
+							if (posixFlags.Length() == 0) {
+								TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
+								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
+								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v2.2-deve");
+								if (mbsVersion.Index("v2", 0) == 0) posixFlags = "-mposix4d9 -mthreads";
+								else								posixFlags = "-D_THREADS_POSIX4ad4 -mthreads";
+							}
 							rdoStrm << rdoTmpl.Encode(line, posixFlags.Data()) << endl;
 						}
 						break;
 					case TMrbConfig::kRdoLynxPlatform:
 						{
-							TString mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "v2.2-deve");
-							if (mbsVersion.Index("v4", 0) == 0) {
-								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PLATFORM") << endl;
-							} else {
+							TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
+							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
+							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v2.2-deve");
+							if (mbsVersion.Index("v2", 0) == 0) {
 								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PROC_FAM") << endl;
+							} else {
+								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PLATFORM") << endl;
 							}
 						}
 						break;
@@ -5582,7 +5591,15 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 		gMrbLog->Err() << "Generating DEFAULT version (to be edited or to be updated via C_analyze)" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup");
 	}
+
 	TMbsSetup * mbsSetup = new TMbsSetup();
+
+	if (!gSystem->AccessPathName(".mbssetup-localdefs")) {
+		mbsSetup->GetEnv()->ReadFile(".mbssetup-localdefs", kEnvChange);
+		gMrbLog->Out() << "[.mbssetup: Merging local defs from file \".mbssetup-localdefs\"]" << endl;
+		gMrbLog->Flush("", "", setblue);
+	}
+
 	UInt_t cratePattern = this->GetCratePattern();
 	TArrayI c(5);
 	c.Reset(-1);
