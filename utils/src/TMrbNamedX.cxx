@@ -48,7 +48,7 @@ const Char_t * TMrbNamedX::GetFullName(TMrbString & FullName, Int_t Base, Bool_t
 	return(FullName.Data());
 }
 
-void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) {
+void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag){
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbNamedX::Print
