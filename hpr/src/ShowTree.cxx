@@ -736,6 +736,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
 //   Int_t max_events = 10000000;
 //   max_events = rootenv.GetValue("HistPresent.MaxEvents", max_events);
 //   cout << cmd << endl;
+   if (nof_events <= 0) nof_events = 100000000;
    if (fApplyLeafCut) {
       TString cut = *fLeafCut;
       TRegexp a1("\\$1");
