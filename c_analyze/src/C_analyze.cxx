@@ -2845,7 +2845,9 @@ Bool_t FhMainFrame::GetDefaults(){
    fRootFile    = new TString("runRUN.root");
    fHistFile    = new TString("histsRUN.root");
    fInputSource = new TString("File");
-   fHelpFile    = new TString("/home/rg/schaileo/marabou/c_analyze/doc/C_analyze.html");
+   fHelpFile    = new TString(gSystem->Getenv("MARABOU"));
+   *fHelpFile   += "/doc/c_analyze";
+//   fHelpFile    = new TString("/home/rg/schaileo/marabou/c_analyze/doc/C_analyze.html");
    TRegexp slash("/");
    TString subdir(gSystem->WorkingDirectory());
    Int_t islash;
