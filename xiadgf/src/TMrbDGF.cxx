@@ -2858,11 +2858,11 @@ UInt_t * TMrbDGF::ToDouble(Double_t Value, UInt_t * DspDouble) {
 		Value = -Value;
 	}
 
-	exp = (Int_t) this->Rounded(log(Value) / log(2) + 0.5);
-	mantissa = Value / pow(2, exp);
+	exp = (Int_t) this->Rounded(log(Value) / log(2.) + 0.5);
+	mantissa = Value / pow(2., exp);
   
-	m1 = (Int_t) (mantissa * pow(2, 15));
-	m0 = (Int_t) (mantissa * pow(2, 31) - m1 * pow(2, 16) + 0.5);
+	m1 = (Int_t) (mantissa * pow(2., 15));
+	m0 = (Int_t) (mantissa * pow(2., 31) - m1 * pow(2., 16) + 0.5);
   
 	if ((sign == kFALSE) & ((m1 & 0x8000) != 0)) {
 		m0 = m0 / 2 + (m1 % 2) * 0x8000;
@@ -3192,7 +3192,7 @@ Double_t TMrbDGF::GetGain(Int_t Channel, Bool_t ReadFromDSP) {
 	if (!this->CheckChannel("GetGain", Channel)) return(-1);
 
 	gainVal = (Double_t) (65535 - this->GetParValue(Channel, "GAINDAC", ReadFromDSP)) / 32768;
-	gainVal = 0.1639 * pow(10, gainVal);
+	gainVal = 0.1639 * pow(10., gainVal);
 	return(gainVal);
 }
 
