@@ -1005,6 +1005,9 @@ Bool_t TMrbDGFData::CheckXiaRelease() {
 	} else if (release.Index("v2.80", 0) == 0) {
 		fXiaRelease = 280;
 		return(kTRUE);
+	} else if (release.Index("v2.7mb", 0) == 0) {
+		fXiaRelease = 271;
+		return(kTRUE);
 	} else {
 		gMrbLog->Err() << "Malformed release - TMrbDGF.XiaRelease = " << release << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckXiaRelease");
