@@ -50,8 +50,6 @@ INCLUDEFILES += $(HPRDEP)
 
 ##### extra libs needed #####
 GLIBS         = $(ROOTGLIBS)
-#GLIBS     = $(shell root-config --new --glibs)
-GLIBS         += -lProof
 OHPRLIBS      := -L$(LPATH) -lTMrbUtils -lTGMrbUtils -lTMrbHelpBrowser
 
 ##### local rules #####

@@ -39,8 +39,6 @@ INCLUDEFILES += $(DGFCDEP)
 
 ##### extra libs needed #####
 GLIBS         = $(ROOTGLIBS)
-#GLIBS     = $(shell root-config --new --glibs)
-GLIBS         += -lProof
 ODGFCLIBS      := -L$(LPATH) -lN2ll -lTMrbDGF -lTMrbEsone -lEsoneClient \
                  -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser
 
