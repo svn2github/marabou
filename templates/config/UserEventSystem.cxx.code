@@ -26,6 +26,12 @@ Bool_t %%USER_EVENT_NAME_UC%%::CreateTree() {
 		Int_t splitMode = gMrbAnalyze->GetSplitLevel();
 
 		fMyAddr = (TObject *) this; 		// we need a '**' ref to this object
+		if (gMrbAnalyze->IsVerbose()) {
+			cout	<< this->ClassName() << "::CreateTree(): Adding branch \"%%USER_EVENT_NAME_LC%%\""
+					<< " to tree \"%%USER_EVENT_NAME_LC%%\" (bufsiz="
+					<< bufSize << ", split=" << splitMode << ")"
+					<< endl;
+		}
 		fTreeOut->Branch("%%USER_EVENT_NAME_LC%%", this->ClassName(), &fMyAddr, bufSize, splitMode);
 	}
 	return(kTRUE);

@@ -6701,7 +6701,7 @@ Bool_t TMrbConfig::CheckConfig() {
 	}
 
 	if (nofErrors == 0) {
-		gMrbLog->Out()	<< "Check done: No inconsistencies encountered" << endl;
+		gMrbLog->Out()	<< "Check done - no inconsistencies encountered" << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckConfig", setblue);
 	} else {
 		gMrbLog->Err()	<< "Check done: " << nofErrors << " inconsistencies encountered - config step aborted" << endl;

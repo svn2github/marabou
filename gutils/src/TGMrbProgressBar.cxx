@@ -93,9 +93,7 @@ TGMrbProgressBar::TGMrbProgressBar( const TGWindow * Parent,
 
 	Window_t wdum;
 	Int_t ax, ay;
-	gVirtualX->TranslateCoordinates(Main->GetId(), Parent->GetId(),
-								(((TGFrame *) Main)->GetWidth() / 2 - this->GetWidth() / 2),
-								(((TGFrame *) Main)->GetHeight() / 2), ax, ay, wdum);
+	gVirtualX->TranslateCoordinates(Main->GetId(), Parent->GetId(), (((TGFrame *) Main)->GetWidth() / 2), (((TGFrame *) Main)->GetHeight() / 2), ax, ay, wdum);
 	this->Move(ax, ay);
 
 	SetWindowName(Title);
