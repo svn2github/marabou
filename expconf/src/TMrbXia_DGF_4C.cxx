@@ -103,11 +103,12 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					gMrbConfig->AddModule(this);				// append to list of modules
 					gDirectory->Append(this);
 					fMaxEvents = 1;
-					fTraceLength = 0;
+					fTraceLength = 40;
 					fRunTask = 0x100;
 					fSwitchBusTerm = kFALSE;
 					fSwitchBusIndiv = kFALSE;
 					fSynchWait = 1;
+					fActivateUserPSA = kFALSE;
 					fInSynch = 0;
 				} else {
 					this->MakeZombie();
@@ -202,7 +203,8 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$moduleNumber", this->GetSerial());
 			fCodeTemplates.Substitute("$maxEvents", this->GetMaxEvents());
 			fCodeTemplates.Substitute("$traceLength", this->GetTraceLength());
-			fCodeTemplates.Substitute("$runTask", this->GetRunTask());
+			fCodeTemplates.Substitute("$activatePSA", this->UserPSAIsActive() ? 1 : 0);
+			fCodeTemplates.Substitute("$runTask", this->GetRunTask(), 16);
 			fCodeTemplates.Substitute("$synchWait", this->GetSynchWait());
 			fCodeTemplates.Substitute("$inSynch", this->GetInSynch());
 			fCodeTemplates.WriteCode(RdoStrm);
@@ -239,6 +241,7 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$modulePosition", this->GetPosition());
 			fCodeTemplates.Substitute("$nofModules", gMrbConfig->GetNofModules());
+			fCodeTemplates.Substitute("$runTask", this->GetRunTask(), 16);
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 	}
@@ -562,6 +565,8 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 						anaTmpl.Substitute("$parModuleNumber", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("MODCSRA");
 						anaTmpl.Substitute("$parModCSRA", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("MODCSRB");
+						anaTmpl.Substitute("$parModCSRB", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("MAXEVENTS");
 						anaTmpl.Substitute("$parMaxEvents", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("SYNCHWAIT");
@@ -584,6 +589,8 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 						anaTmpl.Substitute("$parTraceLength0", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("CHANCSRA0");
 						anaTmpl.Substitute("$parChanCSRA0", (px) ? px->GetIndex() : 0);
+						px = this->FindParam("CHANCSRB0");
+						anaTmpl.Substitute("$parChanCSRB0", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("REALTIMEA");
 						anaTmpl.Substitute("$parRealTimeA", (px) ? px->GetIndex() : 0);
 						px = this->FindParam("REALTIMEB");
@@ -726,6 +733,7 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 				rcTmpl.Substitute("$clusterSegments", this->GetClusterSegments());
 				rcTmpl.Substitute("$maxEvents", this->GetMaxEvents());
 				rcTmpl.Substitute("$traceLength", this->GetTraceLength());
+				rcTmpl.Substitute("$activatePSA", this->UserPSAIsActive() ? "TRUE" : "FALSE");
 				rcTmpl.Substitute("$runTask", this->GetRunTask());
 				rcTmpl.Substitute("$synchWait", this->GetSynchWait());
 				rcTmpl.Substitute("$inSynch", this->GetInSynch());

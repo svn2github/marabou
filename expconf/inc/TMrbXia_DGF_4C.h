@@ -67,7 +67,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 
 		inline void SetMaxEvents(Int_t MaxEvents) { fMaxEvents = MaxEvents; };
 		inline Int_t GetMaxEvents() { return(fMaxEvents); };
-		inline void SetTraceLength(Int_t TraceLength = 0) { fTraceLength = TraceLength; };
+		inline void SetTraceLength(Int_t TraceLength = 40) { fTraceLength = TraceLength; };
 		inline Int_t GetTraceLength() { return(fTraceLength); };
 		inline void SetRunTask(Int_t RunTask = 0x100) { fRunTask = RunTask; };
 		inline Int_t GetRunTask() { return(fRunTask); };
@@ -80,7 +80,9 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 							fSwitchBusTerm = TermFlag; 
 		};
 		inline Bool_t SwitchBusToBeTerminated() { return(fSwitchBusTerm); };
-		
+		inline void ActivateUserPSA(Bool_t ActiveFlag = kTRUE) { fActivateUserPSA = ActiveFlag; };
+		inline Bool_t UserPSAIsActive() { return(fActivateUserPSA); };
+
 		inline void SetClusterID(Int_t Serial, const Char_t * Color, const Char_t * Segments) { // cluster ids
 			fClusterID.Set(Serial, Color, Segments);
 		};
@@ -116,6 +118,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 
 		Bool_t fSwitchBusTerm;				// kTRUE if switch bus is to be terminated
 		Bool_t fSwitchBusIndiv;				// kTRUE if switch bus is to be terminated individually
+		Bool_t fActivateUserPSA;			// kTRUE if user PSA code should be activated
 
 	ClassDef(TMrbXia_DGF_4C, 1)	// [Config] Xia DGF-4C, digital gamma finder
 };
