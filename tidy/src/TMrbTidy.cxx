@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.5 2004-11-17 13:38:43 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.6 2004-11-17 14:22:07 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -880,6 +880,58 @@ Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
 Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
 Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
 
+Bool_t TMrbTidyDoc::Save(const Char_t * DocFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::Save
+// Purpose:        Save tidy code
+// Arguments:      const Char_t * DocFile   -- output file
+// Results:        --
+// Exceptions:
+// Description:    Saves (tidied) code to file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok;
+	if (this->HasNodes()) {
+		TString saveFile = DocFile;
+		gSystem->ExpandPathName(saveFile);
+		tidySaveFile(fHandle, (Char_t *) saveFile.Data());				
+		ok = kTRUE;
+	} else {
+		gMrbLog->Err() << "Document tree empty - nothing to save" << endl;
+		gMrbLog->Flush(this->ClassName(), "Save");
+		ok = kFALSE;
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyDoc::Save(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::Save
+// Purpose:        Save tidy code
+// Arguments:      ostream & Out   -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Saves (tidied) code to stream (stdout).
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok;
+	if (this->HasNodes()) {
+		TidyBuffer tbuf = {0};
+		tidySaveBuffer(fHandle, &tbuf);				
+		Out << tbuf.bp << endl;
+		ok = kTRUE;
+	} else {
+		gMrbLog->Err() << "Document tree empty - nothing to save" << endl;
+		gMrbLog->Flush(this->ClassName(), "Save");
+		ok = kFALSE;
+	}
+	return(ok);
+}
+
 void TMrbTidyDoc::Print(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -892,7 +944,7 @@ void TMrbTidyDoc::Print(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fTidyRoot) {
+	if (this->HasNodes()) {
 		Out 	<< endl << "Document " << this->GetName();
 		if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
 		Out 	<< ": structure as analyzed by D. Raggett's TIDY" << endl

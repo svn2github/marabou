@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.4 2004-11-17 13:38:43 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.5 2004-11-17 14:22:07 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -424,6 +424,9 @@ class TMrbTidyDoc : public TNamed {
 		inline TMrbTidyNode * GetHtml() { return(fTidyHtml); };
 		inline TMrbTidyNode * GetHead() { return(fTidyHead); };
 		inline TMrbTidyNode * GetBody() { return(fTidyBody); };
+
+		Bool_t Save(const Char_t * DocFile);
+		Bool_t Save(ostream & Out = cout);
 
 	protected:
 		Int_t ReadOptions();
