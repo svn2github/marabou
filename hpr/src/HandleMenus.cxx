@@ -183,6 +183,8 @@ enum ERootCanvasCommands {
    kFHFitGTailHigh,
    kFHFitUser,
    kFHEditUser,
+   kFHEditSlicesYUser,
+   kFHFitSlicesYUser,
    kFHMacroBreitW,
    kFHMacroExpG,
    kFHMacroLandau,
@@ -1052,6 +1054,12 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case kFHSetLinBg:
                      fFitHist->SetLinBg(); 
                      break;
+                  case kFHFitSlicesYUser:
+                     fFitHist->ExecFitSliceYMacro(); 
+                     break;
+                  case kFHEditSlicesYUser:
+                     fFitHist->EditFitSliceYMacro(); 
+                     break;
                   case kFHEditUser:
                      fFitHist->EditFitMacro(); 
                      break;
@@ -1508,6 +1516,7 @@ void HandleMenus::BuildMenus()
             if (fHistPresent->fShowAllAsFirst) fDisplayMenu->CheckEntry(kFHAllAsFirst);
             else                      fDisplayMenu->UnCheckEntry(kFHAllAsFirst);
       	   fDisplayMenu->AddEntry("Rebin all",  kFHRebinAll);
+      	   fDisplayMenu->AddSeparator();
          	fDisplayMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
          	fDisplayMenu->AddEntry("Activate simultanous rotation", kFHCommonRotate);
          } else if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
@@ -1591,8 +1600,12 @@ void HandleMenus::BuildMenus()
          if(fFitHist->GetCallMinos()) fFitMenu->CheckEntry(kFHCallMinos);
          else                       fFitMenu->UnCheckEntry(kFHCallMinos);
       }
-      fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
       fFitMenu->AddEntry("Edit User Fit Macro", kFHEditUser);
+      fFitMenu->AddEntry("Execute User Fit Macro", kFHFitUser);
+      fFitMenu->AddSeparator();
+
+      fFitMenu->AddEntry("Edit User Fit Slices Y Macro", kFHEditSlicesYUser);
+      fFitMenu->AddEntry("Execute User FitSlices Y Macro", kFHFitSlicesYUser);
       fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
       fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);

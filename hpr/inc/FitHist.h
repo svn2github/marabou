@@ -98,6 +98,7 @@ private:
    TString fYtitle; 
    TString fFitMacroName; 
    TString fTemplateMacro;
+   TString fFitSliceYMacroName;
    Int_t fFirstUse; 
    Bool_t fDeleteCalFlag;
    Double_t fLinBgConst;
@@ -142,7 +143,10 @@ public:
    void ExecDefMacro();                  // 
    void ExecFitMacro();                  // 
    void EditFitMacro();                  // 
-   void SetTemplateMacro(const char *);                  // 
+   void ExecFitSliceYMacro();                  // 
+   void EditFitSliceYMacro();                  // 
+   void SetTemplateMacro(const char * name){fTemplateMacro = name;};                  // 
+   void SetFitSliceYMacroName(const char *name){fFitSliceYMacroName = name;};                  // 
    void RedefineAxis();                  // 
    void AddAxis(Int_t where);           // 
    void Magnify();                 // 

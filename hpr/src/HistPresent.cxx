@@ -1908,7 +1908,7 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl, Bool_t try_memory)
    TObjString * obj = (TObjString *)hlist->At(pos);
 
    TString fname = obj->String();
-//	cout << "|" << fname << "|" << endl;
+	cout << "GetSelHistAt |" << fname << "|" << endl;
    Int_t pp = fname.Index(" ");
    if (pp <= 0) {cout << "Not file name in: " << obj->String() << endl; return NULL;};
    fname.Resize(pp);
@@ -2578,6 +2578,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       Int_t pp = newhname.Index(".");
       if (pp) newhname.Resize(pp);
       newhname = newhname + "_" + shname.Data();
+//      if (newhname.Index(";") > 1) newhname.Resize(newhname.Index(";"));
       const char * hn = (const char*)newhname;
       TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
       TString FHname("F");
@@ -2743,6 +2744,7 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
    TString FHname("F");
    FHname += hist->GetName();
 //   cout << "FHname " << FHname<< endl;
+   if (FHname.Index(";") > 1)FHname.Resize(FHname.Index(";"));
    TRegexp notascii("[^a-zA-Z0-9_]", kFALSE);
    while (FHname.Index(notascii) >= 0) {
       FHname(notascii) = "_";
@@ -2800,6 +2802,9 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
       wwidx = fWinwidx_2dim;
       wwidy = fWinwidy_2dim;
    }
+   cout << "FHname " << FHname << endl;
+   cout << "hist->GetName() " << hist->GetName() << endl;
+   cout << "origname " << origname << endl;
    fh=new FitHist((const char*)FHname,"A FitHist object",hist, origname,
           fWincurx, fWincury, wwidx, wwidy);
    fLastWindow = fh->GetMyCanvas();
@@ -2951,7 +2956,8 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
    Int_t nsel = hlist->GetSize();
    Int_t nx = 1, ny =1;
    TH1* hist = 0;
-   if (nsel == 00) {
+   TH1* histsel = 0;
+   if (nsel == 0) {
       WarnBox("No histogram selected");
       return;
 
@@ -3030,7 +3036,8 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
       if (!hist) {
 //         cout << " Hist not found at: " << i << endl;  
          continue;
-      }  
+      } 
+//      hist = (TH1*)histsel->Clone(); 
       TString fname = ((TObjString *)hlist->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
       hname = hist->GetName();
@@ -3092,6 +3099,17 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
    		cmd1 += GetName();
    		cmd1 += "\"))->auto_exec_1()";
          p->AddExec("ex1", cmd1.Data());
+//
+         p->SetRightMargin(0.05);
+         p->SetLeftMargin(0.05);
+         TAxis * xa = hist->GetXaxis();
+         TAxis * ya = hist->GetYaxis();
+         ya->SetLabelSize(gStyle->GetLabelSize("Y") * 0.8 * ny); // nb y det text size
+         xa->SetLabelSize(gStyle->GetLabelSize("X") * 0.8 * ny);
+         xa->SetTitleSize(gStyle->GetTitleSize("X") * 0.8 * ny);
+         ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.8 * ny);
+          
+//        hist->SetTitleSize(gStyle->GetTitleSize("C") * 0.8 * ny);
       }  
       SetCurrentHist(hist);
       gPad->Modified(kTRUE);

@@ -58,12 +58,8 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    TString nam;
    TString empty;
    TString sel;
-
-   cmd = "mypres->EditExpression()";
-   nam = "Edit expression";
-   sel = "mypres->ToggleExpression()";
-   fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
-
+   
+   TList * var_list = new TList();
    cmd = "mypres->EditLeafCut()";
    nam = "Edit formula cut";
    sel = "mypres->ToggleLeafCut()";
@@ -105,6 +101,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
               cmd = cmd_base + Form("%s[%d]",leaf->GetName(), ix) + "\")";
               sel = sel_base + Form("%s[%d]",leaf->GetName(), ix) + "\")";
               nam = Form("%s[%d]",leaf->GetName(), ix);
+              var_list->Add(new TObjString(Form("%s[%d]",leaf->GetName(), ix)));
               fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
            }
          } else {
@@ -114,6 +111,7 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
             cmd = cmd_base + leaf->GetName() + "\")";
             sel = sel_base + leaf->GetName() + "\")";
             nam = leaf->GetName();
+            var_list->Add(new TObjString(leaf->GetName()));
             fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
 
          }
@@ -128,6 +126,15 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
  //        fCmdLine->Add(new CmdListEntry(cmd, nam, empty, sel));
      }
    }
+
+   
+   cmd = "mypres->EditExpression(\"";
+   cmd += Form("0x%x",var_list);
+   cmd += "\")";
+   nam = "Edit expression";
+   sel = "mypres->ToggleExpression()";
+   fCmdLine->AddFirst(new CmdListEntry(cmd, nam, empty, sel));
+
    fRootFile->Close();
    HTCanvas *ccont = CommandPanel("TreeList", fCmdLine, 245, ycanvas, this);
    if (fHistLists)fHistLists->Add(ccont);
@@ -264,14 +271,17 @@ void HistPresent::ToggleGraphCut(const char* bp)
 }
 //________________________________________________________________________________________
   
-void HistPresent::EditExpression(const char* bp)
+void HistPresent::EditExpression(const char* vl, const char* bp)
 {
    Bool_t ok;
    const char hist_file[] = {"ntupleCmds.txt"};
    const char * hf = hist_file;
-   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   if (gROOT->GetVersionInt() < 40000) hf = NULL;
+   TList * var_list = 0;
+   if (bp) var_list = (TList*)strtoul(vl, 0, 16);
+//   if (var_list)var_list->Print();
    *fExpression=GetString("Edit expression",(const char *)*fExpression,
-                          &ok, GetMyCanvas(), 0,0,0,0,0, hf);
+                          &ok, GetMyCanvas(), 0,0,0,0,0, hf, var_list);
    if (!ok) return;
    if (strlen(*fExpression) > 1) {
       cout << *fExpression<< endl;
@@ -285,8 +295,11 @@ void HistPresent::EditLeafCut(const char* bp)
 {
 
    Bool_t ok;
-    *fLeafCut=GetString("Edit formula cut",(const char *)*fLeafCut,
-                         &ok, GetMyCanvas());
+   const char hist_file[] = {"ntupleCuts.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   *fLeafCut=GetString("Edit formula cut",(const char *)*fLeafCut,
+                         &ok, GetMyCanvas(), 0,0,0,0,0, hf);
    if (!ok) return;
     if (strlen(*fLeafCut) > 1) {
        
@@ -300,7 +313,11 @@ void HistPresent::EditLeafCut(const char* bp)
 void HistPresent::DefineGraphCut(const char* bp)
 {
    Bool_t ok;
-   *fGraphCut=GetString("Cut name",(const char *)*fGraphCut, &ok, GetMyCanvas());
+   const char hist_file[] = {"ntupleGraphCuts.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   *fGraphCut=GetString("Cut name",(const char *)*fGraphCut, &ok, GetMyCanvas(),
+                         0,0,0,0,0, hf);
    if (!ok) return;
    if (strlen(*fGraphCut) > 1) {
       TCutG* cc=(TCutG*)gROOT->FindObject(fGraphCut->Data());
@@ -562,7 +579,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
          for(Int_t i = 0; i < nent; i++) {
             if (nbin[i] > 0) continue;
             modified = kTRUE;
-            TAxis * a;
+            TAxis * a = 0;
             if      (i == 0) a = htemp->GetXaxis();
             else if (i == 1) a = htemp->GetYaxis();
             else if (i == 2) a = htemp->GetZaxis();

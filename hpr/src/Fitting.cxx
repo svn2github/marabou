@@ -80,6 +80,70 @@ enum dowhat { expand, projectx, projecty, statonly, projectf,
 //____________________________________________________________________________________ 
 /* *INDENT-OFF* */
 //____________________________________________________________________________________ 
+const char SliceYTemplate[]=
+"Double_t bw( Double_t *x, Double_t *par)\n\
+{\n\
+//  1 dim function  breitwigner\n\
+\n\
+   Double_t norm = par[0];  \n\
+   Double_t meanbw = par[1];  \n\
+   if (par[2] == 0) par[2] = 1;\n\
+   Double_t gamma2 = par[2] * par[2];    // Gamma square of bw\n\
+\n\
+   Double_t eb2 = (x[0] - meanbw) * (x[0] - meanbw);\n\
+   Double_t denominator = eb2 + 0.25 * gamma2;\n\
+   if (denominator == 0)denominator = 1e-10;\n\
+   Double_t yval =  gamma2 / denominator;\n\
+ \n\
+   return norm * yval;\n\
+};\n\
+//___________________________________________________________________\n\
+\n\
+fit_slice_function(const char *hname, Double_t from, Double_t to,\n\
+                   Int_t binX_min, Int_t binX_max)\n\
+// This is a template macro to fit a BreitWigner to slices\n\
+{\n\
+   TH2* hist = (TH1*)gROOT->FindObject(hname);\n\
+   if(!hist){\n\
+     cout << \"histogram not found\" << endl;\n\
+     return 0;\n\
+   }\n\
+\n\
+//  range used along  y\n\
+  from = -8; \n\
+  to   =  8; \n\
+//  range used along  x \n\
+   binX_min = 30;\n\
+   binX_max = 70;\n\
+//  use only bins with at least nBin_filled bins with entries\n\
+   Int_t nBin_filled = 10;\n\
+\n\
+//   if (c_from) from = atof(c_from);\n\
+ //  if (c_to)   to   = atof(c_to);\n\
+ //  if (c_bmin) binX_min = atoi(c_bmin);\n\
+//   if (c_bmax) binX_max = atoi(c_bmax);\n\
+   // define function\n\
+   TF1 * f1 = new TF1(\"bw\", bw, from, to, 3);\n\
+\n\
+   f1->SetParName(0, \"norm\");\n\
+   f1->SetParName(1, \"mean\");\n\
+   f1->SetParName(2, \"gamma\");\n\
+\n\
+   f1->SetParameters(1000, -.3, 1);\n\
+\n\
+// option: \"R\" use range of function (from, to)\n\
+//         \"Q\" quiet\n\
+//         \"G2\" merge 2 consecutive bins along Y\n\
+//         \"G3\" merge 3 consecutive bins along Y\n\
+//         \"G4\" merge 4 consecutive bins along Y\n\
+//         \"G5\" merge 5 consecutive bins along Y\n\
+   char opt[] = \"RQ\";\n\
+\n\
+   hist->FitSlicesY(f1, binX_min, binX_max, nBin_filled, opt); \n\
+}\n\
+";
+//_____________________________________________________________________________________
+
 const char Gauss2d[]=
 "Double_t gauss2d( Double_t *x, Double_t *par)\n\
 {\n\
@@ -1762,128 +1826,6 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    return 1;
 };
 
-//____________________________________________________________________________
-
-void FitHist::ExecFitMacro()
-{
-//   cout << fFitMacroName.Data()<< endl;
-//   static TString name(fFitMacroName.Data());
-   const char hist_file[] = {"hprFitMacros.txt"};
-   const char * hf = hist_file;
-   if (gROOT->GetVersionInt() < 40101) hf = NULL;
-   if (fFirstUse) {
-      Bool_t ok;
-      fFitMacroName =
-          GetString("Use Macro:", fFitMacroName.Data(), &ok, mycanvas,
-          0,0,0,0,0, hf);
-      if (!ok)
-         return;
-      fFirstUse = 0;
-   }
-   if (!gSystem->AccessPathName(fFitMacroName.Data(), kFileExists)) {
-      gROOT->LoadMacro(fFitMacroName.Data());
-      TString cmd = "fit_user_function";
-//      Int_t p = cmd.Index(".");
-//      cmd.Remove(p,2);
-      cmd = cmd + "(\"" + fSelHist->GetName() + "\")";
-      cout << cmd << endl;
-      cHist->cd();
-      gROOT->ProcessLine((const char *) cmd);
-//      fSelPad->Modified(kTRUE);
-//      fSelPad->Update();
-      cHist->Modified(kTRUE);
-      cHist->Update();
-   } else
-      WarnBox("Macro not found");
-}
-
-//____________________________________________________________________________________ 
-
-
-void FitHist::SetTemplateMacro(const char *name)
-{
-   fTemplateMacro = name;
-}
-
-//____________________________________________________________________________________ 
-
-
-void FitHist::EditFitMacro()
-{
-   const char hist_file[] = {"hprFitMacros.txt"};
-   const char * hf = hist_file;
-   if (gROOT->GetVersionInt() < 40101) hf = NULL;
-   static TString name(fFitMacroName.Data());
-   Bool_t ok;
-   name = GetString("Name of Fit Macro", name.Data(), &ok, mycanvas,
-                     0,0,0,0,0, hf);
-   if (!ok)
-      return;
-   if (gSystem->AccessPathName(name.Data())) {
-      cout << "Try to open: " << name.Data() << endl;
-
-      ofstream tmpfile(name.Data(), ios::out);
-      if (!tmpfile.good()) {
-         cerr << "EditFitMacro: "
-             << gSystem->GetError() << " - " << name.Data()
-             << endl;
-         return;
-      }
-      if (!tmpfile) {
-         cout << "Cant open new " << name.Data() << endl;
-         return;
-      }
-      if (fSelHist->GetDimension() == 1) {
-      	TOrdCollection *svalues = new TOrdCollection();
-      	for (Int_t i = 0; i < nFitTemplates; i++) {
-         	TString temp(FitMacroTemplates[i]);
-         	Int_t cstart = temp.Index("/*");
-         	Int_t cend = -1;
-         	if (cstart >= 0) cend = temp.Index("*/");
-         	TString mname("NoName");
-         	if (cstart >= 0 && cend > cstart) 
-            	mname = temp(cstart + 2, cend - cstart - 2);
-
-         	svalues->Add(new TObjString(mname.Data()));
-      	}
-
-      	TArrayI flags(nFitTemplates);
-      	TString title("Template Fit Macros");
-      	Int_t retval;
-      	Int_t itemwidth = 240;
-      	new TGMrbTableFrame(mycanvas, &retval,
-      							  title.Data(),
-      							  itemwidth, 1,
-      							  nFitTemplates,
-      							  svalues, 0, 0, &flags,
-      							  nFitTemplates);
-      	if (retval < 0) {
-         	return;
-      	}
-      	Bool_t ok = kFALSE;
-      	for (Int_t i = 0; i < nFitTemplates; i++) {
-         	if (flags[i] == 1) {
-            	tmpfile << FitMacroTemplates[i];
-            	ok = kTRUE;
-            	break;
-         	}
-      	}
-      	if (!ok) {
-         	cout << "no selection" << endl;
-         	return;
-      	}
-      } else if (fSelHist->GetDimension() == 2) {
-          tmpfile << Gauss2d;
-       }
-      tmpfile.close();
-   }
-   TString EditCmd = "nedit ";
-   EditCmd += name.Data();
-   EditCmd += "&";
-   gSystem->Exec(EditCmd.Data());
-   fFitMacroName = name;
-}
-
 //__________________________________________________________________________________
 
 Bool_t FitHist::SetLinBg()
@@ -1965,3 +1907,243 @@ void FitHist::DrawSelectedFunctions()
 	cHist->Modified();
 	cHist->Update();
 }
+//____________________________________________________________________________________ 
+
+void FitHist::EditFitMacro()
+{
+   const char hist_file[] = {"hprFitMacros.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   static TString name(fFitMacroName.Data());
+   Bool_t ok;
+   name = GetString("Name of Fit Macro", name.Data(), &ok, mycanvas,
+                     0,0,0,0,0, hf);
+   if (!ok)
+      return;
+   if (gSystem->AccessPathName(name.Data())) {
+      cout << "Try to open: " << name.Data() << endl;
+
+      ofstream tmpfile(name.Data(), ios::out);
+      if (!tmpfile.good()) {
+         cerr << "EditFitMacro: "
+             << gSystem->GetError() << " - " << name.Data()
+             << endl;
+         return;
+      }
+      if (!tmpfile) {
+         cout << "Cant open new " << name.Data() << endl;
+         return;
+      }
+      if (fSelHist->GetDimension() == 1) {
+      	TOrdCollection *svalues = new TOrdCollection();
+      	for (Int_t i = 0; i < nFitTemplates; i++) {
+         	TString temp(FitMacroTemplates[i]);
+         	Int_t cstart = temp.Index("/*");
+         	Int_t cend = -1;
+         	if (cstart >= 0) cend = temp.Index("*/");
+         	TString mname("NoName");
+         	if (cstart >= 0 && cend > cstart) 
+            	mname = temp(cstart + 2, cend - cstart - 2);
+
+         	svalues->Add(new TObjString(mname.Data()));
+      	}
+
+      	TArrayI flags(nFitTemplates);
+      	TString title("Template Fit Macros");
+      	Int_t retval;
+      	Int_t itemwidth = 240;
+      	new TGMrbTableFrame(mycanvas, &retval,
+      							  title.Data(),
+      							  itemwidth, 1,
+      							  nFitTemplates,
+      							  svalues, 0, 0, &flags,
+      							  nFitTemplates);
+      	if (retval < 0) {
+         	return;
+      	}
+      	Bool_t ok = kFALSE;
+      	for (Int_t i = 0; i < nFitTemplates; i++) {
+         	if (flags[i] == 1) {
+            	tmpfile << FitMacroTemplates[i];
+            	ok = kTRUE;
+            	break;
+         	}
+      	}
+      	if (!ok) {
+         	cout << "no selection" << endl;
+         	return;
+      	}
+      } else if (fSelHist->GetDimension() == 2) {
+          tmpfile << Gauss2d;
+       }
+      tmpfile.close();
+   }
+   TString EditCmd = "nedit ";
+   EditCmd += name.Data();
+   EditCmd += "&";
+   gSystem->Exec(EditCmd.Data());
+   fFitMacroName = name;
+}
+
+//____________________________________________________________________________
+
+void FitHist::ExecFitMacro()
+{
+//   cout << fFitMacroName.Data()<< endl;
+//   static TString name(fFitMacroName.Data());
+   const char hist_file[] = {"hprFitMacros.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   if (fFirstUse) {
+      Bool_t ok;
+      fFitMacroName =
+          GetString("Use Macro:", fFitMacroName.Data(), &ok, mycanvas,
+          0,0,0,0,0, hf);
+      if (!ok)
+         return;
+      fFirstUse = 0;
+   }
+   if (!gSystem->AccessPathName(fFitMacroName.Data(), kFileExists)) {
+      gROOT->LoadMacro(fFitMacroName.Data());
+      TString cmd = "fit_user_function";
+//      Int_t p = cmd.Index(".");
+//      cmd.Remove(p,2);
+      cmd = cmd + "(\"" + fSelHist->GetName() + "\")";
+      cout << cmd << endl;
+      cHist->cd();
+      gROOT->ProcessLine((const char *) cmd);
+//      fSelPad->Modified(kTRUE);
+//      fSelPad->Update();
+      cHist->Modified(kTRUE);
+      cHist->Update();
+   } else
+      WarnBox("Macro not found");
+}
+//____________________________________________________________________________________ 
+
+void FitHist::EditFitSliceYMacro()
+{
+   const char history_file[] = {"hprFitSliceYMacros.txt"};
+   const char * hf = history_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   static TString name(fFitSliceYMacroName.Data());
+   Bool_t ok;
+   name = GetString("Name of Fit Macro", name.Data(), &ok, mycanvas,
+                     0,0,0,0,0, hf);
+   if (!ok)
+      return;
+   if (gSystem->AccessPathName(name.Data())) {
+      cout << "Try to open: " << name.Data() << endl;
+
+      ofstream tmpfile(name.Data(), ios::out);
+      if (!tmpfile.good()) {
+         cerr << "EditFitSliceYMacro: "
+             << gSystem->GetError() << " - " << name.Data()
+             << endl;
+         return;
+      }
+      if (!tmpfile) {
+         cout << "Cant open new " << name.Data() << endl;
+         return;
+      }
+      if (fSelHist->GetDimension() == 2) {
+          tmpfile << SliceYTemplate;
+       }
+      tmpfile.close();
+   }
+   TString EditCmd = "nedit ";
+   EditCmd += name.Data();
+   EditCmd += "&";
+   gSystem->Exec(EditCmd.Data());
+   fFitSliceYMacroName = name;
+}
+//____________________________________________________________________________
+
+void FitHist::ExecFitSliceYMacro()
+{
+//   cout << fFitMacroName.Data()<< endl;
+//   static TString name(fFitMacroName.Data());
+   const char hist_file[] = {"hprFitMacros.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
+   if (fFirstUse) {
+      Bool_t ok;
+      fFitSliceYMacroName =
+          GetString("Use Macro:", fFitSliceYMacroName.Data(), &ok, mycanvas,
+          0,0,0,0,0, hf);
+      if (!ok)
+         return;
+      fFirstUse = 0;
+   }
+   if (!gSystem->AccessPathName(fFitSliceYMacroName.Data(), kFileExists)) {
+      gROOT->LoadMacro(fFitSliceYMacroName.Data());
+      TString cmd = "fit_slice_function";
+//      Int_t p = cmd.Index(".");
+//      cmd.Remove(p,2);
+   Int_t nval = GetMarks(fSelHist);
+   if (nval < 2) {
+      WarnBox("Not enough marks");
+      return;
+   }
+ //  	cout << "ExecFitSliceYMacro ----------------" << endl;
+ //  	markers->Print();
+
+   	FhMarker *pfirst = (FhMarker *) markers->First();
+   	FhMarker *plast = (FhMarker *) markers->Last();
+   	Float_t xlow = pfirst->GetX();
+   	Float_t xup = plast->GetX();
+   	Float_t ylow = pfirst->GetY();
+   	Float_t yup = plast->GetY();
+      Int_t binXlow = fSelHist->GetXaxis()->FindBin(xlow);
+      Int_t binXup  = fSelHist->GetXaxis()->FindBin(xup);
+
+      cmd = cmd + "(\"" + fSelHist->GetName() + 
+                  "\"," 
+                  + Form("%f",ylow) + ","
+                  + Form("%f",yup)  + ","
+                  + Form("%d",binXlow)  + ","
+                  + Form("%d",binXup)  + ")";
+//                  "\", 0, 0, 0, 0)";
+      cout << cmd << endl;
+      cHist->cd();
+      gROOT->ProcessLine((const char *) cmd);
+      TString hname;
+      TString sel;
+      if (hp) {
+         hp->ClearSelect();
+         for (Int_t ipar = 0; ipar < 100; ipar++) {
+            hname = fSelHist->GetName();
+            hname += "_";
+            hname += ipar;
+            TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
+            if (parhist){ 
+//               sel = "memory ";
+//               sel += hname.Data();
+               hname.Prepend("Memory ");
+               hname += " ";
+               hp->fSelectHist->Add(new TObjString((const char *)hname));
+            }
+            else break;
+         }
+         hname = fSelHist->GetName();
+         hname += "_chi2";
+         TH1 * parhist = (TH1*)gROOT->GetList()->FindObject(hname.Data());
+         if (parhist){ 
+ //           sel = "memory ";
+ //           sel += hname.Data();
+            hname += " ";
+            hname.Prepend("Memory ");
+            hp->fSelectHist->Add(new TObjString((const char *)hname));
+         }
+         hp->ShowSelectedHists(hp->fSelectHist, "Fitted values");
+      }
+        
+//      fSelPad->Modified(kTRUE);
+//      fSelPad->Update();
+//      cHist->Modified(kTRUE);
+//      cHist->Update();
+   } else
+      WarnBox("Macro not found");
+}
+
+
