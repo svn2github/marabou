@@ -499,8 +499,6 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
 						if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-						dgf->ClearChannelMask();
-						dgf->ClearTriggerMask();
 						gDGFControlData->fDeltaT = dgf->GetDeltaT();
 						Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
 						dgf->SetSynchWait(synchWait, kTRUE);
@@ -698,8 +696,6 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 							TMrbDGF * dgf = dgfModule->GetAddr();
 							if (dgf->IsConnected()) {
 								if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-								dgf->ClearChannelMask();
-								dgf->ClearTriggerMask();
 								gDGFControlData->fDeltaT = dgf->GetDeltaT();
 								Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
 								dgf->SetSynchWait(synchWait, kTRUE);
