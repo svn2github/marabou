@@ -53,6 +53,28 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::BookHistograms() {
 	return(kTRUE);
 }
 
+Int_t TUsrEvt%%EVT_NAME_UC%%::SetupLofSubevents() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrEvt%%EVT_NAME_UC%%::SetupLofSubevents
+// Purpose:        Setup list of subevents for event %%EVT_NAME_LC%%
+// Arguments:      --
+// Results:        Int_t NofSubevents    -- number of subevents
+// Exceptions:     
+// Description:    Inserts subevents in a list which later on may be
+//                 accessed by subevent index 
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofSubevents.Clear();
+%%BeginOfCode%%
+	this->AddSubevent(&$sevtNameLC, (Int_t) kMrbSevt$sevtNameUC);	// subevent $sevtNameLC: $sevtTitle
+%%EndOfCode%%
+%%EVT_SETUP_SEVT_LIST%%
+
+	return(fLofSubevents.GetSize());
+}
+
 Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -66,19 +88,23 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::AllocHitBuffers() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TUsrHitBuffer * eventTimeBuffer = NULL;
-
-	Int_t nofEntriesE, highWaterE, nofEntriesS, highWaterS, offsetE, offsetS;
+	TUsrHitBuffer * hb;
+	TUsrHBX * hbx;
+	Int_t nofEntriesS, highWaterS, coincWindowS;
 
 %%BeginOfCode%%
 %H%// get dimension of hit buffer
-%H% 	nofEntriesE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.NofEntries"), $nofEntries);
-%H% 	highWaterE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.HighWater"), $highWater);
+%H% 	Int_t nofEntriesE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.NofEntries"), $nofEntries);
+%H% 	Int_t highWaterE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.HighWater"), $highWater);
+%H% 	Int_t coincWindowE = gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.HitBuffer.CoincWindow"), 0);
 %H%
 %S%// alloc hit buffer for subevent $sevtNameLC
 %S% 	nofEntriesS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.NofEntries"), nofEntriesE);
 %S% 	highWaterS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.HighWater"), highWaterE);
-%S% 	$sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS);
+%S% 	coincWindowS = gEnv->GetValue(gMrbAnalyze->GetResource("Subevent.$sevtNameUC.HitBuffer.CoincWindow"), coincWindowE);
+%S% 	hb = $sevtNameLC.AllocHitBuffer("HB$sevtNameUC", nofEntriesS, highWaterS);
+%S% 	hbx = new TUsrHBX(this, hb, coincWindowS);
+%S% 	this->AddHBX(hbx, (Int_t) kMrbSevt$sevtNameUC);
 %S%
 %%EndOfCode%%
 %%EVT_ALLOC_HITBUFFER%%

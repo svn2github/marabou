@@ -23,6 +23,7 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_Silena {
 		~TUsrSevt%%SEVT_NAME_UC%%() {};			// default dtor
 
 		inline const Char_t * GetName() { return(fSevtName.Data()); };
+		inline Int_t GetSerial() { return(kMrbSevt%%SEVT_NAME_UC%%); };
 
 		Bool_t BookParams();					// book params
 %%BeginOfCode%%

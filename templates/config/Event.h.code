@@ -18,9 +18,11 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 			fNofEntries = 0;				// number of entries read from tree
 			fEventNumber = 0;				// event number provided by MBS
 			fReplayMode = kFALSE;			// normally online data acquisition
+			this->SetupLofSubevents();
 		};
 		~TUsrEvt%%EVT_NAME_UC%%() {};		// default dtor
 
+		Int_t SetupLofSubevents();								// build list of subevents
 		Bool_t FillEvent(const s_vehe *, const MBSDataIO *);	// event filling function supplied by system
 		Bool_t BookParams();									// book params for this event
 		Bool_t BookHistograms();								// book histograms for this event
