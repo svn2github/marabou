@@ -665,11 +665,11 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				dlf << "NofCrates:			" << nofCrates << endl;
 				dlf.close();
 
-				TString dlPgm = gEnv->GetValue("DGFControl.DownloadProgram", "unknown");
+				TString dlPgm = gEnv->GetValue("TMrbDGF.HowToDownLoadCode", "/nfs/mbssys/bin/dgfdown");
 				gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
 				gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 
-				gSystem->Exec(Form("rsh %s 'cd %s; %s %s'", camacHost.Data(), gSystem->WorkingDirectory(), dlPgm.Data(), ".DgfDownload.rc"));
+				gSystem->Exec(Form("rsh %s 'cd %s; %s %s %s'", camacHost.Data(), gSystem->WorkingDirectory(), dlPgm.Data(), ".DgfDownload.rc"));
 
 				dgfModule = gDGFControlData->FirstModule();
 				while (dgfModule) {

@@ -403,12 +403,14 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	Int_t modNo, cl;
-	Int_t nofModules, nofHistos;
+	Int_t nofModules, nofHistos, nofWords;
 	TMrbString intStr;
 	Int_t accuTime;
 	TString timeScale;
 	UInt_t chnPattern;
 										
+	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+
 	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
 	intStr = fRunTimeEntry->GetEntry()->GetText();
 	intStr.ToInteger(accuTime);
@@ -468,21 +470,50 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	nofHistos = 0;
 	nofModules = 0;
 	dgfModule = gDGFControlData->FirstModule();
+	TFile * mcaFile = NULL;
+	ofstream listFile;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
 			if (dgf->AccuHist_Stop(0)) {
-				nofHistos++;
+                nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
+                if (nofWords > 0) {
+                    if (verbose) histoBuffer.Print();
+                    for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+						if (histoBuffer.IsActive(chn)) {
+							if (mcaFile == NULL) {
+								listFile.open("mca.histlist", ios::out);
+								mcaFile = new TFile("mca.root", "NEW");
+							}
+							histoBuffer.FillHistogram(chn);
+							TH1F * h = histoBuffer.Histogram(chn);
+							h->Write();
+							listFile << h->GetName() << endl;
+							nofHistos++;
+						}
+					}
+                } else {
+                    gMrbLog->Err()  << "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+                                        << ": Histogram buffer is empty" << endl;
+                    gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+                }
 				dgf->RestoreParams(TMrbDGF::kSaveAccuHist);
 			}
 			nofModules++;
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
-	}				
-	gMrbLog->Out()	<< nofHistos << " histogram(s) accumulated" << endl;
-	gMrbLog->Flush(this->ClassName(), "AcquireHistos", setblue);
+	}
+    if (nofHistos > 0) {
+		listFile.close();
+		mcaFile->Close();
+		gMrbLog->Out()	<< nofHistos << " histogram(s) written to file mca.root" << endl;
+		gMrbLog->Flush(this->ClassName(), "AcquireHistos", setblue);
+	} else {
+        gMrbLog->Err()  << "No histograms at all" << endl;
+        gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+    }
 	return(kTRUE);
 }
 
