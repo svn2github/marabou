@@ -923,7 +923,6 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	eh = eHdr;
 	bto_get_long(&evl, &eh->l_dlen, 1, bo);
-	printf("@@ l_dlen=%ld total=%#lx %ld\n", evl, total, total);
 
 	evl = evl * sizeof(unsigned short) + sizeof(s_evhe);
 
@@ -950,7 +949,6 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	eh = (s_evhe *) mbs->evt_data;
 	bto_get_long(&etype, &eh->i_subtype, 1, bo);
-	printf("@@ type=%#lx\n", etype);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 
@@ -976,7 +974,6 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	if ((mbs->evttype)->type == MBS_ETYPE_VME) {
 		vh = (s_vehe *) mbs->evt_data;
-		printf("@@ trigger=%d\n", vh->i_trigger);
 		triggers[vh->i_trigger].hit++;
 	}
 
