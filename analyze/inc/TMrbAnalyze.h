@@ -204,7 +204,7 @@ class TMrbParamListEntry : public TObject {
 
 	public:
 		TMrbParamListEntry( TMrbNamedX * Module = NULL,								// ctor
-							Int_t * Address = NULL,
+							TObject * Address = NULL,
 							TH1 * HistoAddress = NULL,
 							TH1 * SingleAddress = NULL) :	fModule(Module),
 															fAddress(Address),
@@ -214,8 +214,8 @@ class TMrbParamListEntry : public TObject {
 
 		inline TMrbNamedX * GetModule() { return(fModule); };
 		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
-		inline Int_t * GetAddress() { return(fAddress); };
-		inline void SetAddress(Int_t * Address) { fAddress = Address; };
+		inline TObject * GetAddress() { return(fAddress); };
+		inline void SetAddress(TObject * Address) { fAddress = Address; };
 		inline TH1 * GetHistoAddress(Bool_t SingleFlag = kFALSE) {
 			return(SingleFlag ? fSingleAddress : fHistoAddress);
 		};
@@ -228,7 +228,7 @@ class TMrbParamListEntry : public TObject {
 
 	protected:
 		TMrbNamedX * fModule;
-		Int_t * fAddress;
+		TObject * fAddress;
 		TH1 * fHistoAddress;
 		TH1 * fSingleAddress;
 		TF1 * fCalibrationAddress;
@@ -397,6 +397,8 @@ public:
 		inline void CopyData(UShort_t * Data, Int_t NofData, Int_t Offset = 0) {		// copy hit data
 			if (Data) for (Int_t i = 0; i < NofData; i++) fData[i + Offset] = *Data++;
 		};
+
+		inline void SetData(UShort_t Data, Int_t Offset = TUsrHit::kHitEnergy) { fData[Offset] = Data; }
 
 		inline void CopyData(TUsrHit * Hit, Int_t NofData, Int_t Offset = 0) {
 			UShort_t * dp = Hit->GetDataAddr() + Offset;
@@ -656,13 +658,13 @@ class TMrbAnalyze : public TObject {
 		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t ModuleNumber, Int_t RelParamIndex);	// take histo from list
 		TH1 * GetHistoFromList(TObjArray & HistoList, Int_t AbsParamIndex);	// take histo from list
 		TMrbHistoListEntry * GetHistoListEntry(const Char_t * HistoName);	// get entry in histo list by name
-		Int_t * GetParamAddr(const Char_t * ParamName); 			// get param addr by name
-		Int_t * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index
-		Int_t * GetParamAddr(Int_t AbsParamIndex);					// get param addr by absolute param index
+		TObject * GetParamAddr(const Char_t * ParamName); 			// get param addr by name
+		TObject * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index
+		TObject * GetParamAddr(Int_t AbsParamIndex);					// get param addr by absolute param index
 		Bool_t AddModuleToList(const Char_t * ModuleName, const Char_t * ModuleTitle,
 												Int_t ModuleIndex, Int_t AbsParamIndex,
 												Int_t NofParams, Int_t TimeOffset = 0);
-		Bool_t AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
+		Bool_t AddParamToList(const Char_t * ParamName, TObject * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 		Bool_t AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 
 		Int_t ReadCalibrationFromFile(const Char_t * CalibrationFile);		// read calibration data from file

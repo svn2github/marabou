@@ -2441,13 +2441,13 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 	return(nofCalibs);
 }
 
-Int_t * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) {
+TObject * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamAddr
 // Purpose:        Get param addr by name
 // Arguments:      Char_t * ParamName     -- param name
-// Results:        Int_t * ParamAddr      -- address
+// Results:        TObject * ParamAddr    -- address
 // Exceptions:     
 // Description:    Searches for a param with specified name
 //                 Returns param address.
@@ -2467,7 +2467,7 @@ Int_t * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) {
 	return(ple->GetAddress());
 }
 
-Int_t * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
+TObject * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamAddr
@@ -2496,13 +2496,13 @@ Int_t * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(((TMrbParamListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-Int_t * TMrbAnalyze::GetParamAddr(Int_t AbsParamIndex) {
+TObject * TMrbAnalyze::GetParamAddr(Int_t AbsParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetParamAddr
 // Purpose:        Get param address
 // Arguments:      Int_t AbsParamIndex    -- absolute param index
-// Results:        Int_t * ParamAddr      -- param address
+// Results:        TObject * ParamAddr    -- param address
 // Exceptions:     
 // Description:    Returns param address.
 // Keywords:       
@@ -2576,7 +2576,7 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 	return(kTRUE);
 }
 
-Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex) {
+Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, TObject * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::AddParamToList
@@ -2616,7 +2616,7 @@ Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, 
 		return(kFALSE);
 	}
 	npx = new TMrbNamedX(px + RelParamIndex, ParamName);
-	ple = new TMrbParamListEntry(nmx, ParamAddr, NULL);
+	ple = new TMrbParamListEntry(nmx, (TObject *) ParamAddr, NULL);
 	npx->AssignObject(ple);
 	fParamList.AddAt(npx, px + RelParamIndex);
 	if (RelParamIndex == 0) mle->SetFirstParam(npx);
