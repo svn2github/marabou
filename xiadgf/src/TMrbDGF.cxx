@@ -4607,8 +4607,6 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 	
 	this->SaveParams(TMrbDGF::kSaveTrace);			// save current settings
 	
-	nofWords = TraceLength + TMrbDGFEventBuffer::kTotalHeaderLength;
-
 	this->SetParValue("MAXEVENTS", 1);
  	this->SetParValue("SYNCHWAIT", 0);
  	this->SetParValue("INSYNCH", 1);
@@ -4621,6 +4619,8 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 			this->SetChanCSRA(chn,	TMrbDGFData::kEnableTrigger |
 											TMrbDGFData::kGoodChannel,
 											TMrbDGF::kBitOr, kTRUE);
+			this->SetChanCSRA(chn,	TMrbDGFData::kGroupTriggerOnly,
+											TMrbDGF::kBitClear, kTRUE);
 			this->SetParValue(chn, "TRACELENGTH", TraceLength);
 			this->SetParValue(chn, "XWAIT", XwaitStates);
 			nofChannels++;
@@ -4643,7 +4643,9 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 		return(kFALSE);
 	}
 
-	nofWords *= nofChannels;
+	nofWords = TMrbDGFEventBuffer::kBufHeaderLength + TMrbDGFEventBuffer::kEventHeaderLength;
+	nofWords += nofChannels * (TMrbDGFEventBuffer::kChanHeaderLength + TraceLength);
+
 	if (!this->CheckBufferSize("GetTrace", nofWords)) {
 		this->RestoreParams(TMrbDGF::kSaveTrace);
 		return(kFALSE);
@@ -4804,10 +4806,6 @@ Int_t TMrbDGF::GetUntrigTrace_Stop(Int_t Channel, TArrayI & Buffer, Int_t SecsTo
 	wc = this->GetParValue("LOUTBUFFER");
 	this->WriteTSAR(addr);
 
-	Int_t fc = fCamac.HasFastCamac();
-	if (fc == -1) fc = 0;
-
-//	don't use FAST CAMAC here!
 	cData.Set(wc);
 	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), cData, 0, wc, kTRUE) == -1) {
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
@@ -4923,10 +4921,7 @@ Int_t TMrbDGF::GetDacRamp_Stop(TArrayI & Buffer, Int_t SecsToWait) {
 	Buffer.Set(wc);
 	this->WriteTSAR(addr);
 
-	Int_t fc = fCamac.HasFastCamac();
-	if (fc == -1) fc = 0;
-
-	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(fc), Buffer, 0, wc, kTRUE) == -1) {
+	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), Buffer, 0, wc, kTRUE) == -1) {
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
 						<< ".A0.F0: Reading DAC values failed - DSPAddr=0x" << setbase(16) << addr
 						<< setbase(10) << ", wc=" << wc << endl;

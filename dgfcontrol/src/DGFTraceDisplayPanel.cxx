@@ -458,7 +458,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 		return(kFALSE);
 	}
 
-	sleep(5);
+	sleep(3);
 
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
