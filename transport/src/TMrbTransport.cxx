@@ -36,7 +36,7 @@ using namespace std;
 // global pthread mutex to protect TMapped data
 extern pthread_mutex_t global_data_mutex;
 
-static TMrbTransport * gMrbTransport = NULL;
+TMrbTransport * gMrbTransport = NULL;
 
 static Char_t mbs_error_string[1024];
 

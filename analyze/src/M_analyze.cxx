@@ -60,7 +60,7 @@ extern pthread_mutex_t global_data_mutex;
 
 // Globals
 TMrbAnalyze * u_analyze;
-TMrbTransport * gMrbTransport;
+extern TMrbTransport * gMrbTransport;
 TMrbIOSpec * ioSpec;
 
 TServerSocket *ss = 0;
@@ -68,14 +68,12 @@ TServerSocket *ss = 0;
 // if Offline (replay) dont use TMapFile
 extern Bool_t kUseMap;
 Int_t  gComSocket;
-Bool_t verboseMode = kFALSE;
-UInt_t input_mode = TMrbIOSpec::kInputRoot;
+static Bool_t verboseMode = kFALSE;
+static UInt_t input_mode = TMrbIOSpec::kInputRoot;
 
 static unsigned int update_time = TMrbAnalyze::kUpdateTime;
 
-TString our_pid_file = "/tmp/M_analyze.";
-
-UInt_t Updates; 	// DUMMY to keep M_subs.cxx happy ...
+static TString our_pid_file = "/tmp/M_analyze.";
 
 // global mapped file pointer
 TMapFile * M_prod = 0;

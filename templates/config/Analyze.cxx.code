@@ -64,9 +64,9 @@ extern TUsrDeadTime * gDeadTime;				// dead-time data
 
 extern TMrbLofUserVars * gMrbLofUserVars;		// list of user vars/wdws
 
-Bool_t verboseMode;							// verbosity flag;
-Bool_t dumpIt = kFALSE;						// kTRUE - dump records
-Int_t recNo = 0;
+static Bool_t verboseMode;						// verbosity flag;
+static Bool_t dumpIt = kFALSE;					// kTRUE - dump records
+static Int_t recNo = 0;
 
 Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
