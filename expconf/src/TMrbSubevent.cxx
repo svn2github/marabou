@@ -1137,7 +1137,14 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 							stdHistosOK = kTRUE;
 							doIt = kTRUE;
 						}
-						if (doIt) {
+						if (!this->HistosToBeAllocated()) {
+							anaTmpl.Substitute("$evtNameLC", evtNameLC);
+							anaTmpl.Substitute("$evtNameUC", evtNameUC);
+							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+							anaTmpl.WriteCode(AnaStrm);
+							stdHistosOK = kTRUE;
+						} else if (doIt) {
 							anaTmpl.Substitute("$evtNameLC", evtNameLC);
 							anaTmpl.Substitute("$evtNameUC", evtNameUC);
 							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);

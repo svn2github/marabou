@@ -248,7 +248,6 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventFirstSubevent,		"EVT_FIRST_SEVT"				},
 								{TMrbConfig::kAnaEventSetBranchStatus,		"EVT_SET_BRANCH_STATUS" 		},
 								{TMrbConfig::kAnaEventAnalyze,				"EVT_ANALYZE"			 		},
-								{TMrbConfig::kAnaEventFillHistograms,		"EVT_FILL_HISTOGRAMS"	 		},
 								{TMrbConfig::kAnaEvtResetData,				"EVT_RESET_DATA"				},
 								{TMrbConfig::kAnaSevtNameLC,				"SEVT_NAME_LC"					},
 								{TMrbConfig::kAnaSevtNameUC,				"SEVT_NAME_UC"					},
