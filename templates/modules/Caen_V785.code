@@ -138,7 +138,7 @@
 					CAEN_V785_ALL_TRIG_ON($moduleName);
 					CAEN_V785_OVER_RANGE_CHECK_ON($moduleName);
 					CAEN_V785_SLIDING_SCALE_ON($moduleName);
-					CAEN_V785_EMPTY_PROGR_ENABLE($moduleName);
+					CAEN_V785_EMPTY_PROG_ENABLE($moduleName);
 					CAEN_V785_THRESH_RES_$fineOrCoarse($moduleName);
 					CAEN_V785_CLEAR_DATA($moduleName);
 					CAEN_V785_RESET_EVENT_COUNTER($moduleName);
