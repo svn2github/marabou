@@ -152,7 +152,8 @@ Int_t TMrbStatistics::Fill(TFile * file){
          check_list_of_functions(h);
          ent = new TMrbStatEntry(h, h->GetName(), h->GetTitle());
          fStatEntries->Add(ent); 
-         if(h->InheritsFrom(TH2::Class())){
+         ent->SetCycle(key->GetCycle());
+         if(h->InheritsFrom(TH2::Class())){ 
             ent->Set(h->GetEntries(), h->GetSumOfWeights()); 
          } else {
             ent->Set(h->GetEntries(), h->GetSumOfWeights(),
@@ -245,7 +246,7 @@ TMrbStatEntry::TMrbStatEntry(TH1* hist, const char * name, const char * title)
 
 TMrbStatEntry::TMrbStatEntry(){
 // TMrbStatEntry default constructor 
-   fHist=0; fNofUpdates=0;
+   fHist=0; fNofUpdates=0, fCycle=0;
 };
 
 void TMrbStatEntry::Set(const Stat_t ent, const Stat_t sofw, const Stat_t mx,

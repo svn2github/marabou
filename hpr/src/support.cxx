@@ -1205,6 +1205,12 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
          	TFile * f = new TFile(fname, "update");
          	if (f->Get(name.Data())) {
                list->Remove(sel);
+               Int_t cycle = f->GetKey(name.Data())->GetCycle();
+               if (cycle > 0) {
+                  name += ";";
+                  name += cycle;
+               }
+               cout << "Deleting: " << name.Data() << endl;
             	f->Delete(name.Data());
             	ndeleted++;
          	} else {

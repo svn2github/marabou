@@ -181,9 +181,9 @@ fit_user_function(const char *hname)\n\
 ";
 //____________________________________________________________________________________
 
-const char TwoGauss[]=
-"/*Two Gaussians with common mean*/\n\
-Double_t TwoGauss     ( Double_t *x, Double_t *par) \n\
+const char TwoGaussCM[]=
+"/*Two Gaussians, common mean*/\n\
+Double_t TwoGaussCM     ( Double_t *x, Double_t *par) \n\
 {\n\
 // two gaussians with common mean\n\
   Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);\n\
@@ -221,7 +221,7 @@ fit_user_function(const char *hname)\n\
    Double_t gaus0_sigma= 4;\n\
    Double_t gaus1_const= 10000;\n\
    Double_t gaus1_sigma= 12;\n\
-   TF1* f = new TF1(\"two_gaus\",TwoGauss,from,to, 7);\n\
+   TF1* f = new TF1(\"two_gaus\",TwoGaussCM,from,to, 7);\n\
    f->SetParameters(lin_const  ,\n\
                     lin_slope  ,\n\
                     gaus_mean  ,\n\
@@ -250,14 +250,14 @@ fit_user_function(const char *hname)\n\
 \n\
    f->GetParameters(&par[0]);\n\
 //  draw first gauss\n\
-   TF1* f1 = new TF1(\"gaus1\",TwoGauss,from,to, 7);\n\
+   TF1* f1 = new TF1(\"gaus1\",TwoGaussCM,from,to, 7);\n\
    f1->SetParameters(0, 0, par[2], par[3], par[4], 0, par[6]);\n\
    f1->SetLineColor(2);\n\
    f1->SetLineWidth(2);\n\
    f1->Draw(\"same\");\n\
 \n\
 //  draw second gauss\n\
-   TF1* f2 = new TF1(\"gaus2\",TwoGauss,from,to, 7);\n\
+   TF1* f2 = new TF1(\"gaus2\",TwoGaussCM,from,to, 7);\n\
    f2->SetParameters(0, 0, par[2], 0, par[4], par[5], par[6]);\n\
    f2->SetLineColor(6);\n\
    f2->SetLineWidth(2);\n\
@@ -405,6 +405,34 @@ fit_user_function(const char *hname){\n\
 ";
 //____________________________________________________________________________________
 
+const char TwoGauss[]=
+"/*Two gaussians, diff mean*/ \n\
+fit_user_function(const char *hname) \n\
+// \n\
+// example with fit function given as formula \n\
+// \n\
+// This is a template macro to fit a user defined function \n\
+// As an example sum of 2 gaussians is provided\n\
+// The function is defined  as a formula \n\
+{ \n\
+   TH1* hist = (TH1*)gROOT->FindObject(hname); \n\
+   if(!hist){ \n\
+     cout << \"histogram not found\" << endl; \n\
+     return 0; \n\
+   } \n\
+   Float_t from = 0; \n\
+   Float_t to   = 100;\n\
+   TF1* f = new TF1(\"gaus2\",\"gaus + gaus(3)\",from,to); \n\
+   f->SetParameters(10, 30, 5, 20, 60, 8); \n\
+   f->SetLineColor(4); \n\
+   f->SetLineWidth(3); \n\
+//   f->Draw(\"same\");                // dont fit, draw only \n\
+   hist->Fit(\"gaus2\",\"R\",\"same\"); \n\
+}\n\
+";
+
+//____________________________________________________________________________________
+
 const char Pol2Sine[]=
 "/*Pol2 + Sine, (formula)*/ \n\
 fit_user_function(const char *hname) \n\
@@ -435,9 +463,10 @@ fit_user_function(const char *hname) \n\
 
 //____________________________________________________________________________________
 /* *INDENT-ON* */
-const Int_t nFitTemplates = 5;
+const Int_t nFitTemplates = 6;
 const char *FitMacroTemplates[nFitTemplates] = {
    &TwoGauss[0],
+   &TwoGaussCM[0],
    &ExpGauss[0],
    &BreitWigner[0],
    &Landau[0],

@@ -644,6 +644,7 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
 
    if (fRootFile) fRootFile->Close();
 
+   Int_t anything_to_delete = 0;
    if (strstr(fname,".root")) {
       TFile * rfile = NULL;
       rfile = new TFile(fname);
@@ -812,11 +813,20 @@ Should we create a new file with corrected names?", maincanvas)) {
             }
          }
          cmd = fname;
-         cmd = cmd + "\",\"" + stent->GetName() + "\")";
+         cmd = cmd + "\",\"" + stent->GetName();
+         if (stent->GetCycle() > 0) {
+            cmd += ";";
+            cmd += stent->GetCycle();
+         }   
+         cmd += "\")";
          sel = cmd; 
          cmd.Prepend("mypres->ShowHist(\"");
          sel.Prepend("mypres->SelectHist(\"");
          title = stent->GetName();
+         if (stent->GetCycle() > 1) {
+            title += ";";
+            title += stent->GetCycle();
+         }   
          hint = title;
          if     ( stent->GetDimension() == 1  )title.Prepend("1d ");
          else if (stent->GetDimension() == 2 )title.Prepend("2d ");
@@ -841,6 +851,7 @@ Should we create a new file with corrected names?", maincanvas)) {
          }
          if (fCmdLine->GetSize() < fMaxListEntries) { 
             fCmdLine->Add(new CmdListEntry(cmd, title, hint, sel));
+            anything_to_delete++; 
          } else {
             if (not_shown <= 0){
                cout << setred << "Too many entries in list: " << nstat << endl;
@@ -855,7 +866,6 @@ Should we create a new file with corrected names?", maincanvas)) {
       }
    }
    if (not_shown > 0) cout << "Another: " << not_shown << " hists are not shown" << endl;
-   Int_t anything_to_delete = 0;
    if (fHistSelMask->Length() <=0) {
 //  windows
       if (lofW1.GetSize() > 0) {

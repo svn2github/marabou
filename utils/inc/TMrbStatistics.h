@@ -35,6 +35,8 @@ public:
    inline Stat_t GetSigma() const {return fSigma;}   
    TH1* GetHist() const {return fHist;}
    Int_t GetDimension() const {return fDim;};        // Get histogram dimension  
+   void  SetCycle(Int_t cycle) {fCycle = cycle;}; 
+   Int_t GetCycle() const {return fCycle;}; 
    void Print(Option_t * Option) const { TObject::Print(Option); }
    void Print(ostream & ostr) const;                      // print out one line
 
@@ -42,6 +44,7 @@ protected:
    TH1 * fHist;            //! pointer to histogram, dont stream out hists
    Int_t fDim;             // Dimension of histogram
    Int_t fNofUpdates;      // Number of updates
+   Int_t fCycle;           // cycle number of Key on file
    Stat_t fEntries;        // Entries
    Stat_t fSumofw;         // Sum of Weights, contents without under/overflows
    Stat_t fMean;           // Mean (along X for 2 dim)
