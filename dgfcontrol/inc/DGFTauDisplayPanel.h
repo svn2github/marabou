@@ -51,7 +51,7 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class DGFTauDisplayPanel : public TGMainFrame {
+class DGFTauDisplayPanel : public TGCompositeFrame {
 
 	public:
 
@@ -77,7 +77,6 @@ class DGFTauDisplayPanel : public TGMainFrame {
 									kDGFTauButtonRemoveTraces,			//				remove trace files
 									kDGFTauButtonSaveTrace,				//				save current trace data
 									kDGFTauButtonReset, 				//				reset
-									kDGFTauButtonClose					//				close
 								};
 
 		enum EDGFFitButtonsId 	{
@@ -91,25 +90,10 @@ class DGFTauDisplayPanel : public TGMainFrame {
 									kDGFTauDispStatBoxNo = kDGFChannel3 << 4		//					no
 								};
 
-		// geometry settings
-		enum					{	kFrameWidth 			= 400					};
-		enum					{	kFrameHeight 			= 820					};
-
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 150					};
-		enum					{	kFileEntryWidth			= 210					};
-		enum					{	kLEHeight				= 22					};
-		enum					{	kButtonWidth			= 400					};
-
 	public:
-		DGFTauDisplayPanel(const TGWindow * Parent, UInt_t Width, UInt_t Height,
-                									UInt_t Options = kMainFrame | kVerticalFrame);
+		DGFTauDisplayPanel(TGCompositeFrame * TabFrame);
 		virtual ~DGFTauDisplayPanel() { fHeap.Delete(); };
 
-		DGFTauDisplayPanel(const DGFTauDisplayPanel & f) : TGMainFrame(f) {};	// default copy ctor
-
-		inline virtual void CloseWindow() { delete this; };
-		inline Bool_t HandleKey(Event_t * Event) { return(fKeyBindings.HandleKey(Event)); };
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 	protected:
@@ -137,6 +121,8 @@ class DGFTauDisplayPanel : public TGMainFrame {
 		TGGroupFrame * fTraceFrame; 				//	trace
 		TGMrbLabelEntry * fTraceLengthEntry; 		//		length
 		TGMrbLabelEntry * fNofTracesEntry; 			//		number of traces
+
+		TGHorizontalFrame * fHFrame;
 
 		TGGroupFrame * fFitFrame;					//	fit
 		TGMrbRadioButtonList * fFitTraceYesNo; 		//		yes/no
@@ -186,8 +172,6 @@ class DGFTauDisplayPanel : public TGMainFrame {
 
 		TGMrbFocusList fFocusList;
 
-		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
-		
 	ClassDef(DGFTauDisplayPanel, 0) 	// [DGFControl] Collect/display tau traces
 };
 

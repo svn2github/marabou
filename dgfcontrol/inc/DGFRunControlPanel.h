@@ -69,7 +69,8 @@ class DGFRunControlPanel : public TGMainFrame {
 									kDGFRunControlTabUntrigTrace,
 									kDGFRunControlTabOffsets,
 									kDGFRunControlTabMCA,
-									kDGFRunControlTabTauFit,
+									kDGFRunControlTabTauFit1,
+									kDGFRunControlTabTauFit2,
 									kDGFRunControlTabSave,
 									kDGFRunControlTabRestore,
 									kDGFRunControlTabFiles
@@ -110,7 +111,8 @@ class DGFRunControlPanel : public TGMainFrame {
 		TGCompositeFrame * fUntrigTracesTab;
 		TGCompositeFrame * fOffsetsTab;
 		TGCompositeFrame * fMCATab;
-		TGCompositeFrame * fTauFitTab;
+		TGCompositeFrame * fTauFit1Tab;
+		TGCompositeFrame * fTauFit2Tab;
 		TGCompositeFrame * fSaveTab;
 		TGCompositeFrame * fRestoreTab;
 		TGCompositeFrame * fFilesTab;
@@ -122,7 +124,8 @@ class DGFRunControlPanel : public TGMainFrame {
 		Bool_t fUntrigTracesTabInit;
 		Bool_t fOffsetsTabInit;
 		Bool_t fMCATabInit;
-		Bool_t fTauFitTabInit;
+		Bool_t fTauFit1TabInit;
+		Bool_t fTauFit2TabInit;
 		Bool_t fSaveTabInit;
 		Bool_t fRestoreTabInit;
 		Bool_t fFilesTabInit;

@@ -58,6 +58,7 @@ enum						{	kVFrameWidth			= kTabWidth / 2 		};
 enum						{	kVFrameHeight			= kTabHeight / 2 		};
 enum						{	kLEWidth				= kAutoWidth			};
 enum						{	kEntryWidth				= 100					};
+enum						{	kFileEntryWidth			= 200					};
 enum						{	kLEHeight				= 20					};
 enum						{	kButtonWidth			= 400					};
 enum						{	kButtonHeight			= 20					};

@@ -49,7 +49,6 @@ const SMrbNamedX kDGFTauButtons[] =
 				{DGFTauDisplayPanel::kDGFTauButtonBestTau, 		"Best tau OK",		"Use result of tau fit for corrections" },
 				{DGFTauDisplayPanel::kDGFTauButtonRemoveTraces,	"Remove all traces",	"Remove trace files"	},
 				{DGFTauDisplayPanel::kDGFTauButtonReset,		"Reset",			"Reset to default values"	},
-				{DGFTauDisplayPanel::kDGFTauButtonClose,		"Close",			"Close window"				},
 				{0, 											NULL,				NULL						}
 			};
 
@@ -74,9 +73,9 @@ static TString btnText;
 
 ClassImp(DGFTauDisplayPanel)
 
-DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UInt_t Height, UInt_t Options)
-														: TGMainFrame(Window, Width, Height, Options) {
-//__________________________________________________________________[C++ CTOR]
+DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
+				TGCompositeFrame(TabFrame, TabFrame->GetWidth(), TabFrame->GetHeight(), kVerticalFrame) {
+///__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFTauDisplayPanel
 // Purpose:        DGF Viewer: Calculate tau value
@@ -90,8 +89,6 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 // Description:    Implements DGF Viewer's TauDisplayPanel
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
-
-	TMrbDGF * dgf;
 
 	TGMrbLayout * frameGC;
 	TGMrbLayout * groupGC;
@@ -157,7 +154,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	TGLayoutHints * selectLayout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, selectLayout);
 	HEAP(selectLayout);
-	fSelectFrame = new TGGroupFrame(this, "DGF Selection", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fSelectFrame = new TGGroupFrame(this, "DGF Selection", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fSelectFrame);
 	this->AddFrame(fSelectFrame, frameGC->LH());
 
@@ -182,8 +179,8 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	fSelectModule = new TGMrbLabelCombo(fSelectFrame,  "Module",
 											&fLofModuleKeys,
 											DGFTauDisplayPanel::kDGFTauSelectModule, 2,
-											DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kLEHeight,
-											DGFTauDisplayPanel::kEntryWidth,
+											kTabWidth, kLEHeight,
+											(Int_t) (1.5 * kEntryWidth),
 											frameGC, labelGC, comboGC, buttonGC, kTRUE);
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
@@ -200,16 +197,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
 	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, 1, 
-													DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kLEHeight,
+													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
-	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-	for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) {
-		if (dgf->HasTriggerBitSet(i)) {
-			gDGFControlData->SetSelectedChannel(i);
-			break;
-		}
-	}
 	fSelectChannel->SetState(gDGFControlData->GetSelectedChannelIndex());
 	fSelectChannel->Associate(this);	// get informed if channel number changes
 	fSelectFrame->AddFrame(fSelectChannel, frameGC->LH());
@@ -218,7 +208,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	TGLayoutHints * traceLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, traceLayout);
 	HEAP(traceLayout);
-	fTraceFrame = new TGGroupFrame(this, "Trace Settings", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fTraceFrame = new TGGroupFrame(this, "Trace Settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fTraceFrame);
 	this->AddFrame(fTraceFrame, frameGC->LH());
 
@@ -227,9 +217,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(teLayout);
 	fTraceLengthEntry = new TGMrbLabelEntry(fTraceFrame, "Trace length [samples]",
 																200, kDGFTauTraceLength,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fTraceLengthEntry);
 	fTraceFrame->AddFrame(fTraceLengthEntry, frameGC->LH());
@@ -242,9 +232,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fNofTracesEntry = new TGMrbLabelEntry(fTraceFrame, "Number of traces",
 																200, kDGFTauTraceNofTraces,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fNofTracesEntry);
 	fTraceFrame->AddFrame(fNofTracesEntry, frameGC->LH());
@@ -256,18 +246,22 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	fNofTracesEntry->Associate(this);
 
 // fit settings
+	fHFrame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
+	HEAP(fHFrame);
+	this->AddFrame(fHFrame, frameGC->LH());
+	
 	TGLayoutHints * fitLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, fitLayout);
 	HEAP(fitLayout);
-	fFitFrame = new TGGroupFrame(this, "Fit Settings", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fFitFrame = new TGGroupFrame(fHFrame, "Fit Settings", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fFitFrame);
-	this->AddFrame(fFitFrame, frameGC->LH());
+	fHFrame->AddFrame(fFitFrame, frameGC->LH());
 
 	TGLayoutHints * rbLayout = new TGLayoutHints(kLHintsRight, 1, 1, 1, 1);
 	rbuttonGC->SetLH(rbLayout);
 	HEAP(rbLayout);
 	fFitTraceYesNo = new TGMrbRadioButtonList(fFitFrame,  "Fit trace", &fFitTraceButtons, 1, 
-													DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kLEHeight,
+													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fFitTraceYesNo);
 	fFitFrame->AddFrame(fFitTraceYesNo, frameGC->LH());
@@ -278,9 +272,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	HEAP(feLayout);
 	fFitFromEntry = new TGMrbLabelEntry(fFitFrame, "From sample",
 																200, kDGFTauFitFrom,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitFromEntry);
 	fFitFrame->AddFrame(fFitFromEntry, frameGC->LH());
@@ -293,9 +287,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fFitToEntry = new TGMrbLabelEntry(fFitFrame, "To sample",
 																200, kDGFTauFitTo,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitToEntry);
 	fFitFrame->AddFrame(fFitToEntry, frameGC->LH());
@@ -307,9 +301,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fFitA0Entry = new TGMrbLabelEntry(fFitFrame, "A0 (const)",
 																200, kDGFTauFitParamA0,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitA0Entry);
 	fFitFrame->AddFrame(fFitA0Entry, frameGC->LH());
@@ -321,9 +315,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fFitA1Entry = new TGMrbLabelEntry(fFitFrame, "A1 (ampl)",
 																200, kDGFTauFitParamA1,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitA1Entry);
 	fFitFrame->AddFrame(fFitA1Entry, frameGC->LH());
@@ -335,9 +329,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fFitA2Entry = new TGMrbLabelEntry(fFitFrame, "A2 (tau)",
 																200, kDGFTauFitParamA2,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitA2Entry);
 	fFitFrame->AddFrame(fFitA2Entry, frameGC->LH());
@@ -349,9 +343,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fFitErrorEntry = new TGMrbLabelEntry(fFitFrame, "Error",
 																200, kDGFTauFitError,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitErrorEntry);
 	fFitFrame->AddFrame(fFitErrorEntry, frameGC->LH());
@@ -363,9 +357,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fFitChiSquareEntry = new TGMrbLabelEntry(fFitFrame, "Chi square",
 																200, kDGFTauFitChiSquare,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fFitChiSquareEntry);
 	fFitFrame->AddFrame(fFitChiSquareEntry, frameGC->LH());
@@ -379,18 +373,18 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	TGLayoutHints * dispLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, dispLayout);
 	HEAP(dispLayout);
-	fDisplayFrame = new TGGroupFrame(this, "Display", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fDisplayFrame = new TGGroupFrame(fHFrame, "Display", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fDisplayFrame);
-	this->AddFrame(fDisplayFrame, frameGC->LH());
+	fHFrame->AddFrame(fDisplayFrame, frameGC->LH());
 
 	TGLayoutHints * deLayout = new TGLayoutHints(kLHintsTop, 1, 1, 1, 1);
 	entryGC->SetLH(deLayout);
 	HEAP(deLayout);
 	fDispTraceNoEntry = new TGMrbLabelEntry(fDisplayFrame, "Trace number",
 																200, kDGFTauDispTraceNo,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fDispTraceNoEntry);
 	fDisplayFrame->AddFrame(fDispTraceNoEntry, frameGC->LH());
@@ -402,7 +396,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	fDispTraceNoEntry->Associate(this);
 
 	fDispStatBox = new TGMrbRadioButtonList(fDisplayFrame,  "Stat box", &fDispStatBoxButtons, 1, 
-													DGFTauDisplayPanel::kFrameWidth, DGFTauDisplayPanel::kLEHeight,
+													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDispStatBox);
 	fDisplayFrame->AddFrame(fDispStatBox, frameGC->LH());
@@ -411,9 +405,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	fTraceFileInfo.fIniDir = StrDup(gDGFControlData->fDataPath);
 	fDispFileEntry = new TGMrbFileEntry(fDisplayFrame, "Trace file",
 																200, kDGFTauDispFile,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kFileEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																kFileEntryWidth,
 																&fTraceFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDispFileEntry);
@@ -421,9 +415,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fDispCurTauEntry = new TGMrbLabelEntry(fDisplayFrame, "Tau value",
 																200, kDGFTauDispCurTau,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDispCurTauEntry);
 	fDisplayFrame->AddFrame(fDispCurTauEntry, frameGC->LH());
@@ -434,9 +428,9 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 
 	fDispBestTauEntry = new TGMrbLabelEntry(fDisplayFrame, "Best tau",
 																200, kDGFTauDispBestTau,
-																DGFTauDisplayPanel::kLEWidth,
-																DGFTauDisplayPanel::kLEHeight,
-																DGFTauDisplayPanel::kEntryWidth,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
 																frameGC, labelGC, entryGC);
 	HEAP(fDispBestTauEntry);
 	fDisplayFrame->AddFrame(fDispBestTauEntry, frameGC->LH());
@@ -448,17 +442,11 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauActions, 2, groupGC, buttonGC);
+	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauActions, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	fButtonFrame->Associate(this);
 
-// test mode on?
-	if (gDGFControlData->IsOffline()) {
-		fButtonFrame->SetState(DGFTauDisplayPanel::kDGFTauButtonAcquire, kButtonDisabled);
-		fButtonFrame->SetState(DGFTauDisplayPanel::kDGFTauButtonSaveTrace, kButtonDisabled);
-	}
-	
 // no trace acquisition active
 	fIsRunning = kFALSE;
 	
@@ -471,17 +459,14 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(const TGWindow * Window, UInt_t Width, UI
 	
 	this->ResetValues();
 
-//	key bindings
-	fKeyBindings.SetParent(this);
-	fKeyBindings.BindKey("Ctrl-w", TGMrbLofKeyBindings::kGMrbKeyActionClose);
-	
-	SetWindowName("DGFControl: TauDisplayPanel");
+	TGLayoutHints * dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
+	HEAP(dgfFrameLayout);
+
+	TabFrame->AddFrame(this, dgfFrameLayout);
 
 	MapSubwindows();
-
 	Resize(GetDefaultSize());
-	Resize(Width, Height);
-
+	Resize(TabFrame->GetWidth(), TabFrame->GetHeight());
 	MapWindow();
 }
 
@@ -543,9 +528,6 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;
 						case kDGFTauButtonReset:
 							break;
-						case kDGFTauButtonClose:
-							this->CloseWindow();
-							break;
 					}
 					break;
 				case kCM_RADIOBUTTON:
@@ -585,13 +567,6 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 			}
 			break;
 			
-		case kC_KEY:
-			switch (Param1) {
-				case TGMrbLofKeyBindings::kGMrbKeyActionClose:
-					this->CloseWindow();
-					break;
-			}
-			break;
 	}
 	return(kTRUE);
 }

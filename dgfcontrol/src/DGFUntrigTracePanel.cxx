@@ -415,7 +415,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 			if (td > 0) {
 				hTitle = "Untrig traces for module ";
 				hTitle += dgf->GetName();
-				h = new TH1F(dgf->GetName(), hTitle.Data(), nofWords, 0., nofWords);
+				h = new TH1F(dgf->GetName(), hTitle.Data(), td, 0., td);
 				TMrbString chnList = "chn ";
 				Int_t n = 0;
 				traceBuffer = lofTraceBuffers[nofModules];

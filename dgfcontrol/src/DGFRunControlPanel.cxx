@@ -229,8 +229,11 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	fMCATab = fRunControlTab->AddTab("MCA");			// id=kDGFRunControlMCA
 	fMCATabInit = kFALSE;
 
-	fTauFitTab = fRunControlTab->AddTab("TauFit");			// id=kDGFRunControlTauFit
-	fTauFitTabInit = kFALSE;
+	fTauFit1Tab = fRunControlTab->AddTab("TauFit1");	// id=kDGFRunControlTauFit1
+	fTauFit1TabInit = kFALSE;
+
+	fTauFit2Tab = fRunControlTab->AddTab("TauFit2");	// id=kDGFRunControlTauFit2
+	fTauFit2TabInit = kFALSE;
 
 	fSaveTab = fRunControlTab->AddTab("Save");			// id=kDGFRunControlSave
 	fSaveTabInit = kFALSE;
@@ -443,10 +446,19 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 
-						case kDGFRunControlTabTauFit:
+						case kDGFRunControlTabTauFit1:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (!fTauFitTabInit) new DGFTauFitPanel(fTauFitTab);
-								fTauFitTabInit = kTRUE;
+	                   			if (!fTauFit1TabInit) new DGFTauDisplayPanel(fTauFit1Tab);
+								fTauFit1TabInit = kTRUE;
+							} else {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+
+						case kDGFRunControlTabTauFit2:
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
+	                   			if (!fTauFit2TabInit) new DGFTauFitPanel(fTauFit2Tab);
+								fTauFit2TabInit = kTRUE;
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
