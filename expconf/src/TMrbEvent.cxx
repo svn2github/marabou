@@ -47,7 +47,6 @@ const SMrbNamedXShort kMrbEvtAnalyzeOptions[] =
 								{TMrbConfig::kAnaOptHistograms, 	"HISTOGRAMS"		},
 								{~TMrbConfig::kAnaOptHistograms,	"NOHISTOGRAMS"		},
 								{TMrbConfig::kAnaOptEvtDefault, 	"DEFAULT"			},
-								{TMrbConfig::kAnaOptEventBuilder,	"EVENTBUILDER"		},
 								{0, 								NULL				}
 							};
 
@@ -589,23 +588,48 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 						}
 					}
 					break;
-				case TMrbConfig::kAnaEventActivateEventBuilder:
-					if ((gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptEventBuilder) != 0) {
-						anaTmpl.InitializeCode();
-						anaTmpl.WriteCode(ana);
+				case TMrbConfig::kAnaEventMethodToProcessEvent:
+				case TMrbConfig::kAnaEventReplayEvent:
+					if (gMrbConfig->UserCodeToBeIncluded()) {
+						Bool_t udc = kFALSE;
+						TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
+						while (icl) {
+							if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+								TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+								TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
+								while (nx) {
+									if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+										anaTmpl.InitializeCode();
+										anaTmpl.Substitute("$evtNameLC", evtNameLC);
+										anaTmpl.Substitute("$evtNameUC", evtNameUC);
+										TString method = nx->GetName();
+										Int_t n = method.Index("::", 0);
+										if (n >= 0) method = method(n + 2, method.Length() - n - 2);
+										anaTmpl.Substitute("$processEvent", method.Data());
+										anaTmpl.WriteCode(ana);
+										udc = kTRUE;
+										break;
+									}
+									nx = (TMrbNamedX *) lofMethods->After(nx);
+								}
+							}
+							if (udc) break;
+							icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+						}
+						if (udc) break;
 					}
+					anaTmpl.InitializeCode();
+					anaTmpl.Substitute("$evtNameLC", evtNameLC);
+					anaTmpl.Substitute("$evtNameUC", evtNameUC);
+					anaTmpl.Substitute("$processEvent", "Analyze");
+					anaTmpl.WriteCode(ana);
 					break;
-				case TMrbConfig::kAnaEventBuildEvent:
-					if ((gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptEventBuilder) == 0) break;
 				case TMrbConfig::kAnaEventAnalyze:
 					if (gMrbConfig->UserCodeToBeIncluded()) {
 						Bool_t udc = kFALSE;
 						TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
-						UInt_t iclOpt;
-						if (tagIdx == TMrbConfig::kAnaEventBuildEvent)	iclOpt = TMrbConfig::kIclOptBuildEvent;
-						else if (tagIdx == TMrbConfig::kAnaEventAnalyze) iclOpt = TMrbConfig::kIclOptAnalyze;
 						while (icl) {
-							if ((icl->GetIndex() & iclOpt) == iclOpt) {
+							if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
 								udc = kTRUE;
 								break;
 							}

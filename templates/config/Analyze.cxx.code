@@ -171,8 +171,8 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%HISTO_FILL_ARRAYS%%
 
 %%BeginOfCode%%
-// user-specific code to initialize objects and/or variables
-	this->InitializeUserCode(IOSpec);
+// user-specific method to initialize objects and/or variables
+	this->$initialize(IOSpec);
 %%EndOfCode%%
 %%INCLUDE_USER_INITIALIZE%%
 
@@ -465,12 +465,13 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    This is the event filling function.
-//                 User will be called by methods BuildEvent() or Analyze().
+//                 User has to define how to process this event.
+//                 Default is via method Analyze().
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	const MBSDataIO * BaseAddr; 		// base addr of MBS data
-	UInt_t sts;
+	Bool_t sts;
 
 	if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);		// run is stopped (maybe after pausing)
 
@@ -481,8 +482,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %B%		case kMrbTrigger$evtNameUC:		// event $evtNameLC, trigger $trigNo
 %B%			pthread_mutex_lock(&global_data_mutex);
 %B%			g$evtNameUC->FillEvent(EventData, BaseAddr);
-%ANA%			sts = g$evtNameUC->Analyze();
-%BEV%			sts = g$evtNameUC->BuildEvent();
+%P%			sts = g$evtNameUC->$processEvent();
 %E%			pthread_mutex_unlock(&global_data_mutex);
 %E%			return(sts);
 %%EndOfCode%%

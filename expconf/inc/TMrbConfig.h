@@ -134,9 +134,10 @@ class TMrbConfig : public TNamed {
 									kAnaEventPrivateData,
 									kAnaEventUserMethods,
 									kAnaEventUserData,
-									kAnaEventActivateEventBuilder,
+									kAnaEventMethodToProcessEvent,
 									kAnaEventDispatchOverTrigger,
 									kAnaEventIgnoreTrigger,
+									kAnaEventReplayEvent,
 									kAnaEventBookParams,
 									kAnaEventBookHistograms,
 									kAnaEventFillHistograms,
@@ -153,7 +154,6 @@ class TMrbConfig : public TNamed {
 									kAnaEventSetBranchStatus,
 									kAnaEventReplayTree,
 									kAnaEventFirstSubevent,
-									kAnaEventBuildEvent,
 									kAnaEventAnalyze,
 									kAnaEvtResetData,
 									kAnaSevtNameLC,
@@ -276,7 +276,6 @@ class TMrbConfig : public TNamed {
 									kAnaOptLeaves			=	BIT(3),
 									kAnaOptOverwrite		=	BIT(4),
 									kAnaOptReplayMode		=	BIT(5),
-									kAnaOptEventBuilder 	=	BIT(6),
 									kAnaOptVerbose			=	BIT(7)
 								};
 		enum					{	kAnaOptDefault			=	kAnaOptSubevents |
@@ -305,11 +304,10 @@ class TMrbConfig : public TNamed {
 									kIclOptHandleMessages		=	kIclOptUserMethod | kIclOptClassTMrbAnalyze | BIT(8),
 									kIclOptBookHistograms		=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(9),
 									kIclOptBookParams			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(10),
-									kIclOptAnalyze				=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
-									kIclOptBuildEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
-									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(13),
-									kIclOptUserDefinedEvent		=	kIclOptUserClass | BIT(14),
-									kIclOptUtilities			=	BIT(15)
+									kIclOptProcessEvent			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(11),
+									kIclOptEventMethod			=	kIclOptUserMethod | kIclOptClassTUsrEvent | BIT(12),
+									kIclOptUserDefinedEvent		=	kIclOptUserClass | BIT(13),
+									kIclOptUtilities			=	BIT(14)
 								};
 
 		enum					{	kNofCrates			=	100			};	// max number of crates

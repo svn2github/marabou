@@ -30,10 +30,9 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		Bool_t AllocHitBuffers();								// allocate hit buffers for subevents if needed
 		Bool_t CreateTree();									// create a tree if needed
 %%BeginOfCode%%
-		Bool_t BuildEvent();									// special event builder
+		Bool_t $processEvent();									// method to process this event
 %%EndOfCode%%
-%%EVT_ACTIVATE_EVENT_BUILDER%%
-		Bool_t Analyze();										// user's analyzing code
+%%EVT_METHOD_TO_PROCESS_EVENT%%
 		Bool_t InitializeTree(TFile * RootFile); 				// init tree (replay mode only)
 		Bool_t ReplayTreeData(TMrbIOSpec * IOSpec);				// replay tree data
 		void Reset(Int_t InitValue = 0, Bool_t DataOnly = kFALSE);	// reset event data

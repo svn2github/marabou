@@ -227,9 +227,10 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventPrivateData,			"EVT_PRIVATE_DATA"				},
 								{TMrbConfig::kAnaEventUserMethods,			"EVT_USER_METHODS"				},
 								{TMrbConfig::kAnaEventUserData,				"EVT_USER_DATA"					},
-								{TMrbConfig::kAnaEventActivateEventBuilder, "EVT_ACTIVATE_EVENT_BUILDER"	},
+								{TMrbConfig::kAnaEventMethodToProcessEvent, "EVT_METHOD_TO_PROCESS_EVENT"	},
 								{TMrbConfig::kAnaEventDispatchOverTrigger,	"EVT_DISPATCH_OVER_TRIGGER" 	},
 								{TMrbConfig::kAnaEventIgnoreTrigger,		"EVT_IGNORE_TRIGGER"			},
+								{TMrbConfig::kAnaEventReplayEvent,			"EVT_REPLAY_EVENT"			 	},
 								{TMrbConfig::kAnaEventSetFakeMode,			"EVT_SET_FAKE_MODE"				},
 								{TMrbConfig::kAnaEventCreateTree,			"EVT_CREATE_TREE"				},
 								{TMrbConfig::kAnaEventAddBranches,			"EVT_ADD_BRANCHES"				},
@@ -246,7 +247,6 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventReplayTree,			"EVT_REPLAY_TREE"				},
 								{TMrbConfig::kAnaEventFirstSubevent,		"EVT_FIRST_SEVT"				},
 								{TMrbConfig::kAnaEventSetBranchStatus,		"EVT_SET_BRANCH_STATUS" 		},
-								{TMrbConfig::kAnaEventBuildEvent,			"EVT_BUILD_EVENT"				},
 								{TMrbConfig::kAnaEventAnalyze,				"EVT_ANALYZE"			 		},
 								{TMrbConfig::kAnaEventFillHistograms,		"EVT_FILL_HISTOGRAMS"	 		},
 								{TMrbConfig::kAnaEvtResetData,				"EVT_RESET_DATA"				},
@@ -438,7 +438,6 @@ const SMrbNamedXShort kMrbAnalyzeOptions[] =
 								{~TMrbConfig::kAnaOptLeaves,	 			"BRANCHES"						},
 								{TMrbConfig::kAnaOptOverwrite,				"OVERWRITE" 					},
 								{TMrbConfig::kAnaOptReplayMode, 			"REPLAYMODE"					},
-								{TMrbConfig::kAnaOptEventBuilder,			"EVENTBUILDER"					},
 								{TMrbConfig::kAnaOptVerbose,	 			"VERBOSE"						},
 								{TMrbConfig::kAnaOptDefault,				"DEFAULT"						},
 								{0, 										NULL							}
@@ -470,16 +469,15 @@ const SMrbNamedXShort kMrbRcFileOptions[] =
 
 const SMrbNamedXShort kMrbIncludeOptions[] =
 							{
-								{TMrbConfig::kIclOptUtilities,				"UTILITIES"			},
-								{TMrbConfig::kIclOptUserMethod,				"USERMETHOD"		},
-								{TMrbConfig::kIclOptInitialize,				"INITIALIZE"		},
-								{TMrbConfig::kIclOptReloadParams,			"RELOADPARAMS"		},
-								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"	},
-								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"		},
-								{TMrbConfig::kIclOptAnalyze,				"ANALYZE"			},
-								{TMrbConfig::kIclOptBuildEvent,				"BUILDEVENT"		},
-								{TMrbConfig::kIclOptHandleMessages,			"HANDLEMESSAGES"	},
-								{0, 										NULL				}
+								{TMrbConfig::kIclOptUtilities,				"UTILITIES"				},
+								{TMrbConfig::kIclOptUserMethod,				"USERMETHOD"			},
+								{TMrbConfig::kIclOptInitialize,				"INITIALIZE"			},
+								{TMrbConfig::kIclOptReloadParams,			"RELOADPARAMS"			},
+								{TMrbConfig::kIclOptBookHistograms,			"BOOKHISTOGRAMS"		},
+								{TMrbConfig::kIclOptBookParams, 			"BOOKPARAMS"			},
+								{TMrbConfig::kIclOptProcessEvent,			"PROCESSEVENT"			},
+								{TMrbConfig::kIclOptHandleMessages,			"HANDLEMESSAGES"		},
+								{0, 										NULL					}
 							};
 
 //_________________________________________________________________________________________________________ types of variables and windows
@@ -1273,7 +1271,6 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 	UInt_t trigMask;
 	Bool_t wtstmpFlag;
 
-	Char_t * fp;
 	TString templatePath;
 	TString rdoTemplateFile;
 	TMrbString iniTag;
@@ -1998,7 +1995,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 	Int_t trg;
 	Bool_t ignTrigger;
 
-	const Char_t * fp;
 	TString templatePath;
 	TString anaTemplateFile;
 	TString prefix;
@@ -2394,12 +2390,27 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaUserInitialize:
 						if (this->UserCodeToBeIncluded()) {
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t udc = kFALSE;
 							while (icl) {
 								if ((icl->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
-									anaTmpl.InitializeCode();
-									anaTmpl.WriteCode(anaStrm);
+									TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+									TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
+									while (nx) {
+										if ((nx->GetIndex() & TMrbConfig::kIclOptInitialize) == TMrbConfig::kIclOptInitialize) {
+											anaTmpl.InitializeCode();
+											TString method = nx->GetName();
+											Int_t n = method.Index("::", 0);
+											if (n >= 0) method = method(n + 2, method.Length() - n - 2);
+											anaTmpl.Substitute("$initialize", method.Data());
+											anaTmpl.WriteCode(anaStrm);
+											udc = kTRUE;
+											break;
+										}
+										nx = (TMrbNamedX *) lofMethods->After(nx);
+									}
 									break;
 								}
+								if (udc) break;
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 						}
@@ -2407,7 +2418,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaUserReloadParams:
 					case TMrbConfig::kAnaUserMessages:
 						if (this->UserCodeToBeIncluded()) {
-							UInt_t iclOpt;
+							UInt_t iclOpt = 0xFFFFFFFF;
 							if (tagIdx == kAnaUserReloadParams) 	iclOpt = TMrbConfig::kIclOptReloadParams;
 							else if (tagIdx == kAnaUserMessages)	iclOpt = TMrbConfig::kIclOptHandleMessages;
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
@@ -2703,12 +2714,43 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
 							anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
 							anaTmpl.WriteCode(anaStrm);
-							anaTmpl.InitializeCode(((evt->GetAnalyzeOptions() & TMrbConfig::kAnaOptEventBuilder) == 0) ? "%ANA%" : "%BEV%");
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-							anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-							anaTmpl.WriteCode(anaStrm);
+							anaTmpl.InitializeCode("%P%");
+							Bool_t udc = kFALSE;
+							if (gMrbConfig->UserCodeToBeIncluded()) {
+								TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
+								while (icl) {
+									if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+										TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+										TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
+										while (nx) {
+											if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+												anaTmpl.Substitute("$evtNameLC", evtNameLC);
+												anaTmpl.Substitute("$evtNameUC", evtNameUC);
+												anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+												anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+												TString method = nx->GetName();
+												Int_t n = method.Index("::", 0);
+												if (n >= 0) method = method(n + 2, method.Length() - n - 2);
+												anaTmpl.Substitute("$processEvent", method.Data());
+												anaTmpl.WriteCode(anaStrm);
+												udc = kTRUE;
+												break;
+											}
+											nx = (TMrbNamedX *) lofMethods->After(nx);
+										}
+									}
+									if (udc) break;
+									icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+								}
+							}
+							if (!udc) {
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								anaTmpl.Substitute("$processEvent", "Analyze");
+								anaTmpl.WriteCode(anaStrm);
+							}
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(anaStrm);
 							evt = (TMrbEvent *) fLofEvents.After(evt);
@@ -3442,7 +3484,6 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 	TMrbNamedX * configTag;
 	TMrbConfig::EMrbConfigTag tagIdx;
 
-	Char_t * fp;
 	TString templatePath;
 	TString cfgTemplateFile;
 	TString prefix;
@@ -4307,7 +4348,6 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 	TMrbLofNamedX iclOptions;
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetConfigOptions() & kCfgOptVerbose) != 0);
-
     iclOptions.AddNamedX(kMrbIncludeOptions);
 
 	if (userPath.Length() == 0) userPath = gSystem->WorkingDirectory();
@@ -4438,6 +4478,10 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 											lofMethods->AddNamedX(icl->GetIndex(), method.Data(), line.Data());
 											Int_t n1 = line.Index("%%", 0);
 											Int_t n2 = line.Index("%%", n1 + 2);
+											if (verboseMode) {
+												gMrbLog->Out()  << "Adding method " << method << " (key word " << line(n1, n2 + 2) << ")" << endl;
+												gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+											}
 											line.Remove(n1, n2 - n1 + 2);
 											knownMethod = kTRUE;
 											break;
@@ -4446,8 +4490,21 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 									icl = (TMrbNamedX *) iclOptions.After(icl);
 								}
 								if (!knownMethod) {
-									iclOpts |= TMrbConfig::kIclOptEventMethod;
-									lofMethods->AddNamedX(TMrbConfig::kIclOptEventMethod, method.Data(), line.Data());
+									Int_t n1;
+									Int_t n2;
+									if ((n1 = line.Index("%%", 0)) >= 0 && (n2 = line.Index("%%", n1 + 2)) > 0) {
+										gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
+														<< "): Syntax error -" << endl
+														<< "                               Unknown key word \"" << line(n1, n2 + 2) << "\"" << endl;
+										gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+									} else {
+										iclOpts |= TMrbConfig::kIclOptEventMethod;
+										lofMethods->AddNamedX(TMrbConfig::kIclOptEventMethod, method.Data(), line.Data());
+										if (verboseMode) {
+											gMrbLog->Out()  << "Adding method " << method << endl;
+											gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+										}
+									}
 								}
 							} else {
 								gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
@@ -4457,10 +4514,21 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
 							}
 						} else {
-							gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
-											<< "): Syntax error -" << endl
-											<< "                               Unknown scope operator \"" << scope << "\"" << endl;
-							gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+							TMrbNamedX * nx = (TMrbNamedX *) fLofUserClasses.First();
+							Bool_t isUserClass = kFALSE;
+							while (nx) {
+								if (scope.CompareTo(nx->GetName()) == 0) {
+									isUserClass = kTRUE;
+									break;
+								}
+								nx = (TMrbNamedX *) fLofUserClasses.After(nx);
+							}
+							if (!isUserClass) {
+								gMrbLog->Err()  << "User code file " << fileSpec << " (line " << lineNo
+												<< "): Syntax error -" << endl
+												<< "                               Unknown scope operator \"" << scope << "\"" << endl;
+								gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+							}
 						}
 					} else {
 						splitted.Delete();
@@ -4472,6 +4540,10 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 						method.Resize(method.Index("("));
 						iclOpts |= TMrbConfig::kIclOptUtilities;
 						lofMethods->AddNamedX(TMrbConfig::kIclOptUtilities, method.Data(), line.Data());
+						if (verboseMode) {
+							gMrbLog->Out()  << "Adding utility function " << method << endl;
+							gMrbLog->Flush(this->ClassName(), "IncludeUserCode");
+						}
 					}
 				}
 			}

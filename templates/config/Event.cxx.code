@@ -252,7 +252,10 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 					fNofEvents++;
 					nofBytes += nbytes;
 					gMrbAnalyze->IncrEventCount();
-					this->Analyze();
+%%BeginOfCode%%
+					this->$processEvent();
+%%EndOfCode%%
+%%EVT_REPLAY_EVENT%%
 				}
 				pthread_mutex_unlock(&global_data_mutex);
 				if (timeStamp > stopEvent) break;
@@ -310,7 +313,10 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 				nofEvents++;
 				fNofEvents++;
 				gMrbAnalyze->IncrEventCount();
-				this->Analyze();
+%%BeginOfCode%%
+				this->$processEvent();
+%%EndOfCode%%
+%%EVT_REPLAY_EVENT%%
 				pthread_mutex_unlock(&global_data_mutex);
 			}
 
@@ -439,25 +445,6 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, const MBSData
 	}
 	return(kTRUE);
 }
-
-%%BeginOfCode%%
-Bool_t TUsrEvt$evtNameUC::BuildEvent() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:		   TUsrEvt$evtNameUC::BuildEvent
-// Purpose: 	   Event builder for $evtNameLC
-//  			   (Trigger $evtTrigger)
-// Arguments:	   --
-// Results: 	   kTRUE/kFALSE
-// Exceptions:     
-// Description:    Event builder for trigger $evtNameLC to be called before analysis
-// Keywords:	   
-//////////////////////////////////////////////////////////////////////////////
-
-	return(this->Analyze());
-}
-%%EndOfCode%%
-%%EVT_BUILD_EVENT%%
 
 %%BeginOfCode%%
 Bool_t TUsrEvt$evtNameUC::Analyze() {
