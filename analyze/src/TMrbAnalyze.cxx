@@ -23,6 +23,7 @@
 #include "TEnv.h"
 #include "TRegexp.h"
 #include "TOrdCollection.h"
+#include "TObjString.h"
 
 #include "TMrbAnalyze.h"
 #include "mbsio_protos.h"
@@ -1734,15 +1735,12 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 // Exceptions:     
 // Description:    Checks if a given string represents a legal start/stop value.
 //                 Formats: ValString = "n", n >= 0     -> event count
-//                          ValString = ":hh:mm:ss:xxx" -> time stamp
+//                          ValString = "hh:mm:ss:xxx" -> time stamp
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-	TString valAscii;
+	TMrbString valAscii;
 	TString hmsx;
-	Int_t n1, n2;
-	Int_t nt, ts[4];
 
 	valAscii = ValAscii.Strip(TString::kBoth);
 
@@ -1750,35 +1748,66 @@ Bool_t TMrbIOSpec::CheckStartStop(TString & ValAscii, Int_t & Value, Bool_t & Ti
 
 	if (valAscii.Index(":", 0) == -1) {		// event count
 		TimeStampFlag = kFALSE;
-		valAscii += " ";					// trailing blank keeps istringstream happy
-		istringstream v(valAscii.Data());
-		v >> Value;
-		return(v.good());
+		valAscii.ToInteger(Value);			// convert to integer
 	} else {								// time stamp
 		TimeStampFlag = kTRUE;
-		valAscii += ":";					// add a trailing ":" to make method Index() easier
-		nt = 0;
-		for (i = 0; i < 4; i++) ts[i] = 0;
-		n1 = (valAscii(0) == ':') ? 1 : 0; 	// skip leading ":" if present
-		for (i = 0; i < 4; i++) {			// decode :-separated items
-			n2 = valAscii.Index(":", n1);
-			if (n2 == -1) break;
-			hmsx = valAscii(n1, n2 - n1);
-			istringstream v(hmsx.Data());
-			v >> ts[i];
-			if (!v.good()) return(kFALSE);	// not a number
-			n1 = n2 + 1;
-			nt++;
-		}
+		TObjArray tsArr;
+		Int_t nts = valAscii.Split(tsArr, ":");
 
-		switch (nt) {
-			case 1: Value = ts[0];		// "raw" time stamp - ":nnnnnn"
+		switch (nts) {
+			case 1: break;
+
+			case 2:
+				{
+					TString h = ((TObjString *) tsArr[0])->GetString();
+					h = h.Strip(TString::kBoth);
+					if (h.Length() == 0) {										// :nnnnnn -> raw time stamp
+						Value = atoi(((TObjString *) tsArr[1])->GetString());
+						return(kTRUE);
+					} else {													// hh:mm
+						Int_t hh = atoi(h.Data());
+						TString m = ((TObjString *) tsArr[1])->GetString();
+						m = m.Strip(TString::kBoth);
+						Int_t mm = (m.Length() == 0) ? 0 : atoi(m.Data());
+						if (mm < 0 || mm > 59) return(kFALSE);
+						Value = ((hh * 60 + mm) * 60) * 1000;
+						return(kTRUE);
+					}
+				}
+			case 3:
+				{
+					TString h = ((TObjString *) tsArr[0])->GetString(); 		// hh:mm:ss
+					h = h.Strip(TString::kBoth);
+					Int_t hh = (h.Length() == 0) ? 0 : atoi(h.Data());
+					TString m = ((TObjString *) tsArr[1])->GetString();
+					m = m.Strip(TString::kBoth);
+					Int_t mm = (m.Length() == 0) ? 0 : atoi(m.Data());
+					TString s = ((TObjString *) tsArr[2])->GetString();
+					s = s.Strip(TString::kBoth);
+					Int_t ss = (s.Length() == 0) ? 0 : atoi(s.Data());
+					if (mm < 0 || mm > 59 || ss < 0 || ss > 59) return(kFALSE);
+					Value = ((hh * 60 + mm) * 60 + ss) * 1000;
 					return(kTRUE);
-			case 2: return(kFALSE); 	// illegal
-			case 3: 					// full stime stamp - ":hh:mm:ss[:xxx]"
-			case 4: if (ts[0] > 59 || ts[1] > 59 || ts[2] > 59 || ts[3] > 999) return(kFALSE);	// illegal time format
-					Value = ((ts[0] * 60 + ts[1]) * 60 + ts[2]) * 1000 + ts[3]; 	// time in millesecs
+				}
+			case 4:
+				{
+					TString h = ((TObjString *) tsArr[0])->GetString(); 		// hh:mm:ss:xxx
+					h = h.Strip(TString::kBoth);
+					Int_t hh = (h.Length() == 0) ? 0 : atoi(h.Data());
+					TString m = ((TObjString *) tsArr[1])->GetString();
+					m = m.Strip(TString::kBoth);
+					Int_t mm = (m.Length() == 0) ? 0 : atoi(m.Data());
+					TString s = ((TObjString *) tsArr[2])->GetString();
+					s = s.Strip(TString::kBoth);
+					Int_t ss = (s.Length() == 0) ? 0 : atoi(s.Data());
+					TString x = ((TObjString *) tsArr[3])->GetString();
+					x = x.Strip(TString::kBoth);
+					Int_t xxx = (x.Length() == 0) ? 0 : atoi(x.Data());
+					if (mm < 0 || mm > 59 || ss < 0 || ss > 59 || xxx < 0 || xxx > 999) return(kFALSE);
+					Value = ((hh * 60 + mm) * 60 + ss) * 1000 + xxx;
 					return(kTRUE);
+				}
+			default:	break;
 		}
 	}
 	return(kFALSE);
