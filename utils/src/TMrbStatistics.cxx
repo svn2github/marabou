@@ -131,7 +131,7 @@ Int_t TMrbStatistics::Fill(){
 }
 //____________________________________________________________________________
 
-Int_t TMrbStatistics::Fill(TFile * file){
+Int_t TMrbStatistics::Fill(TDirectory * file){
 //
 //  Look for all histograms in file and make an entry in statistics list
 //
@@ -241,6 +241,7 @@ TMrbStatEntry::TMrbStatEntry(TH1* hist, const char * name, const char * title)
    fSumofw  = 0;
    fMean    = 0;
    fSigma   = 0;
+   fCycle   = 0;
 }
 //____________________________________________________________________________
 

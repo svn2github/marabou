@@ -618,7 +618,7 @@ Int_t GetUsedSize(TMapFile * mfile)
    return size;
 }
 //------------------------------------------------------   
-Int_t GetObjects(TList & list, TFile * rfile, const char * classname)
+Int_t GetObjects(TList & list, TDirectory * rfile, const char * classname)
 {
    Int_t maxkey = 0;
    if (!rfile)

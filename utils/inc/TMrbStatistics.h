@@ -13,7 +13,7 @@ namespace std {} using namespace std;
 #include "TKey.h"
 #include "TList.h"
 #include "TNamed.h"
-#include "TFile.h"
+#include "TDirectory.h"
 #include "TMapFile.h"
 
 class TMrbStatEntry: public TNamed {
@@ -84,7 +84,7 @@ public:
    Int_t Init();              // find hists and initialize table    
    Int_t Update();            // go through list of hists and update values
    Int_t Fill();              // fill stats for hists in memory
-   Int_t Fill(TFile *);       // fill stats for hists in root file
+   Int_t Fill(TDirectory *);       // fill stats for hists in root file
    Int_t Fill(TMapFile *);    // fill stats for hists in map file
    TList * GetListOfEntries(){return fStatEntries;};
    void Print(Option_t * Option) const { TObject::Print(Option); }

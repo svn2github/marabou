@@ -3716,7 +3716,7 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
       c->SetName("abcxyz");
       UInt_t ww, wh;
       ww = c->GetWw() + 2 * (gStyle->GetCanvasBorderSize() + 1);
-      wh =  c->GetWindowHeight(
+      wh =  c->GetWindowHeight();
       HTCanvas * c1 = new HTCanvas(tempname.Data(), c->GetTitle(),
                          c->GetWindowTopX(), c->GetWindowTopY(),
                          ww, wh, this);

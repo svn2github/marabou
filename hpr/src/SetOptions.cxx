@@ -263,6 +263,7 @@ void HistPresent::RestoreOptions()
    fRememberZoom = env.GetValue("HistPresent.RememberZoom", 0);
    fUseAttributeMacro = env.GetValue("HistPresent.UseAttributeMacro", 1);
    fShowAllAsFirst = env.GetValue("HistPresent.ShowAllAsFirst", 1);
+   fRealStack = env.GetValue("HistPresent.RealStack", 1);
    fUseRegexp = env.GetValue("HistPresent.UseRegexp", 0);
    fProjectBothRatio =
        atof(env.GetValue("HistPresent.ProjectBothRatio", "0.6"));
@@ -516,6 +517,7 @@ void HistPresent::SaveOptions()
    SetIntValue(env, "HistPresent.RememberZoom", fRememberZoom);
    SetIntValue(env, "HistPresent.UseAttributeMacro", fUseAttributeMacro);
    SetIntValue(env, "HistPresent.ShowAllAsFirst",    fShowAllAsFirst);
+   SetIntValue(env, "HistPresent.RealStack",    fRealStack);
    SetIntValue(env, "HistPresent.UseRegexp", fUseRegexp);
    SetIntValue(env, "HistPresent.FitOptLikelihood", fFitOptLikelihood);
    SetIntValue(env, "HistPresent.FitOptQuiet", fFitOptQuiet);
@@ -1737,7 +1739,7 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
    Int_t nopt = 16;
    enum e_opt { e_force, e_listsonly, e_psfile, e_enablecal, e_displaycal, 
       e_fitted, e_treehists, e_treenew, e_savelast,
-      e_savezoom, e_useattr, e_allasfirst, e_useregexp, e_auto_1, e_auto_2,
+      e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp, e_auto_1, e_auto_2,
       e_auto_x, e_auto_y
    };
    const char *opt[] = {
@@ -1869,6 +1871,7 @@ Auto exec project Y \n\
       else if (i == e_savezoom && fRememberZoom)        flags[i] = 1;
       else if (i == e_useattr && fUseAttributeMacro)    flags[i] = 1;
       else if (i == e_allasfirst && fShowAllAsFirst)    flags[i] = 1;
+      else if (i == e_realstack && fRealStack)          flags[i] = 1;
       else if (i == e_useregexp && fUseRegexp)          flags[i] = 1;
       else if (i == e_auto_1 && fAutoExec_1)            flags[i] = 1;
       else if (i == e_auto_2 && fAutoExec_2)            flags[i] = 1;
@@ -1899,6 +1902,7 @@ Auto exec project Y \n\
    fRememberZoom = 0;
    fUseAttributeMacro = 0;
    fShowAllAsFirst = 0;
+   fRealStack = 0;
    fUseRegexp = 0;
    fAutoExec_1 = 0;
    fAutoExec_2 = 0;
@@ -1918,6 +1922,7 @@ Auto exec project Y \n\
          else if (i == e_savezoom)   fRememberZoom = 1;
          else if (i == e_useattr)    fUseAttributeMacro = 1;
          else if (i == e_allasfirst) fShowAllAsFirst = 1;
+         else if (i == e_realstack)  fRealStack = 1;
          else if (i == e_useregexp)  fUseRegexp = 1;
          else if (i == e_auto_1) fAutoExec_1 = 1;
          else if (i == e_auto_2) fAutoExec_2 = 1;
