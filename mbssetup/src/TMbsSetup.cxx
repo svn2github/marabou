@@ -1382,7 +1382,10 @@ Bool_t TMbsSetup::CheckSetup() {
 		this->Get(templatePath, "TemplatePath");
 
 		if (smode == kModeSingleProc) {
-			this->ReadoutProc(0)->TriggerModule()->SetTriggerMode("INTERRUPT");
+			if (this->ReadoutProc(0)->TriggerModule()->GetTriggerMode()->GetIndex() == kTriggerModePolling) {
+				gMrbLog->Err() << "You are using POLLING on triggers in a single-ppc environment - INTERRUPT mode is highly recommended" << endl;
+				gMrbLog->Flush(this->ClassName(), "CheckSetup");
+			}
 			templatePath += "/singleproc";
 		} else {
 			templatePath += "/multiproc";
