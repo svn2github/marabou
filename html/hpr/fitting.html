@@ -1,0 +1,117 @@
+<!DOCTYPE HTML>
+<HTML>
+<PRE>
+<H1>Fitting with HistPresent</H1>
+HistPresent supports two possibilities to fit functions
+to a 1-dim histogram:
+1. Fit of predefined functions from a <a href=#Help_on_Fit_1dim_Menu>Popup Menu</a>.
+2. User defined function with the help of a <a href=#Help_on_Fit_1dim_Macro>macro</a>.
+<a href=#Help_on_Fit_2dim>Fitting </a>with 2-dim Histograms
+
+<a NAME=Help_on_Fit_1dim_Menu></a>
+<H1>Fitting of functions to 1-dim histograms</H1>
+from the Fit Popup Menu:
+Predefined are polynmials upto degree 8, gaussians
+(max 3 peaks) plus a linear background and gaussians
+with low or high energy tails. The tail function is
+explained <a href=#Help_on_Tail>here</a> and <a href=#Help_on_Tail>there.</a>
+In case with tail the parameter Ta_fract (tail
+fraction) is the contents of the tail part relative
+to the pure gaussian part. In case of more then one
+peak this fraction, the width of the tail and of the
+gaussian are the same to all peaks. Marks should be
+used to provide lower and upper limits and estimated
+positions of peaks if more than 1 gaussian is be
+fitted. The program estimates from this the start
+parameters of the fit which are presented and may be
+changed. Values may be fixed and bound.<B> When using
+bounds please be aware of the warnings in the MINUIT
+manual on this.</B> Fitted parameters may be kept as
+start for a new fit. As default Minos error analysis
+is not done but may be switched on.
+_____________________________________________________
+
+A linear background determined from 2 regions in
+the spectrum outside the peaks can be incorporated
+in the following way:
+
+Define 4 marks to select the 2 regions. Then use the
+item 'Determine linear background' from the Fit
+popup menu to calculate the parameters const and
+slope of the linear background.  (This activates
+automatically the corresponding option  'Use linear
+background'.) In a subsequent fit the parameters
+Bg_Const and Bg_Slope will be  fixed to the above
+calculated values.  If needed these values can still
+be changed manually. Unfixing them of course will
+let MINUIT vary their values.
+______________________________________________________
+
+The quality of the start parameters of a fit determine
+the speed of convergence. Bad start parameters may lead
+MINUIT to find an unwanted minimum. Start parameters
+may be checked by drawing the fit function with these 
+parameters without actually doing a fit.
+
+<a NAME=Help_on_Fit_1dim_Macro></a>
+<H1>Fitting of 1-dim functions by a macro</H1>
+------------------------------------------------------------
+by a user provided macro.
+
+A more general way of fitting is to edit a macro where all
+the functionality provided by the TFormula class may be
+used. Template macros serving as examples are provided to
+start with. This macro contains  2 possibilities to provide
+the fit function: as formula or as normal C++ function.
+
+Currently 4 examples are provided: An exponential + a
+gaussian, 2 gaussians with common mean, a Breit Wigner and
+3 Landau functions.
+
+Use the command Edit User Fit Macro to edit the macro. If
+the macro given by the name exists this is taken otherwise
+a choice menu with the above 4 examples is presented.
+Meaningful start values should be given to assure that
+MINUIT finds the correct minimum.
+
+In this case drawing of components of the fit function must
+be done in the macro itself.
+
+<a NAME=Help_on_Tail></a>
+<H1>Tail function</H1>
+A simplified tail function as described in 
+NIM 137 (1976) p. 525-536 has been implemented.
+The attached picture illustrates this 
+<img SRC="Help_tail.canvas.gif"  
+height=400 width=800 align=ABSCENTER>
+..
+<a NAME=Help_on_ShowFitted></a>
+<H1>Option: Visualize fit results</H1>
+Display fitted curves
+This option controls which curves are drawn if a function
+is fitted to a 1_dim histogram. 
+(see <a href=#fitting.html>Help_on_Fit_1dim_Menu)</a>
+This function is normally is a sum of several components
+(Gauss, linear background). As default only the sum of 
+the components are drawn. If this option is active all
+components are shown allowing a better visual control of 
+the fit. An example is given in the attached picture
+<img SRC="Fitted_Curves.canvas.gif"  height=400 width=600 align=ABSCENTER>
+</HTML>
+
+<a NAME=Help_on_Fit_2dim></a>
+<H1>Fitting with to 2-dim histograms</H1>
+
+For 2-dim histograms polynomials can be fitted to user
+defined marks or to the entries in regions of the histograms
+nomally defined with a graphical cut (see help on Cuts). In
+this case the entries inside the cut are averaged along the
+y-axis in slices of the bins along the x-axis and the fit is
+done to the resulting 1-dim histogram using the spread of
+the entries along the y-axis as errors.
+
+
+Functions are named. They may be written on a root file and
+retrieved using their names. Parameters, errors etc. may be
+made persistent and reused in analysis programs e.g. as
+calibration.

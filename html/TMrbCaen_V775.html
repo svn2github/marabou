@@ -1,0 +1,267 @@
+<!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN">
+<html>
+<!--                                                        -->
+<!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  -->
+<!--                                                        -->
+<!--                                                        -->
+<head>
+<link rev=made href="mailto:marabou@physik.uni-muenchen.de">
+<meta name="rating" content="General">
+<meta name="objecttype" content="Manual">
+<meta name="keywords" content="software development, oo, object oriented, unix, x11, windows, c++, html, rudi lutter, otto schaile">
+<meta name="description" content="Marabou - MBS and ROOT bases OFF- Online Utility.">
+</head>
+<body BGCOLOR="#ffffff" LINK="#0000ff" VLINK="#551a8b" ALINK="#ff0000" TEXT="#000000">
+
+<a name="TopOfPage"></a>
+<!--BEGIN-->
+<center>
+<h1>TMrbCaen_V775</h1>
+<hr width=300>
+<!--SDL--><em><a href="#TMrbCaen_V775:description">class description</a> - <a href="src/TMrbCaen_V775.cxx.html">source file</a> - <a href="TMrbCaen_V775_Tree.ps">inheritance tree</a></em>
+<hr width=300>
+</center>
+<h2>class <a name="TMrbCaen_V775" href="TMrbCaen_V775.h">TMrbCaen_V775</a> : public <a href="./TMrbVMEModule.html">TMrbVMEModule</a></h2>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:DefineRegisters">DefineRegisters</a><!--PLAIN-->()
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->              <a href="./TMrbCaen_V775.html">TMrbCaen_V775</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:TMrbCaen_V775">TMrbCaen_V775</a><!--PLAIN-->()
+<!--TAB6-->              <a href="./TMrbCaen_V775.html">TMrbCaen_V775</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:TMrbCaen_V775">TMrbCaen_V775</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels = 0)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:~TMrbCaen_V775">~TMrbCaen_V775</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:CheckSubeventType">CheckSubeventType</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Subevent)
+<!--TAB6-->             static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:GetFullScaleRange">GetFullScaleRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> NsecFlag = kTRUE)
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:GetMnemonic">GetMnemonic</a><!--PLAIN-->() const
+<!--TAB6-->      virtual const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:GetPrivateCodeFile">GetPrivateCodeFile</a><!--PLAIN-->() const
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:HasPrivateCode">HasPrivateCode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:HasRandomReadout">HasRandomReadout</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:Help">Help</a><!--PLAIN-->()
+<!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:IsCommonStart">IsCommonStart</a><!--PLAIN-->()
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:IsFFMode">IsFFMode</a><!--PLAIN-->()
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex)
+<!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:MakeReadoutCode">MakeReadoutCode</a><!--PLAIN-->(ofstream&amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex, <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Value = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:SetCommonStart">SetCommonStart</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> CommonStartFlag = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:SetCommonStop">SetCommonStop</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> CommonStopFlag = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:SetFFMode">SetFFMode</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> FFFlag = kTRUE)
+<!--TAB6-->                      <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:SetFullScaleRange">SetFullScaleRange</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> NanoSeconds)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--TAB6-->               virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbCaen_V775:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+</pre>
+
+<h3><!--TAB2-->  <a name="TMrbCaen_V775:Data Members">Data Members</a></h3>
+<pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:fFFMode">fFFMode</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fFFMode"></a></i>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:fCommonStart">fCommonStart</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fCommonStart"></a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:fFullScaleRange">fFullScaleRange</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fFullScaleRange"></a></i>
+<!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:fFullScaleRangeNsecs">fFullScaleRangeNsecs</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fFullScaleRangeNsecs"></a></i>
+
+<!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kSegSize">kSegSize</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kSegSize"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kAddrMod">kAddrMod</a><!--PLAIN-->                     <!--TAB--><i><a name="Title:kAddrMod"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsOutput">kOffsOutput</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kOffsOutput"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsFirmWare">kOffsFirmWare</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kOffsFirmWare"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsGeoAddr">kOffsGeoAddr</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsGeoAddr"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsBitSet1">kOffsBitSet1</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsBitSet1"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsBitClear1">kOffsBitClear1</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kOffsBitClear1"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsStatus1">kOffsStatus1</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsStatus1"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsControl1">kOffsControl1</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kOffsControl1"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsAddrHigh">kOffsAddrHigh</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kOffsAddrHigh"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsAddrLow">kOffsAddrLow</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsAddrLow"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsEvtTrig">kOffsEvtTrig</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsEvtTrig"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsStatus2">kOffsStatus2</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsStatus2"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsEvtCntLow">kOffsEvtCntLow</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kOffsEvtCntLow"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsEvtCntHigh">kOffsEvtCntHigh</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kOffsEvtCntHigh"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsIncrEvt">kOffsIncrEvt</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsIncrEvt"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsIncrOffs">kOffsIncrOffs</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kOffsIncrOffs"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsBitSet2">kOffsBitSet2</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kOffsBitSet2"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsBitClear2">kOffsBitClear2</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kOffsBitClear2"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsCrateSel">kOffsCrateSel</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kOffsCrateSel"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsTestEvtWrite">kOffsTestEvtWrite</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kOffsTestEvtWrite"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsEvtCntReset">kOffsEvtCntReset</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kOffsEvtCntReset"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsFullScaleRange">kOffsFullScaleRange</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kOffsFullScaleRange"></a></i>
+<!--TAB6-->        static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbOffsets">TMrbCaen_V775::EMrbOffsets</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kOffsThresh">kOffsThresh</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kOffsThresh"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegFirmWare">kRegFirmWare</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRegFirmWare"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegGeoAddr">kRegGeoAddr</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegGeoAddr"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegBitSet1">kRegBitSet1</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegBitSet1"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegBitClear1">kRegBitClear1</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRegBitClear1"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegStatus1">kRegStatus1</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegStatus1"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegControl1">kRegControl1</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRegControl1"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegAddrHigh">kRegAddrHigh</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRegAddrHigh"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegAddrLow">kRegAddrLow</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegAddrLow"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegEvtTrig">kRegEvtTrig</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegEvtTrig"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegStatus2">kRegStatus2</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegStatus2"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegEvtCntLow">kRegEvtCntLow</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRegEvtCntLow"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegEvtCntHigh">kRegEvtCntHigh</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kRegEvtCntHigh"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegIncrEvt">kRegIncrEvt</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegIncrEvt"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegIncrReg">kRegIncrReg</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegIncrReg"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegBitSet2">kRegBitSet2</a><!--PLAIN-->                  <!--TAB--><i><a name="Title:kRegBitSet2"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegBitClear2">kRegBitClear2</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kRegBitClear2"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegCrateSel">kRegCrateSel</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kRegCrateSel"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegTestEvtWrite">kRegTestEvtWrite</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kRegTestEvtWrite"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegEvtCntReset">kRegEvtCntReset</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kRegEvtCntReset"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegFullScaleRange">kRegFullScaleRange</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kRegFullScaleRange"></a></i>
+<!--TAB6-->      static const <a href="./TMrbCaen_V775.html#TMrbCaen_V775:EMrbRegisters">TMrbCaen_V775::EMrbRegisters</a> <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kRegThresh">kRegThresh</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kRegThresh"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet1SelAddrIntern">kBitSet1SelAddrIntern</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kBitSet1SelAddrIntern"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitControl1ProgResetModule">kBitControl1ProgResetModule</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kBitControl1ProgResetModule"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2Offline">kBitSet2Offline</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kBitSet2Offline"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2OverRangeDis">kBitSet2OverRangeDis</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kBitSet2OverRangeDis"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2LowThreshDis">kBitSet2LowThreshDis</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kBitSet2LowThreshDis"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2ValidControlDis">kBitSet2ValidControlDis</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kBitSet2ValidControlDis"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2SlideEna">kBitSet2SlideEna</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kBitSet2SlideEna"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2CommonStartDis">kBitSet2CommonStartDis</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kBitSet2CommonStartDis"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2AutoIncrEna">kBitSet2AutoIncrEna</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kBitSet2AutoIncrEna"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2EmptyProgEna">kBitSet2EmptyProgEna</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kBitSet2EmptyProgEna"></a></i>
+<!--TAB6-->                    static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbCaen_V775:kBitSet2AllTrigEna">kBitSet2AllTrigEna</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kBitSet2AllTrigEna"></a></i>
+</pre>
+<!--END-->
+<hr>
+<!--DESCRIPTION--><h2><a name="TMrbCaen_V775:description">Class Description</a></h2>
+<pre>
+ Name:           expconf/src/<a href="./TMrbCaen_V775.html">TMrbCaen_V775</a>.cxx
+ Purpose:        MARaBOU configuration: CAEN modules
+ Description:    Implements class methods to handle a CAEN tdc type V775
+ Keywords:
+ Author:         R. Lutter
+ Mailto:         &lt;a href=mailto:rudi.lutter@physik.uni-muenchen.de&gt;R. Lutter&lt;/a&gt;
+ Revision:
+ Date:
+
+</pre><hr>
+<!--FUNCTION--> <a name="TMrbCaen_V775:TMrbCaen_V775" href="src/TMrbCaen_V775.cxx.html#TMrbCaen_V775:TMrbCaen_V775">TMrbCaen_V775</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels) :
+									<a href="./TMrbVMEModule.html">TMrbVMEModule</a>(ModuleName, "Caen_V775", BaseAddr,
+																<a href="./TMrbCaen_V775.html#TMrbCaen_V775:kAddrMod">TMrbCaen_V775::kAddrMod</a>,
+																<a href="./TMrbCaen_V775.html#TMrbCaen_V775:kSegSize">TMrbCaen_V775::kSegSize</a>,
+																0, NofChannels, 1 &lt;&lt; 12) <br>
+<pre>__________________________________________________________________[C++ CTOR]
+
+ Name:           <a href="./TMrbCaen_V775.html">TMrbCaen_V775</a>
+ Purpose:        Create a tdc of type Caen V775
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleName      -- name of camac module
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr          -- base addr
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels        -- number of channels (16 or 32)
+ Results:        --
+ Exceptions:
+ Description:    Creates a vme tdc of type CAEN V775.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:DefineRegisters" href="src/TMrbCaen_V775.cxx.html#TMrbCaen_V775:DefineRegisters">DefineRegisters</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V775.html#TMrbCaen_V775:DefineRegisters">TMrbCaen_V775::DefineRegisters</a>
+ Purpose:        Define camac registers
+ Arguments:      --
+ Results:        --
+ Exceptions:
+ Description:
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:MakeReadoutCode" href="src/TMrbCaen_V775.cxx.html#TMrbCaen_V775:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm, <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V775.html#TMrbCaen_V775:MakeReadoutCode">TMrbCaen_V775::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a caen tdc
+ Arguments:      ofstream &amp; RdoStrm         -- file output stream
+                 EMrbModuleTag TagIndex     -- index of tag word taken from template file
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a caen v775 tdc module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:MakeReadoutCode" href="src/TMrbCaen_V775.cxx.html#TMrbCaen_V775:MakeReadoutCode">MakeReadoutCode</a>(ofstream &amp; RdoStrm,	<a href="./TMrbConfig.html#TMrbConfig:EMrbModuleTag">TMrbConfig::EMrbModuleTag</a> TagIndex,
+															<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel,
+															<a href="ListOfTypes.html#Int_t">Int_t</a> Value) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V775.html#TMrbCaen_V775:MakeReadoutCode">TMrbCaen_V775::MakeReadoutCode</a>
+ Purpose:        Write a piece of code for a caen tdc
+ Arguments:      ofstream &amp; RdoStrm           -- file output stream
+                 EMrbModuleTag TagIndex       -- index of tag word taken from template file
+                 <a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Channel            -- channel
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Value                  -- value to be set
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Writes code for readout of a caen v775 tdc module.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:CheckSubeventType" href="src/TMrbCaen_V775.cxx.html#TMrbCaen_V775:CheckSubeventType">CheckSubeventType</a>(<a href="http://root.cern.ch/root/html/TObject.html">TObject</a> * Subevent) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V775.html#TMrbCaen_V775:CheckSubeventType">TMrbCaen_V775::CheckSubeventType</a>
+ Purpose:        Check if calling subevent is applicable
+ Arguments:
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Makes sure that a subevent of type [10,4x] (CAEN)
+                 is calling.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbCaen_V775:SetFullScaleRange" href="src/TMrbCaen_V775.cxx.html#TMrbCaen_V775:SetFullScaleRange">SetFullScaleRange</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> NanoSeconds) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbCaen_V775.html#TMrbCaen_V775:SetFullScaleRange">TMrbCaen_V775::SetFullScaleRange</a>
+ Purpose:        Set full scale range register
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> NanoSeconds          -- full scale range in nsecs
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> RegValue             -- resulting register value
+ Exceptions:     Returns 0 on error (Nsec value out of range)
+ Description:    Calculates the value of the full scale range register from
+                 given nanoseconds.
+                 Full range values from 140 to 1200 nsecs correspond to
+                 register values from 0xFF to 0x1E with linear interpolation.
+                 Formula is therefore
+                      r(t) = 256 + (225/1060) * (140 - t)
+ Keywords:
+
+</pre><br><br><br>
+<h3>Inline Functions</h3>
+<hr>
+<pre>
+<!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbCaen_V775.html">TMrbCaen_V775</a> <a name="TMrbCaen_V775:TMrbCaen_V775" href="TMrbCaen_V775.h">TMrbCaen_V775</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleName, <a href="ListOfTypes.html#UInt_t">UInt_t</a> BaseAddr, <a href="ListOfTypes.html#Int_t">Int_t</a> NofChannels = 0)
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbCaen_V775:GetMnemonic" href="TMrbCaen_V775.h">GetMnemonic</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:SetFFMode" href="TMrbCaen_V775.h">SetFFMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> FFFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:IsFFMode" href="TMrbCaen_V775.h">IsFFMode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:SetCommonStart" href="TMrbCaen_V775.h">SetCommonStart</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> CommonStartFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:SetCommonStop" href="TMrbCaen_V775.h">SetCommonStop</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> CommonStopFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:IsCommonStart" href="TMrbCaen_V775.h">IsCommonStart</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbCaen_V775:GetFullScaleRange" href="TMrbCaen_V775.h">GetFullScaleRange</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> NsecFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:HasRandomReadout" href="TMrbCaen_V775.h">HasRandomReadout</a>()
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbCaen_V775:HasPrivateCode" href="TMrbCaen_V775.h">HasPrivateCode</a>()
+<!--INLINE FUNCTION--><!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="TMrbCaen_V775:GetPrivateCodeFile" href="TMrbCaen_V775.h">GetPrivateCodeFile</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:Help" href="TMrbCaen_V775.h">Help</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCaen_V775:Class" href="TMrbCaen_V775.h">Class</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbCaen_V775:IsA" href="TMrbCaen_V775.h">IsA</a>() const
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:ShowMembers" href="TMrbCaen_V775.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:Streamer" href="TMrbCaen_V775.h">Streamer</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:StreamerNVirtual" href="TMrbCaen_V775.h">StreamerNVirtual</a>(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbCaen_V775:~TMrbCaen_V775" href="TMrbCaen_V775.h">~TMrbCaen_V775</a>()
+</pre>
+
+<hr><br>
+<!--SIGNATURE-->
+<em>
+Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+<br>
+Last update: Wed Feb 12 14:34:59 2003
+<br>
+<address>
+<hr>
+<center>
+<a href="http://root.cern.ch/root/Welcome.html">ROOT page</a> - <a href="http://www.bl.physik.uni-muenchen.de/marabou/html/MARaBOU.html">Home page</a> - <a href="ClassIndex.html">Class index</a> - <a href="#TopOfPage">Top of the page</a><br>
+
+</center>
+<hr>This page has been automatically generated. If you have any comments or suggestions about the page layout send a mail to <a href="mailto:marabou@physik.uni-muenchen.de">Marabou support</a>.
+</address>
+</em>
+</body>
+</html>

@@ -1,0 +1,265 @@
+/*******************************************************************
+*
+* User.dsp     
+*                  
+* XIA DGF user DSP programming interface. 
+*              
+* Version. 1.0
+* Modified on Feb. 13, 2000                     
+*                            
+* The interface consists of five routines and a number of global
+* variables.  Data exchange with the host computer is achieved
+* via two data arrays that are part of the I/O parameter blocks 
+* visible to the host.
+*
+* The total amount of memory available to the user comprises 2048 
+* instructions and 1000 data words.
+*
+* Host interface as supported by the DGF-Viewer and the host 
+* interface data structure:
+*
+*   UserIn[16]     16 words of input data
+*   UserOut[16]    16 words of output data
+*                          
+* Interface DSP routines:
+*
+*   UserBegin
+*     This routine is called after rebooting the DSP.  Its purpose
+*     is to establish values vor variables that need to be known
+*     before the first run may start.  Address pointers to data 
+*     buffers established by the user are an example.  The may need
+*     know where to write essential data to before starting a run. 
+*   
+*     Since the DSP program comes up in a default state after rebooting
+*     UserBegin will always be called.  This is different for the
+*     routines listed below, which will only be called if for at least
+*     one channel bit 0 of ChannelCSRB has been set.     
+*
+*   UserRunInit:
+*     This function is called at each run start, for new runs as well
+*     as for esumed runs.  The purpose is to precompute often needed
+*     variables and pointers here and make them available to the
+*     routines that are being called on an event-by-event basis.  
+*     The variables in question would be those that depend on settings
+*     which may change in between runs.
+*          
+*   UserChannel:
+*     This function is called for every event and every DGF channel 
+*     for which data are reported and for which bit 0 of the channel
+*     CSR_B (ChannelCSRB variable) has been set. It is called after
+*     all regular event processing for this channel has finished, 
+*     with the exception of the histogramming part.
+*
+*   UserEvent:
+*     This function is called after all event processing for this 
+*     particular event has finished.  It may be used as an event 
+*     finish routine, or for purposes where the event as a whole 
+*     is to be examined.
+*
+*   UserRunFinish:
+*     This routine is called after the run has ended, but before 
+*     the host computer is notified of that fact.  Its purpose is
+*     to update run summary information. 
+*
+*  
+* Global variables:
+* 
+*   UserIn[16]     16 words of input data, also visible to host
+*   UserOut[16]    16 words of output data, also visible to host
+*
+* All other global variables are not visible to the host.
+* 
+* When entering UserChannel the following globals have been set 
+* by the DSP:
+*
+*   ATstart;       {  Address of current trace } 
+*   TLen;          {  Length of current trace } 
+*   Energy;        {  energy of current event } 
+*   ChanNum;       {  Number of current channel } 
+*   URetVal;       {  Return value from user routine [6] } 
+*   PSAresult;	    {  Result of XIA PSA } 
+*   URetNum; 		 {  Number of User retun words available }
+*   GSLTtimeA;     {  high word, middle, low word  } 
+*   GSLTtimeB;     {  40MHz timer  } 
+*   GSLTtimeC;     {  GSLT arrival time  } 
+*   RUNTASK;		 {  RUNTASK of the current run }
+*   E0L;			    { lagging Energy filter, low word }
+*   E0H;			    { lagging Energy filter, high word }
+*   E1L;			    { leading Energy filter, low word }
+*   E1H;			    { leading Energy filter, high word }
+*
+*
+* Your return value is UretVal. The main code will incorporate
+* this value into the output data stream for you.
+*
+* When entering UserChannel or UserEvent the address register I5 
+* will point to the start of the current event.
+*      
+* Register usage:
+*   
+*   The user routines may use all computational registers without 
+*   having to restore them. However, the secondary register set 
+*   cannot be used, because the XIA interrupt routines use these.
+*
+*   The usage of the address registers I0..I7 and the associate
+*   registers M0..M7, and L0..L7 is subject to restrictions.  
+*   These are listed below for the various routines.
+*
+*   The associate registers L,M are preset and guaranteed as follows:
+*
+*   L0..L7 = 0
+*   M0 = 0; M1 = 1; M2 = -1;
+*   M4 = 0; M5 = 1; M6 = -1;
+*   M3 and M7 have no guaranteed values.
+*
+*   UserBegin, UserRunInit, and UserRunFinish:  
+*   No further restrictions, but user code must leave the associated 
+*   registers listed above in exactly this state when exiting.
+*
+*   UserChannel:
+*     I5,I6,I7  may not even temporarily be overwritten, because
+*     L5,L6     there are interrupt functions which depend on the
+*     M0,M1,M2  content of these registers.
+*     M4,M5,M6
+*
+*     I0,I1,I3  These may be altered, but must be restored on exit.
+*     I4
+*     L0,L1,L2,L3
+*     L4,L7
+*   
+*     I2        May be altered and need not be restored
+*     M3,M7     
+*
+*   UserEvent:
+*     I5,I6,I7  may not even temporarily be overwritten, because
+*     L5,L6     there are interrupt functions which depend on the
+*     M0,M1,M2  content of these registers.
+*     M4,M5,M6
+*
+*     I3        These may be altered, but must be restored on exit.
+*     L0,L1,L2,L3
+*     L4,L7
+*   
+*     I0,I1,I2,I3 May be altered and need not be restored
+*     I4
+*     M3,M7     
+*
+*******************************************************************/
+
+.MODULE/RAM/SEG=UserProgram user;
+
+  .ENTRY UserBegin;
+  .ENTRY UserRunInit;
+  .ENTRY UserChannel;
+  .ENTRY UserEvent;
+  .ENTRY UserRunFinish;
+
+  .EXTERNAL UserBeginReturn;                        
+  .EXTERNAL UserRunInitReturn;                       
+  .EXTERNAL UserChannelReturn;                       
+  .EXTERNAL UserEventReturn;                         
+  .EXTERNAL UserRunFinishReturn;                     
+ 
+  #include <INTRFACE.INC>         /* interface provided by XIA */ 
+  
+  .VAR/DM/SEG=UserData saveI0, saveI1, saveI3, saveI4; 
+  .VAR/DM/SEG=UserData MyBuffer[16];
+
+
+/*---------------------------------------------------------------------
++
++ UserBegin is called once after power up or reboot, after all
++ memory and variables have been initialized, but before
++ the trigger/filter FPGAs and the DACs have been programmed.  
++                         
+----------------------------------------------------------------------*/
+
+UserBegin:
+   
+{ ar=^MyBuffer;                   /* UserOut[0]=address of MyBuffer */
+  ar=ar+0x4000;
+  dm(UserOut)=ar;                 /* address as seen from the host */
+  ar=%MyBuffer;          
+  dm(UserOut+1)=ar;     }          /* UserOut[1]=length of MyBuffer */
+                                  /* To communicate address  */
+                                  /* and size of buffer to host. */
+
+  JUMP UserBeginReturn;     
+
+/*---------------------------------------------------------------------
++
++ UserRunInit is called once during the run initialization phase 
++                         
+----------------------------------------------------------------------*/
+
+UserRunInit:
+     
+  nop;                            /* user program instructions */
+        
+  JUMP UserRunInitReturn;    
+
+/*-----------------------------------------------------------------------
++
++  UserChannel is called for every event, and for every channel 
++  with an entry in the read/hit pattern, and for which bit 0
++  in its ChanCSRB has been set.
++                         
+------------------------------------------------------------------------*/
+
+
+UserChannel:
+
+  /* uncomment if you need to use these registers  */
+
+  dm(saveI0)   = I0;  dm(saveI1)   = I1;      
+  dm(saveI3)   = I3;  dm(saveI4)   = I4;      
+
+  /* end of section to be uncommented              */
+
+  ar=-1;
+  dm(UretVal) = ar;
+  dm(UretVal+1)=ar;
+  dm(UretVal+2)=ar;
+  dm(UretVal+3)=ar;
+  dm(UretVal+4)=ar;
+  dm(UretVal+5)=ar;
+  
+  /* User code goes here */
+   
+  /* uncomment if you have used these registers    */
+
+  I0 = dm(saveI0); I1 = dm(saveI1);           
+  I3 = dm(saveI3); I4 = dm(saveI4);           
+
+  /* end of section to be uncommented              */
+   
+  JUMP UserChannelReturn;    
+
+/*---------------------------------------------------------------------
++
++ UserEvent is called after the regular event processing has finished,
++ and only if for at least one channel bit 0 of ChanCSRB was set.
++                         
+----------------------------------------------------------------------*/
+ 
+UserEvent:
+      
+  nop;                            /* user program instructions */
+ 
+  JUMP UserEventReturn;        
+
+/*---------------------------------------------------------------------
++
++ UserRunFinish is called after the run has ended, but before the host
++ is notified,but only if for at least one channel bit 0 of ChanCSRB 
++ was set.  
++                         
+----------------------------------------------------------------------*/
+ 
+UserRunFinish:
+
+  nop;                            /* user program instructions */
+ 
+  JUMP UserRunFinishReturn;         
+
+.EndMod;    

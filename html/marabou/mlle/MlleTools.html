@@ -1,0 +1,103 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <!-- SGI_COMMENT COSMOCREATE -->
+    <!-- SGI_COMMENT VERSION NUMBER="1.0.2" -->
+</HEAD>
+<BODY>
+<H2>
+Programs/Tools to convert MLLE data</H2>
+<HR>
+<UL>
+    <LI>
+    <B><FONT SIZE="4">mhdr</FONT></B> 
+    <UL>
+        <LI>
+        Outputs MLLE header data to <B>stdout</B> 
+        <LI>
+        May be used for raw data files as well as histograms 
+        <LI>
+        Syntax: 
+        <UL>
+            <LI>
+            <B>mhdr <I>filename</I></B> 
+            <LI>
+            <B>mhdr /dev/dat</B><BR>
+             
+        </UL>
+    </UL>
+    <LI>
+    <B><FONT SIZE="4">mtcopy</FONT></B> 
+    <UL>
+        <LI>
+        Copies MLLE raw data 
+        <UL>
+            <LI>
+            from tape to disk 
+            <LI>
+            from tape to (remote) tape 
+        </UL>
+        <LI>
+        Syntax: see <A HREF="MlleToolMtcopy.html">manual page</A><BR>
+         
+    </UL>
+    <LI>
+    <B><FONT SIZE="4">mlle2hbook</FONT></B> 
+    <UL>
+        <LI>
+        Converts MLLE data to CERN's <B>HBOOK format</B> 
+        <UL>
+            <LI>
+            MLLE raw data to NTuples 
+            <LI>
+            MLLE histograms to HBOOK histograms 
+        </UL>
+        <LI>
+        Syntax: see <A HREF="MlleToolMlle2hbook.html">manual page</A> <BR>
+
+    </UL>
+</UL>
+<HR>
+<UL>
+    <LI>
+    <FONT SIZE="4">rdtio.o</FONT>
+    <UL>
+        <LI>
+        Functions to process MLLE raw data
+        <LI>
+        Provides a means to
+        <UL>
+            <LI>
+            open/close MLLE raw data files
+            <LI>
+            decode records
+            <LI>
+            decode events
+            <LI>
+            show headers
+        </UL>
+        <LI>
+        For details see <B>/home/rg/dcnv/lsrc/rdtio.c</B>
+    </UL>
+    <LI>
+    <FONT SIZE="4">ospio.o</FONT>
+    <UL>
+        <LI>
+        Functions to read MLLE histogram data
+        <LI>
+        Provides function calls to
+        <UL>
+            <LI>
+            open/close an OSP histogram file
+            <LI>
+            read histgram data, 1-dim or 2-dim
+            <LI>
+            show header info
+        </UL>
+        <LI>
+        For details see <B>/home/rg/dcnv/lsrc/ospio.c</B>
+    </UL>
+</UL>
+<HR>
+</BODY>
+</HTML>

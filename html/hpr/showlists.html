@@ -1,0 +1,218 @@
+<!DOCTYPE HTML>
+<HTML>
+<PRE>
+
+<H1>HistPresent start window</H1>
+<a href=#Help_on_operators>Operators</a> 
+<a href=#Help_on_OperRebin>Rebin selected histogram</a> 
+<a href=#Help_on_rootrc>Edit .rootrc</a> 
+<a href=attrmacro.html>Edit AttrMacro</a> 
+<a href=#Help_on_ShowFileList>Show Filelist</a> 
+<a href=#Help_on_ListObjectsInMemory>List Objects in Memory</a> 
+<a href=#Help_on_HistsFromM_analyze>Hists from M_analyze</a> 
+<a href=#Help_on_SelectionMask>File/Histo Selection Mask</a> 
+<a href=#Help_on_ShowSelected>Show selected hists</a> 
+
+<a NAME=Help_on_operators></a> 
+<H1>Operators</H1>
+If two histograms (or more for Add)
+are selected one can
+perform the following operations: 
++ Add: hist1 + factor*hist2
+- Sub: hist1 - factor*hist2
+* Mul: hist1 * factor*hist2
+* Div: hist1 / (factor*hist2)
+
+The resulting histograms are shown and stored in
+memory with new names. Note that in this case the
+order of selection is important.
+
+If only 1 histogram is selected with operation
+multiply then this gets scaled.
+
+For operation <b>Add</b> any number of selections are
+possible.
+
+<a NAME=Help_on_OperRebin></a> 
+<H1>Rebin selected histogram</H1>
+Rebin a selected histogram using the selected
+(green) value. The new bin content may the sum or
+average of the original bins. 
+A new histogram is created in memory  which may be 
+accessed later by the command <a href=#Help_on_ListObjectsInMemory>List Objects in Memory</a> 
+
+<a NAME=Help_on_rootrc></a> 
+<H1>Edit .rootrc</H1>
+The following resources can be put into
+a .rootrc file either in the current or 
+in the home directory. Units for Window 
+parameters are in pixel. (N.b. Normally
+a screen has 1280 x 1024 pixels.)
+
+HistPresent.PaperSizeX:         20
+HistPresent.PaperSizeY:         26
+HistPresent.WindowX:            530
+HistPresent.WindowY:              5
+HistPresent.WindowYShift:        30
+HistPresent.WindowXShift:        0
+HistPresent.WindowXWidth_1dim:  750
+HistPresent.WindowYWidth_1dim:  550
+HistPresent.WindowXWidth_2dim:  750
+HistPresent.WindowYWidth_2dim:  650
+HistPresent.WindowXWidth_many:  800
+HistPresent.WindowYWidth_many:  800
+HistPresent.WindowArrange_many:  ontop
+HistPresent.WindowArrange_many:  sidebyside
+
+HistPresent.WorkFileName:  q3dparams.root
+HistPresent.PrintCommand:  lpr -Paul
+HistPresent.LastSettingsName: defaults/Last
+
+With WindowXShift is > 0 one can arrange the 
+pictures as tiles. In this case one should set
+WindowXShift = WindowXWidth_1dim + 4 ,
+WindowYShift = WindowYWidth_1dim + 30,
+
+This will cause an arrangment like this:
+--------------------------
+| window1    |  window2  |
+--------------------------
+| window3    |  window4  |
+--------------------------
+etc.
+
+If the path LastSettingsName is defined 
+ranges and scales (lin - log) of histograms are
+remembered during and between sessions in files
+with names defaults/Last_histname.def. 
+It is convenient to use an own subdirectory 
+(in this example $CWD/defaults) for this.
+LastSettingsName may be any legal pathname
+e.g. /tmp/$(USER)/
+
+<a NAME=Help_on_ShowFileList></a> 
+<H1>Show Filelist</H1>
+Display a list of root files (.map, .root, .histlist)  in
+current working directory. Ordering may be done
+alphabetically  (or reverse) or by modification time.
+
+Tighter selection can be made by defining a
+FileSelectionMask. Clicking on a file displays the contents
+(histograms, trees , cuts).The gray square button on the
+left side of the objects name is used to select the object
+for operations like Rebin, Add etc. Selecting a cut in this
+way makes it memory resident and can be used when displaying
+trees and 2-dim histograms. The command Clear Select resets
+all selections, currently this does not turn the green
+button to gray.
+
+When a file contains many histograms it can be usful to have
+lists with only a subset. Such a subset can be defined in a
+file e.g. mysubset.histlist. (Note: The Extension .histlist
+is compulsory.) It may contain the name of the file followed
+by the name of the histogram to be selected (one per line)
+separated by a space or only the name of the histogram.
+
+All histograms in such a list may be displayed in one single
+canvas allowing a quick overview on many histgrams.
+
+This list can be produced either by an editor or by
+selecting the subset with HistPresent itself (i.e. pressing
+the grey buttons left of the name) and then clicking on
+Compose list.
+A sample session is shown in the attached picture.
+
+<img SRC="ShowList.canvas.gif"  height=650 width=600 align=ABSCENTER>
+
+<a NAME=Help_on_ListObjectsInMemory></a> 
+<H1>List Objects in Memory</H1>
+List objects (histograms, cuts, windows) currently in memory
+This is needed if new histograms are created by <b>Rebin</b>,
+or arithmetic operations.
+
+<a NAME=Help_on_HistsFromM_analyze></a> 
+<H1>Hists from M_analyze</H1> 
+Histograms may be directly fetched from a running M_analyze
+process via a socket connection to a local or remote
+hostcomputer. 
+The convention on TcpIp port numbers used is as follows:
+Online running M_analyze uses port 9090 for communication
+with C_analyze and HistPresent. Offline processes use
+port 9091 - 9095, maximum 5 processes are allowed 
+simultanously. The port number used is shown in the
+C_analyze control window and printed during startup 
+of M_analyze.
+Notes: 
+When invoking this command first time in a HistPresent
+session hostaddress and port are requested. Next invocations
+take the same values. I.e. hostaddress and port cannot be
+altered in the same session.
+At each invocation of the command the histogram list 
+and the current statistics are fetched from M_analyze
+and the command list is build with these values.
+Pressing on a histogram name will fetch a fresh copy
+of the the histogram from M_analyze.
+This also works for the automatic update when using 
+the command <a href=Help_on_ShowSelected>Show selected hists</a>.
+However since histograms are gathered one by one the number
+of entries will in general not reflect the same number of
+events collected.
+
+<a NAME=Help_on_SelectionMask></a> 
+<H1>File/Histo Selection Mask</H1>
+SelectionMasks may be defined using wildcard or regular
+expression syntax. See <a href=options.html#Help_on_RegExp>Help_on_RegExp</a>
+
+<a NAME=Help_on_ShowSelected></a> 
+<H1>Show selected hists</H1>
+This command displays up to 25 selected histograms in one
+single canvas. Selection is done by pressing the grey button
+in a histogram list which should turn green. Selection may
+be done from different lists.
+Clicking into a histogram will display this with the normal
+options as Fitting, Expanding etc.
+
+In this canvas only the following operations are possible
+(From the Display popup menu):
+
+<B>Show all as selected (Range only) or (Range, Min, Max)</B>:
+
+First select a histgram with the middle mouse, then adjust
+the desired range by moving the left mouse pressed in the
+axis scale.
+
+<B>Calibrate all as selected</B>:
+
+See <a href=calibration#calibration.html>Help_on_Calibration</a>
+
+<B>Rebin all</B>:
+
+Rebin all histograms with the same rebin value.
+
+<b>Activate automatic update</b>:
+
+This is useful in an online environment where histograms are
+written to a memory mapped file. This option allows the
+refresh the display of the histograms in regular intervals.
+The refresh rate (AutoUpdateDelay) may be choosen from the
+Option <b>HistPresent numerical options</b> or in the .rootrc
+file.
+
+<B>Notes:</B>
+Zooming of the x-y axis is possible however these values will 
+<B>not</B> be remembered. To achieve this one should click 
+into the histogram to get the standard view with all options
+and adjust there the desired range.
+To ease this operation for many historams to be shown in the 
+same range the option <B>Show Always All As First</B> is provided.
+In this case it is sufficient to adjust the range only for
+the first histogram in a list.  
+
+An example is shown in the <a href=Help_on_ShowExample>attached picture</a>.
+
+<a NAME=Help_on_ShowExample></a> 
+<H1>Example of Show selected hists</H1>
+<img SRC="ShowSelected.canvas.gif"  height=400 width=600 align=ABSCENTER>
+ 
+</PRE>
+</HTML>

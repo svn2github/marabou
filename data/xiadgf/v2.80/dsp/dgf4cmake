@@ -1,0 +1,17 @@
+OPTIONS = -DDGF4C -DNCHANNELS=4  
+ARCH = -2181
+
+dgfcode.bin :  dgfcode.exe
+	exe2bin dgfcode.exe
+
+dgfcode.exe : baseline.obj begin.obj double.obj compcoef.obj extmem.obj firewire.obj  \
+              interupt.obj main.obj multipar.obj HardWare.obj  process.obj \
+              testseg.obj user.obj dgf.ach              
+	ld21 -i dgf4clink -a dgf -e dgfcode -g -x
+
+user.obj : dgf4cmake user.dsp intrface.inc
+	asm21 $(ARCH) user  
+
+dgf.ach : dgf.sys
+	bld21 dgf
+

@@ -1,0 +1,54 @@
+<!DOCTYPE HTML>
+<HTML>
+<PRE>
+<axx NAME=Help_on_Calibration></a>
+<H1>Calibrate x-scale of 1-dim histogram</H1>
+The X - scale of of a 1-dim histogram may be recalibrated
+providing x-y-points. At least 2 points are required. 
+Points can be provided in the following ways:
+Activate the option  <b>Enable calibration</b> from the 
+<b>Various HistPresent Options</b> menu. Execute a (gauss) fit
+to at least 2 peaks in the spectrum from the <b>Fit popup menu</b>. 
+Execute <b>Calibrate</b> from the same menu and fill in values
+into the presented table. 
+If no or less then 2 points are added before <b>Calibrate</b>
+the x-y values of the fit points must be filled in by hand.
+
+The user is then prompted for a fit function. As default 
+<b>pol1</b> is offered, i.e. a straight line. Giving <b>pol2</b>
+would give a polynomial of 2nd degree.
+The fitted function may be written to a root file for later
+use in an analysis program. 
+Note: Use unique and meaningfull names.
+If more then 2 parameters (pol1) are fitted currently only
+the first 2 (i.e. constant and slope of the polynomial) are
+used for the new x-scale. This is because a non linear scaleing
+would require a rebinning of the histogram which in general
+does not give satisfactory results because of artificial gaps
+and peaks.
+The calibration values and titles of the x and y axis are 
+storedin an ascii-file which name is formed from the resource
+<b>HistPresent.LastSettingsName</b> in the <b>.rootrc</b> followed by 
+_<i>histname</i>.def
+So normally: if the histogram name is <i>hpx</i> the file is named:
+<i>defaults/Last_hpx.def</i>
+The same calibration might be applied to a different histogram 
+by just copying this file and replacing the name of the histogram.
+
+This can also be done by selecting this histogram and the one
+to which the calibration should be applied and display them 
+in one canvas. In this canvas a popup menu is provided to 
+achieve this. See <a href=#Help_on_EnableCalib>Help_on_EnableCalibration</a> 
+
+See also <a href=showlists.html#Help_on_ShowSelected>Help_on_ShowSelected</a> and
+<a href=options.html#Help_on_RememberLastSettings>Help_on_RememberLastSettings</a>
+
+<a NAME=Help_on_EnableCalib></a>
+<H1>Option: Enable calibration</H1>
+This option can be set in the <b>Various HistPresent Options</b> menu.
+The X - scale of of a 1-dim histogram may be recalibrated
+providing (more than 1) x-y-points. If this option is active
+the user is asked after a fit to a peak if the mean value 
+should be added to the list of calibration points.
+See also <a href=calibration.html>Help_on_Calibration</a>
+</HTML>

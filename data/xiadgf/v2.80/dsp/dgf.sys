@@ -1,0 +1,15 @@
+{*****************************************************
+ *  DGF.SYS
+ *
+ *  Define memory segments for DGF-4C, Revision C
+ *
+ *****************************************************}
+.SYSTEM DGF;
+.ADSP2181;
+.MMAP0;
+.SEG/RAM/PM/CODE/ABS=0    program[8192];
+.SEG/RAM/PM/CODE/ABS=8192 UserProgram[3072];
+.SEG/RAM/DM/ABS=0         dgf_params[416];
+.SEG/RAM/DM/ABS=416       dmdata[14836];
+.SEG/RAM/DM/ABS=15252     UserData[1100];
+.ENDSYS;

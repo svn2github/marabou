@@ -1,0 +1,159 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2//EN">
+<HTML>
+<HEAD>
+    <!-- SGI_COMMENT COSMOCREATE -->
+    <!-- SGI_COMMENT VERSION NUMBER="1.0.2" -->
+</HEAD>
+<BODY>
+<H4>
+NAME</H4>
+<P>
+<B>mlle2hbook</B> - konvertiert MLLE-Daten ins HBOOK-Format </P>
+<H4>
+AUFRUF</H4>
+<PRE>
+<FONT SIZE="5">       mlle2hbook [-ivhu]</FONT>
+<FONT SIZE="5">                  [-I hbid] [-d hbdir] [-t title]</FONT>
+<FONT SIZE="5">                  [-b binsize] [-p params] [-P -S psizes]</FONT>
+<FONT SIZE="5">                  [-Q quota] [-R range] [-r count]</FONT>
+<FONT SIZE="5">                  hbfile [mllefiles]</FONT>
+</PRE>
+<H4>
+BESCHREIBUNG</H4>
+<PRE>
+<FONT SIZE="5">       Mlle2hbook  konvertiert  Daten,  die unter dem MLLE-System</FONT>
+<FONT SIZE="5">       erzeugt wurden, ins HBOOK-Format (-&gt; cernlib).  Die resul-</FONT>
+<FONT SIZE="5">       tierenden  HBOOK-Dateien  k&ouml;nnen  dann mit diversen CERN-</FONT>
+<FONT SIZE="5">       Programmen (z.B. paw++) weiterverarbeitet werden.</FONT>
+<FONT SIZE="5">       Mlle2hbook konvertiert sowohl Rohdaten  (rdt-Dateien)  ins</FONT>
+<FONT SIZE="5">       HBOOK-Ntuple-Format   als  auch  Spektren  (osp-Files)  in</FONT>
+<FONT SIZE="5">       HBOOK-Histogramme.</FONT>
+</PRE>
+<H4>
+ARGUMENTE</H4>
+<PRE>
+<FONT SIZE="5">       <B>hbfile</B></FONT>
+<FONT SIZE="5">               [HBOOK File (Output)]</FONT>
+<FONT SIZE="5">               Name der HBOOK-Datei,  in  die  die  konvertierten</FONT>
+<FONT SIZE="5">               Daten  geschrieben  werden  sollen.  Die Extension</FONT>
+<FONT SIZE="5">               sollte .hbook  sein;  sie  wird  ggf.  automatisch</FONT>
+<FONT SIZE="5">               erg&auml;nzt.</FONT>
+<FONT SIZE="5">       <B>mllefiles</B></FONT>
+<FONT SIZE="5">               [MLLE Files (Input)]</FONT>
+<FONT SIZE="5">               MLLE-Datei(en),  die  konvertiert werden soll(en).</FONT>
+<FONT SIZE="5">               Fehlt  dieses  Argument,  so  werden   Daten   von</FONT>
+<FONT SIZE="5">               /dev/dat    gelesen.    Werden   mehrere   Dateien</FONT>
+<FONT SIZE="5">               angegeben, wird die HBOOK-Kennung je  Datei  um  1</FONT>
+<FONT SIZE="5">               erh&ouml;ht.</FONT>
+</PRE>
+<H4>
+OPTIONEN</H4>
+<PRE>
+<FONT SIZE="5">      <B> -i</B>      [Interactive Mode]</FONT>
+<FONT SIZE="5">               gibt den File-Header der MLLE-Datei auf stderr aus</FONT>
+<FONT SIZE="5">               und fragt ab, ob die Datei ins  HBOOK-Format  kon-</FONT>
+<FONT SIZE="5">               vertiert werden soll.</FONT>
+<FONT SIZE="5">       <B>-h</B>      [Output Header]</FONT>
+<FONT SIZE="5">               gibt  den  File-Header  der  MLLE-Datei auf stderr</FONT>
+<FONT SIZE="5">               aus.</FONT>
+<FONT SIZE="5">       <B>-v</B>      [Verbose Mode]</FONT>
+<FONT SIZE="5">               gibt ausf&uuml;hrliche  Diagnosemeldungen  auf  stderr</FONT>
+<FONT SIZE="5">               aus.</FONT>
+<FONT SIZE="5">               Die  Option  -vv (&quot;very verbose&quot;) gibt zus&auml;tzlich</FONT>
+<FONT SIZE="5">               eine Record-Statistik aus, -vvv startet den Debug-</FONT>
+<FONT SIZE="5">               Modus.</FONT>
+<FONT SIZE="5">       <B>-u</B>      [Update File]</FONT>
+<FONT SIZE="5">               schreibt  die  konvertierten Daten in eine bereits</FONT>
+<FONT SIZE="5">               existierende HBOOK-Datei: Daten  mit  einer  neuen</FONT>
+<FONT SIZE="5">               Kennung  werden  der  HBOOK-Struktur hinzugef&uuml;gt.</FONT>
+<FONT SIZE="5">               Daten  mit  bereits  vorhandener  Kennung   &uuml;ber-</FONT>
+<FONT SIZE="5">               schreiben den existierenden Datensatz.</FONT>
+<FONT SIZE="5">               Normalerweise  (d.h.  wenn -u nicht angegeben ist)</FONT>
+<FONT SIZE="5">               wird hbfile neu erzeugt.</FONT>
+<FONT SIZE="5">       <B>-I hbid</B> [HBOOK Id]</FONT>
+<FONT SIZE="5">               definiert die Kennung, unter  der  die  Daten  ins</FONT>
+<FONT SIZE="5">               HBOOK-Format  &uuml;bertragen  werden sollen. Der Wert</FONT>
+<FONT SIZE="5">               hbid=1 ist voreingestellt.</FONT>
+<FONT SIZE="5">       <B>-d hbdir</B></FONT>
+<FONT SIZE="5">               [HBOOK directory]</FONT>
+<FONT SIZE="5">               legt innerhalb des HBOOK-Ordners  das  Unterdirec-</FONT>
+<FONT SIZE="5">               tory  hbdir  an  und  speichert den Datensatz dort</FONT>
+<FONT SIZE="5">               unter der Kennung hbid ab.</FONT>
+<FONT SIZE="5">       <B>-Q quota</B></FONT>
+<FONT SIZE="5">               [Change HBOOK quota]</FONT>
+<FONT SIZE="5">               setzt die maximale  Gr&ouml;sse  der HBOOK-Datei  auf</FONT>
+<FONT SIZE="5">               quota*1000   Records. Standardm&auml;&szlig;ig ist  eine</FONT>
+<FONT SIZE="5">               HBOOK-Datei auf  32000  Records  (je  1024  Worte)</FONT>
+<FONT SIZE="5">               beschr&auml;nkt (d.h. 128 MB).</FONT>
+<FONT SIZE="5">       <B>-t title</B></FONT>
+<FONT SIZE="5">               [HBOOK Title]</FONT>
+<FONT SIZE="5">               vereinbart  den Titel der HBOOK-Datei. Fehlt diese</FONT>
+<FONT SIZE="5">               Option, so werden als  Titel  der  Kommentar,  das</FONT>
+<FONT SIZE="5">               Datum  und die Uhrzeit der MLLE-Datei &uuml;bernommen.</FONT>
+<FONT SIZE="5">       <B>-p params</B></FONT>
+<FONT SIZE="5">               [Param Names]</FONT>
+<FONT SIZE="5">               definiert die Namen der Event-Parameter.  Es  gibt</FONT>
+<FONT SIZE="5">               zwei M&ouml;glichkeiten, die Namen anzugeben:</FONT>
+<FONT SIZE="5">               (1)  durch eine Zeichenkette der Form p1:p2:...:pN</FONT>
+<FONT SIZE="5">               oder</FONT>
+<FONT SIZE="5">               (2) durch Angabe einer Datei mit Extension .pn.</FONT>
+<FONT SIZE="5">               Fehlt die Option -p, so werden die Parameter fort-</FONT>
+<FONT SIZE="5">               laufend numeriert: p1, p2, ..., pN.</FONT>
+<FONT SIZE="5">               Eintr&auml;ge  in  der  .pn-Datei bestehen aus Zeilen,</FONT>
+<FONT SIZE="5">               die jeweils den Namen eines  Parameters  und  ggf.</FONT>
+<FONT SIZE="5">               die Aufl&ouml;sung in Kan&auml;len enthalten.</FONT>
+<FONT SIZE="5">               Die   Option  -p  bietet  auch  die  M&ouml;glichkeit,</FONT>
+<FONT SIZE="5">               einzelne Parameter  auszuw&auml;hlen,  d.h. nur  eine</FONT>
+<FONT SIZE="5">               Untermenge   der   MLLE-Parameter   ins  HBOOK  zu</FONT>
+<FONT SIZE="5">               &uuml;bernehmen: Parameter, deren Name mit 0 angegeben</FONT>
+<FONT SIZE="5">               wird,  werden nicht &uuml;bernommen. Eine Null am Ende</FONT>
+<FONT SIZE="5">               der Liste setzt alle  weiteren  Parameter  auf  0.</FONT>
+<FONT SIZE="5">               Dadurch kann die Gr&ouml;&szlig;e der resultierenden HBOOK-</FONT>
+<FONT SIZE="5">               Datei verringert werden.</FONT>
+<FONT SIZE="5">       <B>-S psizes</B></FONT>
+<FONT SIZE="5">               [Param Sizes]</FONT>
+<FONT SIZE="5">               definiert die Aufl&ouml;sung in Kan&auml;len in der  Form</FONT>
+<FONT SIZE="5">               s1:s2:...:sN.   Sinnvoll  nur f&uuml;r Histogramme und</FONT>
+<FONT SIZE="5">               Projektionsspektren (Option -P).</FONT>
+<FONT SIZE="5">       <B>-P</B>      [Projections Only]</FONT>
+<FONT SIZE="5">               In diesem Fall werden  keine  Ntupel  konvertiert,</FONT>
+<FONT SIZE="5">               vielmehr  werden  direkt  Projektionen in Form von</FONT>
+<FONT SIZE="5">               1-dim Histogrammen angelegt. Eignet sich z.B.  zum</FONT>
+<FONT SIZE="5">               Anlegen von Eichspektren.</FONT>
+<FONT SIZE="5">       <B>-b binsize</B></FONT>
+<FONT SIZE="5">               [Bin Size]</FONT>
+<FONT SIZE="5">               definiert  die  Binsize  (=  Datenpunkte je Kanal)</FONT>
+<FONT SIZE="5">               f&uuml;r Histogramme und Projektionen.</FONT>
+<FONT SIZE="5">       <B>-R range</B></FONT>
+<FONT SIZE="5">               [Record Range]</FONT>
+<FONT SIZE="5">               legt fest, welche  Records  des  Datensatzes  kon-</FONT>
+<FONT SIZE="5">               vertiert  werden sollen. Die Grenzen werden in der</FONT>
+<FONT SIZE="5">               Form  lrl:url  (lower  /   upper   record   limit)</FONT>
+<FONT SIZE="5">               angegeben,  die  Notierung  lrl: bedeutet &quot;Beginne</FONT>
+<FONT SIZE="5">               Konversion ab  Record  lrl&quot;,  die  Notierung  :url</FONT>
+<FONT SIZE="5">               &quot;Konvertiere  alle  Records  einschlie&szlig;lich url&quot;.</FONT>
+<FONT SIZE="5">               Fehlt die Option -R, so werden s&auml;mtliche  Records</FONT>
+<FONT SIZE="5">               der Datei &uuml;bernommen.</FONT>
+<FONT SIZE="5">               Zu  beachten:  Record#1  (der File-Header) wird in</FONT>
+<FONT SIZE="5">               jedem Fall gelesen.</FONT>
+<FONT SIZE="5">       <B>-r count</B></FONT>
+<FONT SIZE="5">               [Repeat Count]</FONT>
+<FONT SIZE="5">               konvertiert  automatisch   die   folgenden   count</FONT>
+<FONT SIZE="5">               Dateien. Die HBOOK-Kennung wird f&uuml;r jede Datei um</FONT>
+<FONT SIZE="5">               1 erh&ouml;ht, ausgehend von        Startwert  hbid.   Diese</FONT>
+<FONT SIZE="5">               Option  setzt  voraus, da&szlig; Daten von Band gelesen</FONT>
+<FONT SIZE="5">               werden.</FONT>
+</PRE>
+<H4>
+SIEHE AUCH</H4>
+<PRE>
+<FONT SIZE="5">       replay(1DCNV), rdtio(3DCNV),</FONT>
+<FONT SIZE="5">       HBOOK Reference Manual</FONT>
+</PRE>
+<H4>
+AUTOR</H4>
+<PRE>
+<FONT SIZE="5">       R. Lutter</FONT>
+</PRE>
+</BODY>
+</HTML>
