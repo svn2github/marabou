@@ -79,7 +79,7 @@ int processEvent(MBSDataIO * mbs) {
 
 	s_vehe * eventData = (s_vehe *) mbs->evt_data; 		/* pointer to event data */
 
-	switch (mbs_event_trigger(mbs)) {			/* dispatch according to trigger number */
+	switch (mbs_get_event_trigger(mbs)) {		/* dispatch according to trigger number */
 		case kMrbTriggerReadout:				/* event readout, trigger 1 */
 			sts = extractSubevents(mbs);		/* extract subevents */
 			if (sts == FALSE) return(FALSE);
@@ -113,7 +113,7 @@ int extractSubevents(MBSDataIO * mbs) {
 		sevtType = mbs_next_sdata(mbs); 					/* next subevent */
 		if (sevtType == MBS_STYPE_ERROR) return(FALSE);	/* error */
 
-		switch (mbs_sevent_serial()) {		/* dispatch according to subevent id */
+		switch (mbs_get_sevent_serial()) {		/* dispatch according to subevent id */
 			case kMrbSevtClu1:				/* subevent clu1: dgf cluster 1, id=1 */
 			case kMrbSevtClu2:				/* subevent clu2: dgf cluster 2, id=2 */
 			case kMrbSevtClu3:				/* subevent clu3: dgf cluster 3, id=3 */
@@ -124,7 +124,7 @@ int extractSubevents(MBSDataIO * mbs) {
 			case kMrbSevtClu8:				/* subevent clu8: dgf cluster 8, id=8 */
 			case kMrbSevtClu9:				/* subevent clu9: dgf cluster 9 (time stamping dgf), id=9 */
 			case kMrbSevtClu10:				/* subevent clu10: dgf cluster 10 (beam dump dgf), id=10 */
-				sts = decodeDgfData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodeDgfData(mbs);
 				if (sts == FALSE) return(FALSE);
 				continue;
  			case kMrbSevtCdf1:				/* caen adc data id=11 */
@@ -133,26 +133,26 @@ int extractSubevents(MBSDataIO * mbs) {
  			case kMrbSevtCdb2:				/* caen adc data id=14 */
  			case kMrbSevtCdb3:				/* caen adc data id=15 */
  			case kMrbSevtCde:				/* caen adc data id=16 */
-				sts = decodeCaenAdcData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodeCaenAdcData(mbs);
 				if (sts == FALSE) return(FALSE);
 				continue;
 			case kMrbSevtCdt1:				/* caen tdc data, id=17 */
 			case kMrbSevtCdt2:				/* caen tdc data, id=18 */
-				sts = decodeCaenTdcData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodeCaenTdcData(mbs);
 				if (sts == FALSE) return(FALSE);
 				continue;
 			case kMrbSevtScData:			/* subevent scData: scaler data, id=19 */
-				sts = decodeScalerData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodeScalerData(mbs);
 				if (sts == FALSE) return(FALSE);
 				continue;
 			case kMrbSevtPuData:			/* subevent puData: pattern unit id=20 */
-				sts = decodePuData(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodePuData(mbs);
 				if (sts == FALSE) return(FALSE);
 				continue;
 			case kMrbSevtDsca1:				/* subevent dsca1: dgf counters crate 1, id=21 */
 			case kMrbSevtDsca2:				/* subevent dsca2: dgf counters crate 2, id=22 */
 			case kMrbSevtDsca3:				/* subevent dsca3: dgf counters crate 3, id=23 */
-				sts = decodeDgfCounters(mbs->sevt_id, mbs->sevt_wc, mbs->sevt_data);
+				sts = decodeDgfCounters(mbs);
 				if (sts == FALSE) return(FALSE);
 				continue;
 
@@ -173,31 +173,61 @@ int extractSubevents(MBSDataIO * mbs) {
 }
 
 /* subevent id 1-10, type [10,22]: raw dgf data, format 0x101 */
-int decodeDgfData(int sevtId, int sevtWc, unsigned short * sevtData) {
+int decodeDgfData(MBSDataIO * mbs) {
+	int sevtId;
+	int sevtWc;
+	unsigned short * sevtData;
+	sevtId = mbs_get_sevent_serial(mbs);
+	sevtWc = mbs_get_sevent_wc(mbs);
+	sevtData = mbs_get_sevent_dataptr(mbs);
 	printf("Subevent %d: Dgf data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
 /* subevent id 11-16, type [10,42]: raw caen data */
-int decodeCaenAdcData(int sevtId, int sevtWc, unsigned short * sevtData) {
+int decodeCaenAdcData(MBSDataIO * mbs) {
+	int sevtId;
+	int sevtWc;
+	unsigned short * sevtData;
+	sevtId = mbs_get_sevent_serial(mbs);
+	sevtWc = mbs_get_sevent_wc(mbs);
+	sevtData = mbs_get_sevent_dataptr(mbs);
 	printf("Subevent %d: Caen V785 adc data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
 /* subevent id 17 + 18, type [10,42]: raw caen data */
-int decodeCaenTdcData(int sevtId, int sevtWc, unsigned short * sevtData) {
+int decodeCaenTdcData(MBSDataIO * mbs) {
+	int sevtId;
+	int sevtWc;
+	unsigned short * sevtData;
+	sevtId = mbs_get_sevent_serial(mbs);
+	sevtWc = mbs_get_sevent_wc(mbs);
+	sevtData = mbs_get_sevent_dataptr(mbs);
 	printf("Subevent %d: Caen V775 tdc data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
 /* subevent 19, type [10,11]: scaler data: 3 scalers a 32 chn a 32 bit */
-int decodeScalerData(int sevtId, int sevtWc, unsigned short * sevtData) {
+int decodeScalerData(MBSDataIO * mbs) {
+	int sevtId;
+	int sevtWc;
+	unsigned short * sevtData;
+	sevtId = mbs_get_sevent_serial(mbs);
+	sevtWc = mbs_get_sevent_wc(mbs);
+	sevtData = mbs_get_sevent_dataptr(mbs);
 	printf("Subevent %d: scaler data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
 
 /* subevent 20, type [10,53]: pattern unit Sis3600 */
-int decodePuData(int sevtId, int sevtWc, unsigned short * sevtData) {
+int decodePuData(MBSDataIO * mbs) {
+	int sevtId;
+	int sevtWc;
+	unsigned short * sevtData;
+	sevtId = mbs_get_sevent_serial(mbs);
+	sevtWc = mbs_get_sevent_wc(mbs);
+	sevtData = mbs_get_sevent_dataptr(mbs);
 	printf("Subevent %d: scaler data, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }
@@ -212,7 +242,13 @@ int decodePuData(int sevtId, int sevtWc, unsigned short * sevtData) {
 /*                                    N+1: magic word                */
 /*                                    ... ... ...                    */
 /*                                    X: end of data 0x5252          */
-int decodeDgfCounters(int sevtId, int sevtWc, unsigned short * sevtData) {
+int decodeDgfCounters(MBSDataIO * mbs) {
+	int sevtId;
+	int sevtWc;
+	unsigned short * sevtData;
+	sevtId = mbs_get_sevent_serial(mbs);
+	sevtWc = mbs_get_sevent_wc(mbs);
+	sevtData = mbs_get_sevent_dataptr(mbs);
 	printf("Subevent %d: internal dgf counters, wc=%d\n", sevtId, sevtWc);
 	return(TRUE);
 }

@@ -16,8 +16,10 @@
 	extern "C" UInt_t mbs_next_sevent_raw(const MBSDataIO *);
 	extern "C" UInt_t mbs_next_sevent(const MBSDataIO *);
 	extern "C" UInt_t mbs_next_sheader(const MBSDataIO *);
-	extern "C" UInt_t mbs_sevent_subtype(const MBSDataIO *);
-	extern "C" Int_t mbs_sevent_serial(const MBSDataIO *);
+	extern "C" UInt_t mbs_get_sevent_subtype(const MBSDataIO *);
+	extern "C" Int_t mbs_get_sevent_serial(const MBSDataIO *);
+	extern "C" Int_t mbs_get_sevent_wc(const MBSDataIO *);
+	extern "C" UShort_t * mbs_get_sevent_dataptr(const MBSDataIO *);
 	extern "C" UInt_t mbs_next_sdata_raw(const MBSDataIO *);
 	extern "C" UInt_t mbs_next_sdata(const MBSDataIO *);
 	extern "C" void mbs_pass_errors(const Char_t *);
@@ -25,7 +27,7 @@
 	extern "C" Bool_t mbs_close_file(const MBSDataIO *);
 	extern "C" Bool_t mbs_free_dbase(const MBSDataIO *);
 	extern "C" UInt_t mbs_next_event(const MBSDataIO *);
-	extern "C" Int_t mbs_event_trigger(const MBSDataIO *);
+	extern "C" Int_t mbs_get_event_trigger(const MBSDataIO *);
 	extern "C" Int_t mbs_pass_sevent(const MBSDataIO * , UShort_t *);
 	extern "C" Int_t mbs_show(const MBSDataIO *, const Char_t *, FILE *);
 	extern "C" Int_t mbs_set_show(const MBSDataIO *, const Char_t *, Int_t , FILE *);

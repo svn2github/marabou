@@ -735,10 +735,10 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	else										return(_mbs_next_lmd_event(mbs));
 }
 
-int mbs_event_trigger(MBSDataIO *mbs) {
+int mbs_get_event_trigger(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_event_trigger
+// Name:           mbs_get_event_trigger
 // Purpose:        Return event trigger
 // Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
 // Results:        int trigger              -- event trigger
@@ -1081,13 +1081,13 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 	return(stype);
 }
 
-unsigned int mbs_sevent_subtype(MBSDataIO *mbs) {
+unsigned int mbs_get_sevent_subtype(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_sevent_subtype
+// Name:           mbs_get_sevent_subtype
 // Purpose:        Return subevent subtype
 // Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        unsigned int sesubtype   -- subevent subtype
+// Results:        unsigned int subtype     -- subevent subtype
 // Exceptions:     
 // Description:    Returns subtype bits of current subevent
 // Keywords:       
@@ -1096,19 +1096,49 @@ unsigned int mbs_sevent_subtype(MBSDataIO *mbs) {
 	return(((mbs->sevttype)->type >> 16) & 0xFFFF);
 }
 
-int mbs_sevent_serial(MBSDataIO *mbs) {
+int mbs_get_sevent_serial(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_sevent_serial
+// Name:           mbs_get_sevent_serial
 // Purpose:        Return subevent serial number
 // Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
-// Results:        int seserial             -- subevent serial
+// Results:        int serial               -- subevent serial
 // Exceptions:     
 // Description:    Returns serial number of current subevent
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
 	return(mbs->sevt_id);
+}
+
+int mbs_get_sevent_wc(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_get_sevent_wc
+// Purpose:        Return subevent word count
+// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
+// Results:        int wc                   -- subevent wc
+// Exceptions:     
+// Description:    Returns word count of current subevent
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	return(mbs->sevt_wc);
+}
+
+unsigned short * mbs_get_sevent_dataptr(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_get_sevent_dataptr
+// Purpose:        Return pointer to subevent data
+// Arguments:      MBSDataIO * mbs          -- ptr as returned by mbs_open_file
+// Results:        int seserial             -- subevent serial
+// Exceptions:     
+// Description:    Returns a pointer to subevent data
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	return(mbs->sevt_data);
 }
 
 unsigned int mbs_next_sdata(MBSDataIO *mbs) {
