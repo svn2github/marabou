@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.6 2004-11-17 14:30:08 marabou Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.7 2004-11-18 12:14:31 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -178,8 +178,12 @@ class TMrbTidyNode : public TMrbNamedX {
 		inline void SetTreeLevel(Int_t Level) { fTreeLevel = Level; };
 		inline void SetTreeLevelFromParent() { fTreeLevel = fParent->GetTreeLevel() + 1; };
 
+		Bool_t HasTextChildsOnly();
+		const Char_t * CollectTextFromChilds(TString & Buffer);
+
 		void FillTree();
 		void DeleteTree();
+		Int_t StepTree(TObjArray & LofNodes);
 
 		inline TMrbLofNamedX * GetLofChilds() { return(&fLofChilds); };
 		inline TMrbLofNamedX * GetLofAttr() { return(&fLofAttr); };
@@ -326,6 +330,8 @@ class TMrbTidyNode : public TMrbNamedX {
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, TObjArray & LofAttr, Bool_t Recursive = kFALSE);
 
+		inline Bool_t HasChilds() { return(this->GetLofChilds()->GetEntries() > 0); };
+
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & Out = cout);
 		void PrintTree(ostream & Out = cout);
@@ -407,7 +413,10 @@ class TMrbTidyDoc : public TNamed {
 		Bool_t CleanAndRepair();
 		Bool_t RunDiagnostics();
 
-		inline Bool_t HasNodes() { return((fTidyRoot != NULL) && (fTidyRoot->GetLofChilds()->GetEntries() > 0)); };
+		inline Bool_t HasNodes() { return((fTidyRoot != NULL) && fTidyRoot->HasChilds()); };
+
+		inline void StripText(Bool_t Flag = kTRUE) { fStripText = Flag; };
+		inline Bool_t TextToBeStripped() { return(fStripText); };
 
 		inline TidyDoc GetHandle() const { return(fHandle); };
 		inline const Char_t * GetDocFile() const { return(fDocFile.Length() ? fDocFile.Data() : NULL); };
@@ -437,6 +446,7 @@ class TMrbTidyDoc : public TNamed {
 		TString fDocFile;				// name of document file
 		TString fCfgFile;				// name of configuration file
 		Bool_t fRepair; 				// kTRUE if 'clean and repair' is to be called
+		Bool_t fStripText;				// kTRUE if <cr>s surrounding text have to be stripped
 
 		TMrbTidyNode * fTidyRoot;		// ptr to whole document
 		TMrbTidyNode * fTidyHtml;		// ptr to <html>...</html>

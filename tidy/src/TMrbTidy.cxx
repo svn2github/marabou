@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.8 2004-11-17 14:38:04 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.9 2004-11-18 12:14:31 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -25,11 +25,11 @@
 <b>ROOT script to invoke TIDY:</b>
 <pre>
 {
-&#160;&#160;&#160;&#160;gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
-&#160;&#160;&#160;&#160;gSystem->Load("$MARABOU/lib/libTMrbTidy.so");
-&#160;&#160;&#160;&#160;gSystem->Load("$MARABOU/lib/libTidy.so");
-&#160;&#160;&#160;&#160;TMrbTidyDoc * tdoc = new TMrbTidyDoc("demo", "tidy.html");
-&#160;&#160;&#160;&#160;tdoc->Print();
+&nbsp;&nbsp;&nbsp;&nbsp;gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+&nbsp;&nbsp;&nbsp;&nbsp;gSystem->Load("$MARABOU/lib/libTMrbTidy.so");
+&nbsp;&nbsp;&nbsp;&nbsp;gSystem->Load("$MARABOU/lib/libTidy.so");
+&nbsp;&nbsp;&nbsp;&nbsp;TMrbTidyDoc * tdoc = new TMrbTidyDoc("demo", "tidy.html");
+&nbsp;&nbsp;&nbsp;&nbsp;tdoc->Print();
 }
 </pre>
 <b>Output from method TMrbTidyDoc::Print():</b>
@@ -259,6 +259,7 @@ void TMrbTidyDoc::Reset(Bool_t Release) {
 
 	if (Release && fHandle) tidyRelease(fHandle);	// free tidy allocs
 	fRepair = kFALSE;								// don't run reapir step
+	fStripText = kFALSE;							// don't strip text
 	fDocFile.Resize(0); 							// no doc file
 	fCfgFile.Resize(0); 							// no config
 	if (Release && fTidyRoot) {						// delete document tree
@@ -495,19 +496,72 @@ const Char_t * TMrbTidyNode::GetText(TString & Buffer) {
 // Name:           TMrbTidyNode::GetText()
 // Purpose:        Get text from node
 // Arguments:      TString & Buffer  -- where to store text
-// Results:        Char_t * BufPtr   -- pointer to text
+// Results:        Char_t * BufPtr   -- ptr to buffer data
 // Exceptions:
 // Description:    Reads text portion from node.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	Buffer.Resize(0);			// cleanup
-	if (this->HasText()) {		// is there any text in this node?
-		TidyBuffer buf;
-		tidyNodeGetText(fTidyDoc, fHandle, &buf);	// fetch it
+	Bool_t hasText = (this->IsText() || this->HasText());
+	if (hasText) {		// is there any text in this node?
+		TidyBuffer buf = {'\0'};
+		tidyNodeGetText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle, &buf);	// fetch it
 		Buffer = buf.bp;		// fill buffer
+		if (((TMrbTidyDoc *) fTidyDoc)->TextToBeStripped() && (Buffer(0) == '\n') && (Buffer(Buffer.Length() - 1) == '\n')) {
+			Buffer.Resize(Buffer.Length() - 1);
+			Buffer = Buffer(1, Buffer.Length() - 1);
+		}
 	}
-	return(Buffer.Data());
+	return(hasText ? Buffer.Data() : NULL);
+}
+
+Bool_t TMrbTidyNode::HasTextChildsOnly() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::HasTextChildsOnly()
+// Purpose:        Check if node has only text in it
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks node childs to be text nodes only.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->HasChilds()) {
+		TMrbTidyNode * child = (TMrbTidyNode *) fLofChilds.First();
+		while (child) {
+			if (!child->IsText()) return(kFALSE);
+			child = (TMrbTidyNode *) fLofChilds.After(child);
+		}
+		return(kTRUE);
+	}
+	return(kFALSE);
+}
+
+const Char_t *  TMrbTidyNode::CollectTextFromChilds(TString & Buffer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::CollectTextFromChilds()
+// Purpose:        Collect text from childs
+// Arguments:      TString & Buffer   -- where to store text
+// Results:        Char_t * BufPtr    -- ptr to buffer data
+// Exceptions:
+// Description:    Collect text from childs if it is a pure text node.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Buffer.Resize(0);
+	Bool_t isPureText = this->HasTextChildsOnly();
+	if (isPureText) {
+		TString text;
+		TMrbTidyNode * child = (TMrbTidyNode *) fLofChilds.First();
+		while (child) {
+			Buffer += child->GetText(text);
+			child = (TMrbTidyNode *) fLofChilds.After(child);
+		}
+	}
+	return(isPureText ? Buffer.Data() : NULL);
 }
 
 void TMrbTidyNode::FillTree() {
@@ -987,6 +1041,29 @@ void TMrbTidyNode::PrintTree(ostream & Out) {
 	}
 }
 
+Int_t TMrbTidyNode::StepTree(TObjArray & LofNodes) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::StepTree
+// Purpose:        Step thru tree and collect nodes
+// Arguments:      TObjArray & LofNodes  -- where to store nodes
+// Results:        Int_t NofNodes        -- number of nodes
+// Exceptions:
+// Description:    Steps thru node tree and stores nodes in array
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
+	Int_t nofNodes = 0;
+	while (node) {
+		LofNodes.Add(node);
+		nofNodes++;
+		nofNodes += node->StepTree(LofNodes);
+		node = (TMrbTidyNode *) fLofChilds.After(node);
+	}
+	return(nofNodes);
+}
+
 void TMrbTidyNode::Print(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1018,16 +1095,11 @@ void TMrbTidyNode::Print(ostream & Out) {
 		<< " type=" << tyStr.Data();
 	if (this->GetIndex() != TidyTag_UNKNOWN) Out << " tagid=" << tagStr.Data();
 	Out << " parent=" << parentName.Data();
-	if (tidyNodeHasText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)) {
-		TidyBuffer text = {'\0'};
-		tidyNodeGetText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle, &text);
-		TString str;
-		char *bp = text.bp;
-		for (Int_t i = 0; i < (Int_t) strlen(text.bp); i++, bp++) {
-			if (*bp == '\n')	str += "<cr>";
-			else				str += *bp;
-		}
-		Out << " text='" << str << "'";
+	TString text;
+	if (this->GetText(text)) {
+		if (text.Length() == 0) text = "<empty>";
+		text.ReplaceAll("\n", "<cr>");
+		Out << " text='" << text << "'";
 	}
 	TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
 	while (a) {
