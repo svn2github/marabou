@@ -138,9 +138,9 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::CreateTree() {
 		fTreeOut = new TTree("%%EVT_NAME_LC%%",
 //- 								arguments have to be on a different lines!!
 								"%%EVT_TITLE%%");
-		autoSave = gEnv->GetValue("TUsrEvt%%EVT_NAME_UC%%.AutoSave",
+		autoSave = gEnv->GetValue(gMrbAnalyze->GetResource("Event.%%EVT_NAME_UC%%.AutoSave",
 //- 								arguments have to be on a different lines!!
-								%%EVT_AUTOSAVE%%);
+								%%EVT_AUTOSAVE%%));
 				
 		fTreeOut->SetAutoSave(autoSave);
 

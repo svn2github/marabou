@@ -111,7 +111,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %B%// set time offsets for modules
 %B% 	Int_t timeOffset;
-%T% 	timeOffset = gEnv->GetValue("Module.$moduleNameUC.TimeOffset", $timeOffset);	// $moduleNameLC ($moduleTitle)
+%T% 	timeOffset = gEnv->GetValue(gMrbAnalyze->GetResource("Module.$moduleNameUC.TimeOffset", $timeOffset));	// $moduleNameLC ($moduleTitle)
 %T% 	gMrbAnalyze->SetTimeOffset(kMrbModule$moduleNameUC, timeOffset);
 %%EndOfCode%%
 %%MODULE_TIME_OFFSET%%
@@ -357,8 +357,8 @@ Bool_t TMrbAnalyze::OpenRootFile(TMrbIOSpec * IOSpec) {
 // turn on replay mode
 		fReplayMode = kTRUE;
 %%BeginOfCode%%
-%E% 		g$evtNameUC->SetReplayMode(gEnv->GetValue("TMrbAnalyze.$evtNameUC.ReplayMode", kTRUE));
-%U% 		g$className->SetReplayMode(gEnv->GetValue("TMrbAnalyze.$className.ReplayMode", kTRUE));
+%E% 		g$evtNameUC->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.ReplayMode", kTRUE)));
+%U% 		g$className->SetReplayMode(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$className.ReplayMode", kTRUE)));
 %%EndOfCode%%
 %%EVT_SET_REPLAY_MODE%%
 	}
