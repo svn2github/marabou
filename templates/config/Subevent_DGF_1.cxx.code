@@ -31,7 +31,7 @@
 %C%	fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
-%C% if (forcedDump & SevtWC > 0) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
+%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
 %C%	dataPtr = (Char_t *) SevtData;
 %C%	recNo++;						// count this record
 %C%	origSevtWC = SevtWC;			// save original subevent wc

@@ -20,7 +20,7 @@
 %C%	this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
 %C%	recNo++;						// count this record	
-%C% if (forcedDump & SevtWC > 0) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
+%C% if (forcedDump && (SevtWC > 0)) gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Forced dump", SevtData, SevtWC);
 %C%	Int_t wordsProcessed = 0; 			// words processed so far
 %C% 	UShort_t * dataPtr = (UShort_t *) SevtData;
 %C%	while (SevtWC > 0) {									// subevent may contain several modules
