@@ -66,22 +66,24 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 			return(kTRUE);
 		}
 
-		mle->IncrEventHits();				// count this event
-
 		Int_t moduleID = (header >> kMrbSevt_10_12_SH_ModuleId) & kMrbSevt_10_12_M_ModuleId;
 		Bool_t sis3801 = (moduleID == (kMrbModIdSis_3801 & kMrbSevt_10_12_M_ModuleId));
 		wc -= 2;				 // count for header words
 		UShort_t evtData[2];
+		Int_t lastChn = 10000;
 		for (; wc; wc-=2) {		 // 2 words per channel
 			Int_t chn;
 			Int_t data = (*dataPtr++) << 16; 			 // channel
 			data |= *dataPtr++;					 // data
 			if (sis3801) {
 				chn = (data >> 24) & 0xFF;		// SIS 3801: chn number in bits 31..24
+				if (chn < lastChn) mle->IncrEventHits();	// new event starts if chn number starts over
 				data &= 0xFFFFFF;				// 24 bit data
 			} else {
 				chn = 0;						// SIS 3600: 1 channel only
+				mle->IncrEventHits();			// therefore: event hit == channel hit
 			}
+			lastChn = chn;
 			mle->IncrChannelHits(chn);			// count this channel
 			evtData[0] = 0;
 			evtData[1] = data;
