@@ -198,10 +198,32 @@ Bool_t TMrbAnalyze::ReloadParams(TMrbIOSpec * IOSpec) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	return(this->ReloadVarsAndWdws(IOSpec));
+	Bool_t sts = this->ReloadVarsAndWdws(IOSpec);
+	this->AdjustWindowPointers();
+	return(sts);
 };
 %%EndOfCode%%
 %%RELOAD_PARAMS%%
+
+Bool_t TMrbAnalyze::AdjustWindowPointers() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AdjustWindowPointers
+// Purpose:        Adjust pointers to windows after reload
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Description:    Update pointers to windows (2-dim only).
+// Exceptions:     
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+%%BeginOfCode%%
+%1D%	$varName = ($className *) gMrbLofUserVars->Find("$varName");
+%2D%	$varName = ($className *) gMrbLofUserVars->Find("$varName");
+%%EndOfCode%%
+%%WDW_ADJUST_POINTERS%%
+	return(kTRUE);
+};
 
 Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 //________________________________________________________________[C++ METHOD]
