@@ -4255,7 +4255,7 @@ Bool_t TMrbDGF::GetUntrigTrace_Init(TArrayI & Buffer, UInt_t ChannelPattern, Int
 	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (ChannelPattern & (1 << chn)) {
 			this->SetParValue(chn, "XWAIT", xWait);
-			unuseda = (deltaT >= 11) ? (Int_t) (floor(65536 / ((deltaT - 3) /4 ))) : 0;
+			unuseda = (deltaT >= 11) ? (Int_t) (floor(65536. / ((deltaT - 3) /4 ))) : 0;
 			this->SetParValue(chn, "UNUSEDA", unuseda);
 		}
 	}
