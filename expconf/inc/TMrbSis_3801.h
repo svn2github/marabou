@@ -52,7 +52,7 @@ class TMrbSis_3801 : public TMrbVMEScaler {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
 
-		virtual inline const Char_t * GetMnemonic() const { return("Sis_3801"); }; 	// module mnemonic
+		virtual inline const Char_t * GetMnemonic() const { return("sis_3801"); }; 	// module mnemonic
 
 		inline Int_t GetFifoDepth() const { return(fFifoDepth); };
 

@@ -68,7 +68,6 @@ class TMrbSubevent_DGF_1 : public TMrbSubevent {
 		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
 
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_DGF_1_Common"); };
 		
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_DGF_1.html&"); };
 

@@ -45,9 +45,9 @@ class TMrbSubevent_10_14 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex,  	// generate part of code for this subevent
 														TMrbTemplate & Template, const Char_t * Prefix = NULL);
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 		// use private code files
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_HB_Common"); };
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };						// allocate hit buffer
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_HB_Common"); };
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_14.html&"); };
 

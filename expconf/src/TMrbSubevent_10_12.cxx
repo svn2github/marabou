@@ -148,18 +148,22 @@ Bool_t TMrbSubevent_10_12::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 				if (param->Parent() != parentModule) {
 					if (parentModule != NULL) {
 						Template.InitializeCode("%SME%");
-						Template.Substitute("$moduleName", parentModule->GetName());
+						Template.Substitute("$moduleNameLC", parentModule->GetName());
 						Template.Substitute("$moduleSerial", parentModule->GetSerial());
 						Template.WriteCode(RdoStrm);
 					}
 					parentModule = (TMrbModule *) param->Parent();
+
+					TString mnemoLC = parentModule->GetMnemonic();
+					TString mnemoUC = mnemoLC;
+					mnemoUC.ToUpper();
 
 					Template.InitializeCode("%SMB%");
 					moduleNameUC = parentModule->GetName();
 					moduleNameUC(0,1).ToUpper();
 					Template.Substitute("$moduleNameLC", parentModule->GetName());
 					Template.Substitute("$moduleNameUC", moduleNameUC);
-					Template.Substitute("$moduleType", parentModule->GetMnemonic());
+					Template.Substitute("$moduleType", mnemoUC);
 					Template.Substitute("$moduleSerial", parentModule->GetSerial());
 					Template.WriteCode(RdoStrm);
 
@@ -187,7 +191,7 @@ Bool_t TMrbSubevent_10_12::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 				}
 			}
 			Template.InitializeCode("%SME%");
-			Template.Substitute("$moduleName", parentModule->GetName());
+			Template.Substitute("$moduleNameLC", parentModule->GetName());
 			Template.Substitute("$moduleSerial", parentModule->GetSerial());
 			Template.WriteCode(RdoStrm);
 
@@ -198,7 +202,7 @@ Bool_t TMrbSubevent_10_12::MakeReadoutCode(ofstream & RdoStrm,	TMrbConfig::EMrbR
 			}
 
 			Template.InitializeCode("%SE%");
-			Template.Substitute("$sevtName", this->GetName());
+			Template.Substitute("$sevtNameLC", this->GetName());
 			Template.WriteCode(RdoStrm);
 			break;
 

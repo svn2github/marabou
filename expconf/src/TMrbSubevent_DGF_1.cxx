@@ -100,7 +100,6 @@ TMrbSubevent_DGF_1::TMrbSubevent_DGF_1(const Char_t * SevtName, const Char_t * S
 		fSevtType = 10; 	 						// set subevent type & subtype
 		fSevtSubtype = 21;
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
-		gMrbConfig->AddUserClass("TMrbSubevent_DGF_1");	// we need this base class
 		gDirectory->Append(this);
 	}
 }

@@ -170,6 +170,7 @@ class TMrbConfig : public TNamed {
 									kAnaSevtFillHistograms,
 									kAnaSevtInitializeBranch,
 									kAnaSevtResetData,
+									kAnaModuleIdEnum,
 									kAnaModuleSerialEnum,
 									kAnaModuleSpecialEnum,
 									kAnaHistoDefinePointers,

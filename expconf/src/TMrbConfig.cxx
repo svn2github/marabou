@@ -263,6 +263,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtFillHistograms,		"SEVT_FILL_HISTOGRAMS"			},
 								{TMrbConfig::kAnaSevtInitializeBranch,		"SEVT_INITIALIZE_BRANCH"		},
 								{TMrbConfig::kAnaSevtResetData,				"SEVT_RESET_DATA"				},
+								{TMrbConfig::kAnaModuleIdEnum,				"MODULE_ID_ENUM"				},
 								{TMrbConfig::kAnaModuleSerialEnum,			"MODULE_SERIAL_ENUM"			},
 								{TMrbConfig::kAnaModuleSpecialEnum,			"MODULE_SPECIAL_ENUM"			},
 								{TMrbConfig::kAnaHistoDefinePointers,		"HISTO_DEFINE_POINTERS" 		},
@@ -2725,6 +2726,26 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						if (header) {
 							anaTmpl.InitializeCode("%E%");
 							anaTmpl.WriteCode(anaStrm);
+						}
+						break;
+					case TMrbConfig::kAnaModuleIdEnum:
+						{
+							module = (TMrbModule *) fLofModules.First();
+							TList onceOnly;
+							while (module) {
+								if (onceOnly.FindObject(module->ClassName()) == NULL) {
+									anaTmpl.InitializeCode();
+									TString moduleType = module->GetMnemonic();
+									moduleType(0,1).ToUpper();
+									anaTmpl.Substitute("$moduleType", moduleType);
+									anaTmpl.Substitute("$moduleID", module->GetModuleID()->GetIndex(), 16);
+									anaTmpl.Substitute("$moduleTitle", module->GetTitle());
+									anaTmpl.WriteCode(anaStrm);
+								}
+								onceOnly.Add(new TNamed(module->ClassName(), ""));
+								module = (TMrbModule *) fLofModules.After(module);
+							}   
+							onceOnly.Delete();
 						}
 						break;
 					case TMrbConfig::kAnaModuleSerialEnum:

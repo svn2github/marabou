@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/inc/TMrbSubevent_Sis_2.h
 // Purpose:        Define experimental configuration for MARaBOU
-// Class:          TMrbSubevent_Sis_2   -- MBS subevent type [10,42]
+// Class:          TMrbSubevent_Sis_2   -- MBS subevent type [10,52]
 //                                         dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
@@ -57,10 +57,10 @@ class TMrbSubevent_Sis_2 : public TMrbSubevent {
 			return(Module->CheckID(TMrbConfig::kModuleSis_3600) || Module->CheckID(TMrbConfig::kModuleSis_3801));
 		};
 				
-		inline Bool_t NeedsHitBuffer() { return(kTRUE); };  					// allocate hit buffer
-		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files
-		inline Bool_t NeedsBranchMode() { return(kTRUE); }; 					// needs branch mode
-		inline const Char_t * GetCommonCodeFile() { return("Subevent_Sis_Common"); };
+		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
+		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 					// use private code files
+		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
+		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis_Common"); };
 		
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Sis_2.html&"); };
 
