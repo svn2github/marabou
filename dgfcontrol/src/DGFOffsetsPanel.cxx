@@ -40,7 +40,7 @@ using namespace std;
 
 const SMrbNamedX kDGFOffsetsActions[] =
 			{
-				{DGFOffsetsPanel::kDGFOffsetsStart,		"Start ramp",	"Start DAC ramp and calc offsets"	},
+				{DGFOffsetsPanel::kDGFOffsetsStart,		"Ramp DAC",	"Start DAC ramp and calc offsets (control task 3)"	},
 				{DGFOffsetsPanel::kDGFOffsetsClose,		"Close",		"Close window"						},
 				{0, 									NULL,			NULL								}
 			};
@@ -179,9 +179,14 @@ DGFOffsetsPanel::DGFOffsetsPanel(const TGWindow * Window, const TGWindow * MainF
 	labelGC->SetLH(aButtonLayout);
 	HEAP(aButtonLayout);
 
-	fActionFrame = new TGGroupFrame(this, "Actions", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fHFrame = new TGHorizontalFrame(this, DGFOffsetsPanel::kFrameWidth, DGFOffsetsPanel::kFrameHeight,
+													kChildFrame, frameGC->BG());
+	HEAP(fHFrame);
+	this->AddFrame(fHFrame, frameGC->LH());
+
+	fActionFrame = new TGGroupFrame(fHFrame, "Actions", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fActionFrame);
-	this->AddFrame(fActionFrame, groupGC->LH());
+	fHFrame->AddFrame(fActionFrame, groupGC->LH());
 	
 	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, 1,
 							DGFOffsetsPanel::kFrameWidth, DGFOffsetsPanel::kLEHeight,
@@ -194,13 +199,18 @@ DGFOffsetsPanel::DGFOffsetsPanel(const TGWindow * Window, const TGWindow * MainF
 	TGLayoutHints * oLayout = new TGLayoutHints(kLHintsCenterY | kLHintsExpandX, 2, 1, 5, 1);
 	entryGC->SetLH(oLayout);
 	HEAP(oLayout);
-	fOffsetValue = new TGMrbLabelEntry(fActionFrame, "Offset",	200, 1,
+
+	fOffsetFrame = new TGGroupFrame(fHFrame, "Offset", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fOffsetFrame);
+	fHFrame->AddFrame(fOffsetFrame, groupGC->LH());
+	
+	fOffsetValue = new TGMrbLabelEntry(fOffsetFrame, NULL,	200, 1,
 																DGFOffsetsPanel::kLEWidth,
 																DGFOffsetsPanel::kLEHeight,
 																DGFOffsetsPanel::kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fOffsetValue);
-	fActionFrame->AddFrame(fOffsetValue, frameGC->LH());
+	fOffsetFrame->AddFrame(fOffsetValue, frameGC->LH());
 	fOffsetValue->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fOffsetValue->GetEntry()->SetText("0");
 	fOffsetValue->SetRange(0,65504);

@@ -93,8 +93,10 @@ class DGFOffsetsPanel : public TGTransientFrame {
 		TGHorizontalFrame * fGroupFrame;
 		TGMrbPictureButtonList * fGroupSelect[kNofModulesPerCluster];
 		TGMrbPictureButtonList * fAllSelect;
+		TGHorizontalFrame * fHFrame;
 		TGGroupFrame * fActionFrame;
 		TGMrbTextButtonList * fActionButtons;
+		TGGroupFrame * fOffsetFrame;
 		TGMrbLabelEntry * fOffsetValue;
 		
 		TMrbLofNamedX fActions;						// text buttons:	actions to be taken

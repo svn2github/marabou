@@ -189,7 +189,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, const TGWind
 	HEAP(fTFrame);
 	fHFrame->AddFrame(fTFrame, groupGC->LH());
 
-	fTraceLength = new TGMrbLabelEntry(fTFrame, "",
+	fTraceLength = new TGMrbLabelEntry(fTFrame, NULL,
 																200, kDGFTraceDisplayXwait,
 																DGFTraceDisplayPanel::kLEWidth,
 																DGFTraceDisplayPanel::kLEHeight,
@@ -207,7 +207,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(const TGWindow * Window, const TGWind
 	HEAP(fXFrame);
 	fHFrame->AddFrame(fXFrame, groupGC->LH());
 
-	fXwait = new TGMrbLabelEntry(fXFrame, "XWAIT",
+	fXwait = new TGMrbLabelEntry(fXFrame, NULL,
 																200, kDGFTraceDisplayXwait,
 																DGFTraceDisplayPanel::kLEWidth,
 																DGFTraceDisplayPanel::kLEHeight,

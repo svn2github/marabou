@@ -41,7 +41,7 @@ using namespace std;
 
 const SMrbNamedX kDGFUntrigTraceActions[] =
 			{
-				{DGFUntrigTracePanel::kDGFUntrigTraceStart,		"Start untrig trace",	"Start taking traces"	},
+				{DGFUntrigTracePanel::kDGFUntrigTraceStart,		"Untrig trace",	"Take untriggered trace (control task 4)"	},
 				{DGFUntrigTracePanel::kDGFUntrigTraceClose,		"Close",				"Close window"			},
 				{0, 											NULL,					NULL					}
 			};
