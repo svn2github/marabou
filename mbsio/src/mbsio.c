@@ -379,7 +379,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 				device = "<stdin>";
 			} else if ((input = fopen(device, "r")) == NULL) {
 				sprintf(loc_errbuf, "?SYSERR-[mbs_open_file]- %s: %s (%d)",
-													device, sys_errlist[errno], errno);
+													device, strerror(errno), errno);
 				_mbs_output_error();
 				return(NULL);
 			}
@@ -689,7 +689,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	if (bytes_read == -1)
 	{
 		sprintf(loc_errbuf, "?INPERR-[_mbs_read_buffer]- %s (buf %d): %s (%d)",
-							mbs->device, mbs->cur_bufno, sys_errlist[errno], errno);
+							mbs->device, mbs->cur_bufno, strerror(errno), errno);
 		_mbs_output_error();
 		return(MBS_BTYPE_ABORT);
 	}
@@ -968,7 +968,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	if (bytes_read == -1)
 	{
 		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): %s (%d)",
-													mbs->device, mbs->evtno, sys_errlist[errno], errno);
+													mbs->device, mbs->evtno, strerror(errno), errno);
 		_mbs_output_error();
 		return(MBS_ETYPE_ABORT);
 	}
@@ -1516,7 +1516,7 @@ int mbs_open_log(char *logfile) {
 	FILE * f;
 
 	if ((f = fopen(logfile, "a")) == NULL) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_open_log]- %s (%d)", sys_errlist[errno], errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_open_log]- %s (%d)", strerror(errno), errno);
 		_mbs_output_error();
 		return(FALSE);
 	}
@@ -1540,7 +1540,7 @@ int mbs_open_med(char *medfile) {
 	FILE * f;
 
 	if ((f = fopen(medfile, "w")) == NULL) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_open_med]- %s (%d)", sys_errlist[errno], errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_open_med]- %s (%d)", strerror(errno), errno);
 		_mbs_output_error();
 		return(FALSE);
 	}
@@ -1580,7 +1580,7 @@ int mbs_open_lmd(char *lmdfile) {
 	FILE * f;
 
 	if ((f = fopen(lmdfile, "w")) == NULL) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_open_lmd]- %s (%d)", sys_errlist[errno], errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_open_lmd]- %s (%d)", strerror(errno), errno);
 		_mbs_output_error();
 		return(FALSE);
 	}
@@ -2636,11 +2636,11 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 	sa.sin_family = hp->h_addrtype;
 	sa.sin_port = htons(port);
 	if((s = socket(hp->h_addrtype, SOCK_STREAM, 0)) < 0) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", sys_errlist[errno], errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", strerror(errno), errno);
 		return(-1);
 	}
 	if(connect(s, &sa, sizeof sa) < 0) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", sys_errlist[errno], errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", strerror(errno), errno);
 		return(-1);
 	}
 	return(s);
@@ -2708,7 +2708,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 			info->buf_p_stream,
 			info->nof_streams);
 	if (errno != 0) {
-		sprintf(loc_errbuf, "?SYSERR-[mbs_read_server_info]- %s (%d)", sys_errlist[errno], errno);
+		sprintf(loc_errbuf, "?SYSERR-[mbs_read_server_info]- %s (%d)", strerror(errno), errno);
 		return(NULL);
 	}
 	return(info);
