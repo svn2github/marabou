@@ -644,8 +644,8 @@ int main(int argc, char **argv) {
 			}
 			gMrbTransport->Close();
 			gMrbTransport->FreeBuffers();
-			if (output_mode & TMrbIOSpec::kOutputWriteMEDFormat) gMrbTransport->CloseMEDFile();
-			if (output_mode & TMrbIOSpec::kOutputWriteLMDFormat) gMrbTransport->CloseLMDFile();
+			if ((output_mode & TMrbIOSpec::kOutputWriteMEDFormat) == TMrbIOSpec::kOutputWriteMEDFormat) gMrbTransport->CloseMEDFile();
+			if ((output_mode & TMrbIOSpec::kOutputWriteLMDFormat) == TMrbIOSpec::kOutputWriteLMDFormat) gMrbTransport->CloseLMDFile();
 		}
 //      cout << " u_analyze->SaveHistograms(*, ioSpec);" << endl;
    	ioSpec->SetHistoFile(histo_file.Data(), histo_mode);

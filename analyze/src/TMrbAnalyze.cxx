@@ -377,8 +377,8 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		if (outputFile.CompareTo("none") != 0) {
 			if (outputFile.CompareTo("+") == 0) {
 				outputFile = lastIOSpec->GetOutputFile();
-				outputMode = TMrbIOSpec::kOutputWriteTree;
-				if ((lastoMode & TMrbIOSpec::kOutputWriteTree) == 0) {
+				outputMode = TMrbIOSpec::kOutputWriteRootTree;
+				if ((lastoMode & TMrbIOSpec::kOutputWriteRootTree) == 0) {
 					if (!lineHdr) {
 						gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
 						gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -390,13 +390,13 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 				}
 			} else if (outputFile.CompareTo("none") == 0) {
 				outputMode = TMrbIOSpec::kOutputNone;
-				if (lastoMode & TMrbIOSpec::kOutputWriteTree) {
+				if (lastoMode & TMrbIOSpec::kOutputWriteRootTree) {
 					lastoMode = (TMrbIOSpec::EMrbOutputMode) (lastoMode | TMrbIOSpec::kOutputClose);
 					lastIOSpec->SetOutputMode(lastoMode);
 				}
 			} else if (outputFile.Index(".root", 0) > 0) {
-				outputMode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteTree);
-				if (lastoMode & TMrbIOSpec::kOutputWriteTree) {
+				outputMode = (TMrbIOSpec::EMrbOutputMode) (TMrbIOSpec::kOutputOpen | TMrbIOSpec::kOutputWriteRootTree);
+				if (lastoMode & TMrbIOSpec::kOutputWriteRootTree) {
 					lastoMode = (TMrbIOSpec::EMrbOutputMode) (lastoMode | TMrbIOSpec::kOutputClose);
 					lastIOSpec->SetOutputMode(lastoMode);
 				}
@@ -2345,34 +2345,36 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 			dot = histoName.Index(".", 0);
 			histoName.Resize(dot);
 			TMrbHistoListEntry * hle = this->GetHistoListEntry(histoName.Data());
-			TString resName = "Calib.";
-			resName += histoName;
-			resName += ".Xmin";
-			Double_t xmin = cal->GetValue(resName.Data(), 0.);
-			resName = "Calib.";
-			resName += histoName;
-			resName += ".Xmax";
-			Double_t xmax = cal->GetValue(resName.Data(), 1.);
-			resName = "Calib.";
-			resName += histoName;
-			resName += ".Gain";
-			Double_t gain = cal->GetValue(resName.Data(), 1.);
-			resName = "Calib.";
-			resName += histoName;
-			resName += ".Offset";
-			Double_t offset = cal->GetValue(resName.Data(), 0.);
-			TString calName = histoName;
-			if (calName(0) == 'h') {
-				calName(0) = 'c';
-			} else {
-				calName(0,1).ToUpper();
-				calName.Prepend("h");
+			if (hle) {
+				TString resName = "Calib.";
+				resName += histoName;
+				resName += ".Xmin";
+				Double_t xmin = cal->GetValue(resName.Data(), 0.);
+				resName = "Calib.";
+				resName += histoName;
+				resName += ".Xmax";
+				Double_t xmax = cal->GetValue(resName.Data(), 1.);
+				resName = "Calib.";
+				resName += histoName;
+				resName += ".Gain";
+				Double_t gain = cal->GetValue(resName.Data(), 1.);
+				resName = "Calib.";
+				resName += histoName;
+				resName += ".Offset";
+				Double_t offset = cal->GetValue(resName.Data(), 0.);
+				TString calName = histoName;
+				if (calName(0) == 'h') {
+					calName(0) = 'c';
+				} else {
+					calName(0,1).ToUpper();
+					calName.Prepend("h");
+				}
+				TF1 * calFct = new TF1(calName.Data(), "[0] + [1] * x", xmin, xmax);
+				calFct->SetParameter(0, offset);
+				calFct->SetParameter(1, gain);
+				this->AddCalibrationToList(calFct, hle->GetModule()->GetIndex(), hle->GetParam()->GetIndex());
+				nofCalibs++;
 			}
-			TF1 * calFct = new TF1(calName.Data(), "[0] + [1] * x", xmin, xmax);
-			calFct->SetParameter(0, offset);
-			calFct->SetParameter(1, gain);
-			this->AddCalibrationToList(calFct, hle->GetModule()->GetIndex(), hle->GetParam()->GetIndex());
-			nofCalibs++;
 		}
 		o = cal->GetTable()->After(o);
 	}
