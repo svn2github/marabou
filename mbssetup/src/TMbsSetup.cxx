@@ -676,6 +676,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	nofHosts = 0;
 	n1 = 0;
 	Bool_t once = kFALSE;
+	TString domain = "";
 	while ((n2 = hString.Index(" ", n1)) != -1) {
 		hName = hString(n1, n2 - n1);
 		ia = new TInetAddress(gSystem->GetHostByName(hName));
@@ -684,7 +685,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			gMrbLog->Err() << "Can't resolve host name - " << hName << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 		} else if (hAddr.Index(".", 0) == -1) {
-			TString domain = gEnv->GetValue("TMbsSetup.DefaultDomain", "");
+			if (domain.IsNull()) domain = gEnv->GetValue("TMbsSetup.DefaultDomain", "");
 			if (domain.IsNull()) {
 				if (!once) {
 					gMrbLog->Err()	<< "Can't get default domain - set TMbsSetup.DefaultDomain in .rootrc properly" << endl;
@@ -706,6 +707,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				nofHosts++;
 			}
 		} else {
+			domain = hAddr(hAddr.Index(".", 0) + 1, 1000);
 			rhosts << hName << " " << userName << endl;
 			rhosts << hAddr << " " << userName << endl;
 			nofHosts++;
