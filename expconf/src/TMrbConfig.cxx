@@ -123,6 +123,9 @@ const SMrbNamedXShort kMrbLofReadoutTags[] =
 							{
 								{TMrbConfig::kRdoPath,					"READOUT_PATH"				},
 								{TMrbConfig::kRdoFile,					"READOUT_FILE"				},
+								{TMrbConfig::kRdoInclude,				"READOUT_INCLUDE"			},
+								{TMrbConfig::kRdoLibs,					"READOUT_LIBS"				},
+								{TMrbConfig::kRdoPosix,					"READOUT_POSIX"				},
 								{TMrbConfig::kRdoDebug,					"DEBUG_READOUT"				},
 								{TMrbConfig::kRdoNameLC, 				"EXP_NAME_LC"				},
 								{TMrbConfig::kRdoNameUC, 				"EXP_NAME_UC"				},
@@ -1360,6 +1363,24 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kRdoFile:
 						rdoStrm << rdoTmpl.Encode(line, pp->GetF()) << endl;
+						break;
+					case TMrbConfig::kRdoInclude:
+						{
+							TString iclPath = gEnv->GetValue("TMrbConfig.ReadoutIncludePath", "/nfs/mbssys/include");
+							rdoStrm << rdoTmpl.Encode(line, iclPath.Data()) << endl;
+						}
+						break;
+					case TMrbConfig::kRdoLibs:
+						{
+							TString libString = gEnv->GetValue("TMrbConfig.ReadoutLibs", "$(LIB)/lib_utils.a");
+							rdoStrm << rdoTmpl.Encode(line, libString.Data()) << endl;
+						}
+						break;
+					case TMrbConfig::kRdoPosix:
+						{
+							TString posixFlags = gEnv->GetValue("TMrbConfig.ReadoutPosixFlags", "-mposix4d9 -mthreads");
+							rdoStrm << rdoTmpl.Encode(line, posixFlags.Data()) << endl;
+						}
 						break;
 					case TMrbConfig::kRdoDebug:
 						if (gEnv->GetValue("TMrbConfig.DebugReadout", kFALSE)) {
