@@ -675,6 +675,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 	isOK = kTRUE;
 	nofHosts = 0;
 	n1 = 0;
+	Bool_t once = kFALSE;
 	while ((n2 = hString.Index(" ", n1)) != -1) {
 		hName = hString(n1, n2 - n1);
 		ia = new TInetAddress(gSystem->GetHostByName(hName));
@@ -682,6 +683,28 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 		if (hAddr.CompareTo("UnknownHost") == 0) {
 			gMrbLog->Err() << "Can't resolve host name - " << hName << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+		} else if (hAddr.Index(".", 0) == -1) {
+			TString domain = gEnv->GetValue("TMbsSetup.DefaultDomain", "");
+			if (domain.IsNull()) {
+				if (!once) {
+					gMrbLog->Err()	<< "Can't get default domain - set TMbsSetup.DefaultDomain in .rootrc properly" << endl;
+					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				}
+				once = kTRUE;
+				gMrbLog->Err()	<< "Got short host name \"" << hName
+								<< "\" while expecting full host addr - not written to .rhosts file" << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			} else {
+				gMrbLog->Out()	<< "Got short host name \"" << hName
+								<< "\" while expecting full host addr - appending default domain \"." << domain << "\"" << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				hAddr = hName;
+				hAddr += ".";
+				hAddr += domain;
+				rhosts << hName << " " << userName << endl;
+				rhosts << hAddr << " " << userName << endl;
+				nofHosts++;
+			}
 		} else {
 			rhosts << hName << " " << userName << endl;
 			rhosts << hAddr << " " << userName << endl;
@@ -1804,8 +1827,8 @@ TMrbNamedX * TMbsSetup::GetMode() {
 	TString resValue;
 	Int_t n;
 
-	gMbsSetup->Get(resValue, "Mode");
+	this->Get(resValue, "Mode");
 	if ((n = resValue.Index("(")) >= 0) resValue = resValue(0, n);
-	setupMode = gMbsSetup->fLofSetupModes.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
+	setupMode = this->fLofSetupModes.FindByName(resValue, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase);
 	return(setupMode);
 }
