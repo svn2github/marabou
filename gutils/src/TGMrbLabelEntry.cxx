@@ -164,7 +164,6 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString s;
-	Bool_t isSigned;
 	TString prefix;
 	Int_t intVal;
 	Double_t dblVal;
@@ -180,21 +179,15 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							s = fEntry->GetText();
 							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-								intVal = s.SplitOffInteger(prefix, isSigned, fBase);
-								if (isSigned) {
-									if (prefix.Length() > 0)	prefix += "-";
-									else						intVal = -intVal;
-								}
+								intVal = s.SplitOffInteger(prefix, fBase);
+								if (prefix.CompareTo("-") == 0) intVal = -intVal;
 								intVal += (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
 							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
-								dblVal = s.SplitOffDouble(prefix, isSigned);
-								if (isSigned) {
-									if (prefix.Length() > 0)	prefix += "-";
-									else						dblVal = -dblVal;
-								}
+								dblVal = s.SplitOffDouble(prefix);
+								if (prefix.CompareTo("-") == 0) dblVal = -dblVal;
 								dblVal += fIncrement;
 								if (!this->CheckRange(dblVal)) break;
 								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
@@ -206,21 +199,15 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							s = fEntry->GetText();
 							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-								intVal = s.SplitOffInteger(prefix, isSigned, fBase);
-								if (isSigned) {
-									if (prefix.Length() > 0)	prefix += "-";
-									else						intVal = -intVal;
-								}
+								intVal = s.SplitOffInteger(prefix, fBase);
+								if (prefix.CompareTo("-") == 0) intVal = -intVal;
 								intVal -= (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
 							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
-								dblVal = s.SplitOffDouble(prefix, isSigned);
-								if (isSigned) {
-									if (prefix.Length() > 0)	prefix += "-";
-									else						dblVal = -dblVal;
-								}
+								dblVal = s.SplitOffDouble(prefix);
+								if (prefix.CompareTo("-") == 0) dblVal = -dblVal;
 								dblVal -= fIncrement;
 								if (!this->CheckRange(dblVal)) break;
 								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
@@ -232,12 +219,12 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							s = fEntry->GetText();
 							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-								s.SplitOffInteger(prefix, isSigned, fBase);
+								s.SplitOffInteger(prefix, fBase);
 								intVal = (Int_t) fLowerLimit;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
 							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
-								s.SplitOffDouble(prefix, isSigned);
+								s.SplitOffDouble(prefix);
 								dblVal = fLowerLimit;
 								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
 							}
@@ -248,12 +235,12 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 							s = fEntry->GetText();
 							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-								s.SplitOffInteger(prefix, isSigned, fBase);
+								s.SplitOffInteger(prefix, fBase);
 								intVal = (Int_t) fUpperLimit;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
 							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
 									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
-								s.SplitOffDouble(prefix, isSigned);
+								s.SplitOffDouble(prefix);
 								dblVal = fUpperLimit;
 								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
 							}
@@ -333,11 +320,11 @@ Bool_t TGMrbLabelEntry::WithinRange() const {
 														if (!numStr.ToDouble(dblVal)) return(kFALSE);
 														return(dblVal >= fLowerLimit && dblVal <= fUpperLimit);
 		case TGMrbLabelEntry::kGMrbEntryTypeCharInt:	numStr = fEntry->GetText();
-														intVal = numStr.SplitOffInteger(prefix, isSigned);
+														intVal = numStr.SplitOffInteger(prefix, fBase);
 														if (isSigned) intVal = -intVal;
 														return(intVal >= fLowerLimit && intVal <= fUpperLimit);
 		case TGMrbLabelEntry::kGMrbEntryTypeCharDouble:	numStr = fEntry->GetText();
-														dblVal = numStr.SplitOffDouble(prefix, isSigned);
+														dblVal = numStr.SplitOffDouble(prefix);
 														if (isSigned) dblVal = -dblVal;
 														return(dblVal >= fLowerLimit && dblVal <= fUpperLimit);
 	}

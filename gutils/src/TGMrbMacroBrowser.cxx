@@ -751,7 +751,6 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	TMrbString argString;
 	TMrbString argValue;
 	TString prefix;
-	Bool_t isSigned;
 	TMrbNamedX * button;
 
 	Int_t defaultEntryWidth;
@@ -994,7 +993,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					if (nsep > 0) {
 						UInt_t at = macroArg->fType->GetIndex();
 						if (at == TGMrbMacroArg::kGMrbMacroArgInt || at == TGMrbMacroArg::kGMrbMacroArgUInt) {
-							m = str.SplitOffInteger(prefix, isSigned, intBase);
+							m = str.SplitOffInteger(prefix, intBase);
 							str.Resize(nsep);
 						} else {
 							tip = str(nsep + 1, str.Length());
