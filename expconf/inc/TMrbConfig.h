@@ -627,6 +627,12 @@ class TMrbConfig : public TNamed {
 									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
 									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
 
+		Bool_t BookHistogram(const Char_t * ArrayName, const Char_t * Type, const Char_t * Name, const Char_t * Title,
+									Int_t A0, Int_t A1 = -1, Int_t A2 = -1, Int_t A3 = -1,
+									Int_t A4 = -1, Int_t A5 = -1, Int_t A6 = -1, Int_t A7 = -1);
+
+
+		TMrbNamedX * FindHistoArray(const Char_t * HistoName);			// find array histo is to be assigned to
 
 		inline Int_t GetNofModules() { return(fNofModules); };
 		Int_t GetNofModules(const Char_t * Pattern);
@@ -725,6 +731,7 @@ class TMrbConfig : public TNamed {
 		TList fLofUserClasses; 				// list of classes added by user
 		TList fLofOnceOnlyTags; 			// list of tags already processed
 		TList fLofUserHistograms;			// list of user-defined histograms
+		TList fLofHistoArrays;				// list of histogram arrays
 		
 	ClassDef(TMrbConfig, 1) 	// [Config] Base class to describe an experimental setup in MARaBOU
 };	

@@ -573,6 +573,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		UpdateTriggerTable();									// initialize trigger table								
 
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
+		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofUserClasses.Delete();								// init list of user-added classes
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
@@ -2379,6 +2380,15 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.WriteCode(anaStrm);
 								h = (TMrbNamedX *) fLofUserHistograms.After(h);
 							}
+							if (fLofHistoArrays.First()) {
+								TMrbNamedX * h = (TMrbNamedX *) fLofHistoArrays.First();
+								while (h) {
+									anaTmpl.InitializeCode("%UDHA%");
+									anaTmpl.Substitute("$hArrayName", h->GetName());
+									anaTmpl.WriteCode(anaStrm);
+									h = (TMrbNamedX *) fLofHistoArrays.After(h);
+								}
+							}
 						}
 						break;
 					case TMrbConfig::kAnaHistoInitializeArrays:
@@ -2388,6 +2398,18 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								sevt->MakeAnalyzeCode(anaStrm, tagIdx, NULL, anaTmpl);
 								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
+							if (fLofHistoArrays.First()) {
+								TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.First();
+								while (hArray) {
+									TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
+									Int_t nofHistos = lofHistos->GetEntriesFast();
+									anaTmpl.InitializeCode("%U%");
+									anaTmpl.Substitute("$hArrayName", hArray->GetName());
+									anaTmpl.Substitute("$nofHistos", nofHistos);
+									anaTmpl.WriteCode(anaStrm);
+									hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
+								}
+							}
 						}
 						break;
 					case TMrbConfig::kAnaHistoBookUserDefined:
@@ -2396,7 +2418,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.WriteCode(anaStrm);
 							TMrbNamedX * h = (TMrbNamedX *) fLofUserHistograms.First();
 							while (h) {
-								anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+								TMrbNamedX * hArray = this->FindHistoArray(h->GetName());
+								if (hArray) {
+									anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UDA1%" : "%UDA2%");
+									anaTmpl.Substitute("$hArrayName", hArray->GetName());
+								} else {
+									anaTmpl.InitializeCode((h->GetIndex() & TMrbConfig::kHistoTH1) ? "%UD1%" : "%UD2%");
+								}
 								anaTmpl.Substitute("$hName", h->GetName());
 								anaTmpl.Substitute("$hTitle", h->GetTitle());
 								TMrbNamedArrayI * a = (TMrbNamedArrayI *) h->GetAssignedObject();
@@ -2412,6 +2440,31 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 								anaTmpl.WriteCode(anaStrm);
 								h = (TMrbNamedX *) fLofUserHistograms.After(h);
+							}
+						}
+						if (fLofHistoArrays.First()) {
+							TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.First();
+							while (hArray) {
+								ofstream list(hArray->GetTitle(), ios::out);
+								if (!list.good()) {
+									gMrbLog->Err() << gSystem->GetError() << " - " << hArray->GetTitle() << endl;
+									gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+								} else {
+									TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
+									TMrbNamedX * h = (TMrbNamedX *) lofHistos->First();
+									while (h) {
+										list << h->GetName() << endl;
+										h = (TMrbNamedX *) lofHistos->After(h);
+									}
+									if (verboseMode) {
+										gMrbLog->Out()  << "Creating histo list file - " << hArray->GetTitle()
+														<< " (" << lofHistos->GetEntriesFast() << " entries)"
+														<< endl;
+										gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+									}
+									list.close();
+								}
+								hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
 							}
 						}
 						break;
@@ -4433,6 +4486,12 @@ Bool_t TMrbConfig::BookHistogram(	const Char_t * Type, const Char_t * Name, cons
 	Int_t nofArgs;
 	TArrayI argList(8);
 
+	if (fLofUserHistograms.FindObject(Name)) {
+		gMrbLog->Err() << "Histogram already booked - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
 	hType = Type;
 	hType.ToUpper();
 	TMrbNamedX * histoType = fLofHistoTypes.FindByName(hType.Data());
@@ -4484,6 +4543,78 @@ Bool_t TMrbConfig::BookHistogram(	const Char_t * Type, const Char_t * Name, cons
 	TMrbNamedArrayI * a = new TMrbNamedArrayI(histoType->GetName(), histoType->GetTitle(), 8, argList.GetArray());
 	fLofUserHistograms.Add(new TMrbNamedX(histoType->GetIndex(), Name, Title, a));
 	return(kTRUE);
+}
+
+Bool_t TMrbConfig::BookHistogram(	const Char_t * ArrayName,
+									const Char_t * Type, const Char_t * Name, const Char_t * Title,
+									Int_t A0, Int_t A1, Int_t A2, Int_t A3,
+									Int_t A4, Int_t A5, Int_t A6, Int_t A7) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookHistogram
+// Purpose:        Define a histogram to be booked
+// Arguments:      Char_t * ArrayName -- name of histo array
+//                 Char_t * Type      -- histo type (TH1X, TH2X)
+//                 Char_t * Name      -- name
+//                 Char_t * Title     -- title
+//                 Int_t Ax           -- arguments
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books user-defined histograms. Adds histo to given array.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray * lofHistos;
+
+	if (fLofUserHistograms.FindObject(Name)) {
+		gMrbLog->Err() << "Histogram already booked - " << Name << endl;
+		gMrbLog->Flush(this->ClassName(), "BookHistogram");
+		return(kFALSE);
+	}
+
+	TString arrayName = ArrayName;
+	arrayName(0,1).ToUpper();
+	TString listName = arrayName;
+	arrayName.Prepend("h");
+	arrayName += "Array";
+	listName += ".histlist";
+	TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.FindObject(arrayName.Data());
+	if (hArray == NULL) {
+		lofHistos = new TObjArray();
+		hArray = new TMrbNamedX(0, arrayName.Data(), listName.Data(), lofHistos);
+		fLofHistoArrays.Add(hArray);
+	} else {
+		lofHistos = (TObjArray *) hArray->GetAssignedObject();
+	}
+	lofHistos->Add(new TMrbNamedX(0, Name, Title));
+	return(this->BookHistogram(Type, Name, Title, A0, A1, A2, A3, A4, A5, A6, A7));
+}
+
+TMrbNamedX * TMrbConfig::FindHistoArray(const Char_t * HistoName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::FindHistoArray
+// Purpose:        Find the array a histogram belongs to
+// Arguments:      Char_t * HistoName -- name of histogram
+// Results:        TMrbNamedX * Array -- array 
+// Exceptions:     
+// Description:    Checks if a histogram is assigned to an array.
+//                 Returns array specs.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * hArray = (TMrbNamedX *) fLofHistoArrays.First();
+	while (hArray) {
+		TObjArray * lofHistos = (TObjArray *) hArray->GetAssignedObject();
+		TMrbNamedX * h = (TMrbNamedX *) lofHistos->First();
+		while (h) {
+			TString hName = h->GetName();
+			if (hName.CompareTo(HistoName) == 0) return(hArray);
+			h = (TMrbNamedX *) lofHistos->After(h);
+		}
+		hArray = (TMrbNamedX *) fLofHistoArrays.After(hArray);
+	}
+	return(NULL);
 }
 
 TMrbConfig * TMrbConfig::ReadFromFile(const Char_t * RootFile,  Option_t * Options) {
