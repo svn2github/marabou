@@ -20,10 +20,6 @@
 
 #include "SetColor.h"
 
-extern void InitGui();
-
-VoidFuncPtr_t initfuncs[] = { InitGui, 0 };
-
 //__________________________________________________________________[C++ MAIN]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           MacroBrowser
@@ -34,8 +30,6 @@ VoidFuncPtr_t initfuncs[] = { InitGui, 0 };
 // Description:    
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
-
-TROOT root("GUI", "ROOT Macro Browser", initfuncs);
 
 int main(int argc, char **argv)
 {
