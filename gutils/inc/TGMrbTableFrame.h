@@ -51,6 +51,9 @@ class TGMrbTableFrame : public TGTransientFrame {
 											kTableFrameAll_1, kTableFrameNone_1,
 											kTableFrameAll_2, kTableFrameNone_2
 										};
+		enum EGMrbTableFrameActions		{	kFlagNoop, kFlagColor,
+                                  kFlagFillStyle, kFlagLineStyle
+										};
 
 	public:
 		TGMrbTableFrame(const TGWindow * MainFrame, Int_t * RetValue, const Char_t * Title,
