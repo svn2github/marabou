@@ -267,9 +267,11 @@ void HistPresent::ToggleGraphCut(const char* bp)
 void HistPresent::EditExpression(const char* bp)
 {
    Bool_t ok;
+   const char hist_file[] = {"ntupleCmds.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
    *fExpression=GetString("Edit expression",(const char *)*fExpression,
-                          &ok, GetMyCanvas(), 0,0,0,0,0,
-                          "ntupleCmds.txt");
+                          &ok, GetMyCanvas(), 0,0,0,0,0, hf);
    if (!ok) return;
    if (strlen(*fExpression) > 1) {
       cout << *fExpression<< endl;

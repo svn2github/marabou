@@ -128,6 +128,7 @@ enum ERootCanvasCommands {
    kFHProjectB,
    kFHAllAsSel,
    kFHCalAllAsSel,
+   kFHCommonRotate,
    kFHAllAsFirst,
    kFHStack,
    kFHCanvas2LP,
@@ -429,6 +430,15 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
                   case kFHAllAsSel:
                      ShowAllAsSelected(gPad, fHCanvas, 1);
+                     break;
+                  case kFHCommonRotate:
+                     if (fHCanvas->GetCommonRotate()) {
+                        fHCanvas->SetCommonRotate(kFALSE);
+                        fDisplayMenu->UnCheckEntry(kFHCommonRotate);
+                     } else {
+                        fHCanvas->SetCommonRotate(kTRUE);
+                        fDisplayMenu->CheckEntry(kFHCommonRotate);
+                     }
                      break;
                   case kFHAllAsFirst:
                      if (fHistPresent->fShowAllAsFirst) {
@@ -1499,6 +1509,7 @@ void HandleMenus::BuildMenus()
             else                      fDisplayMenu->UnCheckEntry(kFHAllAsFirst);
       	   fDisplayMenu->AddEntry("Rebin all",  kFHRebinAll);
          	fDisplayMenu->AddEntry("Activate automatic update",  kFHActivateTimer);
+         	fDisplayMenu->AddEntry("Activate simultanous rotation", kFHCommonRotate);
          } else if (!strncmp(fHCanvas->GetName(), "cstack", 5)){
       	   fDisplayMenu->AddEntry("Real stack", kFHStack);
             if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);

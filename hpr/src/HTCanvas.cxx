@@ -112,6 +112,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fVisibleGridY = 0;
    fGObjectGroups = NULL; 
    fUseEditGrid = kFALSE;
+   fCommonRotate= kFALSE;
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();

@@ -1768,11 +1768,14 @@ void FitHist::ExecFitMacro()
 {
 //   cout << fFitMacroName.Data()<< endl;
 //   static TString name(fFitMacroName.Data());
+   const char hist_file[] = {"hprFitMacros.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
    if (fFirstUse) {
       Bool_t ok;
       fFitMacroName =
           GetString("Use Macro:", fFitMacroName.Data(), &ok, mycanvas,
-          0,0,0,0,0,"hprFitMacros.txt");
+          0,0,0,0,0, hf);
       if (!ok)
          return;
       fFirstUse = 0;
@@ -1807,10 +1810,13 @@ void FitHist::SetTemplateMacro(const char *name)
 
 void FitHist::EditFitMacro()
 {
+   const char hist_file[] = {"hprFitMacros.txt"};
+   const char * hf = hist_file;
+   if (gROOT->GetVersionInt() < 40101) hf = NULL;
    static TString name(fFitMacroName.Data());
    Bool_t ok;
    name = GetString("Name of Fit Macro", name.Data(), &ok, mycanvas,
-                     0,0,0,0,0,"hprFitMacros.txt");
+                     0,0,0,0,0, hf);
    if (!ok)
       return;
    if (gSystem->AccessPathName(name.Data())) {

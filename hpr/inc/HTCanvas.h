@@ -53,6 +53,7 @@ private:
    Double_t       fMouseX;
    Double_t       fMouseY;
    Bool_t         fGetMouse;
+   Bool_t         fCommonRotate;
 
    void Build();
 //
@@ -67,6 +68,8 @@ public:
    HistPresent * GetHistPresent();
    FitHist     * GetFitHist();
    TList * GetHistList() {return fHistList;};
+   Bool_t GetCommonRotate() {return fCommonRotate;};
+   void   SetCommonRotate(Bool_t cr) {fCommonRotate = cr;};
    HTimer * GetHTimer() {return fTimer;};
    void ActivateTimer(Int_t delay);    // start timer, delay(milli seconds)
    void RunAutoExec();

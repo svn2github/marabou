@@ -88,13 +88,19 @@ void HistPresent::auto_exec_1()
 //         cout << "not in divided" << endl;
          return;
       } 
+      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
+      Bool_t cr = kTRUE;
+//      if (ca && ca->GetCommonRotate()) cr = kTRUE;
       HistPresent * hp = (HistPresent*)gROOT->FindObject("mypres");
       if(!hp) return;
       TList * l = gPad->GetListOfPrimitives();
       TIter next(l);
       TObject * o;
       while ( (o = next()) ) {
-         if(o->InheritsFrom("TH1")){
+//         o->Print();
+         if (cr && o->InheritsFrom("TH2")) continue;
+         
+         if(o->InheritsFrom("TH1") ){
             TH1* h = (TH1*)o;
             TString hname(h->GetName());
             Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
@@ -134,28 +140,57 @@ void HistPresent::auto_exec_2()
    // as a development engine.
    //
 
+   static Double_t phi;
+   static Double_t theta;
    int event = gPad->GetEvent();
 //   cout << "event "<< event << endl;
-   if (event != 1 && event != 51) return;
+   if (event != 1 && event != 51&& event != 11) return;
    TObject *select = gPad->GetSelected();
    if(!select) return;
-//   cout << "selected " << select->GetName() << endl;
+//   cout << "auto_exec_2() selected " << select->GetName() << endl;
    
    HistPresent * hpr = (HistPresent*)gROOT->FindObject("mypres");
    if(!hpr) return;
-   if (event == 1 && select->InheritsFrom("TH2")) {
+   if ((event == 1 || event == 11) && select->InheritsFrom("TH2")) {
 //      cout << "TFrame selected" << endl;
       if(gPad == gPad->GetMother()){
 //         cout << "not in divided" << endl;
          return;
       } 
+      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
+      Bool_t cr = ca->GetCommonRotate();
+         
       TList * l = gPad->GetListOfPrimitives();
       TIter next(l);
       TObject * o;
       while ( (o = next()) ){
-         if (o->InheritsFrom("TH1")) {
+         if (o->InheritsFrom("TH2")) {
             TH1* h = (TH1*)o;
-            hpr->ShowHist(h);
+            if (cr && !strncmp(h->GetDrawOption(), "lego", 4)) { 
+            	if (event == 1) {
+               	phi = gPad->GetPhi();
+               	theta = gPad->GetTheta();
+            	} else if (event == 11) {
+               	Double_t phi_n = gPad->GetPhi();
+               	Double_t theta_n = gPad->GetTheta();
+               	if (phi != phi_n || theta != theta_n) {
+                  	TList * pl = gPad->GetMother()->GetListOfPrimitives();
+                  	TIter nextpad(pl);
+                  	TObject * p;
+                  	while ( (p = nextpad()) ) {
+                     	if (p->InheritsFrom("TPad")) {
+                        	TPad* pp = (TPad*)p;
+                        	pp->SetPhi(phi_n);
+                        	pp->SetTheta(theta_n);
+                        	pp->Modified();
+                        	pp->Update();
+                     	}
+                  	}
+               	}                   
+            	}
+            } else {
+               if (event == 1) hpr->ShowHist(h);
+            }
             return;
          }
       }
