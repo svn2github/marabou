@@ -1293,7 +1293,9 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
 //   par[0] = mean;
    const char *funcname;
    TString sfunc = fHname;
-/*
+   Int_t ip = sfunc.Index(";");
+	if (ip > 0)sfunc.Resize(ip);
+  /*
    TString sfunc = fSelHist->GetName();
    Int_t us = sfunc.Index("E_");
    if(us >= 0)sfunc.Remove(0,2);
@@ -1632,6 +1634,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
    }
    const char *funcname;
    TString sfunc = fHname;
+   Int_t ip = sfunc.Index(";");
+	if (ip > 0)sfunc.Resize(ip);
    func_numb++;
    sfunc.Prepend(Form("%d_", func_numb));
    sfunc.Prepend("f");

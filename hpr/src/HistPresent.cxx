@@ -2190,7 +2190,7 @@ void HistPresent::ShowFunction(const char* fname, const char* name, const char* 
    }
 //  gROOT->ls();
    if (func) {
-      new TCanvas("cccc","cccc");
+      new TCanvas("cccc","cccc", 400, 40, 200, 200);
       func->Draw();   
    } else     WarnBox("Function not found");
    if (fRootFile) fRootFile->Close();
