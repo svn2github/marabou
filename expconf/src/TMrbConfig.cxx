@@ -4632,6 +4632,8 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 				if (line.Contains("class ")) {
 					Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
 					Int_t n2 = line.Index(":", n1);
+					if (n2 == -1) n2 = line.Index("{", n1);
+					if (n2 == -1) n2 = line.Length();
 					TString userClass = line(n1, n2 - n1);
 					userClass = userClass.Strip(TString::kBoth);
 					this->AddUserClass(userClass.Data());
