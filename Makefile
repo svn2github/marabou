@@ -8,8 +8,8 @@
 
 include config/Makefile.config
 
-EXTRA_CFLAGS   += -g -I$(ROOTSYS)/include
-EXTRA_CXXFLAGS += -g -I$(ROOTSYS)/include 
+EXTRA_CFLAGS   += -g -Wno-switch -I$(ROOTSYS)/include
+EXTRA_CXXFLAGS += -g -Wno-switch -I$(ROOTSYS)/include 
 ##### include machine dependent macros #####
 
 include config/Makefile.$(ARCH)
