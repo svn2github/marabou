@@ -95,8 +95,10 @@ TGMrbFileEntry::TGMrbFileEntry(const TGWindow * Parent,
 		bSize = fBrowse->GetDefaultWidth();
 	} else bSize = 0;
 
-	fEntry = new TGTextEntry(this, new TGTextBuffer(BufferSize), EntryId,
-										EntryGC->GC(), EntryGC->Font(), EntryOptions, EntryGC->BG());
+	fEntry = new TGTextEntry(this, new TGTextBuffer(BufferSize), EntryId);
+	fEntry->SetFont(EntryGC->Font());
+	fEntry->SetBackgroundColor(EntryGC->BG());
+
 	fHeap.AddFirst((TObject *) fEntry);
 	this->AddFrame(fEntry, EntryGC->LH());
 	fEntry->Resize(EntryWidth - bSize, Height);

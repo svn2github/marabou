@@ -40,12 +40,12 @@ class TGMrbTextEntry: public TGTextEntry {
 	public:
 		TGMrbTextEntry(const TGWindow * Parent, TGTextBuffer * Text, Int_t Id,
 								GContext_t Context, FontStruct_t Font, UInt_t Option, ULong_t Back) :
-														TGTextEntry(Parent, Text, Id, Context, Font, Option, Back) {
+														TGTextEntry(Parent, Text, Id) {
+			this->SetFont(Font);
+			this->SetBackgroundColor(Back);
 			fSendReturnPressed = kTRUE;
 		};
 
-		TGMrbTextEntry(const TGWindow * Parent, const Char_t * Text, Int_t Id = -1) :
-														TGTextEntry(Parent, Text, Id) {};
 		~TGMrbTextEntry() {};
 		
 		inline void SendReturnPressedOnButtonClick(Bool_t Flag) { fSendReturnPressed = Flag; };

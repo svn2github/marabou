@@ -177,72 +177,84 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 					switch (Param1) {
 						case TGMrbLabelEntry::kGMrbEntryButtonUp:
 							s = fEntry->GetText();
-							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
+							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
+								s.ToInteger(intVal, fBase);
+								intVal += (Int_t) fIncrement;
+								if (!this->CheckRange((Double_t) intVal)) break;
+								s.FromInteger(intVal, fWidth, '0', fBase);
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
 								intVal += (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
-								s.SplitOffDouble(prefix, dblVal);
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
+								s.ToDouble(dblVal);
 								dblVal += fIncrement;
 								if (!this->CheckRange(dblVal)) break;
-								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, '0', 8);
 							}
 							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonDown:
 							s = fEntry->GetText();
-							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
+							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
+								s.ToInteger(intVal, fBase);
+								intVal -= (Int_t) fIncrement;
+								if (!this->CheckRange((Double_t) intVal)) break;
+								s.FromInteger(intVal, fWidth, '0', fBase);
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
 								intVal -= (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
-								s.SplitOffDouble(prefix, dblVal);
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
+								s.ToDouble(dblVal);
 								dblVal -= fIncrement;
 								if (!this->CheckRange(dblVal)) break;
-								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, '0', 8);
 							}
 							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonBegin:
 							s = fEntry->GetText();
-							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
+							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
+								Int_t dmy;
+								s.ToInteger(dmy, fBase);
+								intVal = (Int_t) fLowerLimit;
+								s.FromInteger(intVal, fWidth, '0', fBase);
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
 								intVal = (Int_t) fLowerLimit;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
-								s.SplitOffDouble(prefix, dmy);
+								s.ToDouble(dmy);
 								dblVal = fLowerLimit;
-								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, '0', 8);
 							}
 							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonEnd:
 							s = fEntry->GetText();
-							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
+							if (		fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
+								Int_t dmy;
+								s.ToInteger(dmy, fBase);
+								intVal = (Int_t) fUpperLimit;
+								s.FromInteger(intVal, fWidth, '0', fBase);
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
 								intVal = (Int_t) fUpperLimit;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-							} else if ( fType == TGMrbLabelEntry::kGMrbEntryTypeDouble
-									||	fType == TGMrbLabelEntry::kGMrbEntryTypeCharDouble) {
+							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
-								s.SplitOffDouble(prefix, dmy);
+								s.ToDouble(dmy);
 								dblVal = fUpperLimit;
-								s = prefix; s.AppendDouble(dblVal, fWidth, '0', 8);
+								s.FromDouble(dblVal, fWidth, '0', 8);
 							}
 							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
