@@ -784,6 +784,7 @@ class TMrbAnalyze : public TObject {
 		Int_t fEventsProcessed; 	// events processed so far
 		Int_t fTimeOfLastUpdate;	// update time is stored here
 		Int_t fEventsProcPrev; 		// event count of last update
+		Int_t fHistFileVersion;    // version number of (autosaved) hist file
 
 		TMapFile * fMapFile;		// share memory mmap file
 		Int_t fMapFileSize;			// ... size

@@ -99,6 +99,7 @@ TMrbAnalyze::TMrbAnalyze(TMrbIOSpec * IOSpec) {
 		fEventsProcessed = 0;
 		fTimeOfLastUpdate = 0;
 		fEventsProcPrev = 0;
+		fHistFileVersion = 0;
 		fReplayMode = kFALSE;
 
 		fLofIOSpecs.Delete();
@@ -644,11 +645,15 @@ TH1F * TMrbAnalyze::UpdateRateHistory() {
 
 	if (fTimeOfLastUpdate > 0) {
 		elapsed = now - fTimeOfLastUpdate;
-		if (elapsed != 0) {
+//cout << "elapsed " << elapsed << endl;
+		if (elapsed > 0) {
 			nofBins = hRateHistory->GetNbinsX();
 			rate = (fEventsProcessed - fEventsProcPrev) / elapsed;
 			for (Int_t i = 1; i < nofBins; i++) {
-				hRateHistory->SetBinContent(i, hRateHistory->GetBinContent(i+1));
+				if (i + elapsed <= nofBins)
+				   hRateHistory->SetBinContent(i, hRateHistory->GetBinContent(i+elapsed));
+				else
+				   hRateHistory->SetBinContent(i, 0);
 			}
 			hRateHistory->SetBinContent(nofBins, rate);
 			hRateHistory->SetEntries(fEventsProcessed);
@@ -986,6 +991,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString histoFile;
+	TString histoFileVersioned;
 	TString pattern;
 	TRegexp * rexp;
 	Int_t count;
@@ -998,20 +1004,25 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 	rexp = NULL;
 
 	if (pattern.CompareTo("*") == 0) rexp = new TRegexp(pattern.Data(), kTRUE);
-
+// generate a versioned filename
 	histoFile = IOSpec->GetHistoFile();
-	TFile * hf = new TFile(histoFile.Data(), "RECREATE");
+   histoFileVersioned = histoFile;
+	histoFileVersioned += ".";
+	histoFileVersioned += fHistFileVersion++;
+	
+	if (this->IsVerbose())cout	<< setblue
+			<< this->ClassName() << "::SaveHistograms(): Saving histogram(s) to file "
+			<< histoFileVersioned << " - wait ..." << setblack << endl;
+	pthread_mutex_lock(&global_data_mutex);
+	TFile * hf = new TFile(histoFileVersioned.Data(), "RECREATE");
 	if (!hf->IsOpen()) {
-		gMrbLog->Err()	<< "Can't open histo file " << histoFile << endl;
+		gMrbLog->Err()	<< "Can't open histo file " << histoFileVersioned << endl;
 		gMrbLog->Flush(this->ClassName(), "SaveHistograms");
+	   pthread_mutex_unlock(&global_data_mutex);
 		return(-1);
 	}
 	hf->cd();
 
-	cout	<< setblue
-			<< this->ClassName() << "::SaveHistograms(): Saving histogram(s) to file "
-			<< histoFile << " - wait ..." << setblack << endl;
-	pthread_mutex_lock(&global_data_mutex);
    if(kUseMap){
 		fMapFile->Update();		// force update
 
@@ -1053,11 +1064,26 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
          }
       }
    }
-	cout	<< setblue
+	if (this->IsVerbose()) cout	<< setblue
 			<< this->ClassName() << "::SaveHistograms(): " << count << " histogram(s) saved to " << histoFile
 			<< setblack << endl;
+//System->Sleep(15000);
+//out << setgreen << "end of sleep" << setblack << endl;
 	hf->Close();
 	pthread_mutex_unlock(&global_data_mutex);
+// set link to newly created file, remove old
+   if (!gSystem->AccessPathName(histoFile.Data())) {
+	   gSystem->Unlink(histoFile.Data());
+	}
+	gSystem->Symlink(histoFileVersioned.Data(), histoFile.Data());
+	if (fHistFileVersion > 1) {
+	   TString oldfile(histoFile.Data());
+		oldfile += ".";
+		oldfile += (fHistFileVersion - 2);
+      if (!gSystem->AccessPathName(oldfile.Data())) {
+	      gSystem->Unlink(oldfile.Data());
+	   }
+	}
 	return(count);
 }
 

@@ -68,6 +68,7 @@ TServerSocket *ss = 0;
 // if Offline (replay) dont use TMapFile
 extern Bool_t kUseMap;
 Int_t  gComSocket;
+Int_t hsave_intervall;
 static Bool_t verboseMode = kFALSE;
 
 static unsigned int update_time = TMrbAnalyze::kUpdateTime;
@@ -190,6 +191,7 @@ int main(int argc, char **argv) {
 				<<	"                             [output_file] [file_size]" << endl
 				<<	"                             [parm_file] [histo_file]" << endl
 				<<	"                             [mmap_file] [mmap_size]" << endl
+				<<	"                             [hsave_intervall]" << endl
 				<< endl
 				<<	"       ARGUMENT     DEFAULT            MEANING" << endl
 				<<	"       data_source    n/a              server addr or file name" << endl
@@ -212,7 +214,8 @@ int main(int argc, char **argv) {
 				<<	"       mmap_file      \"none\"  name of mmap file, if not \"none\": must be local e.g. \"/tmp/M_prod.map\"" << endl
 				<<	"       mmap_size      0               size of file in MBs" << endl
 				<<	"       gComSocket     0                socket for communication with C_analyze" << endl
-				<< setblack <<	endl << endl;
+				<< "       hsave_intervall 0               frequency for autosaving histos [sec]" << endl
+ 				<< setblack <<	endl << endl;
 		exit(0);
 	}
 
@@ -419,7 +422,10 @@ int main(int argc, char **argv) {
 	our_pid_file += ".";
 	our_pid_file += gComSocket;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] Communication socket:   " <<  gComSocket<< endl;
-
+   hsave_intervall = 0;
+	argNo++;
+	if(argc > argNo)	hsave_intervall = atoi(argv[argNo]);
+	if (verboseMode) cout << "M_analyze: Histo save intervall[sec]:   " << hsave_intervall << endl;
    if (verboseMode) cout << "M_analyze: Reading of arguments done (" << argNo << " args)" << endl;
 
 	PutPid(TMrbAnalyze::M_STARTING);
@@ -548,7 +554,7 @@ int main(int argc, char **argv) {
 					<< setiosflags(ios::fixed) << setprecision(1) << xmb << " MB) > size of map file ("
 					<< (mmap_size / kMB) << " MB)"
 					<< endl;
-			cerr	<< "M_analyze: Sorry, can't run ... Start over with MMapFile Size = "
+			cerr	<< "M_analyze: Sorry, can't run ... Start over with MMapFile Size = "
 					<< (Int_t) (xmb + .99) << ""
 					<< setblack << endl;
 			exit_from_analyze(1);
@@ -738,6 +744,7 @@ void * update_handler(void * dummy) {
 	struct tms buf1, buf2;
 	clock_t t1, t2;
 	static ULong_t total_sleep, seconds;
+	static Int_t sleep_before_update = 0;
 	seconds=0;
 
 	while(1) {
@@ -750,8 +757,13 @@ void * update_handler(void * dummy) {
 		TH1F * dth = u_analyze->UpdateDTimeHistory();
 		if ( M_prod ) M_prod->Update(dth); 
 		pthread_mutex_unlock(&global_data_mutex);
+		sleep_before_update ++;
+		if (hsave_intervall > 0 && sleep_before_update >= hsave_intervall) {
+		   sleep_before_update = 0;
+			u_analyze->SaveHistograms("*", ioSpec);
+		}
 		total_sleep ++;
-		if(total_sleep >= update_time){
+		if (total_sleep >= update_time){
 			total_sleep = 0;
 //	protect update with same mutex as fills
 			pthread_mutex_lock(&global_data_mutex);
@@ -926,7 +938,7 @@ void * msg_handler(void * dummy) {
       if(mess->What() == kMESS_STRING){
          char str[300];
          mess->ReadString(str, 250);
-			if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
+//	if ( verboseMode ) cout << "M_analyze::msg_handler(): Read from client: " << str << endl;
 //        no_of_parameters= M.parse(str, parms);
          TString  smess = str; smess = smess.Strip(TString::kBoth);
          if(smess(0,9) != "M_client "){               
