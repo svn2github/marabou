@@ -42,12 +42,13 @@ extern TMrbDGFData * gMrbDGFData;
 
 ClassImp(TMrbLofDGFs)
 
-Bool_t TMrbLofDGFs::AddModule(TMrbDGF * Module) {
+Bool_t TMrbLofDGFs::AddModule(TMrbDGF * Module, Bool_t MultiCrate) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbLofDGFs::AddModule
 // Purpose:        Add a DGF module to list
 // Arguments:      TMrbDGF * Module   -- module to be added
+//                 Bool_t MultiCrate  -- kTRUE if modules from different crates
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Adds a DGF module to this list.
@@ -63,62 +64,32 @@ Bool_t TMrbLofDGFs::AddModule(TMrbDGF * Module) {
 		return(kFALSE);
 	}
 	
-	stationBit = 1 << (Module->GetStation() - 1);
-	if (fStationMask & stationBit) {
-		gMrbLog->Err()	<< "Module " << Module->GetName() << " (C" << Module->GetCrate() << ".N" << Module->GetStation()
-						<< ") - station N already occupied" << endl;
-		gMrbLog->Flush(this->ClassName(), "AddModule");
-		return(kFALSE);
-	}
-	
 	if (fCamac == NULL) {
 		fCamac = Module->Camac();
 		fCrate = Module->GetCrate();
 		fDGFData = Module->Data();
 	}
 		
-	if (fCrate != Module->GetCrate()) {
-		gMrbLog->Err()	<< "Module " << Module->GetName() << " (C" << Module->GetCrate() << ".N" << Module->GetStation()
-						<< ") - different crate" << endl;
-		gMrbLog->Flush(this->ClassName(), "AddModule");
-		return(kFALSE);
-	}
-	
-	fStationMask |= stationBit;
-	this->Add(Module);
-	return(kTRUE);
-}
+	if (!MultiCrate) {
+		stationBit = 1 << (Module->GetStation() - 1);
+		if (fStationMask & stationBit) {
+			gMrbLog->Err()	<< "Module " << Module->GetName() << " (C" << Module->GetCrate() << ".N" << Module->GetStation()
+							<< ") - station N already occupied" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddModule");
+			return(kFALSE);
+		}
 
-Bool_t TMrbLofDGFs::RemoveModule(TMrbDGF * Module) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbLofDGFs::RemoveModule
-// Purpose:        Remove a DGF module from list
-// Arguments:      TMrbDGF * Module   -- module to be added
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Removes a DGF module from this list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
+		if (fCrate != Module->GetCrate()) {
+			gMrbLog->Err()	<< "Module " << Module->GetName() << " (C" << Module->GetCrate() << ".N" << Module->GetStation()
+							<< ") - different crate" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddModule");
+			return(kFALSE);
+		}
+		fStationMask |= stationBit;
+	}
 
-	UInt_t stationBit;
-	
-	if (this->FindObject(Module->GetName())) {
-		gMrbLog->Err()	<< "Module " << Module->GetName() << " (C" << Module->GetCrate() << ".N" << Module->GetStation()
-						<< ") - already in list" << endl;
-		gMrbLog->Flush(this->ClassName(), "AddModule");
-		return(kFALSE);
-	}
-	
-	stationBit = 1 << (Module->GetStation() - 1);
-	if (fStationMask & stationBit) {
-		gMrbLog->Err()	<< "Module " << Module->GetName() << " (C" << Module->GetCrate() << ".N" << Module->GetStation()
-						<< ") - station N already occupied" << endl;
-		gMrbLog->Flush(this->ClassName(), "AddModule");
-		return(kFALSE);
-	}
-	
-	fStationMask |= stationBit;
+	if (MultiCrate) fMultiCrate = kTRUE;
+
 	this->Add(Module);
 	return(kTRUE);
 }
@@ -154,8 +125,21 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 	if (!this->CheckModules("DownLoadFPGACode")) return(kFALSE);
 	if (!this->CheckConnect("DownLoadFPGACode")) return(kFALSE);
 
-	fBCN = fCamac->HasBroadCast();
-	if (fBCN == -1) {								// no broadcast available - use normal loop
+	if (fMultiCrate) {
+		gMrbLog->Err()	<< "[" << sysfip
+						<< " FPGA] List contains modules from different crates - looping over list members ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
+		ok = kTRUE;
+		dgf = (TMrbDGF *) this->First();
+		while (dgf) {
+			if (!dgf->DownloadFPGACode(FPGAType)) ok = kFALSE;
+			dgf = (TMrbDGF *) this->After(dgf);
+		}
+		return(ok);
+	}
+
+	fBroadCast = fCamac->HasBroadCast(fNsetMask, fNexecCmd);
+	if (!fBroadCast) {								// no broadcast available - use normal loop
 		gMrbLog->Err()	<< "[" << sysfip
 						<< " FPGA] No BROADCAST mode available - looping over list members instead ..." << endl;
 		gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
@@ -221,9 +205,9 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		}
 		fCamac->SetBroadCast(fCrate, sysBits); 									// set broadcast register
-		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fNexecCmd, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[System FPGA] "
-							<< "C" << fCrate << ".N" << fBCN
+							<< "C" << fCrate << ".N" << fNexecCmd
 							<< cnaf << " (pattern=0x" << setbase(16) << sysBits << setbase(10)
 							<< "): Block xfer failed" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
@@ -241,9 +225,9 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		}
 		fCamac->SetBroadCast(fCrate, fippiDbits); 									// set broadcast register
-		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fNexecCmd, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[Fippi(D) FPGA] "
-							<< "C" << fCrate << ".N" << fBCN
+							<< "C" << fCrate << ".N" << fNexecCmd
 							<< cnaf << " (pattern=0x" << setbase(16) << fippiDbits << setbase(10)
 							<< "): Block xfer failed - ActionCount=-1" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
@@ -261,9 +245,9 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		}
 		fCamac->SetBroadCast(fCrate, fippiEbits); 									// set broadcast register
-		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fNexecCmd, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[Fippi(E) FPGA] "
-							<< "C" << fCrate << ".N" << fBCN
+							<< "C" << fCrate << ".N" << fNexecCmd
 							<< cnaf << " (pattern=0x" << setbase(16) << fippiEbits << setbase(10)
 							<< "): Block xfer failed - ActionCount=-1" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
@@ -293,11 +277,11 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 
 	if (gMrbDGFData->IsVerbose()) {
 		if (ok) {
-			gMrbLog->Out()	<< "[" << sysfip << " FPGA] " << "C" << fCrate << ".N" << fBCN
+			gMrbLog->Out()	<< "[" << sysfip << " FPGA] " << "C" << fCrate << ".N" << fNexecCmd
 							<< ": Code successfully loaded via broadcast" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		} else {
-			gMrbLog->Err()	<< "[" << sysfip << " FPGA] " << "C" << fCrate << ".N" << fBCN
+			gMrbLog->Err()	<< "[" << sysfip << " FPGA] " << "C" << fCrate << ".N" << fNexecCmd
 							<< ": error(s) during FPGA download via broadcast" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
 		}
@@ -352,8 +336,22 @@ Bool_t TMrbLofDGFs::DownloadDSPCode(Int_t Retry) {
 	if (!this->CheckModules("DownLoadDSPCode")) return(kFALSE);
 	if (!this->CheckConnect("DownLoadDSPCode")) return(kFALSE);
 
-	fBCN = fCamac->HasBroadCast();
-	if (fBCN == -1) {									// no broadcast available - use normal loop
+	if (fMultiCrate) {									// no broadcast available - use normal loop
+		gMrbLog->Err()	<< "List contains modules from different crates - looping over list members ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
+		ok = kTRUE;
+		dgf = (TMrbDGF *) this->First();
+		while (dgf) {
+			if (!dgf->DownloadDSPCode()) ok = kFALSE;
+			dgf = (TMrbDGF *) this->After(dgf);
+		}
+		return(ok);
+	}
+	
+	fBroadCast = fCamac->HasBroadCast(fNsetMask, fNexecCmd);
+	if (!fBroadCast) {								// no broadcast available - use normal loop
+		gMrbLog->Err()	<< "No BROADCAST mode available - looping over list members instead ..." << endl;
+		gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
 		ok = kTRUE;
 		dgf = (TMrbDGF *) this->First();
 		while (dgf) {
@@ -379,16 +377,16 @@ Bool_t TMrbLofDGFs::DownloadDSPCode(Int_t Retry) {
 		cData.Set(size);
 		this->CopyData(cData, dp, size);
 		if (!this->WriteTSAR(1)) return(kFALSE); 							// start with addr 1
-		if (fCamac->BlockXfer(fCrate, fBCN, A(0), F(16), cData, 2, size - 2, kTRUE) == -1) {	// start block xfer, 16 bit
-			gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
+		if (fCamac->BlockXfer(fCrate, fNexecCmd, A(0), F(16), cData, 2, size - 2, kTRUE) == -1) {	// start block xfer, 16 bit
+			gMrbLog->Err()	<< "C" << fCrate << ".N" << fNexecCmd
 							<< ".A0.F16 failed - DSPAddr=1, wc=" << size - 2 << ", ActionCount=-1" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
 			return(kFALSE);
 		}
 
 		if (!this->WriteTSAR(0)) return(kFALSE); 							// writing to addr 0 will start DSP pgm
-		if (fCamac->BlockXfer(fCrate, fBCN, A(0), F(16), cData, 0, 2, kTRUE) == -1) {	// start block xfer
-			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fBCN
+		if (fCamac->BlockXfer(fCrate, fNexecCmd, A(0), F(16), cData, 0, 2, kTRUE) == -1) {	// start block xfer
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fNexecCmd
 							<< ".A0.F16 failed - DSPAddr=0, wc=2, ActionCount=-1" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
 			return(kFALSE);
@@ -410,11 +408,11 @@ Bool_t TMrbLofDGFs::DownloadDSPCode(Int_t Retry) {
 				
 		if (gMrbDGFData->IsVerbose()) {
 			if (ok) {
-				gMrbLog->Out()	<< "C" << fCrate << ".N" << fBCN
+				gMrbLog->Out()	<< "C" << fCrate << ".N" << fNexecCmd
 								<< ": DSP code successfully loaded via broadcast (" << size << " words)" << endl;
 				gMrbLog->Flush(this->ClassName(), "DownloadDSPCode", setblue);
 			} else {
-				gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
+				gMrbLog->Err()	<< "C" << fCrate << ".N" << fNexecCmd
 								<< ": error(s) during DSP download via broadcast" << endl;
 				gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
 			}
@@ -498,66 +496,6 @@ Bool_t TMrbLofDGFs::DSPCodeLoaded() {
 	return(kTRUE);
 }
 
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::WriteICSR
-//                 TMrbDGF::WriteCSR
-//                 TMrbDGF::WriteTSAR
-//                 TMrbDGF::WriteWCR
-// Purpose:        Camac output to DGF regs
-// Arguments:      UInt_t Data   -- data to be written to DGF reg
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-Bool_t TMrbLofDGFs::WriteICSR(UInt_t Data) {
-// Write DGF Control Status Reg
-	Int_t cVal = (Int_t) Data;
-	if (!fCamac->ExecCnaf(fCrate, fBCN, A(8), F(17), cVal, kTRUE)) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN << ".A8.F17 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteICSR");
-		return(kFALSE);
-	}
-	return(kTRUE);
-}
-
-Bool_t TMrbLofDGFs::WriteCSR(UInt_t Data) {
-// Write DGF Control Status Reg
-	Int_t cVal = (Int_t) Data;
-	if (!fCamac->ExecCnaf(fCrate, fBCN, A(0), F(17), cVal, kTRUE)) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN << ".A0.F17 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteCSR");
-		return(kFALSE);
-	}
-	return(kTRUE);
-}
-
-Bool_t TMrbLofDGFs::WriteTSAR(UInt_t Addr) {
-// Write DGF Transfer Start Addr Reg
-	Int_t cVal = (Int_t) Addr;
-	if (!fCamac->ExecCnaf(fCrate, fBCN, A(1), F(17), cVal, kTRUE)) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
-						<< ".A1.F17 failed - DSPAddr=0x" << setbase(16) << Addr
-						<< setbase(10) << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteTSAR");
-		return(kFALSE);
-	}
-	return(kTRUE);
-}
-
-Bool_t TMrbLofDGFs::WriteWCR(Int_t Data) {
-// Write DGF Word Count Reg
-	Int_t cVal = Data;
-	if (!fCamac->ExecCnaf(fCrate, fBCN, A(2), F(17), cVal, kTRUE)) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN << ".A2.F17 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "WriteWCR");
-		return(kFALSE);
-	}
-	return(kTRUE);
-}
-
 Bool_t TMrbLofDGFs::CheckConnect(const Char_t * Method) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -601,6 +539,118 @@ Bool_t TMrbLofDGFs::CheckModules(const Char_t * Method) {
 	if (fStationMask == 0) {
 		gMrbLog->Err() << "List of DGF modules is empty" << endl;
 		gMrbLog->Flush(this->ClassName(), Method);
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+TMrbDGF::EMrbWaitStatus TMrbLofDGFs::WaitActive(Int_t Timeout) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::WaitActive
+// Purpose:        Wait for active bit to drop
+// Arguments:      Int_t Timeout    -- timeout in seconds
+// Results:        Status: error, timeout, abort, ok
+// Exceptions:
+// Description:    Waits until bit TMrbDGFData::kActive disapears in the csr.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t csr;
+	time_t start;
+
+	start = time(NULL);
+
+	while ((time(NULL) - start) > Timeout) {
+		TMrbDGF * dgf = (TMrbDGF *) this->First();
+		Bool_t ok = kTRUE;
+		while (dgf) {
+			csr = dgf->ReadCSR();
+			if (csr == 0xffffffff || (csr & TMrbDGFData::kActive) != 0) ok = kFALSE;
+			gSystem->ProcessEvents();
+			if (dgf->IsAborted()) {
+			gMrbLog->Err()	<< "Aborted after " << (time(NULL) - start) << " secs. Stopping current run." << endl;
+				gMrbLog->Flush(this->ClassName(), "WaitActive");
+				return(TMrbDGF::kWaitAborted);
+			}
+			dgf = (TMrbDGF *) this->After(dgf);
+		}
+		if (ok) return(TMrbDGF::kWaitOk);
+	}
+
+	gMrbLog->Err()	<< "Timed out after " << Timeout << " secs" << endl;
+	gMrbLog->Flush(this->ClassName(), "WaitActive");
+	TMrbDGF * dgf = (TMrbDGF *) this->First();
+	while (dgf) {
+		csr = dgf->ReadCSR();
+		if (csr == 0xffffffff) {
+			gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+							<< ": Unexpected error." << endl;
+			gMrbLog->Flush(this->ClassName(), "WaitActive");
+		} else if ((csr & TMrbDGFData::kActive) != 0) {
+			gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+							<< ": Still active." << endl;
+			gMrbLog->Flush(this->ClassName(), "WaitActive");
+		}
+		dgf = (TMrbDGF *) this->After(dgf);
+	}
+	return(TMrbDGF::kWaitTimedOut);
+}
+
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::WriteICSR
+//                 TMrbDGF::WriteCSR
+//                 TMrbDGF::WriteTSAR
+//                 TMrbDGF::WriteWCR
+// Purpose:        Camac I/O from/to DGF regs
+// Arguments:      UInt_t Data   -- data to be written to DGF reg
+// Results:        
+// Exceptions:
+// Description:    
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+Bool_t TMrbLofDGFs::WriteICSR(UInt_t Data) {
+// Write DGF Control Status Reg
+	Int_t cVal = (Int_t) Data;
+	if (!fCamac->ExecCnaf(fCrate, fNexecCmd, A(8), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fNexecCmd << ".A8.F17 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteICSR");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbLofDGFs::WriteCSR(UInt_t Data) {
+// Write DGF Control Status Reg
+	Int_t cVal = (Int_t) Data;
+	if (!fCamac->ExecCnaf(fCrate, fNexecCmd, A(0), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fNexecCmd << ".A0.F17 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteCSR");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbLofDGFs::WriteTSAR(UInt_t Addr) {
+// Write DGF Transfer Start Addr Reg
+	Int_t cVal = (Int_t) Addr;
+	if (!fCamac->ExecCnaf(fCrate, fNexecCmd, A(1), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fNexecCmd
+						<< ".A1.F17 failed - DSPAddr=0x" << setbase(16) << Addr << setbase(10) << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteTSAR");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbLofDGFs::WriteWCR(Int_t Data) {
+// Write DGF Word Count Reg
+	Int_t cVal = Data;
+	if (!fCamac->ExecCnaf(fCrate, fNexecCmd, A(2), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fNexecCmd << ".A2.F17 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteWCR");
 		return(kFALSE);
 	}
 	return(kTRUE);

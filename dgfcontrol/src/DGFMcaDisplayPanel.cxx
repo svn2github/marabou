@@ -254,12 +254,6 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame)
 //	no accu running
 	fIsRunning = kFALSE;
 	
-// test mode on?
-	if (gDGFControlData->IsOffline()) {
-		fButtonFrame->SetState(DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, kButtonDisabled);
-		fButtonFrame->SetState(DGFMcaDisplayPanel::kDGFMcaDisplaySaveHistos, kButtonDisabled);
-	}
-	
 // initialize "save" button
 	fMcaFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesROOT;
 	fMcaFileInfo.fIniDir = StrDup(gDGFControlData->fDataPath);
@@ -381,6 +375,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	TString timeScale;
 										
 	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
 	intStr = fRunTimeEntry->GetEntry()->GetText();
@@ -407,9 +402,11 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			dgf = dgfModule->GetAddr();
-			dgf->AccuHist_Init(chnPattern);
-			dgf->AccuHist_Start();
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				dgf->AccuHist_Init(chnPattern);
+				dgf->AccuHist_Start();
+			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
@@ -423,6 +420,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 
 	cout << "[Accumulating " << accuTime << " " << tp->GetName() << "(s) - wait ... " << ends << flush;
 	abortAccu = kFALSE;
+	if (offlineMode) secsToWait = 1;
 	for (Int_t i = 0; i < secsToWait; i++) {
 		sleep(1);
 		gSystem->ProcessEvents();
@@ -445,30 +443,32 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			dgf = dgfModule->GetAddr();
-			if (dgf->AccuHist_Stop(0)) {
-				nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
-				if (nofWords > 0) {
-					if (verbose) histoBuffer.Print();
-					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-						if (histoBuffer.IsActive(chn)) {
-							if (mcaFile == NULL) {
-								listFile.open("mca.histlist", ios::out);
-								mcaFile = new TFile("mca.root", "RECREATE");
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				if (dgf->AccuHist_Stop(0)) {
+					nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
+					if (nofWords > 0) {
+						if (verbose) histoBuffer.Print();
+						for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+							if (histoBuffer.IsActive(chn)) {
+								if (mcaFile == NULL) {
+									listFile.open("mca.histlist", ios::out);
+									mcaFile = new TFile("mca.root", "RECREATE");
+								}
+								histoBuffer.FillHistogram(chn);
+								TH1F * h = histoBuffer.Histogram(chn);
+								h->Write();
+								listFile << h->GetName() << endl;
+								nofHistos++;
 							}
-							histoBuffer.FillHistogram(chn);
-							TH1F * h = histoBuffer.Histogram(chn);
-							h->Write();
-							listFile << h->GetName() << endl;
-							nofHistos++;
 						}
+					} else {
+						gMrbLog->Err()	<< "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+											<< ": Histogram buffer is empty" << endl;
+						gMrbLog->Flush(this->ClassName(), "AcquireHistos");
 					}
-				} else {
-					gMrbLog->Err()	<< "DGF in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-										<< ": Histogram buffer is empty" << endl;
-					gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+					dgf->RestoreParams(TMrbDGF::kSaveAccuHist);
 				}
-				dgf->RestoreParams(TMrbDGF::kSaveAccuHist);
 			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -477,6 +477,8 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	if (nofHistos > 0) {
 		listFile.close();
 		mcaFile->Close();
+	}
+	if (offlineMode || (nofHistos > 0)) {
 		gMrbLog->Out()	<< nofHistos << " histogram(s) written to file mca.root" << endl;
 		gMrbLog->Flush(this->ClassName(), "AcquireHistos", setblue);
 	} else {

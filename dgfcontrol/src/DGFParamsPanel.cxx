@@ -171,8 +171,9 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 	HEAP(fSelectFrame);
 	this->AddFrame(fSelectFrame, groupGC->LH());
 
-	DGFModule * dgfModule = gDGFControlData->FirstModule();
-	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
+	TMrbDGFData * dgfData = new TMrbDGFData();
+	dgfData->ReadNameTable();
+	TMrbLofNamedX * pNameAddr = dgfData->GetLofParamNames();
 	TObjArray pNames;
 	TMrbNamedX * px = (TMrbNamedX *) pNameAddr->First();
 	while (px) {
@@ -208,7 +209,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame)
 		HEAP(fClusterVals[cl]);
 		fValueFrame->AddFrame(fClusterVals[cl], groupGC->LH());
 		for (Int_t modNo = 0; modNo < kNofModulesPerCluster; modNo++) {
-			dgfModule = gDGFControlData->GetModule(cl, modNo);
+			DGFModule * dgfModule = gDGFControlData->GetModule(cl, modNo);
 			Int_t n = modNo + cl * kNofModulesPerCluster;
 			TMrbString dgfName;
 			TGMrbLayout * bgc;
@@ -342,6 +343,8 @@ Bool_t DGFParamsPanel::ReadParams() {
 	TMrbString intStr;
 	Bool_t selectOk;
 
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
 	TMrbNamedX * px = pNameAddr->FindByIndex(fActiveParam);
@@ -397,6 +400,8 @@ Bool_t DGFParamsPanel::ApplyParams() {
 	Int_t idx;
 	Bool_t selectOk;
 				
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	TMrbLofNamedX * pNameAddr = dgfModule->GetAddr()->Data()->GetLofParamNames();
 	TMrbNamedX * px = pNameAddr->FindByIndex(fActiveParam);

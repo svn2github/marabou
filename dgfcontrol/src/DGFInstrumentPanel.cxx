@@ -857,6 +857,8 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	Int_t intVal;
 	Bool_t ok;
 
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
 	ok = kTRUE;
 	if (ReadFromDSP) {
 		dgfModule = gDGFControlData->FirstModule();
@@ -1053,6 +1055,8 @@ Bool_t DGFInstrumentPanel::CopyModuleSettings() {
 								&infoFrom, &infoTo, gDGFControlData,
 								DGFCopyModuleSettingsPanel::kFrameWidth, DGFCopyModuleSettingsPanel::kFrameHeight);
 
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
 	if (infoTo.fExecute) {
 		gDGFControlData->SetSelectedModuleIndex(infoFrom.fModules[0]);
 		thisModule = gDGFControlData->GetSelectedModule();
@@ -1217,6 +1221,8 @@ Bool_t DGFInstrumentPanel::ShowModuleSettings() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
 	TString editor = gSystem->Getenv("EDITOR");
 	DGFModule * dgfModule = gDGFControlData->GetSelectedModule();
 	TString tmpFile = "/tmp/DGFControl.";
@@ -1254,6 +1260,8 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 	Double_t dblVal;
 	Int_t idx;
 	
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
 	dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
 	chn = gDGFControlData->GetChannel(ChannelId);
 

@@ -306,6 +306,8 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	TMrbString intStr;
 	Int_t wpc[TMrbDGFData::kNofChannels];
 										
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+
 	traceBuffer.Set(TMrbDGFData::kUntrigTraceLength * TMrbDGFData::kNofChannels);
 	
 	nofTraces = 0;
@@ -328,15 +330,15 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			selectFlag = kTRUE;
-			dgf = dgfModule->GetAddr();
-
-			if (gDGFControlData->IsDebug()) {
-				TMrbString fn = dgf->GetName();
-				fn += ".param.dat";
-				dgf->PrintParamsToFile(fn.Data());
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				if (gDGFControlData->IsDebug()) {
+					TMrbString fn = dgf->GetName();
+					fn += ".param.dat";
+					dgf->PrintParamsToFile(fn.Data());
+				}
+				dgf->GetUntrigTrace_Init(traceBuffer, chnPattern, xwait);
 			}
-
-			dgf->GetUntrigTrace_Init(traceBuffer, chnPattern, xwait);
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
@@ -353,47 +355,49 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			dgf = dgfModule->GetAddr();
-			UInt_t chnp = chnPattern;
-			nofWords = 0;
-			for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-				wpc[chn] = 0;
-				if (chnp & 1) {
-					dgf->GetUntrigTrace_Start(chn);
-					wpc[chn] = dgf->GetUntrigTrace_Stop(chn, traceBuffer);
-					nofWords += wpc[chn];
-				}
-				chnp >>= 1;
-			}		
-			dgf->GetUntrigTrace_Restore();
-			if (nofWords > 0) {
-				if (!dataOkFlag) {
-					traceFile = new TFile("untrigTrace.root", "RECREATE");
-					hl.open("untrigTrace.histlist", ios::out);
-				}
-				dataOkFlag = kTRUE;
-				hTitle = "Untrig traces for module ";
-				hTitle += dgfModule->GetName();
-				h = new TH1F(dgfModule->GetName(), hTitle.Data(), nofWords, 0., nofWords);
-				TMrbString chnList = "chn ";
-				Int_t n = 0;
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				UInt_t chnp = chnPattern;
+				nofWords = 0;
 				for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-					Int_t offset = chn * TMrbDGFData::kUntrigTraceLength;
-					if (wpc[chn] > 0) {
-						chnList += chn;
-						chnList += " ";
-						for (Int_t i = 0; i < wpc[chn]; i++, n++, offset++) h->Fill((Axis_t) n, traceBuffer[offset]);
+					wpc[chn] = 0;
+					if (chnp & 1) {
+						dgf->GetUntrigTrace_Start(chn);
+						wpc[chn] = dgf->GetUntrigTrace_Stop(chn, traceBuffer);
+						nofWords += wpc[chn];
 					}
+					chnp >>= 1;
+				}		
+				dgf->GetUntrigTrace_Restore();
+				if (nofWords > 0) {
+					if (!dataOkFlag) {
+						traceFile = new TFile("untrigTrace.root", "RECREATE");
+						hl.open("untrigTrace.histlist", ios::out);
+					}
+					dataOkFlag = kTRUE;
+					hTitle = "Untrig traces for module ";
+					hTitle += dgfModule->GetName();
+					h = new TH1F(dgfModule->GetName(), hTitle.Data(), nofWords, 0., nofWords);
+					TMrbString chnList = "chn ";
+					Int_t n = 0;
+					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+						Int_t offset = chn * TMrbDGFData::kUntrigTraceLength;
+						if (wpc[chn] > 0) {
+							chnList += chn;
+							chnList += " ";
+							for (Int_t i = 0; i < wpc[chn]; i++, n++, offset++) h->Fill((Axis_t) n, traceBuffer[offset]);
+						}
+					}
+					hTitle += ": ";
+					hTitle += chnList.Data();
+					h->SetTitle(hTitle.Data());
+					h->Write();
+					hl << dgfModule->GetName() << endl;
+					nofTraces++;
+					gMrbLog->Out()	<< "StartTrace(): [" << dgfModule->GetName() << "] "
+									<< nofWords << " untrig trace data written" << endl;
+					gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 				}
-				hTitle += ": ";
-				hTitle += chnList.Data();
-				h->SetTitle(hTitle.Data());
-				h->Write();
-				hl << dgfModule->GetName() << endl;
-				nofTraces++;
-				gMrbLog->Out()	<< "StartTrace(): [" << dgfModule->GetName() << "] "
-								<< nofWords << " untrig trace data written" << endl;
-				gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -402,6 +406,8 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	if (dataOkFlag) {
 		traceFile->Close();
 		hl.close();
+	}
+	if (offlineMode || dataOkFlag) {
 		gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 		return(kTRUE);

@@ -32,12 +32,12 @@ class TMrbLofDGFs : public TObjArray {
 			fCrate = 0;
 			fStationMask = 0;
 			fDGFData = NULL;
+			fMultiCrate = kFALSE;
 		};
 		
 		~TMrbLofDGFs() {};		 	// default dtor
 
-		Bool_t AddModule(TMrbDGF * Dgf);
-		Bool_t RemoveModule(TMrbDGF * Dgf);
+		Bool_t AddModule(TMrbDGF * Dgf, Bool_t MultiCrate = kFALSE);
 		inline TMrbDGF * FindModule(const Char_t * DgfName) { return((TMrbDGF *) this->FindObject(DgfName)); };
 		inline TMrbDGF * FindModule(TMrbDGF * Dgf) { return((TMrbDGF *) this->FindObject(Dgf->GetName())); };
 				
@@ -52,6 +52,7 @@ class TMrbLofDGFs : public TObjArray {
 		Bool_t DSPCodeLoaded(); 										// test if download ok
 
 		inline void Wait(Int_t Msecs = 100) { gSystem->Sleep(Msecs); };	// wait for DGF to settle down
+		TMrbDGF::EMrbWaitStatus WaitActive(Int_t Timeout = 10);					// wait for active bit to drop
 
 		inline TMrbDGFData * Data() { return(fDGFData); };				// data handle
 		inline TMrbEsone * Camac() { return(fCamac); }; 				// camac handle
@@ -85,8 +86,13 @@ class TMrbLofDGFs : public TObjArray {
 		TString fCamacHost; 											// host name
 		Int_t fCrate;													// crate number
 
-		Int_t fBCN; 													// camac station N to be used for broadcasts
+		Bool_t fBroadCast; 												// kTRUE if broadcast available
+		Int_t fNsetMask;												// station N to set broadcast mask reg
+		Int_t fNexecCmd;												// station N to exec broadcast command
+
 		UInt_t fStationMask;											// camac station mask: 1 bit per module
+
+		Bool_t fMultiCrate; 											// kTRUE if modules from different crates
 
 		TMrbDGFData * fDGFData; 										//! pointer to DGF data base
 

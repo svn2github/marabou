@@ -302,6 +302,8 @@ Bool_t DGFOffsetsPanel::StartRamp() {
 	TMrbString intStr;
 	Int_t nofModules;
 					
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+
 	rampBuffer.Set(8192);
 	
 	Int_t offset, dacValue;
@@ -318,42 +320,44 @@ Bool_t DGFOffsetsPanel::StartRamp() {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			dgf = dgfModule->GetAddr();
-			rampBuffer.Reset();
-			nofWords = dgf->GetDacRamp(rampBuffer);
-			if (nofWords > 0) {
-				if (!selectFlag) {
-					rampFile = new TFile("dacRamp.root", "RECREATE");
-					hl.open("dacRamp.histlist", ios::out);
-				}
-				selectFlag = kTRUE;
-				hTitle = "DAC ramps for module ";
-				hTitle += dgfModule->GetName();
-				h = new TH1F(dgfModule->GetName(), hTitle.Data(), 8192, 0., 8192.);
-				for (Int_t i = 0; i < nofWords; i++) h->Fill((Axis_t) i, rampBuffer[i]);
-				h->Write();
-				hl << dgfModule->GetName() << endl;
-				Int_t start = 0;
-				for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-					Int_t ok = this->CalibrateDac(&rampBuffer[start], 2048, offset, dacValue);
-					if (ok >= 0) {
-						gMrbLog->Out()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-										<< " (chn " << chn << "): dac(" << offset << ") = " << dacValue
-										<< endl;
-						gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
-						dgf->SetParValue(chn, "TRACKDAC", dacValue, kTRUE);
-					} else {
-						gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
-										<< ": Can't calibrate DAC for channel " << chn
-										<< endl;
-						gMrbLog->Flush(this->ClassName(), "CalibrateDac");
+			if (!offlineMode) {
+				dgf = dgfModule->GetAddr();
+				rampBuffer.Reset();
+				nofWords = dgf->GetDacRamp(rampBuffer);
+				if (nofWords > 0) {
+					if (!selectFlag) {
+						rampFile = new TFile("dacRamp.root", "RECREATE");
+						hl.open("dacRamp.histlist", ios::out);
 					}
-					start += 2048;
+					selectFlag = kTRUE;
+					hTitle = "DAC ramps for module ";
+					hTitle += dgfModule->GetName();
+					h = new TH1F(dgfModule->GetName(), hTitle.Data(), 8192, 0., 8192.);
+					for (Int_t i = 0; i < nofWords; i++) h->Fill((Axis_t) i, rampBuffer[i]);
+					h->Write();
+					hl << dgfModule->GetName() << endl;
+					Int_t start = 0;
+					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+						Int_t ok = this->CalibrateDac(&rampBuffer[start], 2048, offset, dacValue);
+						if (ok >= 0) {
+							gMrbLog->Out()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+											<< " (chn " << chn << "): dac(" << offset << ") = " << dacValue
+											<< endl;
+							gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
+							dgf->SetParValue(chn, "TRACKDAC", dacValue, kTRUE);
+						} else {
+							gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
+											<< ": Can't calibrate DAC for channel " << chn
+											<< endl;
+							gMrbLog->Flush(this->ClassName(), "CalibrateDac");
+						}
+						start += 2048;
+					}
+					nofRamps++;
+					gMrbLog->Out()	<< "StartRamp(): [" << dgfModule->GetName() << "] "
+									<< nofWords << " ramp data written" << endl;
+					gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
 				}
-				nofRamps++;
-				gMrbLog->Out()	<< "StartRamp(): [" << dgfModule->GetName() << "] "
-								<< nofWords << " ramp data written" << endl;
-				gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);
 			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -362,6 +366,8 @@ Bool_t DGFOffsetsPanel::StartRamp() {
 	if (selectFlag) {
 		rampFile->Close();
 		hl.close();
+	}
+	if (offlineMode || selectFlag) {
 		gMrbLog->Out()	<< "StartRamp(): " << nofRamps
 						<< " DAC ramps written to file \"dacRamp.root\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "CalibrateDac", setblue);

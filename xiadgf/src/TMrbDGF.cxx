@@ -2917,7 +2917,7 @@ Bool_t TMrbDGF::RestoreParams(EMrbDGFSaveIdx SaveIdx) {
 // Arguments:      UInt_t Data   -- data to be written to DGF reg
 // Results:        UInt_t Data   -- data read from DGF reg
 // Exceptions:
-// Description:    Outputs status info.
+// Description:    Performs i/o from/to dgf regs.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 

@@ -202,9 +202,9 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 //	create main tab object
 	fRunControlTab = new TGTab(this, kTabWidth, kTabHeight);
 	HEAP(fRunControlTab);
-	TGLayoutHints * vframeLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 5);
-	HEAP(vframeLayout);
-	this->AddFrame(fRunControlTab, vframeLayout);
+	TGLayoutHints * tabLayout = new TGLayoutHints(kLHintsBottom | kLHintsExpandX | kLHintsExpandY, 5, 5, 5, 5);
+	HEAP(tabLayout);
+	this->AddFrame(fRunControlTab, tabLayout);
 
 // add tabs
 	fSystemTab = fRunControlTab->AddTab("System");		// id=kDGFRunControlSystem
@@ -390,7 +390,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							fFilesTabInit = kTRUE;
 							break;
 						case kDGFRunControlTabParams:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
                     			if (!fParamsTabInit) new DGFParamsPanel(fParamsTab);
 								fParamsTabInit = kTRUE;
 							} else {
@@ -398,7 +398,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFRunControlTabModules:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
                     			if (!fModulesTabInit) new DGFInstrumentPanel(fModulesTab);
 								fModulesTabInit = kTRUE;
 							} else {
@@ -406,7 +406,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFRunControlTabTrace:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fTracesTabInit) new DGFTraceDisplayPanel(fTracesTab);
 								fTracesTabInit = kTRUE;
 							} else {
@@ -414,7 +414,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFRunControlTabUntrigTrace:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fUntrigTracesTabInit) new DGFUntrigTracePanel(fUntrigTracesTab);
 								fUntrigTracesTabInit = kTRUE;
 							} else {
@@ -422,7 +422,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFRunControlTabOffsets:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fOffsetsTabInit) new DGFOffsetsPanel(fOffsetsTab);
 								fOffsetsTabInit = kTRUE;
 							} else {
@@ -431,7 +431,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;
 
 						case kDGFRunControlTabMCA:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fMCATabInit) new DGFMcaDisplayPanel(fMCATab);
 								fMCATabInit = kTRUE;
 							} else {
@@ -440,7 +440,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							break;
 
 						case kDGFRunControlTabSave:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fSaveTabInit) new DGFSaveModuleSettingsPanel(fSaveTab);
 								fSaveTabInit = kTRUE;
 							} else {
@@ -448,7 +448,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFRunControlTabRestore:
-							if (gDGFControlData->CheckIfStarted()) {
+							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
 	                   			if (!fRestoreTabInit) new DGFRestoreModuleSettingsPanel(fRestoreTab);
 								fRestoreTabInit = kTRUE;
 							} else {
