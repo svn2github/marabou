@@ -15,4 +15,5 @@
 #pragma link C++ class TMrbModuleListEntry+;
 #pragma link C++ class TMrbParamListEntry+;
 #pragma link C++ class TMrbHistoListEntry+;
+#pragma link C++ class TMrbCalibrationListEntry+;
 #endif

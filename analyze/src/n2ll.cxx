@@ -61,6 +61,7 @@ UShort_t * ll2ushort48(UShort_t * Array, long long N) {
 	*ap-- = N & 0xFFFF; N >>= 16;
 	*ap-- = N & 0xFFFF; N >>= 16;
 	*ap-- = N & 0xFFFF;
+	return(Array);
 }
 
 
@@ -70,4 +71,5 @@ UShort_t * ll2ushort64(UShort_t * Array, long long N) {
 	*ap-- = N & 0xFFFF; N >>= 16;
 	*ap-- = N & 0xFFFF; N >>= 16;
 	*ap = N & 0xFFFF;
+	return(Array);
 }

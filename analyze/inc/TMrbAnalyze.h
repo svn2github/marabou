@@ -165,6 +165,39 @@ class TMrbIOSpec : public TObject {
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCalibrationListEntry
+// Purpose:        An entry in user's list of calibration functions
+// Description:    Bookkeeping: Connects calibrations to modules and params
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbCalibrationListEntry : public TObject {
+
+	public:
+		TMrbCalibrationListEntry(	TMrbNamedX * Module = NULL,								// ctor
+									TMrbNamedX * Param = NULL,
+									TF1 * Address = NULL) : fModule(Module),
+															fParam(Param),
+															fAddress(Address) {};
+		virtual ~TMrbCalibrationListEntry() {};  											// dtor
+
+		inline TMrbNamedX * GetModule() { return(fModule); };
+		inline void SetModule(TMrbNamedX * Module) { fModule = Module; };
+		inline TMrbNamedX * GetParam() { return(fParam); };
+		inline void SetParam(TMrbNamedX * Param) { fParam = Param; };
+		inline TF1 * GetAddress() { return(fAddress); };
+		inline void SetAddress(TF1 * Address) { fAddress = Address; };
+
+	protected:
+		TMrbNamedX * fModule;
+		TMrbNamedX * fParam;
+		TF1 * fAddress;
+
+	ClassDef(TMrbCalibrationListEntry, 0) 	// [Analyze] List of calibration functions
+};
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbParamListEntry
 // Purpose:        An entry in user's param list
 // Description:    Bookkeeping: Connects params to modules and histos
@@ -194,12 +227,15 @@ class TMrbParamListEntry : public TObject {
 			if (SingleFlag) fSingleAddress = Address;
 			else			fHistoAddress = Address;
 		};
+		inline TF1 * GetCalibrationAddress() { return(fCalibrationAddress); };
+		inline void SetCalibrationAddress(TF1 * Address) { fCalibrationAddress = Address; };
 
 	protected:
 		TMrbNamedX * fModule;
 		Int_t * fAddress;
 		TH1 * fHistoAddress;
 		TH1 * fSingleAddress;
+		TF1 * fCalibrationAddress;
 
 	ClassDef(TMrbParamListEntry, 0) 	// [Analyze] List of params
 };
@@ -617,6 +653,8 @@ class TMrbAnalyze : public TObject {
 		TH1 * GetHistoAddr(const Char_t * HistoName);				// get histogram addr by name
 		TH1 * GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get histogram addr by relative param index
 		TH1 * GetHistoAddr(Int_t AbsParamIndex);					// get histogram addr by absolute param index
+		TH1 * GetHistoFromList(TObjArray HistoList, Int_t ModuleNumber, Int_t RelParamIndex);	// take histo from list
+		TMrbHistoListEntry * GetHistoListEntry(const Char_t * HistoName);	// get entry in histo list by name
 		Int_t * GetParamAddr(const Char_t * ParamName); 			// get param addr by name
 		Int_t * GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex); // get param addr by relative param index
 		Int_t * GetParamAddr(Int_t AbsParamIndex);					// get param addr by absolute param index
@@ -625,6 +663,15 @@ class TMrbAnalyze : public TObject {
 												Int_t NofParams, Int_t TimeOffset = 0);
 		Bool_t AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, Int_t ModuleIndex, Int_t RelParamIndex);
 		Bool_t AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t RelParamIndex);
+
+		Int_t ReadCalibrationFromFile(const Char_t * CalibrationFile);		// read calibration data from file
+		Bool_t AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
+		TF1 * AddCalibrationToList(const Char_t * Name, const Char_t * Formula, Double_t Xmin, Double_t Xmax, Int_t ModuleIndex, Int_t RelParamIndex); // add calibration
+		TF1 * GetCalibration(const Char_t * CalibrationName); 				// get calibration by name
+		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex);		// get calibration by module + param
+		TF1 * GetCalibration(Int_t AbsParamIndex);							// get calibration by absolute param index
+		TF1 * GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset);
+		TF1 * GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset);
 
 		inline Int_t GetNofModules() { return(fNofModules); };		// number of modules
 		inline Int_t GetNofParams() { return(fNofParams); };		// number of params
@@ -698,10 +745,11 @@ class TMrbAnalyze : public TObject {
 		TString fResourceName;
 		TString fResourceString;
 
-		TMrbLofNamedX fModuleList;	// list of modules, indexed by serial number
-		TMrbLofNamedX fParamList;	// list of params, indexed by param number
-		TMrbLofNamedX fHistoList;	// list of histograms, indexed by param number
-		TMrbLofNamedX fSingleList;	// list of single histograms, indexed by param number
+		TMrbLofNamedX fModuleList;		// list of modules, indexed by serial number
+		TMrbLofNamedX fParamList;		// list of params, indexed by param number
+		TMrbLofNamedX fHistoList;		// list of histograms, indexed by param number
+		TMrbLofNamedX fSingleList;		// list of single histograms, indexed by param number
+		TMrbLofNamedX fCalibrationList;	// list of calibrations, indexed by param number
 
 	ClassDef(TMrbAnalyze, 1)	// [Analyze] Describe user's analysis
 };

@@ -18,9 +18,11 @@
 #include <time.h>
 #include <pthread.h>
 
+#include "TF1.h"
 #include "TArrayI.h"
 #include "TEnv.h"
 #include "TRegexp.h"
+#include "TOrdCollection.h"
 
 #include "TMrbAnalyze.h"
 #include "mbsio_protos.h"
@@ -1835,6 +1837,9 @@ void TMrbAnalyze::InitializeLists(Int_t NofModules, Int_t NofParams) {
 	fHistoList.Delete();
 	fHistoList.Expand(NofParams);
 	for (Int_t i = 0; i < NofParams; i++) fHistoList.AddAt(NULL, i);
+	fCalibrationList.Delete();
+	fCalibrationList.Expand(NofParams);
+	for (Int_t i = 0; i < NofParams; i++) fCalibrationList.AddAt(NULL, i);
 }
 
 const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
@@ -2064,6 +2069,26 @@ Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(px);
 }
 
+TMrbHistoListEntry * TMrbAnalyze::GetHistoListEntry(const Char_t * HistoName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetHistoListEntry
+// Purpose:        Get entry in histogram table
+// Arguments:      Char_t * HistoName               -- histo name
+// Results:        TMrbHistoListEntry * HistoEntry  -- address
+// Exceptions:     
+// Description:    Searches for a histo with specified name
+//                 Returns entry address.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	nx = fHistoList.FindByName(HistoName);
+	if (nx) 	return((TMrbHistoListEntry *) nx->GetAssignedObject());
+	else		return(NULL);
+}
+
 TH1 * TMrbAnalyze::GetHistoAddr(const Char_t * HistoName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -2090,16 +2115,36 @@ TH1 * TMrbAnalyze::GetHistoAddr(const Char_t * HistoName) {
 	return(hle->GetAddress());
 }
 
-TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
+TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbAnalyze::GetHistoAddr
 // Purpose:        Get histogram address
+// Arguments:      Int_t AbsParamIndex    -- absolute param/histo index
+// Results:        TH1 * HistoAddr      -- histo address
+// Exceptions:     
+// Description:    Returns histo address.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+
+	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fHistoList[AbsParamIndex];
+	if (nx == NULL) return(NULL);
+	return(((TMrbHistoListEntry *) nx->GetAssignedObject())->GetAddress());
+}
+
+TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetHistoAddr
+// Purpose:        Get histogram by module number and param offset
 // Arguments:      Int_t ModuleIndex      -- module index
 //                 Int_t RelParamIndex    -- relative param index
 // Results:        TH1 * HistoAddr        -- histogram address
 // Exceptions:     
-// Description:    Returns histogram address.
+// Description:    Returns histogram addr given by module and param.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2118,15 +2163,68 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	return(((TMrbHistoListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
-TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) {
+TH1 * TMrbAnalyze::GetHistoFromList(TObjArray HistoList, Int_t ModuleIndex, Int_t RelParamIndex) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbAnalyze::GetHistoAddr
-// Purpose:        Get histogram address
-// Arguments:      Int_t AbsParamIndex    -- absolute param/histo index
-// Results:        Int_t * HistoAddr      -- histo address
+// Name:           TMrbAnalyze::GetHistoFromList
+// Purpose:        Get histogram from list
+// Arguments:      TObjArray HistoList    -- array containing histograms
+//                 Int_t ModuleIndex      -- module index
+//                 Int_t RelParamIndex    -- relative param index
+// Results:        TH1 * HistoAddr        -- histogram address
 // Exceptions:     
-// Description:    Returns param address.
+// Description:    Calculates absolute param index. Returns histo from list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
+	px = mle->GetIndexOfFirstParam() + RelParamIndex;
+	if (px < 0 || px > HistoList.GetEntriesFast()) return(NULL);
+	return((TH1F *) HistoList[px]);
+}
+
+TF1 * TMrbAnalyze::GetCalibration(const Char_t * CalibrationName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get Calibration by its name
+// Arguments:      Char_t * CalibrationName     -- calibration name
+// Results:        TH1 * HistoAddr              -- address
+// Exceptions:     
+// Description:    Searches for a calibrations function with specified name
+//                 Returns address.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbCalibrationListEntry * cle;
+
+	nx = fCalibrationList.FindByName(CalibrationName);
+	if (nx == NULL) {
+		gMrbLog->Err()	<< "No such calibration - " << CalibrationName << endl;
+		gMrbLog->Flush(this->ClassName(), "GetCalibration");
+		return(NULL);
+	}
+	cle = (TMrbCalibrationListEntry *) nx->GetAssignedObject();
+	return(cle->GetAddress());
+}
+
+TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get calibration address
+// Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        TF1 * CalibrationAddr     -- address
+// Exceptions:     
+// Description:    Returns calibration address.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2135,9 +2233,151 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t AbsParamIndex) {
 	if (AbsParamIndex < 0 || AbsParamIndex > fParamList.GetLast()) return(NULL);
 	nx = (TMrbNamedX *) fHistoList[AbsParamIndex];
 	if (nx == NULL) return(NULL);
-	return(((TMrbHistoListEntry *) nx->GetAssignedObject())->GetAddress());
+	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
 }
 
+TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex, Double_t & Gain, Double_t & Offset) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get gain and offset
+// Arguments:      Int_t ModuleIndex         -- module index
+//                 Int_t RelParamIndex       -- relative param index
+// Results:        TF1 * CalibrationAddr     -- address
+//                 Double_t & Gain           -- gain
+//                 Double_t & Offset         -- offset
+// Exceptions:     
+// Description:    Returns gain and offset.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * cal = this->GetCalibration(ModuleIndex, RelParamIndex);
+	if (cal) {
+		Gain = cal->GetParameter(1);
+		Offset = cal->GetParameter(0);
+	} else {
+		Gain = 1.;
+		Offset = 0.;
+	}
+	return(cal);
+}
+
+TF1 * TMrbAnalyze::GetCalibration(Int_t AbsParamIndex, Double_t & Gain, Double_t & Offset) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get gain and offset
+// Arguments:      Int_t AbsParamIndex       -- absolute param/calib index
+// Results:        TF1 * CalibrationAddr     -- address
+//                 Double_t Gain             -- gain
+//                 Double_t Offset           -- offset
+// Exceptions:     
+// Description:    Returns gain and offset.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * cal = this->GetCalibration(AbsParamIndex);
+	if (cal) {
+		Gain = cal->GetParameter(1);
+		Offset = cal->GetParameter(0);
+	} else {
+		Gain = 1.;
+		Offset = 0.;
+	}
+	return(cal);
+}
+
+TF1 * TMrbAnalyze::GetCalibration(Int_t ModuleIndex, Int_t RelParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::GetCalibration
+// Purpose:        Get calibration by module number and param offset
+// Arguments:      Int_t ModuleIndex          -- module index
+//                 Int_t RelParamIndex        -- relative param index
+// Results:        TF1 * CalibrationAddr      -- calibration address
+// Exceptions:     
+// Description:    Returns calibration addr given by module and param.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx;
+	TMrbModuleListEntry * mle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
+	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
+	px = mle->GetIndexOfFirstParam() + RelParamIndex;
+	if (px < 0 || px > fCalibrationList.GetLast()) return(NULL);
+	nx = (TMrbNamedX *) fHistoList[px];
+	if (nx == NULL) return(NULL);
+	return(((TMrbCalibrationListEntry *) nx->GetAssignedObject())->GetAddress());
+}
+
+Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::ReadCalibrationFromFile
+// Purpose:        Read calibration data from file
+// Arguments:      Char_t * CalibrationFile   -- file name
+// Results:        Int_t NofEntries           -- number of calibration entries
+// Exceptions:     
+// Description:    Reads calibration data from file.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gSystem->AccessPathName(CalibrationFile, (EAccessMode) F_OK)) {
+		gMrbLog->Err()	<< "Can't open calibration file - " << CalibrationFile << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadCalibrationFromFile");
+		return(-1);
+	}
+
+	TEnv * cal = new TEnv(CalibrationFile);
+	Int_t nofCalibs = 0;
+	TObject * o = cal->GetTable()->First();
+	while (o) {
+		TString oName = o->GetName();
+		if (oName.Contains(".Xmin")) {
+			TString histoName = oName;
+			Int_t dot = histoName.Index(".", 0);
+			histoName = histoName(dot + 1, 1000);
+			dot = histoName.Index(".", 0);
+			histoName.Resize(dot);
+			TMrbHistoListEntry * hle = this->GetHistoListEntry(histoName.Data());
+			TString resName = "Calib.";
+			resName += histoName;
+			resName += ".Xmin";
+			Double_t xmin = cal->GetValue(resName.Data(), 0.);
+			resName = "Calib.";
+			resName += histoName;
+			resName += ".Xmax";
+			Double_t xmax = cal->GetValue(resName.Data(), 1.);
+			resName = "Calib.";
+			resName += histoName;
+			resName += ".Gain";
+			Double_t gain = cal->GetValue(resName.Data(), 1.);
+			resName = "Calib.";
+			resName += histoName;
+			resName += ".Offset";
+			Double_t offset = cal->GetValue(resName.Data(), 0.);
+			TString calName = histoName;
+			if (calName(0) == 'h') {
+				calName(0) = 'c';
+			} else {
+				calName(0,1).ToUpper();
+				calName.Prepend("h");
+			}
+			TF1 * calFct = new TF1(calName.Data(), "[0] + [1] * x", xmin, xmax);
+			calFct->SetParameter(0, offset);
+			calFct->SetParameter(1, gain);
+			this->AddCalibrationToList(calFct, hle->GetModule()->GetIndex(), hle->GetParam()->GetIndex());
+			nofCalibs++;
+		}
+		o = cal->GetTable()->After(o);
+	}
+	return(nofCalibs);
+}
 
 Int_t * TMrbAnalyze::GetParamAddr(const Char_t * ParamName) {
 //________________________________________________________________[C++ METHOD]
@@ -2375,6 +2615,84 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	ple->SetHistoAddress(HistoAddr);
 	if (RelParamIndex == 0) mle->SetFirstHisto(nhx);
 	return(kTRUE);
+}
+
+Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleIndex, Int_t RelParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AddCalibrationToList
+// Purpose:        Add a new calibration function to list
+// Arguments:      TF1 * CalibrationAddr  -- address
+//                 Int_t ModuleIndex      -- list index
+//                 Int_t RelParamIndex    -- relative param index
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a new entry in calibration list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nmx;
+	TMrbNamedX * npx;
+	TMrbNamedX * nhx;
+	TMrbModuleListEntry * mle;
+	TMrbParamListEntry * ple;
+	TMrbCalibrationListEntry * cle;
+	Int_t px;
+
+	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+		gMrbLog->Err()	<< "::AddCalibrationToList(): [" << CalibrationAddr->GetName()
+						<< "] Module index out of range - " << ModuleIndex
+						<< " (should be in [1," << fModuleList.GetLast() << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddCalibrationToList");
+		return(kFALSE);
+	}
+	nmx = (TMrbNamedX *) fModuleList[ModuleIndex];
+	if (nmx == NULL) {
+		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] Module index not in use - " << ModuleIndex << endl;
+		gMrbLog->Flush(this->ClassName(), "AddCalibrationToList");
+		return(kFALSE);
+	}
+	mle = (TMrbModuleListEntry *) nmx->GetAssignedObject();
+	px = mle->GetIndexOfFirstParam();
+	nhx = (TMrbNamedX *) fCalibrationList[px + RelParamIndex];
+	if (nhx != NULL) return(kFALSE);
+	npx = (TMrbNamedX *) fParamList[px + RelParamIndex];
+	if (npx == NULL) {
+		gMrbLog->Err()	<< "[" << CalibrationAddr->GetName() << "] No param assigned to index " << RelParamIndex
+						<< " (abs " << px + RelParamIndex << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddCalibrationToList");
+		return(kFALSE);
+	}
+	ple = (TMrbParamListEntry *) npx->GetAssignedObject();
+	nhx = new TMrbNamedX(px, CalibrationAddr->GetName(), CalibrationAddr->GetTitle());
+	cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
+	nhx->AssignObject(cle);
+	fCalibrationList.AddAt(nhx, px + RelParamIndex);
+	ple->SetCalibrationAddress(CalibrationAddr);
+	return(kTRUE);
+}
+
+TF1 * TMrbAnalyze::AddCalibrationToList(	const Char_t * Name, const Char_t * Formula,
+											Double_t Xmin, Double_t Xmax,
+											Int_t ModuleIndex, Int_t RelParamIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbAnalyze::AddCalibrationToList
+// Purpose:        Add a new calibration function to list
+// Arguments:      Char_t * Name          -- name of calibration function
+//                 Char_t * Formula       -- formula (type B)
+//                 Double_t Xmin          -- minimum x
+//                 Double_t Xmax          -- maximum x
+//                 Int_t ModuleIndex      -- list index
+//                 Int_t RelParamIndex    -- relative param index
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Creates a new entry in calibration list.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TF1 * cal = new TF1(Name, Formula, Xmin, Xmax);
+	if (this->AddCalibrationToList(cal, ModuleIndex, RelParamIndex)) return(cal); else return(NULL);
 }
 
 void TMrbAnalyze::PrintLists(ostream & Out) {
