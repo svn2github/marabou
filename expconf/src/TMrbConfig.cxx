@@ -214,6 +214,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaFindVars,					"ANALYZE_FIND_VARS" 			},
 								{TMrbConfig::kAnaEventClassDef, 			"EVT_CLASS_DEFINITION"			},
 								{TMrbConfig::kAnaEventClassMethods, 		"EVT_CLASS_METHODS" 			},
+								{TMrbConfig::kAnaEventUserClassMethods, 	"EVT_USER_CLASS_METHODS" 		},
 								{TMrbConfig::kAnaEventClassInstance,		"EVT_CLASS_INSTANCE"			},
 								{TMrbConfig::kAnaEventUserClassInstance,	"EVT_USER_CLASS_INSTANCE"		},
 								{TMrbConfig::kAnaEventDefinePointers,		"EVT_DEFINE_POINTERS"			},
@@ -2962,6 +2963,17 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							onceOnly.Delete();
 						}
 						break;
+					case TMrbConfig::kAnaEventUserClassMethods:
+						{
+							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
+							while (ucl) {
+								if (ucl->GetIndex() == kIclOptUserDefinedEvent) {
+									this->CreateUserEvent(anaStrm, ucl->GetName(), kFALSE, kTRUE);
+								}
+								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
+							}
+						}
+						break;
 					case TMrbConfig::kAnaEventSetBranchStatus:
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
@@ -3782,7 +3794,6 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 	TString lofSubevents;
 	TString lofModules;
 
-	Char_t * fp;
 	TString templatePath;
 	TString rcTemplateFile;
 	TString prefix;
@@ -4073,7 +4084,7 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 		gMrbLog->Err()	<< "            for file " << fUserMacro << endl;
 		gMrbLog->Flush();
 		fUserMacroToBeCalled = kFALSE;
-		this->CreatePrototypeForUserMacro();
+		this->CreateUserMacro();
 	} else {
 		fUserMacroCmd = fUserMacro;
 		fUserMacroCmd.Remove(fUserMacroCmd.Index(".C"), 100);
@@ -4118,10 +4129,10 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 	return(fUserMacroToBeCalled);
 }
 	
-Bool_t TMrbConfig::CreatePrototypeForUserMacro() {
+Bool_t TMrbConfig::CreateUserMacro() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::CreatePrototypeForUserMacro
+// Name:           TMrbConfig::CreateUserMacro
 // Purpose:        Create prototype of an user macro if none exists
 // Arguments:      --
 // Results:        kTRUE/kFALSE
@@ -4173,12 +4184,12 @@ Bool_t TMrbConfig::CreatePrototypeForUserMacro() {
 			}
 			macroStrm.close();
 			gMrbLog->Out() << "Generating prototype for user macro \"" << fUserMacro << "\" (has to be edited)" << endl;
-			gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserMacro");
+			gMrbLog->Flush(this->ClassName(), "CreateUserMacro");
 			return(kTRUE);
 		}	
 	} else {
 		gMrbLog->Err() << "Can't generate prototype for user macro \"" << fUserMacro << "\" - file \"UserMacro.C.code\" not found" << endl;
-		gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserMacro");
+		gMrbLog->Flush(this->ClassName(), "CreateUserMacro");
 		return(kFALSE);
 	}
 	return(kFALSE);
@@ -4677,6 +4688,10 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 		return(kFALSE);
 	}
 
+	TString uevtName = userFile;
+	Int_t n = (uevtName.EndsWith(".cxx")) ? 4 : 2;
+	uevtName.Resize(uevtName.Length() - n);
+
 	TString fileSpec = gSystem->Which(userPath.Data(), userFile.Data());
 
 	EMrbIncludeOptions classOpt = UserDefinedEvent ? TMrbConfig::kIclOptUserDefinedEvent : TMrbConfig::kIclOptUserClass;
@@ -4702,7 +4717,22 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 		gMrbLog->Err() << "Can't include user class - prototype file \"" << ptPath << "\" missing" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 		if (UserDefinedEvent) {
-			if (!this->CreatePrototypeForUserEvent(ptPath.Data())) return(kFALSE);
+			ofstream uevtStrm(ptPath.Data(), ios::out);
+			if (!uevtStrm.good()) {
+				gMrbLog->Err() << gSystem->GetError() << " - "  << ptPath << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+				return(kFALSE);
+			}
+			Bool_t ok = this->CreateUserEvent(uevtStrm, uevtName.Data(), kTRUE, kFALSE);
+			uevtStrm.close();
+			if (ok) {
+				gMrbLog->Out() << "Generating prototype file \"" << ptPath << "\" for user event \"" << uevtName << "\" (has to be edited)" << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+			} else {
+				gMrbLog->Err() << "Can't generate prototype file \"" << userFile << "\" for user event \"" << uevtName << "\"" << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+				return(kFALSE);
+			}
 		} else {
 			return(kFALSE);
 		}
@@ -4717,7 +4747,22 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 		gMrbLog->Err() << "Can't include user class - code file \"" << ptPath << "\" missing" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 		if (UserDefinedEvent) {
-			if (!this->CreatePrototypeForUserEvent(ptPath.Data())) return(kFALSE);
+			ofstream uevtStrm(ptPath.Data(), ios::out);
+			if (!uevtStrm.good()) {
+				gMrbLog->Err() << gSystem->GetError() << " - "  << ptPath << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+				return(kFALSE);
+			}
+			Bool_t ok = this->CreateUserEvent(uevtStrm, uevtName.Data(), kFALSE, kFALSE);
+			uevtStrm.close();
+			if (ok) {
+				gMrbLog->Out() << "Generating code file \"" << ptPath << "\" for user event \"" << uevtName << "\" (has to be edited)" << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+			} else {
+				gMrbLog->Err() << "Can't generate code file \"" << userFile << "\" for user event \"" << uevtName << "\"" << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+				return(kFALSE);
+			}
 		} else {
 			return(kFALSE);
 		}
@@ -4760,6 +4805,19 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 				if (n2 == -1) n2 = line.Length();
 				TString userClass = line(n1, n2 - n1);
 				userClass = userClass.Strip(TString::kBoth);
+				if (UserDefinedEvent) {
+					if (classOk) {
+						gMrbLog->Err()	<< "[" << userFile << "] More than one class def - can't be used as event class" << endl;
+						gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+						return(kFALSE);
+					}
+					if (uevtName.CompareTo(userClass.Data()) != 0) {
+						gMrbLog->Err()	<< "[" << userFile << "] Class name \"" << userClass
+										<< "\" different from file name - can't be used as event class" << endl;
+						gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
+						return(kFALSE);
+					}
+				}
 				if (verboseMode) {
 					gMrbLog->Out()  << "[" << userFile << "] Defining user class \"" << userClass << "\"" << endl;
 					gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
@@ -4779,93 +4837,88 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 	return(kTRUE);
 }
 
-Bool_t TMrbConfig::CreatePrototypeForUserEvent(const Char_t * Path) {
+Bool_t TMrbConfig::CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::CreatePrototypeForUserEvent
-// Purpose:        Create prototype files for an user-defined event class
-// Arguments:      --
+// Name:           TMrbConfig::CreateUserEvent
+// Purpose:        Create files/methods for a user-defined event class
+// Arguments:      ofstream OutStrm    -- output stream
+//                 Char_t * UserEvent  -- event name
+//                 Bool_t CreateProto  -- create prototypes for header file
+//                 Bool_t SystemPart   -- kTRUE if system part is to be generated
+//                                        kFALSE for user part
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Creates a prototype files for an user-defined event.
+// Description:    Creates files & methods for a user-defined event.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbSystem ux;
-	TString uevtName;
-	TString uevtFile;
-
-	TString uevtPath = Path;
-	ux.GetBaseName(uevtFile, uevtPath.Data());
-
-	uevtName = uevtFile;
-	if (uevtPath.EndsWith(".cxx"))	uevtName.Resize(uevtName.Length() - 4);
-	else							uevtName.Resize(uevtName.Length() - 2);
-
 	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
-	TString tmplFile = uevtPath.EndsWith(".cxx") ? "UserEvent.cxx.code" : "UserEvent.h.code";
+
+	TString uevtName = UserEvent;
+
+	TString tmplFile;
+	if (CreateProto) {
+		tmplFile = "UserEvent.h.code";
+	} else if (SystemPart) {
+		tmplFile = "UserEventSystem.cxx.code";
+	} else {
+		tmplFile = "UserEventUser.cxx.code";
+	}
+
 	TString fileSpec = gSystem->Which(templatePath.Data(), tmplFile.Data());
 	if (!fileSpec.IsNull()) {
-		ofstream uevtStrm(uevtPath.Data(), ios::out);
 		TMrbTemplate uevtTmpl;
-		if (uevtStrm.good() && uevtTmpl.Open(fileSpec.Data(), &fLofUserEventTags)) {			
+		if (uevtTmpl.Open(fileSpec.Data(), &fLofUserEventTags)) {			
 			for (;;) {
 				TString line;
 				TMrbNamedX * uevtTag = uevtTmpl.Next(line);
 				if (uevtTmpl.IsEof()) break;
 				if (uevtTmpl.IsError()) continue;
 				if (uevtTmpl.Status() & TMrbTemplate::kNoTag) {
-					if (line.Index("#-") != 0) uevtStrm << line << endl;
+					if (line.Index("#-") != 0) OutStrm << line << endl;
 				} else {
 					switch (uevtTag->GetIndex()) {
-						case TMrbConfig::kUevFile:
-							uevtStrm << uevtTmpl.Encode(line, uevtFile.Data()) << endl;
-							break;
 						case TMrbConfig::kUevNameLC:
 							{
 								TString nameLC = uevtName;
 								nameLC(0,1).ToLower();
-								uevtStrm << uevtTmpl.Encode(line,nameLC) << endl;
+								OutStrm << uevtTmpl.Encode(line,nameLC) << endl;
 							}
 							break;
 						case TMrbConfig::kUevNameUC:
 							{
 								TString nameUC = uevtName;
 								nameUC(0,1).ToUpper();
-								uevtStrm << uevtTmpl.Encode(line, nameUC) << endl;
+								OutStrm << uevtTmpl.Encode(line, nameUC) << endl;
 							}
 							break;
 						case TMrbConfig::kUevConfigLC:
-							uevtStrm << uevtTmpl.Encode(line, this->GetName()) << endl;
+							OutStrm << uevtTmpl.Encode(line, this->GetName()) << endl;
 							break;
 						case TMrbConfig::kUevConfigUC:
 							{
 								TString nameUC = this->GetName();
 								nameUC(0,1).ToUpper();
-								uevtStrm << uevtTmpl.Encode(line, nameUC) << endl;
+								OutStrm << uevtTmpl.Encode(line, nameUC) << endl;
 							}
 							break;
 						case TMrbConfig::kUevTitle:
-							uevtStrm << uevtTmpl.Encode(line, this->GetTitle()) << endl;
+							OutStrm << uevtTmpl.Encode(line, this->GetTitle()) << endl;
 							break;
 						case TMrbConfig::kUevAuthor:
-							uevtStrm << uevtTmpl.Encode(line, fAuthor) << endl;
+							OutStrm << uevtTmpl.Encode(line, fAuthor) << endl;
 							break;
 						case TMrbConfig::kUevCreationDate:
-							uevtStrm << uevtTmpl.Encode(line, fCreationDate) << endl;
+							OutStrm << uevtTmpl.Encode(line, fCreationDate) << endl;
 							break;
 					}
 				}
 			}
-			uevtStrm.close();
-			gMrbLog->Out() << "Generating file \"" << uevtPath << "\" for user event \"" << uevtName << "\" (has to be edited)" << endl;
-			gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserEvent");
 			return(kTRUE);
 		}	
 	} else {
-		gMrbLog->Err() << "Can't generate file \"" << uevtFile << "\" for user event \"" << uevtName << "\"" << endl;
-		gMrbLog->Flush(this->ClassName(), "CreatePrototypeForUserEvent");
 		return(kFALSE);
 	}
 	return(kFALSE);

@@ -121,6 +121,7 @@ class TMrbConfig : public TNamed {
 									kAnaFindVars,
 									kAnaEventClassDef,
 									kAnaEventClassMethods,
+									kAnaEventUserClassMethods,
 									kAnaEventClassInstance,
 									kAnaEventUserClassInstance,
 									kAnaEventDefinePointers,
@@ -657,7 +658,8 @@ class TMrbConfig : public TNamed {
 		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() >= 0); };
 		inline TMrbLofNamedX * GetLofUserLibs() { return(&fLofUserLibs); };
 
-		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass, Bool_t UserDefinedEvent = kFALSE);
+		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass,
+								Bool_t UserDefinedEvent = kFALSE);
 		inline Bool_t IncludeUserClass(const Char_t * UserClass, Bool_t UserDefinedEvent = kFALSE) {
 			return(this->IncludeUserClass("", UserClass, UserDefinedEvent));
 		}
@@ -781,8 +783,8 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
 
 	protected:
-		Bool_t CreatePrototypeForUserMacro();
-		Bool_t CreatePrototypeForUserEvent(const Char_t * Path);
+		Bool_t CreateUserMacro();
+		Bool_t CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart);
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);
 		Bool_t WriteUtilityProtos();
 		Bool_t CheckConfig();
