@@ -117,10 +117,14 @@ void HTCanvas::InitEditCommands()
    labels->Add(new TObjString("Insert image (gif, jpg"));
    labels->Add(new TObjString("Insert histogram "));
    labels->Add(new TObjString("Insert graph"));
-   labels->Add(new TObjString("Insert text (Latex) from file"));
+   labels->Add(new TObjString("Text (Latex) from file"));
    labels->Add(new TObjString("Text (Latex) from keyboard"));
    labels->Add(new TObjString("Insert compound object"));
    labels->Add(new TObjString("Draw an axis"));
+   labels->Add(new TObjString("Mark as compound object"));
+   labels->Add(new TObjString("Extract as compound obj"));
+   labels->Add(new TObjString("Delete enclosed objects"));
+
    labels->Add(new TObjString("Zoom In"));
    labels->Add(new TObjString("Zoom Out"));
    labels->Add(new TObjString("UnZoom"));
@@ -132,6 +136,9 @@ void HTCanvas::InitEditCommands()
    methods->Add(new TObjString("Latex2RootK()"));
    methods->Add(new TObjString("InsertGObjects()"));
    methods->Add(new TObjString("InsertAxis()"));
+   methods->Add(new TObjString("MarkGObjects()"));
+   methods->Add(new TObjString("ExtractGObjectsE()"));
+   methods->Add(new TObjString("DeleteObjects()"));
    methods->Add(new TObjString("ZoomIn()"));
    methods->Add(new TObjString("ZoomOut()"));
    methods->Add(new TObjString("UnZoom()"));
@@ -262,7 +269,8 @@ void HTCanvas::InsertHist()
    if (pad) {
      gROOT->SetSelectedPad(pad);
    } else {
-      cout << "Please create a new Pad in this Canvas" << endl;
+      WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
+//      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
 //      if (GetListOfPrimitives()->Contains(selected)) {
@@ -308,7 +316,8 @@ void HTCanvas::InsertHist()
          return;
       }
       if (fHistPresent->fSelectHist->GetSize() != 1) {
-         cout << "Please select exactly 1 histogram" << endl;
+         WarnBox("Please select exactly 1 histogram", fRootCanvas); 
+//         cout << "Please select exactly 1 histogram" << endl;
          return;
       } else {
          hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
@@ -397,7 +406,8 @@ void HTCanvas::InsertGraph()
    if (pad) {
      gROOT->SetSelectedPad(pad);
    } else {
-      cout << "Please create a new Pad in this Canvas" << endl;
+      WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
+//      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
 //      if (GetListOfPrimitives()->Contains(selected)) {
@@ -445,7 +455,8 @@ void HTCanvas::InsertGraph()
          return;
       }
       if (fHistPresent->fSelectGraph->GetSize() != 1) {
-         cout << "Please select exactly 1 graph" << endl;
+         WarnBox("Please select exactly 1 graph", fRootCanvas); 
+//         cout << "Please select exactly 1 graph" << endl;
          return;
       } else {
          graph = fHistPresent->GetSelGraphAt(0);
@@ -493,24 +504,25 @@ void HTCanvas::InsertImage()
    if (pad) {
      gROOT->SetSelectedPad(pad);
    } else {
-      cout << "Please create a new Pad in this Canvas" << endl;
+      WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
+//      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
    const char hist_file[] = {"images_hist.txt"};
    Bool_t ok;
-   TString name = "picture.jpg";
+   static TString name;
    Int_t itemwidth = 320;
-   TList complist;
-
+   ofstream hfile(hist_file);
    const char *fname;
    void* dirp=gSystem->OpenDirectory(".");
    TRegexp dotGif = "\\.gif$";   
    TRegexp dotJpg = "\\.jpg$"; 
    while ( (fname=gSystem->GetDirEntry(dirp)) ) {
       TString sname(fname);
-      if (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0) {
-         cout << fname << endl;
-         complist.Add(new TObjString(fname));
+      if (!sname.BeginsWith("temp_") && 
+          (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0)) {
+         hfile << fname << endl;
+         if (name.Length() < 1) name = fname;
       }
    }
    TList *row_lab = new TList(); 
@@ -529,7 +541,7 @@ void HTCanvas::InsertImage()
    AddObjString(fix_wh, values,kAttRadioB);
 
     ok = GetStringExt("Picture name", &name, itemwidth, fRootCanvas,
-                   hist_file, &complist, row_lab, values);
+                   hist_file, NULL, row_lab, values);
    if (!ok) return;
 
 //      TImage *img = TImage::Open(name.Data());
@@ -551,22 +563,24 @@ void HTCanvas::InsertImage()
    Double_t img_height = (Double_t )img->GetHeight();
    cout << "Image size, X,Y: " << img_width
                         << " " << img_height << endl;
-//   Double_t aspect_ratio = img_height * this->GetXsizeReal() 
-//                         / (img_width* this->GetYsizeReal());
-   Double_t aspect_ratio = img_height  / img_width;
+   Double_t aspect_ratio = img_height * this->GetXsizeReal() 
+                        / (img_width* this->GetYsizeReal());
+//   Double_t aspect_ratio = img_height  / img_width;
+//   cout << "Image size, X,Y, ar: " << img_width
+//                        << " " << img_height << " " << aspect_ratio<< endl;
 
    if (fix_w) {  
       pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
                   pad->GetXlowNDC() + pad->GetWNDC(),
-                  pad->GetYlowNDC() + pad->GetHNDC() * aspect_ratio);
-   cout << "InsertImage()fix_w: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
-        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
+                  pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
+//   cout << "InsertImage()fix_w: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
+//        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
    } else if (fix_h) {  
       pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
-                  pad->GetXlowNDC() + pad->GetWNDC() / aspect_ratio,
+                  pad->GetXlowNDC() + pad->GetHNDC() / aspect_ratio,
                   pad->GetYlowNDC() + pad->GetHNDC());
-   cout << "InsertImage()fix_h: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
-        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
+//   cout << "InsertImage()fix_h: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
+//        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
    }
 
    pad->SetTopMargin(.02);
@@ -574,7 +588,6 @@ void HTCanvas::InsertImage()
    pad->SetLeftMargin(0.02);
    pad->SetRightMargin(0.02);
    hprimg->Draw("xxx");
-//      hprimg->Paint();
    Update();
 }
 
@@ -600,8 +613,15 @@ void HTCanvas::WritePrimitives()
 }
 //______________________________________________________________________________
 
-void HTCanvas::GetPrimitives()
+Int_t HTCanvas::MarkGObjects()
 {
+   return ExtractGObjects(kTRUE);
+}
+//______________________________________________________________________________
+
+Int_t HTCanvas::ExtractGObjectsE()
+{
+    return ExtractGObjects(kFALSE);
 }
 //______________________________________________________________________________
 
@@ -609,7 +629,8 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
 {
    TCutG * cut = (TCutG *)FindObject("CUTG");
    if (!cut) {
-      cout << "Define a graphical cut first" << endl;
+      WarnBox("Define a graphical cut first", fRootCanvas); 
+//      cout << "Define a graphical cut first" << endl;
       return -1;
    }
    static Int_t serNr = 1;
@@ -1059,7 +1080,6 @@ void HTCanvas::ShowGallery()
 
 void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
 {
- //  cout << "ShiftObjects " << list << " " << xoff << " " << yoff << endl;
 //  if (list) list->Print();
    TObject * obj;
    TIter next(list);
@@ -1149,6 +1169,65 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
 
 void HTCanvas::PutObjectsOnGrid(TList* list)
 {
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+
+   row_lab->Add(new TObjString("Align X"));
+   row_lab->Add(new TObjString("Align Y"));
+   row_lab->Add(new TObjString("Pads"));
+   row_lab->Add(new TObjString("Arrows"));
+   row_lab->Add(new TObjString("Lines,Axis"));
+   row_lab->Add(new TObjString("Graphs"));
+   row_lab->Add(new TObjString("Text"));
+   row_lab->Add(new TObjString("Arcs"));
+   row_lab->Add(new TObjString("CurlyLines"));
+   row_lab->Add(new TObjString("CurlyArcs"));
+   
+   static Int_t dox      = 1,
+                doy      = 1,
+                dopad    = 1,
+                doarrow  = 1,
+                doline  = 1,
+                dograph  = 1, 
+                dotext   = 1, 
+                doarc    = 1, 
+                docurlyl = 1, 
+                docurlya = 1;
+ 
+   AddObjString(dox     , values, kAttCheckB);
+   AddObjString(doy     , values, kAttCheckB);
+   AddObjString(dopad   , values, kAttCheckB);
+   AddObjString(doarrow , values, kAttCheckB);
+   AddObjString(doline  , values, kAttCheckB);
+   AddObjString(dograph , values, kAttCheckB);
+   AddObjString(dotext  , values, kAttCheckB);
+   AddObjString(doarc   , values, kAttCheckB);
+   AddObjString(docurlyl, values, kAttCheckB);
+   AddObjString(docurlya, values, kAttCheckB);
+   
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+
+   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+   
+   dox     = GetInt(values,   vp++);
+   doy     = GetInt(values,   vp++);
+   dopad   = GetInt(values,   vp++);
+   doarrow = GetInt(values,   vp++);
+   doline  = GetInt(values,   vp++);
+   dograph = GetInt(values,   vp++);
+   dotext  = GetInt(values,   vp++);
+   doarc   = GetInt(values,   vp++);
+   docurlyl= GetInt(values,   vp++);
+   docurlya= GetInt(values,   vp++);
+
+   Double_t x1;
+   Double_t y1;
+   Double_t x2;
+   Double_t y2;
    TObject * obj;
    TList * lof;
    if (list) lof = list;
@@ -1159,17 +1238,17 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
 //      obj->Print();
       if (obj->InheritsFrom("TBox")) {
          TBox * b = (TBox*)obj;
-         b->SetX1(PutOnGridX(PutOnGridX(b->GetX1())));
-         b->SetX2(PutOnGridX(b->GetX2()));
-         b->SetY1(PutOnGridY(b->GetY1()));
-         b->SetY2(PutOnGridY(b->GetY2()));
+         if (dox) b->SetX1(PutOnGridX(b->GetX1()));
+         if (dox) b->SetX2(PutOnGridX(b->GetX2()));
+         if (doy) b->SetY1(PutOnGridY(b->GetY1()));
+         if (doy) b->SetY2(PutOnGridY(b->GetY2()));
          
-      } else if (obj->InheritsFrom("TPad")) {
+      } else if (obj->InheritsFrom("TPad") && dopad) {
          TPad * b = (TPad*)obj;
-         Double_t x1 = b->GetAbsXlowNDC();
-         Double_t y1 = b->GetAbsYlowNDC();
-         Double_t x2 = x1 + b->GetAbsWNDC();
-         Double_t y2 = y1 + b->GetAbsHNDC();
+         x1 = b->GetAbsXlowNDC();
+         y1 = b->GetAbsYlowNDC();
+         x2 = x1 + b->GetAbsWNDC();
+         y2 = y1 + b->GetAbsHNDC();
 //         cout <<  "xyoff: " << xoff << " " << yoff << endl;
 //         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
 //         convert to user 
@@ -1177,51 +1256,64 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          y1 = (y1 - GetY1()) * (GetY2() - GetY1());
          x2 = (x2 - GetX1()) * (GetX2() - GetX1());
          y2 = (y2 - GetY1()) * (GetY2() - GetY1());
-         x1 = PutOnGridX(x1);
-         y1 = PutOnGridX(y1);
-         x2 = PutOnGridX(x2);
-         y2 = PutOnGridX(y2);
+         if (dox) x1 = PutOnGridX(x1);
+         if (doy) y1 = PutOnGridX(y1);
+         if (dox) x2 = PutOnGridX(x2);
+         if (doy) y2 = PutOnGridX(y2);
          x1 = GetX1()+ x1 / (GetX2() - GetX1());
          y1 = GetY1()+ y1 / (GetY2() - GetY1());
          x2 = GetX1()+ x2 / (GetX2() - GetX1());
          y2 = GetY1()+ y2 / (GetY2() - GetY1());
          b->SetPad(x1, y1, x2, y2);
 
-      } else if (obj->InheritsFrom("TLine")){
+      } else if (obj->InheritsFrom("TLine") && doline){
          TLine * b = (TLine*)obj;
-         b->SetX1(PutOnGridX(b->GetX1()));
-         b->SetX2(PutOnGridX(b->GetX2()));
-         b->SetY1(PutOnGridY(b->GetY1()));
-         b->SetY2(PutOnGridY(b->GetY2()));
+         if (dox) b->SetX1(PutOnGridX(b->GetX1()));
+         if (dox) b->SetX2(PutOnGridX(b->GetX2()));
+         if (doy) b->SetY1(PutOnGridY(b->GetY1()));
+         if (doy) b->SetY2(PutOnGridY(b->GetY2()));
 
-      } else if (obj->InheritsFrom("TArrow")) {
+      } else if (obj->InheritsFrom("TArrow") && doarrow) {
          TArrow * b = (TArrow*)obj;
-         b->SetX1(PutOnGridX(b->GetX1()));
-         b->SetX2(PutOnGridX(b->GetX2()));
-         b->SetY1(PutOnGridY(b->GetY1()));
-         b->SetY2(PutOnGridY(b->GetY2()));
+         if (dox) b->SetX1(PutOnGridX(b->GetX1()));
+         if (dox) b->SetX2(PutOnGridX(b->GetX2()));
+         if (doy) b->SetY1(PutOnGridY(b->GetY1()));
+         if (doy) b->SetY2(PutOnGridY(b->GetY2()));
 
-      } else if (obj->InheritsFrom("TCurlyArc")) {
+      } else if (obj->InheritsFrom("TCurlyArc") && docurlya) {
          TCurlyArc * b = (TCurlyArc*)obj;
-         b->SetStartPoint(PutOnGridX(b->GetStartX()), PutOnGridY(b->GetStartY()));
+         x1 = b->GetStartX();
+         y1 = b->GetStartY();
+         if (dox) x1 = PutOnGridX(x1);
+         if (doy) y1 = PutOnGridX(y1);
+         b->SetStartPoint(x1, y1);
   
-      } else if (obj->InheritsFrom("TCurlyLine")) {
+      } else if (obj->InheritsFrom("TCurlyLine") && docurlyl) {
          TCurlyLine * b = (TCurlyLine*)obj;
-         b->SetStartPoint(PutOnGridX(b->GetStartX()), PutOnGridY(b->GetStartY()));
-         b->SetEndPoint(PutOnGridX(b->GetEndX()), PutOnGridY(b->GetEndY()));
+         x1 = b->GetStartX();
+         y1 = b->GetStartY();
+         if (dox) x1 = PutOnGridX(x1);
+         if (doy) y1 = PutOnGridX(y1);
+         b->SetStartPoint(x1, y1);
 
-      } else if (obj->InheritsFrom("TText")) {
-      TText * b = (TText*)obj;
-         b->SetX(b->GetX());
-         b->SetY(b->GetY());
-      } else if (obj->InheritsFrom("TArc")) {
+         x1 = b->GetEndX();
+         y1 = b->GetEndY();
+         if (dox) x1 = PutOnGridX(x1);
+         if (doy) y1 = PutOnGridX(y1);
+         b->SetEndPoint(x1, y1);
+
+      } else if (obj->InheritsFrom("TText") && dotext) {
+         TText * b = (TText*)obj;
+         if (dox) b->SetX(PutOnGridX(b->GetX()));
+         if (doy) b->SetY(PutOnGridX(b->GetY()));
+      } else if (obj->InheritsFrom("TArc") && doarc) {
          TArc * b = (TArc*)obj;
-         b->SetX1(PutOnGridX(b->GetX1()));
+         if (dox) b->SetX1(PutOnGridX(b->GetX1()));
          b->SetY1(PutOnGridY(b->GetY1()));
 //         b->SetX2(PutOnGridX(b->GetX2()));
 //         b->SetY2(PutOnGridY(b->GetY2()));
 
-      } else if (obj->InheritsFrom("TGraph")) {
+      } else if (obj->InheritsFrom("TGraph") && dograph) {
          TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
          if (!x) {
@@ -1231,26 +1323,14 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          Double_t * y = b->GetY();
 //         either first or last point
          for (Int_t i = 0; i < b->GetN(); i++) {
-            x[i] = PutOnGridX(x[i]);
-            y[i] = PutOnGridY(y[i]);
-         }
-      } else if (obj->InheritsFrom("TGraph")) {
-         TGraph* b = (TGraph*)obj;
-         Double_t * x = b->GetX();
-         if (!x) {
-            cout << "TGraph with 0 points" << endl;
-            continue;
-         }
-         Double_t * y = b->GetY();
-//         either first or last point
-         for (Int_t i = 0; i < b->GetN(); i++) {
-            x[i] = PutOnGridX(x[i]);
-            y[i] = PutOnGridY(y[i]);
+            if (dox) x[i] = PutOnGridX(x[i]);
+            if (doy) y[i] = PutOnGridY(y[i]);
          }
       } else {
 //         cout << obj->ClassName() << " not yet implemented" << endl;
       }
    }
+   Modified();
    Update();   
 }
 //______________________________________________________________________________
@@ -1259,9 +1339,11 @@ void HTCanvas::DeleteObjects()
 {
    TCutG * cut = (TCutG *)FindObject("CUTG");
    if (!cut) {
-      cout << "Define a graphical cut first" << endl;
+      WarnBox("Define a graphical cut first", fRootCanvas); 
+ //     cout << "Define a graphical cut first" << endl;
       return;
    }
+   if (QuestionBox("Really delete objects?", fRootCanvas) != kMBYes) return;
    TObject * obj;
    TIter next(GetListOfPrimitives());
    while ( (obj = next()) ) {
@@ -1620,9 +1702,10 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    	   gSystem->ProcessEvents();
    	   gSystem->Sleep(10);
 	   }
-	   cout << fMouseX << " " << fMouseY << endl;
       x0 = fMouseX;
       y0 = fMouseY;
+      fMousePad->cd();
+//	   cout << "HEdit: gPad " << gPad << endl;
    }
 
    ifstream infile;
@@ -1672,6 +1755,7 @@ void HTCanvas::Latex2Root(Bool_t from_file)
       latex->SetTextSize(size);
       latex->SetTextAngle(angle);
       latex->SetTextColor(color);
+//	   cout << "latex->Draw(): gPad " << gPad << endl;
       latex->Draw();
       yt -= dy;
 //      outfile << cmd << endl;

@@ -243,7 +243,6 @@ enum ERootCanvasCommands {
    kFH_UserEdit,
    kFH_Landscape,
    kFH_WritePrim,
-   kFH_GetPrim,
    kFH_DrawHist,
    kFH_DrawGraph,
    kFH_InsertImage,
@@ -655,9 +654,6 @@ again:
                         fHCanvas->WritePrimitives();
                      break;
 
-                  case kFH_GetPrim:
-                        fHCanvas->GetPrimitives();
-                     break;
                   case kFH_InsertGObjects:
                        fHCanvas->InsertGObjects();
                      break;
@@ -679,10 +675,10 @@ again:
                      }                   
                      break;
                   case kFH_MarkGObjects:
-                       fHCanvas->ExtractGObjects(kTRUE);
+                       fHCanvas->MarkGObjects();
                      break;
                   case kFH_ExtractGObjects:
-                       fHCanvas->ExtractGObjects(kFALSE);
+                       fHCanvas->ExtractGObjects();
                      break;
                   case kFH_WriteGObjects:
                        fHCanvas->WriteGObjects();
@@ -1499,7 +1495,7 @@ void HandleMenus::BuildMenus()
       fFileMenu->AddEntry("Open Edit canvas (user defined)",   kFH_UserEdit);
    } else {
       fFileMenu->AddSeparator();
-    	fFileMenu->AddEntry("Write objects to file",  kFH_WritePrim);
+    	fFileMenu->AddEntry("Write this picture to ROOT file",  kFH_WritePrim);
    }
    fFileMenu->AddSeparator();
    fFileMenu->AddEntry("Terminate program",          kFileQuit);
@@ -1761,15 +1757,15 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
       fEditMenu->AddSeparator();
 
-   	fEditMenu->AddEntry("Insert  image (gif, jpg) into selected pad", kFH_InsertImage);
-   	fEditMenu->AddEntry("Insert selected histogram into selected pad",  kFH_DrawHist);
-   	fEditMenu->AddEntry("Insert graph into seperate pad",  kFH_DrawGraph);
-      fEditMenu->AddSeparator();
-   	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatexF);
-   	fEditMenu->AddEntry("Insert text (Latex) from keyboard", kFH_InsertLatex);
-   	fEditMenu->AddEntry("Draw an axis", kFH_InsertAxis);
-   	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
-      fEditMenu->AddSeparator();
+//   	fEditMenu->AddEntry("Insert  image (gif, jpg) into selected pad", kFH_InsertImage);
+//   	fEditMenu->AddEntry("Insert selected histogram into selected pad",  kFH_DrawHist);
+//   	fEditMenu->AddEntry("Insert graph into seperate pad",  kFH_DrawGraph);
+//      fEditMenu->AddSeparator();
+//   	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatexF);
+//   	fEditMenu->AddEntry("Insert text (Latex) from keyboard", kFH_InsertLatex);
+//   	fEditMenu->AddEntry("Draw an axis", kFH_InsertAxis);
+//   	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
+ //     fEditMenu->AddSeparator();
 //   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
 //      if (fHCanvas->fInsertMacrosAsGroup) fEditMenu->CheckEntry(kFH_InsertGObjectsG);
 //      else                                fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);
@@ -1780,7 +1776,6 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Mark selected objects as compound",  kFH_MarkGObjects);
    	fEditMenu->AddEntry("Extract selected objects as compound",  kFH_ExtractGObjects);
    	fEditMenu->AddEntry("Delete selected objects",  kFH_DeleteObjects);
-//   	fEditMenu->AddEntry("Get objects from file",  kFH_GetPrim);
      
 //   	fEditMenu->AddEntry("Clear Pad",              kEditClearPad);
 //   	fEditMenu->AddEntry("Clear Canvas",           kEditClearCanvas);
@@ -1827,7 +1822,7 @@ void HandleMenus::BuildMenus()
       fRootsMenuBar->AddPopup("Fit / Calibrate", fFitMenu,   fMenuBarItemLayout, pmi);
    }
    if(edit_menus){
-         fRootsMenuBar->AddPopup("Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
+         fRootsMenuBar->AddPopup("Hpr-Edit",            fEditMenu,  fMenuBarItemLayout, pmi);
    }
    if (fGraph) {
       fRootsMenuBar->AddPopup("Fit", fFitMenu,   fMenuBarItemLayout, pmi);

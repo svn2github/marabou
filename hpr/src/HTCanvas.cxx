@@ -307,7 +307,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    static Bool_t in_image = kFALSE;
    if (fSelected) {
       if (event == kButton1Down && !strncmp(fSelected->ClassName(), "TASI", 4)) {
-//         cout << "HTCanvas: " << fSelected->ClassName()<< " gPad " <<
+//         cout << "HTCanvas: " << fSelected->GetName()<< " gPad " <<
 //              gPad << endl;
 //         gPad->Dump();
          in_image = kTRUE;
@@ -360,7 +360,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
-      
+
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
       if (in_image) {
@@ -411,6 +411,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          fMouseX = gPad->AbsPixeltoX(px);
          fMouseY = gPad->AbsPixeltoY(py);
          fGetMouse = kFALSE;
+         fMousePad = pad;
+//         cout << "HTCanvas: " << pad->GetName()<< " pad " <<
+//         pad << endl;
       }
 //OS end
       fSelected->ExecuteEvent(event, px, py);

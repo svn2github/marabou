@@ -93,14 +93,28 @@ void HprImage::Paint(Option_t * opt)
    TString name(GetName());
    name.Prepend("temp_");
 //   cout << "HprImage::Paint(): " << name << endl;
+   TList * lop = gPad->GetListOfPrimitives();
+   TObject *obj;
+   TIter next_img(lop);
+   while ( (obj = next_img()) ) {
+      if (obj->InheritsFrom("TASImage")) { 
+ //        cout << "GetHeight(): " << ((TImage*)obj)->GetHeight() << endl;
+         if (((TImage*)obj)->GetHeight() > 5) return;
+      }
+   }
+//   cout << "HprImage::Paint(): " << name << endl;
 //   Dump();
 //   if (fImage) fImage->Dump();
-   TObject *obj;
-   TList * lop = gPad->GetListOfPrimitives();
    TObjOptLink *lnk = (TObjOptLink*)lop->FirstLink();
    while (lnk) {
       obj = lnk->GetObject();
       if (obj->InheritsFrom("TASImage")) lop->Remove(obj);
+      lnk = (TObjOptLink*)lnk->Next();
+   }
+   lnk = (TObjOptLink*)lop->FirstLink();
+   while (lnk) {
+      obj = lnk->GetObject();
+      if (obj->InheritsFrom("TFrame")) lop->Remove(obj);
       lnk = (TObjOptLink*)lnk->Next();
    }
 
@@ -116,5 +130,20 @@ void HprImage::Paint(Option_t * opt)
    fImage->SetEditable(kTRUE);
    fImage->SetImageQuality(TAttImage::kImgBest);
    fImage->Draw("xxx");
+//   lop->ls();
+// make sure image is drawn first
+   TIter next(lop);
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TASImage")) { 
+         break;
+      } else {
+         if (!obj->InheritsFrom("HprImage")) { 
+//            cout << "Pop " << obj << endl;
+            obj->Pop();
+         }
+      }
+   }
+//   lop->ls();
    gPad->Modified(kTRUE);
+
 }

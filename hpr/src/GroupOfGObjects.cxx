@@ -279,7 +279,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          Double_t y1 = b->GetAbsYlowNDC();
          Double_t x2 = x1 + b->GetAbsWNDC();
          Double_t y2 = y1 + b->GetAbsHNDC();
-
+         b->GetListOfPrimitives()->ls();
 //         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
          Double_t xt2, yt2;
 //         convert to user 

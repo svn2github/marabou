@@ -57,7 +57,7 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
 
    gVirtualX->TranslateCoordinates(fMyWindow->GetId(), this->GetParent()->GetId(),
          0,
-         ((TGFrame *) fMyWindow)->GetHeight() - ( height << 1),
+         ((TGFrame *) fMyWindow)->GetHeight() - ( height),
                           ax, ay, wdum);
 //         ((TGFrame *) fMyWindow)->GetWidth() - width >> 1,
    cout << "ax, ay, width, height," << ax << " " << ay << " " << width << " " << height <<  endl;

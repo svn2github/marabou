@@ -54,6 +54,7 @@ private:
    Bool_t         fInsertMacrosAsGroup;
    Double_t       fMouseX;
    Double_t       fMouseY;
+   TPad         * fMousePad;
    Bool_t         fGetMouse;
    Bool_t         fCommonRotate;
    UInt_t         fOrigWw;
@@ -107,7 +108,8 @@ public:
    void    InsertImage();
    void    InsertAxis();
    void    WritePrimitives();
-   void    GetPrimitives();
+   Int_t   ExtractGObjectsE();
+   Int_t   MarkGObjects();
    Int_t   ExtractGObjects(Bool_t markonly = kFALSE);
    void    InsertGObjects(const char * fname = 0);
    void    DeleteObjects();

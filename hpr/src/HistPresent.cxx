@@ -3448,37 +3448,36 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
 //           << x1 << " "<<  y1 << " "<<  x2 << " " << y2 << endl;
 
    GetCanvasList()->Add(c1);
-//      TList * l = c->GetListOfPrimitives();
-   TList * l1 = c1->GetListOfPrimitives();
-//      TIter next(l);
    TObject *obj;
    TObjOptLink *lnk = (TObjOptLink*)c->GetListOfPrimitives()->FirstLink();
    TH1* h;
+   TList lpads;
    while (lnk) {
       obj = lnk->GetObject();
- //     cout << "ShowCanvas: " << obj->GetName() << " " << lnk->GetOption() << endl << flush;
       if (obj->InheritsFrom(TH1::Class())) {
          h = (TH1*)obj;
          h->SetDirectory(gROOT);
       } else {
+         obj->ResetBit(kCanDelete);
+
          if (obj->InheritsFrom("TPad")){
-            TPad * newp = (TPad * )obj->Clone();
-            l1->Add(newp);
-            newp->SetCanvas(c1);
-            newp->Modified(kTRUE);
-            newp->Update();
-//            cout << "ShowCanvas: Pad " << endl;
-//            newp->GetListOfPrimitives()->ls();
+            lpads.Add(obj);
          } else {
-            obj->ResetBit(kCanDelete);
-//               l1->Add(obj);
-//               cout << obj->GetName() << " " << obj->GetOption() << endl;
             obj->SetDrawOption(obj->GetOption());
             obj->Draw(lnk->GetOption());
          }
       }
       lnk = (TObjOptLink*)lnk->Next();
+      
    }
+   if (lpads.GetSize() > 0) {
+      TIter next(&lpads);
+      TPad * pad;
+      while ( (pad = (TPad*)next()) ) {
+         pad->Draw();
+      }
+   }
+
    delete c;
    c1->SetRightMargin(0);
    c1->SetLeftMargin(0);
