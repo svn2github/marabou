@@ -175,13 +175,6 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%HISTO_BOOK_USER_DEFINED%%
 
 %%BeginOfCode%%
-%B%// book subevent histograms individually
-%S%	g$evt->Get$sevt()->BookHistograms();
-%SC%	if ($condition) g$evt->Get$sevt()->BookHistograms();
-%%EndOfCode%%
-%%HISTO_BOOK_SEVT_INDIV%%
-
-%%BeginOfCode%%
 %B%// fill histograms arrays
 %FHA%	if ($hArrayName.FindObject("$hName") == NULL) $hArrayName.Add($hName);
 %%EndOfCode%%

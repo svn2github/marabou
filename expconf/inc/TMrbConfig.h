@@ -857,7 +857,6 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
 		TObjArray fLofHistoConditions;		// list of histogram booking conds
-		TObjArray fLofSevtHistosToBeBooked;	// list of subevent histos to be booked individually
 		
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent

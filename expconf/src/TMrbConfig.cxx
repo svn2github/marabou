@@ -284,7 +284,6 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaHistoDefinePointers,		"HISTO_DEFINE_POINTERS" 		},
 								{TMrbConfig::kAnaHistoInitializeArrays, 	"HISTO_INIT_ARRAYS" 			},
 								{TMrbConfig::kAnaHistoBookUserDefined,	 	"HISTO_BOOK_USER_DEFINED"		},
-								{TMrbConfig::kAnaHistoBookSevtIndiv,	 	"HISTO_BOOK_SEVT_INDIV" 		},
 								{TMrbConfig::kAnaHistoFillArrays,	 		"HISTO_FILL_ARRAYS" 			},
 								{TMrbConfig::kAnaVarDefinePointers, 		"VAR_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaVarClassInstance,			"VAR_CLASS_INSTANCE"			},
@@ -632,7 +631,6 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
-		fLofSevtHistosToBeBooked.Delete();						// init list of histogram booking conds
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
@@ -2940,32 +2938,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 								anaTmpl.WriteCode(anaStrm);
 								h = (TMrbNamedX *) fLofUserHistograms.After(h);
-							}
-						}
-						break;
-
-					case TMrbConfig::kAnaHistoBookSevtIndiv:
-						if (fLofSevtHistosToBeBooked.First()) {
-							TMrbNamedX * nx = (TMrbNamedX *) fLofSevtHistosToBeBooked.First();
-							while (nx) {
-								TString evtName = nx->GetName();
-								evtName(0,1).ToUpper();
-								TString sevtName = nx->GetTitle();
-								sevtName(0,1).ToUpper();
-								TString cnd = ((TObjString *) nx->GetAssignedObject())->GetString();
-								cnd = cnd.Strip(TString::kBoth);
-								if (cnd.Length() == 0)	{
-									anaTmpl.InitializeCode("%S%");
-									anaTmpl.Substitute("$evt", evtName.Data());
-									anaTmpl.Substitute("$sevt", sevtName.Data());
-								} else {
-									anaTmpl.InitializeCode("%SC%");
-									anaTmpl.Substitute("$evt", evtName.Data());
-									anaTmpl.Substitute("$sevt", sevtName.Data());
-									anaTmpl.Substitute("$condition", cnd.Data());
-								}
-								anaTmpl.WriteCode(anaStrm);
-								nx = (TMrbNamedX *) fLofSevtHistosToBeBooked.After(nx);
 							}
 						}
 						break;
@@ -5959,40 +5931,6 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 
 	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
 	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Args, Condition));
-}
-
-Bool_t TMrbConfig::BookHistograms(const Char_t * Event, const Char_t * Subevent, const Char_t * Condition) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::BookHistograms
-// Purpose:        Book subevent histos individually
-// Arguments:      Char_t * Event          -- event name
-//                 Char_t * Subevent       -- subevent name
-//                 Char_t * Condition      -- booking condition
-// Results:        kTRUE/kFALSE
-// Exceptions:     
-// Description:    User may book subevent histos individually here.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbEvent * evt = (TMrbEvent *) fLofEvents.FindObject(Event);
-	if (evt == NULL) {
-		gMrbLog->Err() << "No such event - " << Event << endl;
-		gMrbLog->Flush(this->ClassName(), "BookHistograms");
-		return(kFALSE);
-	}
-
-	TMrbSubevent * sevt = (TMrbSubevent *) evt->GetLofSubevents()->FindByName(Subevent);
-	if (sevt == NULL) {
-		gMrbLog->Err() << "[event " << evt->GetName() << "] No such subevent - " << Subevent << endl;
-		gMrbLog->Flush(this->ClassName(), "BookHistograms");
-		return(kFALSE);
-	}
-
-	const Char_t * cnd;
-	if (Condition == NULL || *Condition == '\0') cnd = ""; else cnd = Condition;
-	fLofSevtHistosToBeBooked.Add(new TMrbNamedX(0, evt->GetName(), sevt->GetName(), new TObjString(cnd)));
-	return(kTRUE);
 }
 
 TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName) {
