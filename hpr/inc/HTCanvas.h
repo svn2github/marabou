@@ -100,6 +100,7 @@ public:
    void    DrawHist();
    void    DrawGraph();
    void    InsertImage();
+   void    InsertAxis();
    void    WritePrimitives();
    void    GetPrimitives();
    Int_t   ExtractGObjects(Bool_t markonly = kFALSE);
@@ -109,7 +110,7 @@ public:
    void    ReadGObjects();
    void    ShowGallery();
    void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
-   void    Latex2Root();
+   void    Latex2Root(Bool_t);
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

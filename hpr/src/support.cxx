@@ -26,18 +26,116 @@
 
 #include "CmdListEntry.h"
 #include "FitHist.h"
-// #include "Table.h"
 #include "SetColor.h"
 
 #include "support.h"
 #include "TGMrbInputDialog.h"
+#include "TMrbString.h"
 
 #include <iostream>
 #include <sstream>
 #include <fstream>
 
 TSocket * gSocket = 0;
-//extern HistPresent *hp;
+//_______________________________________________________________________________
+   
+void AddObjString(Int_t val, TList * list, Int_t type)
+{
+   Int_t ival = val;
+   TString s;
+   if (type == kAttCheckB) {
+      s+= "CheckButton_";
+      if (val == 0) s += "Up";
+      else          s += "Down";
+   } else {
+      if (type == kAttColor) {
+         s+= "ColorSelect_";        
+         TColor * color =  GetColorByInd(ival);
+         ival = 0;
+         if (color) ival = color->GetPixel();
+         else       cout << "Invalid color index: " << val << endl;
+      }
+      if (type == kAttAlign) s+= "AlignSelect_";
+      if (type == kAttLineS) s+= "LineSSelect_";
+      if (type == kAttFont ) { s+= "CfontSelect_"; ival /= 10; }
+      if (type == kAttArrow) s+= "ArrowSelect_";
+      if (type == kAttMarker)s+= "Mark_Select_";
+      if (type == kAttFillS) s+= "Fill_Select_";
+      s += ival;
+   }
+   list->Add(new TObjString(s.Data()));
+} 
+//_______________________________________________________________________________
+   
+void AddObjString(const char * text, TList * list)
+{
+   list->Add(new TObjString(text));
+} 
+//_______________________________________________________________________________
+   
+void AddObjString(Double_t val, TList * list)
+{
+   ostringstream buf;
+   buf << val;
+   list->Add(new TObjString(buf.str().c_str()));
+//   list->Add(new TObjString(Form("%lf", val)));
+} 
+//_______________________________________________________________________________
+
+const char * GetText(TList * list, Int_t pos) 
+{
+   return ((TObjString*)list->At(pos))->GetString();
+}   
+//_______________________________________________________________________________
+
+Double_t GetDouble(TList * list, Int_t pos) 
+{
+   TMrbString s;
+   s = ((TObjString*)list->At(pos))->GetString();
+   Double_t val;
+   if (!s.ToDouble(val)) {
+      cout << "Illegal doubel: " << s << endl;
+      val = 0;
+   }
+   return val;
+}   
+//_______________________________________________________________________________
+  
+Int_t GetInt(TList * list, Int_t pos)
+{
+   TMrbString s;
+   Int_t val;
+   Bool_t iscol = kFALSE;
+   Bool_t isfont = kFALSE;
+   s = ((TObjString*)list->At(pos))->GetString();
+   if (s.BeginsWith("CheckButton_")) {
+      if (s.EndsWith("Down")) val = 1;
+      else                    val = 0;
+   } else {
+      if ( s.BeginsWith("ColorSelect_")) iscol = kTRUE;
+      if ( s.BeginsWith("CfontSelect_")) isfont = kTRUE;
+      if ( s.BeginsWith("ColorSelect_") || 
+           s.BeginsWith("AlignSelect_") ||
+           s.BeginsWith("LineSSelect_") ||
+           s.BeginsWith("CheckButton_") ||
+           s.BeginsWith("Mark_Select_") ||
+           s.BeginsWith("Fill_Select_") ||
+           s.BeginsWith("CfontSelect_") ||
+           s.BeginsWith("ArrowSelect_")) s.Remove(0,12);
+      if (!s.ToInteger(val)) {
+         cout << "Illegal integer: " << s << endl;
+         val = 0;
+      } else {
+         if (iscol) {
+           val =  TColor::GetColor((UInt_t)val);
+           if (!GetColorByInd(val)) val = 1;
+         }
+         if (isfont) val = val * 10 + 2;
+      } 
+   }    
+   return val;
+}   
+   
 //----------------------------------------------------------------------- 
 //  a command button
 

@@ -64,7 +64,7 @@ $(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
 		@echo "OHPRLIBS: $(OHPRLIBS)"
 #		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(MRBLIBS) $(GLIBS) \
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(GLIBS)  -lGed \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)

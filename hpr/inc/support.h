@@ -26,7 +26,22 @@
 #include "TMrbStatistics.h"
 
 namespace std {} using namespace std;
+//_______________________________________________________________________________
 
+enum att_types {kAttDefault, kAttColor, kAttAlign, kAttLineS, kAttFont, 
+                kAttArrow, kAttCheckB, kAttMarker, kAttFillS};
+
+
+void AddObjString(Int_t val, TList * list, Int_t type = 0); 
+Int_t GetInt(TList * list, Int_t pos); 
+
+void AddObjString(Double_t val, TList * list); 
+Double_t GetDouble(TList * list, Int_t pos); 
+
+void AddObjString(const char * text, TList * list);
+const char * GetText(TList * list, Int_t pos); 
+
+//_______________________________________________________________________________
 
 const Int_t kSelected = BIT(16), kCommand  = BIT(17), kSelection  = BIT(18);
 extern int  GetPosition(TVirtualPad*, UInt_t *, UInt_t *);

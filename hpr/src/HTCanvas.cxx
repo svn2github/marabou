@@ -27,6 +27,8 @@
 #include "SetColor.h"
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbInputDialog.h"
+#include "TMrbString.h"
+#include "TGMrbValuesAndText.h"
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
 
@@ -371,17 +373,17 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
           xEnclosingCut = (cut->GetX())[0];
           yEnclosingCut = (cut->GetY())[0];
       }
+      x = gPad->AbsPixeltoX(px);
+      y = gPad->AbsPixeltoY(py);
       if(fUseEditGrid && fSelectedPad == this &&
        !(fSelected->IsA() == TPad::Class() ||fSelected->IsA() == TLatex::Class() )
         ){
 //         cout << "x y  " << gPad->AbsPixeltoX(px) << " " << gPad->AbsPixeltoY(py) << endl;
          if(fEditGridX !=0){
-            x = gPad->AbsPixeltoX(px);
             n = (Int_t)((x + TMath::Sign(0.5*fEditGridX, x)) / fEditGridX);
             x = n * fEditGridX;
          }
          if(fEditGridY !=0){
-            y = gPad->AbsPixeltoY(py);
             n = (Int_t)((y + TMath::Sign(0.5*fEditGridY, y)) / fEditGridY);
             y = n * fEditGridY;
          }
@@ -741,134 +743,11 @@ void HTCanvas::Build()
       fCanvasImp->ShowToolBar(fShowToolBar);
    if (fShowEditor && fMenuBar && fCanvasImp)
       fCanvasImp->ShowEditor(fShowEditor);
-/*
-      if (fMenuBar) cout << "HTCanvas: ctor fMenuBar TRUE" << endl;
-      else          cout << "HTCanvas: ctor fMenuBar FALSE" << endl;
-      if (fMenuBar) cout << "HTCanvas: ctor fMenuBar TRUE" << endl;
-      else          cout << "HTCanvas: ctor fMenuBar FALSE" << endl;
-      if (fShowToolBar) cout << "HTCanvas: ctor fShowToolBar TRUE" << endl;
-      else          cout << "HTCanvas: ctor fShowToolBar FALSE" << endl;
-      if (fShowEditor) cout << "HTCanvas: ctor fShowEditor TRUE" << endl;
-      else          cout << "HTCanvas: ctor fShowEditor FALSE" << endl;
-*/
 #if defined(WIN32) && !defined(GDK_WIN32)
    if (!strcmp(gVirtualX->GetName(), "Win32"))
       gVirtualX->UpdateWindow(1);
 #endif
 }
-//______________________________________________________________________________
-/*
- void HTCanvas::Build()
-{
-   // Build a canvas. Called by all constructors.
-
-   // Make sure the application environment exists. It is need for graphics
-   // (colors are initialized in the TApplication ctor).
-   if (!gApplication)
-      TApplication::CreateApplication();
-
-   // Get some default from .rootrc. Used in fCanvasImp->InitWindow().
-   fMoveOpaque      = gEnv->GetValue("Canvas.MoveOpaque", 0);
-   fResizeOpaque    = gEnv->GetValue("Canvas.ResizeOpaque", 0);
-   fHighLightColor  = gEnv->GetValue("Canvas.HighLightColor", kRed);
-   fShowEventStatus = gEnv->GetValue("Canvas.ShowEventStatus", kFALSE);
-   fAutoExec        = gEnv->GetValue("Canvas.AutoExec", kTRUE);
-
-   // Get window identifier
-   if (fCanvasID == -1)
-      fCanvasID = fCanvasImp->InitWindow();
-#ifndef WIN32
-   if (fCanvasID < 0) return;
-#else
-   // fCanvasID is in fact a pointer to the TGWin32 class
-   if (fCanvasID  == -1) return;
-#endif
-
-   fContextMenu = 0;
-   if (!IsBatch()) {    //normal mode with a screen window
-      // Set default physical canvas attributes
-      gVirtualX->SelectWindow(fCanvasID);
-      gVirtualX->SetFillColor(1);         //Set color index for fill area
-      gVirtualX->SetLineColor(1);         //Set color index for lines
-      gVirtualX->SetMarkerColor(1);       //Set color index for markers
-      gVirtualX->SetTextColor(1);         //Set color index for text
-
-      // Clear workstation
-      gVirtualX->ClearWindow();
-
-      // Set Double Buffer on by default
-      SetDoubleBuffer(1);
-
-      // Get effective window parameters (with borders and menubar)
-      fCanvasImp->GetWindowGeometry(fWindowTopX, fWindowTopY,
-                                    fWindowWidth, fWindowHeight);
-
-      // Get effective canvas parameters without borders
-      Int_t dum1, dum2;
-      gVirtualX->GetGeometry(fCanvasID, dum1, dum2, fCw, fCh);
-
-      fContextMenu = new TContextMenu( "ContextMenu" );
-   }
-   // Fill canvas ROOT data structure
-   fXsizeUser = 0;
-   fYsizeUser = 0;
-   if ( fCw < fCh ) {
-      fYsizeReal = kDefaultCanvasSize;
-      fXsizeReal = fYsizeReal*Float_t(fCw)/Float_t(fCh);
-   }
-   else {
-      fXsizeReal = kDefaultCanvasSize;
-      fYsizeReal = fXsizeReal*Float_t(fCh)/Float_t(fCw);
-   }
-
-   fDISPLAY         = "$DISPLAY";
-   fRetained        = 1;
-
-   // transient canvases have typically no menubar and should not get
-   // by default the event status bar (if set by default)
-   if (fShowEventStatus && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowStatusBar(fShowEventStatus);
-
-   fSelected        = 0;
-   fSelectedPad     = 0;
-   fPadSave         = 0;
-//   fEditorBar       = 0;
-   fEvent           = -1;
-   fEventX          = -1;
-   fEventY          = -1;
-   gROOT->GetListOfCanvases()->Add(this);
-
-   // Set Pad parameters
-   gPad            = this;
-   fCanvas         = this;
-   fMother         = (TPad*)gPad;
-   if (!fPrimitives) {
-      fPrimitives     = new TList(this);
-      SetFillColor(gStyle->GetCanvasColor());
-      SetFillStyle(1001);
-      SetGrid(gStyle->GetPadGridX(),gStyle->GetPadGridY());
-      SetTicks(gStyle->GetPadTickX(),gStyle->GetPadTickY());
-      SetLogx(gStyle->GetOptLogx());
-      SetLogy(gStyle->GetOptLogy());
-      SetLogz(gStyle->GetOptLogz());
-      SetBottomMargin(gStyle->GetPadBottomMargin());
-      SetTopMargin(gStyle->GetPadTopMargin());
-      SetLeftMargin(gStyle->GetPadLeftMargin());
-      SetRightMargin(gStyle->GetPadRightMargin());
-      SetBorderSize(gStyle->GetCanvasBorderSize());
-      SetBorderMode(gStyle->GetCanvasBorderMode());
-      fBorderMode=gStyle->GetCanvasBorderMode(); // do not call SetBorderMode (function redefined in TCanvas)
-      SetPad(0, 0, 1, 1);
-      Range(0, 0, 1, 1);   //Pad range is set by default to [0,1] in x and y
-      PaintBorder(GetFillColor(), kTRUE);    //Paint background
-//      TWbox::Paint("");    //Paint background
-   }
-   SetBit(kObjInCanvas);
-#ifdef WIN32
-   gVirtualX->UpdateWindow(1);
-#endif
-}
-*/
 //______________________________________________________________________________
 void HTCanvas::RunAutoExec()
 {

@@ -18,6 +18,7 @@
 
 #include "TGMrbInputDialog.h"
 #include "TGMrbTableFrame.h"
+#include "TGMrbValuesAndText.h"
 #include "FitHist.h"
 #include "HistPresent.h"
 #include "TMrbHelpBrowser.h"
@@ -472,7 +473,7 @@ void HistPresent::RestoreOptions()
    fArrowWidth       = env.GetValue("HistPresent.ArrowWidth" ,        1);
    fArrowStyle       = env.GetValue("HistPresent.ArrowStyle" ,        1);
 	fArrowFill        = env.GetValue("HistPresent.ArrowFill" ,      1001);
-	fArrowOption      = env.GetValue("HistPresent.ArrowOption" ,   "-|>-");
+	fArrowShape       = env.GetValue("HistPresent.ArrowShape" ,    1);
 	fCurlyWaveLength  = env.GetValue("HistPresent.CurlyWaveLength",0.025);
 	fCurlyAmplitude   = env.GetValue("HistPresent.CurlyAmplitude", 0.01);
    fCurlyColor       = env.GetValue("HistPresent.CurlyColor" ,       1);
@@ -764,19 +765,19 @@ void HistPresent::SaveOptions()
 	env.SetValue("HistPresent.FillColor",       fFillColor       );
 	env.SetValue("HistPresent.FillStyle",       fFillStyle       );
 
-	env.SetValue("HistPresent.ArrowAngle" ,    fArrowAngle           );
-	env.SetValue("HistPresent.ArrowSize"  ,    fArrowSize            );
-	env.SetValue("HistPresent.ArrowColor"  ,   fArrowColor           );
-	env.SetValue("HistPresent.ArrowWidth"  ,   fArrowWidth           );
-	env.SetValue("HistPresent.ArrowStyle"  ,   fArrowStyle           );
-	env.SetValue("HistPresent.ArrowFill"  ,    fArrowFill            );
-	env.SetValue("HistPresent.ArrowOption",    fArrowOption.Data()   );
-	env.SetValue("HistPresent.CurlyWaveLength",fCurlyWaveLength    );
-	env.SetValue("HistPresent.CurlyAmplitude" ,fCurlyAmplitude     );
-	env.SetValue("HistPresent.CurlyColor"  ,   fCurlyColor           );
-	env.SetValue("HistPresent.CurlyWidth"  ,   fCurlyWidth           );
-	env.SetValue("HistPresent.CurlyStyle"  ,   fCurlyStyle           );
-	env.SetValue("HistPresent.IsCurly"    ,    fIsCurly              );
+	env.SetValue("HistPresent.ArrowAngle" ,    fArrowAngle       );
+	env.SetValue("HistPresent.ArrowSize"  ,    fArrowSize        );
+	env.SetValue("HistPresent.ArrowColor"  ,   fArrowColor       );
+	env.SetValue("HistPresent.ArrowWidth"  ,   fArrowWidth       );
+	env.SetValue("HistPresent.ArrowStyle"  ,   fArrowStyle       );
+	env.SetValue("HistPresent.ArrowFill"  ,    fArrowFill        );
+	env.SetValue("HistPresent.ArrowShape",     fArrowShape       );
+	env.SetValue("HistPresent.CurlyWaveLength",fCurlyWaveLength  );
+	env.SetValue("HistPresent.CurlyAmplitude" ,fCurlyAmplitude   );
+	env.SetValue("HistPresent.CurlyColor"  ,   fCurlyColor       );
+	env.SetValue("HistPresent.CurlyWidth"  ,   fCurlyWidth       );
+	env.SetValue("HistPresent.CurlyStyle"  ,   fCurlyStyle       );
+	env.SetValue("HistPresent.IsCurly"    ,    fIsCurly          );
 	env.SetValue("HistPresent.ArcFillColor" ,fArcFillColor);
 	env.SetValue("HistPresent.ArcFillStyle" ,fArcFillStyle);
    env.SetValue("HistPresent.ArcLineColor" ,fArcLineColor);
@@ -812,14 +813,14 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
 {
 //   Int_t nopt = 6;
 
-   enum e_CurySet { 
+   enum e_CurlySet { 
       kArrowAngle      ,
       kArrowSize       ,
       kArrowWidth      ,
       kArrowStyle      ,
       kArrowColor      ,
       kArrowFill       ,
-      kArrowOption     ,
+      kArrowShape     ,
       kCurlyWaveLength ,
       kCurlyAmplitude  ,
       kCurlyWidth      ,
@@ -827,7 +828,9 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
       kCurlyColor      ,
       kIsCurly 
    };
-   TOrdCollection *row_lab = new TOrdCollection();
+   const char * ArrowOption[] = 
+      {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
+   TList *row_lab = new TList();
    Int_t vp = 0;
    row_lab->Add(new TObjString("ArrowAngle "));     
    row_lab->Add(new TObjString("ArrowSize  "));     
@@ -835,7 +838,7 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("ArrowLineStyle"));     
    row_lab->Add(new TObjString("ArrowColor "));     
    row_lab->Add(new TObjString("ArrowFillStyle"));     
-   row_lab->Add(new TObjString("ArrowOption"));         
+   row_lab->Add(new TObjString("ArrowForm"));         
    row_lab->Add(new TObjString("CurlyWaveLength"));         
    row_lab->Add(new TObjString("CurlyAmplitude"));         
    row_lab->Add(new TObjString("CurlyLineWidth"));     
@@ -843,50 +846,49 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("CurlyColor "));     
    row_lab->Add(new TObjString("IsCurly    "));         
 
-   TOrdCollection *svalues = new TOrdCollection();
-   svalues->Add(new TObjString(Form("%lg",fArrowAngle )));
-   svalues->Add(new TObjString(Form("%lg",fArrowSize  )));
-   svalues->Add(new TObjString(Form("%d",fArrowWidth  )));
-   svalues->Add(new TObjString(Form("%d",fArrowStyle  )));
-   svalues->Add(new TObjString(Form("%d",fArrowColor  )));
-   svalues->Add(new TObjString(Form("%d",fArrowFill  )));
-   svalues->Add(new TObjString(Form("%s",fArrowOption.Data())));
-   svalues->Add(new TObjString(Form("%lg",fCurlyWaveLength )));
-   svalues->Add(new TObjString(Form("%lg",fCurlyAmplitude  )));
-   svalues->Add(new TObjString(Form("%d",fCurlyWidth  )));
-   svalues->Add(new TObjString(Form("%d",fCurlyStyle  )));
-   svalues->Add(new TObjString(Form("%d",fCurlyColor  )));
-   svalues->Add(new TObjString(Form("%d",fIsCurly     )));
+   TList *values = new TList();
+   AddObjString(fArrowAngle ,values);
+   AddObjString(fArrowSize  ,values);
+   AddObjString(fArrowWidth  ,values);
+   AddObjString(fArrowStyle  ,values, kAttLineS);
+   AddObjString(fArrowColor  ,values, kAttColor);
+   AddObjString(fArrowFill  ,values, kAttFillS);
+   AddObjString(fArrowShape ,values, kAttArrow);
+   AddObjString(fCurlyWaveLength ,values);
+   AddObjString(fCurlyAmplitude  ,values);
+   AddObjString(fCurlyWidth  ,values);
+   AddObjString(fCurlyStyle  ,values, kAttLineS);
+   AddObjString(fCurlyColor  ,values, kAttColor);
+   AddObjString(fIsCurly     ,values);
 
-   TOrdCollection *col_lab = new TOrdCollection();
-   col_lab->Add(new TObjString("Value"));     
-   col_lab->Add(new TObjString("Set all"));     
-   
-   Int_t nrows = svalues->GetSize();
+   Int_t nrows = values->GetSize();
    TArrayI flag (nrows);
    for (Int_t i = 0; i < nrows; i++) {
       flag[i] = 0;
    } 
-   Int_t ret, itemwidth = 180;
-   new TGMrbTableFrame(win, &ret, "Feynman diagram attributes", itemwidth,
-                       1, 0, svalues, col_lab, row_lab, &flag);
-   if (ret <  0) return;
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values, 
+                      &flag, "Set all");
+   if (!ok) return;
 
    vp = 0;
-   fArrowAngle      = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fArrowSize       = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fArrowWidth      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fArrowStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fArrowColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fArrowFill       = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fArrowOption     = ((TObjString*)(svalues->At(vp++)))->GetString().Data();
-   fCurlyWaveLength = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fCurlyAmplitude  = atof(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fCurlyWidth      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fCurlyStyle      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fCurlyColor      = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   fIsCurly         = atoi(((TObjString*)(svalues->At(vp++)))->GetString().Data());
-   // check ArrowOption
+   fArrowAngle      = GetDouble(values, vp); vp++;
+   fArrowSize       = GetDouble(values, vp); vp++;
+   fArrowWidth      = GetInt(values, vp); vp++;
+   fArrowStyle      = GetInt(values, vp); vp++;
+   fArrowColor      = GetInt(values, vp); vp++;
+   fArrowFill       = GetInt(values, vp); vp++;
+   fArrowShape      = GetInt(values, vp); vp++;
+   fCurlyWaveLength = GetDouble(values, vp); vp++;
+   fCurlyAmplitude  = GetDouble(values, vp); vp++;
+   fCurlyWidth      = GetInt(values, vp); vp++;
+   fCurlyStyle      = GetInt(values, vp); vp++;
+   fCurlyColor      = GetInt(values, vp); vp++;
+   fIsCurly         = GetInt(values, vp); vp++;
+   // check ArrowShape
+/*
    if      (fArrowOption.Contains("->-")) fArrowOption = "->-";
    else if (fArrowOption.Contains("-<-")) fArrowOption = "-<-";
    else if (fArrowOption.Contains("-|>-")) fArrowOption = "-|>-";
@@ -898,7 +900,8 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    else if (fArrowOption.BeginsWith("<"))  fArrowOption = "<";
    else if (fArrowOption.EndsWith(">"))   fArrowOption = ">";
    else                                   fArrowOption = "|>";
-
+*/
+//   cout << "fArrowShape " << fArrowShape << endl;
    SaveOptions();
    gEnv->SetValue("HistPresent.ArrowAngle" ,fArrowAngle);
    gEnv->SetValue("HistPresent.ArrowSize"  ,fArrowSize );
@@ -906,7 +909,7 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    gEnv->SetValue("HistPresent.ArrowStyle" ,fArrowStyle);
    gEnv->SetValue("HistPresent.ArrowColor" ,fArrowColor);
    gEnv->SetValue("HistPresent.ArrowFill"  ,fArrowFill );
-   gEnv->SetValue("HistPresent.ArrowOption",fArrowOption.Data());
+   gEnv->SetValue("HistPresent.ArrowShape" ,fArrowShape);
    gEnv->SetValue("HistPresent.CurlyWaveLength" ,fCurlyWaveLength);
    gEnv->SetValue("HistPresent.CurlyAmplitude"  ,fCurlyAmplitude);
    gEnv->SetValue("HistPresent.CurlyWidth" ,fCurlyWidth);
@@ -938,10 +941,9 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
                if (flag[kArrowWidth] != 0)      a->SetLineWidth(fArrowWidth);
                if (flag[kArrowStyle] != 0)      a->SetLineStyle(fArrowStyle);
                if (flag[kArrowFill]  != 0)      a->SetFillStyle(fArrowFill);
-               if (flag[kArrowColor] != 0)      a->SetLineColor(fArrowColor);
                if (flag[kArrowColor] != 0)      a->SetFillColor(fArrowColor);
-               if (flag[kArrowOption]!= 0)     {a->SetDrawOption(fArrowOption.Data()); 
-                                                a->SetOption(fArrowOption.Data());};
+               if (flag[kArrowShape] != 0)     {a->SetDrawOption(ArrowOption[fArrowShape]); 
+                                                a->SetOption(ArrowOption[fArrowShape]);};
             }
          }
          canvas->Modified();
@@ -973,7 +975,7 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
       kArcLineWidth	
    };
 
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList *row_lab = new TList();
    row_lab->Add(new TObjString("LineColor"));     
    row_lab->Add(new TObjString("LineStyle"));     
    row_lab->Add(new TObjString("LineWidth"));         
@@ -993,58 +995,57 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("ArcLineWidth"));         
 
    Int_t nrows = row_lab->GetSize();
-   TArrayD values(nrows);
+   TList  * values = new TList;
    Int_t vp = 0;
 
-   values[vp++] = fLineColor;     
-   values[vp++] = fLineStyle;     
-   values[vp++] = fLineWidth;
-   values[vp++] = fTextSize ;
-   values[vp++] = fTextAlign;
-   values[vp++] = fTextColor;
-   values[vp++] = fTextFont ;
-   values[vp++] = fFillColor;
-   values[vp++] = fFillStyle;
-   values[vp++] = fMarkerColor;     
-   values[vp++] = fMarkerStyle;     
-   values[vp++] = fMarkerSize;
-   values[vp++] = fArcFillColor;
-   values[vp++] = fArcFillStyle;
-   values[vp++] = fArcLineColor;
-   values[vp++] = fArcLineStyle;
-   values[vp++] = fArcLineWidth; 
-   TOrdCollection *col_lab = new TOrdCollection();
-   col_lab->Add(new TObjString("Value"));     
-   col_lab->Add(new TObjString("Set all"));     
+   AddObjString(fLineColor, values, kAttColor);     
+   AddObjString(fLineStyle, values, kAttLineS);     
+   AddObjString(fLineWidth, values);
+   AddObjString(fTextSize , values);
+   AddObjString(fTextAlign, values, kAttAlign);
+   AddObjString(fTextColor, values, kAttColor);
+   AddObjString(fTextFont , values, kAttFont);
+   AddObjString(fFillColor, values, kAttColor);
+   AddObjString(fFillStyle, values, kAttFillS);
+   AddObjString(fMarkerColor, values, kAttColor);     
+   AddObjString(fMarkerStyle, values, kAttMarker);     
+   AddObjString(fMarkerSize, values);
+   AddObjString(fArcFillColor, values, kAttColor);
+   AddObjString(fArcFillStyle, values, kAttFillS);
+   AddObjString(fArcLineColor, values, kAttColor);
+   AddObjString(fArcLineStyle, values, kAttLineS);
+   AddObjString(fArcLineWidth, values); 
    
    TArrayI flag (nrows);
    for (Int_t i = 0; i < nrows; i++) {
       flag[i] = 0;
    } 
          
-   Int_t ret, itemwidth = 180, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "General graphics attributes", itemwidth,
-                       1, nrows, values, precission, col_lab, row_lab, &flag);
-   if (ret < 0) return;
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values, 
+                      &flag, "Set all");
+   if (!ok) return;
 
    vp = 0;
-   fLineColor     = (Int_t)values[vp++];
-   fLineStyle     = (Int_t)values[vp++];
-   fLineWidth     = (Int_t)values[vp++];
-   fTextSize      =        values[vp++];
-   fTextAlign     = (Int_t)values[vp++];
-   fTextColor     = (Int_t)values[vp++];
-   fTextFont      = (Int_t)values[vp++];
-   fFillColor     = (Int_t)values[vp++];
-   fFillStyle     = (Int_t)values[vp++];
-   fMarkerColor   = (Int_t)values[vp++];
-   fMarkerStyle   = (Int_t)values[vp++];
-   fMarkerSize    =        values[vp++];
-	fArcFillColor  = (Int_t)values[vp++];
-	fArcFillStyle  = (Int_t)values[vp++];
-	fArcLineColor  = (Int_t)values[vp++];
-	fArcLineStyle  = (Int_t)values[vp++];
-	fArcLineWidth  = (Int_t)values[vp++];
+   fLineColor     = GetInt(values, vp); vp++;
+   fLineStyle     = GetInt(values, vp); vp++;
+   fLineWidth     = GetInt(values, vp); vp++;
+   fTextSize      = GetDouble(values, vp); vp++;
+   fTextAlign     = GetInt(values, vp); vp++;
+   fTextColor     = GetInt(values, vp); vp++;
+   fTextFont      = 10 * GetInt(values, vp) + 2; vp++;
+   fFillColor     = GetInt(values, vp); vp++;
+   fFillStyle     = GetInt(values, vp); vp++;
+   fMarkerColor   = GetInt(values, vp); vp++;
+   fMarkerStyle   = GetInt(values, vp); vp++;
+   fMarkerSize    = GetDouble(values, vp); vp++;
+	fArcFillColor  = GetInt(values, vp); vp++;
+	fArcFillStyle  = GetInt(values, vp); vp++;
+	fArcLineColor  = GetInt(values, vp); vp++;
+	fArcLineStyle  = GetInt(values, vp); vp++;
+	fArcLineWidth  = GetInt(values, vp); vp++;
    SaveOptions();
    SetGeneralAtt();
 
@@ -1117,11 +1118,10 @@ void HistPresent::SetGeneralAtt()
 
 void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 10;
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList *values = new TList();
+   TList *row_lab = new TList();
    Int_t vp = 0;
-   row_lab->Add(new TObjString("TitleColor"));     
+   row_lab->Add(new TObjString("TitleBackgroundColor"));     
    row_lab->Add(new TObjString("TitleTextColor")); 
    row_lab->Add(new TObjString("TitleBorderSize"));
    row_lab->Add(new TObjString("TitleFont"));      
@@ -1132,34 +1132,34 @@ void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TitleW"));         
    row_lab->Add(new TObjString("TitleH"));  
 
-   values[vp++] = fTitleColor;     
-   values[vp++] = fTitleTextColor; 
-   values[vp++] = fTitleBorderSize;
-   values[vp++] = fTitleFont;      
-   values[vp++] = fTitleFontSize;  
-   values[vp++] = fTitleStyle;     
-   values[vp++] = fTitleX;         
-   values[vp++] = fTitleY;         
-   values[vp++] = fTitleW;         
-   values[vp++] = fTitleH;  
-   Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Histogram title attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fTitleColor     = (Int_t)values[vp++];
-      fTitleTextColor = (Int_t)values[vp++];
-      fTitleBorderSize= (Int_t)values[vp++];
-      fTitleFont      = (Int_t)values[vp++];
-      fTitleFontSize  = values[vp++];
-      fTitleStyle     = (Int_t)values[vp++];
-      fTitleX         = values[vp++];
-      fTitleY         = values[vp++];
-      fTitleW         = values[vp++];
-      fTitleH         = values[vp++];
-      SaveOptions();
-      SetTitleAtt();
-   }
+   AddObjString(fTitleColor,      values, kAttColor);     
+   AddObjString(fTitleTextColor,  values, kAttColor); 
+   AddObjString(fTitleBorderSize, values);
+   AddObjString(fTitleFont,       values, kAttFont);      
+   AddObjString(fTitleFontSize,   values);  
+   AddObjString(fTitleStyle,      values);     
+   AddObjString(fTitleX, values);         
+   AddObjString(fTitleY, values);         
+   AddObjString(fTitleW, values);         
+   AddObjString(fTitleH, values);  
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   vp = 0;
+   fTitleColor     = GetInt(values, vp); vp++;
+   fTitleTextColor = GetInt(values, vp); vp++;
+   fTitleBorderSize= GetInt(values, vp); vp++;
+   fTitleFont      = GetInt(values, vp); vp++;
+   fTitleFontSize  = GetDouble(values, vp); vp++;
+   fTitleStyle     = GetInt(values, vp); vp++;
+   fTitleX         = GetDouble(values, vp); vp++;
+   fTitleY         = GetDouble(values, vp); vp++;
+   fTitleW         = GetDouble(values, vp); vp++;
+   fTitleH         = GetDouble(values, vp); vp++;
+   SaveOptions();
+   SetTitleAtt();
 }
 //_______________________________________________________________________
 
@@ -1180,9 +1180,8 @@ void HistPresent::SetTitleAtt()
 
 void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 25;
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList *values = new TList();
+   TList *row_lab = new TList();
    Int_t vp = 0;
    row_lab->Add(new TObjString("PadColor"));       
    row_lab->Add(new TObjString("PadBorderSize"));  
@@ -1210,65 +1209,65 @@ void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("CanvasDefX"));		 
    row_lab->Add(new TObjString("CanvasDefY"));		   
 
-   values[vp++] = fPadColor;       
-   values[vp++] = fPadBorderSize;  
-   values[vp++] = fPadBorderMode;  
-   values[vp++] = fPadBottomMargin;
-   values[vp++] = fPadTopMargin;   
-   values[vp++] = fPadLeftMargin;  
-   values[vp++] = fPadRightMargin; 
-   values[vp++] = fPadGridX;       
-   values[vp++] = fPadGridY;       
-   values[vp++] = fPadTickX;       
-   values[vp++] = fPadTickY; 
-   values[vp++] = fFrameFillColor;  
-   values[vp++] = fFrameLineColor;  
-   values[vp++] = fFrameFillStyle;  
-   values[vp++] = fFrameLineStyle;  
-   values[vp++] = fFrameLineWidth;  
-   values[vp++] = fFrameBorderSize; 
-   values[vp++] = fFrameBorderMode; 
-   values[vp++] = fCanvasColor;  	
-   values[vp++] = fCanvasBorderSize;
-   values[vp++] = fCanvasBorderMode;
-   values[vp++] = fCanvasDefH;		
-   values[vp++] = fCanvasDefW;		
-   values[vp++] = fCanvasDefX;		
-   values[vp++] = fCanvasDefY;	
-	 
-   Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Canvas / Pad / Frame attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fPadColor           = (Int_t)values[vp++];
-      fPadBorderSize      = (Int_t)values[vp++];
-      fPadBorderMode      = (Int_t)values[vp++];
-      fPadBottomMargin    = values[vp++];
-      fPadTopMargin       = values[vp++];
-      fPadLeftMargin      = values[vp++];
-      fPadRightMargin     = values[vp++];
-      fPadGridX           = values[vp++];
-      fPadGridY           = values[vp++];
-      fPadTickX           = (Int_t)values[vp++];
-      fPadTickY           = (Int_t)values[vp++];
-		fFrameFillColor      = (Int_t)values[vp++];
-		fFrameLineColor      = (Int_t)values[vp++];
-		fFrameFillStyle      = (Int_t)values[vp++];
-		fFrameLineStyle      = (Int_t)values[vp++];
-		fFrameLineWidth      = (Int_t)values[vp++];
-		fFrameBorderSize     = (Int_t)values[vp++];
-		fFrameBorderMode     = (Int_t)values[vp++];
-		fCanvasColor   	   = (Int_t)values[vp++];
-		fCanvasBorderSize    = (Int_t)values[vp++];
-		fCanvasBorderMode    = (Int_t)values[vp++];
-		fCanvasDefH 		   = (Int_t)values[vp++];
-		fCanvasDefW 		   = (Int_t)values[vp++];
-		fCanvasDefX 		   = (Int_t)values[vp++];
-		fCanvasDefY 		   = (Int_t)values[vp++];
-      SaveOptions();
-      SetPadAtt();
-   } 
+   AddObjString(fPadColor, values, kAttColor);       
+   AddObjString(fPadBorderSize, values);  
+   AddObjString(fPadBorderMode, values);  
+   AddObjString(fPadBottomMargin, values);
+   AddObjString(fPadTopMargin, values);   
+   AddObjString(fPadLeftMargin, values);  
+   AddObjString(fPadRightMargin, values); 
+   AddObjString(fPadGridX, values);       
+   AddObjString(fPadGridY, values);       
+   AddObjString(fPadTickX, values);       
+   AddObjString(fPadTickY, values); 
+   AddObjString(fFrameFillColor, values, kAttColor);  
+   AddObjString(fFrameLineColor, values, kAttColor);  
+   AddObjString(fFrameFillStyle, values, kAttFillS);  
+   AddObjString(fFrameLineStyle, values, kAttLineS);  
+   AddObjString(fFrameLineWidth, values);  
+   AddObjString(fFrameBorderSize, values); 
+   AddObjString(fFrameBorderMode, values); 
+   AddObjString(fCanvasColor, values, kAttColor);  	
+   AddObjString(fCanvasBorderSize, values);
+   AddObjString(fCanvasBorderMode, values);
+   AddObjString(fCanvasDefH, values);		
+   AddObjString(fCanvasDefW, values);		
+   AddObjString(fCanvasDefX, values);		
+   AddObjString(fCanvasDefY, values);	
+
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   vp = 0;
+   fPadColor           = GetInt(values, vp); vp++;
+   fPadBorderSize      = GetInt(values, vp); vp++;
+   fPadBorderMode      = GetInt(values, vp); vp++;
+   fPadBottomMargin    = GetDouble(values, vp); vp++;
+   fPadTopMargin       = GetDouble(values, vp); vp++;
+   fPadLeftMargin      = GetDouble(values, vp); vp++;
+   fPadRightMargin     = GetDouble(values, vp); vp++;
+   fPadGridX           = GetDouble(values, vp); vp++;
+   fPadGridY           = GetDouble(values, vp); vp++;
+   fPadTickX           = GetInt(values, vp); vp++;
+   fPadTickY           = GetInt(values, vp); vp++;
+	fFrameFillColor      = GetInt(values, vp); vp++;
+	fFrameLineColor      = GetInt(values, vp); vp++;
+	fFrameFillStyle      = GetInt(values, vp); vp++;
+	fFrameLineStyle      = GetInt(values, vp); vp++;
+	fFrameLineWidth      = GetInt(values, vp); vp++;
+	fFrameBorderSize     = GetInt(values, vp); vp++;
+	fFrameBorderMode     = GetInt(values, vp); vp++;
+	fCanvasColor   	   = GetInt(values, vp); vp++;
+	fCanvasBorderSize    = GetInt(values, vp); vp++;
+	fCanvasBorderMode    = GetInt(values, vp); vp++;
+	fCanvasDefH 		   = GetInt(values, vp); vp++;
+	fCanvasDefW 		   = GetInt(values, vp); vp++;
+	fCanvasDefX 		   = GetInt(values, vp); vp++;
+	fCanvasDefY 		   = GetInt(values, vp); vp++;
+   SaveOptions();
+   SetPadAtt();
 }
 //_______________________________________________________________________
 
@@ -1304,11 +1303,8 @@ void HistPresent::SetPadAtt()
 
 void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 10;
-   TArrayD values(nopt);
-   TArrayI colors(2 * nopt);
-   colors.Reset(-1);
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList * values = new TList();
+   TList *row_lab = new TList();
    Int_t vp = 0;
    row_lab->Add(new TObjString("HistFillColor")); 
    row_lab->Add(new TObjString("HistLineColor"));  
@@ -1321,64 +1317,35 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("FuncStyle"));  
    row_lab->Add(new TObjString("FuncWidth")); 
    
-   colors[vp] = fHistFillColor;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
-   values[vp++] = fHistFillColor;
+   AddObjString(fHistFillColor, values, kAttColor);
+   AddObjString(fHistLineColor, values, kAttColor);
+   AddObjString(fHistFillStyle, values, kAttFillS);
+   AddObjString(fHistLineStyle, values, kAttLineS);
+   AddObjString(fHistLineWidth, values);
+   AddObjString(fEndErrorSize, values);
+   AddObjString(fErrorX, values);      
+   AddObjString(fFuncColor, values, kAttColor);
+   AddObjString(fFuncStyle, values, kAttLineS);   
+   AddObjString(fFuncWidth, values);   
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   vp = 0;
+   fHistFillColor  = GetInt(values, vp); vp++;
+   fHistLineColor  = GetInt(values, vp); vp++;
+   fHistFillStyle  = GetInt(values, vp); vp++;
+   fHistLineStyle  = GetInt(values, vp); vp++;
+   fHistLineWidth  = GetInt(values, vp); vp++;
+   fEndErrorSize   = GetDouble(values, vp); vp++;
+   fErrorX         = GetDouble(values, vp); vp++;
+   fFuncColor      = GetInt(values, vp); vp++;
+   fFuncStyle      = GetInt(values, vp); vp++;
+   fFuncWidth      = GetInt(values, vp); vp++;
 
-   colors[vp]   = fHistLineColor;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
-   values[vp++] = fHistLineColor;
-
-   values[vp] = fHistFillStyle;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagFillStyle;
-   vp++;
-
-   values[vp] = fHistLineStyle;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagLineStyle;
-   vp++;
-
-   values[vp] = fHistLineWidth;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagNoop;
-   vp++;
-   values[vp] = fEndErrorSize;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagNoop;
-   vp++;
-   values[vp] = fErrorX;      
-   colors[vp + nopt] = TGMrbTableFrame::kFlagNoop;
-   vp++;
-   colors[vp]   = fFuncColor;
-   colors[vp + nopt] = TGMrbTableFrame::kFlagColor;
-   values[vp++] = fFuncColor; 
-  
-   values[vp] = fFuncStyle;   
-   colors[vp + nopt] =TGMrbTableFrame::kFlagLineStyle;
-   vp++;
-   values[vp] = fFuncWidth;   
-   colors[vp + nopt] =TGMrbTableFrame::kFlagNoop;
-   vp++;
-
-   Int_t ret, itemwidth = 240, precission = 5;
-//   TGMrbTableOfDoubles(win, &ret, "Histogram attributes", itemwidth,
-//                       1, nopt, values, precission, 0, row_lab,
-//                       &colors, -nopt);
-   TGMrbTableOfDoubles(win, &ret, "Histogram attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fHistFillColor  = (Int_t)values[vp++];
-      fHistLineColor  = (Int_t)values[vp++];
-      fHistFillStyle  = (Int_t)values[vp++];
-      fHistLineStyle  = (Int_t)values[vp++];
-      fHistLineWidth  = (Int_t)values[vp++];
-      fEndErrorSize   = values[vp++];
-      fErrorX         = values[vp++];
-      fFuncColor      = (Int_t)values[vp++];
-      fFuncStyle      = (Int_t)values[vp++];
-      fFuncWidth      = (Int_t)values[vp++];
-
-      SaveOptions();
-      SetHistAtt();
-   }
+   SaveOptions();
+   SetHistAtt();
 }
 //_______________________________________________________________________
 void HistPresent::SetHistAtt()
@@ -1442,11 +1409,10 @@ void HistPresent::SetStatDefaults(TCanvas * c)
 
 void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 10;
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList *values = new TList();
+   TList *row_lab = new TList();
    Int_t vp = 0;
-   row_lab->Add(new TObjString("StatColor     ")); 
+   row_lab->Add(new TObjString("StatBackgroundColor")); 
    row_lab->Add(new TObjString("StatTextColor "));  
    row_lab->Add(new TObjString("StatBorderSize")); 
    row_lab->Add(new TObjString("StatFont      "));  
@@ -1457,34 +1423,34 @@ void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("StatW         "));  
    row_lab->Add(new TObjString("StatH         ")); 
 
-   values[vp++] = gStyle->GetStatColor();     
-   values[vp++] = gStyle->GetStatTextColor(); 
-   values[vp++] = gStyle->GetStatBorderSize();
-   values[vp++] = gStyle->GetStatFont();      
-   values[vp++] = gStyle->GetStatFontSize();  
-   values[vp++] = gStyle->GetStatStyle();     
-   values[vp++] = gStyle->GetStatX();         
-   values[vp++] = gStyle->GetStatY();         
-   values[vp++] = gStyle->GetStatW();         
-   values[vp++] = gStyle->GetStatH();
-   Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Statistics box attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fStatColor      = (Int_t)values[vp++];
-      fStatTextColor  = (Int_t)values[vp++];
-      fStatBorderSize = (Int_t)values[vp++];
-      fStatFont       = (Int_t)values[vp++];
-      fStatFontSize   = values[vp++];;
-      fStatStyle      = (Int_t)values[vp++];;
-      fStatX          = values[vp++];;
-      fStatY          = values[vp++];;
-      fStatW          = values[vp++];;
-      fStatH          = values[vp++];
-      SetStatAtt();
-      SaveOptions();
-   }
+   AddObjString(gStyle->GetStatColor(), values, kAttColor);     
+   AddObjString(gStyle->GetStatTextColor(), values, kAttColor); 
+   AddObjString(gStyle->GetStatBorderSize(), values);
+   AddObjString(gStyle->GetStatFont(), values, kAttFont);      
+   AddObjString(gStyle->GetStatFontSize(), values);  
+   AddObjString(gStyle->GetStatStyle(), values);     
+   AddObjString(gStyle->GetStatX(), values);         
+   AddObjString(gStyle->GetStatY(), values);         
+   AddObjString(gStyle->GetStatW(), values);         
+   AddObjString(gStyle->GetStatH(), values);
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   vp = 0;
+   fStatColor      = GetInt(values, vp++);
+   fStatTextColor  = GetInt(values, vp++);
+   fStatBorderSize = GetInt(values, vp++);
+   fStatFont       = GetInt(values, vp++);
+   fStatFontSize   = GetDouble(values, vp++);
+   fStatStyle      = GetInt(values, vp++);
+   fStatX          = GetDouble(values, vp++);
+   fStatY          = GetDouble(values, vp++);
+   fStatW          = GetDouble(values, vp++);
+   fStatH          = GetDouble(values, vp++);
+   SetStatAtt();
+   SaveOptions();
 }
 //_______________________________________________________________________________
 
@@ -1505,9 +1471,8 @@ void HistPresent::SetStatAtt()
 
 void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 11;
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList *values = new TList();
+   TList *row_lab = new TList();
    Int_t vp = 0;
    row_lab->Add(new TObjString("NdivisionsZ")); 
    row_lab->Add(new TObjString("AxisColorZ"));  
@@ -1521,44 +1486,105 @@ void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TitleColorZ")); 
    row_lab->Add(new TObjString("TitleFontZ"));  
 
-   values[vp++] = fNdivisionsZ;
-   values[vp++] = fAxisColorZ ;
-   values[vp++] = fLabelColorZ;
-   values[vp++] = fLabelFontZ ;
-   values[vp++] = fLabelOffsetZ;
-   values[vp++] = fLabelSizeZ ;
-   values[vp++] = fTickLengthZ;
-   values[vp++] = fTitleOffsetZ;
-   values[vp++] = fTitleSizeZ ;
-   values[vp++] = fTitleColorZ;
-   values[vp++] = fTitleFontZ ;
-   SaveOptions();
-   Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Z axis attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fNdivisionsZ  = (Int_t)values[vp++];
-      fAxisColorZ   = (Int_t)values[vp++];
-      fLabelColorZ  = (Int_t)values[vp++];
-      fLabelFontZ   = (Int_t)values[vp++];
-      fLabelOffsetZ = values[vp++];;
-      fLabelSizeZ   = values[vp++];;
-      fTickLengthZ  = values[vp++];;
-      fTitleOffsetZ = values[vp++];;
-      fTitleSizeZ   = values[vp++];;
-      fTitleColorZ  = (Int_t)values[vp++];
-      fTitleFontZ   = (Int_t)values[vp++];
-   }
+   AddObjString(fNdivisionsZ, values);
+   AddObjString(fAxisColorZ,  values, kAttColor) ;
+   AddObjString(fLabelColorZ, values, kAttColor);
+   AddObjString(fLabelFontZ,  values);
+   AddObjString(fLabelOffsetZ,values);
+   AddObjString(fLabelSizeZ,  values);
+   AddObjString(fTickLengthZ, values);
+   AddObjString(fTitleOffsetZ,values);
+   AddObjString(fTitleSizeZ,  values);
+   AddObjString(fTitleColorZ, values, kAttColor);
+   AddObjString(fTitleFontZ,  values);
+
+
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+
+   vp = 0;
+   fNdivisionsZ  = GetInt(values, vp); vp++;
+   fAxisColorZ   = GetInt(values, vp); vp++;
+   fLabelColorZ  = GetInt(values, vp); vp++;
+   fLabelFontZ   = GetInt(values, vp); vp++;
+   fLabelOffsetZ = GetDouble(values, vp); vp++;;
+   fLabelSizeZ   = GetDouble(values, vp); vp++;;
+   fTickLengthZ  = GetDouble(values, vp); vp++;;
+   fTitleOffsetZ = GetDouble(values, vp); vp++;;
+   fTitleSizeZ   = GetDouble(values, vp); vp++;;
+   fTitleColorZ  = GetInt(values, vp); vp++;
+   fTitleFontZ   = GetInt(values, vp); vp++;
    SetAxisAtt();
+   row_lab->Delete();
+   values->Delete();
+   delete row_lab;
+   delete values;
 }
-//_______________________________________________________________________
+//_______________________________________________________________________________
+
+void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
+{
+   TList *values = new TList();
+   TList *row_lab = new TList();
+   Int_t vp = 0;
+   row_lab->Add(new TObjString("NdivisionsX")); 
+   row_lab->Add(new TObjString("AxisColorX"));  
+   row_lab->Add(new TObjString("LabelColorX")); 
+   row_lab->Add(new TObjString("LabelFontX"));  
+   row_lab->Add(new TObjString("LabelOffsetX"));
+   row_lab->Add(new TObjString("LabelSizeX"));  
+   row_lab->Add(new TObjString("TickLengthX")); 
+   row_lab->Add(new TObjString("TitleOffsetX"));
+   row_lab->Add(new TObjString("TitleSizeX"));  
+   row_lab->Add(new TObjString("TitleColorX")); 
+   row_lab->Add(new TObjString("TitleFontX"));  
+
+   AddObjString(fNdivisionsX, values);
+   AddObjString(fAxisColorX,  values, kAttColor) ;
+   AddObjString(fLabelColorX, values, kAttColor);
+   AddObjString(fLabelFontX,  values, kAttFont);
+   AddObjString(fLabelOffsetX,values);
+   AddObjString(fLabelSizeX,  values);
+   AddObjString(fTickLengthX, values);
+   AddObjString(fTitleOffsetX,values);
+   AddObjString(fTitleSizeX,  values);
+   AddObjString(fTitleColorX, values, kAttColor);
+   AddObjString(fTitleFontX,  values, kAttFont);
+
+
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+
+   vp = 0;
+   fNdivisionsX  = GetInt(values, vp++);
+   fAxisColorX   = GetInt(values, vp++);
+   fLabelColorX  = GetInt(values, vp++);
+   fLabelFontX   = GetInt(values, vp++);
+   fLabelOffsetX = GetDouble(values, vp++);
+   fLabelSizeX   = GetDouble(values, vp++);
+   fTickLengthX  = GetDouble(values, vp++);
+   fTitleOffsetX = GetDouble(values, vp++);
+   fTitleSizeX   = GetDouble(values, vp++);
+   fTitleColorX  = GetInt(values, vp++);
+   fTitleFontX   = GetInt(values, vp++);
+   SetAxisAtt();
+   row_lab->Delete();
+   values->Delete();
+   delete row_lab;
+   delete values;
+}
+//_______________________________________________________________________________
 
 void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 11;
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
+   TList *values = new TList();
+   TList *row_lab = new TList();
    Int_t vp = 0;
    row_lab->Add(new TObjString("NdivisionsY")); 
    row_lab->Add(new TObjString("AxisColorY"));  
@@ -1572,106 +1598,43 @@ void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TitleColorY")); 
    row_lab->Add(new TObjString("TitleFontY"));  
 
-   values[vp++] = fNdivisionsY;
-   values[vp++] = fAxisColorY ;
-   values[vp++] = fLabelColorY;
-   values[vp++] = fLabelFontY ;
-   values[vp++] = fLabelOffsetY;
-   values[vp++] = fLabelSizeY ;
-   values[vp++] = fTickLengthY;
-   values[vp++] = fTitleOffsetY;
-   values[vp++] = fTitleSizeY ;
-   values[vp++] = fTitleColorY;
-   values[vp++] = fTitleFontY ;
-   SaveOptions();
-   Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "Y axis attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab);
-   if (ret >= 0) {
-      vp = 0;
-      fNdivisionsY  = (Int_t)values[vp++];
-      fAxisColorY   = (Int_t)values[vp++];
-      fLabelColorY  = (Int_t)values[vp++];
-      fLabelFontY   = (Int_t)values[vp++];
-      fLabelOffsetY = values[vp++];;
-      fLabelSizeY   = values[vp++];;
-      fTickLengthY  = values[vp++];;
-      fTitleOffsetY = values[vp++];;
-      fTitleSizeY   = values[vp++];;
-      fTitleColorY  = (Int_t)values[vp++];
-      fTitleFontY   = (Int_t)values[vp++];
-   }
+   AddObjString(fNdivisionsY, values);
+   AddObjString(fAxisColorY,  values, kAttColor) ;
+   AddObjString(fLabelColorY, values, kAttColor);
+   AddObjString(fLabelFontY,  values);
+   AddObjString(fLabelOffsetY,values);
+   AddObjString(fLabelSizeY,  values);
+   AddObjString(fTickLengthY, values);
+   AddObjString(fTitleOffsetY,values);
+   AddObjString(fTitleSizeY,  values);
+   AddObjString(fTitleColorY, values, kAttColor);
+   AddObjString(fTitleFontY,  values);
+
+
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+
+   vp = 0;
+   fNdivisionsY  = GetInt(values, vp++);
+   fAxisColorY   = GetInt(values, vp++);
+   fLabelColorY  = GetInt(values, vp++);
+   fLabelFontY   = GetInt(values, vp++);
+   fLabelOffsetY = GetDouble(values, vp++);
+   fLabelSizeY   = GetDouble(values, vp++);
+   fTickLengthY  = GetDouble(values, vp++);
+   fTitleOffsetY = GetDouble(values, vp++);
+   fTitleSizeY   = GetDouble(values, vp++);
+   fTitleColorY  = GetInt(values, vp++);
+   fTitleFontY   = GetInt(values, vp++);
    SetAxisAtt();
+   row_lab->Delete();
+   values->Delete();
+   delete row_lab;
+   delete values;
 }
-//_______________________________________________________________________
-
-void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
-{
-   Int_t nopt = 12;
-   TArrayD values(nopt);
-   TOrdCollection *row_lab = new TOrdCollection();
-   Int_t vp = 0;
-   row_lab->Add(new TObjString("NdivisionsX")); 
-   row_lab->Add(new TObjString("AxisColorX"));  
-   row_lab->Add(new TObjString("LabelColorX")); 
-   row_lab->Add(new TObjString("LabelFontX"));  
-   row_lab->Add(new TObjString("LabelOffsetX"));
-   row_lab->Add(new TObjString("LabelSizeX")); 
-   row_lab->Add(new TObjString("Max digits used in label"));  
-   row_lab->Add(new TObjString("TickLengthX")); 
-   row_lab->Add(new TObjString("TitleOffsetX"));
-   row_lab->Add(new TObjString("TitleSizeX"));  
-   row_lab->Add(new TObjString("TitleColorX")); 
-   row_lab->Add(new TObjString("TitleFontX"));  
-
-   values[vp++] = fNdivisionsX;
-   values[vp++] = fAxisColorX ;
-   values[vp++] = fLabelColorX;
-   values[vp++] = fLabelFontX ;
-   values[vp++] = fLabelOffsetX;
-   values[vp++] = fLabelSizeX ;
-   values[vp++] = fLabelMaxDigits ;
-   values[vp++] = fTickLengthX;
-   values[vp++] = fTitleOffsetX;
-   values[vp++] = fTitleSizeX ;
-   values[vp++] = fTitleColorX;
-   values[vp++] = fTitleFontX ;
-   SaveOptions();
-   Int_t ret, itemwidth = 240, precission = 5;
-   TGMrbTableOfDoubles(win, &ret, "X axis attributes", itemwidth,
-                       1, nopt, values, precission, 0, row_lab,
-                       NULL, 0, NULL, NULL, "Set Y, Z axis to same values");
-   if (ret >= 0) {
-      vp = 0;
-      fNdivisionsX  = (Int_t)values[vp++];
-      fAxisColorX   = (Int_t)values[vp++];
-      fLabelColorX  = (Int_t)values[vp++];
-      fLabelFontX   = (Int_t)values[vp++];
-      fLabelOffsetX = values[vp++];;
-      fLabelSizeX   = values[vp++];;
-      fLabelMaxDigits = (Int_t)values[vp++];
-      fTickLengthX  = values[vp++];;
-      fTitleOffsetX = values[vp++];;
-      fTitleSizeX   = values[vp++];;
-      fTitleColorX  = (Int_t)values[vp++];
-      fTitleFontX   = (Int_t)values[vp++];
-      if (ret == 1){
-         fNdivisionsZ  = fNdivisionsY  = fNdivisionsX  ; 
-         fAxisColorZ   = fAxisColorY   = fAxisColorX   ; 
-         fLabelColorZ  = fLabelColorY  = fLabelColorX  ; 
-         fLabelFontZ   = fLabelFontY   = fLabelFontX   ; 
-         fLabelOffsetZ = fLabelOffsetY = fLabelOffsetX ; 
-         fLabelSizeZ   = fLabelSizeY   = fLabelSizeX   ; 
-         fTickLengthZ  = fTickLengthY  = fTickLengthX  ; 
-         fTitleOffsetZ = fTitleOffsetY = fTitleOffsetX ; 
-         fTitleSizeZ   = fTitleSizeY   = fTitleSizeX   ; 
-         fTitleColorZ  = fTitleColorY  = fTitleColorX  ; 
-         fTitleFontZ   = fTitleFontY   = fTitleFontX   ;
-      }        
-      SetAxisAtt();
-   }
-}
-
 //_______________________________________________________________________
 
 void HistPresent::SetAxisAtt()

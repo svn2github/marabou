@@ -247,7 +247,9 @@ enum ERootCanvasCommands {
    kFH_DrawHist,
    kFH_DrawGraph,
    kFH_InsertImage,
+   kFH_InsertAxis,
    kFH_InsertLatex,
+   kFH_InsertLatexF,
    kFH_SetGrid,
    kFH_UseGrid,
    kFH_DrawGrid,  
@@ -605,10 +607,16 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
 
                   case kFH_InsertLatex:
-                        fHCanvas->Latex2Root();
+                        fHCanvas->Latex2Root(kFALSE);
+                     break;
+                  case kFH_InsertLatexF:
+                        fHCanvas->Latex2Root(kTRUE);
                      break;
                   case kFH_InsertImage:
                         fHCanvas->InsertImage();
+                     break;
+                  case kFH_InsertAxis:
+                        fHCanvas->InsertAxis();
                      break;
                   case kFH_WritePrim:
                         fHCanvas->WritePrimitives();
@@ -1720,12 +1728,15 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Write this picture to root file",  kFH_WritePrim);
       fEditMenu->AddSeparator();
 
-   	fEditMenu->AddEntry("Draw image (gif, jpg) into selected pad", kFH_InsertImage);
-   	fEditMenu->AddEntry("Draw selected histogram into selected pad",  kFH_DrawHist);
-   	fEditMenu->AddEntry("Draw selected graph into selected pad",  kFH_DrawGraph);
-   	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatex);
+   	fEditMenu->AddEntry("Insert  image (gif, jpg) into selected pad", kFH_InsertImage);
+   	fEditMenu->AddEntry("Insert selected histogram into selected pad",  kFH_DrawHist);
+   	fEditMenu->AddEntry("Insert graph into seperate pad",  kFH_DrawGraph);
       fEditMenu->AddSeparator();
+   	fEditMenu->AddEntry("Insert text (Latex) from file", kFH_InsertLatexF);
+   	fEditMenu->AddEntry("Insert text (Latex) from keyboard", kFH_InsertLatex);
+   	fEditMenu->AddEntry("Draw an axis", kFH_InsertAxis);
    	fEditMenu->AddEntry("Insert macro object",  kFH_InsertGObjects);
+      fEditMenu->AddSeparator();
 //   	fEditMenu->AddEntry("Keep connection when inserting macro objects", kFH_InsertGObjectsG);
 //      if (fHCanvas->fInsertMacrosAsGroup) fEditMenu->CheckEntry(kFH_InsertGObjectsG);
 //      else                                fEditMenu->UnCheckEntry(kFH_InsertGObjectsG);

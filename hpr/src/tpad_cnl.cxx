@@ -31,6 +31,9 @@ void TPad::CreateNewLine(Int_t event, Int_t px, Int_t py, Int_t mode)
    TCurlyLine *cline;
    Double_t radius, phimin,phimax;
 
+   const char * ArrowOption[] = 
+      {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
+
    switch (event) {
 
    case kButton1Down:
@@ -65,14 +68,15 @@ void TPad::CreateNewLine(Int_t event, Int_t px, Int_t py, Int_t mode)
          gPad->GetCanvas()->Selected((TPad*)gPad, line, event);
       }
       if (mode == kArrow) {
-         TString aopt  = gEnv->GetValue("HistPresent.ArrowOption", ">");
+         Int_t ashape  = gEnv->GetValue("HistPresent.ArrowShape", 1);
          Float_t aang  = gEnv->GetValue("HistPresent.ArrowAngle", 60.);
          Float_t asiz  = gEnv->GetValue("HistPresent.ArrowSize", 0.05);
          Int_t   afill = gEnv->GetValue("HistPresent.ArrowFill", 1);
          Int_t   acol  = gEnv->GetValue("HistPresent.ArrowColor", 1);
          Int_t   awid  = gEnv->GetValue("HistPresent.ArrowWidth", 1);
          Int_t   asty  = gEnv->GetValue("HistPresent.ArrowStyle", 1);
-         arrow = new TArrow(x0,y0,x1,y1,asiz,aopt.Data());
+         if (ashape < 1 || ashape > 10) ashape = 1;
+         arrow = new TArrow(x0,y0,x1,y1,asiz, ArrowOption[ashape]);
          arrow->SetAngle(aang);
          arrow->SetFillStyle(afill);
          arrow->Draw();

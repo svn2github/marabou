@@ -1,10 +1,12 @@
 #include "TArc.h"
 #include "TArrow.h"
+#include "TArrayI.h"
 #include "TDialogCanvas.h"
 #include "TCurlyArc.h"
 #include "TCurlyLine.h"
 #include "TEllipse.h"
 #include "TEnv.h"
+#include "TGaxis.h"
 #include "TRegexp.h"
 #include "TImage.h"
 #include "TAttImage.h"
@@ -20,6 +22,8 @@
 #include "TGMrbTableFrame.h"
 #include "EditMarker.h"
 #include "GroupOfGObjects.h"
+#include "TGMrbValuesAndText.h"
+#include "TGMrbGetTextAlignment.h"
 #include "HprImage.h"
 #include <fstream>
 
@@ -242,28 +246,105 @@ void HTCanvas::DrawHist()
 
 void HTCanvas::DrawGraph()
 {
-   if (!fHistPresent) return;
+//   if (!fHistPresent) return;
+   TIter next(this->GetListOfPrimitives());
+   TObject * obj;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TPad")) {
+         TPad* pad = (TPad*)obj;
+         cout << "Pad: " << obj->GetName() << endl;
+         pad->cd(0);
+         gROOT->SetSelectedPad(pad);
+//         ((TPad*)obj)->SetFillStyle(4050);
+      }
+   }
    TPad * selected = (TPad *)gROOT->GetSelectedPad();
-   if (selected) {
-      if (GetListOfPrimitives()->Contains(selected)) {
-         if (fHistPresent->fSelectGraph->GetSize() != 1) {
-            cout << "select exactly 1 graph" << endl;
-            return;
-         } else {
-            TGraph* graph = fHistPresent->GetSelGraphAt(0);
-            if (graph) {
-               graph->Print();
-               selected->cd();
-               graph->Draw(fHistPresent->fDrawOptGraph);
-               selected->Modified();
-            }
-         }
+   if (!selected) {
+      cout << "Please create a Pad in this Canvas" << endl;
+      return;
+   }   
+//      if (GetListOfPrimitives()->Contains(selected)) {
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   static TString fname;
+   static TString gname;
+   TString goption;
+   if (fHistPresent) goption = fHistPresent->fDrawOptGraph;
+   else goption = "AL";
+
+   row_lab->Add(new TObjString("Name of ROOT file"));
+   row_lab->Add(new TObjString("Name of TGraph"));
+   row_lab->Add(new TObjString("Select graph from Filelist"));
+   row_lab->Add(new TObjString("Scale factor for labels titles etc."));
+   row_lab->Add(new TObjString("Drawing option"));
+   
+   static Int_t select_from_list = 1;
+   static Double_t scale = 1;
+ 
+   AddObjString(fname.Data(), values);
+   AddObjString(gname.Data(), values);
+   AddObjString(select_from_list, values, kAttCheckB);
+   AddObjString(scale, values);
+   AddObjString(goption.Data(), values);
+   
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+
+   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+   
+   fname    = GetText(values,   vp++);
+   gname    = GetText(values,   vp++);
+   select_from_list = GetInt(values,   vp++);
+   scale    = GetDouble(values,   vp++);
+   goption  = GetText(values,   vp++);
+   TGraph* graph = 0;
+   
+   if (select_from_list > 0) {
+      if (!fHistPresent) {
+         cout << "No HistPresent" << endl;
+         return;
+      }
+      if (fHistPresent->fSelectGraph->GetSize() != 1) {
+         cout << "Please select exactly 1 graph" << endl;
+         return;
       } else {
-         cout << "Please select a Pad (middle mouse) in this Canvas" << endl;
-      } 
+         graph = fHistPresent->GetSelGraphAt(0);
+      }
    } else {
-         cout << "No Pad selected" << endl;
-   } 
+      if (fname.Length() > 0 && gname.Length()) {
+         TFile * rfile = new TFile(fname.Data());
+         if (!rfile->IsOpen()) {
+            cout << "Cant open file: " << fname.Data() << endl;
+            return;
+         }
+         graph = (TGraph*)rfile->Get(gname.Data());
+         if (!graph) {
+            cout << "Cant find graph: " << gname.Data() << endl;
+            return;
+         }
+      }
+   }
+   if (!graph) return;
+
+//   graph->Print();
+   selected->cd();
+   if (TMath::Abs(scale -1) > 0.0001) {
+      TAxis * a = graph->GetXaxis();
+      if (a) {
+         a->SetLabelSize( scale * a->GetLabelSize());
+         a->SetTickLength( scale * a->GetTickLength());
+      }
+      a = graph->GetYaxis();
+      if (a) {
+         a->SetLabelSize( scale * a->GetLabelSize());
+         a->SetTickLength( scale * a->GetTickLength());
+      }
+   }
+   graph->Draw(goption.Data());
+   selected->Modified();
    Update();
 }
 
@@ -523,6 +604,9 @@ tryagain:
    if (gg->GetNMembers() > 0) {
       if (!markonly) {
          if (!fGObjectGroups) fGObjectGroups = new TList();
+         TObjArray *colors = (TObjArray*)gROOT->GetListOfColors();
+         TObjArray * col_clone = (TObjArray*)colors->Clone(); 
+         gg->AddMember(col_clone,"");
          fGObjectGroups->Add(gg);
          ShowGallery();
       } else {
@@ -542,8 +626,8 @@ void HTCanvas::InsertGObjects(const char * objname)
       return;
    }
    static TString defname = "p1";
-   TOrdCollection *row_lab = new TOrdCollection(); 
-   TOrdCollection *values  = new TOrdCollection();
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
    row_lab->Add(new TObjString("Name of object"));
    row_lab->Add(new TObjString("Scale factor NDC"));
    row_lab->Add(new TObjString("Scale factor User"));
@@ -556,10 +640,10 @@ void HTCanvas::InsertGObjects(const char * objname)
    static Double_t scaleNDC = 1;
    static Double_t scaleU = 1;
    static Double_t angle = 0;
-   static Int_t align = 11;
-   Double_t x0 = 0;
-   Double_t y0 = 0;
-   static Int_t draw_cut = 1;
+   static Int_t    align = 11;
+   Double_t        x0 = 0;
+   Double_t        y0 = 0;
+   static Int_t    draw_cut = 1;
 
    TMrbString temp;
    TString name;
@@ -569,69 +653,34 @@ void HTCanvas::InsertGObjects(const char * objname)
       name = defname;
    }
 
-   values->Add(new TObjString(name.Data()));
-   values->Add(new TObjString(Form("%lf", scaleNDC)));
-   values->Add(new TObjString(Form("%lf", scaleU)));
-   values->Add(new TObjString(Form("%lf", angle)));
-   values->Add(new TObjString(Form("%d", align)));
-   values->Add(new TObjString(Form("%lf", x0)));
-   values->Add(new TObjString(Form("%lf", y0)));
-   if (draw_cut != 0) 
-      values->Add(new TObjString("CheckButton_Down"));
-   else
-      values->Add(new TObjString("CheckButton_Up"));
+   AddObjString(name.Data() , values);
+   AddObjString(scaleNDC , values);
+   AddObjString(scaleU   , values);
+   AddObjString(angle    , values);
+   AddObjString(align    , values, kAttAlign);
+   AddObjString(x0       , values);
+   AddObjString(y0       , values);
+   AddObjString(draw_cut , values, kAttCheckB);
+   Bool_t ok; 
+   Int_t itemwidth = 240;
+   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
 
-   Int_t ret,  itemwidth=160, nrows = values->GetSize(); 
-tryagain:
-   new TGMrbTableFrame((TGWindow*)fRootCanvas, &ret, "", 
-                        itemwidth, 1, nrows, values,
-                        0, row_lab);
-   if (ret < 0) {
-      return;
-   }
-   name = ((TObjString*)values->At(0))->GetString();
-   temp = ((TObjString*)values->At(1))->GetString();
-   if (!temp.ToDouble(scaleNDC)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(2))->GetString();
-   if (!temp.ToDouble(scaleU)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(3))->GetString();
-   if (!temp.ToDouble(angle)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(4))->GetString();
-   if (!temp.ToInteger(align)) {
-      cout << "Illegal integer: " << temp << endl;
-      goto tryagain;      
-   }
-   if (align < 11 || align > 33) {
-      cout << "Illegal alignment " << temp << " should be: 11-33" << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(5))->GetString();
-   if (!temp.ToDouble(x0)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(6))->GetString();
-   if (!temp.ToDouble(y0)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(7))->GetString();
-   if (temp.EndsWith("Down")) draw_cut = 1;
-   else                       draw_cut = 0;
+   name     = GetText(values, vp); vp++;
+   scaleNDC = GetDouble(values, vp); vp++;
+   scaleU   = GetDouble(values, vp); vp++; 
+   angle    = GetDouble(values, vp); vp++;  
+   align    = GetInt(values, vp); vp++;
+   x0       = GetDouble(values, vp); vp++;   
+   y0       = GetDouble(values, vp); vp++;  
+   draw_cut = GetInt(values, vp); vp++;
 
    GroupOfGObjects * gg = (GroupOfGObjects *)fGObjectGroups->FindObject(name); 
    if (!gg) {
       cout << "Object " << name << " not found" << endl;
-      goto tryagain;
+      return;
    }
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
@@ -645,7 +694,34 @@ tryagain:
       y0 = fMouseY;
    }
    this->cd();
+   TObjArray *colors = (TObjArray*)gg->GetMemberList()
+                       ->FindObject("ListOfColors");
+   if (colors) {
+      Int_t ncolors = colors->GetEntries();
+      TIter next(colors);
+      for (Int_t i=0;i<ncolors;i++) {
+//            TColor *colold = (TColor*)colors->At(i);
+//            TColor *colcur = gROOT->GetColor(i);
+         TColor *colold = (TColor*)next();
+         Int_t cn = 0;
+         if (colold) cn = colold->GetNumber();
+         TColor *colcur = gROOT->GetColor(cn);
+         if (colold) {
+            if (colcur) {
+               colcur->SetRGB(colold->GetRed(),colold->GetGreen(),colold->GetBlue());
+            } else {
+               colcur = new TColor(cn,colold->GetRed(),
+                                     colold->GetGreen(),
+                                     colold->GetBlue(),
+                                     colold->GetName());
+               cout << " Adding new color: " << endl; 
+               colcur->Print(); 
+            }
+         }
+      }
+   }
    gg->AddMembersToList(this, x0, y0, scaleNDC, scaleU, angle, align, draw_cut); 
+   
    this->Modified(); 
    this->Update(); 
 }
@@ -1030,79 +1106,249 @@ void HTCanvas::DeleteObjects()
 }
 //______________________________________________________________________________
 
-void HTCanvas::Latex2Root()
+Int_t getm(TString& cmd, Int_t sind) 
 {
-const Char_t helpText[] =
-"Text alignment convention: \n\
-13     23    33 \n\
-\n\
-12     22    32 \n\
-\n\
-11     21    31";
+   Int_t ind = sind;
+   Int_t nbopen = 0;
+//   cout << "getm: |" <<  cmd << "| len: " << cmd.Length()<< endl;
+   while (ind < cmd.Length()) {
+//     cout << cmd[ind] << endl;
+     if (cmd[ind] == '}') {
+        nbopen -= 1;
+        if (nbopen == 0) return ind;
+     }
+     if (cmd[ind] == '{') nbopen += 1;
+     ind += 1;
+   }
+   return -1;
+}
+Int_t getmb(TString& cmd, Int_t sind) 
+{
+   Int_t ind = sind;
+   Int_t nclose = 0;
+//   cout << "getm: |" <<  cmd << "| len: " << cmd.Length()<< endl;
+   while (ind >= 0) {
+//     cout << cmd[ind] << endl;
+     if (cmd[ind] == '{') {
+        nclose -= 1;
+        if (nclose == 0) return ind;
+     }
+     if (cmd[ind] == '}') nclose += 1;
+     ind -= 1;
+   }
+   return -1;
+}
+//______________________________________________________________________________
 
-  
- 
+TString lat2root(TString& cmd) 
+{
+//     cout << "Orig: " << cmd << endl;
+//    remove latex's $ (mathstyle), replace \ by #, ~ by space
+   Int_t ind;
+   Int_t sind = 0;
+   TString ill("Illegal syntax");
+   while (cmd.Index("$") >=0) cmd.Remove(cmd.Index("$"),1);
+   while (cmd.Index("\\{") >=0) cmd.Remove(cmd.Index("\\{"),1);
+   while (cmd.Index("\\}") >=0) cmd.Remove(cmd.Index("\\}"),1);
+   while (cmd.Index("\\") >=0) cmd(cmd.Index("\\")) = '#';
+   while (cmd.Index("~") >=0) cmd(cmd.Index("~")) = ' ';
+//  caligraphics not yet supported
+   while (cmd.Index("#cal") >=0) {
+      Int_t ob = cmd.Index("#cal");
+      Int_t cb = getm(cmd, ob + 4);
+      if (cb < 0) {
+         cout << "in #cal no closing }" << endl;
+         return ill;
+      }
+      cmd.Remove(cb,1);
+      cmd.Remove(ob,5);
+   }
+//      cout << "BeSup: " << cmd << endl;
+//    make sure super / sub scripts are enclosed in {}
+   TRegexp supsub("[_^]");
+   TString rep; 
+   sind = 0;
+   while (cmd.Index(supsub, sind) >=0) {
+      ind = 1 + cmd.Index(supsub, sind);
+      char c = cmd[ind];
+      sind = ind + 1;
+      if (c != '{') {
+         rep = "{";
+         rep += c;
+         rep += "}";
+         cmd.Replace(ind, 1, rep);
+         sind += 2;
+      }
+//         cout << cmd << endl;
+   }
+
+//   add space around operators 
+//      cout << "BeSpc: " << cmd << endl;
+
+   TRegexp oper("[-+*/=]");
+   sind = 0;
+   while (cmd.Index(oper, sind) >=0) {
+
+      ind = 1 + cmd.Index(oper, sind);
+//         cout << "cmd(cmd.Index(oper, sind)): " << ind-1 << " |" <<  cmd[ind -1]<< "|" << endl;
+      char c = cmd[ind];
+//         cout << "chkop sind: " << sind << " ind: " << ind << " " << cmd[ind -1] << endl;
+      sind = ind + 1;
+//   are we within sub / superscript?
+
+      TString le = cmd(0, ind -1);
+      Int_t ob = le.Last('{');
+      if (ob > 0 && (cmd(ob-1) == '^' 
+                 || (cmd(ob-1) == '_'))) {
+//            cout << "chksp: " << le << " ob: " << ob << endl;
+         if (getm(le, ob) == - 1)  continue; // no match before
+      }
+      if (c != ' ' && c!= '{' && c!= '}') {
+         if (ind > -1 && ind < cmd.Length()) { 
+            cmd.Insert(ind," ");
+            sind += 1;
+         }
+      }
+      if (ind > 1) {
+         c = cmd[ind - 2];
+         if (c != ' ' && c!= '{' && c!= '}') { 
+            cmd.Insert(ind-1," ");
+            sind += 1;
+         }
+      }
+//         cout << cmd << endl;
+   }
+//   replace \over by \frac{}{}
+//      cout << "BefOver: " << cmd << endl;
+
+ ind = cmd.Index("#over");
+ Int_t ind1 = cmd.Index("#overline");
+ if (ind > 0 && ind != ind1) {
+     TString le = cmd(0, ind);
+     Int_t cb = le.Last('}');
+     if (cb < 0) {
+        cout << "no closing } found" << endl;
+        return ill;
+     }
+//        cout << "over: " << le << " cb: " << cb << endl;
+     Int_t ob = getmb(cmd, cb);
+     if (ob < 0) {
+        cout << "no matching { found" << endl;
+        return ill;
+     }
+//        cout << "over: ob: " << ob << endl;
+     cmd.Remove(ind, 5);
+     cmd.Insert(ob, " #frac");
+  }
+
+//   remove not used \cos etc,
+//   replace overline by bar
+//      cout << "BefRa: "<< cmd << endl;
+
+   TRegexp re_Ra("#Ra");
+   while (cmd.Index(re_Ra) >= 0) cmd(re_Ra) = " #Rightarrow ";
+   TRegexp re_La("#La");
+   while (cmd.Index(re_La) >= 0) cmd(re_La) = " #Leftarrow ";
+   TRegexp re_cdot("#cdot");
+   while (cmd.Index(re_cdot) >= 0) cmd(re_cdot) = " #upoint ";
+   TRegexp re_exp("#exp");
+   while (cmd.Index(re_exp) >= 0) cmd(re_exp) = " e^";
+   TRegexp re_ln("#ln");
+   while (cmd.Index(re_ln) >= 0) cmd(re_ln) = "ln";
+   TRegexp re_cos("#cos");
+   while (cmd.Index(re_cos) >= 0)cmd(re_cos) = "cos";
+   TRegexp re_sin("#sin");
+   while (cmd.Index(re_sin) >= 0)cmd(re_sin) = "sin";
+   TRegexp re_tan("#tan");
+   while (cmd.Index(re_tan) >= 0)cmd(re_tan) = "tan";
+   TRegexp re_ovl("#overline");
+   while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
+ //     cout << "Final:     " << cmd << endl;
+   return cmd;
+}
+//______________________________________________________________________________
+
+void HTCanvas::Latex2Root(Bool_t from_file)
+{
 // this tries to translate standard Latex into ROOTs
 // latex like formular processor TLatex format
 
-   TOrdCollection *row_lab = new TOrdCollection(); 
-   TOrdCollection *values  = new TOrdCollection();
-   row_lab->Add(new TObjString("File Name with Latex"));
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   if (from_file)
+      row_lab->Add(new TObjString("File Name with Latex"));
    row_lab->Add(new TObjString("X Position"));
    row_lab->Add(new TObjString("Y Position"));
    row_lab->Add(new TObjString("Line spacing"));
    row_lab->Add(new TObjString("Text size"));
-   row_lab->Add(new TObjString("Text alignment (see Help)"));
-   static Double_t x0 = 0;
-   static Double_t y0 = 0;
+   row_lab->Add(new TObjString("Text font"));
+   row_lab->Add(new TObjString("Text precission"));
+   row_lab->Add(new TObjString("Text color"));
+   row_lab->Add(new TObjString("Text alignment"));
+   row_lab->Add(new TObjString("Text angle"));
+   row_lab->Add(new TObjString("Apply latex filter"));
+
+   Double_t x0 =        0;
+   Double_t y0 =        0;
    static Double_t dy = 10;
-   static Int_t align = 11; // lower left
-   static Double_t textsize = 0.02;
-   if (fHistPresent) textsize = fHistPresent->fTextSize;
-   TMrbString temp;
+   static Int_t    align = 11; 
+   static Int_t    color = 1; 
+   static Int_t    font  = 62; 
+   static Int_t    prec  = 2; 
+   static Double_t size = 0.02;
+   static Double_t angle = 0;
+   static Int_t   lfilter = 1;
+//   if (fHistPresent) {
+//      size = fHistPresent->fTextSize;
+//      font     = fHistPresent->fTextFont;
+//      color    = fHistPresent->fTextColor;
+//   }
    static TString fname = "latex.txt";
-   values->Add(new TObjString(fname.Data()));
-   values->Add(new TObjString(Form("%lf", x0)));
-   values->Add(new TObjString(Form("%lf", y0)));
-   values->Add(new TObjString(Form("%lf", dy)));
-   values->Add(new TObjString(Form("%lf", textsize)));
-   values->Add(new TObjString(Form("%d",  align)));
+   TString text;
+   TString * tpointer = 0; 
+   const char * history = 0;
+   if (!from_file) {
+      tpointer = &text;
+      const char hist_file[] = {"text_hist.txt"};
+      history = hist_file;
+      if (gROOT->GetVersionInt() < 40000) history = NULL;
+   }
 
-   Int_t ret,  itemwidth=120, nrows = values->GetSize(); 
-tryagain:
-   new TGMrbTableFrame((TGWindow*)fRootCanvas, &ret, "", 
-                        itemwidth, 1, nrows, values,
-                        0, row_lab, 0, 0, helpText);
-   if (ret < 0) {
-      return;
-   }
-   fname = ((TObjString*)values->At(0))->GetString();
+   if (from_file)
+      AddObjString(fname.Data(), values);
+   AddObjString(x0, values);
+   AddObjString(y0, values);
+   AddObjString(dy, values);
+   AddObjString(size, values);
+   AddObjString(font,  values, kAttFont);
+   AddObjString(prec,  values);
+   AddObjString(color, values, kAttColor);
+   AddObjString(align, values, kAttAlign);
+   AddObjString(angle, values);
+   AddObjString(lfilter, values, kAttCheckB);
 
-   temp = ((TObjString*)values->At(1))->GetString();
-   if (!temp.ToDouble(x0)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(2))->GetString();
-   if (!temp.ToDouble(y0)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(3))->GetString();
-   if (!temp.ToDouble(dy)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(4))->GetString();
-   if (!temp.ToDouble(textsize)) {
-      cout << "Illegal double: " << temp << endl;
-      goto tryagain;      
-   }
-   temp = ((TObjString*)values->At(5))->GetString();
-   if (!temp.ToInteger(align)) {
-      cout << "Illegal integer: " << temp << endl;
-      goto tryagain;      
-   }
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+
+   ok = GetStringExt("Get Params", tpointer, itemwidth, fRootCanvas,
+                      history, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+   if (from_file)
+      fname    = GetText(values,   vp++);
+
+   x0       = GetDouble(values, vp++);
+   y0       = GetDouble(values, vp++);
+   dy       = GetDouble(values, vp++);
+   size     = GetDouble(values, vp++);
+   font     = GetInt(values,    vp++);
+   prec     = GetInt(values,    vp++);
+   color    = GetInt(values,    vp++);
+   align    = GetInt(values,    vp++);
+   angle    = GetDouble(values, vp++);
+   lfilter  = GetInt(values,    vp++);
+
+//   cout << "size " << size << " dy " << dy << endl;
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
    	fGetMouse = kTRUE;
@@ -1115,95 +1361,155 @@ tryagain:
       y0 = fMouseY;
    }
 
-   ifstream infile(fname);
- 
+   ifstream infile;
    TString line;
    TString cmd; 
-   Int_t ind;
-   TString rep; 
+   TString converted_line;
+
    TLatex  * latex;
    Double_t xt = x0;
    Double_t yt = y0;
+   Bool_t loop = kTRUE;
+   if (from_file) {
+      infile.open(fname.Data());
+      if (!infile.good()){
+         cout << "Cant open: " << fname << endl;
+         return;
+      }
+   }
 
-   while(1) {
+   while(loop) {
 // read lines, concatinate lines ending with 
-      line.ReadLine(infile);
-      if (infile.eof()) {
-	      infile.close();
-         if (cmd.Length() > 0) {
-            cout << "Warning: Files ends with \\" << endl;
-            cout << cmd << endl;
-         }
-	      break;
+      if (from_file) {
+      	line.ReadLine(infile);
+      	if (infile.eof()) {
+	      	infile.close();
+         	if (cmd.Length() > 0) {
+            	cout << "Warning: Files ends with \\" << endl;
+            	cout << cmd << endl;
+         	}
+	      	break;
+      	}
+      	line = line.Strip(TString::kBoth);
+      	cmd = cmd + line;
+      	if (cmd.EndsWith("\\")) {
+         	cmd(cmd.Length()-1) = ' ';
+         	continue;
+      	}
+      } else {
+         cmd = tpointer->Data();
+         loop = kFALSE;
       }
-      line = line.Strip(TString::kBoth);
-      cmd = cmd + line;
-      if (cmd.EndsWith("\\")) {
-         cmd(cmd.Length()-1) = ' ';
-         continue;
-      }
-//      cout << cmd << endl;
-//    remove latex's $ (mathstyle), replace \ by #
-      Int_t sind = 0;
-      while (cmd.Index("$") >=0) cmd.Remove(cmd.Index("$"));
-      while (cmd.Index("\\") >=0) cmd(cmd.Index("\\")) = '#';
-      TRegexp oper("[-+*/=]");
-//    make sure super / sub scripts are enclosed in {}
-      TRegexp supsub("[_^]");
- //     cout << "Before supsub: " << cmd << endl;
-      while (cmd.Index(supsub, sind) >=0) {
-         ind = 1 + cmd.Index(supsub, sind);
-         char c = cmd[ind];
-         sind = ind + 1;
-         if (c != '{') {
-            rep = "{";
-            rep += c;
-            rep += "}";
-            cmd.Replace(ind, 1, rep);
-            sind += 2;
-         }
-//         cout << cmd << endl;
-      }
-//      cout << "Before oper: " << cmd << endl;
-//   add space around operators 
-      sind = 0;
-      while (cmd.Index(oper, sind) >=0) {
-         ind = 1 + cmd.Index(oper, sind);
-         char c = cmd[ind];
-//         cout << "ind " << ind << endl;
-         sind = ind + 2;
-         if (c != ' ' && c!= '{' && c!= '}') {
-            
-            cmd.Insert(ind," ");
-            sind += 1;
-         }
-         c = cmd[ind - 2];
-         if (c != ' ' && c!= '{' && c!= '}') { 
-            cmd.Insert(ind-1," ");
-            sind += 1;
-         }
-  //        cout << cmd << endl;
-      }
-//   remove not used \cos etc,
-//   replace overline by bar
-
-      TRegexp re_cos("#cos");
-      TRegexp re_sin("#sin");
-      TRegexp re_tan("#tan");
-      TRegexp re_ovl("#overline");
-      while (cmd.Index(re_cos) >= 0)cmd(re_cos) = "cos";
-      while (cmd.Index(re_sin) >= 0)cmd(re_sin) = "sin";
-      while (cmd.Index(re_tan) >= 0)cmd(re_tan) = "tan";
-      while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
-//      cout << "Final:     " << cmd << endl;
-      latex = new TLatex(xt, yt, cmd.Data());
+      if (lfilter > 0) converted_line = lat2root(cmd);
+      else             converted_line = cmd;
+      latex = new TLatex(xt, yt, converted_line.Data());
       latex->SetTextAlign(align);
-      latex->SetTextSize(textsize);
+      latex->SetTextFont(font / 10 * 10 + prec);
+      latex->SetTextSize(size);
+      latex->SetTextAngle(angle);
+      latex->SetTextColor(color);
       latex->Draw();
       yt -= dy;
 //      outfile << cmd << endl;
       cmd.Resize(0);
    }
+   Modified();
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::InsertAxis()
+{
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   row_lab->Add(new TObjString("X Start"));
+   row_lab->Add(new TObjString("Y Start"));
+   row_lab->Add(new TObjString("X End"));
+   row_lab->Add(new TObjString("Y End"));
+
+   row_lab->Add(new TObjString("Axis Value at Start"));
+   row_lab->Add(new TObjString("Axis Value at End"));
+   row_lab->Add(new TObjString("N divisions"));
+   row_lab->Add(new TObjString("Logarithmic scale"));
+   row_lab->Add(new TObjString("Use Timeformat"));
+   row_lab->Add(new TObjString("Timeformat"));
+   row_lab->Add(new TObjString("Timeoffset"));
+
+   Double_t x0 = 0;
+   Double_t y0 = 0;
+   Double_t x1 = 0;
+   Double_t y1 = 0;
+   static Double_t wmin = 0;
+   static Double_t wmax = 10;
+   static Int_t    ndiv = 510;
+   static Int_t    logscale = 0;
+   static Int_t    usetimeformat = 0;
+   static Int_t    timezero = 0;
+   TString chopt; 
+   TString tformat("H.%H M.%M S.%S"); 
+
+
+   AddObjString(x0, values);
+   AddObjString(y0, values);
+   AddObjString(x1, values);
+   AddObjString(y1, values);
+   AddObjString(wmin, values);
+   AddObjString(wmax, values);
+   AddObjString(ndiv, values);
+   AddObjString(logscale, values, kAttCheckB);
+   AddObjString(usetimeformat, values, kAttCheckB);
+   AddObjString(tformat.Data(), values);
+   AddObjString(timezero, values);
+
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+tryagain:
+   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+   x0       = GetDouble(values, vp++);
+   y0       = GetDouble(values, vp++);
+   x1       = GetDouble(values, vp++);
+   y1       = GetDouble(values, vp++);
+   wmin       = GetDouble(values, vp++);
+   wmax       = GetDouble(values, vp++);
+   ndiv       = GetInt(values,    vp++);
+   logscale   = GetInt(values,    vp++);
+   usetimeformat = GetInt(values, vp++);
+   tformat       = GetText(values,vp++);
+   if (usetimeformat > 0) chopt += "t";
+   if (logscale   > 0) chopt += "G";
+   
+   if (x0 == 0 && y0 == 0 && x1 == 0 && y1 == 0) {
+   	cout << "Input a TLine defining the axis" << endl;
+      TLine * l = (TLine*)this->WaitPrimitive("TLine");
+      if (l) {
+         x0 = l->GetX1();
+         y0 = l->GetY1();
+         x1 = l->GetX2();
+         y1 = l->GetY2();
+         delete l;
+      } else {
+         cout << "No TLine found, try again" << endl;
+         goto tryagain;
+      }
+   }
+   TGaxis *ax = new TGaxis(x0, y0, x1, y1, wmin, wmax, ndiv, chopt.Data());
+   TString whichA;
+   if (TMath::Abs(y1-y0) < TMath::Abs(x1-x0)) whichA = "X";
+   else                                       whichA = "Y";
+   ax->SetLineColor(gStyle->GetAxisColor(whichA.Data()));
+   ax->SetLabelColor(gStyle->GetLabelColor(whichA.Data()));
+   ax->SetLabelOffset(gStyle->GetLabelOffset(whichA.Data()));
+   ax->SetLabelFont(gStyle->GetLabelFont(whichA.Data()));
+   ax->SetLabelSize(gStyle->GetLabelSize(whichA.Data()));
+   ax->SetTickSize(gStyle->GetTickLength(whichA.Data()));
+   ax->SetTitleSize(gStyle->GetTitleSize(whichA.Data()));
+   ax->SetTitleOffset(gStyle->GetTitleOffset(whichA.Data()));
+
+   if (usetimeformat) ax->SetTimeFormat(tformat.Data());
+   ax->Draw();
    Modified();
    Update();
 }

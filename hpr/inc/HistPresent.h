@@ -306,8 +306,9 @@ protected:
    Int_t      fArrowFill  ;     // Arrow fill style
    Color_t    fArrowColor ;     // Arrow color (line + fill)
    Int_t      fArrowWidth ;     // Arrow line width    
+   Int_t      fArrowShape ;      //  Arrow shapes (e.g. -|>-)
    Int_t      fArrowStyle ;     // Arrow line style
-   TString    fArrowOption;     // Arrow shapes (e.g. -|>-)
+//   TString    fArrowOption;     // Arrow shapes (e.g. -|>-)
    Double_t   fCurlyWaveLength; // wavelength of sinusoid in percent of pad height
    Double_t   fCurlyAmplitude;  // amplitude of sinusoid in percent of pad height
    Color_t    fCurlyColor ;     // C  urly line color 
