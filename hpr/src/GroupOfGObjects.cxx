@@ -7,6 +7,7 @@ namespace std {} using namespace std;
 #include "TCurlyLine.h"
 #include "TCurlyArc.h"
 #include "TArrow.h"
+#include "TMarker.h"
 #include "TText.h"
 #include "TEllipse.h"
 #include "TPolyLine.h"
@@ -232,6 +233,7 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          if (phi > 360) phi -= 360; 
          b->SetPhimax(phi);
          b->Paint(b->GetDrawOption());
+
       } else if (clone->InheritsFrom("TCurlyLine")) {
          TCurlyLine * b = (TCurlyLine*)clone;
          Transform(b->GetStartX(), b->GetStartY(), xoff,yoff, scaleG, angle, align, &xt, &yt);  
@@ -241,6 +243,14 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          b->SetWaveLength(b->GetWaveLength() * scaleNDC);
          b->SetAmplitude(b->GetAmplitude() * scaleNDC);
          b->Paint(b->GetDrawOption());
+
+      } else if (clone->InheritsFrom("TMarker")) {
+         TMarker * b = (TMarker*)clone;
+         Transform(b->GetX(), b->GetY(), xoff,yoff, scaleG, angle, align, &xt, &yt);  
+         b->SetX(xt);
+         b->SetY(yt);
+         b->SetMarkerSize(b->GetMarkerSize() * scaleNDC);
+        
       } else if (clone->InheritsFrom("TText")) {
          TText * b = (TText*)clone;
          Transform(b->GetX(), b->GetY(), xoff,yoff, scaleG, angle, align, &xt, &yt);  
@@ -307,6 +317,37 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          }
  //        cout << "b, pad, gPad " << b << " " << pad << " " << gPad << endl;
 
+      } else if (clone->InheritsFrom("TPave")) {
+         TPave * b = (TPave*)clone;
+         Double_t x1 = b->GetX1NDC();
+         Double_t y1 = b->GetY1NDC();
+         Double_t x2 = b->GetX2NDC();
+         Double_t y2 = b->GetY2NDC();
+         Double_t xt2, yt2;
+//         convert to user 
+         x1 = x1 * (fXUpEdge - fXLowEdge);
+         y1 = y1 * (fYUpEdge - fYLowEdge);
+         x2 = x2 * (fXUpEdge - fXLowEdge);
+         y2 = y2 * (fYUpEdge - fYLowEdge); 
+
+//         cout <<  "usr: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+
+         Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt, &yt);  
+         Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt2, &yt2);  
+ //        cout <<  "ust: " << xt << " " << yt << " " << xt2 << " " << yt2 << endl;
+ //        cout <<  "pad: " << pad->GetX1() << " " << pad->GetY1() << " " << pad->GetX2() << " " <<pad->GetY2()  << endl;
+
+         x1 = (xt - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
+         y1 = (yt - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
+         x2 = (xt2 - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
+         y2 = (yt2 - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
+//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+         b->SetX1NDC(x1);
+         b->SetY1NDC(y1); 
+         b->SetX2NDC(x2); 
+         b->SetY2NDC(y2);
+
+ //        cout << "b, pad, gPad " << b << " " << pad << " " << gPad << endl;
       } else if (clone->InheritsFrom("TBox")) {
          TBox * b = (TBox*)clone;
          Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);  

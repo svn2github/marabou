@@ -2901,7 +2901,14 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 void HistPresent::CloseAllCanvases() 
 {
 //     Cleaning all FitHist objects
-   fCanvasList->Delete();
+    
+   TIter next(fCanvasList);
+   HTCanvas * htc;
+   while ( (htc =(HTCanvas *)next()) ) {
+      TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
+      rc->ShowEditor(kFALSE);
+      rc->SendCloseMessage();
+   }
    fNwindows= 0;
    fWincury = fWintopy;
    fWincurx = fWintopx;

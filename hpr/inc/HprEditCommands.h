@@ -9,6 +9,8 @@ class  HprEditCommands : public TGTransientFrame {
 
 private:
    const TGWindow   *fMyWindow;
+   TList            *fButtons;
+   TObject          *fCalling;
    TList            *fWidgets;   // keep track of widgets to be deleted in dtor
 
 public:
@@ -16,11 +18,7 @@ public:
                  TObject * calling_class, const char * cname,
                  TList * labels, TList * methods);
 
-   virtual ~HprEditCommands(){
-// Cleanup dialog.
-      fWidgets->Delete();
-      delete fWidgets;
-   };
+   virtual ~HprEditCommands();
 ClassDef(HprEditCommands,0)		
 };   
 #endif

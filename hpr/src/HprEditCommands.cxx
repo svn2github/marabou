@@ -18,7 +18,8 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
    gClient->GetColorByName("firebrick", brown);
 
    fWidgets = new TList;
-   
+   fButtons = new TList;
+   fCalling = calling_class;
    const TGWindow * main = gClient->GetRoot();
    if(Win != 0)fMyWindow = Win;
    else        fMyWindow = main;
@@ -39,9 +40,11 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
 //      hframe = new TGCompositeFrame(this, win_width, 20, kHorizontalFrame); 
      s = ((TObjString *)labels->At(i))->String();   
      cmd = new TGTextButton(this, new TGHotString((const char *)s), i);
+//     cout << "HprEditCommands, TGTextButton Id: " << cmd->GetId() << endl;
      this->AddFrame(cmd, lo1);
      s = ((TObjString *)methods->At(i))->String();   
      cmd->Connect("Clicked()", cname, calling_class,(const char *)s);
+     fButtons->Add(cmd);
    }  
     
    UInt_t  width = 0, height = 0;
@@ -60,7 +63,7 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
          ((TGFrame *) fMyWindow)->GetHeight() - ( height),
                           ax, ay, wdum);
 //         ((TGFrame *) fMyWindow)->GetWidth() - width >> 1,
-   cout << "ax, ay, width, height," << ax << " " << ay << " " << width << " " << height <<  endl;
+//   cout << "HprEditCommands Id: " << GetId() <<  endl;
    UInt_t ww, wh;
    Int_t  wwi,whi;
    Int_t screen_x, screen_y;
@@ -95,4 +98,18 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
    this->ChangeBackground(brown);
 
 //   gClient->WaitFor(this);
+};
+//_______________________________________________________________________
+
+HprEditCommands::~HprEditCommands(){
+// Cleanup dialog.
+   TIter next(fButtons);
+   TObject * obj;
+   while ( (obj = next()) ) {
+//      cout << "Disconnecting Id: " << ((TGButton*)obj)->GetId() << endl;
+      ((TGButton*)obj)->Disconnect("Clicked()", fCalling);
+      delete obj;
+   }
+//   fWidgets->Delete();
+ //  delete fWidgets;
 };

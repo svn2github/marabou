@@ -17,6 +17,7 @@
 #include "TImage.h"
 #include "TError.h"
 #include "TContextMenu.h"
+#include "TVirtualPadEditor.h"
 
 #include "HTCanvas.h"
 #include "HandleMenus.h"
@@ -419,7 +420,7 @@ again:
                      }
                      break;
                   case kFileSaveAsPS:
-                    fHCanvas->SetFillStyle(0);
+//                    fHCanvas->SetFillStyle(0);
                     fHCanvas->SaveAs();
                      break;
                   case kFileSaveAsEPS:
@@ -429,7 +430,7 @@ again:
                      fHCanvas->SaveAs(".pdf");
                      break;
                   case kFileSaveAsGIF:
-                    fHCanvas->SetFillStyle(0);
+//                    fHCanvas->SetFillStyle(0);
                      fHCanvas->SaveAs(".gif");
                      break;
                   case kFileSaveAsJPG:
@@ -437,10 +438,15 @@ again:
                      break;
                   case kFilePrint:
                     fHCanvas->Print();
-                    fHCanvas->SetFillStyle(0);
+//                    fHCanvas->SetFillStyle(0);
                      break;
                   case kFileCloseCanvas:
-                     delete fHCanvas;  // this in turn will delete this object
+//                     cout << "TVirtualPadEditor::GetPadEditor(kFALSE) " <<TVirtualPadEditor::GetPadEditor(kFALSE) << endl;
+//                     if ( (TVirtualPadEditor::GetPadEditor(kFALSE) != 0) )
+//                        TVirtualPadEditor::Terminate();
+                     fRootCanvas->ShowEditor(kFALSE);
+
+                     fRootCanvas->SendCloseMessage();
                      break;
                   case kFHCutsFromASCII:
                      {
@@ -639,10 +645,10 @@ again:
                      break;
 
                   case kFH_InsertLatex:
-                        fHCanvas->Latex2Root(kFALSE);
+                        fHCanvas->InsertText(kFALSE);
                      break;
                   case kFH_InsertLatexF:
-                        fHCanvas->Latex2Root(kTRUE);
+                        fHCanvas->InsertText(kTRUE);
                      break;
                   case kFH_InsertImage:
                         fHCanvas->InsertImage();
@@ -1303,9 +1309,9 @@ void HandleMenus::BuildMenus()
 {
    fRootsMenuBar = ((TRootCanvas*)fHCanvas->GetCanvasImp())->GetMenuBar();
 /*
-   cout << "fRootsMenuBar: " << fRootsMenuBar<< endl;
+   cout << "fRootsMenuBar: " << fRootsMenuBar->GetId()<< endl;
    cout << "fMenuBarItemLayout: " << fMenuBarItemLayout<< endl;
-   cout << "fRootCanvas: " << fRootCanvas<< endl;
+   cout << "fRootCanvas: " << fRootCanvas->GetId()<< endl;
    cout << "fHistPresent: " << fHistPresent<< endl;
    cout << "fFitHist: " << fFitHist<< endl;
 */
@@ -1489,7 +1495,7 @@ void HandleMenus::BuildMenus()
       fFileMenu->AddEntry("Read Cuts (Window2D) from ASCII file", kFHCutsFromASCII);
 //   fFileMenu->AddEntry("&Print...",           kFilePrint);
       fFileMenu->AddSeparator();
-      fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
+ //     fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
       fFileMenu->AddEntry("Open Edit canvas (A4 portrait)",    kFH_Portrait);
       fFileMenu->AddEntry("Open Edit canvas (A4 landscape)",   kFH_Landscape);
       fFileMenu->AddEntry("Open Edit canvas (user defined)",   kFH_UserEdit);
@@ -1498,6 +1504,7 @@ void HandleMenus::BuildMenus()
     	fFileMenu->AddEntry("Write this picture to ROOT file",  kFH_WritePrim);
    }
    fFileMenu->AddSeparator();
+   fFileMenu->AddEntry("&Close Canvas",       kFileCloseCanvas);
    fFileMenu->AddEntry("Terminate program",          kFileQuit);
 
    fOptionMenu = new TGPopupMenu(fRootCanvas->GetParent());
@@ -1515,6 +1522,7 @@ void HandleMenus::BuildMenus()
    fOptionMenu->AddEntry("Brightness of rgb", kOptionBright);
    fOptionMenu->AddEntry("Lightness+Saturation (HLS)", kOptionHLS);
    fOptionMenu->AddEntry("Default colors and fonts", kOptionCol);
+
    fAttrMenu = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenu->AddEntry("Histogram / function", kOptionHist);
    fAttrMenu->AddEntry("Statistics box", kOptionStat);
@@ -1525,7 +1533,7 @@ void HandleMenus::BuildMenus()
    fAttrMenu->AddEntry("Line - Text - Markers - Fill", kOptionGeneral);
    fAttrMenu->AddEntry("Feynman diagrams", kOptionFeynman);
    fAttrMenu->AddEntry("Canvas, Pad, Frame", kOptionPad);
-   fOptionMenu->AddPopup("Graphics Attr (Canvas, Pads, Hist, Axis, etc)",  fAttrMenu);
+//   fOptionMenu->AddPopup("Graphics Attr (Canvas, Pads, Hist, Axis, etc)",  fAttrMenu);
 
    fAttrMenuDef = new TGPopupMenu(fRootCanvas->GetParent());
    fAttrMenuDef->AddEntry("Take and set Stat box defaults", kOptionStatDef);
@@ -1815,6 +1823,7 @@ void HandleMenus::BuildMenus()
 
    fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
    fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
+   fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
    if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    if(fh_menus){

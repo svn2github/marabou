@@ -117,13 +117,14 @@ public:
    void    ReadGObjects();
    void    ShowGallery();
    void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
-   void    Latex2Root(Bool_t);
-   void    Latex2RootF(){Latex2Root(kTRUE);};
-   void    Latex2RootK(){Latex2Root(kFALSE);};
+   void    InsertText(Bool_t);
+   void    InsertTextF(){InsertText(kTRUE);};
+   void    InsertTextK(){InsertText(kFALSE);};
    TPad*   GetEmptyPad();
    void    ZoomIn();
    void    ZoomOut();
    void    UnZoom();
+   void    MyClose();
 
    ClassDef(HTCanvas,1)  //Graphics canvas
 };

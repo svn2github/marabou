@@ -10,6 +10,7 @@
 #include "TFrame.h"
 #include "TF1.h"
 #include "TPaveStats.h"
+#include "TPaveLabel.h"
 #include "TArrow.h"
 #include "TArc.h"
 #include "TMarker.h"
@@ -1070,12 +1071,34 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
                if (flag[kLineColor] != 0)      tc->SetLineColor(fLineColor);
                if (flag[kLineStyle] != 0)      tc->SetLineStyle(fLineStyle);
             }
+            if (obj->InheritsFrom("TPave")) {
+               TPave * tc = (TPave*)obj;
+               if (flag[kLineWidth] != 0)      tc->SetLineWidth(fLineWidth);
+               if (flag[kLineColor] != 0)      tc->SetLineColor(fLineColor);
+               if (flag[kLineStyle] != 0)      tc->SetLineStyle(fLineStyle);
+               if (flag[kFillColor] != 0)      tc->SetFillColor(fFillColor);
+               if (flag[kFillStyle] != 0)      tc->SetFillStyle(fFillStyle);
+            }
+            if (obj->InheritsFrom("TPaveText")) {
+               TPaveText * tc = (TPaveText*)obj;
+               if (flag[kTextSize]  != 0)      tc->SetTextSize(fTextSize);
+               if (flag[kTextColor] != 0)      tc->SetTextColor(fTextColor);
+               if (flag[kTextFont]  != 0)      tc->SetTextFont(fTextFont);
+               if (flag[kTextAlign] != 0)      tc->SetTextAlign(fTextAlign);
+            }
+            if (obj->InheritsFrom("TPaveLabel")) {
+               TPaveLabel * tc = (TPaveLabel*)obj;
+               if (flag[kTextSize]  != 0)      tc->SetTextSize(fTextSize);
+               if (flag[kTextColor] != 0)      tc->SetTextColor(fTextColor);
+               if (flag[kTextFont]  != 0)      tc->SetTextFont(fTextFont);
+               if (flag[kTextAlign] != 0)      tc->SetTextAlign(fTextAlign);
+            }
             if (obj->InheritsFrom("TText")) {
-               TText * a = (TText*)obj;
-               if (flag[kTextSize]  != 0)      a->SetTextSize(fTextSize);
-               if (flag[kTextColor] != 0)      a->SetTextColor(fTextColor);
-               if (flag[kTextFont]  != 0)      a->SetTextFont(fTextFont);
-               if (flag[kTextAlign] != 0)      a->SetTextAlign(fTextAlign);
+               TText * tc = (TText*)obj;
+               if (flag[kTextSize]  != 0)      tc->SetTextSize(fTextSize);
+               if (flag[kTextColor] != 0)      tc->SetTextColor(fTextColor);
+               if (flag[kTextFont]  != 0)      tc->SetTextFont(fTextFont);
+               if (flag[kTextAlign] != 0)      tc->SetTextAlign(fTextAlign);
             }
             if (obj->InheritsFrom("TMarker")) {
                TMarker * tc = (TMarker*)obj;

@@ -1008,6 +1008,7 @@ the picture size is halfed";
    Int_t npads = 0;
    const Int_t maxpads = 64;
    TString option = opt;
+
    if (option.Contains("plain")) {
       TList *l = ca->GetListOfPrimitives();
       TIter next(l);
@@ -1032,6 +1033,7 @@ the picture size is halfed";
       ca->GetFrame()->SetFillStyle(0);
       ca->SetBorderMode(0);
    }
+
    TEnv env(".rootrc");         // inspect ROOT's environment
    Int_t xpaper = env.GetValue("HistPresent.PaperSizeX", 20);
    Int_t ypaper = env.GetValue("HistPresent.PaperSizeX", 26);

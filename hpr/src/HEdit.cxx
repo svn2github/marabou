@@ -132,8 +132,8 @@ void HTCanvas::InitEditCommands()
    methods->Add(new TObjString("InsertImage()"));
    methods->Add(new TObjString("InsertHist()"));
    methods->Add(new TObjString("InsertGraph()"));
-   methods->Add(new TObjString("Latex2RootF()"));
-   methods->Add(new TObjString("Latex2RootK()"));
+   methods->Add(new TObjString("InsertTextF()"));
+   methods->Add(new TObjString("InsertTextK()"));
    methods->Add(new TObjString("InsertGObjects()"));
    methods->Add(new TObjString("InsertAxis()"));
    methods->Add(new TObjString("MarkGObjects()"));
@@ -517,11 +517,17 @@ void HTCanvas::InsertImage()
    void* dirp=gSystem->OpenDirectory(".");
    TRegexp dotGif = "\\.gif$";   
    TRegexp dotJpg = "\\.jpg$"; 
+   Long_t id, size, flags, modtime;
    while ( (fname=gSystem->GetDirEntry(dirp)) ) {
       TString sname(fname);
       if (!sname.BeginsWith("temp_") && 
           (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0)) {
-         hfile << fname << endl;
+         size = 0;
+         gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
+         if (size <= 0)
+            cout << "Warning, empty file: " << fname << endl;
+         else 
+            hfile << fname << endl;
          if (name.Length() < 1) name = fname;
       }
    }
@@ -682,7 +688,24 @@ tryagain:
          lnk = (TObjOptLink*)lnk->Next();
          continue;
       }
-      if (obj->InheritsFrom("TBox")) {
+      if (obj->InheritsFrom("TPave")) {
+         TPave * b = (TPave*)obj;
+         if (cut->IsInside(b->GetX1(), b->GetY1())
+            |cut->IsInside(b->GetX1(), b->GetY2())
+            |cut->IsInside(b->GetX2(), b->GetY1())
+            |cut->IsInside(b->GetX2(), b->GetY2()) ) {
+            if (!markonly) {
+               b = (TPave*)obj->Clone();
+
+               b->SetX1NDC((b->GetX1() - gg->fXLowEdge) / (gg->fXUpEdge - gg->fXLowEdge));
+               b->SetX2NDC((b->GetX2() - gg->fXLowEdge) / (gg->fXUpEdge - gg->fXLowEdge));
+               b->SetY1NDC((b->GetY1() - gg->fYLowEdge) / (gg->fYUpEdge - gg->fYLowEdge));
+               b->SetY2NDC((b->GetY2() - gg->fYLowEdge) / (gg->fYUpEdge - gg->fYLowEdge));
+            }
+            gg->AddMember(b,  lnk->GetOption());
+         }
+         
+      } else if (obj->InheritsFrom("TBox")) {
          TBox * b = (TBox*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
             |cut->IsInside(b->GetX1(), b->GetY2())
@@ -764,6 +787,17 @@ tryagain:
             }
             gg->AddMember(b,  lnk->GetOption());
          }
+      } else if (obj->InheritsFrom("TMarker")) {
+         TMarker * b = (TMarker*)obj;
+         if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
+            if (!markonly) {
+               b = (TMarker*)obj->Clone();
+               b->SetX(b->GetX() - xoff);
+               b->SetY(b->GetY() - yoff);
+            }
+            gg->AddMember(b,  lnk->GetOption());
+         }
+
       } else if (obj->InheritsFrom("TText")) {
          TText * b = (TText*)obj;
          if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
@@ -856,14 +890,14 @@ void HTCanvas::InsertGObjects(const char * objname)
       cout << "No Macro objects defined" << endl;
       return;
    }
-   static TString defname = "p1";
+   static TString name;
    TList *row_lab = new TList(); 
    TList *values  = new TList();
    row_lab->Add(new TObjString("Name of object"));
    row_lab->Add(new TObjString("Scale factor NDC"));
    row_lab->Add(new TObjString("Scale factor User"));
    row_lab->Add(new TObjString("Angle[deg]"));
-   row_lab->Add(new TObjString("Align (11 lowleft, 22 cent)"));
+   row_lab->Add(new TObjString("Alignment"));
    row_lab->Add(new TObjString("X value"));
    row_lab->Add(new TObjString("Y value"));
    row_lab->Add(new TObjString("Draw enclosing cut"));
@@ -877,11 +911,11 @@ void HTCanvas::InsertGObjects(const char * objname)
    static Int_t    draw_cut = 1;
 
    TMrbString temp;
-   TString name;
    if (objname && strlen(objname) > 1) {
       name = objname;
-   } else {
-      name = defname;
+   } else if (name.Length() < 1) {
+      GroupOfGObjects * gg = (GroupOfGObjects *)fGObjectGroups->First();
+      name = gg->GetName();
    }
 
    AddObjString(name.Data() , values);
@@ -1061,9 +1095,9 @@ void HTCanvas::ShowGallery()
 //      tt = new TText(0,0, "");
       TList * lop = b->GetListOfPrimitives();
 //      lop->Add(tt);
-      go->AddMembersToList(b, 0, 0, 4, 1, 0, 22);
+      go->AddMembersToList(b, 0, 0, 1, 1, 0, 22);
       tt = new TText();
-      tt->SetText(-.4 * xr, -.5 *yr, oname.Data());
+      tt->SetText(-.1* xr, -.3 *yr, oname.Data());
       tt->SetTextSize(0.15);
       lop->Add(tt, "");
 //      tt->Draw();
@@ -1086,7 +1120,16 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("EditMarker")) continue; 
  //     obj->Print();
-      if (obj->InheritsFrom("TBox")) {
+      if (obj->InheritsFrom("TPave")) {
+         TPave * b = (TPave*)obj;
+         Double_t yoffNDC = yoff / (GetY2() - GetY1());
+         Double_t xoffNDC = xoff / (GetX2() - GetX1());
+         b->SetX1NDC(b->GetX1NDC() + xoffNDC);
+         b->SetY1NDC(b->GetY1NDC() + yoffNDC);
+         b->SetX2NDC(b->GetX2NDC() + xoffNDC);
+         b->SetY2NDC(b->GetY2NDC() + yoffNDC);
+         
+      } else if (obj->InheritsFrom("TBox")) {
          TBox * b = (TBox*)obj;
          b->SetX1(b->GetX1() + xoff);
          b->SetX2(b->GetX2() + xoff);
@@ -1125,10 +1168,16 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
          b->SetStartPoint(b->GetStartX() + xoff, b->GetStartY() + yoff);
          b->SetEndPoint(b->GetEndX() + xoff, b->GetEndY() + yoff);
 
+      } else if (obj->InheritsFrom("TMarker")) {
+      TMarker * b = (TMarker*)obj;
+         b->SetX(b->GetX() + xoff);
+         b->SetY(b->GetY() + yoff);
+
       } else if (obj->InheritsFrom("TText")) {
       TText * b = (TText*)obj;
          b->SetX(b->GetX() + xoff);
          b->SetY(b->GetY() + yoff);
+
       } else if (obj->InheritsFrom("TEllipse")) {
          TEllipse * b = (TEllipse*)obj;
          b->SetX1(b->GetX1() + xoff);
@@ -1175,33 +1224,39 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    row_lab->Add(new TObjString("Align X"));
    row_lab->Add(new TObjString("Align Y"));
    row_lab->Add(new TObjString("Pads"));
+   row_lab->Add(new TObjString("Paves"));
    row_lab->Add(new TObjString("Arrows"));
    row_lab->Add(new TObjString("Lines,Axis"));
    row_lab->Add(new TObjString("Graphs"));
    row_lab->Add(new TObjString("Text"));
    row_lab->Add(new TObjString("Arcs"));
+   row_lab->Add(new TObjString("Markers"));
    row_lab->Add(new TObjString("CurlyLines"));
    row_lab->Add(new TObjString("CurlyArcs"));
    
    static Int_t dox      = 1,
                 doy      = 1,
                 dopad    = 1,
+                dopave    = 1,
                 doarrow  = 1,
                 doline  = 1,
                 dograph  = 1, 
                 dotext   = 1, 
                 doarc    = 1, 
+                domark    = 1, 
                 docurlyl = 1, 
                 docurlya = 1;
  
    AddObjString(dox     , values, kAttCheckB);
    AddObjString(doy     , values, kAttCheckB);
    AddObjString(dopad   , values, kAttCheckB);
+   AddObjString(dopave   , values, kAttCheckB);
    AddObjString(doarrow , values, kAttCheckB);
    AddObjString(doline  , values, kAttCheckB);
    AddObjString(dograph , values, kAttCheckB);
    AddObjString(dotext  , values, kAttCheckB);
    AddObjString(doarc   , values, kAttCheckB);
+   AddObjString(domark  , values, kAttCheckB);
    AddObjString(docurlyl, values, kAttCheckB);
    AddObjString(docurlya, values, kAttCheckB);
    
@@ -1216,11 +1271,13 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    dox     = GetInt(values,   vp++);
    doy     = GetInt(values,   vp++);
    dopad   = GetInt(values,   vp++);
+   dopave   = GetInt(values,   vp++);
    doarrow = GetInt(values,   vp++);
    doline  = GetInt(values,   vp++);
    dograph = GetInt(values,   vp++);
    dotext  = GetInt(values,   vp++);
    doarc   = GetInt(values,   vp++);
+   domark   = GetInt(values,   vp++);
    docurlyl= GetInt(values,   vp++);
    docurlya= GetInt(values,   vp++);
 
@@ -1236,7 +1293,24 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("EditMarker")) continue; 
 //      obj->Print();
-      if (obj->InheritsFrom("TBox")) {
+      if (obj->InheritsFrom("TPave") && dopave) {
+         TPave * b = (TPave*)obj;
+         x1 = PutOnGridX(b->GetX1());
+         y1 = PutOnGridX(b->GetY1());
+         x2 = PutOnGridX(b->GetX2());
+         y2 = PutOnGridX(b->GetY2());
+
+         x1 = (x1 - this->GetX1()) / (this->GetX2() - this->GetX1());
+         y1 = (y1 - this->GetY1()) / (this->GetY2() - this->GetY1());
+         x2 = (x2 - this->GetX1()) / (this->GetX2() - this->GetX1());
+         y2 = (y2 - this->GetY1()) / (this->GetY2() - this->GetY1());
+//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+         if (dox) b->SetX1NDC(x1);
+         if (doy) b->SetY1NDC(y1); 
+         if (dox) b->SetX2NDC(x2); 
+         if (doy) b->SetY2NDC(y2);
+         
+      } else if (obj->InheritsFrom("TBox")) {
          TBox * b = (TBox*)obj;
          if (dox) b->SetX1(PutOnGridX(b->GetX1()));
          if (dox) b->SetX2(PutOnGridX(b->GetX2()));
@@ -1302,10 +1376,16 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          if (doy) y1 = PutOnGridX(y1);
          b->SetEndPoint(x1, y1);
 
+      } else if (obj->InheritsFrom("TMarker") && domark) {
+         TMarker * b = (TMarker*)obj;
+         if (dox) b->SetX(PutOnGridX(b->GetX()));
+         if (doy) b->SetY(PutOnGridX(b->GetY()));
+
       } else if (obj->InheritsFrom("TText") && dotext) {
          TText * b = (TText*)obj;
          if (dox) b->SetX(PutOnGridX(b->GetX()));
          if (doy) b->SetY(PutOnGridX(b->GetY()));
+
       } else if (obj->InheritsFrom("TArc") && doarc) {
          TArc * b = (TArc*)obj;
          if (dox) b->SetX1(PutOnGridX(b->GetX1()));
@@ -1400,9 +1480,13 @@ void HTCanvas::DeleteObjects()
             |cut->IsInside(b->GetEndX(), b->GetEndY()) ) {
              delete obj;
          }
+      } else if (obj->InheritsFrom("TMarker")) {
+         TMarker * b = (TMarker*)obj;
+         if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
+             delete obj;
+         }
       } else if (obj->InheritsFrom("TText")) {
          TText * b = (TText*)obj;
-//         if (cut->IsInside(b->GetX(), b->GetY()) ) {
          if (SloppyInside(cut, b->GetX(), b->GetY()) ) {
              delete obj;
          }
@@ -1614,7 +1698,7 @@ TString lat2root(TString& cmd)
 }
 //______________________________________________________________________________
 
-void HTCanvas::Latex2Root(Bool_t from_file)
+void HTCanvas::InsertText(Bool_t from_file)
 {
 // this tries to translate standard Latex into ROOTs
 // latex like formular processor TLatex format
@@ -1632,6 +1716,7 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    row_lab->Add(new TObjString("Text color"));
    row_lab->Add(new TObjString("Text alignment"));
    row_lab->Add(new TObjString("Text angle"));
+   row_lab->Add(new TObjString("Mark as compound"));
    row_lab->Add(new TObjString("Apply latex filter"));
 
    Double_t x0 =        0;
@@ -1643,7 +1728,10 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    static Int_t    prec  = 2; 
    static Double_t size = 0.02;
    static Double_t angle = 0;
-   static Int_t   lfilter = 1;
+   Int_t           markc = 0;
+   if (from_file)  markc = 1;
+   static Int_t    lfilter = 1;
+   static Int_t    text_seqnr = 0;
 //   if (fHistPresent) {
 //      size = fHistPresent->fTextSize;
 //      font     = fHistPresent->fTextFont;
@@ -1671,6 +1759,7 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    AddObjString(color, values, kAttColor);
    AddObjString(align, values, kAttAlign);
    AddObjString(angle, values);
+   AddObjString(markc, values, kAttCheckB);
    AddObjString(lfilter, values, kAttCheckB);
 
    Bool_t ok; 
@@ -1692,6 +1781,7 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    color    = GetInt(values,    vp++);
    align    = GetInt(values,    vp++);
    angle    = GetDouble(values, vp++);
+   markc    = GetInt(values,    vp++);
    lfilter  = GetInt(values,    vp++);
 
 //   cout << "size " << size << " dy " << dy << endl;
@@ -1716,7 +1806,9 @@ void HTCanvas::Latex2Root(Bool_t from_file)
    TLatex  * latex;
    Double_t xt = x0;
    Double_t yt = y0;
-   Bool_t loop = kTRUE;
+   Double_t longestline = 0, th_first = 0, th_last = 0;
+   TList llist;
+      Bool_t loop = kTRUE;
    if (from_file) {
       infile.open(fname.Data());
       if (!infile.good()){
@@ -1724,7 +1816,6 @@ void HTCanvas::Latex2Root(Bool_t from_file)
          return;
       }
    }
-
    while(loop) {
 // read lines, concatinate lines ending with 
       if (from_file) {
@@ -1757,9 +1848,70 @@ void HTCanvas::Latex2Root(Bool_t from_file)
       latex->SetTextColor(color);
 //	   cout << "latex->Draw(): gPad " << gPad << endl;
       latex->Draw();
+      llist.Add(latex);
       yt -= dy;
 //      outfile << cmd << endl;
       cmd.Resize(0);
+      if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
+      if (th_first <= 0) th_first = latex->GetYsize();
+      th_last = latex->GetYsize();
+//      cout << "tw, th " << latex->GetXsize() << " " << latex->GetYsize() << endl;
+   }
+
+   Int_t nlines = llist.GetSize();
+   if (nlines > 1) {
+      GroupOfGObjects * text_group = NULL;
+      TString cname("text_obj_");
+
+      if (markc) {
+         text_group = new GroupOfGObjects(cname.Data(), 0, 0, NULL);
+         cname += text_seqnr;
+      }
+      Double_t yshift = 0;
+      cout << th_first << " " << th_last << endl;
+      if (align%10 == 1)yshift =  (nlines -1) * dy;
+      if (align%10 == 2)yshift =  (nlines  -1)* (0.5 * dy);
+      TIter next(&llist);
+      while ( (latex = (TLatex*)next()) ) {
+          latex->SetY(latex->GetY() + yshift);
+          if (text_group) text_group->AddMember(latex, "");
+      }
+      if (markc) {
+         yt += dy;        // last displayed line
+      	Double_t xenc[5];
+      	Double_t yenc[5];
+      	yenc[0] = yt + yshift;
+//      	if (align%10 == 1)yenc[0] -= 0.5 * th_last;
+      	if (align%10 == 2)yenc[0] -= 0.5 * th_last;
+      	if (align%10 == 3)yenc[0] -= th_last;
+      	yenc[1] = yenc[0];
+
+      	yenc[2] = y0 + yshift;
+      	if (align%10 == 2)yenc[2] += 0.5 * th_first;
+      	if (align%10 == 1)yenc[2] += th_first;
+      	yenc[3] = yenc[2];
+      	yenc[4] = yenc[0];
+
+      	Int_t halign = align / 10;
+      	if (halign == 1) {
+         	xenc[0] = x0;
+         	xenc[1] = xenc[0] + longestline;
+         	xenc[0] -= 0.001;
+      	} else if (halign == 2) {
+         	xenc[0] = x0 + 0.5 * longestline;
+         	xenc[1] = xenc[0] - longestline;
+      	} else {
+         	xenc[0] = x0 - longestline;
+         	xenc[1] = x0 + 0.001;
+      	}
+      	xenc[2] = xenc[1];
+      	xenc[3] = xenc[0];
+      	xenc[4] = xenc[0];
+      	TCutG cut(cname.Data(), 5, xenc, yenc);
+	//      cut.Print();
+      	text_group->SetEnclosingCut(&cut);
+      	text_group->Draw();
+   	}
    }
    Modified();
    Update();

@@ -133,7 +133,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    }
    fHandleMenus = new HandleMenus(this, fHistPresent, fFitHist, fGraph); 
 //   cout << "fHandleMenus->GetId() " << fHandleMenus->GetId() << endl;
-  fHandleMenus->BuildMenus(); 
+   fHandleMenus->BuildMenus(); 
 //   ToggleEventStatus();
 //   ToggleEventStatus();
    fCanvasImp->ShowEditor(kFALSE);
@@ -144,19 +144,31 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    // Popup canvas
    fCanvasImp->Show();
    SetWindowSize(ww , wh );
-   if (TestBit(kIsAEditorPage)) InitEditCommands();        
+   if (TestBit(kIsAEditorPage)) {
+      InitEditCommands();
+      fRootCanvas->DontCallClose();
+      TQObject::Connect((TGMainFrame*)fRootCanvas, "CloseWindow()",
+                        this->ClassName(), this, "MyClose()");
+   }        
    fOrigWw = GetWw();
    fOrigWh = GetWh();
 
-//   if(fHistPresent && fFitHist)fHistPresent->GetCanvasList()->Add(this);
-//   cout << "ctor HTCanvas: " << this << " " << name << endl;
+//   cout << "ctor HTCanvas: " << this << " " << name 
+//        << " Id " << fRootCanvas->GetId() << endl;
 };
+//______________________________________________________________________________________
+
+void HTCanvas::MyClose()
+{
+//   cout << "HTCanvas::MyClose() set ShowEditor(kFALSE) " << endl;
+   fRootCanvas->ShowEditor(kFALSE);
+   fRootCanvas->CloseWindow();
+}
+//______________________________________________________________________________________
 
 HTCanvas::~HTCanvas()
 {
 //   cout << "dtor HTCanvas: " << this << " " << GetName()<< endl;
-   if ((TVirtualPadEditor::GetPadEditor(kFALSE) != 0))
-      TVirtualPadEditor::Terminate();
    if (fEditCommands) { delete fEditCommands; fEditCommands = NULL;};
    if (fHandleMenus) {
       delete fHandleMenus;
@@ -267,7 +279,7 @@ HTCanvas::~HTCanvas()
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
-//      cout << "HTCanvas: delete fFitHist " << this << endl;
+      cout << "HTCanvas: delete fFitHist " << this << endl;
       delete fFitHist;
    }
 };
