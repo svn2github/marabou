@@ -1,86 +1,89 @@
 namespace std {} using namespace std;
 
-#include <cstdlib>
 #include <iostream>
 
 #include <TROOT.h>
-#include <TApplication.h>
 #include <TVirtualX.h>
-#include "TRootHelpDialog.h"
 
 #include <TGClient.h>
 #include <TGFrame.h>
-#include <TGIcon.h>
 #include <TGLabel.h>
-#include <TGButton.h>
 #include <TGTextEntry.h>
-#include <TGMsgBox.h>
-#include <TGMenu.h>
-#include <TGCanvas.h>
-#include <TGComboBox.h>
-#include <TGTab.h>
-#include <TList.h>
 #include <TObjString.h>
+#include "TOrdCollection.h"
 
+// #include "MyTimer.h"
 #include "TGMrbSliders.h"
-#include "TGMrbHelpWindow.h"
 
 
 ///////////////////////////////////////////////////////////////////////////
 //                                                                       //
-// Dialog Widget providing n sliders                                     //    
-// optionally a Checkbutton is displayed to provide a yes-no selction    //
-// and a help text button                                                //
+// Dialog Widget providing n sliders.                                    //
+//                                                                       //
+// After call the routine returns immediatly keeping up the widget       //
+
+// when a slider changes its value but at a maximum repitition rate      //
+// of 20 Hz. This allows the application to update canvases in a smooth  // 
+// manner.                                                               //
+//                                                                       //
+// Usage:                                                                //
+//                                                                       //
+// somewhere in calling class: ColorPlayer                                       //
+//                                                                       //
+// TGMrbSliders * sl = new TGMrbSliders("Set HLS", NVAL,                 // 
+//                     min, max, val, lab, flags,                        //
+//                     (TRootCanvas*)fCanvas->GetCanvasImp());           //
+//  sl->Connect("SliderEvent(Int_t, Int_t, Int_t)",this->ClassName(),    //
+//                this, "AdjustHLS(Int_t, Int_t, Int_t)");               //
+//  .....                                                                //
+//                                                                       //
+//  void ColorPlayer::AdjustHLS(Int_t id, Int_t row , Int_t val)         //
+//                                                                       //
 //                                                                       //
 // required arguments:                                                   //
-//     
+//                                                                       //
 //  const Char_t *  Title                                                //
 //  Int_t NValues     : number of entries                                //
 //  Double_t * Min, Max, Val : min, max, value                           //
 //                                                                       //
 // optional arguments:                                                   //
 //                                                                       //
-//  TOrdCollection * RowLabels                                          //
-//  Int_t * flags  : if bit 1 set TextEntry is colored with value = hue  //                                   //
-//  TGWindow *win       : pointer to parent window                       //  
+//  TOrdCollection * RowLabels                                           //
+//  Int_t * flags   : if bit 1 set TextEntry is colored with value = hue //
+//  TGWindow *win   : pointer to parent window                           //  
 //  Int_t identifier : unique number passed in emit signal               //
-//  Int_t * retval    : 0 if ok pressed, -1 if cancel                    //                  
-//  const char *HelpText: help text                                      //   
 //                                                                       //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
+
+
+ClassImp(MyTimer)
 ClassImp(TGMrbSliders)
 
-//_____________________________________________________________________________________
-
-class MyTimer : public TTimer {
-
-private:
-  TGMrbSliders * fSlider;
-public:
-  
-   MyTimer(Long_t ms, Bool_t synch, TGMrbSliders * slider):TTimer(ms,synch){
+//____________________________________________________________________________
+MyTimer::MyTimer(Long_t ms, Bool_t synch,  TGMrbSliders* slider):TTimer(ms,synch)
+{
    fSlider = slider;
 //     cout << "init mytimer" << endl;
    gSystem->AddTimer(this);
-}
-//_____________________________________________________________________________________
+};
+//_____________________________________________________________________________
+//MyTimer::~MyTimer() {}
+//_____________________________________________________________________________
+
 Bool_t MyTimer::Notify() {
  //  cout << " Notify reached" << endl;
    fSlider->Wakeup();
    Reset();
    return kTRUE;
-}
 };
-//_____________________________________________________________________________________
-
+//________________________________________________________________________________
 
 TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
-                         Int_t * min, Int_t * max, Int_t * val, 
-                         TOrdCollection * Row_Labels, Int_t * flags, 
-                         const TGWindow *Win, const Int_t Identifier,
-                         Int_t * Return, const char *HelpText)
+                         const Int_t * min, const Int_t * max, Int_t * val, 
+                         TOrdCollection * Row_Labels, const Int_t * flags, 
+                         const TGWindow *Win, const Int_t Identifier)
 							    : TGTransientFrame(gClient->GetRoot(), Win, 100, 100)
 {
    ChangeOptions(kHorizontalFrame);
@@ -90,7 +93,8 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    fVal = new Int_t[NValues];
    fValPrev = new Int_t[NValues];
    for (Int_t i = 0; i < NValues; i++ ) {
-     fValPrev[i] = fVal[i] = val[i];
+     fValPrev[i] = -1;
+     fVal[i] = val[i];
    }
    if (flags) {
       fFlags = new Int_t[NValues];
@@ -98,8 +102,8 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    } else {
       fFlags = NULL;
    }
+   fWidgetList = new TList();
 //   fStopwatch = new TStopwatch();
-   fTimer = new MyTimer(50, kTRUE, this);
    ULong_t brown;
    gClient->GetColorByName("firebrick", brown);
    fTeColor = new TColor(999, 1, 0, 0);
@@ -113,7 +117,8 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
 
    //--- layout for the frame: place at bottom, right aligned
    fBfly1 = new TGLayoutHints(kLHintsTop | kLHintsRight, 20, 10, 15, 0);
-   fLO4 = new TGLayoutHints(kLHintsExpandX | kLHintsExpandY |kLHintsCenterY| kLHintsCenterX, 1, 1, 1, 1);
+   fLO4 = new TGLayoutHints(kLHintsExpandX | kLHintsExpandY 
+                            |kLHintsCenterY| kLHintsCenterX, 1, 1, 1, 1);
 
    fTePointers  = new TGTextEntry * [NValues];
    fTbPointers  = new TGTextBuffer * [NValues];
@@ -136,10 +141,13 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
       fValueFrame->AddFrame(fTePointers[i], fBly);
       TObjString *objs = (TObjString *)Row_Labels->At(i);
       TString s = objs->String();
-      TGCompositeFrame * lfr= new TGCompositeFrame(fLabelFrame,100,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
-      TGLabel * label = new TGLabel(lfr, new TGString((const char *)s));
-      lfr->AddFrame(label, fLO4);
-      fLabelFrame->AddFrame(lfr, fBly);
+      TGCompositeFrame * label_fr = new TGCompositeFrame(fLabelFrame,100,20,
+                              kVerticalFrame | kFixedWidth |kRaisedFrame);
+      fWidgetList->AddFirst(label_fr);
+      TGLabel * label = new TGLabel(label_fr, new TGString((const char *)s));
+      fWidgetList->AddFirst(label);
+      label_fr->AddFrame(label, fLO4);
+      fLabelFrame->AddFrame(label_fr, fBly);
    }
    AddFrame(fValueFrame, fBfly1);
    AddFrame(fSliderFrame, fBfly1);
@@ -201,12 +209,7 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    // popup dialog and wait till user replies
    this->MapWindow();
    this->ChangeBackground(brown);
-   if (fFlags) {
-      for (Int_t i = 0; i < NValues; i++ ) {
-         if(fFlags[i] & 1) 
-           ProcessMessage(MK_MSG(kC_HSLIDER, kSL_POS) , i, fVal[i]);
-      }
-   }
+   fTimer = new MyTimer(50, kTRUE, this);
  
 //   gClient->WaitFor(this);
 };
@@ -215,10 +218,11 @@ TGMrbSliders::~TGMrbSliders()
 {
    // Delete dialog.
 //   cout << "dtor ~TGMrbSliders()" << endl;
+   fWidgetList->Delete();
+   delete fWidgetList;
    for (Int_t i = 0; i < fNValues; i++) {
       delete fSlPointers[i];
-      delete fTePointers[i];                    
-//      delete fTbPointers[i];
+      delete fTePointers[i];
    }
 
    delete [] fSlPointers;
@@ -232,8 +236,9 @@ TGMrbSliders::~TGMrbSliders()
 //   delete fStopwatch;
    delete fTimer;
    delete fSliderFrame;
+   delete fLabelFrame;
    delete fValueFrame;
-   delete fBfly1; delete fBly;
+   delete fBfly1; delete fBly; delete fLO4;
 }
 
 void TGMrbSliders::CloseWindow()
@@ -246,18 +251,18 @@ void TGMrbSliders::CloseWindow()
 Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
    // Process slider messages.
-   Float_t r, g, b;   
+//   Float_t r, g, b;   
    Int_t row;
    switch (GET_MSG(msg)) {
       case kC_TEXTENTRY:
          switch (GET_SUBMSG(msg)) {
-            case kTE_TEXTCHANGED:
+            case kTE_ENTER:
                row = parm1%1000;
 //               cout << parm1 << " " << row << endl;
 //               cout << fSlPointers[row] << endl;
                fSlPointers[row]->SetPosition(atoi(fTbPointers[row]->GetString()));
-//               fVal[row] = fSlPointers[row]->GetPosition();
-//               SliderEvent(fIdentifier, row, fSlPointers[row]->GetPosition());
+               fVal[row] = fSlPointers[row]->GetPosition();
+//               SliderEvent(fIdentifier, row, fVal[row]);
                break;
          }
          break;
@@ -271,14 +276,6 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
             case kSL_POS:
                row = parm1%1000;
                fVal[row] = parm2;
-//               cout <<  row << " " << parm2 << endl;
-//               cout << fSlPointers[row] << endl;
-               if (fFlags && fFlags[row] & 1){
-                  TColor::HLS2RGB((Float_t)parm2, 0.5, 1, r, g, b);
-                  fTeColor->SetRGB(r, g, b);
-                  Pixel_t p = fTeColor->GetPixel();
-                  fTePointers[row]->SetBackgroundColor(p); 
-               }
                fTbPointers[row]->Clear();
                fTbPointers[row]->AddText(0, Form("%ld", parm2));
                fClient->NeedRedraw(fTePointers[row]);
@@ -292,6 +289,27 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 }
 //______________________________________________________________
 
+void  TGMrbSliders::Wakeup()
+{
+//   cout << "Wakeup()" << endl;
+   Float_t r, g, b;   
+   for (Int_t row = 0; row < fNValues; row++) { 
+      if (fVal[row] != fValPrev[row]) {
+//  optionally set color of text widget
+      	if (fFlags && fFlags[row] & 1){
+         	TColor::HLS2RGB(fVal[row], 0.5, 1, r, g, b);
+         	fTeColor->SetRGB(r, g, b);
+         	Pixel_t p = fTeColor->GetPixel();
+         	fTePointers[row]->SetBackgroundColor(p); 
+            fClient->NeedRedraw(fTePointers[row]);
+      	}
+         fValPrev[row] = fVal[row];
+         SliderEvent(fIdentifier, row, fVal[row]);
+      }
+   }
+}
+//______________________________________________________________
+
 void  TGMrbSliders::SliderEvent(Int_t id, Int_t row, Int_t val)
 {
    Long_t args[3];   // ident, row, value
@@ -302,16 +320,4 @@ void  TGMrbSliders::SliderEvent(Int_t id, Int_t row, Int_t val)
  
    Emit("SliderEvent(Int_t, Int_t, Int_t)", args);
 };
-//______________________________________________________________
-
-void  TGMrbSliders::Wakeup()
-{
-//   cout << "Wakeup()" << endl;
-   for (Int_t row = 0; row < fNValues; row++) { 
-      if (fVal[row] != fValPrev[row]) {
-         fValPrev[row] = fVal[row];
-         SliderEvent(fIdentifier, row, fVal[row]);
-      }
-   }
-}
   

@@ -36,6 +36,7 @@
 #pragma link C++ class TGMrbMacroBrowserTransient;
 #pragma link C++ class TGMrbInputDialog;
 #pragma link C++ class TGMrbSliders;
+#pragma link C++ class MyTimer;
 #pragma link C++ class TGMrbHelpWindow;
 #pragma link C++ class TGMrbMessageViewer;
 #pragma link C++ class TGMrbProgressBar;

@@ -7,12 +7,11 @@
 #include "TGWindow.h"
 #include "TGFrame.h"
 #include "TGSlider.h"
-#include "TOrdCollection.h"
-// #include "TStopwatch.h"
-#include "TTimer.h"
+#include "TGTextEntry.h"
+#include <TList.h>
 #include "TColor.h"
-
-class MyTimer;
+#include "TTimer.h"
+#include "MyTimer.h"
 
 class TGMrbSliders : public TGTransientFrame {
 
@@ -23,6 +22,7 @@ private:
    Int_t * fFlags;
    Int_t fIdentifier;
    const TGWindow * fMyWindow;
+   TList * fWidgetList;
    TGTextEntry  ** fTePointers;
    TGTextBuffer ** fTbPointers;
    TGHSlider    ** fSlPointers;
@@ -34,10 +34,9 @@ private:
 
 public:
    TGMrbSliders(const char *Title,  const Int_t NValues,
-                Int_t * min, Int_t * max, Int_t * val, 
-                TOrdCollection * Row_Labels = 0, Int_t * flags = 0, 
-                const TGWindow *Win = 0, const Int_t Identifier = 0,
-                Int_t * Return = 0, const char *HelpText = 0);
+                const Int_t * min, const Int_t * max, Int_t * val, 
+                TOrdCollection * Row_Labels = 0, const Int_t * flags = 0, 
+                const TGWindow *Win = 0, const Int_t Identifier = 0);
    virtual ~TGMrbSliders();
 
    virtual void CloseWindow();
