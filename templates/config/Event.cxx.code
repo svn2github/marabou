@@ -519,7 +519,8 @@ void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue) {
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-	$sevtNameLC.Reset(InitValue);	// reset param data in subevent $sevtNameLC
+%S%	$sevtNameLC.Reset(InitValue);	// reset param data in subevent $sevtNameLC
+%R% 	gMrbAnalyze->ResetModuleHits();
 %%EndOfCode%%
 %%EVT_RESET_DATA%%
 }

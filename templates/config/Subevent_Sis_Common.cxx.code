@@ -54,6 +54,7 @@ Bool_t TMrbSubevent_Sis::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 					<< setblack << endl;
 			return(kTRUE);
 		}
+		
 		Int_t moduleID = (header >> kMrbSevt_10_12_SH_ModuleId) & kMrbSevt_10_12_M_ModuleId;
 		Bool_t sis3801 = (moduleID == (kMrbModIdSis_3801 & kMrbSevt_10_12_M_ModuleId));
 		wc -= 2;				 // count for header words

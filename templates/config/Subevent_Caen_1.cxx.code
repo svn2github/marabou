@@ -46,7 +46,7 @@
 %C%		}
 %C%		wc = (header >> CAEN_V7X5_SH_WC) & CAEN_V7X5_M_WC;				// extract wc
 %C% 		wcs = wc;
-%C%		if (wc <= 0 || wc > 32) {				// max 32 data words
+%C%		if (wc < 0 || wc > 32) {				// max 32 data words
 %C%			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong word count", SevtData, SevtWC);
 %C%			cerr	<< setred
 %C%					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
