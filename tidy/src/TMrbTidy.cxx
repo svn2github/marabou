@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.7 2004-11-17 14:30:08 marabou Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.8 2004-11-17 14:38:04 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1207,7 +1207,7 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 Bool_t TMrbTidyNode::CompareAttributes(TObjArray & LofAttr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTidyNode::DecodeAttrString
+// Name:           TMrbTidyNode::CompareAttributes
 // Purpose:        Compare attributes
 // Arguments:      TObjArray & LofAttr       -- attributes
 // Results:        kTRUE/kFALSE
