@@ -1731,9 +1731,9 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    TString cmd;
    TString hname = "hist_";
    Int_t nent = 1;
-   static Double_t nbin[4] = {0, 0, 0, 0};
-   static Double_t vmin[4] = {0, 0, 0, 0};
-   static Double_t vmax[4] = {0, 0, 0, 0};
+   Double_t nbin[4] = {0, 0, 0, 0};
+   Double_t vmin[4] = {0, 0, 0, 0};
+   Double_t vmax[4] = {0, 0, 0, 0};
 //   cout << "leafname " << leafname << " " << strlen(leafname) 
 //    << " nent " << fSelectLeaf->GetSize() << endl;
    if (strlen(leafname)>0) {
@@ -1947,9 +1947,10 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    if (must_find_limits) {
       
       for(Int_t i = 0; i < nent; i++) {
+         if (nbin[i] > 0) continue;
          TString bname;
          bname = *leaf[i];
-//         cout << "bname " << bname << endl;
+         cout << "Try to find limits for: " << bname << endl;
          if (bname.Length() > 0) {
          	Int_t ib = bname.Index('[');
          	if (ib > 0)bname.Resize(ib);
