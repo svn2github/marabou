@@ -835,7 +835,7 @@ void * msg_handler(void * dummy) {
    mon->Print();
 
 //   TSocket *s0 = 0, *s1 = 0, *s_reject = 0;
-   TSocket * s[kMaxSock];
+   TSocket * s[kMaxSock] = {0};
    TMessage *mess =0;
    Int_t maxwait = 1000;
 //     TSocket  *sock = ss->Accept();
