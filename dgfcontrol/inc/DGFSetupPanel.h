@@ -91,6 +91,9 @@ class DGFSetupPanel : public TGCompositeFrame {
 		Bool_t TurnUserPSAOnOff(Bool_t ActivateFlag);	// turn user psa on/off
 		
 	protected:
+		Bool_t DaqIsRunning();						// check if a daq is running
+
+	protected:
 		TList fHeap;								//! list of objects created on heap
 		TGGroupFrame * fCAMACFrame; 				// camac defs
 		TGMrbLabelEntry * fCAMACHostEntry;			//		default host

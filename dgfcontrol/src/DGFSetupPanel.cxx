@@ -418,6 +418,13 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 	
 	Int_t errCnt = gMrbLog->GetErrors(errLog);
 
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "ConnectToEsone");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
 	if (gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
 		gMrbLog->Flush(this->ClassName(), "ConnectToEsone");
@@ -545,6 +552,13 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 	
 	Int_t errCnt = gMrbLog->GetErrors(errLog);
+
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReloadDGFs");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
 
 	if (gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
@@ -761,6 +775,13 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 						
 	offlineMode = gDGFControlData->IsOffline();
 	
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "AbortDGFs");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
 	if (gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
 		gMrbLog->Flush(this->ClassName(), "AbortDGFs");
@@ -821,6 +842,13 @@ Bool_t DGFSetupPanel::RestartEsone() {
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 	
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "RestartEsone");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
 	esoneCold = new TMrbEsone(offlineMode);
 	if (esoneCold->IsZombie()) {
 		gMrbLog->Err()	<< "ESONE not running" << endl;
@@ -867,6 +895,13 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 	
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
 	if (gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
@@ -911,4 +946,34 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
 	}
+}
+
+Bool_t DGFSetupPanel::DaqIsRunning() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::DaqIsRunning
+// Purpose:        Check if a DAQ is running
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Checks for a running daq.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gDGFControlData->IsOffline()) return(kFALSE);		// don't worry about if offline
+
+	TString pidFile = "/tmp/M_analyze_";
+	pidFile += gSystem->Getenv("USER");
+	pidFile += ".9090";
+	if (gSystem->AccessPathName(pidFile.Data())) return(kFALSE);	// no pid file, therefore no active daq	
+
+	ifstream p;
+	p.open(pidFile.Data(), ios::in);
+	Int_t pid;
+	p >> pid;
+	TString proc = "/proc/";
+	proc += pid;
+	if (gSystem->AccessPathName(proc.Data())) return(kFALSE);		// pid exists but process has gone
+
+	return(kTRUE);
 }
