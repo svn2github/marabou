@@ -1,11 +1,11 @@
 /*_________________________________________________________________[CODE FILE]
 //////////////////////////////////////////////////////////////////////////////
-// @(#)Name:       Xia_DGF_4C.code
-// @(#)Purpose:    Camac code for module XIA DGF-4C
+// Name:           Xia_DGF_4C.code
+// Purpose:        Camac code for module XIA DGF-4C
 // Description:    Contains pieces of camac code to operate a DGF module
-// @(#)Author:     R. Lutter
-// @(#)Revision:   SCCS:  %W%
-// @(#)Date:       %G%
+// Author:         R. Lutter
+// Revision:       SCCS:  %W%
+// Date:           %G%
 // Keywords:       
 ////////////////////////////////////////////////////////////////////////////*/
 
@@ -81,6 +81,8 @@
 %R<=2.0%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParModCSRA, dgfmod);
 %B%			DGF_READ_WCR($moduleNameLC);
 %B%			if (root_env_getval_b("TMrbDGF.ReloadParamsOnDaqInit", 0) == 1) dgf_reload_params($moduleNameLC, "$moduleNameLC", "$settingsPath/$moduleNameLC.par");
+%B%			dgfswb = (root_env_getval_b("$moduleNameUC.SwitchBusTerm", 0) == 1) ? 0x2400 : 0;
+%B% 			DGF_WRITE_ICSR($moduleNameLC, dgfswb);		/* set switchbus reg */
 %B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParModNum, kMrbModule$moduleNameUC);
 %B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParMaxEvents, root_env_getval_i("$moduleNameUC.MaxEvents", $maxEvents));
 %B%			dgf_set_par_value($moduleNameLC, -1, kMrbDgfParInSynch, root_env_getval_i("$moduleNameUC.InSynch", $inSynch));
