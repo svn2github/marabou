@@ -2865,7 +2865,13 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "SELECTNUMBER:"  <<  wout       << endl; 
    if(fAutoSetup) wout = "TRUE";  
    else             wout = "FALSE";
-   wstream << "AUTOSETUP:"  <<  wout       << endl; 
+   wstream << "AUTOSETUP:"  <<  wout       << endl;
+
+   if (!fSetup) fSetup = new TMbsSetup();
+   fSetup->EvtBuilder()->SetProcName(masters[fCbMaster->GetSelected()-1]);
+   fSetup->ReadoutProc(0)->SetProcName(slaves[fCbReadout->GetSelected()-1]);
+   fSetup->Save();
+
   return kTRUE; 
 }
  //________________________________________________________________________________
