@@ -25,7 +25,9 @@
 <pre>
 
 <!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#DGFTraceDisplayPanel:MoveFocus">MoveFocus</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId)
 <!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFTraceDisplayPanel:StartTrace">StartTrace</a><!--PLAIN-->()
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFTraceDisplayPanel:Update">Update</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId)
 
 <!--TAB4-->    <b>public:</b><br>
 <!--TAB6-->      <a href="./DGFTraceDisplayPanel.html">DGFTraceDisplayPanel</a> <!--TAB--><!--BOLD--><a href="#DGFTraceDisplayPanel:DGFTraceDisplayPanel">DGFTraceDisplayPanel</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Main, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Width, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Height, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Options = kMainFrame|kVerticalFrame)
@@ -51,13 +53,19 @@
 <!--TAB6-->           <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fGroupFrame">fGroupFrame</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fGroupFrame"></a></i>
 <!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fGroupSelect">fGroupSelect[6]</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fGroupSelect"></a></i>
 <!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fAllSelect">fAllSelect</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fAllSelect"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fHFrame">fHFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fHFrame"></a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fXFrame">fXFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fXFrame"></a></i>
+<!--TAB6-->             <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fXwait">fXwait</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fXwait">wait states</a></i>
+<!--TAB6-->       <a href="./TGMrbCheckButtonGroup.html">TGMrbCheckButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fSelectChannel">fSelectChannel</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelectChannel">channel</a></i>
 <!--TAB6-->        <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fActionFrame">fActionFrame</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fActionFrame"></a></i>
 <!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fActions">fActions</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fActions">text buttons:	actions to be taken</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fLofChannels">fLofChannels</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofChannels">! channel numbers</a></i>
 <!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fLofDGFModuleKeys">fLofDGFModuleKeys[20]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofDGFModuleKeys"></a></i>
 <!--TAB6-->               <a href="./TGMrbFocusList.html">TGMrbFocusList</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fFocusList">fFocusList</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fFocusList"></a></i>
 <!--TAB6-->          <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
 
 <!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFTraceDisplayPanel.html#DGFTraceDisplayPanel:EDGFTraceDisplayActionId">DGFTraceDisplayPanel::EDGFTraceDisplayActionId</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:kDGFTraceDisplayXwait">kDGFTraceDisplayXwait</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFTraceDisplayXwait"></a></i>
 <!--TAB6-->      static const <a href="./DGFTraceDisplayPanel.html#DGFTraceDisplayPanel:EDGFTraceDisplayActionId">DGFTraceDisplayPanel::EDGFTraceDisplayActionId</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:kDGFTraceDisplayStart">kDGFTraceDisplayStart</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFTraceDisplayStart"></a></i>
 <!--TAB6-->      static const <a href="./DGFTraceDisplayPanel.html#DGFTraceDisplayPanel:EDGFTraceDisplayActionId">DGFTraceDisplayPanel::EDGFTraceDisplayActionId</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:kDGFTraceDisplayClose">kDGFTraceDisplayClose</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFTraceDisplayClose"></a></i>
 <!--TAB6-->      static const <a href="./DGFTraceDisplayPanel.html#DGFTraceDisplayPanel:EDGFTraceDisplayActionId">DGFTraceDisplayPanel::EDGFTraceDisplayActionId</a> <!--TAB--><!--BOLD--><a name="DGFTraceDisplayPanel:kDGFTraceDisplaySelectAll">kDGFTraceDisplaySelectAll</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFTraceDisplaySelectAll"></a></i>
@@ -124,6 +132,30 @@
  Keywords:
 
 </pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFTraceDisplayPanel:Update" href="src/DGFTraceDisplayPanel.cxx.html#DGFTraceDisplayPanel:Update">Update</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFTraceDisplayPanel.html#DGFTraceDisplayPanel:Update">DGFTraceDisplayPanel::Update</a>
+ Purpose:        Update program state on X events
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId      -- entry id
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Updates variables on X events and starts action.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="DGFTraceDisplayPanel:MoveFocus" href="src/DGFTraceDisplayPanel.cxx.html#DGFTraceDisplayPanel:MoveFocus">MoveFocus</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EntryId) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFTraceDisplayPanel.html#DGFTraceDisplayPanel:MoveFocus">DGFTraceDisplayPanel::MoveFocus</a>
+ Purpose:        Move focus to next entry field
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId     -- entry id
+ Results:        --
+ Exceptions:
+ Description:    Moves focus to next entry field in ring buffer.
+ Keywords:
+
+</pre><hr>
 <!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFTraceDisplayPanel:StartTrace" href="src/DGFTraceDisplayPanel.cxx.html#DGFTraceDisplayPanel:StartTrace">StartTrace</a>() <br>
 <pre>________________________________________________________________[C++ METHOD]
 
@@ -155,7 +187,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:54:04 2002
+Last update: Thu Dec  5 14:05:00 2002
 <br>
 <address>
 <hr>

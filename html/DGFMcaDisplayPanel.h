@@ -34,6 +34,7 @@
 
 #include "TGMrbTextButton.h"
 #include "TGMrbRadioButton.h"
+#include "TGMrbPictureButton.h"
 #include "TGMrbLabelEntry.h"
 #include "TGMrbFileEntry.h"
 #include "TGMrbLabelCombo.h"
@@ -55,16 +56,19 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 
 	public:
 
+				
 		// cmd ids to dispatch over X events in this panel
-		enum EDGFTauCmdId 	{
-									kDGFMcaSelectModule, 				//		module
-									kDGFMcaRunTime, 					//		runtime
-									kDGFMcaTimeScale,					//				time scale
-									kDGFMcaButtonAcquire,				//		actions start accu
-									kDGFMcaButtonSaveHistos,			//				save current histograms
-									kDGFMcaButtonReset, 				//				reset
-									kDGFMcaButtonClose					//				close
-								};
+		enum EDGFMcaCmdId 	{
+										kDGFMcaDisplayRunTime, 			//		runtime
+										kDGFMcaDisplayTimeScale,		//				time scale
+										kDGFMcaDisplayAcquire,			//		actions start accu
+										kDGFMcaDisplaySaveHistos,		//				save current histograms
+										kDGFMcaDisplayReset, 			//				reset
+										kDGFMcaDisplayClose,				//				close
+										kDGFMcaDisplaySelectAll,		// select	all
+										kDGFMcaDisplaySelectNone,		//				none
+										kDGFMcaDisplaySelectColumn		//				column
+									};
 
 		enum EDGFMcaTimeScaleId {
 									kDGFMcaTimeScaleSecs = kDGFChannel3 << 1,		//	seconds
@@ -73,13 +77,13 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 								};
 
 		// geometry settings
-		enum					{	kFrameWidth 			= 400					};
-		enum					{	kFrameHeight 			= 330					};
+		enum					{	kFrameWidth 			= 750					};
+		enum					{	kFrameHeight 			= 380					};
 
-		enum					{	kLEWidth				= kAutoWidth			};
-		enum					{	kEntryWidth				= 150					};
-		enum					{	kFileEntryWidth			= 210					};
-		enum					{	kLEHeight				= 22					};
+		enum					{	kLEWidth					= kAutoWidth		};
+		enum					{	kEntryWidth				= 110					};
+		enum					{	kNumEntryWidth			= 80					};
+		enum					{	kLEHeight				= 20					};
 		enum					{	kButtonWidth			= 400					};
 
 	public:
@@ -104,9 +108,13 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 		
 	protected:
 		TList fHeap;								//! list of objects created on heap
-		TGGroupFrame * fSelectFrame; 				//	select
-		TGMrbLabelCombo * fSelectModule; 			//		module
-		TGMrbCheckButtonList * fSelectChannel;		//		channel
+		TGGroupFrame * fModules;			 		// module list
+		TGMrbCheckButtonList * fCluster[kNofClusters];
+		TGHorizontalFrame * fGroupFrame;
+		TGMrbPictureButtonList * fGroupSelect[kNofModulesPerCluster];
+		TGMrbPictureButtonList * fAllSelect;
+		TGHorizontalFrame * fHFrame;
+		TGMrbCheckButtonGroup * fSelectChannel;		//		channel
 
 		TGGroupFrame * fAccuFrame;	 				//	accu
 		TGMrbLabelEntry * fRunTimeEntry; 			//		runtime
@@ -114,9 +122,10 @@ class DGFMcaDisplayPanel : public TGTransientFrame {
 
 		TGMrbTextButtonGroup * fButtonFrame;
 
-		TMrbLofNamedX fLofModuleKeys;				//! ... key list
-		TMrbLofNamedX fLofChannels;					//! channel numbers
+		TMrbLofNamedX fLofChannels;				//! channel numbers
 
+		TMrbLofNamedX fLofDGFModuleKeys[kNofClusters];
+		
 		TGFileInfo fMcaFileInfo;					//!
 
 		Bool_t fIsRunning;							// kTRUE if trace acquisition running

@@ -33,44 +33,74 @@
 
 const SMrbNamedX kMrbLofCamacActions[] =		// list of camac actions
 			{
-    		  {TMrbEsone::kCANone,		"n.a",		"No Action",												},
-    		  {TMrbEsone::kCA_cfsa, 	"cfsa", 	"Single CAMAC Action, 24 bit",							  	},
-    		  {TMrbEsone::kCA_cssa, 	"cssa", 	"Single CAMAC Action, 16 bit",							  	},
-    		  {TMrbEsone::kCA_cfga, 	"cfga", 	"General Multiple CAMAC Action, 24 bit",  				  	},
-    		  {TMrbEsone::kCA_csga, 	"csga", 	"General Multiple CAMAC Action, 16 bit",  				  	},
-    		  {TMrbEsone::kCA_cfmad,	"cfmad",	"Address Scan, 24 bit",  								  	},
-    		  {TMrbEsone::kCA_csmad,	"csmad",	"Address Scan, 16 bit",  								  	},
-    		  {TMrbEsone::kCA_cfubc,	"cfubc",	"Controller Synchronized Block Xfer, 24 bit",			  	},
-    		  {TMrbEsone::kCA_csubc,	"csubc",	"Controller Synchronized Block Xfer, 16 bit",			  	},
-    		  {TMrbEsone::kCA_cfubr,	"cfubr",	"Controller Synchronized Block Xfer, Q-driven, 24 bit",    	},
-    		  {TMrbEsone::kCA_csubr,	"csubr",	"Controller Synchronized Block Xfer, Q-driven, 16 bit",    	},
-    		  {0,						NULL, 		NULL									 					}
-    	  };
+				{TMrbEsoneCnaf::kCANone,	"n.a",		"No Action",											},
+				{TMrbEsoneCnaf::kCA_cfsa, 	"cfsa", 	"Single CAMAC Action, 24 bit"							},
+				{TMrbEsoneCnaf::kCA_cssa, 	"cssa", 	"Single CAMAC Action, 16 bit"							},
+				{TMrbEsoneCnaf::kCA_cfga, 	"cfga", 	"General Multiple CAMAC Action, 24 bit" 				},
+				{TMrbEsoneCnaf::kCA_csga, 	"csga", 	"General Multiple CAMAC Action, 16 bit"					},
+				{TMrbEsoneCnaf::kCA_cfmad,	"cfmad",	"Address Scan, 24 bit"									},
+				{TMrbEsoneCnaf::kCA_csmad,	"csmad",	"Address Scan, 16 bit"									},
+				{TMrbEsoneCnaf::kCA_cfubc,	"cfubc",	"Controller Synchronized Block Xfer, 24 bit"			},
+				{TMrbEsoneCnaf::kCA_csubc,	"csubc",	"Controller Synchronized Block Xfer, 16 bit"			},
+				{TMrbEsoneCnaf::kCA_cfubr,	"cfubr",	"Controller Synchronized Block Xfer, Q-driven, 24 bit"	},
+				{TMrbEsoneCnaf::kCA_csubr,	"csubr",	"Controller Synchronized Block Xfer, Q-driven, 16 bit"	},
+				{0,							NULL, 		NULL									 				}
+			};
 
-const SMrbNamedXShort kMrbLofCNAFNames[] =
+const SMrbNamedXShort kMrbLofCnafNames[] =
 							{
-								{TMrbEsoneCNAF::kCnafCrate, 	"CRATE",			},
-								{TMrbEsoneCNAF::kCnafStation,	"NSTATION"	 		},
-								{TMrbEsoneCNAF::kCnafAddr,		"ADDRESS"			},
-								{TMrbEsoneCNAF::kCnafFunction,	"FUNCTION"	 		},
-								{TMrbEsoneCNAF::kCnafData,		"DATA"	 			},
+								{TMrbEsoneCnaf::kCnafCrate, 	"CRATE",			},
+								{TMrbEsoneCnaf::kCnafStation,	"NSTATION"	 		},
+								{TMrbEsoneCnaf::kCnafAddr,		"ADDRESS"			},
+								{TMrbEsoneCnaf::kCnafFunction,	"FUNCTION"	 		},
+								{TMrbEsoneCnaf::kCnafData,		"DATA"	 			},
 								{0, 							NULL				}
 							};
 
-const SMrbNamedXShort kMrbLofCNAFTypes[] =
+const SMrbNamedXShort kMrbLofCnafTypes[] =
 							{
-								{TMrbEsoneCNAF::kCnafTypeRead,			"READ"  	},
-								{TMrbEsoneCNAF::kCnafTypeWrite, 		"WRITE" 	},
-								{TMrbEsoneCNAF::kCnafTypeControl,		"CNTRL" 	},
-								{TMrbEsoneCNAF::kCnafTypeReadStatus,	"RSTATUS"	},
+								{TMrbEsoneCnaf::kCnafTypeRead,			"READ"  	},
+								{TMrbEsoneCnaf::kCnafTypeWrite, 		"WRITE" 	},
+								{TMrbEsoneCnaf::kCnafTypeControl,		"CNTRL" 	},
+								{TMrbEsoneCnaf::kCnafTypeReadStatus,	"RSTATUS"	},
 								{0, 									NULL}
+							};
+
+const SMrbNamedXShort kMrbLofCamacFunctions[] =
+							{
+								{TMrbEsoneCnaf::kCF_RD1,			"read group 1 register" 				},
+								{TMrbEsoneCnaf::kCF_RD2,			"read group 2 register"					},
+								{TMrbEsoneCnaf::kCF_RC1,			"read and clear group 1 register"		},
+								{TMrbEsoneCnaf::kCF_RCM,			"read complement of group 1 register"	},
+								{TMrbEsoneCnaf::kCF_TLM,			"test LAM" 								},
+								{TMrbEsoneCnaf::kCF_CL1,			"clear group 1 register"				},
+								{TMrbEsoneCnaf::kCF_CLM,			"clear LAM"								},
+								{TMrbEsoneCnaf::kCF_CL2,			"clear group 2 register"				},
+								{TMrbEsoneCnaf::kCF_WT1,			"write group 1 register"				},
+								{TMrbEsoneCnaf::kCF_WT2,			"write group 2 register"				},
+								{TMrbEsoneCnaf::kCF_SS1,			"selective set group 1 register"		},
+								{TMrbEsoneCnaf::kCF_SS2,			"selective set group 2 register"		},
+								{TMrbEsoneCnaf::kCF_SC1,			"selective clear group 1 register"  	},
+								{TMrbEsoneCnaf::kCF_SC2,			"selective clear group 2 register"  	},
+								{TMrbEsoneCnaf::kCF_DIS,			"disable"								},
+								{TMrbEsoneCnaf::kCF_XEQ,			"execute"								},
+								{TMrbEsoneCnaf::kCF_ENB,			"enable"								},
+								{TMrbEsoneCnaf::kCF_TST,			"test" 									},
+								{0, 								NULL									}
+							};
+
+const SMrbNamedXShort kMrbLofEsoneServers[] =
+							{
+								{TMrbEsone::kES_MBS,				"MBS"		},
+								{TMrbEsone::kES_MARABOU,			"MARaBOU"	},
+								{0, 								NULL		}
 							};
 
 const SMrbNamedXShort kMrbLofControllers[] =
 							{
-								{TMrbEsone::kCC_CBV,					"CBV"		},
-								{TMrbEsone::kCC_CC32,					"CC32"		},
-								{0, 									NULL}
+								{TMrbEsone::kCC_CBV,				"CBV"		},
+								{TMrbEsone::kCC_CC32,				"CC32"		},
+								{0, 								NULL		}
 							};
 
 TMrbLofNamedX * gMrbEsoneHosts = NULL;
@@ -91,6 +121,7 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	TString esoneServer;
 	TString camacContr;
 	TMrbNamedX * nx;
 		
@@ -101,22 +132,57 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 	fLofCamacActions.SetName("CAMAC Actions");		// camac actions
 	fLofCamacActions.AddNamedX(kMrbLofCamacActions);
 	
-	fLofCNAFNames.SetName("CAMAC Registers");		// register names
-	fLofCNAFNames.AddNamedX(kMrbLofCNAFNames);
+	fLofCnafNames.SetName("CAMAC Registers");		// register names
+	fLofCnafNames.AddNamedX(kMrbLofCnafNames);
 	
-	fLofCNAFTypes.SetName("CNAF Types");			// cnaf types
-	fLofCNAFTypes.AddNamedX(kMrbLofCNAFTypes);
+	fLofCnafTypes.SetName("Cnaf Types");			// cnaf types
+	fLofCnafTypes.AddNamedX(kMrbLofCnafTypes);
+	
+	fLofEsoneServers.SetName("ESONE Server");	// controllers
+	fLofEsoneServers.AddNamedX(kMrbLofEsoneServers);
 	
 	fLofControllers.SetName("CAMAC Controller");	// controllers
 	fLofControllers.AddNamedX(kMrbLofControllers);
 	
+	fLofCamacFunctions.SetName("CAMAC Functions");	// camac functions
+	fLofControllers.AddNamedX(kMrbLofCamacFunctions);
+	
+	esoneServer = gEnv->GetValue("TMrbEsone.ServerType", "");
+	if (esoneServer.Length() == 0) {
+		gMrbLog->Err() << "Type of ESONE server undefined (\"TMrbEsone.ServerType\" has to be set)" << endl;
+		gMrbLog->Flush(this->ClassName(), "Reset");
+		return(kFALSE);
+	} else if ((nx = fLofEsoneServers.FindByName(esoneServer.Data(), TMrbLofNamedX::kFindIgnoreCase)) == NULL) {
+		gMrbLog->Err() << "No such ESONE server - " << esoneServer << endl;
+		gMrbLog->Flush(this->ClassName(), "Reset");
+		return(kFALSE);
+	}
+	fServerType.Set(nx);
+	if (this->IsVerbose()) {
+		gMrbLog->Out() << "Using ESONE server \"" << fServerType.GetName() << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
+	}
+		
 	camacContr = gEnv->GetValue("TMrbEsone.Controller", "");
-	if ((nx = fLofControllers.FindByName(camacContr.Data())) == NULL) {
+	if (camacContr.Length() == 0) {
 		gMrbLog->Err() << "CAMAC controller undefined (\"TMrbEsone.Controller\" has to be set)" << endl;
+		gMrbLog->Flush(this->ClassName(), "Reset");
+		return(kFALSE);
+	} else if ((nx = fLofControllers.FindByName(camacContr.Data(), TMrbLofNamedX::kFindIgnoreCase)) == NULL) {
+		gMrbLog->Err() << "No such CAMAC controller - " << camacContr << endl;
 		gMrbLog->Flush(this->ClassName(), "Reset");
 		return(kFALSE);
 	}
 	fController.Set(nx);
+
+	if (this->GetServerIndex() == kES_MARABOU && this->GetControllerIndex() == kCC_CBV) {
+		gMrbLog->Err()	<< "Illegal CAMAC controller - " << this->GetControllerName()
+						<< " (ESONE server \"" << this->GetServerName()
+						<< "\" implies controller \"CC32\")" << endl;
+		gMrbLog->Flush(this->ClassName(), "Reset");
+		return(kFALSE);
+	}
+
 	if (this->IsVerbose()) {
 		gMrbLog->Out() << "Using CAMAC controller \"" << fController.GetName() << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
@@ -124,20 +190,12 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 		
 	fHost.Resize(0);								// host name
 	fHostInet.Resize(0);
-	fHostAddr = 0;									// host address
-
-	fCrate = -1;									// crate number
-
-	fError.Resize(0); 	 							// error message
-	fErrorCode = 0;									// error code
-
-	this->ResetBuffers(kMaxNofCnafs);				// reset buffers
+	fHostAddr = 0xFFFFFFFF;							// host address
 
 	fOffline = Offline; 							// hardware access?
 	
 	fUseBroadCast = gEnv->GetValue("TMrbEsone.UseBroadCast", kTRUE); // use broadcast if applicable
 		
-	fAction = TMrbEsone::kCANone;					// type of last action
 	return(kTRUE);
 }
 
@@ -153,105 +211,63 @@ Bool_t TMrbEsone::CheckConnection(const Char_t * Method) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (fHostAddr > 0) return(kTRUE);
+	if (this->IsOffline() || fHostAddr > 0) return(kTRUE);
 
 	gMrbLog->Err() << "No CAMAC host connected" << endl;
 	gMrbLog->Flush(this->ClassName(), Method);
 	return(kFALSE);
 }
 
-Int_t TMrbEsone::CheckCrate(Int_t Crate, const Char_t * Method) {
+Bool_t TMrbEsone::CheckCrate(Int_t Crate, const Char_t * Method) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::CheckCrate
 // Purpose:        Check if crate number is legal
 // Arguments:      Int_t Crate        -- crate number
 //                 Char_t * Method    -- calling method
-// Results:        Int_t Crate        -- crate number or -1 if error
+// Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Checks if crate number is ok.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (Crate == TMrbEsone::kDefaultCrate) Crate = fCrate;
-	if (Crate == -1) {
-		gMrbLog->Err() << "No crate defined" << endl;
-		gMrbLog->Flush(this->ClassName(), Method);
-		return(-1);
-	}
-
-	if (Crate < 0 || Crate > kMaxNofCrates) {
-		gMrbLog->Err() << "Illegal crate number - " << Crate << " (should be in [0," << kMaxNofCrates << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), Method);
-		return(-1);
-	}
-	return(Crate);
-}
-
-Bool_t TMrbEsone::CheckIndex(Int_t Index, const Char_t * Method) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::CheckIndex
-// Purpose:        Check if index is legal
-// Arguments:      Int_t Index        -- index in cnaf/data array
-//                 Char_t * Method    -- calling method
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Checks if index is ok.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (Index == -1) {					// single action
-		if ((fAction & TMrbEsone::kCASingle) == 0) {
-			gMrbLog->Err() << "Valid only with single CNAFs" << endl;
-			gMrbLog->Flush(this->ClassName(), Method);
-			return(kFALSE);
-		}
-		Index = 0;
-	}
-
-	if (this->IsOffline()) return(0);
-	
-	if (Index < 0 || Index >= fCurNofCnafs) {
-		gMrbLog->Err() << "Illegal index - " << Index << " (should be in [0," << fCurNofCnafs << "])" << endl;
+	if (Crate <= 0 || Crate > kEsoneNofCrates) {
+		gMrbLog->Err() << "Illegal crate number - C" << Crate << " (should be in [1," << kEsoneNofCrates << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), Method);
 		return(kFALSE);
 	}
-	return(Index);
+	return(kTRUE);
 }
 
-Int_t TMrbEsone::CheckSize(Int_t Size, const Char_t * Method) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::CheckSize
-// Purpose:        Check if data size is legal
-// Arguments:      Int_t Size         -- data size
-//                 Char_t * Method    -- calling method
-// Results:        Int_t Size         -- actual size
-// Exceptions:
-// Description:    Checks if data size is ok.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (Size == -1) Size = fMaxNofCnafs;
-	if (Size < 1 || Size > fMaxNofCnafs) {
-		gMrbLog->Err()	<< "Number of data words out of bounds - " << Size
-						<< " (should be in [1," << fMaxNofCnafs << "])" << endl;
-		gMrbLog->Flush(this->ClassName(), Method);
-		return(-1);
-	}
-	return(Size);
-}
-
-Bool_t TMrbEsone::StartServer(const Char_t * HostName, const Char_t * SetupPath, const Char_t * MbsVersion, Bool_t PrmFlag) {
+Bool_t TMrbEsone::StartServer(const Char_t * HostName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::StartServer
 // Purpose:        Try to start esone server on host
 // Arguments:      Char_t * HostName    -- host name
-//                 Char_t * SetupPath   -- where to find MBS setup files
-//                 Char_t * MbsVersion  -- MBS version to be used
-//                 Bool_t PrmFlag       -- start m_prompt if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Start server depending on type.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnection("StartServer")) return(kFALSE);
+
+	switch (this->GetServerIndex()) {
+		case kES_MBS:
+			return(this->StartMbsServer(HostName));
+		case kES_MARABOU:
+			return(this->StartMarabouServer(HostName));
+	}
+	return(kFALSE);
+}
+
+Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::StartMbsServer
+// Purpose:        Try to start esone server on host
+// Arguments:      Char_t * HostName    -- host name
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Tries to start mbs.
@@ -265,23 +281,33 @@ Bool_t TMrbEsone::StartServer(const Char_t * HostName, const Char_t * SetupPath,
 	TString pLine;
 	Bool_t found;
 	TString remoteHome;
+	TString setupPath;
+	TString mbsVersion;
+	Bool_t startPrompter;
 	TString prmOrDsp;
 
 	this->SetOffline(kFALSE);
 	
+	setupPath = gEnv->GetValue("TMrbEsone.SetupPath", "/nfs/mbssys/esone");
+	mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "deve");
+	startPrompter = gEnv->GetValue("TMrbEsone.StartPrompter", kFALSE);
+
 	// reset mbs
-	cout	<< setmagenta
-			<< this->ClassName() << "::StartServer(): Resetting ESONE server on host \""
-			<< HostName << "\". Please wait ."
-			<< setblack << ends << flush;
+	gMrbLog->Out()	<< "Resetting ESONE server on host \""
+					<< HostName << "\"." << endl;
+	gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 
 	rCmd = new ostrstream();
 	*rCmd	<< "rsh " << HostName
 			<< " -l " << gSystem->Getenv("USER")
-			<< " \"/mbs/" << MbsVersion
-			<< "/script/remote_exe.sc /mbs/" << MbsVersion
-			<< " " << SetupPath << " m_remote reset -l >>/dev/null\""
+			<< " \"/mbs/" << mbsVersion
+			<< "/script/remote_exe.sc /mbs/" << mbsVersion
+			<< " " << setupPath << " m_remote reset -l >>/dev/null\""
 			<< ends;
+	if (this->IsVerbose()) {
+		gMrbLog->Out()	<< "Exec >> " << rCmd->str() << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	}
 	gSystem->Exec(rCmd->str());
 	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
@@ -290,6 +316,7 @@ Bool_t TMrbEsone::StartServer(const Char_t * HostName, const Char_t * SetupPath,
 	*rCmd	<< "rsh " << HostName << " -l " << gSystem->Getenv("USER") << " \"ps ax | fgrep m_\""
 			<< ends;
 
+	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
 	for (i = 0; i < 30 ; i++) {
 		gSystem->ProcessEvents();
@@ -323,30 +350,38 @@ Bool_t TMrbEsone::StartServer(const Char_t * HostName, const Char_t * SetupPath,
 	}
 
 // restart mbs
-	cout	<< setmagenta
-			<< this->ClassName() << "::StartServer(): Restarting ESONE server ("
-			<< fController.GetName() << ") on host \"" << HostName << "\". Please wait ."
-			<< setblack << ends << flush;
+	gMrbLog->Out()	<< "Restarting ESONE server (type "
+			<< fServerType.GetName() << ", controller "
+			<< fController.GetName() << ") on host \"" << HostName << "\"." << endl;
+	gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 
 	rCmd = new ostrstream();
 	*rCmd	<< "rsh " << HostName
 			<< " -l " << gSystem->Getenv("USER")
-			<< " \"cp " << SetupPath << "/.tcshrc . >>/dev/null\""
+			<< " \"cp " << setupPath << "/.tcshrc . >>/dev/null\""
 			<< ends;
+	if (this->IsVerbose()) {
+		gMrbLog->Out()	<< endl << "Exec >> " << rCmd->str() << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	}
 	gSystem->Exec(rCmd->str());
 	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
 
-	prmOrDsp = PrmFlag ? "m_prompt" : "m_dispatch";
+	prmOrDsp = startPrompter ? "m_prompt" : "m_dispatch";
 
 	rCmd = new ostrstream();
 	*rCmd	<< "rsh " << HostName
 			<< " -l " << gSystem->Getenv("USER")
-			<< " \"/mbs/" << MbsVersion
-			<< "/script/remote_exe.sc /mbs/" << MbsVersion
-			<< " . " << prmOrDsp << " @" << SetupPath << "/"
+			<< " \"/mbs/" << mbsVersion
+			<< "/script/remote_exe.sc /mbs/" << mbsVersion
+			<< " . " << prmOrDsp << " @" << setupPath << "/"
 			<< fController.GetName() << "/startup >>/dev/null\""
 			<< ends;
+	if (this->IsVerbose()) {
+		gMrbLog->Out()	<< "Exec >> " << rCmd->str() << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	}
 	gSystem->Exec(rCmd->str());
 	rCmd->rdbuf()->freeze(0);
 	delete rCmd;
@@ -355,6 +390,7 @@ Bool_t TMrbEsone::StartServer(const Char_t * HostName, const Char_t * SetupPath,
 	*rCmd	<< "rsh " << HostName << " -l " << gSystem->Getenv("USER") << " \"ps ax | fgrep m_\""
 			<< ends;
 
+	cout	<< setmagenta << "Please wait " << setblack << ends << flush;
 	fAborted = kFALSE;
 	for (i = 0; i < 30 ; i++) {
 		gSystem->ProcessEvents();
@@ -384,33 +420,123 @@ Bool_t TMrbEsone::StartServer(const Char_t * HostName, const Char_t * SetupPath,
 	delete rCmd;
 
 	if (found) {
-		gMrbLog->Out()	<< "ESONE server (" << fController.GetName() << ") running on host \""
+		gMrbLog->Out()	<< "ESONE server (type " << fServerType.GetName()
+						<< ", controller " << fController.GetName() << ") running on host \""
 						<< HostName << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setblue);
 		return(kTRUE);
 	} else {
-		gMrbLog->Err()	<< "Can't start server (" << fController.GetName() << ") on host \""
+		gMrbLog->Err()	<< "Can't start server (type " << fServerType.GetName()
+						<< ", controller " << fController.GetName() << ") on host \""
 						<< HostName << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer");
 		return(kFALSE);
 	}
 }
 
-CamacHost_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
+Bool_t TMrbEsone::StartMarabouServer(const Char_t * HostName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::StartMarabouServer
+// Purpose:        Connect to MARaBOU server
+// Arguments:      Char_t * HostName      -- server addr
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Establishes a server connection.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TSocket * s;
+	TMrbString cmd;
+	Bool_t sockOk;
+	
+	this->SetOffline(kFALSE);
+	
+	fHost = HostName;
+	fPort = gEnv->GetValue("TMrbEsone.ServerPort", 9010);
+	fServerProg = gEnv->GetValue("TMrbEsone.ServerProg", "mrbEsoneSrv");
+	fBufferSize = gEnv->GetValue("TMrbEsone.BufferSize", 0x8000);
+	fNofCrates = gEnv->GetValue("TMrbEsone.NofCrates", 1);
+	fCC32Base = gEnv->GetValue("TMrbEsone.CC32Base", 0x550000);
+
+	fSocket = NULL;
+	
+	s = new TSocket(fHost.Data(), fPort);
+	sockOk = s->IsValid();
+	if (sockOk) {
+		gMrbLog->Out()	<< "Connecting to server " << fHost << ":" << fPort
+						<< " (progr " << fServerProg << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
+	} else {
+		gMrbLog->Out()	<< "Trying to connect to server " << fHost << ":" << fPort
+						<< " (progr " << fServerProg << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
+		delete s;
+		cmd = "xterm -title ";
+		cmd += fServerProg;
+		cmd += "@";
+		cmd += fHost;
+		cmd += " -e rsh ";
+		cmd += fHost;
+		cmd += " ";
+		cmd += fServerProg;
+		cmd += " ";
+		cmd += fPort;
+		cmd += " ";
+		cmd += fNofCrates;
+		cmd += " 0x";
+		cmd.AppendInteger(fCC32Base, 0, ' ', 16);
+		cmd += " 0x";
+		cmd.AppendInteger(fBufferSize, 0, ' ', 16);
+		cmd += " &";
+
+		if (this->IsVerbose()) {
+			gMrbLog->Out()	<< "Exec >> " << cmd << " <<" << endl;
+			gMrbLog->Flush(this->ClassName(), "StartMarabouServer", setmagenta);
+		}
+		gSystem->Exec(cmd.Data());
+		cout	<< "Wait " << flush;
+		for (Int_t i = 0; i < 5; i++) {
+			sleep(1);
+			cout << "." << flush;
+		}
+		for (Int_t i = 0; i < kEsoneWaitForServer; i++) {
+			sleep(1);
+			cout << "." << flush;
+			s = new TSocket(fHost.Data(), fPort);
+			sockOk = s->IsValid();
+			if (sockOk) break;
+			delete s;
+		}
+		if (sockOk) {
+			cout << " done." << endl;
+		} else {
+			cout << endl;
+			gMrbLog->Err()	<< "Can't connect to server/port " << fHost << ":" << fPort << endl;
+			gMrbLog->Flush(this->ClassName(), "StartMarabouServer");
+			return(kFALSE);
+		}
+	}
+	
+	fSocket = s;
+	return(kTRUE);
+}
+							
+UInt_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::ConnectToHost
 // Purpose:        Establish connection to camac host
 // Arguments:      Char_t * HostName  -- host name
 //                 Bool_t Offline     -- hardware access to be simulated by software?
-// Results:        CamacHost_t        -- host address, 0 if error
+// Results:        UInt_t             -- host address, 0 if error
 // Exceptions:
 // Description:    ESONE ccopen.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * host;
-	CamacHost_t hostAddr;
+	UInt_t hostAddr;
 	TInetAddress * ia;
 	TString iAddr;
 
@@ -436,7 +562,7 @@ CamacHost_t TMrbEsone::ConnectToHost(const Char_t * HostName) {
 
 	host = gMrbEsoneHosts->FindByName(HostName); 				// host already in internal host table?
 	if (host == NULL) {
-		if (!this->IsOffline() && ccopen((Char_t *) HostName, &hostAddr) == -1) {		// no: try to connect via ESONE
+		if (!this->EsoneCCOPEN(HostName, hostAddr)) {			// no: try to connect via ESONE
 			gMrbLog->Err() << "Can't connect to " << HostName << endl;
 			this->PrintError("ccopen", "ConnectToHost");
 			fHost.Resize(0);
@@ -460,22 +586,19 @@ Bool_t TMrbEsone::ClearDW(Int_t Crate) {
 // Arguments:      Int_t Crate      -- crate number
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    ESONE cccc.
+// Description:    ESONE cccc (CAMAC Clear)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	CamacReg_t creg;
-
 	if (!this->CheckConnection("ClearDW")) return(kFALSE);
-	if ((Crate = this->CheckCrate(Crate, "ClearDW")) == -1) return(kFALSE);	// take default crate if not explicitly given
+	if (!this->CheckCrate(Crate, "ClearDW")) return(kFALSE);
 
-	creg = cdreg(&creg, fHostAddr, Crate, 0, 0);				// get ESONE-style CAMAC command: HOST.Cxx.N0.A0
-
-	cdctrl(fController.GetIndex());							// define controller: cnaf code depends on it
-	if (this->IsOffline() || cccc(creg) == 0) return(kTRUE); 	// exec CAMAC-C
-	gMrbLog->Err() << "Dataway clear failed -" << endl;
-	this->PrintError("cccc", "ClearDW");
-	return(kFALSE);
+	if (!this->EsoneCCCC(Crate)) {						// exec CAMAC-C
+		gMrbLog->Err() << "Dataway clear failed for crate C" << Crate <<" -" << endl;
+		this->PrintError("cccc", "ClearDW");
+		return(kFALSE);
+	}
+	return(kTRUE);
 }
 
 Bool_t TMrbEsone::SetDWInhibit(Int_t Crate, Bool_t Inhibit) {
@@ -487,31 +610,25 @@ Bool_t TMrbEsone::SetDWInhibit(Int_t Crate, Bool_t Inhibit) {
 //                 Bool_t Inhibit   -- inhibit flag
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    ESONE ccci.
+// Description:    ESONE ccci (CAMAC Inhibit)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	CamacReg_t creg;
-	Int_t lflag;
-
 	if (!this->CheckConnection("SetDWInhibit")) return(kFALSE);
-	if ((Crate = this->CheckCrate(Crate, "SetDWInhibit")) == -1) return(kFALSE);	// take default crate if not explicitly given
+	if (!this->CheckCrate(Crate, "SetDWInhibit")) return(kFALSE);
 
-	creg = cdreg(&creg, fHostAddr, Crate, 0, 0);				// get ESONE-style CAMAC command: HOST.Cxx.N0.A0
-
-	lflag = Inhibit ? (Int_t) kFEnable : (Int_t) kFDisable; 					// enable / disable
-
-	cdctrl(fController.GetIndex());							// define controller: cnaf code depends on it
-	if (this->IsOffline() || ccci(creg, lflag) == 0) return(kTRUE);	// exec CAMAC-I
-	gMrbLog->Err() << "Dataway inhibit failed -" << endl;
-	this->PrintError("ccci", "SetDWInhibit");
-	return(kFALSE);
+	if (!this->EsoneCCCI(Crate, Inhibit) == 0) {			// exec CAMAC-I
+		gMrbLog->Err() << "Dataway inhibit failed for crate C" << Crate << " -" << endl;
+		this->PrintError("ccci", "SetDWInhibit");
+		return(kFALSE);
+	}
+	return(kTRUE);
 }
 
-Bool_t TMrbEsone::DWInhibit(Int_t Crate) {
+Bool_t TMrbEsone::DWIsInhibited(Int_t Crate) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::DWInhibit
+// Name:           TMrbEsone::DWInhIsActive
 // Purpose:        Test dataway inhibit
 // Arguments:      Int_t Crate        -- crate number
 // Results:        kTRUE/kFALSE
@@ -520,17 +637,9 @@ Bool_t TMrbEsone::DWInhibit(Int_t Crate) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	CamacReg_t creg;
-	Int_t dwFlag;
-
 	if (!this->CheckConnection("DWInhibit")) return(kFALSE);
-	if ((Crate = this->CheckCrate(Crate, "DWInhibit")) == -1) return(kFALSE);	// take default crate if not explicitly given
-
-	creg = cdreg(&creg, fHostAddr, Crate, 0, 0);				// get ESONE-style CAMAC command: HOST.Cxx.N0.A0
-
-	if (this->IsOffline()) return(kTRUE);
-	ctci(creg, &dwFlag);
-	return(dwFlag == 1);
+	if (!this->CheckCrate(Crate, "DWInhibit")) return(kFALSE);
+	return(this->EsoneCTCI(Crate));
 }
 
 Bool_t TMrbEsone::InitDW(Int_t Crate) {
@@ -541,281 +650,199 @@ Bool_t TMrbEsone::InitDW(Int_t Crate) {
 // Arguments:      Int_t Crate     -- crate number
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    ESONE cccz.
+// Description:    ESONE cccz (CAMAC Z)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	CamacReg_t creg;
-
 	if (!this->CheckConnection("InitDW")) return(kFALSE);
-	if ((Crate = this->CheckCrate(Crate, "InitDW")) == -1) return(kFALSE);	// take default crate if not explicitly given
+	if (!this->CheckCrate(Crate, "InitDW")) return(kFALSE);
 
-	creg = cdreg(&creg, fHostAddr, Crate, 0, 0);				// get ESONE-style CAMAC command: HOST.Cxx.N0.A0
-
-	cdctrl(fController.GetIndex());							// define controller: cnaf code depends on it
-	if (this->IsOffline() || cccz(creg) == 0) return(kTRUE); 	// exec CAMAC-Z
-	gMrbLog->Err() << "Dataway initialize failed -" << endl;
-	this->PrintError("cccz", "InitDW");
-	return(kFALSE);
+	if (!this->EsoneCCCZ(Crate)) { 			// exec CAMAC-Z
+		gMrbLog->Err() << "Dataway initialize failed for crate C" << Crate << " -" << endl;
+		this->PrintError("cccz", "InitDW");
+		return(kFALSE);
+	}
+	return(kTRUE);
 }
 
-Int_t TMrbEsone::ExecCnaf(const Char_t * Cnaf, CamacData_t Data, Bool_t D16Flag) {
+Bool_t TMrbEsone::ExecCnaf(const Char_t * Cnaf, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::ExecCnaf
+// Purpose:        Exec a single control CNAF
+// Arguments:      Char_t * Cnaf     -- cnaf (ascii representation)
+//                 Bool_t D16Flag    -- kTRUE if 16 bits only
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    ESONE cfsa / cssa. Control cnafs only.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbEsoneCnaf cnaf;
+
+	if (!cnaf.Ascii2Int(Cnaf)) return(kFALSE);			// decode CNAF
+	return(this->ExecCnaf(cnaf, D16Flag));
+}
+
+Bool_t TMrbEsone::ExecCnaf(const Char_t * Cnaf, Int_t & Data, Bool_t D16Flag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::ExecCnaf
 // Purpose:        Exec a single CNAF
 // Arguments:      Char_t * Cnaf     -- cnaf (ascii representation)
-//                 CamacData_t Data  -- data
+//                 Int_t & Data      -- data
 //                 Bool_t D16Flag    -- kTRUE if 16 bits only
-// Results:        Int_t TallyCount  -- -1 (error), 1 (normally)
-// Exceptions:
+// Results:        kTRUE/kFALSE
+// Exceptions:     
 // Description:    ESONE cfsa / cssa.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbEsoneCNAF cnaf;
-	Int_t stsX;
-	Int_t crate;
+	TMrbEsoneCnaf cnaf;
 
-	if (!this->CheckConnection("ExecCnaf")) return(-1);
-
-	if (!cnaf.Ascii2Int(Cnaf)) return(-1);			// decode CNAF
-
-	if ((crate = cnaf.Get(TMrbEsoneCNAF::kCnafCrate)) == -1) {					// crate number explicitly given? 
-		if ((crate = this->CheckCrate(crate, "ExecCnaf")) == -1) return(-1);	// no, try to take default
-		cnaf.Set(TMrbEsoneCNAF::kCnafCrate, crate);
-	}
-
-	fFunction[0] = cnaf.Get(TMrbEsoneCNAF::kCnafFunction); // get actual function
-
-	if (cnaf.IsWrite()) {
-		if (Data == kNoData) Data = cnaf.Get(TMrbEsoneCNAF::kCnafData);
-		if (Data == kNoData) {
-			gMrbLog->Err() << "Function F" << fFunction[0] << " (WRITE) needs DATA" << endl;
-			gMrbLog->Flush(this->ClassName(), "ExecCnaf");
-			return(-1);
-		}
-		fData[0] = Data;								// store data if WRITE
-		cnaf.Set(TMrbEsoneCNAF::kCnafData, Data);
-	} else {
-		fData[0] = kNoData;
-	}
-
-	if (!cnaf.CheckCnaf()) return(-1);					// check for completeness & consistency
-
-	fCnaf[0] = cnaf.Int2Esone(fHostAddr);				// get CAMAC command: HOST.Cxx.Nxx.Axx
-	fQX[0] = 0;
-
-	if (D16Flag) {
-		fAction = TMrbEsone::kCA_cssa;
-		if (this->IsOffline()) return(1); 			// simulated by software
-		stsX = cssa(fFunction[0], fCnaf[0], (Int_t *) this->GetDAddr(), NULL); // exec single cnaf, 16 bit
-	} else {
-		fAction = TMrbEsone::kCA_cfsa;
-		if (this->IsOffline()) return(1); 			// simulated by software
-		stsX = cfsa(fFunction[0], fCnaf[0], (Int_t *) this->GetDAddr(), NULL); // exec single cnaf, 24 bit
-	}
-
-	fCurNofCnafs = 1;
-	if (stsX == -1) {			// X = 0, Q = 0
-		fQX[0] = 0;
-		fTally = -1;
-	} else {
-		fQX[0] = TMrbEsone::kXFlag; 					// X = 1
-		if (stsX != 0) fQX[0] |= TMrbEsone::kQFlag; 	// Q = 1
-		fTally = 1;
-	}
-	if (this->IsVerbose()) this->PrintResults("ExecCnaf", &cnaf);
-	return(fTally);
+	if (!cnaf.Ascii2Int(Cnaf)) return(kFALSE);			// decode CNAF
+	if (cnaf.IsWrite()) cnaf.SetData(Data);
+	if (!this->ExecCnaf(cnaf, D16Flag)) return(kFALSE);
+	if (cnaf.IsRead()) Data = cnaf.GetData();
+	return(kTRUE);
 }
 
-Int_t TMrbEsone::ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, CamacFunction_t Function, CamacData_t Data, Bool_t D16Flag) {
+Bool_t TMrbEsone::ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::ExecCnaf
+// Purpose:        Exec a single control CNAF
+// Arguments:      Int_t Crate       -- crate number
+//                 Int_t Station     -- station
+//                 Int_t Subaddr     -- subaddress
+//                 Int_t Function    -- function
+//                 Bool_t D16Flag    -- kTRUE if 16 bits only
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    ESONE cfsa / cssa. Control cnafs only.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbEsoneCnaf cnaf;
+	cnaf.Set(Crate, Station, Subaddr, Function);
+	if (!cnaf.IsControl()) {
+		gMrbLog->Err()	<< "[" << cnaf.Int2Ascii() << "] Not a CONTROL cnaf" << endl;
+		gMrbLog->Flush(this->ClassName(), "ExecCnaf");
+		return(kFALSE);
+	}
+	cnaf.ClearData();
+	return(this->ExecCnaf(cnaf, D16Flag));
+}
+
+Bool_t TMrbEsone::ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Int_t & Data, Bool_t D16Flag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::ExecCnaf
 // Purpose:        Exec a single CNAF
-// Arguments:      Int_t Crate               -- crate number
-//                 Int_t Station             -- station
-//                 Int_t Subaddr             -- subaddress
-//                 CamacFunction_t Function  -- function
-//                 CamacData_t Data          -- data
-//                 Bool_t D16Flag            -- kTRUE if 16 bits only
-// Results:        Int_t TallyCount          -- resulting number of data words
+// Arguments:      Int_t Crate       -- crate number
+//                 Int_t Station     -- station
+//                 Int_t Subaddr     -- subaddress
+//                 Int_t Function    -- function
+//                 Int_t & Data      -- data
+//                 Bool_t D16Flag    -- kTRUE if 16 bits only
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    ESONE cfsa / cssa.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbEsoneCnaf cnaf;
+
+	cnaf.Set(Crate, Station, Subaddr, Function, Data);
+	if (!this->ExecCnaf(cnaf, D16Flag)) return(kFALSE);
+	if (cnaf.IsRead()) Data = cnaf.GetData();
+	return(kTRUE);
+}
+
+Bool_t TMrbEsone::ExecCnaf(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::ExecCnaf
+// Purpose:        Exec a single CNAF
+// Arguments:      TMrbEsoneCnaf & Cnaf     -- cnaf
+//                 Bool_t D16Flag           -- kTRUE if 16 bits only
+// Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    ESONE cfsa / cssa.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t stsX;
-	TMrbEsoneCNAF cnaf;
+	Bool_t ok;
 
-	if (!this->CheckConnection("ExecCnaf")) return(-1);
+	if (!this->CheckConnection("ExecCnaf")) return(kFALSE);
+	if (!Cnaf.CheckCnaf()) return(kFALSE);		// check for completeness & consistency
 
-	if ((Crate = this->CheckCrate(Crate, "ExecCnaf")) == -1) return(-1);
+	cout << "@@ ExecCnaf: before " << Cnaf.Int2Ascii(kTRUE) << endl;
 
-	cnaf.Set(Crate, Station, Subaddr, Function, Data);
-	if (!cnaf.CheckCnaf()) return(-1);				// check cnaf
+	ok = this->EsoneCXSA(Cnaf, D16Flag);  		// exec single cnaf, 16 or 24 bit
+	cout << "@@ ExecCnaf: after " << Cnaf.Int2Ascii(kTRUE) << endl;
 
-	fFunction[0] = Function;
-	if (cnaf.IsWrite()) {
-		if (Data == kNoData) {
-			gMrbLog->Err() << "Function F" << fFunction[0] << " (WRITE) needs DATA" << endl;
-			gMrbLog->Flush(this->ClassName(), "ExecCnaf");
-			return(-1);
-		}
-		fData[0] = Data;			// store data if WRITE
-	} else fData[0] = kNoData;
+	if (this->IsVerbose()) this->PrintResults("ExecCnaf", Cnaf);
 
-	fCnaf[0] = cnaf.Int2Esone(fHostAddr);
-	fQX[0] = 0;
-
-	if (D16Flag) {
-		fAction = TMrbEsone::kCA_cssa;
-		if (this->IsOffline()) return(1); 				// simulated by software
-		stsX = cssa(fFunction[0], fCnaf[0], (Int_t *) this->GetDAddr(), (Int_t *) this->GetQXAddr()); // exec single cnaf, 16 bit
-	} else {
-		fAction = TMrbEsone::kCA_cfsa;
-		if (this->IsOffline()) return(1); 				// simulated by software
-		stsX = cfsa(fFunction[0], fCnaf[0], (Int_t *) this->GetDAddr(), (Int_t *) this->GetQXAddr()); // exec single cnaf, 24 bit
-	}
-
-	fCurNofCnafs = 1;
-	if (stsX == -1) {			// X = 0, Q = 0
-		fQX[0] = 0;
-		fTally = -1;
-	} else {
-		fQX[0] = TMrbEsone::kXFlag; 					// X = 1
-		if (stsX != 0) fQX[0] |= TMrbEsone::kQFlag; 	// Q = 1
-		fTally = 1;
-	}
-	if (this->IsVerbose()) this->PrintResults("ExecCnaf", &cnaf);
-	return(fTally);
+	return(ok);
 }
 
-Int_t TMrbEsone::ExecCnafList(Int_t NofCnafs, Bool_t D16Flag) {
+Int_t TMrbEsone::ExecCnafList(TObjArray & CnafList, Bool_t D16Flag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::ExecCnafList
 // Purpose:        Exec a list of CNAFs
-// Arguments:      Int_t NofCnafs    -- number of CNAFs to be executed
-//                 Bool_t D16Flag    -- kTRUE if 16 bits only
-// Results:        Int_t TallyCount  -- resulting number of data words
-// Exceptions:
+// Arguments:      TObjArray & CnafList    -- cnafs to be executed
+//                 Bool_t D16Flag          -- kTRUE if 16 bits only
+// Results:        Int_t NofCnafs          -- number of cnafs executed
+// Exceptions:     Returns kEsoneError on error.
 // Description:    ESONE cfga / csga.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t stsX;
+	Int_t nofCnafs;
 
-	if (!this->CheckConnection("ExecCnafList")) return(-1);
+	if (!this->CheckConnection("ExecCnafList")) return(kEsoneError);
 
-//	if ((NofCnafs = this->CheckList(NofCnafs, "ExecCnafList")) == -1) return(-1);	// check consistency
-
-	this->SetCB(NofCnafs);											// length of cnaf list
-	this->ClearTally(); 											// no data
-	this->ClearQX();												// clear Q & X
-
-	if (D16Flag) {
-		fAction = TMrbEsone::kCA_csga;
-		if (this->IsOffline()) return(NofCnafs); 				// simulated by software
-		stsX = csga((Int_t *) this->GetFAddr(), (Int_t *) this->GetCAddr(), (Int_t *) this->GetDAddr(), (Int_t *) this->GetQXAddr(), fCB);
-	} else {
-		fAction = TMrbEsone::kCA_cfga;
-		if (this->IsOffline()) return(NofCnafs); 				// simulated by software
-		stsX = cfga((Int_t *) this->GetFAddr(), (Int_t *) this->GetCAddr(), (Int_t *) this->GetDAddr(), (Int_t *) this->GetQXAddr(), fCB);
+	Bool_t ok = kTRUE;
+	for (Int_t i = 0; i <= CnafList.GetLast(); i++) {
+		if (!((TMrbEsoneCnaf *) CnafList[i])->CheckCnaf()) ok = kFALSE;		// check for completeness & consistency
 	}
+	if (!ok) return(kEsoneError);
 
-	if (stsX == 0) fTally = fCB[1]; else fTally = -1;
-	if (this->IsVerbose()) this->PrintResults("ExecCnafList");
-	return(fTally);
+	nofCnafs = this->EsoneCXGA(CnafList, D16Flag);
+	if (this->IsVerbose()) this->PrintResults("ExecCnafList", CnafList);
+	return(nofCnafs);
 }
 
 
-Int_t TMrbEsone::AddressScan(const Char_t * Start, const Char_t * Stop, Int_t WordCount, Bool_t D16Flag) {
+Int_t TMrbEsone::AddressScan(const Char_t * Start, const Char_t * Stop, TArrayI & Data, TObjArray & Results, Bool_t D16Flag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::AddressScan
 // Purpose:        Exec cnafs between N(start) and N(Stop)
 // Arguments:      Char_t * Start            -- C.N.F to start with
 //                 Char_t * Stop             -- C.N.F to stop with
-//                 Int_t WordCount           -- number of cnafs to execute / data to take
+//                 TArrayI & Data            -- data (read/write)
+//                 TObjArray & Results       -- where to store resulting data
 //                 Bool_t D16Flag            -- kTRUE if 16 bits only
-// Results:        Int_t TallyCount          -- resulting number of data words
-// Exceptions:
+// Results:        Int_t NofData             -- resulting number of data words
+// Exceptions:     Returns kEsoneError on error.
 // Description:    ESONE cfmad / csmad.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t stsX;
-	TMrbEsoneCNAF startCnaf, stopCnaf;
-	Int_t crate;
-	Int_t station;
-	CamacFunction_t function;
+	TMrbEsoneCnaf startCnaf, stopCnaf;
 
-	if (!this->CheckConnection("AddressScan")) return(-1);
+	if (!this->CheckConnection("AddressScan")) return(kEsoneError);
 
-	if (!startCnaf.Ascii2Int(Start)) return(-1);		// test if cnaf if legal
-	if (!stopCnaf.Ascii2Int(Stop)) return(-1);
+	if (!startCnaf.Ascii2Int(Start)) return(kEsoneError);
+	if (!stopCnaf.Ascii2Int(Stop)) return(kEsoneError);
 
-	crate = startCnaf.Get(TMrbEsoneCNAF::kCnafCrate);
-	if ((crate = this->CheckCrate(crate, "AddressScan")) == -1) return(-1);
-	if (stopCnaf.Get(TMrbEsoneCNAF::kCnafCrate) == -1) stopCnaf.Set(TMrbEsoneCNAF::kCnafCrate, crate);
-
-	if (stopCnaf.Get(TMrbEsoneCNAF::kCnafCrate) != crate) { 	// crate must be same
-		gMrbLog->Err()	<< "Crates different - start=C" << crate
-						<< " != stop=C" << stopCnaf.Get(TMrbEsoneCNAF::kCnafCrate) << endl;
-		gMrbLog->Flush(this->ClassName(), "AdressScan");
-		return(-1);
-	}
-
-	station = startCnaf.Get(TMrbEsoneCNAF::kCnafStation);
-	if (stopCnaf.Get(TMrbEsoneCNAF::kCnafStation) < station) { 	// stations must be in order
-		gMrbLog->Err()	<< "Station out of order - start=N" << station
-						<< " > stop=N" << stopCnaf.Get(TMrbEsoneCNAF::kCnafStation) << endl;
-		gMrbLog->Flush(this->ClassName(), "AdressScan");
-		return(-1);
-	}
-
-	if (startCnaf.Get(TMrbEsoneCNAF::kCnafAddr) != -1 || stopCnaf.Get(TMrbEsoneCNAF::kCnafAddr) != -1) { 	// no subaddr allowed
-		gMrbLog->Err() << "Subaddresses may not be given" << endl;
-		gMrbLog->Flush(this->ClassName(), "AdressScan");
-		return(-1);
-	}
-
-	function = startCnaf.Get(TMrbEsoneCNAF::kCnafFunction);
-	if (stopCnaf.Get(TMrbEsoneCNAF::kCnafFunction) == -1) stopCnaf.Set(TMrbEsoneCNAF::kCnafFunction, function);
-
-	if ((CamacFunction_t) stopCnaf.Get(TMrbEsoneCNAF::kCnafFunction) != function) { 	// must be same function
-		gMrbLog->Err()	<< "Function codes different - start=F" << function
-						<< " != stop=F" << stopCnaf.Get(TMrbEsoneCNAF::kCnafFunction) << endl;
-		gMrbLog->Flush(this->ClassName(), "AdressScan");
-		return(-1);
-	}
-
-	fCnaf[0] = startCnaf.Int2Esone(fHostAddr);			// start
-	fCnaf[1] = stopCnaf.Int2Esone(fHostAddr);			// stop
-	fFunction[0] = function;							// camac function code
-	if (WordCount == -1) WordCount = fMaxNofCnafs;
-	this->SetCB(WordCount);
-
-	if (!startCnaf.IsWrite()) this->ClearData();		// reset data buffer in case of read/control cnafs
-
-	if (D16Flag) {
-		fAction = TMrbEsone::kCA_csmad;
-		if (this->IsOffline()) return(WordCount); 				// simulated by software
-		stsX = csmad(fFunction[0], (Int_t *) this->GetCAddr(), (Int_t *) this->GetDAddr(), fCB);
-	} else {
-		fAction = TMrbEsone::kCA_cfmad;
-		if (this->IsOffline()) return(WordCount); 				// simulated by software
-		stsX = cfmad(fFunction[0], (Int_t *) this->GetCAddr(), (Int_t *) this->GetDAddr(), fCB);
-	}
-	if (stsX == 0) fTally = fCB[1]; else fTally = -1;
-	if (this->IsVerbose()) this->PrintResults("AddressScan", &startCnaf, &stopCnaf);
-	return(fTally);
+	return(this->AddressScan(startCnaf, stopCnaf, Data, Results, D16Flag));
 }
 
-Int_t TMrbEsone::AddressScan(Int_t Crate, Int_t Start, Int_t Stop, CamacFunction_t Function,
-																	Int_t WordCount, Bool_t D16Flag) {
+Int_t TMrbEsone::AddressScan(Int_t Crate, Int_t Start, Int_t Stop, Int_t Function, TArrayI & Data, TObjArray & Results, Bool_t D16Flag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::AddressScan
@@ -823,133 +850,118 @@ Int_t TMrbEsone::AddressScan(Int_t Crate, Int_t Start, Int_t Stop, CamacFunction
 // Arguments:      Int_t Crate               -- crate number
 //                 Int_t Start               -- station to start with
 //                 Int_t Stop                -- station to stop with
-//                 CamacFunction_t Function  -- function code
-//                 Int_t WordCount           -- number of cnafs to execute / data to take
+//                 Int_t Function            -- function code
+//                 TArrayI & Data            -- data (read/write)
+//                 TObjArray & Results       -- where to store resulting data
 //                 Bool_t D16Flag            -- kTRUE if 16 bits only
-// Results:        Int_t TallyCount          -- resulting number of data words
-// Exceptions:
+// Results:        Int_t NofData             -- resulting number of data words
+// Exceptions:     Returns kEsoneError on error.     
 // Description:    ESONE cfmad / csmad.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t stsX;
-	TMrbEsoneCNAF startCnaf, stopCnaf;
+	TMrbEsoneCnaf startCnaf, stopCnaf;
 
-	if (!this->CheckConnection("AddressScan")) return(-1);
-
-	if ((Crate = this->CheckCrate(Crate, "AddressScan")) == -1) return(-1);	// take default crate if not explicitly given
+	if (!this->CheckConnection("AddressScan")) return(kEsoneError);
+	if (!this->CheckCrate(Crate, "AddressScan")) return(kEsoneError);
 
 	startCnaf.Set(Crate, Start, 0, Function);
 	stopCnaf.Set(Crate, Stop, 0, Function);
 
-	if (Start > Stop) { 	// stations must be in order
-		gMrbLog->Err() << "Station out of order - start=N" << Start << " > stop=N" << Stop << endl;
-		gMrbLog->Flush(this->ClassName(), "AdressScan");
-		return(-1);
-	}
-
-	if (!startCnaf.CheckCnaf(~TMrbEsoneCNAF::kCnafData)) return(-1);	// check cnafs (all but data field)
-	if (!stopCnaf.CheckCnaf(~TMrbEsoneCNAF::kCnafData)) return(-1);
-
-	fCnaf[0] = startCnaf.Int2Esone(fHostAddr);			// start
-	fCnaf[1] = stopCnaf.Int2Esone(fHostAddr);			// stop
-	fFunction[0] = Function;
-	if (WordCount == -1) WordCount = fMaxNofCnafs;
-	this->SetCB(WordCount);
-
-	if (!startCnaf.IsWrite()) this->ClearData();		// reset data buffer in case of read/control cnafs
-
-	if (D16Flag) {
-		fAction = TMrbEsone::kCA_csmad;
-		if (this->IsOffline()) return(WordCount); 			// simulated by software	
-		stsX = csmad(fFunction[0], (Int_t *) this->GetCAddr(), (Int_t *) this->GetDAddr(), fCB);
-	} else {
-		fAction = TMrbEsone::kCA_cfmad;
-		if (this->IsOffline()) return(WordCount); 			// simulated by software	
-		stsX = cfmad(fFunction[0], (Int_t *) this->GetCAddr(), (Int_t *) this->GetDAddr(), fCB);
-	}
-
-	if (stsX == 0) fTally = fCB[1]; else fTally = -1;
-	if (this->IsVerbose()) this->PrintResults("AddressScan", &startCnaf, &stopCnaf);
-	return(fTally);
+	return(this->AddressScan(startCnaf, stopCnaf, Data, Results, D16Flag));
 }
 
-Int_t TMrbEsone::BlockXfer(const Char_t * Cnaf, Int_t NofCnafs, Bool_t D16Flag, Bool_t QXfer) {
+Int_t TMrbEsone::AddressScan(TMrbEsoneCnaf & Start, TMrbEsoneCnaf & Stop, TArrayI & Data, TObjArray & Results, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::AddressScan
+// Purpose:        Exec cnafs between N(start) and N(Stop)
+// Arguments:      TMrbEsoneCnaf & Start     -- C.N.F to start with
+//                 TMrbEsoneCnaf & Stop      -- C.N.F to stop with
+//                 TArrayI & Data            -- data (read/write)
+//                 TObjArray & Results       -- where to store resulting data
+//                 Bool_t D16Flag            -- kTRUE if 16 bits only
+// Results:        Int_t NofData             -- resulting number of data words
+// Exceptions:     Returns kEsoneError on error.
+// Description:    ESONE cfmad / csmad.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t crate = Start.GetC();
+	if (!this->CheckCrate(crate, "AddressScan")) return(kEsoneError);
+	if (Stop.GetC() == -1) Stop.SetC(crate);
+
+	if (Stop.GetC() != crate) { 	// crate must be same
+		gMrbLog->Err()	<< "[" << Start.Int2Ascii() << " : " << Stop.Int2Ascii()
+						<< "] Crates different - start=C" << crate
+						<< " != stop=C" << Stop.GetC() << endl;
+		gMrbLog->Flush(this->ClassName(), "AdressScan");
+		return(kEsoneError);
+	}
+
+	Int_t station = Start.GetN();
+	if (Stop.GetN() < station) { 	// stations must be in order
+		gMrbLog->Err()	<< "[" << Start.Int2Ascii() << " : " << Stop.Int2Ascii()
+						<< "] Station out of order - start=N" << station
+						<< " > stop=N" << Stop.GetN() << endl;
+		gMrbLog->Flush(this->ClassName(), "AdressScan");
+		return(kEsoneError);
+	}
+
+	if (Start.GetA() != -1) { 	// no subaddr allowed
+		gMrbLog->Err() << "[" << Start.Int2Ascii() << "] Subaddr may not be given" << endl;
+		gMrbLog->Flush(this->ClassName(), "AdressScan");
+		return(kEsoneError);
+	}
+
+	if (Stop.GetA() != -1) { 	// no subaddr allowed
+		gMrbLog->Err() << "[" << Stop.Int2Ascii() << "] Subaddr may not be given" << endl;
+		gMrbLog->Flush(this->ClassName(), "AdressScan");
+		return(kEsoneError);
+	}
+
+	Int_t function = Start.GetF();
+	if (Stop.GetF() == -1) Stop.SetF(function);
+
+	if (Stop.GetF() != function) { 	// must be same function
+		gMrbLog->Err()	<< "[" << Start.Int2Ascii() << " : " << Stop.Int2Ascii()
+						<< "] Function codes different - start=F" << function
+						<< " != stop=F" << Stop.GetF() << endl;
+		gMrbLog->Flush(this->ClassName(), "AdressScan");
+		return(kEsoneError);
+	}
+
+	Int_t nofData = this->EsoneCXMAD(Start, Stop, Data, Results, D16Flag);
+	if (this->IsVerbose()) this->PrintResults("AddressScan", Results);
+	return(nofData);
+}
+
+Int_t TMrbEsone::BlockXfer(const Char_t * Cnaf, TArrayI & Data, Int_t Start, Int_t NofWords, Bool_t D16Flag, Bool_t QXfer) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::BlockXfer
 // Purpose:        Start block transfer
 // Arguments:      Char_t * Cnaf            -- C.N.F to be executed
-//                 Int_t NofCnafs           -- number of cnafs
+//                 TArrayI & Data           -- data
+//                 Int_t Start              -- data index to start with
+//                 Int_t NofWords           -- number of words to xfer
 //                 Bool_t D16Flag           -- kTRUE if 16 bits only
 //                 Bool_t QXfer             -- kTRUE if Q-driven
-// Results:        Int_t TallyCount         -- resulting number of data words
-// Exceptions:
+// Results:        Int_t NofData            -- resulting number of data words
+// Exceptions:     Returns kEsoneError on error.
 // Description:    ESONE cfubc / csubc / cfubr / csubr.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t stsX;
-	TMrbEsoneCNAF cnaf;
-	Int_t crate;
-	CamacReg_t creg;
-	Int_t offset, repeat;
+	TMrbEsoneCnaf cnaf;
 
-	if (!this->CheckConnection("BlockXfer")) return(-1);
-
-	if (!cnaf.Ascii2Int(Cnaf)) return(-1);		// test if cnaf if legal
-
-	if ((crate = cnaf.Get(TMrbEsoneCNAF::kCnafCrate)) == -1) {							// crate number explicitly given? 
-		if ((crate = this->CheckCrate(crate, "BlockXfer")) == -1) return(-1);	// no, try to take default
-		cnaf.Set(TMrbEsoneCNAF::kCnafCrate, crate);
-	}
-
-	if (!cnaf.CheckCnaf(~TMrbEsoneCNAF::kCnafData)) return(-1);			// check cnaf (all but data field)
-
-	fFunction[0] = cnaf.Get(TMrbEsoneCNAF::kCnafFunction);				// get actual function
-
-	if (!cnaf.IsWrite()) this->ClearData(); 			// reset data buffer in case of read/control cnafs
-
-	creg = cnaf.Int2Esone(fHostAddr);
-
-	if (NofCnafs == -1) NofCnafs = fCurNofCnafs;		// default: current number of cnafs
-	this->SetCB(NofCnafs);								// setup control block
-
-	fTally = 0;
-	offset = 0;
-	repeat = (NofCnafs + kMaxRepeatCount - 1) / kMaxRepeatCount;
-	for (; repeat--; offset += kMaxRepeatCount, NofCnafs -= kMaxRepeatCount) {
-		if (NofCnafs > kMaxRepeatCount) this->SetCB(kMaxRepeatCount); else this->SetCB(NofCnafs);
-		if (QXfer) {
-			if (D16Flag) {
-				fAction = TMrbEsone::kCA_csubr;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = csubr(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			} else {
-				fAction = TMrbEsone::kCA_cfubr;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = cfubr(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			}
-		} else {
-			if (D16Flag) {
-				fAction = TMrbEsone::kCA_csubc;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = csubc(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			} else {
-				fAction = TMrbEsone::kCA_cfubc;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = cfubc(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			}
-		}
-		if (stsX == 0) fTally += fCB[1]; else fTally = -1;
-		if (this->IsVerbose()) this->PrintResults("BlockXfer", &cnaf);
-		if (fTally == -1) return(-1);
-	}
-	return(fTally);
+	if (!this->CheckConnection("BlockXfer")) return(kEsoneError);
+	if (!cnaf.Ascii2Int(Cnaf)) return(kEsoneError);		// test if cnaf if legal
+	return(this->BlockXfer(cnaf, Data, Start, NofWords, D16Flag, QXfer));
 }
 
-Int_t TMrbEsone::BlockXfer(Int_t Crate, Int_t Station, Int_t SubAddr, CamacFunction_t Function,
-										Int_t NofCnafs, Bool_t D16Flag, Bool_t QXfer) {
+Int_t TMrbEsone::BlockXfer(Int_t Crate, Int_t Station, Int_t SubAddr, Int_t Function,
+										TArrayI & Data, Int_t Start, Int_t NofWords, Bool_t D16Flag, Bool_t QXfer) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::BlockXfer
@@ -957,527 +969,73 @@ Int_t TMrbEsone::BlockXfer(Int_t Crate, Int_t Station, Int_t SubAddr, CamacFunct
 // Arguments:      Int_t Crate              -- crate number
 //                 Int_t Station            -- station
 //                 Int_t SubAddr            -- subaddress
-//                 CamacFunction_t Function -- function code
-//                 Int_t NofCnafs           -- number of cnafs
+//                 Int_t Function           -- function code
+//                 TArrayI & Data           -- data
+//                 Int_t Start              -- data index to start with
+//                 Int_t NofWords           -- number of words to xfer
 //                 Bool_t D16Flag           -- kTRUE if 16 bits only
 //                 Bool_t QXfer             -- kTRUE if Q-driven
-// Results:        Int_t TallyCount         -- resulting number of data words
-// Exceptions:
+// Results:        Int_t NofData            -- resulting number of data words
+// Exceptions:     Returns kEsoneError on error.
 // Description:    ESONE cfubc / csubc / cfubr / csubr.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t stsX;
-	TMrbEsoneCNAF cnaf;
-	CamacReg_t creg;
-	Int_t offset, repeat;
+	TMrbEsoneCnaf cnaf;
 
-	if (!this->CheckConnection("BlockXfer")) return(-1);
-
-	if ((Crate = this->CheckCrate(Crate, "BlockXfer")) == -1) return(-1);
-
+	if (!this->CheckConnection("BlockXfer")) return(kEsoneError);
 	cnaf.Set(Crate, Station, SubAddr, Function);
-	if (!cnaf.CheckCnaf(~TMrbEsoneCNAF::kCnafData)) return(-1);		// check cnaf (all but data field)
+	return(this->BlockXfer(cnaf, Data, Start, NofWords, D16Flag, QXfer));
+}
 
-	fFunction[0] = cnaf.Get(TMrbEsoneCNAF::kCnafFunction);			// get actual function
+Int_t TMrbEsone::BlockXfer(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start, Int_t NofWords,
+																		Bool_t D16Flag, Bool_t QXfer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::BlockXfer
+// Purpose:        Start block transfer
+// Arguments:      TMrbEsoneCnaf & Cnaf     -- C.N.F to be executed
+//                 TArrayI & Data           -- data
+//                 Int_t Start              -- data index to start with
+//                 Int_t NofWords           -- number of words to xfer
+//                 Bool_t D16Flag           -- kTRUE if 16 bits only
+//                 Bool_t QXfer             -- kTRUE if Q-driven
+// Results:        Int_t NofData            -- resulting number of data words
+// Exceptions:     Returns kEsoneError on error.
+// Description:    ESONE cfubc / csubc / cfubr / csubr.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
 
-	if (NofCnafs == -1) NofCnafs = fCurNofCnafs;					// default: current number of cnafs
-	this->SetCB(NofCnafs);
+	Int_t repeat;
+	Int_t nofData;
+	Int_t nd;
+	Int_t from, wc;
 
-	if (!cnaf.IsWrite()) this->ClearData();				// reset data buffer in case of read/control cnafs
+	if (!this->CheckConnection("BlockXfer")) return(kEsoneError);
+	if (!Cnaf.CheckCnaf(~TMrbEsoneCnaf::kCnafData)) return(kEsoneError);	// check cnaf (all but data field)
 
-	creg = cnaf.Int2Esone(fHostAddr);
-
-	fTally = 0;
-	offset = 0;
-	repeat = (NofCnafs + kMaxRepeatCount - 1) / kMaxRepeatCount;
-	for (; repeat--; offset += kMaxRepeatCount, NofCnafs -= kMaxRepeatCount) {
-		if (NofCnafs > kMaxRepeatCount) this->SetCB(kMaxRepeatCount); else this->SetCB(NofCnafs);
-		if (QXfer) {
-			if (D16Flag) {
-				fAction = TMrbEsone::kCA_csubr;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = csubr(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			} else {
-				fAction = TMrbEsone::kCA_cfubr;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = cfubr(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			}
-		} else {
-			if (D16Flag) {
-				fAction = TMrbEsone::kCA_csubc;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-//				Int_t n = (NofCnafs > kMaxRepeatCount) ? kMaxRepeatCount : NofCnafs;
-//				Int_t * dp = (Int_t *) this->GetDAddr() + offset;
-//				Int_t qresp = 0;
-//				for (Int_t i = 0; i < n; i++, dp++) cssa(fFunction[0], creg, dp, &qresp);
-//				stsX = 0;
-				stsX = csubc(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			} else {
-				fAction = TMrbEsone::kCA_cfubc;
-				if (this->IsOffline()) return(NofCnafs); 				// simulated by software	
-				stsX = cfubc(fFunction[0], creg, (Int_t *) this->GetDAddr() + offset, fCB);
-			}
-		}
-		if (stsX == 0) fTally += fCB[1]; else fTally = -1;
-		if (this->IsVerbose()) this->PrintResults("BlockXfer", &cnaf);
-		if (fTally == -1) return(-1);
+	nofData = 0;
+	repeat = (NofWords + kEsoneNofRepeats) / kEsoneNofRepeats;
+	from = Start;
+	for (; repeat--;) {
+		wc = ((nofData + wc) > NofWords) ? (NofWords - nofData) : kEsoneNofRepeats;
+		nd = this->EsoneCXUBX(Cnaf, Data, from, wc, D16Flag, QXfer);
+		if (this->IsVerbose()) this->PrintResults("BlockXfer", Cnaf);
+		if (this->IsError()) return(kEsoneError);
+		nofData += nd;
+		from += wc;
 	}
-	return(fTally);
+	return(nofData);
 }
 
-void TMrbEsone::ResetBuffers(Int_t NofCnafs) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::ResetBuffers
-// Purpose:        Define length of internal arrays
-// Arguments:      Int_t NofCnafs       -- max number of cnafs
-// Results:        --
-// Exceptions:
-// Description:    Defines buffer length and resets buffers.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	fCnaf.Set(NofCnafs); fCnaf.Reset();
-	fFunction.Set(NofCnafs); fFunction.Reset();
-	fData.Set(NofCnafs); fData.Reset();
-	fQX.Set(NofCnafs); fQX.Reset();
-	fMaxNofCnafs = NofCnafs;
-	fCurNofCnafs = -1;
-	fTally = -1;
-	fCB[0] = fCB[1] = fCB[2] = fCB[3] = 0;
-}
-
-Bool_t TMrbEsone::SetNofCnafs(Int_t NofCnafs) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetNofCnafs
-// Purpose:        Define actual number of cnafs in list
-// Arguments:      Int_t NofCnafs       -- number of cnafs
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Defines number of valid cnafs in list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (NofCnafs > fMaxNofCnafs) {
-		gMrbLog->Err() << "Cnaf count out of range - " << NofCnafs << " (" << fMaxNofCnafs << " max)" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetNofCnafs");
-		return(kFALSE);
-	}
-	fCurNofCnafs = NofCnafs;
-	return(kTRUE);
-}
-
-void TMrbEsone::ClearCnaf() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::ClearCnaf
-// Purpose:        Clear cnaf list
-// Arguments:      --
-// Results:        --
-// Exceptions:
-// Description:    Clears list of cnafs.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t n;
-
-	n = (fMaxNofCnafs > kMaxNofCnafs) ? fMaxNofCnafs : kMaxNofCnafs;
-	fCnaf.Set(n);
-	fCnaf.Reset();
-}
-
-Bool_t TMrbEsone::SetCnaf(Int_t Index, const Char_t * Cnaf, CamacData_t Data) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetCnaf
-// Purpose:        Set cnaf at given index
-// Arguments:      Int_t Index      -- array index
-//                 Char_t * Cnaf    -- C.N.A.F
-//                 CamacData_t Data -- data
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets a data element in cnaf list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbEsoneCNAF cnaf;
-
-	if ((Index = this->CheckIndex(Index, "SetCnaf")) == -1) return(kFALSE);
-	if (!this->CheckConnection("SetCnaf")) return(kFALSE);
-
-	if (!cnaf.Ascii2Int(Cnaf)) return(kFALSE);
-	cnaf.Set(TMrbEsoneCNAF::kCnafData, Data);
-	if (!cnaf.CheckCnaf()) return(kFALSE);
-
-	fCnaf[Index] = cnaf.Int2Esone(fHostAddr);
-	fFunction[Index] = cnaf.Get(TMrbEsoneCNAF::kCnafFunction);
-	fData[Index] = Data;
-	fQX[Index] = 0;
-	return(kTRUE);
-}
-
-Bool_t TMrbEsone::SetCnaf(Int_t Index, Int_t Crate, Int_t Station, Int_t Subaddr,
-												CamacFunction_t Function, CamacData_t Data) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetCnaf
-// Purpose:        Set cnaf at given index
-// Arguments:      Int_t Index               -- array index
-//                 Int_t Crate               -- crate number
-//                 Int_t Station             -- station
-//                 CamacFunction_t Function  -- function code
-//                 CamacData_t Data          -- data
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets a data element in cnaf list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbEsoneCNAF cnaf;
-
-	if ((Index = this->CheckIndex(Index, "SetCnaf")) == -1) return(kFALSE);
-	if (!this->CheckConnection("SetCnaf")) return(kFALSE);
-
-	if (!cnaf.Set(Crate, Station, Subaddr, Function, Data)) return(kFALSE);
-
-	fCnaf[Index] = cnaf.Int2Esone(fHostAddr);
-	fFunction[Index] = cnaf.Get(TMrbEsoneCNAF::kCnafFunction);
-	fData[Index] = Data;
-	fQX[Index] = 0;
-	return(kTRUE);
-}
-
-Bool_t TMrbEsone::GetCnaf(Int_t Index, TString & Host, TString & Cnaf, CamacData_t & Data) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetCnaf
-// Purpose:        Get cnaf at given index
-// Arguments:      Int_t Index              -- array index
-//                 TString & Host            -- host name
-//                 TString & Cnaf            -- cnaf (ascii representation)
-//                 CamacData_t & Data        -- data
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Returns an element of cnaf list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbEsoneCNAF cnaf;
-	CamacReg_t creg;
-	CamacHost_t hostAddr;
-	Int_t crate;
-	Int_t station;
-	Int_t subaddr;
-	TMrbNamedX * kp;
-
-	if ((Index = this->CheckIndex(Index, "GetCnaf")) == -1) return(kFALSE);
-
-	creg = fCnaf[Index];
-	cgreg(creg, &hostAddr, &crate, &station, &subaddr);
-	if (!cnaf.Set(crate, station, subaddr, fFunction[Index], fData[Index])) return(kFALSE);
-	kp = gMrbEsoneHosts->FindByIndex((Int_t) hostAddr);
-	if (kp) Host = kp->GetName(); else Host = "Unknown";
-	Cnaf = cnaf.Int2Ascii(kFALSE);
-	Data = fData[Index];
-	return(kTRUE);
-}
-
-const Char_t * TMrbEsone::GetCnaf(Int_t Index, Bool_t DataFlag) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetCnaf
-// Purpose:        Get cnaf at given index
-// Arguments:      Int_t Index               -- array index
-// Results:        Char_t * Cnaf             -- full cnaf: HOST:Cxx.Nxx.Axx.Fxx D=xx
-// Exceptions:
-// Description:    Returns an element of cnaf list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbEsoneCNAF cnaf;
-	CamacReg_t creg;
-	CamacHost_t hostAddr;
-	Int_t crate;
-	Int_t station;
-	Int_t subaddr;
-	TMrbNamedX * kp;
-
-	fCnafAscii.Resize(0);
-
-	if ((Index = this->CheckIndex(Index, "GetCnaf")) == -1) return(fCnafAscii.Data());
-
-	creg = fCnaf[Index];
-	cgreg(creg, &hostAddr, &crate, &station, &subaddr);
-	if (!cnaf.Set(crate, station, subaddr, fFunction[Index], fData[Index])) return(fCnafAscii.Data());
-	kp = gMrbEsoneHosts->FindByIndex((Int_t) hostAddr);
-	if (kp) fCnafAscii = kp->GetName(); else fCnafAscii = "Unknown";
-	fCnafAscii += ":";
-	fCnafAscii += cnaf.Int2Ascii(DataFlag);
-	return(fCnafAscii.Data());
-}
-
-TMrbNamedX * TMrbEsone::GetCnafType(Int_t Index) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetCnafType
-// Purpose:        Get cnaf type at given index
-// Arguments:      Int_t Index               -- array index
-// Results:        EMrbCnafType type         -- cnaf type
-// Exceptions:
-// Description:    Returns cnaf type.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	CamacFunction_t fct;
-	TMrbEsoneCNAF::EMrbCnafType type;
-
-	if ((Index = this->CheckIndex(Index, "GetCnafType")) == -1) return(NULL);
-	fct = fFunction[Index];
-	if (IS_F_READ(fct)) 			type = TMrbEsoneCNAF::kCnafTypeRead;
-	else if (IS_F_WRITE(fct)) 		type = TMrbEsoneCNAF::kCnafTypeWrite;
-	else if (IS_F_CNTL(fct)) {
-		if (fct == 8 || fct == 27)	type = TMrbEsoneCNAF::kCnafTypeReadStatus;
-		else						type = TMrbEsoneCNAF::kCnafTypeControl;
-	} else return(NULL);
-
-	return(fLofCNAFTypes.FindByIndex((Int_t) type));
-}
-
-void TMrbEsone::ClearData() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::ClearData
-// Purpose:        Clear data buffer
-// Arguments:      --
-// Results:        --
-// Exceptions:
-// Description:    Clears data buffer.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t n;
-
-	n = (fMaxNofCnafs > kMaxNofCnafs) ? fMaxNofCnafs : kMaxNofCnafs;
-	fData.Set(n);
-	fData.Reset();
-}
-
-Bool_t TMrbEsone::SetData(Int_t Index, CamacData_t Data) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetData
-// Purpose:        Set data at given index
-// Arguments:      Int_t Index        -- array index
-//                 CamacData_t Data   -- data
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets a data element in the data buffer.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((Index = this->CheckIndex(Index, "SetData")) == -1) return(kFALSE);
-	fData[Index] = Data;
-	return(kTRUE);
-}
-
-Bool_t TMrbEsone::SetData(CamacDArray & Data, Int_t NofData) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetData
-// Purpose:        Set data from external array
-// Arguments:      CamacDArray & Data    -- ext data array
-//                 Int_t NofData         -- number of data points
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets data buffer from external array.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((NofData = this->CheckSize(NofData, "SetData")) == -1) return(kFALSE);
-	fCurNofCnafs = NofData;
-	fData.Set(NofData);
-	fData.Reset();
-	for (Int_t i = 0; i < NofData; i++) fData[i] = Data[i];
-	return(kTRUE);
-}
-
-Bool_t TMrbEsone::SetData(CamacData_t * Data, Int_t NofData) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetData
-// Purpose:        Set data from external array
-// Arguments:      CamacData_t * Data    -- ext data array
-//                 Int_t NofData         -- number of data points
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets data buffer from external array.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((NofData = this->CheckSize(NofData, "SetData")) == -1) return(kFALSE);
-	fCurNofCnafs = NofData;
-	fData.Set(NofData);
-	fData.Reset();
-	for (Int_t i = 0; i < NofData; i++) fData[i] = *Data++;
-	return(kTRUE);
-}
-
-Bool_t TMrbEsone::SetData(UShort_t * Data, Int_t NofData) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetData
-// Purpose:        Set data from external array
-// Arguments:      UShort_t * Data       -- ext data array (16 bit)
-//                 Int_t NofData         -- number of data points
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets data buffer from external array.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((NofData = this->CheckSize(NofData, "SetData")) == -1) return(kFALSE);
-	fCurNofCnafs = NofData;
-	fData.Set(NofData);
-	fData.Reset();
-	for (Int_t i = 0; i < NofData; i++) fData[i] = (CamacData_t) *Data++;
-	return(kTRUE);
-}
-
-CamacData_t TMrbEsone::GetData(Int_t Index) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetData
-// Purpose:        Get data at a given index
-// Arguments:      Int_t Index          -- data index
-// Results:        CamacData_t Data     -- data
-// Exceptions:
-// Description:    Returns data stored at a given index.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((Index = this->CheckIndex(Index, "GetData")) == -1) return(kNoData);
-	return(fData[Index]);
-}
-
-void TMrbEsone::ClearFunction() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::ClearFunction
-// Purpose:        Clear function list
-// Arguments:      --
-// Results:        --
-// Exceptions:
-// Description:    Clears function list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t n;
-
-	n = (fMaxNofCnafs > kMaxNofCnafs) ? fMaxNofCnafs : kMaxNofCnafs;
-	fFunction.Set(n);
-	fFunction.Reset();
-}
-
-Bool_t TMrbEsone::SetFunction(Int_t Index, CamacFunction_t Function) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::SetFunction
-// Purpose:        Set data at given index
-// Arguments:      Int_t Index              -- array index
-//                 CamacFunction_t Function -- data
-// Results:        kFALSE/kTRUE
-// Exceptions:
-// Description:    Sets an element in the function list.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((Index = this->CheckIndex(Index, "SetFunction")) == -1) return(kFALSE);
-	if (Function < 0 || Function > 31) {
-		gMrbLog->Err() << "Illegal function code - " << Function << " (should be in [0,31])" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetFunction");
-		return(kFALSE);
-	}
-	fFunction[Index] = Function;
-	return(kTRUE);
-}
-
-CamacFunction_t TMrbEsone::GetFunction(Int_t Index) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetFunction
-// Purpose:        Get function code at given index
-// Arguments:      Int_t Index                  -- data index
-// Results:        CamacFunction_t Function     -- function code
-// Exceptions:
-// Description:    Returns function code stored at a given index.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((Index = this->CheckIndex(Index, "GetFunction")) == -1) return(kNoData);
-	return(fFunction[Index]);
-}
-
-void TMrbEsone::ClearQX() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::ClearQX
-// Purpose:        Clear Q/X buffer
-// Arguments:      --
-// Results:        --
-// Exceptions:
-// Description:    Clears Q/X buffer.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t n;
-
-	n = (fMaxNofCnafs > kMaxNofCnafs) ? fMaxNofCnafs : kMaxNofCnafs;
-	fQX.Set(n);
-	fQX.Reset();
-}
-
-Bool_t TMrbEsone::GetQ(Int_t Index) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetQ
-// Purpose:        Get Q flag at given index
-// Arguments:      Int_t Index         -- index
-// Results:        Bool_t QFlag        -- Q flag
-// Exceptions:
-// Description:    Returns Q flag (bit 0) stored at a given index.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((Index = this->CheckIndex(Index, "GetQ")) == -1) return(kFALSE);
-	return((fQX[Index] & 1) == 1);
-}
-
-Bool_t TMrbEsone::GetX(Int_t Index) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetX
-// Purpose:        Get X flag at given index
-// Arguments:      Int_t Index         -- index
-// Results:        Bool_t XFlag        -- X flag
-// Exceptions:
-// Description:    Returns X flag (bit 1) stored at a given index.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if ((Index = this->CheckIndex(Index, "GetX")) == -1) return(kFALSE);
-	return((fQX[Index] & 2) == 2);
-}
-
-CamacStatus_t TMrbEsone::GetStatus(Bool_t & XFlag, Bool_t & QFlag, CamacError_t & ErrorCode, TString & Error) {
+UInt_t TMrbEsone::GetStatus(Bool_t & XFlag, Bool_t & QFlag, Int_t & ErrorCode, TString & Error) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::GetStatus
 // Purpose:        Get ESONE status of prev camac action
 // Arguments:      Bool_t & XFlag         -- CAMAC X
 //                 Bool_t & QFlag         -- CAMAC Q
-//                 CamacError_t ErrorCode -- error code
+//                 Int_t ErrorCode        -- error code
 //                 TString & Error        -- error message
 // Results:        CamacStatus_t Status   -- status word
 // Exceptions:
@@ -1485,57 +1043,28 @@ CamacStatus_t TMrbEsone::GetStatus(Bool_t & XFlag, Bool_t & QFlag, CamacError_t 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	CamacStatus_t status;
-
-	ctstat((Int_t *) &status);
+	UInt_t status = this->EsoneCTSTAT();
 	switch (status & 0x3) {
 		case 0x0:	XFlag = kTRUE; QFlag = kTRUE; break;
 		case 0x1:	XFlag = kTRUE; QFlag = kFALSE; break;
 		case 0x2:	XFlag = kFALSE; QFlag = kTRUE; break;
 		case 0x3:	XFlag = kFALSE; QFlag = kFALSE; break;
 	}
-	fErrorCode = status >> 2;
-	fError.Resize(0);
-	ErrorCode = fErrorCode;
-	if (fErrorCode != 0) {
-		fError = cerror(fErrorCode, 0);
-		Error = fError;
+	ErrorCode = status >> 2;
+	if (ErrorCode != 0) {
+		this->EsoneCERROR(Error, ErrorCode, kFALSE);
 	} else {
-		fError.Resize(0);
 		Error.Resize(0);
 	}
 	return(status);
 }
 
-const Char_t * TMrbEsone::GetError() {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbEsone::GetError
-// Purpose:        Get error of prev cnaf action
-// Arguments:      --
-// Results:        Char_t * Error    -- error string
-// Exceptions:
-// Description:    Returns an error message.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	CamacStatus_t status;
-
-	ctstat((Int_t *) &status);
-	fErrorCode = status >> 2;
-	fError.Resize(0);
-	if (fErrorCode != 0) {
-		fError = cerror(fErrorCode, 0);
-		return(fError.Data());
-	} else return("");
-}
-
-TMrbNamedX * TMrbEsone::GetHost(CamacHost_t HostAddr) {
+TMrbNamedX * TMrbEsone::GetHost(UInt_t HostAddr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::GetHost
 // Purpose:        Get host by ESONE address
-// Arguments:      CamacHost_t HostAddr   -- ESONE address
+// Arguments:      UInt_t HostAddr           -- ESONE address
 // Results:        TMrbNamedX * HostKey      -- host name / address
 // Exceptions:
 // Description:    Finds host by its address.
@@ -1562,30 +1091,25 @@ TMrbNamedX * TMrbEsone::GetHost(const Char_t * HostName) {
 	return(gMrbEsoneHosts->FindByName(HostName, TMrbLofNamedX::kFindExact | TMrbLofNamedX::kFindIgnoreCase));
 }
 
-void TMrbEsone::Print(Int_t From, Int_t To) {
+void TMrbEsone::Print(TMrbEsoneCnaf & Cnaf) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::Print
 // Purpose:        Print cnafs & data
-// Arguments:      Int_t From            -- start
-//                 Int_t To              -- stop
+// Arguments:      TMrbEsoneCnaf & Cnaf  -- cnaf
 // Results:        --
 // Exceptions:
-// Description:    Outputs cnafs, data, flags.
+// Description:    Outputs cnaf, data, flags.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
 	TMrbNamedX * action;
-	const Char_t * XQ;
-	UInt_t data;
-	Int_t tally;
-	TMrbNamedX * ctype;
-	UInt_t ct;
+	const Char_t * xq;
+	Int_t data;
 
 	action = this->GetAction();
 
-	if (action->GetIndex() == TMrbEsone::kCANone) {
+	if (action->GetIndex() == TMrbEsoneCnaf::kCANone) {
 		gMrbLog->Err() << "No CAMAC action" << endl;
 		gMrbLog->Flush(this->ClassName(), "Print");
 		return;
@@ -1598,99 +1122,111 @@ void TMrbEsone::Print(Int_t From, Int_t To) {
 			<< " CNAF                     Type          X? Q?  Data" << endl
 			<< "..........................................................................................." << endl;
 
-	switch (action->GetIndex()) {
-		case TMrbEsone::kCA_cfsa:
-		case TMrbEsone::kCA_cssa:
-				cout	<< " " << setiosflags(ios::left)
-						<< setw(25) << this->GetCnaf(-1, kFALSE);
-				cout	<< setw(5) << this->GetCnafType()->GetName();
-				XQ = this->GetX()? "X" : "-"; cout	<< resetiosflags(ios::left) << setw(10) << XQ;
-				XQ = this->GetQ()? "Q" : "-"; cout	<< setw(3) << XQ;
-				data = this->GetData();
-				if (data != kNoData) {
-					cout	<< setw(10) << setbase(10) << data;
-					cout	<< "    0" << setbase(8) << setiosflags(ios::left) << data;
-					cout	<< "    0x" << setbase(16) << setiosflags(ios::left) << data;
-				}
-				cout	<< setbase(10) << endl;
-				break;
-
-		case TMrbEsone::kCA_cfga:
-		case TMrbEsone::kCA_csga:
-				for (i = 0; i < this->GetTally(); i++) {
-					cout	<< " " << setiosflags(ios::left)
-							<< setw(25) << this->GetCnaf(i, kFALSE);
-					cout	<< setw(5) << this->GetCnafType(i)->GetName();
-					XQ = this->GetX(i)? "X" : "-"; cout	<< resetiosflags(ios::left) << setw(10) << XQ;
-					XQ = this->GetQ(i)? "Q" : "-"; cout	<< setw(3) << XQ;
-					data = this->GetData(i);
-					if (data != kNoData) {
-						cout	<< setw(10) << setbase(10) << data;
-						cout	<< "    0" << setbase(8) << setiosflags(ios::left) << data;
-						cout	<< "    0x" << setbase(16) << setiosflags(ios::left) << data;
-					}
-					cout	<< setbase(10) << endl;
-				}
-				break;
-
-		case TMrbEsone::kCA_cfubc:
-		case TMrbEsone::kCA_csubc:
-		case TMrbEsone::kCA_cfubr:
-		case TMrbEsone::kCA_csubr:
-				ctype = this->GetCnafType(0);
-				ct = ctype->GetIndex();
-				cout	<< " " << setiosflags(ios::left)
-						<< setw(25) << this->GetCnaf(0, kFALSE);
-				cout	<< setw(5) << ctype->GetName();
-				XQ = this->GetX(0)? "X" : "-"; cout << resetiosflags(ios::left) << setw(10) << XQ;
-				XQ = this->GetQ(0)? "Q" : "-"; cout	<< setw(3) << XQ << endl;
-				if (ct == TMrbEsoneCNAF::kCnafTypeRead || ct == TMrbEsoneCNAF::kCnafTypeReadStatus) {
-					tally = this->GetTally();
-					if (!this->SetNofCnafs(tally)) return;
-					for (i = 0; i < tally; i++) {
-						data = this->GetData(i);
-						if (data != kNoData) {
-							cout	<< resetiosflags(ios::left) << setw(34) << i << ": "
-									<< setw(18) << setbase(10) << data;
-							cout	<< "    0" << setbase(8) << setiosflags(ios::left) << data;
-							cout	<< "    0x" << setbase(16) << setiosflags(ios::left) << data;
-						}
-						cout	<< setbase(10) << endl;
-					}
-				}
-				break;
-
-		case TMrbEsone::kCA_cfmad:
-		case TMrbEsone::kCA_csmad:
-				ctype = this->GetCnafType(0);
-				ct = ctype->GetIndex();
-				cout	<< " " << setiosflags(ios::left)
-						<< setw(25) << this->GetCnaf(0, kFALSE);
-				cout	<< setw(5) << ctype->GetName() << " [START]" << endl;
-				ctype = this->GetCnafType(1);
-				cout	<< " " << setiosflags(ios::left)
-						<< setw(25) << this->GetCnaf(1, kFALSE);
-				cout	<< setw(5) << ctype->GetName() << " [STOP]" << endl;
-				if (ct == TMrbEsoneCNAF::kCnafTypeRead || ct == TMrbEsoneCNAF::kCnafTypeReadStatus) {
-					tally = this->GetTally();
-					if (!this->SetNofCnafs(tally)) return;
-					for (i = 0; i < tally; i++) {
-						data = this->GetData(i);
-						if (data != kNoData) {
-							cout	<< resetiosflags(ios::left) << setw(34) << i << ": "
-									<< setw(18) << setbase(10) << data;
-							cout	<< "    0" << setbase(8) << setiosflags(ios::left) << data;
-							cout	<< "    0x" << setbase(16) << setiosflags(ios::left) << data;
-						}
-						cout	<< setbase(10) << endl;
-					}
-				}
-				break;
-
-		default:	break;
+	cout	<< " " << setiosflags(ios::left)
+			<< setw(25) << Cnaf.Int2Ascii(kFALSE);
+	cout	<< setw(5) << fLofCnafTypes.FindByIndex((Int_t) Cnaf.GetType());
+	xq = Cnaf.GetX()? "X" : "-";
+	cout	<< resetiosflags(ios::left) << setw(10) << xq;
+	xq = Cnaf.GetQ()? "Q" : "-";
+	cout	<< setw(3) << xq;
+	data = Cnaf.GetData();
+	if ((data & kEsoneNoData) == 0) {
+		cout	<< setw(10) << setbase(10) << data;
+		cout	<< "    0" << setbase(8) << setiosflags(ios::left) << data;
+		cout	<< "    0x" << setbase(16) << setiosflags(ios::left) << data;
+		cout	<< setbase(10) << endl;
 	}
 	cout	<< "-------------------------------------------------------------------------------------------"
 			<< endl << endl;
+}
+
+void TMrbEsone::Print(TObjArray & CnafList, Int_t From, Int_t To) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::Print
+// Purpose:        Print cnafs & data
+// Arguments:      TObjArray & CnafList  -- list of cnafs
+//                 Int_t From            -- cnaf to start with
+//                 Int_t To              -- cnaf to end with
+// Results:        --
+// Exceptions:
+// Description:    Outputs cnaf, data, flags.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * action;
+	const Char_t * xq;
+	Int_t data;
+	TMrbEsoneCnaf * cnaf;
+
+	Int_t nofCnafs = CnafList.GetEntriesFast();
+	if (nofCnafs == 0) {
+		gMrbLog->Err()	<< "Cnaf list is EMPTY" << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+		return;
+	}
+
+	if (To == -1) To = nofCnafs - 1;
+
+	if (From < 0 || From > To || From > nofCnafs || To > nofCnafs) {
+		gMrbLog->Err()	<< "Cnafs out of range - [" << From << "," << To << "] (should be in ["
+						<< nofCnafs << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+		return;
+	}
+
+	action = this->GetAction();
+
+	if (action->GetIndex() == TMrbEsoneCnaf::kCANone) {
+		gMrbLog->Err() << "No CAMAC action" << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+		return;
+	}
+
+	cout	<< endl
+			<< "===========================================================================================" << endl
+			<< " CAMAC action           : " << action->GetName() << endl
+			<< "-------------------------------------------------------------------------------------------" << endl
+			<< " CNAF                     Type          X? Q?  Data" << endl
+			<< "..........................................................................................." << endl;
+
+	for (Int_t i = From; i <= To; i++) {
+		cnaf = (TMrbEsoneCnaf *) CnafList[i];
+		cout	<< setw(3) << i << ": " << setiosflags(ios::left)
+				<< setw(21) << cnaf->Int2Ascii(kFALSE);
+		cout	<< setw(5) << fLofCnafTypes.FindByIndex((Int_t) cnaf->GetType());
+		xq = cnaf->GetX()? "X" : "-";
+		cout	<< resetiosflags(ios::left) << setw(10) << xq;
+		xq = cnaf->GetQ()? "Q" : "-";
+		cout	<< setw(3) << xq;
+		data = cnaf->GetData();
+		if ((data & kEsoneNoData) == 0) {
+			cout	<< setw(10) << setbase(10) << data;
+			cout	<< "    0" << setbase(8) << setiosflags(ios::left) << data;
+			cout	<< "    0x" << setbase(16) << setiosflags(ios::left) << data;
+			cout	<< setbase(10) << endl;
+		}
+	}
+	cout	<< "-------------------------------------------------------------------------------------------"
+			<< endl << endl;
+}
+
+const Char_t * TMrbEsone::GetError(TString & Error) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::GetError
+// Purpose:        Get error of prev cnaf action
+// Arguments:      TString & Error   -- where to put the error message
+// Results:        Char_t * Error    -- error string
+// Exceptions:
+// Description:    Returns an error message.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t status = this->EsoneCTSTAT();
+	Int_t errorCode = (Int_t) (status >> 2);
+	this->EsoneCERROR(Error, errorCode, kFALSE);
+	return(Error.Data());
 }
 
 void TMrbEsone::PrintError(const Char_t * EsoneCall, const Char_t * Method) {
@@ -1702,19 +1238,21 @@ void TMrbEsone::PrintError(const Char_t * EsoneCall, const Char_t * Method) {
 //                 Char_t * Method         -- calling method
 // Results:        --
 // Exceptions:
+
 // Description:    Error printout.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TString error;
-	Char_t errBuf[256];
 
 	if (EsoneCall != NULL) {
-		strcpy(errBuf, cerror(-1, 0));
-		gMrbLog->Err() << "Error in ESONE fct \"" << EsoneCall << "\" - " << errBuf << endl;
-		gMrbLog->Flush(this->ClassName(), Method);
+		this->EsoneCERROR(error, TMrbEsone::kLastError, kFALSE);
+		if (!error.IsNull()) {
+			gMrbLog->Err() << "Error in ESONE fct \"" << EsoneCall << "\" - " << error << endl;
+			gMrbLog->Flush(this->ClassName(), Method);
+		}
 	} else {
-		error = this->GetError();
+		this->GetError(error);
 		if (!error.IsNull()) {
 			gMrbLog->Err() << "ESONE error - " << error << endl;
 			gMrbLog->Flush(this->ClassName(), Method);
@@ -1722,7 +1260,7 @@ void TMrbEsone::PrintError(const Char_t * EsoneCall, const Char_t * Method) {
 	}
 }
 
-void TMrbEsone::PrintStatus() {
+void TMrbEsone::PrintStatus(const Char_t * Method) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::PrintStatus
@@ -1735,15 +1273,15 @@ void TMrbEsone::PrintStatus() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * action;
-	Bool_t XFlag;
-	Bool_t QFlag;
-	CamacStatus_t status;
-	CamacError_t ErrorCode;
-	TString ErrorMsg;
+	Bool_t xFlag;
+	Bool_t qFlag;
+	UInt_t status;
+	Int_t errorCode;
+	TString errorMsg;
 
 	action = this->GetAction();
 
-	if (action->GetIndex() == TMrbEsone::kCANone) {
+	if (action->GetIndex() == TMrbEsoneCnaf::kCANone) {
 		gMrbLog->Err() << "No CAMAC action" << endl;
 		gMrbLog->Flush(this->ClassName(), "PrintStatus");
 		return;
@@ -1753,112 +1291,149 @@ void TMrbEsone::PrintStatus() {
 			<< "-----------------------------------------------------------------------------" << endl
 			<< "    CAMAC action           : " << action->GetName() << endl;
 
-	status = this->GetStatus(XFlag, QFlag, ErrorCode, ErrorMsg);
+	status = this->GetStatus(xFlag, qFlag, errorCode, errorMsg);
 
-	cout	<< "    X Response             : " << (XFlag ? "yes" : "no") << endl;
-	cout	<< "    Q Response             : " << (QFlag ? "yes" : "no") << endl;
-	cout	<< "    Error Code             : " << ErrorCode << endl;
-	if (ErrorCode > 0) {
-		cout	<< "    Error                  : " << cerror(ErrorCode, 0) << endl;
+	cout	<< "    X Response             : " << (xFlag ? "yes" : "no") << endl;
+	cout	<< "    Q Response             : " << (qFlag ? "yes" : "no") << endl;
+	cout	<< "    Error Code             : " << errorCode << endl;
+	if (errorCode > 0) {
+		cout	<< "    Error                  : " << errorMsg << endl;
 	}
 	cout	<< "-----------------------------------------------------------------------------" << endl;
 }
 
-void TMrbEsone::PrintResults(const Char_t * Method, TMrbEsoneCNAF * c1, TMrbEsoneCNAF * c2) {
+void TMrbEsone::PrintResults(const Char_t * Method, TMrbEsoneCnaf & Cnaf) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::PrintResults
 // Purpose:        Print results
-// Arguments:      Char_t * Method         -- calling method
-//                 TMrbEsoneCNAF * c1      -- cnaf 1
-//                 TMrbEsoneCNAF * c2      -- cnaf 2
+// Arguments:      Char_t * Method            -- calling method
+//                 TMrbEsoneCnaf & Cnaf       -- cnaf
 // Results:        --
 // Exceptions:
 // Description:    Outputs cnaf results.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * kp;
+	TMrbNamedX * action;
+	TMrbNamedX * type;
 
-	kp = fLofCamacActions.FindByIndex((Int_t) fAction);
+	action = this->GetAction();
+
 	cout	<< setmagenta
-			<< this->ClassName() << "::" << Method << "(): " << kp->GetName()
+			<< this->ClassName() << "::" << Method << "(): " << action->GetName()
 			<< setblack << endl;
 
-	switch (fAction) {
-		case kCA_cfsa:
-		case kCA_cssa:
-			kp = fLofCNAFTypes.FindByIndex((Int_t) c1->GetType());
-			cout	<< setmagenta
-					<< "                           CNAF=" << c1->Int2Ascii() << " (" << kp->GetName() << ")"
-					<< ", X=" << (this->GetX() ? 1 : 0)
-					<< ", Q=" << (this->GetQ() ? 1 : 0)
-					<< ", WC(in)=1, WC(out)=" << (Int_t) fTally
-					<< setblack << endl;
-			break;		
-		case kCA_cfga:
-		case kCA_csga:
-		case kCA_cfmad:
-		case kCA_csmad:
-			break;
-		case kCA_cfubc:
-		case kCA_csubc:
-		case kCA_cfubr:
-		case kCA_csubr:
-			kp = fLofCNAFTypes.FindByIndex((Int_t) c1->GetType());
-			cout	<< setmagenta
-					<< "                           CNAF=" << c1->Int2Ascii() << " (" << kp->GetName() << ")"
-					<< ", X=" << (this->GetX(0) ? 1 : 0)
-					<< ", Q=" << (this->GetQ(0) ? 1 : 0)
-					<< ", WC(in)=" << fCB[0] << ", WC(out)=" << (Int_t) fTally
-					<< setblack << endl;
-			break;
+	type = fLofCnafTypes.FindByIndex((Int_t) Cnaf.GetType());
+	cout	<< setmagenta
+			<< "                      CNAF=" << Cnaf.Int2Ascii() << " (" << type->GetName() << ")"
+			<< ", X=" << (Cnaf.GetX() ? 1 : 0)
+			<< ", Q=" << (Cnaf.GetQ() ? 1 : 0)
+			<< ", Data=" << Cnaf.GetData() << " (0x" << setbase(16) << Cnaf.GetData() << setbase(10) << ")"
+			<< setblack << endl;
+}
+
+void TMrbEsone::PrintResults(const Char_t * Method, TObjArray & CnafList) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::PrintResults
+// Purpose:        Print results
+// Arguments:      Char_t * Method            -- calling method
+//                 TObjArray & CnafList       -- list of cnafs
+// Results:        --
+// Exceptions:
+// Description:    Outputs cnaf results.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * action;
+	TMrbNamedX * type;
+	TMrbEsoneCnaf * cnaf;
+
+	action = this->GetAction();
+
+	cout	<< setmagenta
+			<< this->ClassName() << "::" << Method << "(): " << action->GetName()
+			<< setblack << endl;
+
+	for (Int_t i = 0; i < CnafList.GetLast() + 1; i++) {
+		cnaf = (TMrbEsoneCnaf *) CnafList.At(i);
+		type = fLofCnafTypes.FindByIndex((Int_t) cnaf->GetType());
+		cout	<< setmagenta
+				<< "                      CNAF(" << i << ")=" << cnaf->Int2Ascii() << " (" << type->GetName() << ")"
+				<< ", X=" << (cnaf->GetX() ? 1 : 0)
+				<< ", Q=" << (cnaf->GetQ() ? 1 : 0)
+				<< ", Data=" << cnaf->GetData() << " (0x" << setbase(16) << cnaf->GetData() << setbase(10) << ")"
+				<< setblack << endl;
 	}
 }
 
-Int_t TMrbEsone::HasFastCamac() {
+Bool_t TMrbEsone::HasFastCamac() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::HasFastCamac
 // Purpose:        Test for fast camac capability
 // Arguments:      --
-// Results:        Int_t FastCamacFct   -- function F to be used for
-//                                         fast camac read
-// Exceptions:     F = -1 -> no fast camac capability
-// Description:    Returns function F to be used for fast camac read.
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Tests if controller has fast camac
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	switch (fController.GetIndex()) {
 		case kCC_CC32:
-			return(kFastCamac_F_CC32);
+			return(kTRUE);
 		case kCC_CBV:
 		default:
-			return(-1);
+			return(kFALSE);
 	}
 }
 
-Int_t TMrbEsone::HasBroadCast() {
+Bool_t TMrbEsone::HasBroadCast(Int_t & NsetMask, Int_t & NexecCmd) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::HasBroadCast
+// Purpose:        Test for broadcast capability
+// Arguments:      Int_t & NsetMask     -- station N to set broadcast mask
+//                 Int_t & NexecCmd     -- station N to exec bc commands
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Tests if controller has broadcast capability.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	NsetMask = 0;
+	NexecCmd = 0;
+	if (fUseBroadCast) {
+		switch (fController.GetIndex()) {
+			case kCC_CC32:	NsetMask = kBroadCastSetMask_N_CC32;
+							NexecCmd = kBroadCastExecCmd_N_CC32;
+							return(kTRUE);
+			default:		return(kFALSE);
+		}
+	}
+	return(kFALSE);
+}
+
+Bool_t TMrbEsone::HasBroadCast() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::HasBroadCast
 // Purpose:        Test for broadcast capability
 // Arguments:      --
-// Results:        Int_t BroadCastStation   -- station N to be used for
-//                                             broadcasting
-// Exceptions:     N = -1 -> no broad cast capability
-// Description:    Returns station N to be used for broadcasting.
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Tests if controller has broadcast capability.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fUseBroadCast) {
 		switch (fController.GetIndex()) {
-			case kCC_CC32:
-				return(kBroadCast_N_CC32);
-			default:
-				return(-1);
+			case kCC_CC32:	return(kTRUE);
+			default:		return(kFALSE);
 		}
-	} else return(-1);
+	}
+	return(kFALSE);
 }
 
 Bool_t TMrbEsone::SetBroadCast(Int_t Crate, UInt_t BroadCast) {
@@ -1877,7 +1452,7 @@ Bool_t TMrbEsone::SetBroadCast(Int_t Crate, UInt_t BroadCast) {
 	Int_t sts;
 
 	if (!this->CheckConnection("SetBroadCast")) return(kFALSE);
-	if ((Crate = this->CheckCrate(Crate, "SetBroadCast")) == -1) return(kFALSE);
+	if (!this->CheckCrate(Crate, "SetBroadCast")) return(kFALSE);
 
 	if (this->HasBroadCast() > 0) {
 		sts = this->ExecCnaf(Crate, 26, 0, 16, (Int_t) BroadCast);
@@ -1889,73 +1464,108 @@ Bool_t TMrbEsone::SetBroadCast(Int_t Crate, UInt_t BroadCast) {
 	}
 }
 
-UInt_t TMrbEsone::GetBroadCast() {
+UInt_t TMrbEsone::GetBroadCast(Int_t Crate) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::SetBroadCast
 // Purpose:        Read broadcast register
-// Arguments:      --
+// Arguments:      Int_t Crate          -- crate number
 // Results:        UInt_t BroadCast     -- bits on bc mask
-// Exceptions:
+// Exceptions:     Returns kEsoneError on error.
 // Description:    Reads the broadcast mask register.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t sts;
+	Int_t bcData;
 	
-	if (!this->CheckConnection("GetBroadCast")) return(0);
+	if (!this->CheckConnection("GetBroadCast")) return((UInt_t) kEsoneError);
+	if (!this->CheckCrate(Crate, "GetBroadCast")) return((UInt_t) kEsoneError);
 
 	if (this->HasBroadCast() > 0) {
-		sts = this->ExecCnaf(fCrate, 26, 0, 0);
-		if (sts == 1) return(this->GetData()); else return(0);
+		if (this->ExecCnaf(Crate, 26, 0, 0, bcData)) return(bcData); else return((UInt_t) kEsoneError);
 	} else {
 		gMrbLog->Err() << "No BroadCasting for CAMAC controller " << fController.GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "GetBroadCast");
-		return(0);
+		return((UInt_t) kEsoneError);
 	}
 }
 
-Bool_t TMrbEsone::AddBroadCast(Int_t Station) {
+Bool_t TMrbEsone::AddToBroadCast(Int_t Crate, Int_t Station) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::AddBroadCast
 // Purpose:        Add station to broadcast mask
-// Arguments:      Int_t Station      -- camac station
+// Arguments:      Int_t Crate        -- crate number
+//                 Int_t Station      -- camac station
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Adds a bit to the broadcast mask register.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t sts;
-	UInt_t mask;
+	Int_t bcData;
 	
-	if (!this->CheckConnection("AddBroadCast")) return(kFALSE);
+	if (!this->CheckConnection("AddToBroadCast")) return(kFALSE);
+	if (!this->CheckCrate(Crate, "AddToBroadCast")) return(kFALSE);
 
 	if (this->HasBroadCast() > 0) {
 		if (Station < 1 || Station > 24) {
 			gMrbLog->Err() << "Illegal camac station - " << Station << " (should be in [1, 24])" << endl;
-			gMrbLog->Flush(this->ClassName(), "AddBroadCast");
+			gMrbLog->Flush(this->ClassName(), "AddToBroadCast");
 			return(kFALSE);
 		}
-		sts = this->ExecCnaf(fCrate, 26, 0, 0);
-		if (sts != 1) return(kFALSE);
-		mask = (UInt_t) this->GetData() | (1 << (Station - 1));			
-		sts = this->ExecCnaf(fCrate, 26, 0, 16, (Int_t) mask);
-		return(sts == 1);
+		if (!this->ExecCnaf(Crate, 26, 0, 0, bcData)) return(kFALSE);
+		bcData |= (1 << (Station - 1));			
+		return(this->ExecCnaf(Crate, 26, 0, 16, bcData));
 	} else {
 		gMrbLog->Err() << "No BroadCasting for CAMAC controller " << fController.GetName() << endl;
-		gMrbLog->Flush(this->ClassName(), "AddBroadCast");
+		gMrbLog->Flush(this->ClassName(), "AddToBroadCast");
 		return(kFALSE);
 	}
 }
 
-Bool_t TMrbEsone::SetAutoRead(Bool_t AutoRead) {
+Bool_t TMrbEsone::RemoveFromBroadCast(Int_t Crate, Int_t Station) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::RemoveFromBroadCast
+// Purpose:        Remove station from broadcast mask
+// Arguments:      Int_t Crate        -- crate number
+//                 Int_t Station      -- camac station
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Removes a bit to the broadcast mask register.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t bcData;
+	
+	if (!this->CheckConnection("RemoveFromBroadCast")) return(kFALSE);
+	if (!this->CheckCrate(Crate, "RemoveFromBroadCast")) return(kFALSE);
+
+	if (this->HasBroadCast() > 0) {
+		if (Station < 1 || Station > 24) {
+			gMrbLog->Err() << "Illegal camac station - " << Station << " (should be in [1, 24])" << endl;
+			gMrbLog->Flush(this->ClassName(), "RemoveFromBroadCast");
+			return(kFALSE);
+		}
+		if (!this->ExecCnaf(Crate, 26, 0, 0, bcData)) return(kFALSE);
+		bcData &= ~(1 << (Station - 1));			
+		return(this->ExecCnaf(Crate, 26, 0, 16, bcData));
+	} else {
+		gMrbLog->Err() << "No BroadCasting for CAMAC controller " << fController.GetName() << endl;
+		gMrbLog->Flush(this->ClassName(), "RemoveFromBroadCast");
+		return(kFALSE);
+	}
+}
+
+
+Bool_t TMrbEsone::SetAutoRead(Int_t Crate, Bool_t AutoRead) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::SetAutoRead
 // Purpose:        Enable/disable AutoRead mode
-// Arguments:      Bool_t AutoRead   -- on/off flag
+// Arguments:      Int_t Crate       -- crate number
+//                 Bool_t AutoRead   -- on/off flag
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Enables/disable auto read mode (CC32 only).
@@ -1965,15 +1575,13 @@ Bool_t TMrbEsone::SetAutoRead(Bool_t AutoRead) {
 	Int_t sts;
 	
 	if (!this->CheckConnection("SetAutoRead")) return(kFALSE);
+	if (!this->CheckCrate(Crate, "SetAutoRead")) return(kFALSE);
 
 	switch (fController.GetIndex()) {
 		case kCC_CC32:
-			sts = this->ExecCnaf(fCrate, 0, 0, 3);
-			if (sts != 1) return(kFALSE);
-			sts = this->GetData();
+			if (!this->EsoneSpecial(TMrbEsoneCnaf::kCnafTypeRead, Crate, 0, 0, 3, sts, kTRUE)) return(kFALSE);
 			if (AutoRead) sts |= kAutoRead_CC32; else sts &= ~kAutoRead_CC32;
-			sts = this->ExecCnaf(fCrate, 0, 0, 3, sts);
-			return(sts == 1);
+			return(this->EsoneSpecial(TMrbEsoneCnaf::kCnafTypeWrite, Crate, 0, 0, 3, sts, kTRUE));
 		case kCC_CBV:
 		default:
 			gMrbLog->Err() << "No AutoRead mode for CAMAC controller " << fController.GetName() << endl;
@@ -1982,26 +1590,27 @@ Bool_t TMrbEsone::SetAutoRead(Bool_t AutoRead) {
 	}
 }
 
-Bool_t TMrbEsone::ReadDoubleWord(Bool_t ReadDW) {
+Bool_t TMrbEsone::ReadDoubleWord(Int_t Crate, Bool_t ReadDW) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbEsone::ReadDoubleWord
 // Purpose:        Enable/disable 32 bit mode
-// Arguments:      Bool_t ReadDW   -- on/off flag
+// Arguments:      Int_t Crate     -- crate number
+//                 Bool_t ReadDW   -- on/off flag
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Enables/disable 32 bit mode (CC32 only).
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t sts;
-	
+	Int_t data0 = 0;
+
 	if (!this->CheckConnection("ReadDoubleWord")) return(kFALSE);
+	if (!this->CheckCrate(Crate, "ReadDoubleWord")) return(kFALSE);
 
 	switch (fController.GetIndex()) {
 		case kCC_CC32:
-			sts = this->ExecCnaf(fCrate, 27, ReadDW ? 2 : 3, 16, 0);
-			return(sts == 1);
+			return(this->EsoneSpecial(TMrbEsoneCnaf::kCnafTypeWrite, Crate, 27, ReadDW ? 2 : 3, 16, data0, kTRUE));
 		case kCC_CBV:
 		default:
 			gMrbLog->Err() << "No 32 bit mode for CAMAC controller " << fController.GetName() << endl;
@@ -2009,3 +1618,571 @@ Bool_t TMrbEsone::ReadDoubleWord(Bool_t ReadDW) {
 			return(kFALSE);
 	}
 }
+
+Bool_t TMrbEsone::EsoneCDREG(UInt_t & Handle, Int_t Crate, Int_t Station, Int_t SubAddr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCDREG
+// Purpose:        Encode C, N, A
+// Arguments:      Int_t & Handle     -- identifier
+//                 Int_t Crate        -- crate C
+//                 Int_t Station      -- station N
+//                 Int_t SubAddr      -- subaddr A
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Encodes ESONE-stype camac addr from C,N,A.
+//                 Returns unique identifier (handle).
+//                 Esone call: cdreg()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fHostAddr <= 0) return(kFALSE);
+
+	if (this->IsMbsServer()) {
+		cdreg(&Handle, fHostAddr, Crate, Station, SubAddr);
+		return(kTRUE);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbEsone::EsoneCDREG(UInt_t & Handle, TMrbEsoneCnaf & Cnaf) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCDREG
+// Purpose:        Encode C, N, A
+// Arguments:      Int_t & Handle        -- identifier
+//                 TMrbEsoneCnaf & Cnaf  -- CNAF specs
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Encodes ESONE-stype camac addr from C,N,A.
+//                 Returns unique identifier (handle).
+//                 Esone call: cdreg()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t c, n, a;
+
+	c = Cnaf.GetC(); if (c == -1) c = 0;
+	n = Cnaf.GetN(); if (n == -1) n = 0;
+	a = Cnaf.GetA(); if (a == -1) a = 0;
+
+	return(this->EsoneCDREG(Handle, c, n, a));
+}
+
+Bool_t TMrbEsone::EsoneCDCTRL() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCDCTRL
+// Purpose:        Define controller
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Defines type of controller to be used (CBV or CC32)
+//                 Esone call: cdctrl()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->IsMbsServer()) {
+		cdctrl(fController.GetIndex());
+		return(kTRUE);
+	} else {
+		if (fController.GetIndex() != TMrbEsone::kCC_CC32) return(kFALSE);
+		return(kTRUE);
+	}
+}
+
+Bool_t TMrbEsone::EsoneCCCC(Int_t Crate) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCCCC
+// Purpose:        Clear dataway
+// Arguments:      Int_t Crate        -- crate C
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Clears dataway for given crate.
+//                 Esone call: cccc()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	UInt_t creg;
+
+	if (!this->EsoneCDREG(creg, Crate)) return(kFALSE);
+	if (!this->EsoneCDCTRL()) return(kFALSE);
+
+	if (this->IsMbsServer()) {
+		sts = cccc(creg);
+		return(sts == 0);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+
+Bool_t TMrbEsone::EsoneCCOPEN(const Char_t * HostName, UInt_t & HostAddress) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCCOPEN
+// Purpose:        Open connection to CAMAC
+// Arguments:      Char_t * HostName    -- name of camac host
+//                 UInt_t HostAddress   -- ... address
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Connects to camac.
+//                 Esone call: ccopen()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+
+	if (this->IsOffline()) return(kTRUE);		// nothing to do if in offline mode
+
+	if (this->IsMbsServer()) {
+		sts = ccopen((Char_t *) HostName, &HostAddress);
+		return(sts == 0);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbEsone::EsoneCCCI(Int_t Crate, Bool_t Inhibit) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCCCI
+// Purpose:        Set/clear dataway inhibit
+// Arguments:      Int_t Crate        -- crate C
+//                 Bool_t Inhibit     -- inhibit flag
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Inhibit/enable camac dataway
+//                 Esone call: ccci()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	UInt_t creg;
+
+	if (this->IsOffline()) return(kTRUE);
+
+	if (!this->EsoneCDREG(creg, Crate)) return(kFALSE);
+	if (!this->EsoneCDCTRL()) return(kFALSE);
+
+	if (this->IsMbsServer()) {
+		sts = ccci(creg, Inhibit ? TMrbEsoneCnaf::kCF_ENB : TMrbEsoneCnaf::kCF_DIS);
+		return(sts == 0);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbEsone::EsoneCTCI(Int_t Crate) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCTCI
+// Purpose:        Test dataway inhibit
+// Arguments:      Int_t Crate        -- crate C
+// Results:        Bool_t Inhibit     -- inhibit flag
+// Exceptions:
+// Description:    Tests dataway inhibit
+//                 Esone call: ctci()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t creg;
+	Int_t dwinhFlag;
+
+	if (this->IsOffline()) return(kTRUE);
+
+	if (!this->EsoneCDREG(creg, Crate)) return(kFALSE);
+	if (!this->EsoneCDCTRL()) return(kFALSE);
+
+	if (this->IsMbsServer()) {
+		ctci(creg, &dwinhFlag);
+		return(dwinhFlag == 1);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbEsone::EsoneCCCZ(Int_t Crate) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCCCZ
+// Purpose:        Initialize dataway
+// Arguments:      Int_t Crate        -- crate C
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Initializes camac dataway
+//                 Esone call: cccz()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	UInt_t creg;
+
+	if (this->IsOffline()) return(kTRUE);
+
+	if (!this->EsoneCDREG(creg, Crate)) return(kFALSE);
+	if (!this->EsoneCDCTRL()) return(kFALSE);
+
+	if (this->IsMbsServer()) {
+		sts = cccz(creg);
+		return(sts == 0);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+UInt_t TMrbEsone::EsoneCTSTAT() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCTSTAT
+// Purpose:        Test controller status
+// Arguments:      --
+// Results:        UInt_t Status      -- status information
+// Exceptions:
+// Description:    Tests controller status
+//                 Esone call: ctstat()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+
+	if (this->IsOffline()) return(0);
+
+	if (this->IsMbsServer()) {
+		ctstat(&sts);
+		return(sts);
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+Bool_t TMrbEsone::EsoneCXSA(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCXSA
+// Purpose:        Execute single cnaf
+// Arguments:      TMrbEsoneCnaf & Cnaf  -- cnaf (+data)
+//                 Bool_t D16Flag        -- 16 bit data if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Executes a single camac cnaf, 16 or 24 bit
+//                 Esone call: cssa(), cfsa()
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	UInt_t camacCNA;
+	Int_t camacData;
+
+	if (this->IsMbsServer()) {
+		if (!this->EsoneCDREG(camacCNA, Cnaf)) return(kFALSE);
+		if (!this->EsoneCDCTRL()) return(kFALSE);
+		camacData = Cnaf.IsWrite() ? Cnaf.GetData() : 0;
+		if (D16Flag) {
+			Cnaf.SetAction(TMrbEsoneCnaf::kCA_cssa);
+			this->SetAction(TMrbEsoneCnaf::kCA_cssa);
+			if (this->IsOffline()) return(kTRUE);
+			sts = cssa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
+		} else {
+			Cnaf.SetAction(TMrbEsoneCnaf::kCA_cfsa);
+			this->SetAction(TMrbEsoneCnaf::kCA_cfsa);
+			if (this->IsOffline()) return(kTRUE);
+			sts = cfsa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
+		}
+		Cnaf.ClearStatus(); 		// clear error, X, Q
+		Cnaf.ClearData();			// clear data
+		if (sts == -1) {			// X = 0, Q = 0
+			Cnaf.SetError();
+			this->SetError();
+			return(kFALSE);
+		} else {
+			Cnaf.SetX(); this->SetX(); 						// X = 1
+			if (sts != 0) { Cnaf.SetQ(); this->SetQ(); } 	// Q = 1
+			if (Cnaf.IsRead()) Cnaf.SetData(camacData);
+			return(kTRUE);
+		}
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+}
+
+Int_t TMrbEsone::EsoneCXGA(TObjArray & CnafList, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCXGA
+// Purpose:        Execute cnaf list
+// Arguments:      TObjArray & CnafList  -- list of cnafs (+data)
+//                 Bool_t D16Flag        -- 16 bit data if kTRUE
+// Results:        Int_t NofCnafs        -- number of cnafs executed
+// Exceptions:     NofCnafs = kEsoneError on error
+// Description:    Executes cnafs in the list, 16 or 24 bit
+//                 Esone call: csga(), cfga()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	Int_t nofCnafs;
+	UInt_t cna;
+	TMrbEsoneCnaf * cnaf;
+	TArrayI camacF, camacCNA, camacData, camacXQ;
+	TArrayI ctrlBlock(4);
+
+	if (this->IsMbsServer()) {
+		if (!this->EsoneCDCTRL()) return(kEsoneError);
+		nofCnafs = CnafList.GetEntriesFast();
+		this->SetCB(ctrlBlock, nofCnafs);
+		camacF.Set(nofCnafs);
+		camacCNA.Set(nofCnafs);
+		camacData.Set(nofCnafs);
+		camacXQ.Set(nofCnafs);
+		this->SetAction(D16Flag ? TMrbEsoneCnaf::kCA_csga : TMrbEsoneCnaf::kCA_cfga);
+		for (Int_t i = 0; i < nofCnafs; i++) {
+			cnaf = (TMrbEsoneCnaf *) CnafList[i];
+			camacF[i] = cnaf->GetF();
+			this->EsoneCDREG(cna, cnaf->GetC(), cnaf->GetN(), cnaf->GetA());
+			camacCNA[i] = (Int_t) cna;
+			camacData[i] = cnaf->IsWrite() ? cnaf->GetData() : 0;
+			camacXQ[i] = 0;
+			cnaf->SetAction(D16Flag ? TMrbEsoneCnaf::kCA_csga : TMrbEsoneCnaf::kCA_cfga);
+		}
+		if (this->IsOffline()) return(nofCnafs);
+		if (D16Flag) {
+			sts = csga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
+						camacXQ.GetArray(), ctrlBlock.GetArray());
+		} else {
+			sts = cfga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
+						camacXQ.GetArray(), ctrlBlock.GetArray());
+		}
+		this->ClearStatus();		// clear status
+		if (sts == 0) {
+			nofCnafs = ctrlBlock[1];
+			for (Int_t i = 0; i < nofCnafs; i++) {
+				cnaf = (TMrbEsoneCnaf *) CnafList[i];
+				if (cnaf->IsRead()) cnaf->SetData(camacData[i]);
+				cnaf->ClearStatus();
+				if (camacXQ[i] & 0x2) cnaf->SetX();
+				if (camacXQ[i] & 0x1) cnaf->SetQ();
+			}
+		} else {
+			nofCnafs = kEsoneError;
+		}
+		return(nofCnafs);
+	} else {						// not yet implemented
+		return(kEsoneError);
+	}
+}
+
+Int_t TMrbEsone::EsoneCXMAD(TMrbEsoneCnaf & Start, TMrbEsoneCnaf & Stop, TArrayI & Data, TObjArray & Results, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCXMAD
+// Purpose:        Perform an address scan
+// Arguments:      TMrbEsoneCnaf & Start -- start cnaf
+//                 TMrbEsoneCnaf & Stop  -- stop cnaf
+//                 TArrayI & Data        -- data (read/write)
+//                 TObjArray & Results   -- resulting cnafs (+data)
+//                 Bool_t D16Flag        -- 16 bit data if kTRUE
+// Results:        Int_t NofWords        -- number of data words
+// Exceptions:     NofWords = kEsoneError on error
+// Description:    Address scan: Executes cnafs starting with 'start',
+//                               ending with 'stop',
+//                               stops whenever Q=0
+//                 Esone call: csmad(), cfmad()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	TArrayI camacCNA(2);
+	TArrayI camacData(2048);
+	TArrayI ctrlBlock(4);
+	UInt_t cna;
+
+	if (this->IsMbsServer()) {
+		if (!this->EsoneCDCTRL()) return(kEsoneError);
+		if (!this->EsoneCDREG(cna, Start)) return(kEsoneError);			// start
+		camacCNA[0] = (Int_t) cna;
+		if (!this->EsoneCDREG(cna, Stop)) return(kEsoneError);			// stop
+		camacCNA[1] = (Int_t) cna;
+		Results.Delete();						// ignored if mbs server
+		this->SetCB(ctrlBlock, 2048);			// max number of cnafs
+
+		if (!Start.IsWrite()) Data.Reset();		// reset data buffer in case of read/control cnafs
+
+		if (D16Flag) {
+			Start.SetAction(TMrbEsoneCnaf::kCA_csmad);
+			Stop.SetAction(TMrbEsoneCnaf::kCA_csmad);
+			if (this->IsOffline()) return(0);
+			sts = csmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+		} else {
+			Start.SetAction(TMrbEsoneCnaf::kCA_cfmad);
+			Stop.SetAction(TMrbEsoneCnaf::kCA_cfmad);
+			if (this->IsOffline()) return(0);
+			sts = cfmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+		}
+		return((sts == 0) ? ctrlBlock[1] : kEsoneError);
+	} else {						// not yet implemented
+		return(kEsoneError);
+	}
+}
+
+Int_t TMrbEsone::EsoneCXUBX(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start, Int_t NofWords, Bool_t D16Flag, Bool_t QXfer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCXUBX
+// Purpose:        Block transfer
+// Arguments:      TMrbEsoneCnaf & Cnaf  -- cnaf
+//                 TArrayI & Data        -- data
+//                 Int_t Start           -- data index to start with
+//                 Int_t NofWords        -- number of words to xfer
+//                 Bool_t D16Flag        -- 16 bit data if kTRUE
+//                 Bool_t QXfer          -- if xfer is to be controlled by Q
+// Results:        Int_t NofWords        -- number of data words
+// Exceptions:     NofWords = kEsoneError on error
+// Description:    Executes a block transfer
+//                 Esone call: csubr(), cfubr(), csubc(), cfubc()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TArrayI ctrlBlock(4);
+	UInt_t camacCNA;
+	Int_t sts;
+
+	if (this->IsMbsServer()) {
+		if (!this->EsoneCDCTRL()) return(kEsoneError);
+		if (!this->EsoneCDREG(camacCNA, Cnaf)) return(kEsoneError);
+		this->SetCB(ctrlBlock, NofWords);
+		if (QXfer) {
+			if (D16Flag) {
+				Cnaf.SetAction(TMrbEsoneCnaf::kCA_csubr);
+				if (this->IsOffline()) return(0);
+				sts = csubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+			} else {
+				Cnaf.SetAction(TMrbEsoneCnaf::kCA_cfubr);
+				if (this->IsOffline()) return(0);
+				sts = cfubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+			}
+		} else {
+			if (D16Flag) {
+				Cnaf.SetAction(TMrbEsoneCnaf::kCA_csubc);
+				if (this->IsOffline()) return(0);
+				sts = csubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+			} else {
+				Cnaf.SetAction(TMrbEsoneCnaf::kCA_cfubc);
+				if (this->IsOffline()) return(0);
+				sts = cfubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+			}
+		}
+		return((sts == 0) ? ctrlBlock[1] : kEsoneError);
+	} else {
+		return(kEsoneError); 		// not yet implemented
+	}
+}
+
+Bool_t TMrbEsone::EsoneSpecial(TMrbEsoneCnaf::EMrbCnafType Type,
+													Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function,
+													Int_t & Data, Bool_t D16Flag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneSpecial
+// Purpose:        Excecute special cnaf
+// Arguments:      EMrbCnafType Type     -- cnaf type
+//                 Int_t Crate           -- crate C
+//                 Int_t Station         -- station N
+//                 Int_t Subaddr         -- subaddress A
+//                 Int_t Function        -- function F
+//                 Int_t & Data          -- data i/o
+//                 Bool_t D16Flag        -- 16 bit data if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Executes a special cnaf, 16 or 24 bit
+//                 Esone call: cssa(), cfsa()
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t sts;
+	UInt_t camacCNA;
+	Int_t camacData;
+	TMrbEsoneCnaf cnaf;
+
+	if (this->IsMbsServer()) {
+		cnaf.Set(Crate, Station, Subaddr);
+		if (!this->EsoneCDCTRL()) return(kFALSE);
+		if (!this->EsoneCDREG(camacCNA, cnaf)) return(kFALSE);
+		camacData = Data;
+		if (D16Flag) {
+			this->SetAction(TMrbEsoneCnaf::kCA_cssa);
+			if (this->IsOffline()) return(kTRUE);
+			sts = cssa(Function, camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
+		} else {
+			this->SetAction(TMrbEsoneCnaf::kCA_cfsa);
+			if (this->IsOffline()) return(kTRUE);
+			sts = cfsa(Function, camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
+		}
+		Data = 0;
+		if (sts == -1) {			// X = 0, Q = 0
+			this->SetError();
+			return(kFALSE);
+		} else if (Type == TMrbEsoneCnaf::kCnafTypeRead) {
+			Data = camacData;
+			return(kTRUE);
+		}
+	} else {						// not yet implemented
+		return(kFALSE);
+	}
+	return(kFALSE);
+}
+
+const Char_t * TMrbEsone::EsoneCERROR(TString & ErrMsg, Int_t ErrorCode, Bool_t DateFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEsone::EsoneCERROR
+// Purpose:        Report error
+// Arguments:      TString & ErrMsg      -- error message
+//                 Int_t ErrorCode       -- error code
+//                 Bool_t DateFlag       -- include date if kTRUE
+// Results:        Char_t * ErrMsg       -- pointer to error message
+// Exceptions:     
+// Description:    Reports any error recently produced by a esone call
+//                 Esone call: cerror()
+//
+//                 >>> protected method <<<
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->IsMbsServer()) {
+		ErrMsg = cerror(ErrorCode, DateFlag ? 1 : 0);
+		return(ErrMsg.Data());
+	} else {
+		return("");
+	}
+}
+

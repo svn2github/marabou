@@ -21,6 +21,7 @@
 #include "TSystem.h"
 #include "TRegexp.h"
 
+#include "TMrbNamedX.h"
 #include "TMrbString.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -54,7 +55,8 @@ class TMrbEnv : public TObject {
 
 																				// get resource value
 		Int_t Get(const Char_t * Resource, Int_t Default);						// ... integer
-		const Char_t * Get(TString & Result, const Char_t * Resource, const Char_t * Default = "");	// ... ascii
+		const Char_t * Get(TString & Result, const Char_t * Resource, const Char_t * Default = ""); 	// ... ascii
+		const Char_t * Get(TMrbNamedX & Result, const Char_t * Resource, const Char_t * Default = "");	// ... ascii(int)
 
 																				// get default resource value
 		Int_t GetDefault(const Char_t * Resource, Int_t Default);				// ... integer

@@ -68,7 +68,10 @@ class TMrbDGFEventBuffer : public TNamed, public TArrayI {
 
 		~TMrbDGFEventBuffer() {}; 										// default dtor
 
-		void Print(Int_t EventNumber = -1); 							// output header data
+		void Print(ostream & OutStrm, Int_t EventNumber = -1, const Char_t * ModuleInfo = NULL);
+		inline void Print(Int_t EventNumber = -1) { this->Print(cout, EventNumber); };
+		Bool_t PrintToFile(const Char_t * FileName, const Char_t * ModuleInfo);
+
 		void Reset();													// reset buffer
 		inline Int_t GetNofWords() { return(fNofWords); };				// get number of data words
 		inline Int_t GetNofEvents() { return(fNofEvents); };			// get number of events

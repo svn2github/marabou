@@ -4,6 +4,7 @@
 #include "TEnv.h"
 #include "TFile.h"
 #include "TCanvas.h"
+#include "TColor.h"
 #include "HTCanvas.h"
 #include "TButton.h"
 #include "TObject.h"
@@ -77,6 +78,8 @@ void  Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
 TEnv * GetDefaults(TString &, Bool_t mustexist = kTRUE);
 TH1 * gethist( const char * hname, const char * host, Int_t socket, Bool_t * ok);
 TMrbStatistics * getstat(const char * host, Int_t socket, Bool_t * ok);
- 
+TColor * GetColorByInd(Int_t index);   
+void SetUserPalette(Int_t startindex, TArrayI * pixels); 
+
 inline void nothing();
 #endif

@@ -149,12 +149,12 @@ typedef enum
 } fcode_t;
 
 /*
-** controller codes [RL, 14-Mar-2002]
+** controller codes [RL, 14-Mar-2002, modified 10-Dec-2002]
 */
 typedef enum
 {
-	C_CBV = 0,
-	C_CC32 = 1
+	C_CBV = 5,
+	C_CC32 = 11
 } ccode_t;
 
 #define MAX_CRATES	16  /* 23/02/96 f.h. changed from 7 to 16 */

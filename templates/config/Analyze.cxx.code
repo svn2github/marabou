@@ -133,19 +133,6 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%INITIALIZE_EVT_SEVT_MODS%%
 
 %%BeginOfCode%%
-%B%// user-specific code to book histograms
-%I%#	include "$iclFile"
-%%EndOfCode%%
-%%INCLUDE_USER_BOOK_HISTOGRAMS%%
-
-%%BeginOfCode%%
-%B%// book histograms defined by user
-%UD1%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX);
-%UD2%	if ($hName == NULL) $hName = new $hType("$hName", "$hTitle", $binSizeX, $lowerX, $upperX, $binSizeY, $lowerY, $upperY);
-%%EndOfCode%%
-%%HISTO_BOOK_USER_DEFINED%%
-
-%%BeginOfCode%%
 %B%// user-specific code to initialize objects and/or variables
 %I%#	include "$iclFile"
 %%EndOfCode%%
@@ -393,7 +380,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    This is the event filling function.
-//                 User will be called by methods BuildEvent() or Analyze().
+//                 User will be called by method Analyze().
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -409,8 +396,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %B%		case kMrbTrigger$evtNameUC:		// event $evtNameLC, trigger $trigNo
 %B%			pthread_mutex_lock(&global_data_mutex);
 %B%			g$evtNameUC->FillEvent(EventData, BaseAddr);
-%ANA%			sts = g$evtNameUC->Analyze();
-%BEV%			sts = g$evtNameUC->BuildEvent();
+%A%			sts = g$evtNameUC->Analyze();
 %E%			pthread_mutex_unlock(&global_data_mutex);
 %E%			return(sts);
 %%EndOfCode%%

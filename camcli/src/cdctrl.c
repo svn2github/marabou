@@ -44,5 +44,5 @@ int ctrl_type;
 {
     _cam_errno = EC_NORMAL;
 	_cam_ctrl_type = ctrl_type; 
-    return 0;
+	return 0;
 }

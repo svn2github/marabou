@@ -18,7 +18,7 @@
 #include "TROOT.h"
 #include "TSystem.h"
 #include "TObjString.h"
-#include "TTimeStamp.h"
+#include "TDatime.h"
 
 #include "TPolControl.h"
 
@@ -29,7 +29,7 @@ ClassImp(TPolControl)
 
 extern TMrbLogger * gMrbLog;			// access to message logger
 
-TPolControl::TPolControl(const Char_t * Device) : TMrbSerialComm(Device) {
+TPolControl::TPolControl(const Char_t * Device) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TPolControl
@@ -38,6 +38,7 @@ TPolControl::TPolControl(const Char_t * Device) : TMrbSerialComm(Device) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
+	if (Device) fSerIO = new TMrbSerialComm(Device); else fSerIO = NULL;
 	fSubdevPattern = BIT(0);
 	fWaitAV = 500;
 	fWaitAR = 500;
@@ -71,8 +72,12 @@ Int_t TPolControl::ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution) {
 	Int_t chn;
 	Int_t nBytes;
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadAdc");
+		return(-1);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadAdc");
 		return(-1);
 	}
@@ -83,17 +88,17 @@ Int_t TPolControl::ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution) {
 	if (LowResolution) {
 		cmd = "AH";
 		cmd += chn;
-		this->WriteData(cmd.Data());
+		fSerIO->WriteData(cmd.Data());
 	} else {
 		cmd = "AV";
 		cmd += chn;
-		this->WriteData(cmd.Data());
+		fSerIO->WriteData(cmd.Data());
 		gSystem->Sleep(fWaitAV);
-		this->WriteData("AR");
+		fSerIO->WriteData("AR");
 		gSystem->Sleep(fWaitAR);
 	}
 	for (Int_t i = 0; i < 4; i++) {
-		if ((nBytes = this->ReadData(result)) > 0) break;
+		if ((nBytes = fSerIO->ReadData(result)) > 0) break;
 		gSystem->Sleep(100);
 	}
 	if (nBytes == 0) {
@@ -129,8 +134,12 @@ Int_t TPolControl::ReadAdc(Int_t AbsChannel, Bool_t LowResolution) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadAdc");
+		return(-1);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadAdc");
 		return(-1);
 	}
@@ -157,8 +166,12 @@ Int_t TPolControl::ReadAdc(const Char_t * ChnName, Bool_t LowResolution) {
 	Int_t chn;
 	TString entryName;
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadAdc");
+		return(-1);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadAdc");
 		return(-1);
 	}
@@ -200,8 +213,12 @@ Int_t TPolControl::SetDac(Int_t AbsChannel, Double_t DacValue, Int_t ReadBack, B
 	TMrbString cmd, result;
 	Int_t dacVal;
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetDac");
+		return(-1);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "SetDac");
 		return(-1);
 	}
@@ -215,7 +232,7 @@ Int_t TPolControl::SetDac(Int_t AbsChannel, Double_t DacValue, Int_t ReadBack, B
 	cmd += AbsChannel;
 	cmd += "=";
 	cmd += dacVal;
-	this->WriteData(cmd.Data());
+	fSerIO->WriteData(cmd.Data());
 	gSystem->Sleep(fWaitSD);
 	if (ReadBack != -1) {
 		return(this->ReadAdc(ReadBack, LowResolution));
@@ -242,8 +259,12 @@ Int_t TPolControl::SetDac(Int_t Subdev, Int_t Channel, Double_t DacValue, Int_t 
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetDac");
+		return(-1);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "SetDac");
 		return(-1);
 	}
@@ -277,8 +298,12 @@ Int_t TPolControl::SetDac(const Char_t * ChnName, Double_t DacValue, const Char_
 	Int_t dacChn, rdbChn;
 	TString entryName;
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetDac");
+		return(-1);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "SetDac");
 		return(-1);
 	}
@@ -337,8 +362,12 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 	Int_t steps;
 	TMrbString hTitle, hAxis;
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "Plot");
+		return(NULL);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "Plot");
 		return(NULL);
 	}
@@ -416,8 +445,12 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "Plot");
+		return(NULL);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "Plot");
 		return(NULL);
 	}
@@ -455,8 +488,12 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 	Int_t chnX, chnY;
 	TString entryName;
 
-	if (!this->IsOpen()) {
-		gMrbLog->Err()	<< "Device not open - " << this->GetName() << endl;
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "Plot");
+		return(NULL);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "Plot");
 		return(NULL);
 	}
@@ -490,7 +527,7 @@ TH1F * TPolControl::Plot(	const Char_t * HistoName,
 TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 								const Char_t * Comment,
 								const Char_t * LofChannels,
-								Int_t Period, Int_t NofRecords) {
+								Int_t NofRecords, Int_t Period) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TPolControl::Monitor
@@ -498,8 +535,8 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 // Arguments:      Char_t * FileName     -- name of resulting root file
 //                 Char_t * Comment      -- commenting text
 //                 Char_t * LofChannels  -- channels to be monitored
-//                 Int_t Period          -- monitor period
 //                 Int_t NofRecords      -- number of snapshots to be taken
+//                 Int_t Period          -- monitor period
 // Results:        TNtuple * MonitorData -- data
 // Exceptions:
 // Description:    Monitor ADC data and write it to root file.
@@ -521,9 +558,17 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 	Int_t sd, chn;
 	TMrbNamedX * nx;
 
-	if (this->MonitorIsOn()) {
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "Monitor");
+		return(NULL);
+	} else if (this->MonitorIsOn()) {
 		gMrbLog->Err()	<< "Can't create a new monitor - monitoring already in progress ("
 						<< (this->IsWriting() ? "WRITE" : "READ") << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "Monitor");
+		return(NULL);
+	} else if (!fSerIO->IsOpen()) {
+		gMrbLog->Err()	<< "Device not open - " << fSerIO->GetName() << endl;
 		gMrbLog->Flush(this->ClassName(), "Monitor");
 		return(NULL);
 	}
@@ -535,7 +580,7 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 		gMrbLog->Flush(this->ClassName(), "Monitor");
 		return(NULL);
 	}
-	varList = "date:time:";
+	varList = "time:";
 	fMonitorLayout.Delete();
 	fMonitorLayout.SetName("MonitorLayout");
 	TString numString = "123456789";
@@ -579,7 +624,7 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 				varList += adcName;
 			}
 		} else {
-			nx = this->Find(&fNameTable, adcName.Data(), "A", kFALSE);
+			nx = this->Find(&fNameTable, adcName.Data(), "A", "Monitor", kFALSE);
 			if (nx) 	{
 				fMonitorLayout.AddNamedX(nx);
 				if (i > 0) varList += ":";
@@ -615,13 +660,15 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName,
 
 	this->PrintMonitorLayout();
 
+	if (Period == 0) Period = fMonitorData->GetNvar() - 1;
+
 	TTimer * t = new TTimer(Period * 1000); 	// create a timer, resolution is seconds
 	t->SetObject(this);							// connect to it
 	if (fNofRecords == 0) {
-		gMrbLog->Out()	<< "Monitoring started (call StopMonitor() to stop)" << endl;
+		gMrbLog->Out()	<< "Monitoring started (period=" << Period << "s, call StopMonitor() to stop)" << endl;
 		fNofRecords = 1000000;
 	} else {
-		gMrbLog->Out()	<< "Monitoring started (stop after " << fNofRecords << " record(s) or on StopMonitor())" << endl;
+		gMrbLog->Out()	<< "Monitoring started (period=" << Period << "s, stop after " << fNofRecords << " record(s) or on StopMonitor())" << endl;
 	}
 	gMrbLog->Flush(this->ClassName(), "Monitor", setblue);
 	fStopFlag = kFALSE;
@@ -644,36 +691,25 @@ Bool_t TPolControl::HandleTimer(TTimer * Timer) {
 
 	Int_t nofData;
 	TArrayF monData;
-	Int_t idx;
 	TMrbNamedX * nx;
+	TDatime timeStamp;
+	union t2f { UInt_t t; Float_t f; } t2f;
 
-	nofData = fMonitorLayout.GetLast() + 1; 		// number of ntuple elements
-	monData.Set(nofData + 2);						// + date + time
+	nofData = fMonitorLayout.GetLast(); 	 		// number of ntuple elements
+	monData.Set(nofData + 1);						// + timestamp
 	monData.Reset();
 
-	TTimeStamp * ts = new TTimeStamp(); 			// get current date & time
-	monData[0] = (Float_t) ts->GetDate();
-	monData[1] = (Float_t) ts->GetTime(kFALSE);
-	delete ts;
+	t2f.t = timeStamp.Get();
+	monData[0] = t2f.f;
 
-	idx = 2;
-	for (Int_t i = 0; i < nofData; i++, idx++) {
+	for (Int_t i = 1; i <= nofData; i++) {
 		nx = (TMrbNamedX *) fMonitorLayout[i];
-		monData[idx] = (Float_t) this->ReadAdc(nx->GetIndex()) * kPolMaxVoltage / kPolAdcRange;
+		monData[i] = (Float_t) this->ReadAdc(nx->GetIndex()) * kPolMaxVoltage / kPolAdcRange;
 	}
 	fMonitorData->Fill(monData.GetArray());
 	fRecordCount++;
 
-	if (this->IsVerbose()) {
-		cout	<< endl << "HandleTimer(): at record " << fRecordCount << endl;
-		cout	<< "   Date: " << (Int_t) monData[0] << "   Time: " << (Int_t) monData[1] << endl;
-		idx = 2;
-		for (Int_t i = 0; i < nofData; i++, idx++) {
-			cout	<< "   " << monData[idx];
-			if (((idx + 1) % 10) == 0) cout << endl;
-		}
-		cout << endl;
-	}
+	if (this->IsVerbose()) this->PrintRecordData(cout, fRecordCount, t2f.t, monData.GetArray() + 1, nofData);
 
 	if ((fRecordCount >= fNofRecords) || fStopFlag) {
 		Timer->TurnOff();
@@ -718,28 +754,77 @@ TNtuple * TPolControl::Monitor(	const Char_t * FileName) {
 	fMonitorLayout.SetName("MonitorLayout");
 	fMonitorLayout.AddNamedX((TMrbLofNamedX *) fMonitorRootFile->Get("TMrbLofNamedX"));
 
+	fWriteFlag = kFALSE;
+
 	fMonitorData = (TNtuple *) fMonitorRootFile->Get("MonitorData");
 	this->PrintMonitorLayout();
 
 	return(fMonitorData);
 }
 
-Int_t TPolControl::GetEntry(Int_t EntryNumber, Int_t & Date, Int_t & Time, TArrayF & Data) {
+Int_t TPolControl::GetNofEntries() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TPolControl::GetNofEntries
+// Purpose:        Number of entries
+// Arguments:      --
+// Results:        Int_t NofEntries   -- number of records in root file
+// Exceptions:
+// Description:    Returns number of entries
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->MonitorIsOn()) {
+		gMrbLog->Err()	<< "Monitor not active" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetNofEntries");
+		return(-1);
+	} else if (!this->IsReading()) {
+		gMrbLog->Err()	<< "Monitor not in READ mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetNofEntries");
+		return(-1);
+	}
+	return((Int_t) fMonitorData->GetEntries());
+}
+
+Int_t TPolControl::GetNofADCs() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TPolControl::GetNofADCs
+// Purpose:        Number of ADCs
+// Arguments:      --
+// Results:        Int_t NofADCs   -- number of adcs in ntuple
+// Exceptions:
+// Description:    Returns number of ADCs
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->MonitorIsOn()) {
+		gMrbLog->Err()	<< "Monitor not active" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetNofADCs");
+		return(-1);
+	} else if (!this->IsReading()) {
+		gMrbLog->Err()	<< "Monitor not in READ mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetNofADCs");
+		return(-1);
+	}
+	return(fMonitorData->GetNvar());
+}
+
+Int_t TPolControl::GetEntry(Int_t EntryNumber, UInt_t & TimeStamp, TArrayF & Data) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TPolControl::GetEntry
 // Purpose:        Read monitor data from root file
 // Arguments:      Int_t EntryNumber     -- entry to be read
-//                 Int_t & Date          -- date YYYYMMDD
-//                 Int_t & Time          -- time HHMMSS
+//                 UInt_t & TimeStamp    -- time stamp (secs since 1.1.1970)
 //                 TArrayF & Data        -- monitor data
-// Results:        TNtuple * MonitorData -- data
+// Results:        Int_t NofData         -- number of data elements
 // Exceptions:
 // Description:    Reads given entry from tree.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TArrayF monData;
+	union t2f { UInt_t t; Float_t f; } t2f;
 
 	if (!this->MonitorIsOn()) {
 		gMrbLog->Err()	<< "Monitor not active" << endl;
@@ -761,11 +846,10 @@ Int_t TPolControl::GetEntry(Int_t EntryNumber, Int_t & Date, Int_t & Time, TArra
 
 	fMonitorData->ResetBranchAddresses();
 	fMonitorData->GetEntry(EntryNumber);
-	monData.Set(2, fMonitorData->GetArgs());
-	Date = (Int_t) monData[0];
-	Time = (Int_t) monData[1];
-	Int_t nofData = fMonitorData->GetNvar() - 2;
-	Data.Set(nofData, fMonitorData->GetArgs() + 2);
+	t2f.f = *fMonitorData->GetArgs();
+	TimeStamp = t2f.t;
+	Int_t nofData = fMonitorData->GetNvar() - 1;
+	Data.Set(nofData, fMonitorData->GetArgs() + 1);
 	return(nofData);
 }
 
@@ -851,11 +935,13 @@ void TPolControl::Print() {
 	}
 	cout	<< endl;
 
-	cout	<< "Wait states            : "	<< fWaitAV << " ms (AV), "
-											<< fWaitAR << " ms (AR), "
-											<< fWaitSD << " ms (SD)" << endl;
+	if (this->IsOnline()) {
+		cout	<< "Wait states            : "	<< fWaitAV << " ms (AV), "
+												<< fWaitAR << " ms (AR), "
+												<< fWaitSD << " ms (SD)" << endl;
 
-	TMrbSerialComm::Print();
+		fSerIO->Print();
+	}
 }
 
 void TPolControl::SetWait(Int_t WaitAV, Int_t WaitAR, Int_t WaitSD) {
@@ -871,6 +957,12 @@ void TPolControl::SetWait(Int_t WaitAV, Int_t WaitAR, Int_t WaitSD) {
 // Description:    Defines several wait states.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
+	if (!this->IsOnline()) {
+		gMrbLog->Err()	<< "Not in ONLINE mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetWait");
+		return;
+	};
 
 	fWaitAV = WaitAV;
 	fWaitAR = (WaitAR > 0) ? WaitAR : WaitAV;
@@ -973,7 +1065,8 @@ TMrbNamedX * TPolControl::Find(Int_t Subdev, Int_t Channel, const Char_t * Type)
 	return(this->Find(&fNameTable, Subdev, Channel, Type));
 }
 
-TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, const Char_t * Name, const Char_t * Type, Bool_t Verbose) {
+TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, const Char_t * Name, const Char_t * Type,
+											const Char_t * Method, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TPolControl::Find
@@ -981,6 +1074,7 @@ TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, const Char_t * Name, const
 // Arguments:      TMbrLofNamedX * Table -- table address
 //                 Char_t * Name         -- adc/dac name
 //                 Char_t * Type         -- "A" for ADC, "D" for DAC
+//                 Char_t * Method       -- calling method
 //                 Bool_t Verbose        -- kTRUE to activate error output
 // Results:        TMrbNamedX * Entry    -- table entry
 // Exceptions:
@@ -1004,21 +1098,22 @@ TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, const Char_t * Name, const
 		isAdc = kFALSE;
 	} else {
 		gMrbLog->Err()	<< "Illegal type - " << type << " (should be \"A\" for ADC or \"D\" for DAC" << endl;
-		gMrbLog->Flush(this->ClassName(), "Find");
+		gMrbLog->Flush(this->ClassName(), Method);
 		return(NULL);
 	}
 	
 	if ((nx = Table->FindByName(entryName.Data())) == NULL) {
 		if (Verbose) {
 			gMrbLog->Err()	<< (isAdc ? "ADC" : "DAC") << " not found - " << Name << endl;
-			gMrbLog->Flush(this->ClassName(), "Find");
+			gMrbLog->Flush(this->ClassName(), Method);
 		}
 		return(NULL);
 	}
 	return(nx);
 }
 
-TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channel, const Char_t * Type, Bool_t Verbose) {
+TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channel, const Char_t * Type,
+									const Char_t * Method, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TPolControl::Find
@@ -1027,6 +1122,7 @@ TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channe
 //                 Int_t Subdev          -- subdevice
 //                 Int_t Channel         -- channel
 //                 Char_t * Type         -- "A" for ADC, "D" for DAC
+//                 Char_t * Method       -- calling method
 //                 Bool_t Verbose        -- kTRUE to activate error output
 // Results:        TMrbNamedX * Entry    -- table entry
 // Exceptions:
@@ -1046,16 +1142,16 @@ TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channe
 	else if (type.CompareTo("D") == 0) isAdc = kFALSE;
 	else {
 		gMrbLog->Err()	<< "Illegal type - " << type << " (should be \"A\" for ADC or \"D\" for DAC" << endl;
-		gMrbLog->Flush(this->ClassName(), "Find");
+		gMrbLog->Flush(this->ClassName(), Method);
 		return(NULL);
 	}
 		
-	if (!this->CheckSubdev(Subdev, "Find")) return(NULL);
+	if (!this->CheckSubdev(Subdev, Method)) return(NULL);
 
 	if (isAdc) {
-		if (!this->CheckAdcChannel(Subdev, Channel, "Find")) return(NULL);
+		if (!this->CheckAdcChannel(Subdev, Channel, Method)) return(NULL);
 	} else {
-		if (!this->CheckDacChannel(Subdev, Channel, "Find")) return(NULL);
+		if (!this->CheckDacChannel(Subdev, Channel, Method)) return(NULL);
 	}
 
 	chn = Subdev * kPolNofAdcs + Channel;
@@ -1063,7 +1159,7 @@ TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channe
 		if (Verbose) {
 			gMrbLog->Err()	<< (isAdc ? "ADC" : "DAC") << " not found - channel " << chn
 							<< " (subdev=" << Subdev << ", chn=" << Channel << ")" << endl;
-			gMrbLog->Flush(this->ClassName(), "Find");
+			gMrbLog->Flush(this->ClassName(), Method);
 		}
 		return(NULL);
 	}
@@ -1072,13 +1168,13 @@ TMrbNamedX * TPolControl::Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channe
 		entryName = entryName(0, entryName.Length() - 2);
 		gMrbLog->Err()	<< "Not an ADC - " << entryName << " at channel " << chn
 						<< " (subdev=" << Subdev << ", chn=" << Channel << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "Find");
+		gMrbLog->Flush(this->ClassName(), Method);
 		return(NULL);
 	} else if (!isAdc && (entryName.Index(".D", 0) == -1)) {
 		entryName = entryName(0, entryName.Length() - 2);
 		gMrbLog->Err()	<< "Not a DAC - " << entryName << " at channel " << chn
 						<< " (subdev=" << Subdev << ", chn=" << Channel << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "Find");
+		gMrbLog->Flush(this->ClassName(), Method);
 		return(NULL);
 	} else return(nx);
 }
@@ -1253,6 +1349,92 @@ void TPolControl::PrintMonitorLayout() {
 	cout	<< "Name      Type      AbsChn    Subdev    RelChn" << endl;
 	cout	<< "..................................................................................." << endl;
 	this->PrintTable(&fMonitorLayout);
+}
+
+void TPolControl::PrintRecords(Int_t Start, Int_t Stop) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TPolControl::PrintRecords
+// Purpose:        Output record data to cout
+// Arguments:      Int_t Start     -- record to start with
+//                 Int_t Stop      -- record to stop with
+// Results:        --
+// Exceptions:
+// Description:    Outputs record data to cout.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t ts;
+	TArrayF data;
+
+	if (!this->MonitorIsOn()) {
+		gMrbLog->Err()	<< "Monitor not active" << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	} else if (!this->IsReading()) {
+		gMrbLog->Err()	<< "Monitor not in READ mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	}
+	Int_t nofRecords = this->GetNofEntries();
+	if (Stop < 0) Stop = nofRecords - 1;
+	if (Start < 0 || Start > Stop || Stop > nofRecords - 1) {
+		gMrbLog->Err()	<< "Limits out of range (should be in [0," << nofRecords - 1 << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	}
+	for (Int_t i = Start; i <= Stop; i++) {
+		Int_t n = this->GetEntry(i, ts, data);
+		this->PrintRecordData(cout, i, ts, data.GetArray(), n);
+	}
+}
+
+void TPolControl::PrintRecords(const Char_t * File, Int_t Start, Int_t Stop) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TPolControl::PrintRecords
+// Purpose:        Output record data to file
+// Arguments:      Int_t Start     -- record to start with
+//                 Int_t Stop      -- record to stop with
+// Results:        --
+// Exceptions:
+// Description:    Outputs record data to file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	ofstream f;
+	UInt_t ts;
+	TArrayF data;
+
+	if (!this->MonitorIsOn()) {
+		gMrbLog->Err()	<< "Monitor not active" << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	} else if (!this->IsReading()) {
+		gMrbLog->Err()	<< "Monitor not in READ mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	}
+	Int_t nofRecords = this->GetNofEntries();
+	if (Stop < 0) Stop = nofRecords - 1;
+	if (Start < 0 || Start > Stop || Stop > nofRecords - 1) {
+		gMrbLog->Err()	<< "Limits out of range (should be in [0," << nofRecords - 1 << "])" << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	}
+	f.open(File, ios::out);
+	if (!f.good()) {
+		gMrbLog->Err()	<< gSystem->GetError() << " - " << File << endl;
+		gMrbLog->Flush(this->ClassName(), "PrintRecords");
+		return;
+	}
+	for (Int_t i = Start; i <= Stop; i++) {
+		Int_t n = this->GetEntry(i, ts, data);
+		this->PrintRecordData(f, i, ts, data.GetArray(), n);
+	}
+	f.close();
+	gMrbLog->Out()	<< Stop - Start + 1 << " records written to file \"" << File << "\" (ASCII)" << endl;
+	gMrbLog->Flush(this->ClassName(), "PrintRecords", setblue);
 }
 
 Bool_t TPolControl::CheckAdcChannel(Int_t Subdev, Int_t Channel, const char * Method) {
@@ -1460,4 +1642,54 @@ void TPolControl::PrintTable(TMrbLofNamedX * Table) {
 		nx = (TMrbNamedX *) Table->After(nx);
 	}
 	cout << endl;
+}
+
+void TPolControl::PrintRecordData(ostream & Out, Int_t RecordNumber, UInt_t TimeStamp,
+																	Float_t * Data, Int_t NofData) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TPolControl::PrintRecordData
+// Purpose:        Output record data
+// Arguments:      Int_t RecordNumber   -- record number
+//                 TArrayF & Data       -- data
+//                 Int_t NofData        -- number of data elements
+// Results:        --
+// Exceptions:
+// Description:    Outputs record data to ostream.
+//                 ** Method is PROTECTED **
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t idx;
+	TDatime * d;
+	
+	Out	<< RecordNumber << "-[";
+	d = new TDatime(TimeStamp);
+	Out	<< d->AsString() << "] ";
+	delete d;
+	Out	<< setprecision(4) << setiosflags(ios::fixed);
+	idx = 2;
+	for (Int_t i = 0; i < NofData; i++, idx++, Data++) {
+		Out	<< setw(8) << *Data;
+		if (((i + 1) % 10) == 0) Out << endl << "                                                    ";
+	}
+	Out << endl;
+}
+
+const Char_t * TPolControl::TimeStampAsString(TString & TimeString, UInt_t TimeStamp) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TPolControl::TimeStampAsString
+// Purpose:        Convert time stamp to string
+// Arguments:      UInt_t TimeStamp     -- time stamp (secs since 1.1.1970)
+// Results:        Char_t * TimeString  -- ASCII representation
+// Exceptions:
+// Description:    Converts seconds since 1.1.1970 to ascii.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TDatime * d;
+	d = new TDatime(TimeStamp);
+	TimeString = d->AsString();
+	return(TimeString.Data());
 }

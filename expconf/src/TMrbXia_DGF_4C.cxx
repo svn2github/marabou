@@ -104,8 +104,6 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 					fTraceLength = 0;
 					fRunTask = 0x100;
 					fSwitchBusTerm = kFALSE;
-					fSynchWait = 1;
-					fInSynch = 0;
 				} else {
 					this->MakeZombie();
 				}
@@ -256,8 +254,6 @@ Bool_t TMrbXia_DGF_4C::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModul
 			fCodeTemplates.Substitute("$maxEvents", this->GetMaxEvents());
 			fCodeTemplates.Substitute("$traceLength", this->GetTraceLength());
 			fCodeTemplates.Substitute("$runTask", this->GetRunTask());
-			fCodeTemplates.Substitute("$synchWait", this->GetSynchWait());
-			fCodeTemplates.Substitute("$inSynch", this->GetInSynch());
 			fCodeTemplates.WriteCode(RdoStrm);
 			break;
 		case TMrbConfig::kModuleReadModule:
@@ -562,8 +558,6 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 				rcTmpl.Substitute("$maxEvents", this->GetMaxEvents());
 				rcTmpl.Substitute("$traceLength", this->GetTraceLength());
 				rcTmpl.Substitute("$runTask", this->GetRunTask());
-				rcTmpl.Substitute("$synchWait", this->GetSynchWait());
-				rcTmpl.Substitute("$inSynch", this->GetInSynch());
 				rcTmpl.Substitute("$isActive", this->IsActive() ? "TRUE" : "FALSE");
 				rcTmpl.WriteCode(RcStrm);
 				return(kTRUE);

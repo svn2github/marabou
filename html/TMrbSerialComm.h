@@ -78,8 +78,8 @@ class TMrbSerialComm : public TNamed {
 
 	protected:
 		Int_t fFd;						// i/o channel id from open(2)
-		void * fOldTIO; 				// old settings will be saved here
-		void * fNewTIO; 				// new settings
+		void * fOldTIO; 				//! old settings will be saved here
+		void * fNewTIO; 				//! new settings
 		Int_t fBaudRate;				// baud rate
 		Bool_t fUseRtsCts;				// kTRUE if RTS/CTS to be used
 		Int_t fNofDataBits; 			// number of data bits

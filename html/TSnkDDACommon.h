@@ -26,6 +26,12 @@ enum 					{	kSnkWaitForServer		=	15	 	};
 enum 					{	kSnkNofSubdevs 			=	4				 	};
 enum 					{	kSnkNofChnPerSubdev 	=	4				 	};
 
+enum ESnkDacChannels	{	kDacX					= 0,
+							kDacY					= 1,
+							kDacH					= 2,
+							kDacB					= 3
+						};
+
 // Must be same as defined in dda0816_P.h !!!
 enum ESnkPreScale		{	kSnkPSUndef				=	BIT(10),
 							kSnkPS1					=	0,
@@ -53,7 +59,7 @@ enum ESnkScanMode		{	kSnkSMUndef				=	BIT(0),
 							kSnkSMXOnly				=	BIT(4),
 							kSnkSMYOnly				=	BIT(5),
 							kSnkSMXYConst			=	BIT(6),
-							kSnkSMX0Y0 				=	BIT(7)
+							kSnkSMFromFile 			=	BIT(7)
 						};
 
 enum ESnkExecMode		{	kSnkEMNormal			=	BIT(0),
@@ -67,14 +73,15 @@ enum ESnkScanProfile	{	kSnkSPUndef				=	BIT(0),
 							kSnkSPSawToothLR		=	BIT(2),
 							kSnkSPSawToothRL		=	BIT(3),
 							kSnkSPConstant 			=	BIT(4),
-							kSnkSPExtern			=	BIT(5)
 						};
 
 enum ESnkHysteresis 	{	kSnkHystLow				=	2300,
 							kSnkHystHigh			=	3000
 						};
 
-
+enum ESnkBeamOnOff		{	kSnkBeamOff				=	2300,
+							kSnkBeamOn				=	3000
+						};
 
 enum ESnkAction 		{	kSnkActionUndef 		=	-1,
 							kSnkActionConnect		=	1,
@@ -136,7 +143,6 @@ const SMrbNamedX kSnkLofScanProfiles[] =
 								{kSnkSPSawToothLR,	"sawtooth-left",	"Scan profile: sawtooth, ///" 			},
 								{kSnkSPSawToothRL,	"sawtooth-right",	"Scan profile: sawtooth, \\\\\\"		},
 								{kSnkSPConstant,	"constant",			"Scan profile: data remain constant"	},
-								{kSnkSPExtern,  	"file", 			"Scan profile: data taken from file"	},
 								{0, 				NULL,				NULL									}
 							};
 
@@ -145,13 +151,13 @@ const SMrbNamedX kSnkLofScanProfiles[] =
 const SMrbNamedX kSnkLofScanModes[] =
 							{
 								{kSnkSMUndef,	 	"undef",			"Scan mode: undefined" 				},
-								{kSnkSMSymm,		"symm", 			"Scan mode: X Y symmectric"			},
-								{kSnkSMAsymm, 		"asymm",			"Scan mode: X Y individual"			},
+								{kSnkSMSymm,		"symm", 			"Scan mode: X,Y symmectric"			},
+								{kSnkSMAsymm, 		"asymm",			"Scan mode: X,Y individual"			},
 								{kSnkSMLShape,  	"L shape",			"Scan mode: L-shaped scan" 			},
 								{kSnkSMXOnly, 		"along X",			"Scan mode: X data vary, Y=const"	},
 								{kSnkSMYOnly,   	"along Y",			"Scan mode: Y data vary, X=const"	},
 								{kSnkSMXYConst,		"(X,Y)=c",			"Scan mode: X=const and Y=const"	},
-								{kSnkSMX0Y0,		"(X,Y)=0 V",		"Scan mode: X=Y=0 Volts"			},
+								{kSnkSMFromFile,	"file", 			"Scan mode: X,Y taken from file"	},
 								{0, 				NULL,				NULL								}
 							};
 

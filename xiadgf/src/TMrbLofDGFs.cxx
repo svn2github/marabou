@@ -145,6 +145,8 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 	Int_t subAddr;
 	TString cnaf;
 
+	TArrayI cData;
+
 	UInt_t sysBits, fippiDbits, fippiEbits;
 
 	if (!this->CheckModules("DownLoadFPGACode")) return(kFALSE);
@@ -209,18 +211,19 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 	if (sysBits != 0) {
 		size = fDGFData->GetFPGACodeSize(TMrbDGFData::kSystemFPGA); 			// size of FPGA data
 		dp = (UShort_t *) fDGFData->GetFPGACodeAddr(TMrbDGFData::kSystemFPGA);	// addr of FPGA data
-		fCamac->SetData(dp, size);												// copy FPGA data to camac buffer
+		cData.Set(size);
+		this->CopyData(cData, dp, size);												// copy FPGA data to camac buffer
 		if (gMrbDGFData->IsVerbose()) {
 			gMrbLog->Out()	<< "[System FPGA] Setting broadcast mask for crate C" << fCrate << ": 0x"
 							<< setbase(16) << sysBits << setbase(10) << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		}
 		fCamac->SetBroadCast(fCrate, sysBits); 									// set broadcast register
-		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), size, kTRUE) == -1) {		// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[System FPGA] "
 							<< "C" << fCrate << ".N" << fBCN
 							<< cnaf << " (pattern=0x" << setbase(16) << sysBits << setbase(10)
-							<< "): Block xfer failed - ActionCount=-1" << endl;
+							<< "): Block xfer failed" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode");
 			return(kFALSE);
 		}
@@ -228,14 +231,15 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 	if (fippiDbits != 0) {
 		size = fDGFData->GetFPGACodeSize(TMrbDGFData::kFippiFPGA, TMrbDGFData::kRevD); 	// size of FPGA data
 		dp = (UShort_t *) fDGFData->GetFPGACodeAddr(TMrbDGFData::kFippiFPGA, TMrbDGFData::kRevD);	// addr of FPGA data
-		fCamac->SetData(dp, size);												// copy FPGA data to camac buffer
+		cData.Set(size);
+		this->CopyData(cData, dp, size);												// copy FPGA data to camac buffer
 		if (gMrbDGFData->IsVerbose()) {
 			gMrbLog->Out()	<< "[Fippi(D) FPGA] Setting broadcast mask for crate C" << fCrate << ": 0x"
 							<< setbase(16) << fippiDbits << setbase(10) << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		}
 		fCamac->SetBroadCast(fCrate, fippiDbits); 									// set broadcast register
-		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), size, kTRUE) == -1) {		// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[Fippi(D) FPGA] "
 							<< "C" << fCrate << ".N" << fBCN
 							<< cnaf << " (pattern=0x" << setbase(16) << fippiDbits << setbase(10)
@@ -247,14 +251,15 @@ Bool_t TMrbLofDGFs::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 	if (fippiEbits != 0) {
 		size = fDGFData->GetFPGACodeSize(TMrbDGFData::kFippiFPGA, TMrbDGFData::kRevE); 	// size of FPGA data
 		dp = (UShort_t *) fDGFData->GetFPGACodeAddr(TMrbDGFData::kFippiFPGA, TMrbDGFData::kRevE);	// addr of FPGA data
-		fCamac->SetData(dp, size);												// copy FPGA data to camac buffer
+		cData.Set(size);
+		this->CopyData(cData, dp, size);												// copy FPGA data to camac buffer
 		if (gMrbDGFData->IsVerbose()) {
 			gMrbLog->Out()	<< "[Fippi(E) FPGA] Setting broadcast mask for crate C" << fCrate << ": 0x"
 							<< setbase(16) << fippiEbits << setbase(10) << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadFPGACode", setblue);
 		}
 		fCamac->SetBroadCast(fCrate, fippiEbits); 									// set broadcast register
-		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), size, kTRUE) == -1) {		// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fBCN, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[Fippi(E) FPGA] "
 							<< "C" << fCrate << ".N" << fBCN
 							<< cnaf << " (pattern=0x" << setbase(16) << fippiEbits << setbase(10)
@@ -340,6 +345,8 @@ Bool_t TMrbLofDGFs::DownloadDSPCode(Int_t Retry) {
 	UShort_t * dp;
 	UInt_t sts;
 	
+	TArrayI cData;
+
 	if (!this->CheckModules("DownLoadDSPCode")) return(kFALSE);
 	if (!this->CheckConnect("DownLoadDSPCode")) return(kFALSE);
 
@@ -367,9 +374,10 @@ Bool_t TMrbLofDGFs::DownloadDSPCode(Int_t Retry) {
 		
 		size = fDGFData->GetDSPCodeSize();									// size of DSP data
 		dp = (UShort_t *) fDGFData->GetDSPCodeAddr();	 					// addr of DSP data
+		cData.Set(size);
+		this->CopyData(cData, dp, size);
 		if (!this->WriteTSAR(1)) return(kFALSE); 							// start with addr 1
-		fCamac->SetData(dp + 2, size - 2);									// copy DSP[2], DSP[3] ... to camac buffer
-		if (fCamac->BlockXfer(fCrate, fBCN, A(0), F(16), size - 2, kTRUE) == -1) {	// start block xfer, 16 bit
+		if (fCamac->BlockXfer(fCrate, fBCN, A(0), F(16), cData, 2, size - 2, kTRUE) == -1) {	// start block xfer, 16 bit
 			gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
 							<< ".A0.F16 failed - DSPAddr=1, wc=" << size - 2 << ", ActionCount=-1" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
@@ -377,8 +385,7 @@ Bool_t TMrbLofDGFs::DownloadDSPCode(Int_t Retry) {
 		}
 
 		if (!this->WriteTSAR(0)) return(kFALSE); 							// writing to addr 0 will start DSP pgm
-		fCamac->SetData(dp, 2);												// copy DSP[0] & DSP[1] to camac buffer
-		if (fCamac->BlockXfer(fCrate, fBCN, A(0), F(16), 2, kTRUE) == -1) {	// start block xfer
+		if (fCamac->BlockXfer(fCrate, fBCN, A(0), F(16), cData, 0, 2, kTRUE) == -1) {	// start block xfer
 			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fBCN
 							<< ".A0.F16 failed - DSPAddr=0, wc=2, ActionCount=-1" << endl;
 			gMrbLog->Flush(this->ClassName(), "DownloadDSPCode");
@@ -505,9 +512,9 @@ Bool_t TMrbLofDGFs::DSPCodeLoaded() {
 
 Bool_t TMrbLofDGFs::WriteICSR(UInt_t Data) {
 // Write DGF Control Status Reg
-	if (fCamac->ExecCnaf(fCrate, fBCN, A(8), F(17), Data, kTRUE) == -1) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
-						<< ".A8.F17 failed - ActionCount=-1" << endl;
+	Int_t cVal = (Int_t) Data;
+	if (!fCamac->ExecCnaf(fCrate, fBCN, A(8), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN << ".A8.F17 failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteICSR");
 		return(kFALSE);
 	}
@@ -516,9 +523,9 @@ Bool_t TMrbLofDGFs::WriteICSR(UInt_t Data) {
 
 Bool_t TMrbLofDGFs::WriteCSR(UInt_t Data) {
 // Write DGF Control Status Reg
-	if (fCamac->ExecCnaf(fCrate, fBCN, A(0), F(17), Data, kTRUE) == -1) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
-						<< ".A0.F17 failed - ActionCount=-1" << endl;
+	Int_t cVal = (Int_t) Data;
+	if (!fCamac->ExecCnaf(fCrate, fBCN, A(0), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN << ".A0.F17 failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteCSR");
 		return(kFALSE);
 	}
@@ -527,10 +534,11 @@ Bool_t TMrbLofDGFs::WriteCSR(UInt_t Data) {
 
 Bool_t TMrbLofDGFs::WriteTSAR(UInt_t Addr) {
 // Write DGF Transfer Start Addr Reg
-	if (fCamac->ExecCnaf(fCrate, fBCN, A(1), F(17), Addr, kTRUE) == -1) {
+	Int_t cVal = (Int_t) Addr;
+	if (!fCamac->ExecCnaf(fCrate, fBCN, A(1), F(17), cVal, kTRUE)) {
 		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
 						<< ".A1.F17 failed - DSPAddr=0x" << setbase(16) << Addr
-						<< setbase(10) << ", ActionCount=-1" << endl;
+						<< setbase(10) << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteTSAR");
 		return(kFALSE);
 	}
@@ -539,9 +547,9 @@ Bool_t TMrbLofDGFs::WriteTSAR(UInt_t Addr) {
 
 Bool_t TMrbLofDGFs::WriteWCR(Int_t Data) {
 // Write DGF Word Count Reg
-	if (fCamac->ExecCnaf(fCrate, fBCN, A(2), F(17), Data, kTRUE) == -1) {
-		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN
-						<< ".A2.F17 failed - ActionCount=-1" << endl;
+	Int_t cVal = Data;
+	if (!fCamac->ExecCnaf(fCrate, fBCN, A(2), F(17), cVal, kTRUE)) {
+		gMrbLog->Err()	<< "C" << fCrate << ".N" << fBCN << ".A2.F17 failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteWCR");
 		return(kFALSE);
 	}

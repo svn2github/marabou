@@ -35,7 +35,6 @@
 #include "TError.h"
 #include "TEnv.h"
 #include "TSysEvtHandler.h"
-#include "TObjectTable.h"
 
 #include "TDirectory.h"
 #include "TSocket.h"
@@ -99,11 +98,11 @@ void PlayQuart(Int_t n){
 //      gSystem->Exec("xset b 100 400 200");
       gSystem->Exec(cmd1.str());
       cout << bell << endl;
-      gSystem->Sleep(800);   
+      gSystem->Sleep(400);   
 //      gSystem->Exec("xset b 100 504 300");
       gSystem->Exec(cmd2.str());
       cout << bell << endl;
-      gSystem->Sleep(1000);
+      gSystem->Sleep(500);
    }
    gSystem->Exec(cmd1.str());
    cout << bell << endl;
@@ -653,18 +652,8 @@ int main(int argc, char **argv) {
 	} 
 	cout << "M_analyze terminated, Events Processed: " << 
          u_analyze->GetEventsProcessed()<< endl;
-   PlayQuart(6);
-/*
-//@@@@@
-      	TMapRec *mr = M_prod->GetFirst();
-      	if(mr){
-         	while (M_prod->OrgAddress(mr)) {
-            	if(!mr) break;
-            	cout << mr->GetName() << endl;
-            	mr=mr->GetNext();         
-         	}
-      	}
-*/
+
+   PlayQuart(3);
 //    for(Int_t i=0; i < 5; i++){
 //       usleep(300000);
 // 	   cout << "" << endl;

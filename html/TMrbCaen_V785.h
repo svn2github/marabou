@@ -5,7 +5,7 @@
 //////////////////////////////////////////////////////////////////////////////
 // Name:           expconf/inc/TMrbCaen_V785.h
 // Purpose:        Define experimental configuration for MARaBOU
-// Class:          TMrbCaen_V785        -- 8 chn peak sensing ADC
+// Class:          TMrbCaen_V785        -- 32 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
 // Revision:       
@@ -114,6 +114,7 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 		inline Bool_t HasRandomReadout() { return(kFALSE); };
 
 		virtual inline Bool_t HasPrivateCode() { return(kTRUE); }; 			// use private code files
+		virtual inline const Char_t * GetPrivateCodeFile() { return("Module_Caen_V7X5"); };
 		
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V785.html&"); };
 

@@ -31,7 +31,7 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TPolControl : public TMrbSerialComm {
+class TPolControl : public TObject {
 
 	public:
 		enum	{	kPolNofAdcs 	= 32		};		// number of adcs per subdevice
@@ -44,7 +44,7 @@ class TPolControl : public TMrbSerialComm {
 		enum	{	kPolNofFields	= kPolIdxComment - kPolIdxName + 1	};
 
  	public:
-		TPolControl(const Char_t * Device = "/dev/ttyS0");
+		TPolControl(const Char_t * Device = NULL);
 		virtual ~TPolControl() {};
 
 		Int_t ReadAdc(Int_t Subdev, Int_t Channel, Bool_t LowResolution = kFALSE);	// read adc, relative addr
@@ -85,20 +85,27 @@ class TPolControl : public TMrbSerialComm {
 						Double_t Xmin, Double_t Xmax, Double_t DeltaX,
 						const Char_t * Xaxis = NULL, const Char_t * Yaxis = NULL);
 
+		inline TMrbSerialComm * SerIO() { return(fSerIO); };		// serial i/o port
+		inline Bool_t IsOnline() { return(fSerIO != NULL); };		// online/offline mode
+
 		inline void Draw() { if (fHisto) fHisto->Draw(); };
 
 		TNtuple * Monitor(const Char_t * FileName,					// monitor data to root file
 						const Char_t * Comment,
 						const Char_t * LofChannels,
-						Int_t Period = 1, Int_t NofRecords = 0);
+						Int_t NofRecords = 0, Int_t Period = 0);
 
 		TNtuple * Monitor(const Char_t * FileName); 	// retrieve monitor data from file
-		Int_t GetEntry(Int_t EntryNumber, Int_t & Date, Int_t & Time, TArrayF & Data);
+		Int_t GetNofADCs();								// number of adcs in ntuple
+		Int_t GetNofEntries();							// number of entries in file
+		Int_t GetEntry(Int_t EntryNumber, UInt_t & TimeStamp, TArrayF & Data);	// get record from ntuple
 
 		Bool_t StopMonitor();										// stop monitoring
 		inline Bool_t IsWriting() { return((fMonitorData != NULL) && fWriteFlag); };
 		inline Bool_t IsReading() { return((fMonitorData != NULL) && !fWriteFlag); };
 		inline Bool_t MonitorIsOn() { return(fMonitorData != NULL); };
+
+		inline const Char_t * TimeStampAsString(TString & TimeString, UInt_t TimeStamp);
 
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag; };
 		inline Bool_t IsVerbose() { return(fVerboseMode); };
@@ -110,6 +117,9 @@ class TPolControl : public TMrbSerialComm {
 		void PrintNameTable();										// print adc/dac names
 		
 		void PrintMonitorLayout();									// print monitor layout
+
+		void PrintRecords(Int_t Start = 0, Int_t Stop = -1); 		// print record data
+		void PrintRecords(const Char_t * FileName, Int_t Start = 0, Int_t Stop = -1);
 
 		Bool_t HandleTimer(TTimer * Timer); 						// used by Monitor() method
 
@@ -125,11 +135,16 @@ class TPolControl : public TMrbSerialComm {
 
 		TMrbNamedX * AddName(TMrbLofNamedX * Table, const Char_t * Name, Int_t Subdevice, Int_t Channel,
 								const Char_t * Type, const Char_t * Comment);
-		TMrbNamedX * Find(TMrbLofNamedX * Table, const Char_t * Name, const Char_t * Type, Bool_t Verbose = kTRUE);
-		TMrbNamedX * Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channel, const Char_t * Type, Bool_t Verbose = kTRUE);
+		TMrbNamedX * Find(TMrbLofNamedX * Table, const Char_t * Name, const Char_t * Type,
+											const Char_t * Method = "Find", Bool_t Verbose = kTRUE);
+		TMrbNamedX * Find(TMrbLofNamedX * Table, Int_t Subdev, Int_t Channel, const Char_t * Type,
+											const Char_t * Method = "Find", Bool_t Verbose = kTRUE);
 		void PrintTable(TMrbLofNamedX * Table);
+		void PrintRecordData(ostream & Out, Int_t RecordNumber, UInt_t TimeStamp, Float_t * Data, Int_t NofData);
 
 	protected:
+		TMrbSerialComm * fSerIO;		// serial i/o
+
 		Bool_t fVerboseMode;
 
 		TH1F * fHisto;					//! histogram to store XY plot

@@ -240,7 +240,7 @@ Bool_t TMrbSerialComm::Close() {
 }
 
 void TMrbSerialComm::Setup(Int_t BaudRate, Int_t NofDataBits, EMrbParity Parity, Int_t NofStopBits,
-																Bool_t UseRtsCts = kFALSE, Bool_t IgnoreCR) {
+																Bool_t UseRtsCts, Bool_t IgnoreCR) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSerialComm::Setup

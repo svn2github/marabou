@@ -49,29 +49,31 @@ class TSnkDDA0816 : public TNamed {
 			fVerbose = kFALSE;
 			fScanInterval = kSnkMaxInterval;
 			this->ResetCalibration();
+			fDacX.SetStopPos(this->Ampl2Dist(0, kSnkOffset0), kSnkOffset0);
+			fDacY.SetStopPos(this->Ampl2Dist(1, kSnkOffset0), kSnkOffset0);
 			return(kTRUE);
 		};
 
 		inline Bool_t SetPreScaler(ESnkPreScale PreScale) { fPreScale = PreScale; return(kTRUE); };
-		Bool_t SetPreScaler(const Char_t *);
+		Bool_t SetPreScaler(const Char_t * PreScale);
 		inline TMrbNamedX * GetPreScaler() { return(fLofPreScales.FindByIndex(fPreScale)); };
 		inline Bool_t SetClockSource(ESnkClockSource ClockSource) { fClockSource = ClockSource; return(kTRUE); };
-		Bool_t SetClockSource(const Char_t *);
+		Bool_t SetClockSource(const Char_t * ClockSource);
 		inline TMrbNamedX * GetClockSource() { return(fLofClockSources.FindByIndex(fClockSource)); };
-		Bool_t SetSoftScale(Int_t);
+		Bool_t SetSoftScale(Int_t Channel);
 		inline void ClearSoftScale() { fDacX.SetSoftScale(0); fDacY.SetSoftScale(0); };
-		Int_t GetSoftScale(Int_t);
-		Bool_t SetCurve(Int_t, TArrayI &, Int_t Size = kSnkMaxPoints);
+		Int_t GetSoftScale(Int_t Channel);
+		Bool_t SetCurve(Int_t Channel, TArrayI & Data, Int_t Size = kSnkMaxPoints);
 		Bool_t AdjustSettings(Int_t Channel, Bool_t Verbose = kTRUE);
-		Bool_t SetOffset(Int_t, Int_t);
-		Int_t GetOffset(Int_t);
-		Bool_t SetAmplitude(Int_t, Int_t);
-		Int_t GetAmplitude(Int_t);
-		Bool_t SetIncrement(Int_t, Int_t);
-		Int_t GetIncrement(Int_t);
-		Bool_t SetScanProfile(Int_t, ESnkScanProfile);
-		Bool_t SetScanProfile(Int_t, const Char_t *);
-		TMrbNamedX * GetScanProfile(Int_t);
+		Bool_t SetOffset(Int_t Channel, Int_t Offset);
+		Int_t GetOffset(Int_t Channel);
+		Bool_t SetAmplitude(Int_t Channel, Int_t Offset);
+		Int_t GetAmplitude(Int_t Channel);
+		Bool_t SetIncrement(Int_t Channel, Int_t Increment);
+		Int_t GetIncrement(Int_t Channel);
+		Bool_t SetScanProfile(Int_t Channel, ESnkScanProfile ScanProfile);
+		Bool_t SetScanProfile(Int_t Channel, const Char_t * ScanProfile);
+		TMrbNamedX * GetScanProfile(Int_t Channel);
 
 		inline Double_t GetScanInterval() { return(fScanInterval); };
 
@@ -86,8 +88,8 @@ class TSnkDDA0816 : public TNamed {
 		Bool_t SetCurveXOnly(Bool_t SaveFlag = kTRUE);
 		Bool_t SetCurveYOnly(Bool_t SaveFlag = kTRUE);
 		Bool_t SetCurveXYConst(Bool_t SaveFlag = kTRUE);
-		Bool_t SetCurveX0Y0(Bool_t SaveFlag = kTRUE);
 		Bool_t SetCurveLShape(Bool_t SaveFlag = kTRUE);
+		Bool_t SetCurveFromFile(const Char_t * FileName, Bool_t SaveFlag = kTRUE);
 
 		Bool_t ConnectToServer(const Char_t * ServerName = "localhost", Int_t Port = kSnkDefaultPort,
 																			const Char_t * ServerProg = NULL);
@@ -108,7 +110,7 @@ class TSnkDDA0816 : public TNamed {
 		inline Int_t GetSubdevice() { return(fSubdevice); };
 		const Char_t * GetSubdeviceName();
 		
-		const Char_t * GetScanFile() { return(fScanFile); };
+		const Char_t * GetSaveScan() { return(fSaveScan); };
 
 		inline void SetAmplYScale(Double_t Scale) { fAmplYScale = Scale; }; 	// scale factor Y
 		inline Double_t GetAmplYScale() { return(fAmplYScale); };
@@ -116,13 +118,18 @@ class TSnkDDA0816 : public TNamed {
 		inline Bool_t IsXorY(Int_t XorY) { return(XorY == 0 || XorY == 1); };
 		inline Int_t GetChargeState() { return(fChargeState); };
 		inline Double_t GetEnergy() { return(fEnergy); };
-		inline Double_t GetVoltage(Int_t XorY) { return(IsXorY(XorY) ? fVoltage[XorY] : 1.); };
-		inline Double_t GetStepWidth(Int_t XorY) { return(IsXorY(XorY) ? fStepWidth[XorY] : 1.); };
-		inline Double_t GetRange(Int_t XorY) { return(IsXorY(XorY) ? fRange[XorY] : 0.); };
+
+		inline Double_t GetVoltage(Int_t XorY) { return(IsXorY(XorY) ? this->GetDac(XorY)->GetVoltage() : 1.); };
+		inline Double_t GetStepWidth(Int_t XorY) { return(IsXorY(XorY) ? this->GetDac(XorY)->GetStepWidth() : 1.); };
+		inline Double_t GetRange(Int_t XorY) { return(IsXorY(XorY) ? this->GetDac(XorY)->GetRange() : 0.); };
+
 		Bool_t Calibrate(Int_t ChargeState, Double_t Energy, Double_t VoltageX, Double_t VoltageY);
 		Int_t Dist2Ampl(Int_t XorY, Double_t Distance);
 		Double_t Ampl2Dist(Int_t XorY, Int_t Amplitude);
 		void ResetCalibration();
+
+		Bool_t SetStopPos(Int_t XorY, Double_t Pos, Int_t Pos0);
+		inline Double_t GetStopPos(Int_t XorY) { return(IsXorY(XorY) ? this->GetDac(XorY)->GetStopPos() : 0.); };
 
 		inline UInt_t GetExecMode() { return((UInt_t) fExecMode); };		// exec mode
 		inline void SetExecMode(UInt_t ExecMode) { fExecMode = ExecMode; };
@@ -139,6 +146,9 @@ class TSnkDDA0816 : public TNamed {
 		inline Bool_t IsOffline() { return((fExecMode & kSnkEMOffline) != 0); };
 
 		inline void SetOnline() { fExecMode = (ESnkExecMode) (fExecMode & ~kSnkEMOffline); };
+
+		void SetScanDataFile(const Char_t * FileName) { fScanDataFile = FileName; };
+		inline const Char_t * GetScanDataFile() { return(fScanDataFile.Data()); };
 
 		TSocket * GetConnection(TString & Server, Int_t & Port);
 		Bool_t SetConnection(TSocket * Socket, const Char_t * Server, Int_t Port);
@@ -162,6 +172,8 @@ class TSnkDDA0816 : public TNamed {
 		Int_t SetSawToothRL(TArrayI &, Int_t, Int_t, Int_t, Int_t);
 		Int_t SetLShape(TArrayI &, Int_t, Int_t, Int_t, Int_t, Int_t);
 		Bool_t SetHysteresis();
+		Bool_t SetBeamOn();
+
 
 	protected:
 		Int_t fSubdevice;				// subdevice: 0 (chn 0-2), 1 (chn 4-6), 2 (chn 8-10), 3 (chn 12-14)
@@ -170,6 +182,7 @@ class TSnkDDA0816 : public TNamed {
 		TSnkDDAChannel fDacX;			// channel X
 		TSnkDDAChannel fDacY;			// channel Y
 		TSnkDDAChannel fDacH;			// channel H (hysteresis)
+		TSnkDDAChannel fDacB;			// channel B (beam on/off)
 		TSnkDDAChannel fDacError;		// dummy in case of error
 
 		Double_t fAmplYScale;			// scale factor Y in case of symmetric scan
@@ -178,16 +191,15 @@ class TSnkDDA0816 : public TNamed {
 		Int_t fChargeState;				// charge number
 		Int_t fMassNo;					// mass number
 		Double_t fEnergy;				// beam energy [MeV]
-		Double_t fVoltage[2]; 			// max voltage X/Y [kV]
-		Double_t fStepWidth[2];			// step width X/Y [um]		
-		Double_t fRange[2];				// max range X/Y [um]		
 
 		Int_t fPacerClock; 				// pacer clock
 		ESnkPreScale fPreScale;			// prescale frequency
 		ESnkClockSource fClockSource;	// clock source
 
 		ESnkScanMode fScanMode; 		// scan mode
-		TString fScanFile;				// save of current scan data
+		TString fSaveScan;				// save of current scan data
+
+		TString fScanDataFile;			// file name if scan data taken from file
 
 		Bool_t fVerbose;				// kTRUE if verbose mode
 

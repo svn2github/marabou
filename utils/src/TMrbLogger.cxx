@@ -122,16 +122,19 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fLog = new ofstream();
+	fLog = NULL;
+	if (LogFile != NULL && *LogFile != '\0') fLog = new ofstream();
+
 	fOut = new ostrstream();
 	fErr = new ostrstream();
-	fEnabled = TMrbLogger::kMrbMsgCout | TMrbLogger::kMrbMsgCerr | TMrbLogger::kMrbMsgLog;
+	fEnabled = TMrbLogger::kMrbMsgCout | TMrbLogger::kMrbMsgCerr;
+	if (fLog) fEnabled |= TMrbLogger::kMrbMsgLog;
 	fLofMessages.Delete();
 	fIndexOfLastPrinted = 0;
 	fGUI = NULL;
 	gROOT->Append(this);
 	this->SetProgName(ProgName);
-	this->Open(LogFile);
+	if (fLog) this->Open(LogFile);
 	this->SetName((fProgName.Length() > 0) ? fProgName.Data() : fLogFile.Data());
 	this->SetTitle("MARaBOU's (error) message logger");
 }
@@ -203,7 +206,7 @@ Bool_t TMrbLogger::Close() {
 
 	TString logRoot;
 
-	if (fLog->good()) {
+	if (fLog && fLog->good()) {
 		fLog->close();
 		cout	<< setblue
 				<< this->ClassName() << "::Close(): Closing log file " << fLogFile
@@ -250,7 +253,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << flush;
-		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
+		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << flush;
 	}
 	fOut->rdbuf()->freeze(0);
 	delete fOut;
@@ -262,7 +265,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str);
 		fLofMessages.Add(msg);
 		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << flush;
-		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
+		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << flush;
 	}
 	fErr->rdbuf()->freeze(0);
 	delete fErr;

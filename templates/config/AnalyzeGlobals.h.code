@@ -68,13 +68,6 @@ static $className * $varName = NULL;
 %ANX%static TH1F * h$sevtNameUCArray[$nofParams]; 	// array of ptrs to hists for subevent $sevtNameLC
 %AP%static TH1F * h$prefix$paramNameUC = NULL; 	// $evtNameLC: $sevtNameLC.$paramNameLC
 %APX%static TH1F * h$sevtNameUCArray[$nofParams]; 	// $evtNameLC: array of ptrs to hists for subevent $sevtNameLC
-%UDH%
-%UDH%//_______________________________________________________________[GLOBAL DEFS]
-%UDH%//////////////////////////////////////////////////////////////////////////////
-%UDH%// Purpose:        Define pointers to histograms booked by user
-%UDH%//////////////////////////////////////////////////////////////////////////////
-%UDH%
-%UDBH%static $hType * $hName = NULL;
 %%EndOfCode%%
 %%HISTO_DEFINE_POINTERS%%
 

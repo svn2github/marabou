@@ -81,7 +81,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 };
 HTCanvas::~HTCanvas()
 {
-   cout << "dtor HTCanvas " << GetName()<< endl;
+//   cout << "dtor HTCanvas " << GetName()<< endl;
    if (fHistPresent && fFitHist) {
       TH1 * hist =  fFitHist->GetSelHist();
       if(!hist || !hist->TestBit(TObject::kNotDeleted) ||
@@ -169,7 +169,7 @@ HTCanvas::~HTCanvas()
    }
    if(fHistPresent){
       fHistPresent->GetHistList()->Remove(this);
-      cout << "remove " << this->GetName() << endl;
+//     cout << "remove " << this->GetName() << endl;
    }
    if(fHistList){
       fHistPresent->fHistListList->Remove(fHistList);

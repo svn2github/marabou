@@ -57,7 +57,7 @@ int GetBPars(const char *cmd, TObject * cc, int xpos, int ypos, float dx,
 //  a command button
 
 TButton *CButton(const char *cmd, const char *title, TObject * cc,
-                 int xpos, int ypos, float dy, float dx = 0.1)
+                 int xpos, int ypos, float dy, float dx)
 {
    char tmp[50];
    float x0, x1, y0, y1;
@@ -74,7 +74,7 @@ TButton *CButton(const char *cmd, const char *title, TObject * cc,
 //  a toggle button
 
 TButton *SButton(const char *cmd, const char *title, TObject * cc,
-                 int xpos, int ypos, float dy, int onoff, float dx = 0.1)
+                 int xpos, int ypos, float dy, int onoff, float dx)
 {
    char tmp[50];
    float x0, x1, y0, y1;
@@ -94,7 +94,7 @@ TButton *SButton(const char *cmd, const char *title, TObject * cc,
 //  a help button
 
 void HButton(const char *cmd, TObject * cc, int xpos, int ypos,
-             float dy, float dx = 0.1)
+             float dy, float dx)
 {
    char tmp[50];
    float x0, x1, y0, y1;
@@ -1301,4 +1301,35 @@ TMrbStatistics *getstat(const char *host, Int_t socket, Bool_t * ok)
 //  cout << "Int_t:" << retval << endl;
    gDirectory = gROOT;
    return stat;
+}
+//___________________________________________________________________________
+
+TColor * GetColorByInd(Int_t index) {   
+   TIter next(gROOT->GetListOfColors());
+   while (TColor * c = (TColor *)next()) {
+      if (c->GetNumber() == index) {
+         return c;
+      }
+   }
+   return NULL;
+}
+//___________________________________________________________________________
+
+void SetUserPalette(Int_t startindex, TArrayI * pixels) 
+{
+   Int_t ncont = pixels->GetSize();
+   if (ncont <= 0) return;
+	TColor * c;
+   
+	TArrayI colind(ncont);
+	Float_t r=0, g=0, b=0;
+	for (Int_t i = 0; i < ncont; i++) {
+   	colind[i] = i + startindex;
+   	c = GetColorByInd(i + startindex); 
+   	if (c) delete c;
+   	c = new TColor(i + startindex, r, g, b);
+   	c->Pixel2RGB((*pixels)[i], r, g, b);
+   	c->SetRGB(r, g, b);
+   	gStyle->SetPalette(ncont, colind.GetArray());  
+	}
 }

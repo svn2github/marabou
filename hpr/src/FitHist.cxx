@@ -59,6 +59,7 @@
 #include "SetColor.h"
 #include "TMrbWdw.h"
 #include "TMrbVarWdwCommon.h"
+#include "TMrbNamedArray.h"
 
 //extern HistPresent* hp;
 extern TFile *fWorkfile;
@@ -74,10 +75,10 @@ enum dowhat { expand, projectx, projecty, statonly, projectf,
 ClassImp(FitHist)
 //_______________________________________________________________________________
 // constructor
-    FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
-                     const Text_t * hname, Int_t win_topx, Int_t win_topy,
-                     Int_t win_widx, Int_t win_widy)
-:TNamed(name, title)
+FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
+               const Text_t * hname, Int_t win_topx, Int_t win_topy,
+               Int_t win_widx, Int_t win_widy)
+        :TNamed(name, title)
 {
    if (!hist) {
       cout << "NULL pointer in: " << name << endl;
@@ -112,6 +113,7 @@ ClassImp(FitHist)
    fLogx = 0;
    fLogy = 0;
    fLogz = 0;
+   fUserContourLevels = 0;
    datebox = 0;
    fSelHist = hist;
    fSelPad = NULL;
@@ -132,6 +134,9 @@ ClassImp(FitHist)
       fAllFunctions = hp->GetFunctionList();
       fAllWindows = hp->GetWindowList();
       fAllCuts = hp->GetCutList();
+      gStyle->SetPalette(hp->fNofColorLevels, hp->fPalette);
+ //     cout << "hp->fNofColorLevels " <<hp->fNofColorLevels 
+ //           << " hp->fPalette" << hp->fPalette << endl;
    }
    markers = new TObjArray(0);
    peaks = new TObjArray(0);
@@ -148,18 +153,23 @@ ClassImp(FitHist)
       TObject *p;
       TIter next(lof);
       while ( (p = (TObject *) next()) ) {
-//         p->Print();
-         if (fDimension == 2 && is_a_cut(p))
-            fActiveCuts->Add(p);
+//         cout << "$$$$$$$$$$$$   "  << p << "  $$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
+//         p->Dump();
+ //        cout << "$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$" << endl;
+         if (p->InheritsFrom(TMrbWindow::Class())) {
+            TMrbWindow *w = dynamic_cast<TMrbWindow*>(p);
+         	if (fDimension == 2)
+            	fActiveCuts->Add(w);
 
-         if (fDimension == 1 && is_a_window(p)) {
-            if (fAllWindows->FindObject(p->GetName()));
-//               cout << p->GetName() << " already existing" <<endl;
-            else
-               fAllWindows->Add(p);
-            if (!fActiveWindows->FindObject(p->GetName()))
-               fActiveWindows->Add(p);
-         }
+         	if (fDimension == 1) {
+            	if (fAllWindows->FindObject(w->GetName()));
+	//               cout << p->GetName() << " already existing" <<endl;
+            	else
+               	fAllWindows->Add(w);
+            	if (!fActiveWindows->FindObject(w->GetName()))
+               	fActiveWindows->Add(w);
+         	}
+      	}
       }
    }
 //   cout << "all windows ----------------------------" <<endl;
@@ -258,132 +268,132 @@ FitHist::~FitHist()
 
 void FitHist::SaveDefaults(Bool_t recalculate)
 {
+//   cout << "Enter SaveDefaults " << endl;
+   if (!hp) return;      // not called from  Histpresenter
 
-   if (hp && (hp->fRememberLastSet || hp->fRememberZoom)) {
-      TString defname;
-      Bool_t fok = kFALSE;
-      TEnv env(".rootrc");         // inspect ROOT's environment
-      env.SetValue("HistPresent.FitMacroName", fFitMacroName);
+   if (!hp->fRememberLastSet &&  !hp->fRememberZoom) return;
+
+   TString defname;
+   Bool_t fok = kFALSE;
+   TEnv env(".rootrc");         // inspect ROOT's environment
+   env.SetValue("HistPresent.FitMacroName", fFitMacroName);
+   env.Save();
+   defname =
+       env.GetValue("HistPresent.LastSettingsName", defname.Data());
+   if (defname.Length() <= 0) {
+      WarnBox("Setting defaults dir/name to defaults/Last");
+      defname = "defaults/Last";
+      env.SetValue("HistPresent.LastSettingsName", defname.Data());
+      env.SaveLevel(kEnvUser);
       env.Save();
-      defname =
-          env.GetValue("HistPresent.LastSettingsName", defname.Data());
-      if (defname.Length() <= 0) {
-         WarnBox("Setting defaults dir/name to defaults/Last");
-         defname = "defaults/Last";
-         env.SetValue("HistPresent.LastSettingsName", defname.Data());
-         env.SaveLevel(kEnvUser);
-         env.Save();
-      }    
-      fok = kTRUE;
-      Int_t lslash = defname.Last('/');
-      if (lslash > 0) {
-         TString dirname = defname;
-         dirname.Remove(lslash, 100);
-         if (gSystem->AccessPathName(dirname.Data())) {
-            fok = kFALSE;
-            TString question = dirname;
-            question += " does not exist, create it?";
-            int buttons = kMBYes | kMBNo, retval = 0;
-            EMsgBoxIcon icontype = kMBIconQuestion;
-            new TGMsgBox(gClient->GetRoot(), mycanvas,
-                         "Warning", (const char *) question,
-                         icontype, buttons, &retval);
-            if (retval == kMBYes) {
-               if (gSystem->MakeDirectory((const char *) dirname) == 0) {
-                  fok = kTRUE;
-               } else {
-                  dirname.Prepend("Error creating ");
-                  dirname.Append(": ");
-                  dirname.Append(gSystem->GetError());
-                  WarnBox(dirname.Data());
-               }
+   }    
+   fok = kTRUE;
+   Int_t lslash = defname.Last('/');
+   if (lslash > 0) {
+      TString dirname = defname;
+      dirname.Remove(lslash, 100);
+      if (gSystem->AccessPathName(dirname.Data())) {
+         fok = kFALSE;
+         TString question = dirname;
+         question += " does not exist, create it?";
+         int buttons = kMBYes | kMBNo, retval = 0;
+         EMsgBoxIcon icontype = kMBIconQuestion;
+         new TGMsgBox(gClient->GetRoot(), mycanvas,
+                      "Warning", (const char *) question,
+                      icontype, buttons, &retval);
+         if (retval == kMBYes) {
+            if (gSystem->MakeDirectory((const char *) dirname) == 0) {
+               fok = kTRUE;
+            } else {
+               dirname.Prepend("Error creating ");
+               dirname.Append(": ");
+               dirname.Append(gSystem->GetError());
+               WarnBox(dirname.Data());
             }
          }
       }
-      if (fok) {
-         defname += "_";
-         defname += fHname;
-         defname += ".def";
-         if (fDeleteCalFlag && !gSystem->AccessPathName(defname.Data())) {
-            defname.Prepend("rm ");
-            gSystem->Exec(defname.Data());
-            cout << "Removing: " << defname.Data() << endl;
-         } else {
-            cout << "SaveDefaults in: "<< defname.Data()  << endl;
-            ofstream wstream;
-            wstream.open(defname, ios::out);
-            if (wstream.good()) {
-               if (TCanvas * ca =
-                   (TCanvas *) gROOT->FindObject(GetCanvasName())) {
-                  wstream << "LogX:  " << ca->GetLogx() << endl;
-                  wstream << "LogY:  " << ca->GetLogy() << endl;
-                  wstream << "LogZ:  " << ca->GetLogz() << endl;
-               } else {
-                  //            cerr << "~FitHist(): Canvas deleted, cant find lin/log state" 
-                  //                 << endl;
-               }
-               if (recalculate) {
-                  //         check if hist is still alive
-                  if (fSelHist->TestBit(TObject::kNotDeleted) &&
-                      !fSelHist->TestBit(0xf0000000)) {
-                     wstream << "fBinlx:  " << fSelHist->GetXaxis()->
-                         GetFirst() << endl;
-                     wstream << "fBinux:  " << fSelHist->GetXaxis()->
-                         GetLast() << endl;
-                     if (is2dim(fSelHist)) {
-                        wstream << "fBinly:  " << fSelHist->GetYaxis()->
-                            GetFirst() << endl;
-                        wstream << "fBinuy:  " << fSelHist->GetYaxis()->
-                            GetLast() << endl;
-                     }
-                  } else {
-                     cout << "fSelHist already deleted" << endl;
-                  }
-               } else {
-                  cout << "take current fBinlx " << endl;
-                  wstream << "fBinlx:  " << fBinlx << endl;
-                  wstream << "fBinux:  " << fBinux << endl;
-                  if (is2dim(fSelHist)) {
-                     wstream << "fBinly:  " << fBinly << endl;
-                     wstream << "fBinuy:  " << fBinuy << endl;
-                  }
-               }
-               //         check if hist is still alive
-               if (fSelHist->TestBit(TObject::kNotDeleted) &&
-                   !fSelHist->TestBit(0xf0000000)
-                   && fSelHist->InheritsFrom("TH1")) {
-                  if (strlen(fSelHist->GetXaxis()->GetTitle()) > 0) {
-                     cout << "FitHist dtor: save axis title" << endl;
-                     wstream << "fXtitle:  " << fSelHist->GetXaxis()->
-                         GetTitle() << endl;
-                  }
-                  if (strlen(fSelHist->GetYaxis()->GetTitle()) > 0)
-                     wstream << "fYtitle:  " << fSelHist->GetYaxis()->
-                         GetTitle() << endl;
-               } else {
-                  if (fXtitle.Length() > 0) {
-                     wstream << "fXtitle:  " << fXtitle.Data() << endl;
-                  }
+   }
 
-                  if (fYtitle.Length() > 0) {
-                     wstream << "fYtitle:  " << fYtitle.Data() << endl;
-                  }
-               }
-               if (fSetRange) {
-                  //            cout << "save fRangeLowX:  "  << fRangeLowX << endl;
-                  //            cout << "save fRangeUpX:   "  << fRangeUpX << endl;
-                  wstream << "fRangeLowX:  " << fRangeLowX << endl;
-                  wstream << "fRangeUpX:  " << fRangeUpX << endl;
-                  if (fDimension == 2) {
-                     wstream << "fRangeLowY:  " << fRangeLowY << endl;
-                     wstream << "fRangeUpY:  " << fRangeUpY << endl;
-                  }
-               }
-            } else {
-               cerr << "SaveDefaults: "
-                   << gSystem->GetError() << " - " << defname << endl;
-            }
+   if (!fok) return;
+
+   defname += "_";
+   defname += fHname;
+   defname += ".def";
+   if (fDeleteCalFlag && !gSystem->AccessPathName(defname.Data())) {
+      defname.Prepend("rm ");
+      gSystem->Exec(defname.Data());
+      cout << "Removing: " << defname.Data() << endl;
+      return;
+   } 
+
+//   cout << "SaveDefaults in: "<< defname.Data()  << endl;
+   ofstream wstream;
+   wstream.open(defname, ios::out);
+   if (!wstream.good()) {
+      cerr << "SaveDefaults: " << gSystem->GetError() << " - " 
+           << defname << endl;
+      return;
+   }
+   if (TCanvas * ca =
+       (TCanvas *) gROOT->FindObject(GetCanvasName())) {
+      wstream << "LogX:  " << ca->GetLogx() << endl;
+      wstream << "LogY:  " << ca->GetLogy() << endl;
+      wstream << "LogZ:  " << ca->GetLogz() << endl;
+   } else {
+      cerr << "Canvas deleted, cant find lin/log state" << endl;
+   }
+   if (recalculate) {
+      //         check if hist is still alive
+      if (fSelHist->TestBit(TObject::kNotDeleted)) {
+         wstream << "fBinlx:  " << fSelHist->GetXaxis()-> GetFirst() << endl;
+         wstream << "fBinux:  " << fSelHist->GetXaxis()-> GetLast() << endl;
+         if (is2dim(fSelHist)) {
+            wstream << "fBinly:  " << fSelHist->GetYaxis()->
+                GetFirst() << endl;
+            wstream << "fBinuy:  " << fSelHist->GetYaxis()->
+                GetLast() << endl;
          }
+      } else {
+         cout << "fSelHist already deleted" << endl;
+      }
+   } else {
+      cout << "take current fBinlx " << endl;
+      wstream << "fBinlx:  " << fBinlx << endl;
+      wstream << "fBinux:  " << fBinux << endl;
+      if (is2dim(fSelHist)) {
+         wstream << "fBinly:  " << fBinly << endl;
+         wstream << "fBinuy:  " << fBinuy << endl;
+      }
+   }
+   //         check if hist is still alive
+   if (fSelHist->TestBit(TObject::kNotDeleted)) {
+      if (strlen(fSelHist->GetXaxis()->GetTitle()) > 0) 
+         wstream << "fXtitle: " << fSelHist->GetXaxis()->GetTitle() << endl;
+      if (strlen(fSelHist->GetYaxis()->GetTitle()) > 0)
+         wstream << "fYtitle: " << fSelHist->GetYaxis()-> GetTitle() << endl;
+//     save user contour
+      if(fSelHist->InheritsFrom("TH2") && fUserContourLevels > 0) {
+         Double_t * uc = new Double_t[fUserContourLevels];
+         Int_t ncont = fSelHist->GetContour(uc);
+         Int_t pixval;
+         TMrbNamedArrayI * colors = (TMrbNamedArrayI *)fSelHist->
+            GetListOfFunctions()->FindObject("Pixel");
+         wstream << "Contours: " << ncont << endl;
+         for (Int_t i = 0; i < ncont; i++) {
+            if (colors) pixval = (*colors)[i];
+            else        pixval = 0;
+            wstream << "Cont" << i << ": " << uc[i] << endl;
+            wstream << "Pix"  << i << ": " << pixval << endl;
+         } 
+         if (uc) delete [] uc;     
+      }
+   }
+   if (fSetRange) {
+      wstream << "fRangeLowX:  " << fRangeLowX << endl;
+      wstream << "fRangeUpX:   " << fRangeUpX << endl;
+      if (fDimension == 2) {
+         wstream << "fRangeLowY:  " << fRangeLowY << endl;
+         wstream << "fRangeUpY:   " << fRangeUpY << endl;
       }
    }
    return;
@@ -433,6 +443,36 @@ void FitHist::RestoreDefaults()
             fBinly = lastset->GetValue("fBinly", fBinly);
             fBinuy = lastset->GetValue("fBinuy", fBinuy);
             fSelHist->GetYaxis()->SetRange(fBinly, fBinuy);
+         }
+         if (lastset->Lookup("Contours")) {
+            fUserContourLevels = lastset->GetValue("Contours", 0);
+            if (fUserContourLevels > 0) {
+               TString temp;
+         		Double_t * uc = new Double_t[fUserContourLevels];
+          		TMrbNamedArrayI * colors = new TMrbNamedArrayI("Pixel", fHname.Data());
+               colors->Set(fUserContourLevels);
+         		for (Int_t i = 0; i < fUserContourLevels; i++) {
+                  temp = "Cont";
+                  temp += i;
+                  uc[i] = lastset->GetValue(temp.Data(), (Double_t)0);
+                  temp = "Pix";
+                  temp += i;
+                  (*colors)[i] = lastset->GetValue(temp.Data(), (Int_t)0);
+         		} 
+   				fSelHist->SetContour(fUserContourLevels, uc);
+//                cout << "Set levels, Ncont: " << fUserContourLevels<< endl;
+               
+   				Int_t allcolors = 0;
+   				for (Int_t i=0; i< fUserContourLevels; i++) allcolors += (*colors)[i];
+					if (allcolors > 0) {
+				 //  set new Palette
+//                  cout << "Set colors " << endl;
+     			   	fSelHist->GetListOfFunctions()->Add(colors);
+                  colors->Dump();
+      				SetUserPalette(1001, colors);
+					}
+         		if (uc) delete [] uc;     
+            }   
          }
          if (lastset)
             delete lastset;
@@ -709,6 +749,7 @@ for expanded Histogram");
 void FitHist::AddAxis(Int_t where)
 {
 //   Double_t *xyvals = new Double_t[2];
+   TString side;
    TArrayD xyvals(2);
 //   TString title("Define axis limits");
    TOrdCollection *row_lab = new TOrdCollection();
@@ -716,9 +757,20 @@ void FitHist::AddAxis(Int_t where)
    if (where == 1) {            // xaxis
       xyvals[0] = cHist->GetFrame()->GetX1();
       xyvals[1] = cHist->GetFrame()->GetX2();
+      if (cHist->GetLogx()) {
+         xyvals[0] = TMath::Power(10, xyvals[0]);
+         xyvals[1] = TMath::Power(10, xyvals[1]);
+         side += "G";
+      }
    } else {
       xyvals[0] = cHist->GetFrame()->GetY1();
       xyvals[1] = cHist->GetFrame()->GetY2();
+      if (cHist->GetLogy()) {
+         cout << "LogY " << endl;
+         xyvals[0] = TMath::Power(10, xyvals[0]);
+         xyvals[1] = TMath::Power(10, xyvals[1]);
+         side += "G";
+      }
    }
 // show values to caller and let edit
 //   Int_t ret=TGMrbTableOfDoubles(mycanvas, title, 2, 1, xyvals,
@@ -729,11 +781,12 @@ void FitHist::AddAxis(Int_t where)
    if (ret >= 0) {
       TGaxis *naxis;
       Axis_t x1, y1, x2, y2;
-      TString side("-");
+//      TString side("-");
       Float_t loff = 0.05;
       Float_t lsize;
       Int_t ndiv;
       if (where == 1) {
+         side += "-";
          x1 = cHist->GetFrame()->GetX1();
          x2 = cHist->GetFrame()->GetX2();
          y1 = cHist->GetFrame()->GetY2();
@@ -742,7 +795,7 @@ void FitHist::AddAxis(Int_t where)
          ndiv = fSelHist->GetXaxis()->GetNdivisions();
          lsize = fSelHist->GetXaxis()->GetLabelSize();
       } else {
-         side = "+";
+         side += "+";
          x1 = cHist->GetFrame()->GetX2();
          x2 = x1;
          y1 = cHist->GetFrame()->GetY1();
@@ -766,6 +819,83 @@ void FitHist::AddAxis(Int_t where)
       delete row_lab;
    }
 };
+//_______________________________________________________________________________________
+
+void FitHist::ClearUserContours()
+{
+   TH2 * h2 = (TH2*)fSelHist;
+   h2->SetContour(20);
+   if (hp) gStyle->SetPalette(hp->fNofColorLevels, hp->fPalette);
+   TObject * nai = fSelHist->GetListOfFunctions()->FindObject("Pixel");
+   if (nai)  fSelHist->GetListOfFunctions()->Remove(nai);
+   fUserContourLevels = 0;
+   SaveDefaults();
+   cHist->Modified(kTRUE);
+   cHist->Update();
+}
+//_______________________________________________________________________________________
+
+void FitHist::SetUserContours()
+{
+   Int_t old_ncont = fSelHist->GetContour();
+   Int_t ncont;
+   Bool_t use_old;
+   
+   if(old_ncont > 0 && old_ncont != 20) { 
+      ncont = old_ncont;
+      use_old = kTRUE;
+   } else {
+      use_old = kFALSE;
+      ncont = 3;
+   }
+   Bool_t ok;
+   ncont = GetInteger("Number of contours", ncont, &ok, mycanvas);
+   if (!ok || ncont <= 0)
+       return;
+   TArrayD xyvals(ncont);
+   TArrayI colors(ncont);
+   TOrdCollection *col_lab = new TOrdCollection();
+   TOrdCollection *row_lab = NULL;
+   col_lab->Add(new TObjString("Level"));
+   col_lab->Add(new TObjString("Color"));
+   TMrbNamedArrayI * oldcol = 0;
+   if (use_old) {
+     oldcol = dynamic_cast<TMrbNamedArrayI*>(fSelHist->
+              GetListOfFunctions()->FindObject("Pixel"));
+     if (oldcol)fSelHist->GetListOfFunctions()->Remove(oldcol);
+   }
+   for (Int_t i=0; i < ncont; i++) {
+      colors[i] = 0;
+      Int_t ival = (Int_t)(i * fSelHist->GetMaximum() / ncont);
+      xyvals[i] = (Double_t) ival;
+      if (use_old && i < old_ncont) {
+         xyvals[i] = fSelHist->GetContourLevel(i);
+         if (oldcol) colors[i] = oldcol->At(i);
+      } 
+   }
+   Int_t ret, ncols = 1, itemwidth=120, precission = 5; 
+   TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, "Contour values", 
+                         itemwidth, ncols, ncont, xyvals, precission,
+                          col_lab, row_lab, &colors, -ncont);
+   if (ret <  0) return;
+   fUserContourLevels = ncont;
+   TH2 * h2 = (TH2*)fSelHist;
+   h2->SetContour(ncont, xyvals.GetArray());
+   Int_t allcolors = 0;
+   for (Int_t i=0; i< ncont; i++) allcolors += colors[i];
+	if (allcolors > 0) {
+ //  set new Palette
+      TMrbNamedArrayI * ca = new TMrbNamedArrayI("Pixel",fHname.Data());
+      ca->Set(ncont, colors.GetArray());
+      h2->GetListOfFunctions()->Add(ca);
+
+//         ( new RGBValues("Pixel",fHname.Data(), ncont, colors.GetArray()));
+      SetUserPalette(1001, &colors);
+	}
+   SaveDefaults();
+   cHist->Modified(kTRUE);
+   cHist->Update();
+}
 
 //------------------------------------------------------ 
 
@@ -998,7 +1128,7 @@ void FitHist::WriteOutHist()
       if (!ok)
          return;
       fSelHist->SetName(hname.Data());
-      if (OpenWorkFile()) {
+      if (OpenWorkFile(mycanvas)) {
          fSelHist->Write();
          CloseWorkFile();
       }
@@ -2011,6 +2141,14 @@ void FitHist::ExecDefMacro()
 
 //____________________________________________________________________________
 
+void FitHist::DrawHist() {
+    if (is2dim(fSelHist)) Draw2Dim(); 
+    else                  Draw1Dim(); 
+
+    delete this; 
+};  
+//____________________________________________________________________________
+
 void FitHist::Draw1Dim()
 {
    TString drawopt;
@@ -2102,15 +2240,21 @@ void FitHist::Draw2Dim()
 //      while( p= (TF1*)next() ){
       while ( (p = (TObject *) next()) ) {
 //         p->Print();
-         p->Draw("same");
          if (p->InheritsFrom(TF1::Class())) {
-            TF1 *f = (TF1 *) p;
+            TF1 *f =  dynamic_cast<TF1*>(p);
+             f->Draw("same");
             f->SetParent(fSelHist);
-         }
-         if (p->InheritsFrom(TMrbWindow2D::Class())) {
-            TMrbWindow2D *w = (TMrbWindow2D *) p;
+         } else if (p->InheritsFrom(TMrbWindow2D::Class())) {
+            TMrbWindow2D *w = dynamic_cast<TMrbWindow2D*>(p);
+            w->Draw("same");
             w->SetParent(fSelHist);
             fActiveCuts->Add(w);
+         } else if  (p->InheritsFrom(TMrbNamedArrayI::Class())) {
+             TMrbNamedArrayI * nai = dynamic_cast<TMrbNamedArrayI*>(p);
+             TString name(nai->GetName());
+             if (name.BeginsWith("Pixel")) {
+                SetUserPalette(1001, nai);
+             }  
          }
       }
    }
@@ -2186,4 +2330,51 @@ void FitHist::SetLogz(Int_t state)
    }
    cHist->SetLogz(state);
    SaveDefaults();
+}
+//______________________________________________________________________________________
+  
+void FitHist::DrawColors() 
+{
+//   TString hexcol;
+   TString scol;
+//   TString cmd;
+   new TCanvas("colors", "rgb colors", 400, 20, 800, 400);
+   Float_t dx = 1./10.2 , dy = 1./10.2 ;
+   Float_t x0 = 0.1 * dx,  y0 =0.1 *  dy; 
+   Float_t x = x0, y = y0;;
+   TButton * b;
+   TColor  * c;
+   Int_t maxcolors = 100;
+   Int_t basecolor = 1;
+   Int_t colindex = basecolor;
+//   Int_t palette = new Int_t[maxcolors];
+   for (Int_t i=basecolor; i<= maxcolors; i++) {
+//      cmd = "pcol(\"";
+//      cmd += hexcol.Data();
+//      cmd += "\");";
+      scol = Form("%d", colindex);
+      b = new TButton(scol.Data(), scol.Data(), x, y, x + .9*dx , y + .9*dy );
+//      c = new TColor(colindex, (Float_t)red/256, (Float_t)green/256, (Float_t)blue/256);
+      b->SetFillColor(colindex);
+      b->SetTextAlign(22);
+      b->SetTextFont(100);
+      b->SetTextSize(0.8);
+      c = GetColorByInd(colindex);
+      if (c) {
+         if ( c->GetRed() + c->GetBlue() + c->GetGreen() < 1.5 ) b->SetTextColor(0);
+         else                   b->SetTextColor(1);
+      } else {
+         cout << "color not found " << colindex << endl;
+      }
+      if ( (colindex++ >= maxcolors + basecolor) ) {
+         cout << "Too many colors " << maxcolors << endl;
+         break;
+      }
+      b->Draw();
+      y += dy;
+      if ( y >= 1 - dy ){
+         y = y0;
+         x+= dx;
+      }
+   }
 }

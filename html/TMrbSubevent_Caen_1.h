@@ -52,7 +52,7 @@ class TMrbSubevent_Caen_1 : public TMrbSubevent {
 		inline Bool_t AllowsMultipleModules() { return(kTRUE); };				// can store multiple modules
 
 		inline Bool_t CheckModuleID(TMrbModule * Module) {						// needs modules of type CAEN
-			return(Module->CheckID(TMrbConfig::kModuleCaenV785));
+			return(Module->CheckID(TMrbConfig::kModuleCaenV775) || Module->CheckID(TMrbConfig::kModuleCaenV785));
 		};
 		
 		inline Bool_t HasPrivateCode() { return(kTRUE); }; 						// use private code files

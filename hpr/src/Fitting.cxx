@@ -325,7 +325,7 @@ Int_t GetGaussEstimate(TH1 * h1, Double_t bg, Int_t centbin, TArrayD & par)
    Int_t binl = centbin, dbinl = 0 , dbin = 0;
    while (binl > 0) {
       Double_t cont = (Double_t) h1->GetBinContent(binl);
-      if (cont < halfmax) {
+      if (cont < halfmax && cont > bg) {
          dbinl = centbin - binl;
          break;
       }
@@ -335,7 +335,7 @@ Int_t GetGaussEstimate(TH1 * h1, Double_t bg, Int_t centbin, TArrayD & par)
    Int_t binr = centbin, dbinr = 1;
    while (binr <= NbinX) {
       Double_t cont = (Double_t) h1->GetBinContent(binr);
-      if (cont < halfmax) {
+      if (cont < halfmax && cont > bg) {
          dbinr = binr - centbin;
          break;
       }
@@ -705,18 +705,38 @@ void FitHist::FitGBg(Int_t with_tail)
          npar = 7;
          nPeaks = 1;
          //      func = new TF1(funcname,"pol1(0)+gaus(2)",edgelx, edgeux);
-         upar[2] = 0.5 * (lowval + upval);
-         upar[3] = 0.;
-         if (nval == 3) {
-            centbin = inp[1];
-         } else {
-            centbin = GetMaxBin(fSelHist, inp[0], inp[1]);
-         }
-         binh = GetGaussEstimate(fSelHist, lowval, centbin, gpar);
+//         upar[2] = 0.5 * (lowval + upval);
+//         upar[3] = 0.;
+//         if (nval == 3) {
+//            centbin = inp[1];
+//         } else {
+ //           centbin = GetMaxBin(fSelHist, inp[0], inp[1]);
+//         }
+ //        binh = GetGaussEstimate(fSelHist, lowval, centbin, gpar);
 
-         upar[4] = gpar[2];
-         upar[5] = gpar[0];
-         upar[6] = gpar[1];
+//         upar[4] = gpar[2];
+//         upar[5] = gpar[0];
+ //        upar[6] = gpar[1];
+         Double_t dx = edgeux - edgelx;
+         Double_t dy = upval - lowval;
+         if (dx > 0) {
+            upar[3] = dy / dx;
+            upar[2] = upval - upar[3] * edgeux;
+         } else {
+            upar[2] = 0.5 * (lowval + upval);
+            upar[3] = 0.;
+         }
+
+         upar[5] = 0;
+         upar[4] = 0.25 * (edgeux - edgelx);
+         for (Int_t i = inp[0]; i <= inp[nval - 1]; i++){
+            upar[5] = upar[5] + fSelHist->GetBinContent(i) -
+                      (upar[2] + upar[3] * fSelHist->GetBinCenter(i));
+         }
+         upar[5] *= fSelHist->GetBinWidth(inp[0]);
+
+         upar[6] = 0.5 * (edgeux + edgelx);
+
       } else {
          if (nval > 5) {
             WarnBox("Warning: Using not all inputs");
@@ -957,6 +977,7 @@ void FitHist::FitGBg(Int_t with_tail)
           << setblack << endl;
    }
    func->GetParameters(upar);
+   Double_t * errors = func->GetParErrors();
    fSelHist->SetFillColor(hp->f1DimFillColor);
 
 //   Bool_t enable_calib = kFALSE;
@@ -974,7 +995,8 @@ void FitHist::FitGBg(Int_t with_tail)
          if (with_tail)
             woff = 2;
          FhPeak *peak = new FhPeak(upar[4 + woff]);
-         peak->SetWidth(upar[2 + woff]);
+//         peak->SetWidth(upar[2 + woff]);
+         peak->SetWidth(errors[4 + woff]);
          peak->SetContent(upar[3 + woff]);
          fPeaks->Add(peak);
       }

@@ -323,7 +323,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	Int_t modNo, cl;
 	TMrbDGF * dgf;
 	TH1F * h;
-	Bool_t selectFlag, dataOkFlag;
+	Bool_t selectFlag;
 	Int_t nofWords;
 	TString hTitle;
 	Int_t nofModules, nofTraces;
@@ -334,6 +334,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 										
 	traceBuffer.Set(8192 * TMrbDGFData::kNofChannels);
 	
+	selectFlag = kFALSE;
 	nofModules = 0;
 	nofTraces = 0;
 
@@ -348,13 +349,10 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	intStr = fXwait->GetEntry()->GetText();
 	intStr.ToInteger(xwait);
 	dgfModule = gDGFControlData->FirstModule();
-	selectFlag = kFALSE;
-	dataOkFlag = kFALSE;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			selectFlag = kTRUE;
 			dgf = dgfModule->GetAddr();
 			nofWords = dgf->GetUntrigTrace(traceBuffer, chnPattern, xwait);
 
@@ -365,11 +363,11 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 			}
 
 			if (nofWords > 0) {
-				if (!dataOkFlag) {
+				if (!selectFlag) {
 					traceFile = new TFile("untrigTrace.root", "RECREATE");
 					hl.open("untrigTrace.histlist", ios::out);
 				}
-				dataOkFlag = kTRUE;
+				selectFlag = kTRUE;
 				hTitle = "Untrig traces for module ";
 				hTitle += dgfModule->GetName();
 				h = new TH1F(dgfModule->GetName(), hTitle.Data(), nofWords, 0., nofWords);
@@ -386,17 +384,11 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 		nofModules++;
 	}				
 	if (selectFlag) {
-		if (dataOkFlag) {
-			traceFile->Close();
-			hl.close();
-			gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
-			return(kTRUE);
-		} else {
-			gMrbLog->Err()	<< "StartTrace(): Couldn't get any traces" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTrace");
-			return(kTRUE);
-		}
+		traceFile->Close();
+		hl.close();
+		gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
+		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);

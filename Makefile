@@ -22,9 +22,9 @@ include config/Makefile.$(ARCH)
 
 MODULES       = build utils gutils \
 				expconf analyze \
-				camcli esone mbssetup mbsio transport \
                 macrobrowser helpbrowser hpr c_analyze \
-				camcli mbssetup mbsio transport \
+				camcli esone mbssetup mbsio transport \
+				xiadgf dgfcontrol \
 				snake polar
 
 ##### ROOT libraries #####

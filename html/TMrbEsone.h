@@ -19,11 +19,18 @@
 #include "TArrayI.h"
 #include "TArrayL.h"
 
+#include "TServerSocket.h"
+#include "TSocket.h"
+#include "TMessage.h"
+
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 
 #include "TMrbEsoneCommon.h"
-#include "TMrbEsoneCNAF.h"
+#include "TMrbEsoneCnaf.h"
+
+#define C_CBV	5
+#define C_CC32	11
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -36,141 +43,114 @@
 class TMrbEsone : public TObject {
 
 	public:
-		enum						{	kDefaultCrate		=	999 		};
-		enum						{	kMaxNofCnafs		=	1024 		};
-
-		enum EMrbCamacController	{	kCC_CBV 			=	C_CBV,
-										kCC_CC32			=	C_CC32
+		enum EMrbEsoneServer	{	kES_MBS 					=	0,
+									kES_MARABOU					=	1
+								};
+		
+		enum EMrbCamacController	{	kCC_CBV 				=	C_CBV,
+										kCC_CC32				=	C_CC32
 									};
 		
-		enum EMrbCamacAction		{	kCANone 			= 	0x0,
-										kCASingle			=	BIT(0),									
-										kCAMultiple			=	BIT(1),									
-										kCAAddrScan 		=	BIT(2),
-										kCABlockXfer 		=	BIT(3),
-										kCAQDriven			=	BIT(4),
-										kCA16Bit	 		=	BIT(5),
-										kCA24Bit	 		=	BIT(6),
-										kCA_cfsa			=	kCASingle | kCA24Bit,
-										kCA_cssa			=	kCASingle | kCA16Bit,
-										kCA_cfga			=	kCAMultiple | kCA24Bit,
-										kCA_csga			=	kCAMultiple | kCA16Bit,
-										kCA_cfmad			=	kCAAddrScan | kCA24Bit,
-										kCA_csmad			=	kCAAddrScan | kCA16Bit,
-										kCA_cfubc			=	kCABlockXfer | kCA24Bit,
-										kCA_csubc			=	kCABlockXfer | kCA16Bit,
-										kCA_cfubr			=	kCABlockXfer | kCAQDriven | kCA24Bit,
-										kCA_csubr			=	kCABlockXfer | kCAQDriven | kCA16Bit
-									};
-
-		enum EMrbCamacQX			{	kQFlag				=	BIT(0),
-										kXFlag				=	BIT(1)
-									};
-
-		enum						{	kBroadCast_N_CC32 	=	N(25)	};
-		enum						{	kFastCamac_F_CC32 	=	F(5)	};
-		enum						{	kAutoRead_CC32	 	=	BIT(12)	};
-		
+		enum					{	kBroadCastSetMask_N_CC32 	=	N(26)	};
+		enum					{	kBroadCastExecCmd_N_CC32 	=	N(25)	};
+		enum					{	kFastCamac_F	 			=	F(5)	};
+		enum					{	kAutoRead_CC32	 			=	BIT(12)	};
+		enum					{	kLastError					=	-1		};
+	
 	public:
 
 		TMrbEsone(Bool_t Offline = kFALSE) {								// default ctor
-			if (!Reset(Offline)) MakeZombie();
+			if (!this->Reset(Offline)) MakeZombie();
 		};		
 
 		TMrbEsone(const Char_t * HostName, Bool_t Offline = kFALSE) {		// ctor: connect to host
-			if (Reset(Offline)) ConnectToHost(HostName);
-			else MakeZombie();
+			if (this->Reset(Offline)) this->ConnectToHost(HostName);
+			else this->MakeZombie();
 		};
 
 		~TMrbEsone() {};											// default dtor
 
-		Bool_t ClearDW(Int_t Crate = TMrbEsone::kDefaultCrate);		// cccc: clear dataway (CAMAC-C)
-																	// ccci: set/clear dataway inhibit (CAMAC-I)
-		Bool_t SetDWInhibit(Int_t Crate = TMrbEsone::kDefaultCrate, Bool_t Flag = kTRUE);
-		Bool_t InitDW(Int_t Crate = TMrbEsone::kDefaultCrate);		// cccz: initialize dataway (CAMAC-Z)
+		Bool_t StartServer(const Char_t * HostName); 				// start esone server
 
-		Bool_t StartServer(const Char_t * HostName, 				// start esone server
-				const Char_t * SetupPath = "/mbsusr/marabou/esone",
-				const Char_t * MbsVersion = "deve",
-				Bool_t PrmFlag = kFALSE);
+// cccc: clear dataway (CAMAC-C)
+		Bool_t ClearDW(Int_t Crate);		
+// cccz: initialize dataway (CAMAC-Z)
+		Bool_t InitDW(Int_t Crate);
+// ccci: set/clear dataway inhibit (CAMAC-I)
+		Bool_t SetDWInhibit(Int_t Crate, Bool_t Flag = kTRUE);
+// ctci: test dataway inhibit
+		Bool_t DWIsInhibited(Int_t Crate);
+// ccopen: connect to camac host
+		UInt_t ConnectToHost(const Char_t * HostName);
+// cfsa/cssa: single camac action
+		Bool_t ExecCnaf(const Char_t * Cnaf, Bool_t D16Flag = kFALSE);
+		Bool_t ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Bool_t D16Flag = kFALSE);
+		Bool_t ExecCnaf(const Char_t * Cnaf, Int_t & Data, Bool_t D16Flag = kFALSE);
+		Bool_t ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Int_t & Data, Bool_t D16Flag = kFALSE);
+		Bool_t ExecCnaf(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag = kFALSE);
+// cfga/csga: multiple camac action
+		Int_t ExecCnafList(TObjArray & CnafList, Bool_t D16Flag = kFALSE);
+// cfmad/csmad: adress scan
+		Int_t AddressScan(const Char_t * Start, const Char_t * Stop, TArrayI & Data, TObjArray & Results, Bool_t D16Flag = kFALSE);
+		Int_t AddressScan(Int_t Crate, Int_t Start, Int_t Stop, Int_t Function, TArrayI & Data, TObjArray & Results, Bool_t D16Flag = kFALSE);
+		Int_t AddressScan(TMrbEsoneCnaf & Start, TMrbEsoneCnaf & Stop, TArrayI & Data, TObjArray & Results, Bool_t D16Flag = kFALSE);
+// cfubc/csubc, cfubr/csubr: block transfer
+		Int_t BlockXfer(const Char_t * Cnaf, TArrayI & Data, Int_t Start = 0, Int_t NofWords = -1, Bool_t D16Flag = kFALSE, Bool_t QXfer = kFALSE);
+		Int_t BlockXfer(Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, TArrayI & Data, Int_t Start = 0, Int_t NofWords = -1, Bool_t D16Flag = kFALSE, Bool_t QXfer = kFALSE);
+		Int_t BlockXfer(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start = 0, Int_t NofWords = -1, Bool_t D16Flag = kFALSE, Bool_t QXfer = kFALSE);
 
-		CamacHost_t ConnectToHost(const Char_t * HostName); 		// ccopen: connect to camac host
+// ctstat: get status of last camac action
+		UInt_t GetStatus(Bool_t & XFlag, Bool_t & QFlag, Int_t & ErrorCode, TString & Error);
+		const Char_t * GetError(TString & Error);
 
-		Int_t ExecCnaf(const Char_t * Cnaf, CamacData_t Data = kNoData, Bool_t D16Flag = kFALSE);		// cfsa/cssa: single camac action
-		Int_t ExecCnaf(Int_t Crate, Int_t Station, Int_t Subaddr, CamacFunction_t Function, CamacData_t Data = kNoData, Bool_t D16Flag = kFALSE);
-
-		Int_t ExecCnafList(Int_t NofCnafs = -1, Bool_t D16Flag = kFALSE);		// cfga/csga: multiple camac action
-
-		Int_t AddressScan(const Char_t * Start, const Char_t * Stop, Int_t WordCount = -1, Bool_t D16Flag = kFALSE);		// cfmad/csmad: adress scan
-		Int_t AddressScan(Int_t Crate, Int_t Start, Int_t Stop, CamacFunction_t Function, Int_t WordCount = -1, Bool_t D16Flag = kFALSE);
-
-																	// cfubc/csubc, cfubr/csubr: block transfer
-		Int_t BlockXfer(const Char_t * Cnaf, Int_t NofCnafs = -1, Bool_t D16Flag = kFALSE, Bool_t QXfer = kFALSE);
-		Int_t BlockXfer(Int_t Crate, Int_t Station, Int_t Subaddr, CamacFunction_t Function, Int_t NofCnafs = -1, Bool_t D16Flag = kFALSE, Bool_t QXfer = kFALSE);
-
-		Bool_t DWInhibit(Int_t Crate = TMrbEsone::kDefaultCrate);	// ctci: test dataway inhibit
-
-		CamacStatus_t GetStatus(Bool_t &, Bool_t &, CamacError_t &, TString &); // ctstat: get status of prev camac action
-		const Char_t * GetError();
-
-		void ResetBuffers(Int_t NofCnafs);							// reset internal buffers
-		Bool_t SetNofCnafs(Int_t NofCnafs);  						// set actual number of cnafs in list
-
-		inline void ClearTally() { fTally = -1; };					// reset tally count
-		Int_t GetTally() { return(fTally); };						// get resulting word count
-
-		void ClearCnaf();											// clear cnaf list
-		Bool_t SetCnaf(Int_t Index, const Char_t * Cnaf, CamacData_t Data = kNoData);	// set cnaf list at given index
-		Bool_t SetCnaf(Int_t Index, Int_t Crate, Int_t Station, Int_t Subaddr, CamacFunction_t Function, CamacData_t Data = kNoData);
-		Bool_t GetCnaf(Int_t Index, TString & Host, TString & Cnaf, CamacData_t & Data); 		// get cnaf list entry
-		const Char_t * GetCnaf(Int_t Index = -1, Bool_t DataFlag = kFALSE);
-		TMrbNamedX * GetCnafType(Int_t Index = -1);							// get cnaf type
-		inline CamacReg_t * GetCAddr() { return((CamacReg_t *) fCnaf.GetArray()); };		// return array addr
-
-		void ClearData();											// clear data buffer
-		Bool_t SetData(Int_t Index, CamacData_t Data);				// set data at given index
-		Bool_t SetData(CamacDArray & Data, Int_t Size = -1); 		// ... from ext TArrayI
-		Bool_t SetData(CamacData_t * Data, Int_t Size = -1); 		// ... from ext UInt_t array
-		Bool_t SetData(UShort_t * Data, Int_t Size = -1);	 		// ... from ext UShort_t array
-		CamacData_t GetData(Int_t Index = -1);						// get data at given index
-		inline CamacData_t * GetDAddr() { return((CamacData_t *) fData.GetArray()); };	// return array addr
-
-		void ClearFunction();										// clear function list
-		Bool_t SetFunction(Int_t, CamacFunction_t);					// set function at given index
-		CamacFunction_t GetFunction(Int_t Index = -1);				// get function at given index
-		inline CamacFunction_t * GetFAddr() { return((CamacFunction_t *) fFunction.GetArray()); };	// return array addr
-
-		void ClearQX(); 						 					// clear Q/X buffer
-		Bool_t GetQ(Int_t Index = -1);								// get Q at given index
-		Bool_t GetX(Int_t Index = -1);								// get X at given index
-		inline CamacQX_t * GetQXAddr() { return((CamacQX_t *) fQX.GetArray()); };	// return array addr
-
-		inline TMrbNamedX * GetAction() { return(fLofCamacActions.FindByIndex(fAction)); }; 	// return last action
-
-		TMrbNamedX * GetHost(CamacHost_t HostAddr); 						// get host by addr
+// camac host
+		TMrbNamedX * GetHost(UInt_t HostAddr); 								// get host by addr
 		TMrbNamedX * GetHost(const Char_t * HostName); 						// get host by name
-
 		inline void SetOffline(Bool_t Offline = kTRUE) { fOffline = Offline; };
 		inline Bool_t IsOffline() { return(fOffline); };			// hardware access simulated by software?
 		
-		Bool_t SetAutoRead(Bool_t AutoRead = kTRUE);				// enable/disable auto-read (CC32 only)
-		Bool_t ReadDoubleWord(Bool_t ReadDW = kTRUE);				// enable/disable 32 bit read (CC32 only)
-		
-		Int_t HasBroadCast();										// test broadcast capability (returns station N)
+// camac data
+		inline void ClearStatus() { fStatus = 0; };
+		inline void SetX() { fStatus |= kEsoneX; };
+		inline void SetQ() { fStatus |= kEsoneQ; };
+		inline void SetXQ() { fStatus |= (kEsoneQ|kEsoneX); };
+		inline void SetError() { fStatus |= kEsoneError; };
+
+		inline Bool_t GetX() { return(IS_X(fStatus)); };
+		inline Bool_t GetQ() { return(IS_Q(fStatus)); };
+		inline Bool_t IsError() { return(IS_ERROR(fStatus)); };
+
+		inline TMrbNamedX * GetAction() { return(fAction); };	// return action
+		inline void SetAction(TMrbEsoneCnaf::EMrbCamacAction Action) { fAction = fLofCamacActions.FindByIndex(Action); };
+
+// broadcast
+		Bool_t HasBroadCast();										// test broadcast capability
+		Bool_t HasBroadCast(Int_t & NsetMask, Int_t & NexecCmd);
 		Bool_t SetBroadCast(Int_t Crate, UInt_t BroadCast);			// write broadcast register
-		inline Bool_t ClearBroadCast(Int_t Crate) { return(SetBroadCast(Crate, 0)); };
-		Bool_t AddBroadCast(Int_t Station); 						// add station to broadcast mask
-		UInt_t GetBroadCast();										// get bc mask register
+		inline Bool_t ClearBroadCast(Int_t Crate) { return(this->SetBroadCast(Crate, 0)); };
+		Bool_t AddToBroadCast(Int_t Crate, Int_t Station); 			// add station to broadcast mask
+		Bool_t RemoveFromBroadCast(Int_t Crate, Int_t Station); 	// remove station from broadcast mask
+		UInt_t GetBroadCast(Int_t Crate);							// get bc mask register
 		inline void UseBroadCast(Bool_t Flag) { fUseBroadCast = Flag; };	// turn bc on/off (if possible)
 						
-		Int_t HasFastCamac();										// test fast camac capability (returns function F)
-
-		void Print(Int_t From = -1, Int_t To = -1);							// print cnaf(s)
+// special camac functions
+		Bool_t HasFastCamac();										// test fast camac capability (returns function F)
+		Bool_t SetAutoRead(Int_t Crate, Bool_t AutoRead = kTRUE);	// enable/disable auto-read (CC32 only)
+		Bool_t ReadDoubleWord(Int_t Crate, Bool_t ReadDW = kTRUE);	// enable/disable 32 bit read (CC32 only)
+		
+// misc
+		void Print(TMrbEsoneCnaf & Cnaf);									// print single cnaf
+		void Print(TObjArray & CnafList, Int_t From = 0, Int_t To = -1);	// print cnaf from list
 		void PrintError(const Char_t * EsoneCall, const Char_t * Method);	// print error
-		void PrintStatus(); 												// print status reg
+		void PrintStatus(const Char_t * Method); 							// print status of last camac action
 
 		Bool_t ReadFromFile(const Char_t * FileName) { return(kTRUE); };	// read cnaf list from file (not yet implemented)
 
+		inline const Char_t * GetServerName() { return(fServerType.GetName()); };	// name/index of camac controller used
+		inline Int_t GetServerIndex() { return(fServerType.GetIndex()); };
+		inline Bool_t IsMarabouServer() { return(fServerType.GetIndex() == kES_MARABOU); };
+		inline Bool_t IsMbsServer() { return(fServerType.GetIndex() == kES_MBS); };
+		
 		inline const Char_t * GetControllerName() { return(fController.GetName()); };	// name/index of camac controller used
 		inline Int_t GetControllerIndex() { return(fController.GetIndex()); };
 		
@@ -182,25 +162,51 @@ class TMrbEsone : public TObject {
 		inline void Abort() { fAborted = kTRUE; };
 		inline Bool_t IsAborted() { return(fAborted); };
 
-		public:
+		inline Bool_t IsConnected() { return(fHostAddr > 0); };
+
+	public:
 		TMrbLofNamedX fLofCamacActions;								// list of camac actions
-		TMrbLofNamedX fLofCNAFNames;								// list of camac registers
-		TMrbLofNamedX fLofCNAFTypes;								// list of cnaf types
+		TMrbLofNamedX fLofCnafNames;								// list of camac registers
+		TMrbLofNamedX fLofCnafTypes;								// list of cnaf types
+		TMrbLofNamedX fLofEsoneServers;								// list of esone servers available
 		TMrbLofNamedX fLofControllers;								// list of camac controllers available
+		TMrbLofNamedX fLofCamacFunctions;							// list of camac function types
 
 	protected:
+		Bool_t StartMbsServer(const Char_t * HostName); 			// start esone server (MBS)
+		Bool_t StartMarabouServer(const Char_t * HostName); 		// ... (MARaBOU)
+
 		Bool_t Reset(Bool_t Offline = kFALSE);						// reset internal data base
 		Bool_t CheckConnection(const Char_t * Method);				// check if connected to host
-		Int_t CheckCrate(Int_t Crate, const Char_t * Method); 		// check if crate number is legal
-		Bool_t CheckIndex(Int_t Index, const Char_t * Method);		// check index
-		Int_t CheckSize(Int_t Size, const Char_t * Method); 		// check data size
-		Int_t CheckList(Int_t NofCnafs, const Char_t * Method) { return(0); }; 	// check cnaf list (not yet implemented)
+		Bool_t CheckCrate(Int_t Crate, const Char_t * Method); 		// check if crate number is legal
 
-		inline void SetCB(Int_t Repeat = 0, Int_t Tally = 0, Int_t Lam = 0, Int_t DMA = 0)  {
-			fCB[0] = Repeat; fCB[1] = Tally; fCB[2] = Lam; fCB[3] = DMA;
+		void PrintResults(const Char_t * Method, TMrbEsoneCnaf & Cnaf);
+		void PrintResults(const Char_t * Method, TObjArray & CnafList);
+
+	protected:																	// ESONE calls
+		Bool_t EsoneCDREG(UInt_t & Handle, Int_t Crate, Int_t Station = 0, Int_t SubAddr = 0);	// [cdreg] encode cnaf + host addr	
+		Bool_t EsoneCDREG(UInt_t & Handle, TMrbEsoneCnaf & Cnaf);	
+		Bool_t EsoneCDCTRL();													// [cdctrl] define controller	
+		Bool_t EsoneCCCC(Int_t Crate);											// [cccc] camac "c" (clear dataway)
+		Bool_t EsoneCCOPEN(const Char_t * HostName, UInt_t & HostAddress);		// [ccopen] camac connect
+		Bool_t EsoneCCCI(Int_t Crate, Bool_t Inhibit = kTRUE);					// [ccci] camac "i" (inhibit dataway)
+		Bool_t EsoneCTCI(Int_t Crate);											// [ctci] test dw inh
+		Bool_t EsoneCCCZ(Int_t Crate);											// [cccz] camac "z" (init dataway)
+		UInt_t EsoneCTSTAT();													// [ctstat] test status
+		Bool_t EsoneCXSA(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag);					// [cssa, cfsa] exec single cnaf
+		Int_t EsoneCXGA(TObjArray & CnafList, Bool_t D16Flag);					// [csga, cfga] exec cnaf list
+		Int_t EsoneCXMAD(TMrbEsoneCnaf & Start, TMrbEsoneCnaf & Stop,			// [csmad, cfmad] adress scan
+									TArrayI & Data, TObjArray & Results, Bool_t D16Flag);
+																				// [csubr, cfubr, csubc, cfubc] block xfer
+		Int_t EsoneCXUBX(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t First, Int_t Last, Bool_t D16Flag, Bool_t QXfer);
+
+		Bool_t EsoneSpecial(TMrbEsoneCnaf::EMrbCnafType Type, Int_t Crate, Int_t Station, Int_t Subaddr, Int_t Function, Int_t & Data, Bool_t D16Flag);
+
+		const Char_t * EsoneCERROR(TString & ErrMsg, Int_t ErrorCode, Bool_t DateFlag);
+ 
+		inline void SetCB(TArrayI & CB, Int_t Repeat = 0, Int_t Tally = 0, Int_t Lam = 0, Int_t DMA = 0)  {
+			CB[0] = Repeat; CB[1] = Tally; CB[2] = Lam; CB[3] = DMA;
 		};
-
-		void PrintResults(const Char_t * Method, TMrbEsoneCNAF * c1 = NULL, TMrbEsoneCNAF * c2 = NULL);
 
 	protected:
 		Bool_t fVerboseMode;						// kTRUE if verbose mode on
@@ -208,30 +214,21 @@ class TMrbEsone : public TObject {
 		Bool_t fOffline;							// access camac hardware?
 		Bool_t fAborted;							// kTRUE if operation aborted
 
+		TMrbNamedX * fAction;						// last camac action
+		UInt_t fStatus;								// status of last camac action
+
+		TMrbNamedX fServerType; 					// server type (name+index)
 		TMrbNamedX fController; 					// camac controller used (name+index)
 		
 		TString fHost;								// host name
 		TString fHostInet;							// full inet address
-		CamacHost_t fHostAddr;						// ESONE host address
-
-		TString fCnafAscii; 						// cnaf (ascii representation)
-
-		Int_t fCrate;								// crate number
-
-		TString fError; 							// error message
-		CamacError_t fErrorCode;					// error code
-
-		CamacRegArray fCnaf;						// cnafs
-		CamacFArray fFunction;						// functions
-		CamacDArray fData;							// data
-		CamacQXArray fQX;							// Q/X
-		Int_t fMaxNofCnafs;							// max number of cnafs
-		Int_t fCurNofCnafs;							// actual number of cnafs
-		Int_t fTally;								// resulting number of data words
-
-		Int_t fCB[4];								// control block
-
-		EMrbCamacAction fAction;					// type of last action
+		UInt_t fHostAddr;							// ESONE host address
+		TString fServerProg;						// server program
+		TSocket * fSocket;							//! connection to server
+		Int_t fPort;								// port number
+		Int_t fNofCrates;							// number of crates in use
+		Int_t fCC32Base; 							// base address (CC32 only)
+		Int_t fBufferSize;							// tcp buffer size		
 
 	ClassDef(TMrbEsone, 1)		// [Access to CAMAC] Establish connection via ESONE calls
 };

@@ -988,14 +988,18 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					TMrbString str = ((TObjString *) lofSubstrings[nn])->GetString().Data();
 					intBase = macroEnv->GetValue(macroArg->GetResource(argName, "Base"), 10);
 					Int_t nsep = str.Index("=", 0);
+					TString tip = "";
 					if (nsep > 0) {
 						UInt_t at = macroArg->fType->GetIndex();
 						if (at == TGMrbMacroArg::kGMrbMacroArgInt || at == TGMrbMacroArg::kGMrbMacroArgUInt) {
 							m = str.SplitOffInteger(prefix, isSigned, intBase);
 							str.Resize(nsep);
+						} else {
+							tip = str(nsep + 1, str.Length());
+							str.Resize(nsep);
 						}
 					}
-					macroArg->fButtons.AddNamedX(new TMrbNamedX(m, str.Data()));
+					macroArg->fButtons.AddNamedX(new TMrbNamedX(m, str.Data(), (tip.Length() > 0) ? tip.Data() : NULL));
 					m <<= 1;
 				}
 				if (n == TGMrbMacroArg::kGMrbMacroEntryRadio) {

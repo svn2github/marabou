@@ -4,5 +4,5 @@
 #pragma link off all functions;
 
 #pragma link C++ class TMrbEsone;
-#pragma link C++ class TMrbEsoneCNAF;
+#pragma link C++ class TMrbEsoneCnaf;
 #endif

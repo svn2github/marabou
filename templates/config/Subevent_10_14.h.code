@@ -26,8 +26,8 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
 
 		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
 		Bool_t BookParams();					// book params
+		void Reset(Int_t InitValue = 0);		// reset param data
 %%BeginOfCode%%
-%R% 		void Reset(Int_t InitValue = $iniVal);		// reset param data
 %N% 		Bool_t BookHistograms();				// book histograms
 %N% 		Bool_t FillHistograms();				// fill histograms
 %P% 		Bool_t Book$evtNameUCHistograms();		// book private histos for event $evtNameLC
@@ -37,8 +37,6 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
 		Bool_t AddBranch(TTree * Tree);				// add a branch to the tree
 		Bool_t InitializeBranch(TTree * Tree);		// init branch addresses (replay mode only)
 		inline Int_t GetTimeStamp() { return(fTimeStamp); };	// return time stamp (100 microsecs since start)
-
-//%%SEVT_USER_METHODS%%			user-specific methods may be included here
 
 												// get param addr (method needed to access params from outside, eg. in macros)
 %%BeginOfCode%%
@@ -62,7 +60,5 @@ class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_HB {
 %%EndOfCode%%
 %%SEVT_PRIVATE_DATA%%
 
-//%%SEVT_USER_DATA%%			user-specific data members may be included here
-		
 	ClassDef(TUsrSevt%%SEVT_NAME_UC%%, 1)		// [Analyze] Store subevent data in hit buffer
 };

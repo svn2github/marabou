@@ -920,7 +920,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	dblStr = dgf->GetDelay(chn);
 	fTraceDelayEntry->GetEntry()->SetText(dblStr.Data());
 // StatRegModICSREntry:
-	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl");
+	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm);
 	intStr = "0x";
 	intStr.AppendInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
 	fStatRegModICSREntry->GetEntry()->SetText(intStr.Data());

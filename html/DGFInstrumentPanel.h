@@ -64,8 +64,6 @@ class DGFInstrumentPanel : public TGTransientFrame {
 									kDGFInstrTraceDelayEntry, 			//		delay
 									kDGFInstrTracePSAOffsetEntry, 		//		psa offset
 									kDGFInstrTracePSALengthEntry,		//		psa length
-									kDGFInstrStatRegModCSRAEntry, 		//		module csra
-									kDGFInstrStatRegModCSRAEditButton,	//		edit
 									kDGFInstrStatRegModICSREntry, 		//		module switchbus
 									kDGFInstrStatRegModICSREditButton,	//		edit
 									kDGFInstrStatRegChanCSRAEntry, 		//		channel csra
@@ -73,13 +71,9 @@ class DGFInstrumentPanel : public TGTransientFrame {
 									kDGFInstrStatCoincPatternEntry, 	//		pattern
 									kDGFInstrStatCoincPatternEditButton,	//	edit
 									kDGFInstrDACGainEntry, 				//		DAC
-									kDGFInstrDACGainEntryButton,
 									kDGFInstrDACVVEntry,			  	//		V/V
-									kDGFInstrDACVVEntryButton,
 									kDGFInstrDACOffsetEntry,		 	//		DAC
-									kDGFInstrDACOffsetEntryButton,
 									kDGFInstrDACVoltEntry,		  		//		Volt
-									kDGFInstrDACVoltEntryButton,
 									kDGFInstrCFDFractionEntry,	  		//		fraction
 									kDGFInstrMCAEnergyEntry, 			//		energy
 									kDGFInstrMCAEnergyBinsEntry,		//		combine bins
@@ -151,8 +145,6 @@ class DGFInstrumentPanel : public TGTransientFrame {
 		TGMrbLabelEntry * fTracePSALengthEntry; 	//					length
 		TGGroupFrame * fStatRegFrame;				//			status regs
 		TGGroupFrame * fStatRegEntryFrame;			//
-		TGMrbLabelEntry * fStatRegModCSRAEntry; 	//				module csra
-		TMrbNamedX * fModCSRAEditButton;			//
 		TGMrbLabelEntry * fStatRegModICSREntry; 	//				switchbus
 		TMrbNamedX * fModICSREditButton;			//
 		TGMrbLabelEntry * fStatRegChanCSRAEntry; 	//				channel csra
@@ -164,14 +156,10 @@ class DGFInstrumentPanel : public TGTransientFrame {
 		TGGroupFrame * fDACFrame;					//			DAC
 		TGGroupFrame * fDACGainFrame;				//				gain
 		TGMrbLabelEntry * fDACGainEntry; 			//					DAC
-		TMrbNamedX * fDACGainEntryButton;
 		TGMrbLabelEntry * fDACVVEntry;			  	//					V/V
-		TMrbNamedX * fDACVVEntryButton;
 		TGGroupFrame * fDACOffsetFrame; 			//				offset
 		TGMrbLabelEntry * fDACOffsetEntry;		 	//					DAC
-		TMrbNamedX * fDACOffsetEntryButton;
 		TGMrbLabelEntry * fDACVoltEntry;		  	//					Volt
-		TMrbNamedX * fDACVoltEntryButton;
 		TGGroupFrame * fCFDFrame;					//			CFD
 		TGGroupFrame * fCFDFractionFrame;			//				fraction
 		TGMrbLabelEntry * fCFDFractionEntry;	  	//
@@ -194,9 +182,6 @@ class DGFInstrumentPanel : public TGTransientFrame {
 		TMrbLofNamedX fInstrModuleActions;
 
 		TGMrbFocusList fFocusList;
-
-		Bool_t fDACGainEntryActive; 				// kTRUE if dac input, kFALSE if V/V input
-		Bool_t fDACOffsetEntryActive;				// kTRUE if dac input, kFALSE if Volt input
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 		

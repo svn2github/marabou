@@ -19,10 +19,11 @@
 #include "TMrbNamedX.h"
 
 // channel ids to be used by checkbuttons
-enum EDGFChannels			{	kDGFChannel0			= BIT(12),
-								kDGFChannel1			= BIT(13),
-								kDGFChannel2			= BIT(14),
-								kDGFChannel3			= BIT(15)
+enum EDGFChannels			{
+									kDGFChannel0			= BIT(12),
+									kDGFChannel1			= BIT(13),
+									kDGFChannel2			= BIT(14),
+									kDGFChannel3			= BIT(15)
 								};
 
 enum						{	kDGFChannelMask			= kDGFChannel0 | kDGFChannel1 | kDGFChannel2 | kDGFChannel3 };
@@ -37,7 +38,7 @@ enum						{	kNofClusters			= 20	};
 enum						{	kNofCrates				= 8 	};
 
 // lifo to store objects located on heap
-#define H(x)	fHeap.AddFirst(x)
+#define HEAP(x)	fHeap.AddFirst(x)
 
 const SMrbNamedXShort kDGFChannelNumbers[] =
 							{

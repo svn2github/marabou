@@ -110,7 +110,9 @@ class TMrbString : public TString {
 
 		Double_t Increment(Double_t Increment, Bool_t WithSign = kFALSE);	// increment trailing double
 
-		Int_t Split(TObjArray & LofSubStrings, const Char_t * Separator = ":"); // split into substrings
+		Int_t Split(TObjArray & LofSubStrings, const Char_t * Separator = ":", Bool_t RemoveWhiteSpace = kFALSE); // split into substrings
+
+		Int_t ReplaceWhiteSpace(const Char_t WhiteSpace = ' ');		// replace multiple white spaces (blanks or tabs) by given one
 
 		void Expand(const Char_t Escape = '%');									// expand string
 		virtual void ProcessEscapeSequence(Char_t CharId, TString & Replacement);

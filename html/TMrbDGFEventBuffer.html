@@ -45,7 +45,9 @@
 <!--TAB6-->                   <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Histogram">Histogram</a><!--PLAIN-->()
 <!--TAB6-->         virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:IsA">IsA</a><!--PLAIN-->() const
 <!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:MakeIndex">MakeIndex</a><!--PLAIN-->()
+<!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Print">Print</a><!--PLAIN-->(ostream&amp; OutStrm, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber = -1, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleInfo = "NULL")
 <!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Print">Print</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber = -1)
+<!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:PrintToFile">PrintToFile</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ModuleInfo)
 <!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:Reset">Reset</a><!--PLAIN-->()
 <!--TAB6-->                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SaveTraces">SaveTraces</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* TraceFile = "NULL", <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber = -1, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
 <!--TAB6-->                    <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGFEventBuffer:SetGlobalEventNo">SetGlobalEventNo</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNo)
@@ -253,21 +255,37 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:Print" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:Print">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:Print" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:Print">Print</a>(ostream &amp; OutStrm, <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleInfo) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGFEventBuffer.html#TMrbDGFEventBuffer:Print">TMrbDGFEventBuffer::Print</a>
  Purpose:        Print buffer headers
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber      -- event number
+ Arguments:      ostream &amp; OutStrm       -- output stream
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber       -- event number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleInfo     -- module info
  Results:        --
  Exceptions:
  Description:    Outputs buffer / event / channel headers.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGFEventBuffer:PrintToFile" href="src/TMrbDGFEventBuffer.cxx.html#TMrbDGFEventBuffer:PrintToFile">PrintToFile</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName, const <a href="ListOfTypes.html#Char_t">Char_t</a> * ModuleInfo) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:PrintToFile">TMrbDGF::PrintToFile</a>
+ Purpose:        Print event buffer to file
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> * FileName             -- file name
+                 <a href="ListOfTypes.html#char">char</a> _t * ModuleInfo          -- module info
+ Results:        kTRUE/kFALSE
+ Exceptions:
+ Description:    Outputs event data to file.
  Keywords:
 
 </pre><br><br><br>
 <h3>Inline Functions</h3>
 <hr>
 <pre>
+<!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:Print" href="TMrbDGFEventBuffer.h">Print</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> EventNumber = -1)
 <!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetNofEvents" href="TMrbDGFEventBuffer.h">GetNofEvents</a>()
 <!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGFEventBuffer:GetGlobalIndex" href="TMrbDGFEventBuffer.h">GetGlobalIndex</a>()
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGFEventBuffer:SetGlobalIndex" href="TMrbDGFEventBuffer.h">SetGlobalIndex</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Index)
@@ -293,7 +311,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:56:30 2002
+Last update: Thu Dec  5 14:07:43 2002
 <br>
 <address>
 <hr>

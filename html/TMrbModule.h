@@ -74,6 +74,9 @@ class TMrbModule : public TNamed {
 		inline Bool_t HistosToBeAllocated() { return(fHistosToBeAllocated); };
 		inline Bool_t ConvertToInt() { return(kTRUE); };						// convert short to int
 
+		inline void SetActive(Bool_t ActiveFlag = kTRUE) { fIsActive = ActiveFlag; };
+		inline Bool_t IsActive() { return(fIsActive); };						// module active?
+
 		Bool_t SetBlockReadout(Bool_t Flag = kTRUE);							// turn block mode on
 		inline Bool_t HasBlockReadout() { return(fBlockReadout); }; 			// check if block mode
 
@@ -152,6 +155,8 @@ class TMrbModule : public TNamed {
 		Int_t fSerial;							// unique serial number
 		Bool_t UtilitiesLoaded; 				// kTRUE if some utility procedures already loaded
 		Int_t fNofChannels;						// number of channels available
+
+		Bool_t fIsActive; 						// kTRUE if module active
 
 		TMrbNamedX * fDataType;					// data type
 		Int_t fNofShortsPerChannel; 			// number of 16 bit words per channel

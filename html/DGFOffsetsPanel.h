@@ -103,7 +103,7 @@ class DGFOffsetsPanel : public TGTransientFrame {
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 		
-	ClassDef(DGFOffsetsPanel, 0)		// [DGFControl] Untriggered trace
+	ClassDef(DGFOffsetsPanel, 0)		// [DGFControl] Set offset values
 };
 
 #endif

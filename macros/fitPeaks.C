@@ -20,8 +20,9 @@
 
 //
 // This macro fits a gaussian + linear bg to histograms provided in file 
-// input.list given as argument. Results are written to output.result. 
-// Its name defaults to input.result. 
+// InFileName given as argument. Its name defaults to "hs.list"
+// Results are written to OutFileName, its name uses as default "hs.result"
+// i.e the InFileName with suffix "list" replaced by "result". 
 //
 // The first entry in input.list is the name of the root file followed
 // by the names of the histgrams which may contain wildcards (*).
@@ -33,6 +34,14 @@
 // Repeat: Ignore fit for current histogram and expect again 2 mouse clicks
 // Next:   Move on to next histogram
 // Quit:   Skip the rest of list
+//
+// Usage:
+// At root prompt:
+//  
+//  .L fitPeaks.C+
+//  fit("infile.list")
+//
+// 
 //
 // Author: Otto Schaile
 //_________________________________________________________________________

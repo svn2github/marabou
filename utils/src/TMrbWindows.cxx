@@ -569,8 +569,8 @@ TMrbWindow2D::TMrbWindow2D() {
 }
 
 
-TMrbWindow2D::TMrbWindow2D(const Char_t * WdwName, Int_t N, Double_t * X = NULL, Double_t * Y = NULL) :
-																			TCutG(WdwName, N, (Double_t *) X, (Double_t *) Y) {
+TMrbWindow2D::TMrbWindow2D(const Char_t * WdwName, Int_t N, Double_t * X, Double_t * Y) :
+														TCutG(WdwName, N, (Double_t *) X, (Double_t *) Y) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbWindow2D

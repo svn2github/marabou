@@ -48,7 +48,7 @@ class TMrbLofDGFs : public TObjArray {
 		Bool_t FPGACodeLoaded(const Char_t * FPGAType);
 
 		// DSP section
-		Bool_t DownloadDSPCode();										// download code to DSP
+		Bool_t DownloadDSPCode(Int_t Retry = 3);					// download code to DSP
 		Bool_t DSPCodeLoaded(); 										// test if download ok
 
 		inline void Wait(Int_t Msecs = 100) { gSystem->Sleep(Msecs); };	// wait for DGF to settle down
@@ -56,6 +56,8 @@ class TMrbLofDGFs : public TObjArray {
 		inline TMrbDGFData * Data() { return(fDGFData); };				// data handle
 		inline TMrbEsone * Camac() { return(fCamac); }; 				// camac handle
 		
+		inline UInt_t GetStationMask() { return(fStationMask); };
+
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofDGFs.html&"); };
 
 	protected:

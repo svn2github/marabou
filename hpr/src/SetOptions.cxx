@@ -307,14 +307,20 @@ void HistPresent::RestoreOptions()
          fGreyPalette[i] = 301 + i;
       }
    }
-   if (f2DimColorPalette->Contains("MONO"))
-      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
-   else if (f2DimColorPalette->Contains("MINV"))
-      gStyle->SetPalette(fNofGreyLevels, fGreyPaletteInv);
-   else if (f2DimColorPalette->Contains("REGB"))
-      gStyle->SetPalette(1, 0); // violet - red 
-   else
-      gStyle->SetPalette(50, 0);	// default palette
+   if (f2DimColorPalette->Contains("MONO")) {
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPalette;
+   } else if (f2DimColorPalette->Contains("MINV")) {
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPaletteInv;
+   } else if (f2DimColorPalette->Contains("REGB")) {
+      fNofColorLevels = 1;
+      fPalette = NULL;
+   } else {
+      fNofColorLevels = 50;
+      fPalette = NULL;
+   }
+   gStyle->SetPalette(fNofGreyLevels, fPalette);
 //   CheckAutoExecFiles();
 //
    if (fShowStatBox) {
@@ -551,19 +557,31 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
 
    if (flags[nopt - 3] != 0) {
       *f2DimColorPalette = "MONO";
-      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPalette;
+//      gStyle->SetPalette(fNofGreyLevels, fGreyPalette);
       cout << "Setting MONO " << endl;
    } else if (flags[nopt - 2] != 0) {
       *f2DimColorPalette = "MINV";
-      gStyle->SetPalette(fNofGreyLevels, fGreyPaletteInv);
+      fNofColorLevels = fNofGreyLevels;
+      fPalette = fGreyPaletteInv;
+
+//      gStyle->SetPalette(fNofGreyLevels, fGreyPaletteInv);
       cout << "Setting MINV " << endl;
    } else if (flags[nopt - 1] != 0) {
       *f2DimColorPalette = "REGB";
-      gStyle->SetPalette(1, 0); // violet - red 
+      fNofColorLevels = 1;
+      fPalette = 0;
+
+//      gStyle->SetPalette(1, 0); // violet - red 
    } else {
       *f2DimColorPalette = "DEFA";
-      gStyle->SetPalette(50, 0);	// default palette
+      fNofColorLevels = 50;
+      fPalette = 0;
+ //     gStyle->SetPalette(50, 0);	// default palette
    }
+      gStyle->SetPalette(fNofColorLevels, fPalette);
+
    if (fh) {
       fh->SetSelectedPad();
 //      cout << " fDrawOpt2Dim: " << fDrawOpt2Dim->Data() << endl;

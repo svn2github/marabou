@@ -32,13 +32,19 @@
 <!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:Class">Class</a><!--PLAIN-->()
 <!--TAB6-->       virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:HandleButton">HandleButton</a><!--PLAIN-->(Event_t* Event)
 <!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:SendReturnPressedOnButtonClick">SendReturnPressedOnButtonClick</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag)
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:SendSignal">SendSignal</a><!--PLAIN-->()
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:StreamerNVirtual">StreamerNVirtual</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
+<!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbTextEntry:TextChanged">TextChanged</a><!--PLAIN-->()
 </pre>
 
 <h3><!--TAB2-->  <a name="TGMrbTextEntry:Data Members">Data Members</a></h3>
 <pre>
+
+<!--TAB4-->    <b>protected:</b><br>
+<!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TGMrbTextEntry:fSendReturnPressed">fSendReturnPressed</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fSendReturnPressed"></a></i>
 </pre>
 <!--END-->
 <hr>
@@ -79,6 +85,9 @@
 <pre>
 <!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbTextEntry.html">TGMrbTextEntry</a> <a name="TGMrbTextEntry:TGMrbTextEntry" href="TGMrbLabelEntry.h">TGMrbTextEntry</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, <a href="http://root.cern.ch/root/html/TGTextBuffer.html">TGTextBuffer</a>* Text, <a href="ListOfTypes.html#Int_t">Int_t</a> Id, <a href="ListOfTypes.html#GContext_t">GContext_t</a> Context, <a href="ListOfTypes.html#FontStruct_t">FontStruct_t</a> Font, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Option, <a href="ListOfTypes.html#ULong_t">ULong_t</a> Back)
 <!--INLINE FUNCTION--><!--TAB6-->        <a href="./TGMrbTextEntry.html">TGMrbTextEntry</a> <a name="TGMrbTextEntry:TGMrbTextEntry" href="TGMrbLabelEntry.h">TGMrbTextEntry</a>(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Text, <a href="ListOfTypes.html#Int_t">Int_t</a> Id = -1)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTextEntry:SendReturnPressedOnButtonClick" href="TGMrbLabelEntry.h">SendReturnPressedOnButtonClick</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag)
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTextEntry:SendSignal" href="TGMrbLabelEntry.h">SendSignal</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTextEntry:TextChanged" href="TGMrbLabelEntry.h">TextChanged</a>()
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbTextEntry:Class" href="TGMrbLabelEntry.h">Class</a>()
 <!--INLINE FUNCTION--><!--TAB6-->               <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TGMrbTextEntry:IsA" href="TGMrbLabelEntry.h">IsA</a>() const
 <!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TGMrbTextEntry:ShowMembers" href="TGMrbLabelEntry.h">ShowMembers</a>(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
@@ -93,7 +102,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:55:17 2002
+Last update: Wed Feb 12 14:34:10 2003
 <br>
 <address>
 <hr>

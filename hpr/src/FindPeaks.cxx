@@ -135,7 +135,7 @@ void FitHist::PrintCalib(){
 Bool_t FitHist::Calibrate(){
    PrintCalib();
    if(fSetRange){
-       cout << "range was set" << endl;
+//       cout << "range was set" << endl;
        WarnBox("Calibration already applied,
 use Clear calibration and redisplay");
        return kFALSE;
@@ -178,6 +178,9 @@ use Clear calibration and redisplay");
          xyvals[counter+npeaks] = peak->GetWidth();
          counter ++;
       }
+   } else {
+      xyvals[1] = 1;               // mean
+      xyvals[1 + 2*npeaks ] = 2;   // nom value
    }
    TArrayI useflag(npeaks);
    for(Int_t i=0; i<npeaks; i++)useflag[i] = 1;

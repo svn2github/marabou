@@ -42,14 +42,14 @@ class TMrbDGFData : public TObject {
 
 		// file types for DSP and FPGA code files
 		enum	EMrbDGFFileType {	kFileUndef				=	1,
-									kFileAscii				=	2,
-									kFileBinary 			=	3
-								};
+										kFileAscii				=	2,
+										kFileBinary 			=	3
+									};
 
 		// FPGA types
 		enum	EMrbFPGAType 	{	kSystemFPGA,
-									kFippiFPGA
-								};
+										kFippiFPGA
+									};
 
 		// layout of parameter section in DSP memory
 		enum					{	kNofDSPInputParams		=	256 			};
@@ -62,41 +62,43 @@ class TMrbDGFData : public TObject {
 		enum					{	kDSPOutparStartAddr	 	=	kDSPInparStartAddr + kNofDSPInputParams		};
 		
 		// bit definitions in the control/status reg of the CAMAC Fippi FPGA
-		enum EMrbCamacCSR		{	kRunEna 				=	BIT(0),
-									kNewRun 				=	BIT(1),
-									kEnaLAM 				=	BIT(3),
-									kDSPReset				=	BIT(4),
-									kDSPError				=	BIT(12),
-									kActive 				=	BIT(13),
-									kLAMActive				=	BIT(14)
-								};
+		enum EMrbCamacCSR		{
+										kRunEna 				=	BIT(0),
+										kNewRun 					=	BIT(1),
+										kEnaLAM 					=	BIT(3),
+										kDSPReset				=	BIT(4),
+										kDSPError				=	BIT(12),
+										kActive 					=	BIT(13),
+										kLAMActive				=	BIT(14)
+									};
 		enum					{	kCamacCSRMask			=	kRunEna | kNewRun | kEnaLAM |
-																kDSPError | kActive | kLAMActive
+																	kDSPError | kActive | kLAMActive
 								};
 
 		// bit definitions in the control/status reg of the CAMAC System FPGA
-		enum EMrbCamacICSR		{	kSystemFPGAReset		 	=	BIT(0),
-									kFippiFPGA0Reset 			=	BIT(4),
-									kFippiFPGA1Reset 			=	BIT(5),
-									kFippiFPGA2Reset 			=	BIT(6),
-									kFippiFPGA3Reset 			=	BIT(7),
-									kConnectDSPFromRight 	 	=	BIT(8),
-									kConnectDSPFromLeft			=	BIT(9),
-									kTerminateDSP	 			=	BIT(10),
-									kConnectFastFromRight		=	BIT(11),
-									kConnectFastFromLeft		=	BIT(12),
-									kTerminateFast				=	BIT(13),
-									kSwitchBusNormal			=	0
-								};
+		enum EMrbCamacICSR		{
+											kSystemFPGAReset		 	=	BIT(0),
+											kFippiFPGA0Reset 			=	BIT(4),
+											kFippiFPGA1Reset 			=	BIT(5),
+											kFippiFPGA2Reset 			=	BIT(6),
+											kFippiFPGA3Reset 			=	BIT(7),
+											kConnectDSPFromRight 	 	=	BIT(8),
+											kConnectDSPFromLeft			=	BIT(9),
+											kTerminateDSP	 			=	BIT(10),
+											kConnectFastFromRight		=	BIT(11),
+											kConnectFastFromLeft		=	BIT(12),
+											kTerminateFast				=	BIT(13),
+											kSwitchBusNormal			=	0
+										};
 		enum					{	kFippiFPGAReset 		=	kFippiFPGA0Reset | kFippiFPGA1Reset |
-																kFippiFPGA2Reset | kFippiFPGA3Reset
+																	kFippiFPGA2Reset | kFippiFPGA3Reset
 								};
-		enum					{	kFPGAReset  			=	kSystemFPGAReset | kFippiFPGAReset };
+		enum					{	kFPGAReset  				=	kSystemFPGAReset | kFippiFPGAReset };
 		enum					{	kConnectDSPTrigger		=	kConnectDSPFromRight | kConnectDSPFromLeft |
-																kTerminateDSP
+																		kTerminateDSP
 								};
 		enum					{	kConnectFastTrigger		=	kConnectFastFromRight | kConnectFastFromLeft |
-																kTerminateFast
+																		kTerminateFast
 								};
 		enum					{	kSwitchBus				=	kConnectDSPTrigger | kConnectFastTrigger };
 		enum					{	kCamacICSRMask			=	kFPGAReset | kSwitchBus };
@@ -108,40 +110,43 @@ class TMrbDGFData : public TObject {
 		enum EMrbModCSRB		{};
 
 		// value definitions for parameter RUNTASK: defines kind of run task to be started
-		enum EMrbRunTask		{	kRunControl		=	0,
-									kRunLinear		=	0x100,
-									kRunCircular	=	0x101,
-									kRunPSA 		=	0x102,
-									kRunShort 		=	0x103,
-									kRunMCA 		=	0x301,
-								};
+		enum EMrbRunTask		{
+										kRunControl		=	0,
+										kRunLinear		=	0x100,
+										kRunCircular	=	0x101,
+										kRunPSA 		=	0x102,
+										kRunShort 		=	0x103,
+										kRunMCA 		=	0x301,
+									};
 
 		// value definitions for parameter CONTROLTASK: defines control tasks
-		enum EMrbControlTask	{	kProgramDACs 		=	0,
-									kConnectInputs		=	1,
-									kDisconnectInputs	=	2,
-									kCalibrate			=	3,
-									kSampleADCs 	 	=	4,
-									kUpdateFPGA 		=	5,
-									kReadHistoFirstPage =	9,
-									kReadHistoNextPage	=	10
-								};
+		enum EMrbControlTask	{
+										kProgramDACs 		=	0,
+										kConnectInputs		=	1,
+										kDisconnectInputs	=	2,
+										kCalibrate			=	3,
+										kSampleADCs 	 	=	4,
+										kUpdateFPGA 		=	5,
+										kReadHistoFirstPage =	9,
+										kReadHistoNextPage	=	10
+									};
 
 		// bit definitions in parameter CHANCSRA: control/status reg A for channel X
-		enum EMrbChanCSRA		{	kGroupTriggerOnly	=	BIT(0),
-									kIndivLiveTime		=	BIT(1),
-									kGoodChannel		=	BIT(2),
-									kReadAlways 		=	BIT(3),
-									kEnableTrigger		=	BIT(4),
-									kTriggerPositive	=	BIT(5),
-									kGFLTValidate		=	BIT(6),
-									kHistoEnergies		=	BIT(7),
-									kHistoBaselines 	=	BIT(8),
-									kCorrBallDeficit	=	BIT(9),
-									kComputeCFT 		=	BIT(10),
-									kEnaMultiplicity	=	BIT(11),
-									kBipolarSignals 	=	BIT(15)
-								};
+		enum EMrbChanCSRA		{
+										kGroupTriggerOnly	=	BIT(0),
+										kIndivLiveTime		=	BIT(1),
+										kGoodChannel		=	BIT(2),
+										kReadAlways 		=	BIT(3),
+										kEnableTrigger		=	BIT(4),
+										kTriggerPositive	=	BIT(5),
+										kGFLTValidate		=	BIT(6),
+										kHistoEnergies		=	BIT(7),
+										kHistoBaselines 	=	BIT(8),
+										kCorrBallDeficit	=	BIT(9),
+										kComputeCFT 		=	BIT(10),
+										kEnaMultiplicity	=	BIT(11),
+										kBipolarSignals 	=	BIT(15)
+									};
 
 		enum					{	kChanCSRAMask		=	0xffff			};
 
@@ -149,23 +154,28 @@ class TMrbDGFData : public TObject {
 		enum EMrbChanCSRB		{};
 
 		// bit definitions: software status (data)
-		enum EMrbDGFStatusDBits	{	kSystemFPGACodeRead		=	BIT(2),
-									kFippiFPGARevDCodeRead	=	BIT(3),
-									kFippiFPGARevECodeRead	=	BIT(4),
-									kDSPCodeRead 			=	BIT(5),
-									kParamNamesRead			=	BIT(6)
-								};
+		enum EMrbDGFStatusDBits	{
+											kSystemFPGACodeRead		=	BIT(2),
+											kFippiFPGARevDCodeRead	=	BIT(3),
+											kFippiFPGARevECodeRead	=	BIT(4),
+											kDSPCodeRead 				=	BIT(5),
+											kParamNamesRead			=	BIT(6)
+										};
 
 		// number of channels per module
 		enum					{	kNofChannels		=	4			};
 		enum					{	kNofMCAPages		=	8			};
 		enum					{	kMCAPageSize		=	32 * 1024	};
+		enum					{	kChannelPattern	=	0xF };
 
 		// module revision
-		enum EMrbDGFRevision	{	kRevD = 0,
-									kRevE = 1
+		enum EMrbDGFRevision	{	kRevUnknown 		= -1,
+									kOrigRevD			= 3,
+									kOrigRevE			= 4,
+									kRevD				= 0,
+									kRevE				= 1
 								};
-		enum					{	kNofRevs = 2 };
+		enum					{	kNofRevs			= kRevE - kRevD + 1 };
 
 	public:
 		TMrbDGFData();				 					// default ctor
@@ -173,26 +183,26 @@ class TMrbDGFData : public TObject {
 		~TMrbDGFData() { Reset(); };					// default dtor
 
 		// FPGA section
-		Int_t ReadFPGACodeBinary(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", EMrbDGFRevision Rev = kRevD, Bool_t Forced = kFALSE);	// read FPGA data (binary) from file
-		Int_t ReadFPGACodeBinary(const Char_t * FPGAType, const Char_t * CodeFile = "", EMrbDGFRevision Rev = kRevD, Bool_t Forced = kFALSE);
-		Int_t ReadFPGACodeAscii(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", EMrbDGFRevision Rev = kRevD, Bool_t Forced = kFALSE); 	// read FPGA data (ascii) from file
-		Int_t ReadFPGACodeAscii(const Char_t * FPGAType, const Char_t * CodeFile = "", EMrbDGFRevision Rev = kRevD, Bool_t Forced = kFALSE);
-		Int_t ReadFPGACode(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", EMrbDGFRevision Rev = kRevD, Bool_t Forced = kFALSE);	// read FPGA data depending on file ext
-		Int_t ReadFPGACode(const Char_t * FPGAType, const Char_t * CodeFile = "", EMrbDGFRevision Rev = kRevD, Bool_t Forced = kFALSE);
-		Bool_t FPGACodeRead(EMrbFPGAType FPGAType, EMrbDGFRevision Rev = kRevD);
-		Bool_t FPGACodeRead(const Char_t * FPGAType, EMrbDGFRevision Rev = kRevD);
-		inline Int_t GetFPGACodeSize(EMrbFPGAType FPGAType, EMrbDGFRevision Rev = kRevD) {
-			return (FPGAType == TMrbDGFData::kSystemFPGA ? fSystemFPGASize : fFippiFPGASize[Rev]);
+		Int_t ReadFPGACodeBinary(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);	// read FPGA data (binary) from file
+		Int_t ReadFPGACodeBinary(const Char_t * FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);
+		Int_t ReadFPGACodeAscii(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE); 	// read FPGA data (ascii) from file
+		Int_t ReadFPGACodeAscii(const Char_t * FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);
+		Int_t ReadFPGACode(EMrbFPGAType FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);	// read FPGA data depending on file ext
+		Int_t ReadFPGACode(const Char_t * FPGAType, const Char_t * CodeFile = "", Int_t Rev = kRevUnknown, Bool_t Forced = kFALSE);
+		Bool_t FPGACodeRead(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown);
+		Bool_t FPGACodeRead(const Char_t * FPGAType, Int_t Rev = kRevUnknown);
+		inline Int_t GetFPGACodeSize(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown) {
+			return (FPGAType == kSystemFPGA ? fSystemFPGASize : fFippiFPGASize[Rev]);
 		};
-		inline UShort_t * GetFPGACodeAddr(EMrbFPGAType FPGAType, EMrbDGFRevision Rev = kRevD) {
-			return (FPGAType == TMrbDGFData::kSystemFPGA ? (UShort_t *) fSystemFPGACode.GetArray() : (UShort_t *) fFippiFPGACode[Rev].GetArray());
+		inline UShort_t * GetFPGACodeAddr(EMrbFPGAType FPGAType, Int_t Rev = kRevUnknown) {
+			return (FPGAType == kSystemFPGA ? (UShort_t *) fSystemFPGACode.GetArray() : (UShort_t *) fFippiFPGACode[Rev].GetArray());
 		};
 				
 		// DSP section
 		Int_t ReadDSPCodeBinary(const Char_t * CodeFile = "", Bool_t Forced = kFALSE); 	// read DSP data (binary) from file
 		Int_t ReadDSPCodeAscii(const Char_t * CodeFile = "", Bool_t Forced = kFALSE);	// read DSP data (ascii) from file
 		Int_t ReadDSPCode(const Char_t * CodeFile = "", Bool_t Forced = kFALSE);		// read DSP data depending on file ext
-		inline Bool_t DSPCodeRead() { return((fStatusD & TMrbDGFData::kDSPCodeRead) != 0); };
+		inline Bool_t DSPCodeRead() { return((fStatusD & kDSPCodeRead) != 0); };
 		inline Int_t GetDSPCodeSize() { return(fDSPSize); };
 		UShort_t * GetDSPCodeAddr() { return((UShort_t *) fDSPCode.GetArray()); };
 		
@@ -205,7 +215,7 @@ class TMrbDGFData : public TObject {
 
 		inline TMrbNamedX * FirstParam() { return((TMrbNamedX *) fParamNames.First()); };
 		inline TMrbNamedX * NextParam(TMrbNamedX * Param) { return((TMrbNamedX *) fParamNames.After(Param)); };
-		inline Bool_t ParamNamesRead() { return((fStatusD & TMrbDGFData::kParamNamesRead) != 0); };
+		inline Bool_t ParamNamesRead() { return((fStatusD & kParamNamesRead) != 0); };
 		inline Int_t GetNofParams() { return(fNofParams); };
 		inline TMrbLofNamedX * GetLofParamNames() { return(&fParamNames); };
 		

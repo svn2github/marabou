@@ -53,6 +53,8 @@ class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 
 		inline TGTextEntry * GetEntry() { return(fEntry); };
 
+		void FileButtonEnable(Bool_t Flag = kTRUE);			// enable/disable file button
+
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFileEntry.html&"); };

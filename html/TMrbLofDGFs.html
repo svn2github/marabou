@@ -39,7 +39,7 @@
 <!--TAB6-->           <a href="./TMrbEsone.html">TMrbEsone</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:Camac">Camac</a><!--PLAIN-->()
 <!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:Class">Class</a><!--PLAIN-->()
 <!--TAB6-->         <a href="./TMrbDGFData.html">TMrbDGFData</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:Data">Data</a><!--PLAIN-->()
-<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:DownloadDSPCode">DownloadDSPCode</a><!--PLAIN-->()
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:DownloadDSPCode">DownloadDSPCode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Retry = 3)
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:DownloadFPGACode">DownloadFPGACode</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType)
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:DownloadFPGACode">DownloadFPGACode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType)
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:DSPCodeLoaded">DSPCodeLoaded</a><!--PLAIN-->()
@@ -47,6 +47,7 @@
 <!--TAB6-->             <a href="./TMrbDGF.html">TMrbDGF</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:FindModule">FindModule</a><!--PLAIN-->(<a href="./TMrbDGF.html">TMrbDGF</a>* Dgf)
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:FPGACodeLoaded">FPGACodeLoaded</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType)
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:FPGACodeLoaded">FPGACodeLoaded</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType)
+<!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:GetStationMask">GetStationMask</a><!--PLAIN-->()
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:Help">Help</a><!--PLAIN-->()
 <!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:IsA">IsA</a><!--PLAIN-->() const
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbLofDGFs:RemoveModule">RemoveModule</a><!--PLAIN-->(<a href="./TMrbDGF.html">TMrbDGF</a>* Dgf)
@@ -130,12 +131,12 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLofDGFs:DownloadDSPCode" href="src/TMrbLofDGFs.cxx.html#TMrbLofDGFs:DownloadDSPCode">DownloadDSPCode</a>() <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbLofDGFs:DownloadDSPCode" href="src/TMrbLofDGFs.cxx.html#TMrbLofDGFs:DownloadDSPCode">DownloadDSPCode</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Retry) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbLofDGFs.html#TMrbLofDGFs:DownloadDSPCode">TMrbLofDGFs::DownloadDSPCode</a>
  Purpose:        Download DSP data
- Arguments:      --
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Retry  -- number of retries on error
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Loads code down to DSP.
@@ -223,6 +224,7 @@
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofDGFs:Wait" href="TMrbLofDGFs.h">Wait</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Msecs = 100)
 <!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbDGFData.html">TMrbDGFData</a>* <a name="TMrbLofDGFs:Data" href="TMrbLofDGFs.h">Data</a>()
 <!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbEsone.html">TMrbEsone</a>* <a name="TMrbLofDGFs:Camac" href="TMrbLofDGFs.h">Camac</a>()
+<!--INLINE FUNCTION--><!--TAB6-->              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbLofDGFs:GetStationMask" href="TMrbLofDGFs.h">GetStationMask</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#void">void</a> <a name="TMrbLofDGFs:Help" href="TMrbLofDGFs.h">Help</a>()
 <!--INLINE FUNCTION--><!--TAB6-->             <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbLofDGFs:Class" href="TMrbLofDGFs.h">Class</a>()
 <!--INLINE FUNCTION--><!--TAB6-->             <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <a name="TMrbLofDGFs:IsA" href="TMrbLofDGFs.h">IsA</a>() const
@@ -237,7 +239,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:57:00 2002
+Last update: Thu Dec  5 14:08:13 2002
 <br>
 <address>
 <hr>

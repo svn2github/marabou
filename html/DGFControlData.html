@@ -51,11 +51,13 @@
 <!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetPatInUse">GetPatInUse</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster)
 <!--TAB6-->        const <a href="ListOfTypes.html#Char_t">Char_t</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetResource">GetResource</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource) const
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetResource">GetResource</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource)
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetResource">GetResource</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Name, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Resource)
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedChannel">GetSelectedChannel</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedChannelIndex">GetSelectedChannelIndex</a><!--PLAIN-->()
 <!--TAB6-->           <a href="./DGFModule.html">DGFModule</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedModule">GetSelectedModule</a><!--PLAIN-->()
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:GetSelectedModuleIndex">GetSelectedModuleIndex</a><!--PLAIN-->()
 <!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#DGFControlData:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:IsDebug">IsDebug</a><!--PLAIN-->()
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:IsOffline">IsOffline</a><!--PLAIN-->()
 <!--TAB6-->               <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:IsVerbose">IsVerbose</a><!--PLAIN-->()
 <!--TAB6-->               <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#DGFControlData:ModuleIndex">ModuleIndex</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Cluster, <a href="ListOfTypes.html#Int_t">Int_t</a> ModNo)
@@ -96,6 +98,9 @@
 <!--TAB6-->      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLofClusters">fLofClusters</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fLofClusters">clusters: name, serial, color</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSelectedModule">fSelectedModule</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSelectedModule">index of module currently selected</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSelectedChannel">fSelectedChannel</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelectedChannel">index of channel currently selected</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSimulStartStop">fSimulStartStop</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSimulStartStop">kTRUE if to start/stop simultaneously</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fSyncClocks">fSyncClocks</a><!--PLAIN-->              <!--TAB--><i><a name="Title:fSyncClocks">kTRUE if clocks have to be synchronized</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fIndivSwitchBusTerm">fIndivSwitchBusTerm</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fIndivSwitchBusTerm">kTRUE if switchbus should be terminated individually</a></i>
 <!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fLoadPath">fLoadPath</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fLoadPath">where to load DSP/FPGA code from</a></i>
 <!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDSPCodeFile">fDSPCodeFile</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDSPCodeFile">... DSP code</a></i>
 <!--TAB6-->            <a href="http://root.cern.ch/root/html/TString.html">TString</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fDSPParamsFile">fDSPParamsFile</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fDSPParamsFile">... param table</a></i>
@@ -119,13 +124,13 @@
 <!--TAB6-->            <a href="ListOfTypes.html#ULong_t">ULong_t</a> <!--TAB--><!--BOLD--><a name="DGFControlData:fColorRed">fColorRed</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fColorRed"></a></i>
 
 <!--TAB4-->    <b>public:</b><br>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFVerboseMode">kDGFVerboseMode</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFVerboseMode"></a></i>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFDebugMode">kDGFDebugMode</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kDGFDebugMode"></a></i>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFModNumGlobal">kDGFModNumGlobal</a><!--PLAIN-->    <!--TAB--><i><a name="Title:kDGFModNumGlobal"></a></i>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFOfflineMode">kDGFOfflineMode</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFOfflineMode"></a></i>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFSimulStartStop">kDGFSimulStartStop</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFSimulStartStop"></a></i>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFSyncClocks">kDGFSyncClocks</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDGFSyncClocks"></a></i>
-<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFNewCode">kDGFNewCode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFNewCode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFVerboseMode">kDGFVerboseMode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFVerboseMode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFDebugMode">kDGFDebugMode</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kDGFDebugMode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFModNumGlobal">kDGFModNumGlobal</a><!--PLAIN-->        <!--TAB--><i><a name="Title:kDGFModNumGlobal"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFOfflineMode">kDGFOfflineMode</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFOfflineMode"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFSimulStartStop">kDGFSimulStartStop</a><!--PLAIN-->      <!--TAB--><i><a name="Title:kDGFSimulStartStop"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFSyncClocks">kDGFSyncClocks</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kDGFSyncClocks"></a></i>
+<!--TAB6-->      static const <a href="./DGFControlData.html#DGFControlData:EDGFStatusBit">DGFControlData::EDGFStatusBit</a> <!--TAB--><!--BOLD--><a name="DGFControlData:kDGFIndivSwitchBusTerm">kDGFIndivSwitchBusTerm</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kDGFIndivSwitchBusTerm"></a></i>
 </pre>
 <!--END-->
 <hr>
@@ -214,6 +219,28 @@
  Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Result       -- resource value
  Exceptions:
  Description:    Reads an integer resource value from ROOT's environment.
+                 Resource name is either
+                        &lt;Prefix&gt;.&lt;Serial&gt;.&lt;Resource&gt;
+                 or     &lt;Prefix&gt;.&lt;Name&gt;.&lt;Resource&gt;
+                 Example: To get the address of module #1 with name "xyz"
+                          it looks for "DGFControl.Module.1.Address"
+                          and for      "DGFControl.Module.Xyz.Address"
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:GetResource" href="src/DGFControlData.cxx.html#DGFControlData:GetResource">GetResource</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; Result, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix, <a href="ListOfTypes.html#Int_t">Int_t</a> Serial, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Name, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./DGFControlData.html#DGFControlData:GetResource">DGFControlData::GetResource</a>
+ Purpose:        Get resource from environment
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> &amp; Result    -- where to put resulting value
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Prefix    -- prefix "DGFControl.XXX"
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> Serial       -- serial number
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Name      -- name
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Resource  -- resource name
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> Result       -- resource value
+ Exceptions:
+ Description:    Reads an boolean resource value from ROOT's environment.
                  Resource name is either
                         &lt;Prefix&gt;.&lt;Serial&gt;.&lt;Resource&gt;
                  or     &lt;Prefix&gt;.&lt;Name&gt;.&lt;Resource&gt;
@@ -427,6 +454,7 @@
 <!--INLINE FUNCTION--><!--TAB6-->          HistPresent* <a name="DGFControlData:GetHistPresent" href="DGFControlData.h">GetHistPresent</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:IsOffline" href="DGFControlData.h">IsOffline</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:IsVerbose" href="DGFControlData.h">IsVerbose</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="DGFControlData:IsDebug" href="DGFControlData.h">IsDebug</a>()
 <!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:NormalFont" href="DGFControlData.h">NormalFont</a>() const
 <!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:BoldFont" href="DGFControlData.h">BoldFont</a>() const
 <!--INLINE FUNCTION--><!--TAB6-->         const <a href="ListOfTypes.html#Char_t">Char_t</a>* <a name="DGFControlData:SlantedFont" href="DGFControlData.h">SlantedFont</a>() const
@@ -444,7 +472,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:53:45 2002
+Last update: Thu Dec  5 14:04:39 2002
 <br>
 <address>
 <hr>

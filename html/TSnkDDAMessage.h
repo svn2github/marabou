@@ -51,7 +51,7 @@ class TSnkDDAMessage : public TObject {
 		TString fExecMode;
 		Double_t fInterval;
 		TString fPath;
-		TString fScanFile;
+		TString fSaveScan;
 						
 	ClassDef(TSnkDDAMessage, 1) 	// [SNAKE] Client/server communication
 };

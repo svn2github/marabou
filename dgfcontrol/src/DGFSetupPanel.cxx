@@ -71,8 +71,6 @@ const SMrbNamedXShort kDGFSetupAccessMode[] =
 
 TMrbEsone * esoneCold = NULL;
 
-Bool_t firstCall = kTRUE;
-
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
 
@@ -185,13 +183,11 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 	fDGFFrame->Associate(this);
 	fDGFFrame->SetState(gDGFControlData->fStatus);
 
-	if (firstCall) {
-		gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
-		gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
-		gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
-	}
+	gDGFControlData->fSimulStartStop = gEnv->GetValue("DGFControl.StartStopSimultaneously", kTRUE) ? kButtonDown : kButtonUp;
 	fDGFFrame->SetState(DGFControlData::kDGFSimulStartStop, gDGFControlData->fSimulStartStop ? kButtonDown : kButtonUp);
+	gDGFControlData->fSyncClocks = gEnv->GetValue("DGFControl.SynchronizeClocks", kTRUE) ? kButtonDown : kButtonUp;
 	fDGFFrame->SetState(DGFControlData::kDGFSyncClocks, gDGFControlData->fSyncClocks ? kButtonDown : kButtonUp);
+	gDGFControlData->fIndivSwitchBusTerm = gEnv->GetValue("DGFControl.TerminateSwitchBusIndividually", kFALSE) ? kButtonDown : kButtonUp;
 	fDGFFrame->SetState(DGFControlData::kDGFIndivSwitchBusTerm, gDGFControlData->fIndivSwitchBusTerm ? kButtonDown : kButtonUp);
 
 //	CAMAC defs
@@ -327,8 +323,6 @@ DGFSetupPanel::DGFSetupPanel(const TGWindow * Window, const TGWindow * MainFrame
 
 	MapWindow();
 //	gClient->WaitFor(this);
-
-	firstCall = kFALSE;
 }
 
 Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) {
@@ -626,7 +620,7 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 						dgf = dgfModule->GetAddr();
 						if (dgf->IsConnected()) {
 							if (Mode == kDGFSetupConnectReloadDGFs) {
-								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm)) nerr++;
 							}
 						}
 					}
@@ -739,7 +733,7 @@ Bool_t DGFSetupPanel::StartDGFs(EDGFSetupCmdId Mode) {
 								}
 
 								if (systemFPGAok && fippiFPGAok) {
-									if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+									if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm)) nerr++;
 									if (toBeLoaded & kDGFSetupCodeDSP) {
 										if (dgf->Data()->ReadDSPCode(gDGFControlData->fDSPCodeFile) <= 0) nerr++;
 										if (dgf->DownloadDSPCode()) {

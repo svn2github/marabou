@@ -67,10 +67,6 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		inline Int_t GetTraceLength() { return(fTraceLength); };
 		inline void SetRunTask(Int_t RunTask = 0x100) { fRunTask = RunTask; };
 		inline Int_t GetRunTask() { return(fRunTask); };
-		inline void SetSynchWait(Int_t SynchWait = 1) { fSynchWait = SynchWait; };
-		inline Int_t GetSynchWait() { return(fSynchWait); };
-		inline void SetInSynch(Int_t InSynch = 0) { fInSynch = InSynch; };
-		inline Int_t GetInSynch() { return(fInSynch); };
 		inline void SetSwitchBusTerm(Bool_t TermFlag = kTRUE) { fSwitchBusTerm = TermFlag; };
 		inline Bool_t SwitchBusToBeTerminated() { return(fSwitchBusTerm); };
 		
@@ -104,8 +100,6 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		Int_t fMaxEvents;					// parameter MAXEVENTS
 		Int_t fTraceLength; 				// parameter TRACELENGTH (common to all 4 channels)
 		Int_t fRunTask; 					// parameter RUNTASK
-		Int_t fSynchWait;					// parameter SYNCHWAIT
-		Int_t fInSynch; 					// parameter INSYNCH
 
 		Bool_t fSwitchBusTerm;				// kTRUE if switch bus is to be terminated
 

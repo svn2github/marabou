@@ -18,7 +18,7 @@
 # Set SYSMODE=y only if you want to build MARaBOU from sources
 # To use MARaBOU after successful installation set SYSMODE=n
 
-SYSMODE=y
+SYSMODE=
 
 # Set environment vars needed by MARaBOU:
 # ROOTSYS        where the ROOT system resides
@@ -194,7 +194,7 @@ export PATH=$PATH:$ROOTSYS/bin:$MARABOU/bin
 echo -e -n $BLU >&2
 if [ $SYSMODE = "y" ]
 then
-	echo "iniMrbPath: You are currently using ROOT `$ROOTSYS/bin/root-config --version`"
+	echo "iniMrbPath: You are currently using ROOT `$ROOTSYS/bin/root-config --version` ($ROOTSYS)"
 	echo "iniMrbPath: MARaBOU distribution at $MARABOU is ready to be built"
 else
 	echo "iniMrbPath: MARaBOU installation at $MARABOU is ready to be used"

@@ -109,7 +109,7 @@ class DGFParamsPanel : public TGTransientFrame {
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 		
-	ClassDef(DGFParamsPanel, 0)		// [DGFControl] Untriggered trace
+	ClassDef(DGFParamsPanel, 0)		// [DGFControl] Set/display module params
 };
 
 #endif

@@ -1120,6 +1120,12 @@ void FhMainFrame::StopMessage(){
       wstream.close();
    } 
    wstream.open(logfile, ios::nocreate | ios:: app);
+   if (gSystem->AccessPathName(logfile) != 0) {
+		cerr	<< "C_analyze: "
+				<< "No such file - " << logfile
+				<< endl;
+		   return;
+   }
    if (!wstream.good()) {
 		cerr	<< "C_analyze: "
 				<< gSystem->GetError() << " - " << logfile

@@ -7,7 +7,7 @@
 	ddaMsg->Reset();
 	ddaMsg->fProgram = "ddaStart.C";
 	ddaMsg->fPath = gSystem->WorkingDirectory();
-	ddaMsg->fScanFile = "DDA_ScanData.root";
+	ddaMsg->fSaveScan = "DDA_ScanData.root";
 	ddaMsg->fAction = "StartScan";
 	ddaMsg->fExecMode = gEnv->GetValue("DDAControl.ExecMode", "normal");
 	TString server = gEnv->GetValue("DDAControl.Server", "localHost");

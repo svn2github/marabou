@@ -45,7 +45,6 @@ const SMrbNamedXShort kMrbEvtAnalyzeOptions[] =
 								{TMrbConfig::kAnaOptHistograms, 	"HISTOGRAMS"		},
 								{~TMrbConfig::kAnaOptHistograms,	"NOHISTOGRAMS"		},
 								{TMrbConfig::kAnaOptEvtDefault, 	"DEFAULT"			},
-								{TMrbConfig::kAnaOptEventBuilder,	"EVENTBUILDER"		},
 								{0, 								NULL				}
 							};
 
@@ -367,6 +366,8 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 
 	TMrbTemplate anaTmpl;
 	
+	Bool_t foundEventTimeBuffer;
+
 	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
@@ -546,44 +547,44 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 						}
 						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 					}
-					break;
-				case TMrbConfig::kAnaEventBuildEvent:
-					anaTmpl.InitializeCode("%B%");
-					anaTmpl.Substitute("$evtNameLC", evtNameLC);
-					anaTmpl.Substitute("$evtNameUC", evtNameUC);
-					anaTmpl.Substitute("$evtTrigger", this->GetTrigger());
-					anaTmpl.WriteCode(ana);
-					if (gMrbConfig->UserCodeToBeIncluded()) {
-						icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
-						while (icl) {
-							iclFile = icl->GetName();
-							if (iclFile.Length() == 0) iclFile = gMrbConfig->GetName();
-							iclFile(0,1).ToUpper();
-							if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) iclFile += evtNameUC.Data();
-							if (icl->GetIndex() & TMrbConfig::kIclOptAnalyze) {
-								iclFile += "EventBuilder.udc.cxx";
-								anaTmpl.InitializeCode("%IUC%");
-								iclPath = icl->GetTitle();
-								if (iclPath.Length() == 0) iclPath = srcPath;
-								fp = gSystem->Which(iclPath.Data(), iclFile.Data());
-								if (fp) {
-									TMrbSystem ux;
-									iclPath = fp;
-									fp = ux.GetRelPath(iclPath, gSystem->WorkingDirectory());
-									anaTmpl.Substitute("$iclFile", fp);
-								} else {
-									anaTmpl.Substitute("$iclFile", iclFile);
-								}
-								anaTmpl.WriteCode(ana);
+					foundEventTimeBuffer = kFALSE;
+					sevt = (TMrbSubevent *) fLofSubevents.First();
+					while (sevt) {
+						if (sevt->ProvidesEventTime()) {
+							if (foundEventTimeBuffer) {
+								gMrbLog->Err() << "More than 1 subevent provides event times - " << sevt->GetName() << endl;
+								gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 							}
-							icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+							sevtNameLC = sevt->GetName();
+							sevtNameUC = sevtNameLC;
+							sevtNameUC(0,1).ToUpper();
+							anaTmpl.InitializeCode("%PEV%");
+							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+							anaTmpl.WriteCode(ana);
+							foundEventTimeBuffer = kTRUE;
 						}
-					} else {
-						anaTmpl.InitializeCode("%N%");
-						anaTmpl.WriteCode(ana);
+						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 					}
-					anaTmpl.InitializeCode("%E%");
-					anaTmpl.WriteCode(ana);
+					sevt = (TMrbSubevent *) fLofSubevents.First();
+					while (sevt) {
+						if (sevt->NeedsEventTime()) {
+							sevtNameLC = sevt->GetName();
+							sevtNameUC = sevtNameLC;
+							sevtNameUC(0,1).ToUpper();
+							anaTmpl.InitializeCode("%NEV%");
+							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
+							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
+							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+							anaTmpl.WriteCode(ana);
+							if (!foundEventTimeBuffer) {
+								gMrbLog->Err() << "There is no module/subevent to provide event times - needed by subevent " << sevt->GetName() << endl;
+								gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
+							}
+						}
+						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+					}
 					break;
 				case TMrbConfig::kAnaEventAnalyze:
 					anaTmpl.InitializeCode("%B%");
@@ -591,19 +592,14 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					anaTmpl.Substitute("$evtNameUC", evtNameUC);
 					anaTmpl.Substitute("$evtTrigger", this->GetTrigger());
 					anaTmpl.WriteCode(ana);
-					if ((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptEventBuilder) == 0) {
-						anaTmpl.InitializeCode("%WTF%");
-						anaTmpl.WriteCode(ana);
-					}
-					if (((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptHistograms) != 0)
-					&&	((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptFillHistosAfter) == 0)) {
+					if (this->GetAnalyzeOptions() & TMrbConfig::kAnaOptHistograms) {
 						sevt = (TMrbSubevent *) fLofSubevents.First();
 						while (sevt) {
 							sevtNameLC = sevt->GetName();
 							sevtNameUC = sevtNameLC;
 							sevtNameUC(0,1).ToUpper();
-							if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%FHBP%");
-							else								anaTmpl.InitializeCode("%FHBN%");
+							if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%P%");
+							else								anaTmpl.InitializeCode("%N%");
 							anaTmpl.Substitute("$evtNameLC", evtNameLC);
 							anaTmpl.Substitute("$evtNameUC", evtNameUC);
 							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
@@ -613,7 +609,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 						}
 					}
-					anaTmpl.InitializeCode("%AC%");
+					anaTmpl.InitializeCode("%C%");
 					anaTmpl.WriteCode(ana);
 					if (gMrbConfig->UserCodeToBeIncluded()) {
 						icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
@@ -640,28 +636,6 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 							}
 							icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
 						}
-					}
-					if (((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptHistograms) != 0)
-					&&	((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptFillHistosAfter) != 0)) {
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							sevtNameLC = sevt->GetName();
-							sevtNameUC = sevtNameLC;
-							sevtNameUC(0,1).ToUpper();
-							if (this->HasPrivateHistograms())	anaTmpl.InitializeCode("%FHAP%");
-							else								anaTmpl.InitializeCode("%FHAN%");
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
-							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
-							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
-							anaTmpl.WriteCode(ana);
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-						}
-					}
-					if ((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptEventBuilder) == 0) {
-						anaTmpl.InitializeCode("%WT%");
-						anaTmpl.WriteCode(ana);
 					}
 					anaTmpl.InitializeCode("%E%");
 					anaTmpl.WriteCode(ana);
@@ -741,9 +715,8 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 						iclFile = icl->GetName();
 						if (iclFile.Length() == 0) iclFile = gMrbConfig->GetName();
 						iclFile(0,1).ToUpper();
-						if ((icl->GetIndex() & TMrbConfig::kIclOptByEventName) 
-						&&	(icl->GetIndex() & TMrbConfig::kIclOptBookHistograms)) {
-							iclFile += evtNameUC.Data();
+						if (icl->GetIndex() & TMrbConfig::kIclOptByEventName) iclFile += evtNameUC.Data();
+						if (icl->GetIndex() & TMrbConfig::kIclOptBookHistograms) {
 							iclFile += "BookHistograms.udc.cxx";
 							if (writeCmt) {
 								anaTmpl.InitializeCode("%B%");

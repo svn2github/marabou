@@ -368,7 +368,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	TH1F * h;
-	Bool_t selectFlag, dataOkFlag;
+	Bool_t selectFlag;
 	Int_t nofWords;
 	Int_t modNo, cl;
 	TString hTitle;
@@ -382,6 +382,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 										
 	traceBuffer.Set(4 * 8192);
 	
+	selectFlag = kFALSE;
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
 	nofTraces = 0;
@@ -406,14 +407,11 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 
 	intStr = fXwait->GetEntry()->GetText();
 	intStr.ToInteger(xwait);
-	selectFlag = kFALSE;
-	dataOkFlag = kFALSE;
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			dgf = dgfModule->GetAddr();
-			selectFlag = kTRUE;
 			traceBuffer.Reset();
 			nofWords = dgf->GetTrace(traceBuffer, traceLength, chnPattern, xwait);
 			if (gDGFControlData->IsDebug()) {
@@ -426,11 +424,11 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 			}
 
 			if (nofWords > 0) {
-				if (!dataOkFlag) {
+				if (!selectFlag) {
 					traceFile = new TFile("trace.root", "RECREATE");
 					hl.open("trace.histlist", ios::out);
 				}
-				dataOkFlag = kTRUE;
+				selectFlag = kTRUE;
 				if (traceBuffer.GetNofEvents() > 0) {
 					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 						if (traceBuffer.FillHistogram(0, chn, kFALSE)) {
@@ -441,13 +439,6 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 								h->SetName(hName.Data());
 								h->SetTitle(dgfModule->GetTitle());
 								h->Write();
-								if (gDGFControlData->IsVerbose()) {
-									cout	<< "[" << dgfModule->GetTitle()
-											<< "(chn" << chn
-											<< "): trace" << nofTraces
-											<< " -> histo " << hName
-											<< ", " << traceLength << " data points]" << endl;
-								}
 								nofTraces++;
 							}
 						}
@@ -467,17 +458,12 @@ Bool_t DGFTraceDisplayPanel::StartTrace() {
 		nofModules++;
 	}				
 	if (selectFlag) {
-		if (dataOkFlag) {
-			traceFile->Close();
-			hl.close();
-			gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
-			return(kTRUE);
-		} else {
-			gMrbLog->Err()	<< "StartTrace(): Couldn't get any traces" << endl;
-			gMrbLog->Flush(this->ClassName(), "StartTrace");
-			return(kTRUE);
-		}
+		traceFile->Close();
+		hl.close();
+		gMrbLog->Out()	<< "StartTrace(): " << nofTraces
+						<< " traces written to file \"trace.root\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
+		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);

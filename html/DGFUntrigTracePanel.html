@@ -51,13 +51,19 @@
 <!--TAB6-->           <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fGroupFrame">fGroupFrame</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fGroupFrame"></a></i>
 <!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fGroupSelect">fGroupSelect[6]</a><!--PLAIN-->        <!--TAB--><i><a name="Title:fGroupSelect"></a></i>
 <!--TAB6-->      <a href="./TGMrbPictureButtonList.html">TGMrbPictureButtonList</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fAllSelect">fAllSelect</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fAllSelect"></a></i>
+<!--TAB6-->           <a href="http://root.cern.ch/root/html/TGHorizontalFrame.html">TGHorizontalFrame</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fHFrame">fHFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fHFrame"></a></i>
+<!--TAB6-->                <a href="http://root.cern.ch/root/html/TGGroupFrame.html">TGGroupFrame</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fXFrame">fXFrame</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fXFrame"></a></i>
+<!--TAB6-->             <a href="./TGMrbLabelEntry.html">TGMrbLabelEntry</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fXwait">fXwait</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:fXwait">wait states</a></i>
+<!--TAB6-->       <a href="./TGMrbCheckButtonGroup.html">TGMrbCheckButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fSelectChannel">fSelectChannel</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fSelectChannel">channel</a></i>
 <!--TAB6-->        <a href="./TGMrbTextButtonGroup.html">TGMrbTextButtonGroup</a>* <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fActionFrame">fActionFrame</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fActionFrame"></a></i>
 <!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fActions">fActions</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fActions">text buttons:	actions to be taken</a></i>
+<!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fLofChannels">fLofChannels</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fLofChannels">! channel numbers</a></i>
 <!--TAB6-->                <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fLofDGFModuleKeys">fLofDGFModuleKeys[20]</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofDGFModuleKeys"></a></i>
 <!--TAB6-->               <a href="./TGMrbFocusList.html">TGMrbFocusList</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fFocusList">fFocusList</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fFocusList"></a></i>
 <!--TAB6-->          <a href="./TGMrbLofKeyBindings.html">TGMrbLofKeyBindings</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:fKeyBindings">fKeyBindings</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fKeyBindings">key bindings</a></i>
 
 <!--TAB4-->    <b>public:</b><br>
+<!--TAB6-->      static const <a href="./DGFUntrigTracePanel.html#DGFUntrigTracePanel:EDGFUntrigTraceActionId">DGFUntrigTracePanel::EDGFUntrigTraceActionId</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:kDGFUntrigTraceXwait">kDGFUntrigTraceXwait</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFUntrigTraceXwait"></a></i>
 <!--TAB6-->      static const <a href="./DGFUntrigTracePanel.html#DGFUntrigTracePanel:EDGFUntrigTraceActionId">DGFUntrigTracePanel::EDGFUntrigTraceActionId</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:kDGFUntrigTraceStart">kDGFUntrigTraceStart</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFUntrigTraceStart"></a></i>
 <!--TAB6-->      static const <a href="./DGFUntrigTracePanel.html#DGFUntrigTracePanel:EDGFUntrigTraceActionId">DGFUntrigTracePanel::EDGFUntrigTraceActionId</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:kDGFUntrigTraceClose">kDGFUntrigTraceClose</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kDGFUntrigTraceClose"></a></i>
 <!--TAB6-->      static const <a href="./DGFUntrigTracePanel.html#DGFUntrigTracePanel:EDGFUntrigTraceActionId">DGFUntrigTracePanel::EDGFUntrigTraceActionId</a> <!--TAB--><!--BOLD--><a name="DGFUntrigTracePanel:kDGFUntrigTraceSelectAll">kDGFUntrigTraceSelectAll</a><!--PLAIN-->     <!--TAB--><i><a name="Title:kDGFUntrigTraceSelectAll"></a></i>
@@ -155,7 +161,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:54:05 2002
+Last update: Thu Dec  5 14:05:02 2002
 <br>
 <address>
 <hr>

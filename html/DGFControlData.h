@@ -48,7 +48,6 @@ class DGFControlData : public TNamed {
 	friend class DGFUntrigTracePanel;
 	friend class DGFOffsetsPanel;
 	friend class DGFMcaDisplayPanel;
-	friend class DGFEditModCSRAPanel;
 	friend class DGFEditModICSRPanel;
 	friend class DGFEditChanCSRAPanel;
 	friend class DGFEditCoincPatternPanel;
@@ -65,7 +64,7 @@ class DGFControlData : public TNamed {
 								kDGFOfflineMode			= BIT(3),
 								kDGFSimulStartStop		= BIT(4),
 								kDGFSyncClocks		 	= BIT(5),
-								kDGFNewCode				= BIT(6)
+								kDGFIndivSwitchBusTerm	= BIT(6)
 							};
 		
 	public:
@@ -123,8 +122,8 @@ class DGFControlData : public TNamed {
 		inline HistPresent * GetHistPresent() { return(fHistPresent); };
 		
 		inline Bool_t IsOffline() { return((fStatus & kDGFOfflineMode) != 0); };
-
 		inline Bool_t IsVerbose() { return((fStatus & DGFControlData::kDGFVerboseMode) != 0); };
+		inline Bool_t IsDebug() { return((fStatus & DGFControlData::kDGFDebugMode) != 0); };
 		
 		inline const Char_t * NormalFont() { return(fNormalFont.Data()); };
 		inline const Char_t * BoldFont() { return(fBoldFont.Data()); };
@@ -137,6 +136,7 @@ class DGFControlData : public TNamed {
 		
 		const Char_t * GetResource(TString & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
 		Int_t GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
+		Bool_t GetResource(Bool_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
 	
 	protected:
 		TList fHeap;								//!
@@ -161,6 +161,10 @@ class DGFControlData : public TNamed {
 
 		Int_t fSelectedModule;						// index of module currently selected
 		Int_t fSelectedChannel;						// index of channel currently selected
+
+		Bool_t fSimulStartStop;						// kTRUE if to start/stop simultaneously
+		Bool_t fSyncClocks;							// kTRUE if clocks have to be synchronized
+		Bool_t fIndivSwitchBusTerm;				// kTRUE if switchbus should be terminated individually
 
 		TString fLoadPath;							// where to load DSP/FPGA code from
 		TString fDSPCodeFile;						// ... DSP code

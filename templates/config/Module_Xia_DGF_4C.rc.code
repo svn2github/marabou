@@ -7,8 +7,6 @@
 %NUM%$resource.Module.$modNo.MaxEvents:		$maxEvents
 %NUM%$resource.Module.$modNo.IsActive:	 	$isActive
 %NUM%$resource.Module.$modNo.SwitchBusTerm:	$switchBusTerm
-%NUM%$resource.Module.$modNo.SynchWait: 	$synchWait
-%NUM%$resource.Module.$modNo.InSynch:	 	$inSynch
 %NAM%$resource.Module.$moduleNameUC.ClusterSerial:	$clusterSerial
 %NAM%$resource.Module.$moduleNameUC.ClusterColor:	$clusterColor
 %NAM%$resource.Module.$moduleNameUC.ClusterSegments:	$clusterSegments
@@ -17,7 +15,5 @@
 %NAM%$resource.Module.$moduleNameUC.MaxEvents:		$maxEvents
 %NAM%$resource.Module.$moduleNameUC.IsActive:		$isActive
 %NAM%$resource.Module.$moduleNameUC.SwitchBusTerm:	$switchBusTerm
-%NAM%$resource.Module.$moduleNameUC.SynchWait:		$synchWait
-%NAM%$resource.Module.$moduleNameUC.InSynch:		$inSynch
 %%EndOfCode%%
 %%MODULE_DATA%%

@@ -64,8 +64,8 @@
 
 <!--TAB4-->    <b>protected:</b><br>
 <!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fFd">fFd</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fFd">i/o channel id from open(2)</a></i>
-<!--TAB6-->                           <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fOldTIO">fOldTIO</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fOldTIO">old settings will be saved here</a></i>
-<!--TAB6-->                           <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fNewTIO">fNewTIO</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNewTIO">new settings</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fOldTIO">fOldTIO</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fOldTIO">! old settings will be saved here</a></i>
+<!--TAB6-->                           <a href="ListOfTypes.html#void">void</a>* <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fNewTIO">fNewTIO</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fNewTIO">! new settings</a></i>
 <!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fBaudRate">fBaudRate</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fBaudRate">baud rate</a></i>
 <!--TAB6-->                          <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fUseRtsCts">fUseRtsCts</a><!--PLAIN-->         <!--TAB--><i><a name="Title:fUseRtsCts">kTRUE if RTS/CTS to be used</a></i>
 <!--TAB6-->                           <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbSerialComm:fNofDataBits">fNofDataBits</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fNofDataBits">number of data bits</a></i>
@@ -86,9 +86,6 @@
 <!--TAB6-->      static const <a href="./TMrbSerialComm.html#TMrbSerialComm:EMrbParity">TMrbSerialComm::EMrbParity</a> <!--TAB--><!--BOLD--><a name="TMrbSerialComm:kMrbParityEven">kMrbParityEven</a><!--PLAIN-->  <!--TAB--><i><a name="Title:kMrbParityEven"></a></i>
 </pre>
 <!--END-->
-<br><hr>
-<!--SEE ALSO--><h2>See also</h2><dl><dd>
-<a href="./TPolControl.html">TPolControl</a></dl>
 <hr>
 <!--DESCRIPTION--><h2><a name="TMrbSerialComm:description">Class Description</a></h2>
 <pre>
@@ -135,7 +132,7 @@
 
 </pre><hr>
 <!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbSerialComm:Setup" href="src/TMrbSerialComm.cxx.html#TMrbSerialComm:Setup">Setup</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> BaudRate, <a href="ListOfTypes.html#Int_t">Int_t</a> NofDataBits, EMrbParity Parity, <a href="ListOfTypes.html#Int_t">Int_t</a> NofStopBits,
-																<a href="ListOfTypes.html#Bool_t">Bool_t</a> UseRtsCts = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> IgnoreCR) <br>
+																<a href="ListOfTypes.html#Bool_t">Bool_t</a> UseRtsCts, <a href="ListOfTypes.html#Bool_t">Bool_t</a> IgnoreCR) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbSerialComm.html#TMrbSerialComm:Setup">TMrbSerialComm::Setup</a>
@@ -254,7 +251,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:57:26 2002
+Last update: Wed Feb 12 14:36:10 2003
 <br>
 <address>
 <hr>

@@ -492,50 +492,50 @@ TObjString * TMrbTemplate::TestIfInCodeSegment(TObjString * Code, Bool_t & InSeg
 	Int_t np1, np2;
 
 	while (Code) {
-		lineOfCode = Code->String();
-		if (lineOfCode.Index("%%Begin(", 0) == 0) {
-			isBegin = kTRUE;
-			np1 = sizeof("%%Begin(") - 1;
-		} else if (lineOfCode.Index("%%End(", 0) == 0) {
-			isBegin = kFALSE;
-			np1 = sizeof("%%End(") - 1;
-		} else {
-			ErrorFlag = kFALSE;
-			return(Code);
-		}
+	lineOfCode = Code->String();
+	if (lineOfCode.Index("%%Begin(", 0) == 0) {
+		isBegin = kTRUE;
+		np1 = sizeof("%%Begin(") - 1;
+	} else if (lineOfCode.Index("%%End(", 0) == 0) {
+		isBegin = kFALSE;
+		np1 = sizeof("%%End(") - 1;
+	} else {
+		ErrorFlag = kFALSE;
+		return(Code);
+	}
 
-		np2 = lineOfCode.Index(")%%", 0);
-		if (np2 == -1 || np2 <= np1) {
+	np2 = lineOfCode.Index(")%%", 0);
+	if (np2 == -1 || np2 <= np1) {
+		Label = lineOfCode;
+		ErrorFlag = kTRUE;
+		return(Code);
+	}
+	lb = "%";
+	lb += lineOfCode(np1, np2 - np1);
+	lb += "%";
+	if (isBegin) {
+		if (InSegmentFlag) {
 			Label = lineOfCode;
 			ErrorFlag = kTRUE;
 			return(Code);
 		}
-		lb = "%";
-		lb += lineOfCode(np1, np2 - np1);
-		lb += "%";
-		if (isBegin) {
-			if (InSegmentFlag) {
-				Label = lineOfCode;
-				ErrorFlag = kTRUE;
-				return(Code);
-			}
-			Label = lb;
-			InSegmentFlag = kTRUE;
-			Code = (TObjString *) fCodeBuffer.After((TObject *) Code);
-			if (Code == NULL) {
-				Label = lineOfCode;
-				ErrorFlag = kTRUE;
-			}
-		} else {
-			if (!InSegmentFlag || lb.CompareTo(Label.Data()) != 0) {
-				Label = lineOfCode;
-				ErrorFlag = kTRUE;
-				return(Code);
-			}
-			InSegmentFlag = kFALSE;
-			Code = (TObjString *) fCodeBuffer.After((TObject *) Code);
-			ErrorFlag = kFALSE;
+		Label = lb;
+		InSegmentFlag = kTRUE;
+		Code = (TObjString *) fCodeBuffer.After((TObject *) Code);
+		if (Code == NULL) {
+			Label = lineOfCode;
+			ErrorFlag = kTRUE;
 		}
+	} else {
+		if (!InSegmentFlag || lb.CompareTo(Label.Data()) != 0) {
+			Label = lineOfCode;
+			ErrorFlag = kTRUE;
+			return(Code);
+		}
+		InSegmentFlag = kFALSE;
+		Code = (TObjString *) fCodeBuffer.After((TObject *) Code);
+		ErrorFlag = kFALSE;
+	}
 	}
 	return(Code);
 }

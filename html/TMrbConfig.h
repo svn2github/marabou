@@ -337,7 +337,8 @@ class TMrbConfig : public TNamed {
 
 		enum EMrbCrateType  	{	kCrateUnused		=	0,			// crate types
 									kCrateCamac 		=	BIT(0),
-									kCrateVME			=	BIT(1)
+									kCrateVME			=	BIT(1),
+									kCrateAny			=	kCrateCamac | kCrateVME
 								};
 
 		enum EMrbControllerType {	kControllerUnused	=	0,			// controller types (camac)
@@ -388,6 +389,8 @@ class TMrbConfig : public TNamed {
 									kModuleLeCroy4432		 =	kManufactLeCroy + 18,
 									kModuleLeCroy4448		 =	kManufactLeCroy + 19,
 									kModuleKinetics3655		 =	kManufactKinetics + 20,
+									kModuleCaenV775 		=	kManufactCaen + 21,
+									kModuleCaenV820 		=	kManufactCaen + 22,
 									kModuleUserDefined	 	=	kManufactOther,
 									kModuleSoftModule	 	=	kManufactOther + 1
 								};
@@ -578,8 +581,8 @@ class TMrbConfig : public TNamed {
 		inline void SetCrateType(Int_t Crate, EMrbCrateType CrateType) { fCrateTable[Crate] = CrateType; };
 		inline EMrbCrateType GetCrateType(Int_t Crate) { return((EMrbCrateType) fCrateTable[Crate]); };
 		Int_t FindCrate(Int_t After = -1);												// find next crate
-		Int_t GetNofCrates();															// return number of crates
-		UInt_t GetCratePattern();														// return crate numbers as bit pattern
+		Int_t GetNofCrates(EMrbCrateType CrateType = kCrateAny);															// return number of crates
+		UInt_t GetCratePattern(EMrbCrateType CrateType = kCrateAny);														// return crate numbers as bit pattern
 		
 		Bool_t SetControllerType(Int_t Crate, const Char_t * Type);
 		Bool_t SetControllerType(const Char_t * Crate, const Char_t * Type);

@@ -271,12 +271,12 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
 
 HistPresent::~HistPresent()
 {
+   cout<< "enter HistPresents dtor" <<endl;
    SaveOptions();
    CloseAllCanvases();
    gDirectory->GetList()->Remove(this);
    gROOT->GetListOfCleanups()->Remove(this);
    if (cHPr )delete cHPr;
-   cout<< "HistPresents dtor called" <<endl;
 };
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
@@ -1221,7 +1221,7 @@ void HistPresent::ShowTree(const char* fname, const char* tname, const char* bp)
       }
    }
    fRootFile->Close();
-   CommandPanel("TreeList", fCmdLine, 245, ycanvas);
+   CommandPanel("TreeList", fCmdLine, 245, ycanvas, this);
    ycanvas += 50;
    if (ycanvas >= 500) ycanvas=5;
    fCmdLine->Delete(); 
@@ -1570,22 +1570,12 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
    }
 
    gDirectory=gROOT;
-/*
-   if (nent==1) {
-      TCanvas *tempc=(TCanvas*)gROOT->FindObject("ctemp");
-      if (tempc)delete tempc;
-   }
-   if (nent==2)TCanvas *tempc=new TCanvas("ctemp","ctemp",50,50);
-*/
    if (nent==3) new TCanvas("ctemp","ctemp",800,800);
 
    if (fRootFile) fRootFile->Close();
    fRootFile=new TFile(fname);
-//  fRootFile->ls();
    TTree *tree = (TTree*)fRootFile->Get(tname);
-//   cout << cmd << endl;
-//   Int_t entries = tree->GetEntries();
-//  no histgramm defined yet
+
    gDirectory=gROOT;
    Double_t * nbin = new Double_t[nent];
    Double_t * vmin = new Double_t[nent];
@@ -1610,17 +1600,6 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
          rcfile.close();
       }
       env = new TEnv("ntuplerc");
-/*
-      Double_t * nbin = new Double_t[nent];
-      Double_t * vmin = new Double_t[nent];
-      Double_t * vmax = new Double_t[nent];
-     
-      for(Int_t i = 0; i < nent; i++) {
-         vmin[i] = tree->GetMinimum(lname[i]);
-         vmax[i] = tree->GetMaximum(lname[i]);
-         nbin[i] = 100;
-      }
-*/
 //     look if at least one of nbin, min max is defined;
       ok = kFALSE;
       if (env) {
@@ -1650,7 +1629,6 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
       }
    }
    if (!ok) {
-//      TString title("Set axis ranges");
       TOrdCollection *row_lab = new TOrdCollection(); 
       TOrdCollection *col_lab = new TOrdCollection();
       col_lab->Add(new TObjString("Nbins"));
@@ -1659,7 +1637,6 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
       row_lab->Add(new TObjString(leaf0.Data()));
       if (nent > 1 ) row_lab->Add(new TObjString(leaf1.Data()));
       if (nent == 3) row_lab->Add(new TObjString(leaf2.Data()));
-//      Double_t *xyvals = new Double_t[3*nent];
       TArrayD xyvals(3*nent);
       Int_t p = 0;
       for(Int_t i = 0; i < nent; i++) { xyvals[p] = nbin[i]; p++;}
@@ -1700,7 +1677,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
          }
       }
    }
-/*
+
    if (nent==1) TH1F *h1 = new TH1F(hname.Data(),hname.Data(),
                                (Int_t)nbin[0],vmin[0], vmax[0]); 
    if (nent==2) TH2F *h2 = new TH2F(hname.Data(),hname.Data(),
@@ -1710,7 +1687,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
                               (Int_t)nbin[0],vmin[0], vmax[0], 
                               (Int_t)nbin[1],vmin[1], vmax[1], 
                               (Int_t)nbin[2],vmin[2], vmax[2]); 
-*/
+
    delete [] vmin; delete [] vmax; delete [] nbin;
    if (env) delete env;
 
@@ -1761,7 +1738,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* tname,
          if (nent==2) hist->GetYaxis()->SetTitle(lname[1]);
          ShowHist(hist);
       } else {
-//         hist->Draw();
+         hist->Draw();
       }
    } else WarnBox("No hist");    
 }
@@ -2175,7 +2152,7 @@ void HistPresent::RebinHist()
 //________________________________________________________________________________________
 // Rebin histograms 
   
-TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl = 0) 
+TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl) 
 {
    TList * hlist;
    if (hl) hlist = hl;

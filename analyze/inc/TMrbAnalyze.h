@@ -350,7 +350,7 @@ class TUsrHitBuffer : public TObject {
 
 	public:
 		TUsrHitBuffer() {};
-		TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0, Int_t Offset = 0);		// ctor
+		TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0, UInt_t Offset = 0);		// ctor
 		~TUsrHitBuffer() {};										// default dtor
 
 		void Reset();										// reset hit list
@@ -368,8 +368,8 @@ class TUsrHitBuffer : public TObject {
 		inline Int_t GetNofEntries() { return(fNofEntries); };
 		inline Int_t GetNofHits() { return(fNofHits); };
 		
-		inline void SetOffset(Int_t Offset) { fOffset = Offset; };
-		inline Int_t GetOffset() { return(fOffset); };
+		inline void SetOffset(UInt_t Offset) { fOffset = Offset; };
+		inline UInt_t GetOffset() { return(fOffset); };
 
 		inline void SetHighWater(Int_t HighWater) { fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater; };
 		inline Int_t GetHighWater() { return(fHighWater); };
@@ -378,7 +378,7 @@ class TUsrHitBuffer : public TObject {
 		TUsrHit * FindHit(TUsrHit & Hit, TUsrHit * After = NULL);				// search for a given hit
 		TUsrHit * At(Int_t Index) { return (TUsrHit *) fHits->At(Index); }; 	// return hit at given index
 		
-		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };			// sort entries by time
+		inline void Sort(Int_t UpTo = kMaxInt) { fHits->Sort(UpTo); };		// sort entries by time
 
 		inline TClonesArray * GetCA() { return(fHits); };
 
@@ -389,7 +389,7 @@ class TUsrHitBuffer : public TObject {
 		TString fBufName;						// buffer name
 		Int_t fNofEntries;						// max number of entries
 		Int_t fNofHits; 						// current number of hits
-		Int_t fOffset;							// time stamp offset
+		UInt_t fOffset;							// time stamp offset
 		Int_t fHighWater;						// high water margin
 		TClonesArray * fHits;					//-> array containing hit data
 			

@@ -78,11 +78,11 @@ class TMrbDGF : public TNamed {
 
 		// temp param save/restore
 		enum EMrbDGFSaveIdx 	{	kSaveTrace,
-									kSaveTraceAsIs,
-									kSaveUntrigTrace,
-									kSaveDacRamp,
-									kSaveTaufit
-								};
+										kSaveUntrigTrace,
+										kSaveDacRamp,
+										kSaveTaufit,
+										kSaveAccuHist
+									};
 
 	public:
 		TMrbDGF(	const Char_t * DgfName = "DGF-4C") : TNamed(DgfName, "Xia DGF-4C") {	// default ctor
@@ -110,13 +110,13 @@ class TMrbDGF : public TNamed {
 		Bool_t FPGACodeLoaded(TMrbDGFData::EMrbFPGAType FPGAType);		// test if download ok
 		Bool_t FPGACodeLoaded(const Char_t * FPGAType);
 
-		Bool_t SetSwitchBusDefault();									// set switch bus register
+		Bool_t SetSwitchBusDefault(Bool_t IndiFlag = kFALSE);			// set switch bus register
 		Bool_t SetSwitchBus(UInt_t Bits = 0, TMrbDGF::EMrbBitOp BitOp = kBitSet);
 		Bool_t SetSwitchBus(const Char_t * DSPTrigger, const Char_t * FastTrigger = NULL);
 		UInt_t GetSwitchBus(); // get
 
 		// DSP section
-		Bool_t DownloadDSPCode();										// download code to DSP
+		Bool_t DownloadDSPCode(Int_t Retry = 3, Bool_t TriedOnce = kFALSE);	// download code to DSP
 		Bool_t UploadDSPCode(TArrayS & DSPCode);						// load code back from DSP to memory
 		inline Bool_t DSPCodeLoaded() { return((fStatusM & TMrbDGF::kDSPCodeLoaded) != 0); };	// test if download ok
 		void ClearRegisters();											// initialize main dsp registers										
@@ -226,7 +226,7 @@ class TMrbDGF : public TNamed {
 		Int_t SetGain(Int_t Channel, Double_t Gain, Bool_t UpdateDSP = kTRUE); 			// set gain
 		Double_t GetGain(Int_t Channel, Bool_t ReadFromDSP = kTRUE);					// get gain
 
-		Int_t SetOffset(Int_t Channel, Double_t Offset, Bool_t UpdateDSP=kFALSE);		// set offset
+		Int_t SetOffset(Int_t Channel, Double_t Offset, Bool_t UpdateDSP=kTRUE);		// set offset
 		Double_t GetOffset(Int_t Channel, Bool_t ReadFromDSP = kTRUE);					// get offset
 
 		Bool_t UpdateSlowFilter(Int_t Channel, Bool_t UpdateDSP = kTRUE);				// update slow filter
@@ -257,21 +257,16 @@ class TMrbDGF : public TNamed {
 		Bool_t SetTau(Int_t Channel, Double_t Tau, Bool_t UpdateDSP = kTRUE);					// set tau
 		Double_t GetTau(Int_t Channel, Bool_t ReadFromDSP = kTRUE); 							// get tau value													// get tau value
 
-		Bool_t SetBinning(Int_t Channel, Int_t BsWeight, Int_t EnBin, Int_t BsBin, Bool_t UpdateDSP = kTRUE);	// set binning
+		Bool_t SetBinning(Int_t Channel, Int_t EnBin, Bool_t UpdateDSP = kTRUE);	// set binning
 
 		// data acquisition
-		Int_t GetTrace( UInt_t TriggerMask, const Char_t * Polarity, UInt_t GoodChannels,		// take a trace
-						Int_t NofTraces, Int_t TraceLength, TMrbDGFEventBuffer & Data,
-						Int_t XwaitStates = 0);
-		Int_t GetTrace( Int_t TraceLength, TMrbDGFEventBuffer & Data, Int_t XwaitStates = 0);
-			Bool_t GetTrace_Init(UInt_t TriggerMask, const Char_t * Polarity, UInt_t GoodChannels,
-									Int_t NofTraces, Int_t TraceLength, Int_t XwaitStates = 0);
-			Bool_t GetTrace_Init(Int_t TraceLength, Int_t XwaitStates = 0);
+		Int_t GetTrace(TMrbDGFEventBuffer & Data, Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates = 0);
+			Bool_t GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t XwaitStates = 0);
 			Bool_t GetTrace_Start();
 			Int_t GetTrace_Stop(TMrbDGFEventBuffer & Data, Int_t SecsToWait = 5);
 
-		Int_t GetUntrigTrace(TArrayI & Buffer, Int_t XwaitStates = 0);			// take untriggered traces
-			Bool_t GetUntrigTrace_Init(TArrayI & Buffer, Int_t XwaitStates = 0);
+		Int_t GetUntrigTrace(TArrayI & Buffer, UInt_t ChannelPattern, Int_t XwaitStates = 0);			// take untriggered traces
+			Bool_t GetUntrigTrace_Init(TArrayI & Buffer, UInt_t ChannelPattern, Int_t XwaitStates = 0);
 			Bool_t GetUntrigTrace_Start(Int_t Channel);
 			Int_t GetUntrigTrace_Stop(Int_t Channel, TArrayI & Buffer, Int_t SecsToWait = 5);
 
@@ -281,8 +276,14 @@ class TMrbDGF : public TNamed {
 			Int_t GetDacRamp_Stop(TArrayI & Buffer, Int_t SecsToWait = 10);
 
  		Int_t ReadEventBuffer(TMrbDGFEventBuffer & Buffer); 				// get data from event buffer
-		Bool_t AccuHistograms(Int_t Time, const Char_t * Scale = "secs", Bool_t AccuBL = kTRUE);	// accumulate histogram
-		Int_t ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer); 							// get mca data
+
+		Bool_t AccuHistograms(Int_t Time, const Char_t * Scale = "secs",
+													UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);	// accumulate histogram
+			Bool_t AccuHist_Init(UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);
+			Bool_t AccuHist_Start();
+			Bool_t AccuHist_Stop(Int_t SecsToWait = 10);
+
+		Int_t ReadHistogramBuffer(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern); 	// get mca data
 
 		// tau fit
 		Double_t TauFit(Int_t Channel, Int_t NofTraces, Int_t TraceLength, Double_t A0, Double_t A1,
@@ -315,8 +316,7 @@ class TMrbDGF : public TNamed {
 		inline TMrbNamedX * GetClusterID() { return(&fClusterID); };
 		const Char_t * GetClusterInfo(TMrbString & Info);
 		
-		inline TMrbNamedX * GetRevision() { return(&fRevision); }; 					// module revision
-		inline void SetRevision(Int_t ManufactIndex = 0);
+		TMrbNamedX * GetRevision(Bool_t Renew = kFALSE); 							// module revision
 
 		inline void SetModuleNumber(Int_t ModNum) { fModNum = ModNum; };			// module number
 		inline Int_t GetModuleNumber() { return(fModNum); };
@@ -369,6 +369,8 @@ class TMrbDGF : public TNamed {
 
 		Int_t ReadHistogramBufferPage();
 
+		void SetRevision(Int_t ManufactIndex = TMrbDGFData::kRevUnknown);
+
 	public:
 		TMrbLofNamedX fLofDGFStatusMBits;								// soft status bits (module)
 		TMrbLofNamedX fLofDGFSwitchBusModes;							// switch bus modes
@@ -391,8 +393,6 @@ class TMrbDGF : public TNamed {
 
 		TArrayS fParams;												// DSP's parameter section
 		
-		UInt_t fSwitchBus;												// switchbus value
-		
 		TH1F * fTauDistr;												//! tau distribution
 		TF1 * fGaussian;												//! gaussian fit
 
@@ -402,6 +402,7 @@ class TMrbDGF : public TNamed {
 		TArrayS fTmpParUntrigTrace;
 		TArrayS fTmpParDacRamp;
 		TArrayS fTmpParTaufit;
+		TArrayS fTmpParAccuHist;
 
 	ClassDef(TMrbDGF, 1)		// [XIA DGF-4C] Base class for DGF modules
 };

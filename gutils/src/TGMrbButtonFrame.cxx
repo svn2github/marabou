@@ -419,7 +419,7 @@ void TGMrbButtonFrame::UpdateState(UInt_t Pattern) {
 			while (namedX) {
 				button = (TGButton *) namedX->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
-					if (namedX->GetIndex() == Pattern) {
+					if ((UInt_t) namedX->GetIndex() == Pattern) {
 						button->SetState(kButtonDown);
 					} else if (namedX->GetIndex() & pat) {
 						button->SetState(kButtonDown);

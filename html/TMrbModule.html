@@ -68,6 +68,7 @@
 <!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Help">Help</a><!--PLAIN-->()
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:HistosToBeAllocated">HistosToBeAllocated</a><!--PLAIN-->()
 <!--TAB6-->            virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbModule:IsA">IsA</a><!--PLAIN-->() const
+<!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsActive">IsActive</a><!--PLAIN-->()
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsCamac">IsCamac</a><!--PLAIN-->()
 <!--TAB6-->             virtual <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsRaw">IsRaw</a><!--PLAIN-->()
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:IsVME">IsVME</a><!--PLAIN-->()
@@ -83,6 +84,7 @@
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* RegName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:Set">Set</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> RegIndex, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Value, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel = -1)
+<!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetActive">SetActive</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ActiveFlag = kTRUE)
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetBinSize">SetBinSize</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> BinSize)
 <!--TAB6-->                     <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetBlockReadout">SetBlockReadout</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbModule:SetType">SetType</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ModuleType, <a href="ListOfTypes.html#Bool_t">Bool_t</a> OrFlag = kTRUE)
@@ -100,6 +102,7 @@
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fSerial">fSerial</a><!--PLAIN-->               <!--TAB--><i><a name="Title:fSerial">unique serial number</a></i>
 <!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:UtilitiesLoaded">UtilitiesLoaded</a><!--PLAIN-->       <!--TAB--><i><a name="Title:UtilitiesLoaded">kTRUE if some utility procedures already loaded</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fNofChannels">fNofChannels</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fNofChannels">number of channels available</a></i>
+<!--TAB6-->             <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fIsActive">fIsActive</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fIsActive">kTRUE if module active</a></i>
 <!--TAB6-->        <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a name="TMrbModule:fDataType">fDataType</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fDataType">data type</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fNofShortsPerChannel">fNofShortsPerChannel</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fNofShortsPerChannel">number of 16 bit words per channel</a></i>
 <!--TAB6-->              <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a name="TMrbModule:fCrate">fCrate</a><!--PLAIN-->                <!--TAB--><i><a name="Title:fCrate">crate number</a></i>
@@ -370,6 +373,8 @@
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:AllocateHistograms" href="TMrbModule.h">AllocateHistograms</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HistosToBeAllocated" href="TMrbModule.h">HistosToBeAllocated</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:ConvertToInt" href="TMrbModule.h">ConvertToInt</a>()
+<!--INLINE FUNCTION--><!--TAB6-->                  <a href="ListOfTypes.html#void">void</a> <a name="TMrbModule:SetActive" href="TMrbModule.h">SetActive</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ActiveFlag = kTRUE)
+<!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:IsActive" href="TMrbModule.h">IsActive</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                <a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbModule:HasBlockReadout" href="TMrbModule.h">HasBlockReadout</a>()
 <!--INLINE FUNCTION--><!--TAB6-->        <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <a name="TMrbModule:GetLofRegisters" href="TMrbModule.h">GetLofRegisters</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbModule:GetRange" href="TMrbModule.h">GetRange</a>()
@@ -416,7 +421,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:57:08 2002
+Last update: Wed Feb 12 14:35:53 2003
 <br>
 <address>
 <hr>

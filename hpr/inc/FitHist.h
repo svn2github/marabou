@@ -76,6 +76,7 @@ private:
    Int_t fLogy;
    Int_t fLogz;
    Bool_t fSelInside;
+   Int_t fUserContourLevels;
    Float_t fMax, fMin, fXmax, fXmin, fYmax, fYmin;
    HTRootCanvas *mycanvas;
    TPaveText *datebox;
@@ -98,6 +99,10 @@ public:
    void SaveDefaults(Bool_t recalculate = kTRUE);
    void RestoreDefaults();
    void DisplayHist(TH1*, Int_t, Int_t, Int_t, Int_t);  // display hists
+   void DrawHist();                      // 
+   void Draw1Dim();                      // 
+   void Draw2Dim();                      // 
+   void DrawColors();                      // 
    const Char_t * GetCanvasName(){return fCname.Data();};             // 
    HTRootCanvas* GetMyCanvas(){return mycanvas;};  
    HTCanvas* GetCanvas(){return cHist;};  
@@ -137,6 +142,8 @@ public:
    void SetLogx(Int_t state) {fLogx = state; cHist->SetLogx(state);};
    void SetLogy(Int_t state) {fLogy = state; cHist->SetLogy(state);};
    void SetLogz(Int_t state);
+   void SetUserContours();               // 
+   void ClearUserContours();               // 
 
    Int_t GetLogx() {return fLogx;};
    Int_t GetLogy() {return fLogy;};
@@ -170,8 +177,6 @@ public:
    void DrawCutName();                      // 
    void MarksToCut();               // 
    void AddCutsToHist();
-   void Draw1Dim();                      // 
-   void Draw2Dim();                      // 
    void DrawDateBox(TH1*, Float_t);                      // 
    Bool_t UseCut(TMrbWindow2D * const);         // 
    Bool_t UseWindow(TMrbWindow * const);         // 
@@ -210,7 +215,7 @@ public:
    void WarnBox(const char *);
    void PrintCalib();
    void ClearCalib(){fPeaks->Clear();};
-   void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE;};
+   void SetDeleteCalFlag(){fDeleteCalFlag = kTRUE; SaveDefaults(); DrawHist(); };
    Bool_t Calibrate();
    void SetCanvasIsDeleted(){fCanvasIsAlive = kFALSE;};
    void SetSelectedPad(){cHist->cd();};

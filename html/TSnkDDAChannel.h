@@ -66,6 +66,17 @@ class TSnkDDAChannel : public TObject {
 		inline Int_t GetNofPixels() 							{ return(fNofPixels); };
 		inline Int_t GetNofDataPoints() 					 	{ return(fNofDataPoints); };
 
+		inline void SetVoltage(Double_t Voltage) { fVoltage = Voltage; };
+		inline void SetStepWidth(Double_t StepWidth) { fStepWidth = StepWidth; };
+		inline void SetRange(Double_t Range) { fRange = Range; };
+		inline void SetStopPos(Double_t StopPos, Int_t Pos0) { fStopPos = StopPos; fPos0 = Pos0; };
+
+		inline Double_t GetVoltage() { return(fVoltage); };
+		inline Double_t GetStepWidth() { return(fStepWidth); };
+		inline Double_t GetRange() { return(fRange); };
+		inline Double_t GetStopPos() { return(fStopPos); };
+		inline Int_t GetPos0() { return(fPos0); };
+
 		void Print();					// print settings
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TSnkDDAChannel.html&"); };
@@ -73,17 +84,25 @@ class TSnkDDAChannel : public TObject {
 	protected:
 		TObject * fParent;				// link to parent DDA0816
 
-		Int_t fChannel;				// dac channel
+		Int_t fChannel;					// dac channel
 		TString fDevice;				// device name (/dev/dda08_N)
 		TString fAxis;					// axis name
 		Int_t fSoftScale;				// soft scale
-		Int_t fOffset; 	 			// offset
+		Int_t fOffset; 	 				// offset
 		Int_t fAmplitude;				// amplitude
 		Int_t fIncrement;				// increment
 		ESnkScanProfile fScanProfile; 	// scan profile
 		Int_t fNofPixels;				// scan size
 		Int_t fNofDataPoints;			// number of curve data points
 		TArrayI fCurveData; 			// curve buffer
+
+										// calibration steps <-> distance
+		Double_t fVoltage;  			// max voltage [kV]
+		Double_t fStepWidth;			// step width [um]		
+		Double_t fRange;				// max range [um]		
+
+		Double_t fStopPos;				// stop position
+		Int_t fPos0;					// position 0 (offset)
 
 	ClassDef(TSnkDDAChannel, 1) 	// [SNAKE] Single channel of DAC module DDA0816
 };

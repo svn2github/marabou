@@ -99,7 +99,7 @@ class DGFSaveModuleSettingsPanel : public TGTransientFrame {
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 		
-	ClassDef(DGFSaveModuleSettingsPanel, 0)		// [DGFControl] Restore settings
+	ClassDef(DGFSaveModuleSettingsPanel, 0)		// [DGFControl] Save settings
 };
 
 #endif

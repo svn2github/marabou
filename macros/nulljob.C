@@ -91,7 +91,7 @@ void nulljob(const Char_t * Host = "ppc-0",
 	Bool_t up = kTRUE;
 	UInt_t patt = Pattern;
 	for (;;) {
-		esone->ExecCnaf(Crate, Station, 0, 16, patt);
+		esone->ExecCnaf(Crate, Station, 0, 16, patt, kFALSE);
 		if (patt & 1) up = kTRUE;
 		else if (patt & 0x800000) up = kFALSE;
 		if (up) patt <<= 1; else patt >>= 1;

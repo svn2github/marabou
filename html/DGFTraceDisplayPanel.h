@@ -50,11 +50,13 @@ class DGFTraceDisplayPanel : public TGTransientFrame {
 	public:
 
 		// cmd ids to dispatch over X events in this panel
-		enum EDGFTraceDisplayActionId 	{	kDGFTraceDisplayStart,
-											kDGFTraceDisplayClose,
-											kDGFTraceDisplaySelectAll,
-											kDGFTraceDisplaySelectNone,
-											kDGFTraceDisplaySelectColumn
+		enum EDGFTraceDisplayActionId 	{
+														kDGFTraceDisplayXwait,
+														kDGFTraceDisplayStart,
+														kDGFTraceDisplayClose,
+														kDGFTraceDisplaySelectAll,
+														kDGFTraceDisplaySelectNone,
+														kDGFTraceDisplaySelectColumn
 										};
 				
 		// geometry settings
@@ -80,6 +82,8 @@ class DGFTraceDisplayPanel : public TGTransientFrame {
 
 	protected:
 		Bool_t StartTrace();
+		Bool_t Update(Int_t EntryId);											// update program state on X events
+		void MoveFocus(Int_t EntryId);											// move focus to next entry
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -88,17 +92,23 @@ class DGFTraceDisplayPanel : public TGTransientFrame {
 		TGHorizontalFrame * fGroupFrame;
 		TGMrbPictureButtonList * fGroupSelect[kNofModulesPerCluster];
 		TGMrbPictureButtonList * fAllSelect;
+		TGHorizontalFrame * fHFrame;
+		TGGroupFrame * fXFrame;
+		TGMrbLabelEntry * fXwait;							// wait states
+		TGMrbCheckButtonGroup * fSelectChannel;		//	channel
 		TGMrbTextButtonGroup * fActionFrame;
 
 		TMrbLofNamedX fActions;						// text buttons:	actions to be taken
 		
+		TMrbLofNamedX fLofChannels;				//! channel numbers
+
 		TMrbLofNamedX fLofDGFModuleKeys[kNofClusters];
 		
 		TGMrbFocusList fFocusList;
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings
 		
-	ClassDef(DGFTraceDisplayPanel, 0)		// [DGFControl] Untriggered trace
+	ClassDef(DGFTraceDisplayPanel, 0)		// [DGFControl] Collect a trace
 };
 
 #endif

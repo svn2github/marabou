@@ -55,13 +55,14 @@
 <!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Double_t">Double_t</a> d)
 <!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* s)
 <!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="./TMrbString.html">TMrbString</a>&amp; s)
-<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="./TSubString.html">TSubString</a>&amp; s)
+<!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <!--TAB--><!--BOLD--><a href="#TMrbString:operator=">operator=</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TSubString.html">TSubString</a>&amp; s)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ProcessEscapeSequence">ProcessEscapeSequence</a><!--PLAIN-->(<a href="ListOfTypes.html#Char_t">Char_t</a> CharId, <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Replacement)
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ReplaceWhiteSpace">ReplaceWhiteSpace</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a> WhiteSpace =  )
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ResetBase">ResetBase</a><!--PLAIN-->()
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SetBase">SetBase</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Base)
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SetPrecision">SetPrecision</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Precision)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:ShowMembers">ShowMembers</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TMemberInspector.html">TMemberInspector</a>&amp; insp, <a href="ListOfTypes.html#char">char</a>* parent)
-<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Split">Split</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; LofSubStrings, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Separator = ":")
+<!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Split">Split</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a>&amp; LofSubStrings, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Separator = ":", <a href="ListOfTypes.html#Bool_t">Bool_t</a> RemoveWhiteSpace = kFALSE)
 <!--TAB6-->             <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SplitOffDouble">SplitOffDouble</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; IsSigned)
 <!--TAB6-->                <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbString:SplitOffInteger">SplitOffInteger</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; Prefix, <a href="ListOfTypes.html#Bool_t">Bool_t</a>&amp; IsSigned, <a href="ListOfTypes.html#Int_t">Int_t</a> Base = 0)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbString:Streamer">Streamer</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TBuffer.html">TBuffer</a>&amp; b)
@@ -239,7 +240,7 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:Split" href="src/TMrbString.cxx.html#TMrbString:Split">Split</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; LofSubStrings, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Separator) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:Split" href="src/TMrbString.cxx.html#TMrbString:Split">Split</a>(<a href="http://root.cern.ch/root/html/TObjArray.html">TObjArray</a> &amp; LofSubStrings, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Separator, <a href="ListOfTypes.html#Bool_t">Bool_t</a> RemoveWhiteSpace) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbString.html#TMrbString:Split">TMrbString::Split</a>
@@ -250,6 +251,18 @@
  Exceptions:
  Description:    Appends substrings to list.
                  Substrings have to be converted to <a href="http://root.cern.ch/root/html/TObjString.html">TObjString</a> to get stored.
+ Keywords:
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbString:ReplaceWhiteSpace" href="src/TMrbString.cxx.html#TMrbString:ReplaceWhiteSpace">ReplaceWhiteSpace</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a> WhiteSpace) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbString.html#TMrbString:ReplaceWhiteSpace">TMrbString::ReplaceWhiteSpace</a>
+ Purpose:        Replace white spaces
+ Arguments:      <a href="ListOfTypes.html#Char_t">Char_t</a> WhiteSpace    -- white space to be used as replacement
+ Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofChars       -- resulting length
+ Exceptions:
+ Description:    Replaces multiple white spaces (blanks or tabs) with given character
  Keywords:
 
 </pre><hr>
@@ -321,7 +334,7 @@
 <!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="./TMrbString.html">TMrbString</a>&amp; s)
 <!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator+=" href="TMrbString.h">operator+=</a>(const <a href="ListOfTypes.html#Char_t">Char_t</a>* s)
 <!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator+=" href="TMrbString.h">operator+=</a>(const <a href="http://root.cern.ch/root/html/TString.html">TString</a>&amp; s)
-<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="./TSubString.html">TSubString</a>&amp; s)
+<!--INLINE FUNCTION--><!--TAB6-->          <a href="./TMrbString.html">TMrbString</a>&amp; <a name="TMrbString:operator=" href="TMrbString.h">operator=</a>(const <a href="http://root.cern.ch/root/html/TSubString.html">TSubString</a>&amp; s)
 <!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:SetPrecision" href="TMrbString.h">SetPrecision</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Precision)
 <!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:SetBase" href="TMrbString.h">SetBase</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Base)
 <!--INLINE FUNCTION--><!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <a name="TMrbString:ResetBase" href="TMrbString.h">ResetBase</a>()
@@ -340,7 +353,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:57:32 2002
+Last update: Wed Feb 12 14:36:17 2003
 <br>
 <address>
 <hr>

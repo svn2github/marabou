@@ -349,6 +349,58 @@ const Char_t * TMrbEnv::Get(TString & Result, const Char_t * Resource, const Cha
 	return(Result.Data());
 }
 
+const Char_t * TMrbEnv::Get(TMrbNamedX & Result, const Char_t * Resource, const Char_t * Default) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbEnv::Get
+// Purpose:        Read an ascii resource from database
+// Arguments:      TMrbNamedX & Result   -- where to store resulting value
+//                 Char_t * Resource     -- resource name
+//                 Char_t * Default      -- default value
+// Results:        Char_t * Value        -- ascii value (same as Result.Data())
+// Exceptions:
+// Description:    Reads a given resource from database.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString resVal;
+	TMrbString resNum;
+	Int_t intVal;
+	Int_t base;
+
+	fResourceName = fPrefix + Resource;
+
+	resVal = fCurEnv->GetValue(fResourceName, "<undef>");	// read as ascii
+	if (resVal.CompareTo("<undef>") == 0) {
+		if (this->HasDefaults()) {
+			resVal = fDefaultsEnv->GetValue(fResourceName, "<undef>");
+			if (resVal.CompareTo("<undef>") == 0) resVal = Default;
+		} else {
+			resVal = Default;
+		}
+	}
+	resVal.Strip(TString::kBoth);
+	Result.Set(-1, resVal);
+	Int_t idx1 = resVal.Index("(", 0);
+	if (idx1 >= 0) {
+		Int_t idx2 = resVal.Index(")", 0);
+		if (idx2 > idx1 + 1) {
+			resNum = resVal(idx1 + 1, idx2 - idx1 - 1);
+			resNum.Strip(TString::kBoth);
+			base = 10;
+			if (resNum.Index("0b", 0) == 0)			base = 2;
+			else if (resNum.Index("0x", 0) == 0)	base = 16;
+			else if (resNum.Index("0", 0) == 0)		base = 8;
+			if (base != 10) resNum = resNum(2, 1000);
+			resNum.ToInteger(intVal, base);
+			TString rv = resVal(0, idx1);
+			Result.Set(intVal, rv.Data());
+		}
+	}
+
+	return(resVal.Data());
+}
+
 const Char_t * TMrbEnv::GetDefault(TString & Result, const Char_t * Resource, const Char_t * Default) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

@@ -70,7 +70,7 @@
 <!--TAB6-->                                <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetAuthor">GetAuthor</a><!--PLAIN-->()
 <!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetConfigOptions">GetConfigOptions</a><!--PLAIN-->()
 <!--TAB6-->      <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetControllerType">GetControllerType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
-<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetCratePattern">GetCratePattern</a><!--PLAIN-->()
+<!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetCratePattern">GetCratePattern</a><!--PLAIN-->(<a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> CrateType = <a href="./TMrbConfig.html#TMrbConfig:kCrateAny">kCrateAny</a>)
 <!--TAB6-->           <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetCrateType">GetCrateType</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Crate)
 <!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetDeadTimeInterval">GetDeadTimeInterval</a><!--PLAIN-->()
 <!--TAB6-->                            <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetDeadTimeScaler">GetDeadTimeScaler</a><!--PLAIN-->()
@@ -83,7 +83,7 @@
 <!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofSubevents">GetLofSubevents</a><!--PLAIN-->()
 <!--TAB6-->                      <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetLofUserIncludes">GetLofUserIncludes</a><!--PLAIN-->()
 <!--TAB6-->                         <a href="./TMrbLogger.html">TMrbLogger</a>* <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetMessageLogger">GetMessageLogger</a><!--PLAIN-->()
-<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetNofCrates">GetNofCrates</a><!--PLAIN-->()
+<!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetNofCrates">GetNofCrates</a><!--PLAIN-->(<a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> CrateType = <a href="./TMrbConfig.html#TMrbConfig:kCrateAny">kCrateAny</a>)
 <!--TAB6-->                               <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetNofModules">GetNofModules</a><!--PLAIN-->()
 <!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetRcFileOptions">GetRcFileOptions</a><!--PLAIN-->()
 <!--TAB6-->                              <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbConfig:GetReadoutOptions">GetReadoutOptions</a><!--PLAIN-->()
@@ -398,6 +398,7 @@
 <!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateUnused">kCrateUnused</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kCrateUnused"></a></i>
 <!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateCamac">kCrateCamac</a><!--PLAIN-->                    <!--TAB--><i><a name="Title:kCrateCamac"></a></i>
 <!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateVME">kCrateVME</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kCrateVME"></a></i>
+<!--TAB6-->             static const <a href="./TMrbConfig.html#TMrbConfig:EMrbCrateType">TMrbConfig::EMrbCrateType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kCrateAny">kCrateAny</a><!--PLAIN-->                      <!--TAB--><i><a name="Title:kCrateAny"></a></i>
 <!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kControllerUnused">kControllerUnused</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kControllerUnused"></a></i>
 <!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kControllerCBV">kControllerCBV</a><!--PLAIN-->                 <!--TAB--><i><a name="Title:kControllerCBV"></a></i>
 <!--TAB6-->        static const <a href="./TMrbConfig.html#TMrbConfig:EMrbControllerType">TMrbConfig::EMrbControllerType</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kControllerCC32">kControllerCC32</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kControllerCC32"></a></i>
@@ -440,6 +441,8 @@
 <!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleLeCroy4432">kModuleLeCroy4432</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleLeCroy4432"></a></i>
 <!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleLeCroy4448">kModuleLeCroy4448</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleLeCroy4448"></a></i>
 <!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleKinetics3655">kModuleKinetics3655</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kModuleKinetics3655"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleCaenV775">kModuleCaenV775</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleCaenV775"></a></i>
+<!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleCaenV820">kModuleCaenV820</a><!--PLAIN-->                <!--TAB--><i><a name="Title:kModuleCaenV820"></a></i>
 <!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleUserDefined">kModuleUserDefined</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kModuleUserDefined"></a></i>
 <!--TAB6-->              static const <a href="./TMrbConfig.html#TMrbConfig:EMrbModuleID">TMrbConfig::EMrbModuleID</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kModuleSoftModule">kModuleSoftModule</a><!--PLAIN-->              <!--TAB--><i><a name="Title:kModuleSoftModule"></a></i>
 <!--TAB6-->            static const <a href="./TMrbConfig.html#TMrbConfig:EMrbScalerMode">TMrbConfig::EMrbScalerMode</a> <!--TAB--><!--BOLD--><a name="TMrbConfig:kScalerCamac">kScalerCamac</a><!--PLAIN-->                   <!--TAB--><i><a name="Title:kScalerCamac"></a></i>
@@ -653,24 +656,24 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:GetNofCrates" href="src/TMrbConfig.cxx.html#TMrbConfig:GetNofCrates">GetNofCrates</a>() <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbConfig:GetNofCrates" href="src/TMrbConfig.cxx.html#TMrbConfig:GetNofCrates">GetNofCrates</a>(EMrbCrateType CrateType) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbConfig.html#TMrbConfig:GetNofCrates">TMrbConfig::GetNofCrates</a>
  Purpose:        Return number of crates in use
- Arguments:      --
+ Arguments:      EMrbCrateType CrateType -- crate type (camac, vme, any)
  Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofCrates         -- number of crates in use
  Exceptions:
  Description:    Loops thru table of crates and returns number of active crates
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetCratePattern" href="src/TMrbConfig.cxx.html#TMrbConfig:GetCratePattern">GetCratePattern</a>() <br>
+<!--FUNCTION--><a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbConfig:GetCratePattern" href="src/TMrbConfig.cxx.html#TMrbConfig:GetCratePattern">GetCratePattern</a>(EMrbCrateType CrateType) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbConfig.html#TMrbConfig:GetCratePattern">TMrbConfig::GetCratePattern</a>
  Purpose:        Return number of crates as bit pattern
- Arguments:      --
+ Arguments:      EMrbCrateType CrateType     -- crate type (camac, vme, any)
  Results:        <a href="ListOfTypes.html#UInt_t">UInt_t</a> CratePattern         -- bit pattern
  Exceptions:
  Description:    Loops thru table of crates and returns bit pattern of active crates
@@ -1213,7 +1216,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:56:10 2002
+Last update: Wed Feb 12 14:35:13 2003
 <br>
 <address>
 <hr>

@@ -120,6 +120,9 @@ protected:
    Int_t fUseAttributeMacro;
    Int_t fShowAllAsFirst; 
 
+   Int_t fNofColorLevels;
+   Int_t * fPalette;
+
    Int_t fNofGreyLevels;
    Int_t * fGreyPalette;
    Int_t * fGreyPaletteInv;

@@ -70,6 +70,16 @@ class TMrbLofDGFs : public TObjArray {
 		Bool_t WriteTSAR(UInt_t Data);									//		write TSAR (Transfer Start Address Reg)
 		Bool_t WriteWCR(Int_t WordCount); 								//		write WCR (Word Count Reg)
 
+		inline void CopyData(TArrayI & Dest, Short_t * Src, Int_t NofWords) {	// copy back and forth
+			for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Int_t) *Src++;
+		};
+		inline void CopyData(TArrayS & Dest, Int_t * Src, Int_t NofWords) {
+			for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Short_t) *Src++;
+		};
+		inline void CopyData(TArrayI & Dest, UShort_t * Src, Int_t NofWords) {
+			for (Int_t i = 0; i < NofWords; i++) Dest[i] = (Int_t) *Src++;
+		};
+
 	protected:
 		TMrbEsone * fCamac;												//! camac handle via esone rpc
 		TString fCamacHost; 											// host name

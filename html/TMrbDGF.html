@@ -34,6 +34,7 @@
 <!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:CheckTriggerPolarity">CheckTriggerPolarity</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Method)
 <!--TAB6-->       <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadHistogramBufferPage">ReadHistogramBufferPage</a><!--PLAIN-->()
 <!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ResetDGF">ResetDGF</a><!--PLAIN-->()
+<!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetRevision">SetRevision</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ManufactIndex = <a href="./TMrbDGFData.html#TMrbDGFData:kRevUnknown">TMrbDGFData::kRevUnknown</a>)
 <!--TAB6-->        <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetupDGF">SetupDGF</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> LocalData = kFALSE)
 <!--TAB6-->      <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:WritePSA">WritePSA</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Offset)
 
@@ -43,7 +44,10 @@
 <!--TAB6-->                      <a href="./TMrbDGF.html">TMrbDGF</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:TMrbDGF">TMrbDGF</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* DGFName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* HostName, const <a href="ListOfTypes.html#Char_t">Char_t</a>* CamacAddr, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Connect = kTRUE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> Offline = kFALSE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> LocalData = kFALSE)
 <!--TAB6-->                 virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:~TMrbDGF">~TMrbDGF</a><!--PLAIN-->()
 <!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:AbortRun">AbortRun</a><!--PLAIN-->()
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:AccuHistograms">AccuHistograms</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Time, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Scale = "secs", <a href="ListOfTypes.html#Bool_t">Bool_t</a> AccuBL = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:AccuHist_Init">AccuHist_Init</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern = <a href="./TMrbDGFData.html#TMrbDGFData:kChannelPattern">TMrbDGFData::kChannelPattern</a>)
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:AccuHist_Start">AccuHist_Start</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:AccuHist_Stop">AccuHist_Stop</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> SecsToWait = 10)
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:AccuHistograms">AccuHistograms</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Time, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Scale = "secs", <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern = <a href="./TMrbDGFData.html#TMrbDGFData:kChannelPattern">TMrbDGFData::kChannelPattern</a>)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:CalcCoincWait">CalcCoincWait</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                   <a href="./TMrbEsone.html">TMrbEsone</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGF:Camac">Camac</a><!--PLAIN-->()
 <!--TAB6-->               static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGF:Class">Class</a><!--PLAIN-->()
@@ -56,7 +60,7 @@
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:CopyParamMemory">CopyParamMemory</a><!--PLAIN-->(<a href="./TMrbDGF.html">TMrbDGF</a>* Module, <a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:CopyParamMemory">CopyParamMemory</a><!--PLAIN-->(<a href="./TMrbDGF.html">TMrbDGF</a>* Module, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName)
 <!--TAB6-->                 <a href="./TMrbDGFData.html">TMrbDGFData</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGF:Data">Data</a><!--PLAIN-->()
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:DownloadDSPCode">DownloadDSPCode</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:DownloadDSPCode">DownloadDSPCode</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Retry = 3, <a href="ListOfTypes.html#Bool_t">Bool_t</a> TriedOnce = kFALSE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:DownloadFPGACode">DownloadFPGACode</a><!--PLAIN-->(<a href="./TMrbDGFData.html#TMrbDGFData:EMrbFPGAType">TMrbDGFData::EMrbFPGAType</a> FPGAType)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:DownloadFPGACode">DownloadFPGACode</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* FPGAType)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:DSPCodeLoaded">DSPCodeLoaded</a><!--PLAIN-->()
@@ -89,23 +93,21 @@
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetParValue">GetParValue</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetParValue">GetParValue</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                     <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetPeakTime">GetPeakTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
-<!--TAB6-->                  <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetRevision">GetRevision</a><!--PLAIN-->()
+<!--TAB6-->                  <a href="./TMrbNamedX.html">TMrbNamedX</a>* <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetRevision">GetRevision</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Renew = kFALSE)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetStation">GetStation</a><!--PLAIN-->()
 <!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetStatus">GetStatus</a><!--PLAIN-->()
 <!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetSwitchBus">GetSwitchBus</a><!--PLAIN-->()
 <!--TAB6-->                     <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTau">GetTau</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetThreshold">GetThreshold</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
-<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace">GetTrace</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> TriggerMask, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Polarity, <a href="ListOfTypes.html#UInt_t">UInt_t</a> GoodChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraces, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>&amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
-<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace">GetTrace</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>&amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace_Init">GetTrace_Init</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> TriggerMask, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Polarity, <a href="ListOfTypes.html#UInt_t">UInt_t</a> GoodChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraces, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace_Init">GetTrace_Init</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace">GetTrace</a><!--PLAIN-->(<a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>&amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace_Init">GetTrace_Init</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace_Start">GetTrace_Start</a><!--PLAIN-->()
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTrace_Stop">GetTrace_Stop</a><!--PLAIN-->(<a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>&amp; Data, <a href="ListOfTypes.html#Int_t">Int_t</a> SecsToWait = 5)
 <!--TAB6-->                     <a href="ListOfTypes.html#Double_t">Double_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTraceLength">GetTraceLength</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTriggerMask">GetTriggerMask</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetTriggerPolarity">GetTriggerPolarity</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
-<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetUntrigTrace">GetUntrigTrace</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetUntrigTrace_Init">GetUntrigTrace_Init</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetUntrigTrace">GetUntrigTrace</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Buffer, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetUntrigTrace_Init">GetUntrigTrace_Init</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Buffer, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates = 0)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetUntrigTrace_Start">GetUntrigTrace_Start</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetUntrigTrace_Stop">GetUntrigTrace_Stop</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a>&amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> SecsToWait = 5)
 <!--TAB6-->      <a href="./TMrbDGF.html#TMrbDGF:EMrbWaitStatus">TMrbDGF::EMrbWaitStatus</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:GetWaitStatus">GetWaitStatus</a><!--PLAIN-->()
@@ -136,7 +138,7 @@
 <!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:PrintTriggerMask">PrintTriggerMask</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> CrFlag, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadCSR">ReadCSR</a><!--PLAIN-->()
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadEventBuffer">ReadEventBuffer</a><!--PLAIN-->(<a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a>&amp; Buffer)
-<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadHistogramBuffer">ReadHistogramBuffer</a><!--PLAIN-->(<a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>&amp; Buffer)
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadHistogramBuffer">ReadHistogramBuffer</a><!--PLAIN-->(<a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>&amp; Buffer, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern)
 <!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadICSR">ReadICSR</a><!--PLAIN-->()
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadParamMemory">ReadParamMemory</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadInputParams = kTRUE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadOutputParams = kFALSE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:ReadParamMemory">ReadParamMemory</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel)
@@ -153,7 +155,7 @@
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SaveParams">SaveParams</a><!--PLAIN-->(<a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a>&amp; TempStorage)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SaveParams">SaveParams</a><!--PLAIN-->(<a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> SaveIdx)
 <!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SaveValues">SaveValues</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ValueFile, <a href="ListOfTypes.html#Bool_t">Bool_t</a> ReadFromDSP = kTRUE)
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetBinning">SetBinning</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> BsWeight, <a href="ListOfTypes.html#Int_t">Int_t</a> EnBin, <a href="ListOfTypes.html#Int_t">Int_t</a> BsBin, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetBinning">SetBinning</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> EnBin, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetCamacHost">SetCamacHost</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* Host)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetChanCSRA">SetChanCSRA</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits, <a href="./TMrbDGF.html#TMrbDGF:EMrbBitOp">TMrbDGF::EMrbBitOp</a> BitOp, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetChannelMask">SetChannelMask</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ChannelMask, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
@@ -172,18 +174,17 @@
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetInSynch">SetInSynch</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SynchFlag = kTRUE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetModCSRA">SetModCSRA</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits, <a href="./TMrbDGF.html#TMrbDGF:EMrbBitOp">TMrbDGF::EMrbBitOp</a> BitOp, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetModuleNumber">SetModuleNumber</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ModNum)
-<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetOffset">SetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Double_t">Double_t</a> Offset, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kFALSE)
+<!--TAB6-->                        <a href="ListOfTypes.html#Int_t">Int_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetOffset">SetOffset</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Double_t">Double_t</a> Offset, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetParamsIncoreChanged">SetParamsIncoreChanged</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
 <!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetParamValuesRead">SetParamValuesRead</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetParValue">SetParValue</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetParValue">SetParValue</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ParamName, <a href="ListOfTypes.html#Int_t">Int_t</a> Value, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetPeakTime">SetPeakTime</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Double_t">Double_t</a> PeakTime, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
-<!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetRevision">SetRevision</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> ManufactIndex = 0)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetStation">SetStation</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Station)
 <!--TAB6-->                         <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetStatus">SetStatus</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Status)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetSwitchBus">SetSwitchBus</a><!--PLAIN-->(<a href="ListOfTypes.html#UInt_t">UInt_t</a> Bits = 0, <a href="./TMrbDGF.html#TMrbDGF:EMrbBitOp">TMrbDGF::EMrbBitOp</a> BitOp = <a href="./TMrbDGF.html#TMrbDGF:kBitSet">kBitSet</a>)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetSwitchBus">SetSwitchBus</a><!--PLAIN-->(const <a href="ListOfTypes.html#Char_t">Char_t</a>* DSPTrigger, const <a href="ListOfTypes.html#Char_t">Char_t</a>* FastTrigger = "NULL")
-<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetSwitchBusDefault">SetSwitchBusDefault</a><!--PLAIN-->()
+<!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetSwitchBusDefault">SetSwitchBusDefault</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> IndiFlag = kFALSE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetSynchWait">SetSynchWait</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> SynchFlag = kTRUE, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetTau">SetTau</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Double_t">Double_t</a> Tau, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
 <!--TAB6-->                       <a href="ListOfTypes.html#Bool_t">Bool_t</a> <!--TAB--><!--BOLD--><a href="#TMrbDGF:SetThreshold">SetThreshold</a><!--PLAIN-->(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> Threshold, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP = kTRUE)
@@ -233,7 +234,6 @@
 <!--TAB6-->                   <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fClusterID">fClusterID</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fClusterID">cluster id</a></i>
 <!--TAB6-->                   <a href="./TMrbNamedX.html">TMrbNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fRevision">fRevision</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fRevision">revision</a></i>
 <!--TAB6-->                      <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fParams">fParams</a><!--PLAIN-->             <!--TAB--><i><a name="Title:fParams">DSP's parameter section</a></i>
-<!--TAB6-->                       <a href="ListOfTypes.html#UInt_t">UInt_t</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fSwitchBus">fSwitchBus</a><!--PLAIN-->          <!--TAB--><i><a name="Title:fSwitchBus">switchbus value</a></i>
 <!--TAB6-->                        <a href="http://root.cern.ch/root/html/TH1F.html">TH1F</a>* <!--TAB--><!--BOLD--><a name="TMrbDGF:fTauDistr">fTauDistr</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fTauDistr">! tau distribution</a></i>
 <!--TAB6-->                         <a href="http://root.cern.ch/root/html/TF1.html">TF1</a>* <!--TAB--><!--BOLD--><a name="TMrbDGF:fGaussian">fGaussian</a><!--PLAIN-->           <!--TAB--><i><a name="Title:fGaussian">! gaussian fit</a></i>
 <!--TAB6-->                 <a href="./TMrbDGFData.html">TMrbDGFData</a>* <!--TAB--><!--BOLD--><a name="TMrbDGF:fDGFData">fDGFData</a><!--PLAIN-->            <!--TAB--><i><a name="Title:fDGFData">pointer to DGF data base</a></i>
@@ -241,6 +241,7 @@
 <!--TAB6-->                      <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fTmpParUntrigTrace">fTmpParUntrigTrace</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fTmpParUntrigTrace"></a></i>
 <!--TAB6-->                      <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fTmpParDacRamp">fTmpParDacRamp</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fTmpParDacRamp"></a></i>
 <!--TAB6-->                      <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fTmpParTaufit">fTmpParTaufit</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fTmpParTaufit"></a></i>
+<!--TAB6-->                      <a href="http://root.cern.ch/root/html/TArrayS.html">TArrayS</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fTmpParAccuHist">fTmpParAccuHist</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fTmpParAccuHist"></a></i>
 
 <!--TAB4-->    <b>public:</b><br>
 <!--TAB6-->      static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFStatusMBits">TMrbDGF::EMrbDGFStatusMBits</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSetupOk">kSetupOk</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kSetupOk"></a></i>
@@ -266,10 +267,10 @@
 <!--TAB6-->                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGF:kTimeout">kTimeout</a><!--PLAIN-->               <!--TAB--><i><a name="Title:kTimeout"></a></i>
 <!--TAB6-->                   static const enum <a href="http://root.cern.ch/root/html/TObject.html">TObject</a>:: <!--TAB--><!--BOLD--><a name="TMrbDGF:kCalibrationSize">kCalibrationSize</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kCalibrationSize"></a></i>
 <!--TAB6-->          static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSaveTrace">kSaveTrace</a><!--PLAIN-->             <!--TAB--><i><a name="Title:kSaveTrace"></a></i>
-<!--TAB6-->          static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSaveTraceAsIs">kSaveTraceAsIs</a><!--PLAIN-->         <!--TAB--><i><a name="Title:kSaveTraceAsIs"></a></i>
 <!--TAB6-->          static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSaveUntrigTrace">kSaveUntrigTrace</a><!--PLAIN-->       <!--TAB--><i><a name="Title:kSaveUntrigTrace"></a></i>
 <!--TAB6-->          static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSaveDacRamp">kSaveDacRamp</a><!--PLAIN-->           <!--TAB--><i><a name="Title:kSaveDacRamp"></a></i>
 <!--TAB6-->          static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSaveTaufit">kSaveTaufit</a><!--PLAIN-->            <!--TAB--><i><a name="Title:kSaveTaufit"></a></i>
+<!--TAB6-->          static const <a href="./TMrbDGF.html#TMrbDGF:EMrbDGFSaveIdx">TMrbDGF::EMrbDGFSaveIdx</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:kSaveAccuHist">kSaveAccuHist</a><!--PLAIN-->          <!--TAB--><i><a name="Title:kSaveAccuHist"></a></i>
 <!--TAB6-->                                 <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fLofDGFStatusMBits">fLofDGFStatusMBits</a><!--PLAIN-->     <!--TAB--><i><a name="Title:fLofDGFStatusMBits">soft status bits (module)</a></i>
 <!--TAB6-->                                 <a href="./TMrbLofNamedX.html">TMrbLofNamedX</a> <!--TAB--><!--BOLD--><a name="TMrbDGF:fLofDGFSwitchBusModes">fLofDGFSwitchBusModes</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fLofDGFSwitchBusModes">switch bus modes</a></i>
 </pre>
@@ -444,17 +445,18 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:SetSwitchBusDefault" href="src/TMrbDGF.cxx.html#TMrbDGF:SetSwitchBusDefault">SetSwitchBusDefault</a>() <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:SetSwitchBusDefault" href="src/TMrbDGF.cxx.html#TMrbDGF:SetSwitchBusDefault">SetSwitchBusDefault</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> IndiFlag) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:SetSwitchBusDefault">TMrbDGF::SetSwitchBusDefault</a>
  Purpose:        Set switch bus register to default value
- Arguments:      --
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> IndiFlag     -- kTRUE if switch bus to be set individually
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Sets switchbus bits:
-                 if trigger is enabled set to "unterminated"
-                 set to "terminated" else.
+                      IndiFlag = kTRUE      inspect <a href="./TMrbDGF.html">TMrbDGF</a>.&lt;name&gt;.SwitchBusTerm
+                      IndiFlag = kFALSE     terminate if module doesn't contain a core
+                                            (segment id like "B:ssss")
  Keywords:
 
 </pre><hr>
@@ -496,12 +498,13 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:DownloadDSPCode" href="src/TMrbDGF.cxx.html#TMrbDGF:DownloadDSPCode">DownloadDSPCode</a>() <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:DownloadDSPCode" href="src/TMrbDGF.cxx.html#TMrbDGF:DownloadDSPCode">DownloadDSPCode</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Retry, <a href="ListOfTypes.html#Bool_t">Bool_t</a> TriedOnce) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:DownloadDSPCode">TMrbDGF::DownloadDSPCode</a>
  Purpose:        Download DSP data
- Arguments:      --
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Retry       -- number of retries on error
+                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> TriedOnce  -- kTRUE if already tried once
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Loads code down to DSP.
@@ -580,7 +583,6 @@
  Exceptions:
  Description:    Writes param values to DSP.
                  Only param DATA will be written (256 words).
-                 Writes ICSR (switchbus) also.
  Keywords:
 
 </pre><hr>
@@ -1488,15 +1490,13 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:SetBinning" href="src/TMrbDGF.cxx.html#TMrbDGF:SetBinning">SetBinning</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> BsWeight, <a href="ListOfTypes.html#Int_t">Int_t</a> EnBin, <a href="ListOfTypes.html#Int_t">Int_t</a> BsBin, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:SetBinning" href="src/TMrbDGF.cxx.html#TMrbDGF:SetBinning">SetBinning</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Channel, <a href="ListOfTypes.html#Int_t">Int_t</a> EnBin, <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:SetBinning">TMrbDGF::SetBinning</a>
  Purpose:        Set binning
  Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Channel       -- channel number
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> BsWeight      -- baseline weight
                  <a href="ListOfTypes.html#Int_t">Int_t</a> EnBin         -- energy binning
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> BsBin         -- baseline binning
                  <a href="ListOfTypes.html#Bool_t">Bool_t</a> UpdateDSP    -- kTRUE if DSP is to be updated
  Results:        kTRUE/kFALSE
  Exceptions:
@@ -1504,58 +1504,65 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:ReadHistogramBuffer" href="src/TMrbDGF.cxx.html#TMrbDGF:ReadHistogramBuffer">ReadHistogramBuffer</a>(<a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a> &amp; Buffer) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:ReadHistogramBuffer" href="src/TMrbDGF.cxx.html#TMrbDGF:ReadHistogramBuffer">ReadHistogramBuffer</a>(<a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a> &amp; Buffer, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:ReadHistogramBuffer">TMrbDGF::ReadHistogramBuffer</a>
  Purpose:        Read MCA data
  Arguments:      <a href="./TMrbDGFHistogramBuffer.html">TMrbDGFHistogramBuffer</a>   -- histogram buffer
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern    -- pattern of active channels
  Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords           -- number of words read
  Exceptions:
  Description:    Reads MCA data from DSP. For XiaRelease = 2.0 (32k memory)
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:AccuHistograms" href="src/TMrbDGF.cxx.html#TMrbDGF:AccuHistograms">AccuHistograms</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Time, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Scale, <a href="ListOfTypes.html#Bool_t">Bool_t</a> AccuBL) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:AccuHistograms" href="src/TMrbDGF.cxx.html#TMrbDGF:AccuHistograms">AccuHistograms</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> Time, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Scale, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:AccuHistograms">TMrbDGF::AccuHistograms</a>
  Purpose:        Accumulate MCA histogram
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Time           -- measuring time
-                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Scale       -- time scale ("s", "m", "h")
-                 <a href="ListOfTypes.html#Bool_t">Bool_t</a> AccuBL        -- accu baselines if kTRUE
+ Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> Time             -- measuring time
+                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Scale         -- time scale ("s", "m", "h")
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern  -- pattern of active channels
  Results:        kTRUE/kFALSE
  Exceptions:
  Description:    Starts a MCA accumulation.
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetTrace" href="src/TMrbDGF.cxx.html#TMrbDGF:GetTrace">GetTrace</a>(	<a href="ListOfTypes.html#UInt_t">UInt_t</a> TriggerMask, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Polarity,
-							<a href="ListOfTypes.html#UInt_t">UInt_t</a> GoodChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraces, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength,
-							<a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> &amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:AccuHist_Init" href="src/TMrbDGF.cxx.html#TMrbDGF:AccuHist_Init">AccuHist_Init</a>(<a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
- Name:           <a href="./TMrbDGF.html#TMrbDGF:GetTrace">TMrbDGF::GetTrace</a>
- Purpose:        Perform tracing
- Arguments:      <a href="ListOfTypes.html#UInt_t">UInt_t</a> TriggerMask             -- trigger(s) to be set
-                 <a href="ListOfTypes.html#Char_t">Char_t</a> * Polarity              -- trigger polarity
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraces                -- number of traces to collect
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength              -- trace length
-                 <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> &amp; Buffer    -- where to store trace data
-                 <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates              -- extra wait states
- Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraceData             -- number of trace data taken
- Exceptions:
- Description:    Take traces from all channels given in the arg list.
- Keywords:
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:AccuHist_Init">TMrbDGF::AccuHist_Init</a>
+ Purpose:        Initialize histogramming
+ Results:        kTRUE/kFALSE
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetTrace" href="src/TMrbDGF.cxx.html#TMrbDGF:GetTrace">GetTrace</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> &amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:AccuHist_Start" href="src/TMrbDGF.cxx.html#TMrbDGF:AccuHist_Start">AccuHist_Start</a>() <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:AccuHist_Start">TMrbDGF::AccuHist_Start</a>
+ Purpose:        Start histogramming
+ Results:        kTRUE/kFALSE
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:AccuHist_Stop" href="src/TMrbDGF.cxx.html#TMrbDGF:AccuHist_Stop">AccuHist_Stop</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> SecsToWait) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:AccuHist_Stop">TMrbDGF::AccuHist_Stop</a>
+ Purpose:        Stop histogramming
+ Results:        kTRUE/kFALSE
+
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetTrace" href="src/TMrbDGF.cxx.html#TMrbDGF:GetTrace">GetTrace</a>(<a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> &amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:GetTrace">TMrbDGF::GetTrace</a>
  Purpose:        Perform tracing
- Arguments:      <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength              -- trace length
-                 <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> &amp; Buffer    -- where to store trace data
+ Arguments:      <a href="./TMrbDGFEventBuffer.html">TMrbDGFEventBuffer</a> &amp; Buffer    -- where to store trace data
+                 <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength              -- trace length
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern          -- channel pattern
                  <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates              -- extra wait states
  Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraceData             -- number of trace data taken
  Exceptions:
@@ -1563,17 +1570,7 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:GetTrace_Init" href="src/TMrbDGF.cxx.html#TMrbDGF:GetTrace_Init">GetTrace_Init</a>(	<a href="ListOfTypes.html#UInt_t">UInt_t</a> TriggerMask, const <a href="ListOfTypes.html#Char_t">Char_t</a> * Polarity,
-								<a href="ListOfTypes.html#UInt_t">UInt_t</a> GoodChannels, <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraces, <a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength,
-								<a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
-<pre>________________________________________________________________[C++ METHOD]
-
- Name:           <a href="./TMrbDGF.html#TMrbDGF:GetTrace_Init">TMrbDGF::GetTrace_Init</a>
- Purpose:        Initialize tracing
- Results:        kTRUE/kFALSE
-
-</pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:GetTrace_Init" href="src/TMrbDGF.cxx.html#TMrbDGF:GetTrace_Init">GetTrace_Init</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:GetTrace_Init" href="src/TMrbDGF.cxx.html#TMrbDGF:GetTrace_Init">GetTrace_Init</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> TraceLength, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:GetTrace_Init">TMrbDGF::GetTrace_Init</a>
@@ -1597,12 +1594,13 @@
  Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofWords   -- number of trace data read
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetUntrigTrace" href="src/TMrbDGF.cxx.html#TMrbDGF:GetUntrigTrace">GetUntrigTrace</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetUntrigTrace" href="src/TMrbDGF.cxx.html#TMrbDGF:GetUntrigTrace">GetUntrigTrace</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Buffer, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:GetUntrigTrace">TMrbDGF::GetUntrigTrace</a>
  Purpose:        Get a untriggered trace
  Arguments:      <a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Buffer               -- where to store trace data
+                 <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern          -- channel pattern
                  <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates              -- extra wait states
  Results:        <a href="ListOfTypes.html#Int_t">Int_t</a> NofTraceData             -- number of trace data taken
  Exceptions:
@@ -1610,7 +1608,7 @@
  Keywords:
 
 </pre><hr>
-<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:GetUntrigTrace_Init" href="src/TMrbDGF.cxx.html#TMrbDGF:GetUntrigTrace_Init">GetUntrigTrace_Init</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Buffer, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
+<!--FUNCTION--><a href="ListOfTypes.html#Bool_t">Bool_t</a> <a name="TMrbDGF:GetUntrigTrace_Init" href="src/TMrbDGF.cxx.html#TMrbDGF:GetUntrigTrace_Init">GetUntrigTrace_Init</a>(<a href="http://root.cern.ch/root/html/TArrayI.html">TArrayI</a> &amp; Buffer, <a href="ListOfTypes.html#UInt_t">UInt_t</a> ChannelPattern, <a href="ListOfTypes.html#Int_t">Int_t</a> XwaitStates) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
  Name:           <a href="./TMrbDGF.html#TMrbDGF:GetUntrigTrace_Init">TMrbDGF::GetUntrigTrace_Init</a>
@@ -2073,6 +2071,18 @@
  Keywords:
 
 </pre><hr>
+<!--FUNCTION--><a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGF:GetRevision" href="src/TMrbDGF.cxx.html#TMrbDGF:GetRevision">GetRevision</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Renew) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:           <a href="./TMrbDGF.html#TMrbDGF:GetRevision">TMrbDGF::GetRevision</a>
+ Purpose:        Return module revision
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> Renew           -- read again from module if kTRUE
+ Results:        <a href="./TMrbNamedX.html">TMrbNamedX</a> * Revision  -- revision (code &amp; 1<a href="ListOfTypes.html#char">char</a>-id)
+ Exceptions:
+ Description:    Defines module revision.
+ Keywords:
+
+</pre><hr>
 <!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TMrbDGF:SetVerboseMode" href="src/TMrbDGF.cxx.html#TMrbDGF:SetVerboseMode">SetVerboseMode</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> VerboseFlag) <br>
 <pre>________________________________________________________________[C++ METHOD]
 
@@ -2109,7 +2119,6 @@
 <!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetStation" href="TMrbDGF.h">GetStation</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                           <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGF:SetClusterID" href="TMrbDGF.h">SetClusterID</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ClusterSerial = 0, const <a href="ListOfTypes.html#Char_t">Char_t</a>* ClusterColor, const <a href="ListOfTypes.html#Char_t">Char_t</a>* SegmentID)
 <!--INLINE FUNCTION--><!--TAB6-->                    <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGF:GetClusterID" href="TMrbDGF.h">GetClusterID</a>()
-<!--INLINE FUNCTION--><!--TAB6-->                    <a href="./TMrbNamedX.html">TMrbNamedX</a>* <a name="TMrbDGF:GetRevision" href="TMrbDGF.h">GetRevision</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                           <a href="ListOfTypes.html#void">void</a> <a name="TMrbDGF:SetModuleNumber" href="TMrbDGF.h">SetModuleNumber</a>(<a href="ListOfTypes.html#Int_t">Int_t</a> ModNum)
 <!--INLINE FUNCTION--><!--TAB6-->                          <a href="ListOfTypes.html#Int_t">Int_t</a> <a name="TMrbDGF:GetModuleNumber" href="TMrbDGF.h">GetModuleNumber</a>()
 <!--INLINE FUNCTION--><!--TAB6-->                         <a href="ListOfTypes.html#UInt_t">UInt_t</a> <a name="TMrbDGF:GetStatus" href="TMrbDGF.h">GetStatus</a>()
@@ -2140,7 +2149,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:56:26 2002
+Last update: Thu Dec  5 14:07:38 2002
 <br>
 <address>
 <hr>

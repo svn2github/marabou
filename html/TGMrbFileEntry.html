@@ -25,9 +25,10 @@
 <pre>
 
 <!--TAB4-->    <b>public:</b><br>
-<!--TAB6-->       <a href="./TGMrbFileEntry.html">TGMrbFileEntry</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:TGMrbFileEntry">TGMrbFileEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Label, <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth, <a href="./TGFileInfo.html">TGFileInfo</a>* FileInfo, EFileDialogMode DialogMode, <a href="./TGMrbLayout.html">TGMrbLayout</a>* FrameGC, <a href="./TGMrbLayout.html">TGMrbLayout</a>* LabelGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* EntryGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* BrowseGC = NULL, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions = kHorizontalFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> EntryOptions = kSunkenFrame|kDoubleBorder)
+<!--TAB6-->       <a href="./TGMrbFileEntry.html">TGMrbFileEntry</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:TGMrbFileEntry">TGMrbFileEntry</a><!--PLAIN-->(const <a href="http://root.cern.ch/root/html/TGWindow.html">TGWindow</a>* Parent, const <a href="ListOfTypes.html#Char_t">Char_t</a>* Label, <a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId, <a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth, <a href="http://root.cern.ch/root/html/TGFileInfo.html">TGFileInfo</a>* FileInfo, EFileDialogMode DialogMode, <a href="./TGMrbLayout.html">TGMrbLayout</a>* FrameGC, <a href="./TGMrbLayout.html">TGMrbLayout</a>* LabelGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* EntryGC = NULL, <a href="./TGMrbLayout.html">TGMrbLayout</a>* BrowseGC = NULL, <a href="ListOfTypes.html#UInt_t">UInt_t</a> FrameOptions = kHorizontalFrame, <a href="ListOfTypes.html#UInt_t">UInt_t</a> EntryOptions = kSunkenFrame|kDoubleBorder)
 <!--TAB6-->         virtual <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:~TGMrbFileEntry">~TGMrbFileEntry</a><!--PLAIN-->()
 <!--TAB6-->       static <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:Class">Class</a><!--PLAIN-->()
+<!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:FileButtonEnable">FileButtonEnable</a><!--PLAIN-->(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag = kTRUE)
 <!--TAB6-->         <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:GetEntry">GetEntry</a><!--PLAIN-->()
 <!--TAB6-->                 <a href="ListOfTypes.html#void">void</a> <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:Help">Help</a><!--PLAIN-->()
 <!--TAB6-->      virtual <a href="http://root.cern.ch/root/html/TClass.html">TClass</a>* <!--TAB--><!--BOLD--><a href="#TGMrbFileEntry:IsA">IsA</a><!--PLAIN-->() const
@@ -43,7 +44,7 @@
 <!--TAB4-->    <b>protected:</b><br>
 <!--TAB6-->          <a href="http://root.cern.ch/root/html/TGTextEntry.html">TGTextEntry</a>* <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fEntry">fEntry</a><!--PLAIN-->       <!--TAB--><i><a name="Title:fEntry">!</a></i>
 <!--TAB6-->      <a href="http://root.cern.ch/root/html/TGPictureButton.html">TGPictureButton</a>* <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fBrowse">fBrowse</a><!--PLAIN-->      <!--TAB--><i><a name="Title:fBrowse">!</a></i>
-<!--TAB6-->            <a href="./TGFileInfo.html">TGFileInfo</a> <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fFileInfo">fFileInfo</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFileInfo">!</a></i>
+<!--TAB6-->            <a href="http://root.cern.ch/root/html/TGFileInfo.html">TGFileInfo</a> <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fFileInfo">fFileInfo</a><!--PLAIN-->    <!--TAB--><i><a name="Title:fFileInfo">!</a></i>
 <!--TAB6-->       EFileDialogMode <!--TAB--><!--BOLD--><a name="TGMrbFileEntry:fDialogMode">fDialogMode</a><!--PLAIN-->  <!--TAB--><i><a name="Title:fDialogMode"></a></i>
 </pre>
 <!--END-->
@@ -71,7 +72,7 @@
 												<a href="ListOfTypes.html#Int_t">Int_t</a> BufferSize, <a href="ListOfTypes.html#Int_t">Int_t</a> EntryId,
 												<a href="ListOfTypes.html#Int_t">Int_t</a> Width, <a href="ListOfTypes.html#Int_t">Int_t</a> Height,
 												<a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth,
-												<a href="./TGFileInfo.html">TGFileInfo</a> * FileInfo, EFileDialogMode DialogMode,
+												<a href="http://root.cern.ch/root/html/TGFileInfo.html">TGFileInfo</a> * FileInfo, EFileDialogMode DialogMode,
 												<a href="./TGMrbLayout.html">TGMrbLayout</a> * FrameGC,
 												<a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC,
 												<a href="./TGMrbLayout.html">TGMrbLayout</a> * EntryGC,
@@ -90,7 +91,7 @@
                  <a href="ListOfTypes.html#Int_t">Int_t</a> Width                 -- frame width
                  <a href="ListOfTypes.html#Int_t">Int_t</a> Height                -- frame height
                  <a href="ListOfTypes.html#Int_t">Int_t</a> EntryWidth            -- widht of the entry field
-                 <a href="./TGFileInfo.html">TGFileInfo</a> * FileInfo       -- file info
+                 <a href="http://root.cern.ch/root/html/TGFileInfo.html">TGFileInfo</a> * FileInfo       -- file info
                  EFileDialogMode DialogMode  -- mode: open or save
                  <a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC       -- graphic context &amp; layout (frame)
                  <a href="./TGMrbLayout.html">TGMrbLayout</a> * LabelGC       -- ... (label)
@@ -116,6 +117,18 @@
  Description:    Handle message received from browse button
  Keywords:
 
+</pre><hr>
+<!--FUNCTION--><a href="ListOfTypes.html#void">void</a> <a name="TGMrbFileEntry:FileButtonEnable" href="src/TGMrbFileEntry.cxx.html#TGMrbFileEntry:FileButtonEnable">FileButtonEnable</a>(<a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag) <br>
+<pre>________________________________________________________________[C++ METHOD]
+
+ Name:       <a href="./TGMrbFileEntry.html#TGMrbFileEntry:FileButtonEnableonEnable">TGMrbFileEntry::FileButtonEnableonEnable</a>
+ Purpose:        Enable/disable file button
+ Arguments:      <a href="ListOfTypes.html#Bool_t">Bool_t</a> Flag      -- kTRUE/kFALSE
+ Results:        --
+ Exceptions:
+ Description:    Enables/disables file button.
+ Keywords:
+
 </pre><br><br><br>
 <h3>Inline Functions</h3>
 <hr>
@@ -135,7 +148,7 @@
 <em>
 Author:          <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
 <br>
-Last update: Mon Aug 26 10:54:26 2002
+Last update: Wed Feb 12 14:33:06 2003
 <br>
 <address>
 <hr>

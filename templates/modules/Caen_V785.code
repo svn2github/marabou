@@ -128,6 +128,8 @@
 					CAEN_V785_SLIDING_SCALE_ON($moduleName);
 					CAEN_V785_CLEAR_DATA($moduleName);
 					CAEN_V785_RESET_EVENT_COUNTER($moduleName);
+					sprintf(msg, "  $moduleName: Bit reg #2 = %#x\n", CAEN_V785_READ_BITSET2($moduleName));
+					f_ut_send_msg("m_read_meb", msg, ERR__MSG_INFO, MASK__PRTT);
 %%EndOfCode%%
 %%INIT_MODULE%%
 

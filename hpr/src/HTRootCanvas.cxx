@@ -143,6 +143,8 @@ enum ERootCanvasCommands {
    kFHActivateTimer,
    kFHRebinAll,
    kFHRebinOne,
+   kFHUserCont,
+   kFHUserContClear,
 //   kFHProjectY,
    kFHOutputStat,
    kFHHistToFile,
@@ -305,12 +307,12 @@ void HTRootCanvas::CreateCanvas(const char *name)
 //   char *cn = (const char *)myFitHistName; 
    HistPresent * hpr = 0;
    hpr = fHCanvas->GetHistPresent();
+   FitHist * oFitHist = fHCanvas->GetFitHist();
    TMrbHelpBrowser * hbrowser = 0;
    if (hpr) {
      hbrowser = hpr->GetHelpBrowser();
-     hpr->SetMyCanvas(this);
+     if (!oFitHist) hpr->SetMyCanvas(this);
    }
-   FitHist * oFitHist = fHCanvas->GetFitHist();
 //   FitHist *oFitHist = 0;
 //   if(strlen(cn) > 0)oFitHist=(FitHist*)gROOT->FindObject(cn);
 //   else   cout << setred << "CreateCanvas: name too short: " 
@@ -400,6 +402,10 @@ void HTRootCanvas::CreateCanvas(const char *name)
       	fViewMenu->AddEntry("Expand",      kFHExpand     );
       	fViewMenu->AddEntry("Entire",      kFHEntire     );
       	if(!is2dim)fViewMenu->AddEntry("Rebin",       kFHRebinOne);
+      	if (is2dim) {
+            fViewMenu->AddEntry("Set User Contours",   kFHUserCont);
+            fViewMenu->AddEntry("Clear User Contours",   kFHUserContClear);
+         }
       	fViewMenu->AddSeparator();
       	fViewMenu->AddEntry("ClearMarks",   kFHClearMarks);
       	fViewMenu->AddEntry("PrintMarks",   kFHPrintMarks);
@@ -953,11 +959,13 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   // Handle View menu items...
                   case kViewColors:
                      {
-                        TVirtualPad *padsav = gPad->GetCanvas();
-                        TCanvas *m = new TCanvas("colors","Color Table");
-                        TPad::DrawColorTable();
-                        m->Update();
-                        padsav->cd();                     }
+                     if (oFitHist) oFitHist->DrawColors(); 
+//                        TVirtualPad *padsav = gPad->GetCanvas();
+//                        TCanvas *m = new TCanvas("colors","Color Table");
+//                        TPad::DrawColorTable();
+//                        m->Update();
+//                        padsav->cd();                     
+                     }
                      break;
                   case kViewFonts:
                      Show_Fonts();
@@ -1245,6 +1253,12 @@ Bool_t HTRootCanvas::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                      break;
                   case kFHRebinOne:
                      oFitHist->RebinOne(); 
+                     break;
+                  case kFHUserCont:
+                     oFitHist->SetUserContours(); 
+                     break;
+                  case kFHUserContClear:
+                     oFitHist->ClearUserContours(); 
                      break;
                   case kFHMagnify:
                      oFitHist->Magnify(); 

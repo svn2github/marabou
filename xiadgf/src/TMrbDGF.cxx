@@ -436,6 +436,7 @@ Bool_t TMrbDGF::DownloadFPGACode(TMrbDGFData::EMrbFPGAType FPGAType) {
 			return(kFALSE);
 		}
 		this->Wait();															// wait for reset to complete
+		cData.Set(size);
 		this->CopyData(cData, dp, size);										// copy FPGA data to camac buffer
 		if (fCamac.BlockXfer(fCrate, fStation, subAddr, F(17), cData, 0, size, kTRUE) == -1) {		// start block xfer, 16 bit
 			gMrbLog->Err()	<< "[" << sysfip << " FPGA] "
@@ -502,13 +503,12 @@ Bool_t TMrbDGF::DownloadFPGACode(const Char_t * FPGAType) {
 	return(this->DownloadFPGACode((TMrbDGFData::EMrbFPGAType) sysfip->GetIndex()));
 }
 
-Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix) {
+Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::SetSwitchBusDefault
 // Purpose:        Set switch bus register to default value
-// Arguments:      Bool_t IndiFlag            -- kTRUE if switch bus to be set individually
-//                 Char_t * Prefix            -- resource prefix
+// Arguments:      Bool_t IndiFlag     -- kTRUE if switch bus to be set individually
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Sets switchbus bits:
@@ -525,17 +525,14 @@ Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix) {
 	if (!this->CheckConnect("SetSwitchBusDefault")) return(kFALSE);
 
 	if (IndiFlag) {
-		if (Prefix == NULL || *Prefix == '\0') Prefix = "TMrbDGF";
 		resource = this->GetName();
 		resource(0,1).ToUpper();
-		resource.Prepend(".Module.");
-		resource.Prepend(Prefix);
+		resource.Prepend("TMrbDGF.");
 		resource += ".SwitchBusTerm";
 		terminate = gEnv->GetValue(resource.Data(), kFALSE);
-		cout << "@@ " << this->GetName() << " " << resource << " " << (terminate ? "kTRUE" : "kFALSE") << endl;
 	} else {
 		segmentID = this->GetClusterID()->GetTitle();
-		terminate = (segmentID.Index("c", 0) >= 0);
+		terminate = segmentID.Index("c", 0) == -1;
 	}
 
 	if (terminate)	switchBus = TMrbDGFData::kTerminateDSP | TMrbDGFData::kTerminateFast;
@@ -566,7 +563,6 @@ Bool_t TMrbDGF::SetSwitchBus(UInt_t Bits, TMrbDGF::EMrbBitOp BitOp) {
 	switch (BitOp) {
 		case TMrbDGF::kBitSet:
 			icsrBits = Bits & TMrbDGFData::kSwitchBus;
-			cout << "@@ SetSwitchBus: set 0x" << setbase(16) << Bits << setbase(10) << endl;
 			break;
 		case TMrbDGF::kBitOr:
 			icsrBits = this->ReadICSR();
@@ -687,6 +683,7 @@ Bool_t TMrbDGF::DownloadDSPCode(Int_t Retry, Bool_t TriedOnce) {
 			this->Wait();																// wait for reset to complete
 
 			size = fDGFData->fDSPSize;											// size of DSP data
+			cData.Set(size);
 			this->CopyData(cData, fDGFData->fDSPCode.GetArray(), size); 		// copy DSP data to camac buffer
 			if (!downloadFailed) {
 				if (this->WriteTSAR(1)) {											// start with addr 1
@@ -1050,6 +1047,7 @@ Bool_t TMrbDGF::WriteParamMemory(Bool_t Reprogram) {
 	if (this->ParamValuesRead()) {
 		this->WriteTSAR(TMrbDGFData::kDSPInparStartAddr);				// where to write to
 		nofParams = TMrbDGFData::kNofDSPInputParams;					// size of params section (input only)
+		cData.Set(nofParams);
 		this->CopyData(cData, fParams.GetArray(), nofParams);			// xfer param data to camac buffer
 		if (fCamac.BlockXfer(fCrate, fStation, A(0), F(16), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
@@ -2436,6 +2434,7 @@ Bool_t TMrbDGF::RestoreParams(TArrayS & TempStorage) {
 
 	this->WriteTSAR(TMrbDGFData::kDSPInparStartAddr);				// where to write to
 	nofParams = TMrbDGFData::kNofDSPInputParams;					// size of params section (input only)
+	cData.Set(nofParams);
 	this->CopyData(cData, TempStorage.GetArray(), nofParams);
 	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(16), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation

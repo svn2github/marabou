@@ -390,7 +390,7 @@ void TMrbHelpBrowser::Clear(){
 //________________________________________________________________________________
 
 Bool_t TMrbHelpBrowser::ToRootFile(const char * InputDir, const char * RootFile, 
-                  const char * option = "UPDATE"){
+                  const char * option){
 //
 //  add html and gif files in directory InputDir to a ROOT file.
 //  In this way a single root file containing a complete documentation
@@ -412,7 +412,7 @@ Bool_t TMrbHelpBrowser::ToRootFile(const char * InputDir, const char * RootFile,
 }
 //________________________________________________________________________________
 
-void TMrbHelpBrowser::Print(TString * option = 0){
+void TMrbHelpBrowser::Print(TString * option){
 //
 //  print a list of currently known help entries
    Int_t ind = 0;

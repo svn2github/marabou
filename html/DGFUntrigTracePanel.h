@@ -50,12 +50,14 @@ class DGFUntrigTracePanel : public TGTransientFrame {
 	public:
 
 		// cmd ids to dispatch over X events in this panel
-		enum EDGFUntrigTraceActionId 	{	kDGFUntrigTraceStart,
-											kDGFUntrigTraceClose,
-											kDGFUntrigTraceSelectAll,
-											kDGFUntrigTraceSelectNone,
-											kDGFUntrigTraceSelectColumn
-										};
+		enum EDGFUntrigTraceActionId 	{
+													kDGFUntrigTraceXwait,
+													kDGFUntrigTraceStart,
+													kDGFUntrigTraceClose,
+													kDGFUntrigTraceSelectAll,
+													kDGFUntrigTraceSelectNone,
+													kDGFUntrigTraceSelectColumn
+												};
 				
 		// geometry settings
 		enum					{	kFrameWidth 			= 750					};
@@ -88,10 +90,16 @@ class DGFUntrigTracePanel : public TGTransientFrame {
 		TGHorizontalFrame * fGroupFrame;
 		TGMrbPictureButtonList * fGroupSelect[kNofModulesPerCluster];
 		TGMrbPictureButtonList * fAllSelect;
+		TGHorizontalFrame * fHFrame;
+		TGGroupFrame * fXFrame;
+		TGMrbLabelEntry * fXwait;							// wait states
+		TGMrbCheckButtonGroup * fSelectChannel;		//	channel
 		TGMrbTextButtonGroup * fActionFrame;
 
 		TMrbLofNamedX fActions;						// text buttons:	actions to be taken
 		
+		TMrbLofNamedX fLofChannels;				//! channel numbers
+
 		TMrbLofNamedX fLofDGFModuleKeys[kNofClusters];
 		
 		TGMrbFocusList fFocusList;

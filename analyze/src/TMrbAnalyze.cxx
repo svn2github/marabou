@@ -1846,7 +1846,7 @@ const Char_t * TMrbAnalyze::GetModuleName(Int_t ModuleIndex) {
 
 	TMrbNamedX * nx;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleName");
@@ -1876,7 +1876,7 @@ const Char_t * TMrbAnalyze::GetModuleTitle(Int_t ModuleIndex) {
 
 	TMrbNamedX * nx;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetModuleTitle");
@@ -1933,7 +1933,7 @@ const Char_t * TMrbAnalyze::GetParamName(Int_t ModuleIndex, Int_t RelParamIndex)
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetParamName");
@@ -2047,7 +2047,7 @@ Int_t TMrbAnalyze::GetParamIndex(Int_t ModuleIndex, Int_t RelParamIndex) {
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(-1);
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) return(-1);
 	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
 	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
 	if (RelParamIndex >= mle->GetNofParams()) return(-1);
@@ -2101,7 +2101,7 @@ TH1 * TMrbAnalyze::GetHistoAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
 	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
 	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
 	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
@@ -2176,9 +2176,8 @@ Int_t * TMrbAnalyze::GetParamAddr(Int_t ModuleIndex, Int_t RelParamIndex) {
 	TMrbModuleListEntry * mle;
 	Int_t px;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) return(NULL);
 	nx = (TMrbNamedX *) fModuleList[ModuleIndex];
-	if (nx == NULL) return(NULL);
 	mle = (TMrbModuleListEntry *) nx->GetAssignedObject();
 	if (RelParamIndex >= mle->GetNofParams()) return(NULL);
 	px = mle->GetIndexOfFirstParam() + RelParamIndex;
@@ -2228,7 +2227,7 @@ Bool_t TMrbAnalyze::AddModuleToList(const Char_t * ModuleName, const Char_t * Mo
 	TMrbNamedX * nx;
 	TMrbModuleListEntry * mle;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "[" << ModuleName << "] Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddModuleToList");
@@ -2287,7 +2286,7 @@ Bool_t TMrbAnalyze::AddParamToList(const Char_t * ParamName, Int_t * ParamAddr, 
 	TMrbParamListEntry * ple;
 	Int_t px;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "[" << ParamName << "] Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddParamToList");
@@ -2335,7 +2334,7 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 	TMrbHistoListEntry * hle;
 	Int_t px;
 
-	if (ModuleIndex <= 0 || ModuleIndex > fModuleList.GetLast()) {
+	if (ModuleIndex < 0 || ModuleIndex > fModuleList.GetLast()) {
 		gMrbLog->Err()	<< "::AddHistoToList(): [" << HistoAddr->GetName()
 						<< "] Module index out of range - " << ModuleIndex
 						<< " (should be in [0," << fModuleList.GetLast() << "])" << endl;
@@ -2493,7 +2492,7 @@ Bool_t TMrbAnalyze::DumpData(const Char_t * Prefix, Int_t Index,	const Char_t * 
 		gMrbLog->Flush(this->ClassName(), "DumpData");
 		return(kFALSE);
 	}
-	f.write(DataPtr, DataWC * sizeof(UShort_t));
+	f.write((const Char_t *) DataPtr, DataWC * sizeof(UShort_t));
 	f.close();
 	return(kTRUE);
 }
@@ -2745,7 +2744,7 @@ void TUsrHit::Print(ostream & Out, Bool_t PrintNames) {
 	}
 }
 	
-TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater, Int_t Offset) {
+TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater, UInt_t Offset) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer
@@ -2753,7 +2752,7 @@ TUsrHitBuffer::TUsrHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWa
 // Arguments:      Char_t * Name         -- name
 //                 Int_t NofEntries      -- number of entries
 //                 Int_t HighWater       -- high water limit
-//                 Int_t Offset          -- time stamp offset
+//                 UInt_t Offset         -- time stamp offset
 // Results:        --
 // Exceptions:
 // Description:    Class constructor
@@ -2786,7 +2785,7 @@ void TUsrHitBuffer::Reset() {
 
 TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t EventTimeLo,
-										UShort_t * Data, Int_t NofData, Bool_t SubOffs = kTRUE) {
+										UShort_t * Data, Int_t NofData, Bool_t SubOffs) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::AddHit
@@ -2807,7 +2806,7 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fNofHits >= fNofEntries) {
-		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddHit");
 		return(NULL);
 	}
@@ -2823,7 +2822,7 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 
 TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Channel,
 										UShort_t * EventTime,
-										UShort_t * Data, Int_t NofData, Bool_t SubOffs = kTRUE) {
+										UShort_t * Data, Int_t NofData, Bool_t SubOffs) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrHitBuffer::AddHit
@@ -2844,7 +2843,7 @@ TUsrHit * TUsrHitBuffer::AddHit(Int_t EventIndex, Int_t ModuleNumber, Int_t Chan
 //////////////////////////////////////////////////////////////////////////////
 
 	if (fNofHits >= fNofEntries) {
-		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddHit");
 		return(NULL);
 	}
@@ -2941,7 +2940,7 @@ void TUsrHitBuffer::Print(ostream & Out, Int_t Begin, Int_t End) {
 									"Energy");
 	for (Int_t i = Begin; i <= End; i++) {
 		hit = (TUsrHit *) fHits->At(i);
-		Out << Form("  %5d", i);
+		printf("  %5d", i);
 		if (hit) hit->Print(Out, kTRUE); else Out << " ... [empty slot]" << endl;
 	}
 }
