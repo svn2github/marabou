@@ -91,31 +91,31 @@ is written into file mbslog.l in this directory.
 <a NAME=Help_on_Histograms></a>
 <H1>Online Histograms</H1>
 
-Histograms are saved in a memory mapped file which must
-reside on a local filesystem (e.g. <i>/tmp</i>). The size of
+Histograms may be stored in a memory mapped file which must
+reside on a local filesystem (e.g. /tmp). The size of
 this file should be adjusted to keep all histograms and
-not wasting too much memory. This file should be saved at
-the end of a run to a normal root file to compress it.
-This can optionally done automatically at end of a run.
-In this case the name of the file will be Hists_RUN.root.
-
-If the mapped file exists at start of a new run filling of
-histograms may continue on this file. The current contents
-is saved in the same directory (e.g. <i>/tmp</i>) with the
-name extended by _save.root.
-If individual histograms should be cleared please consult
-section on <a href=#Help_on_ResetHists>ResetHists</a> 
+not wasting too much memory. 
 Use of a memory mapped file can be avoided giving it the
 name <i>none</i>. This saves memory needed for the
 memory mapped file. It also saves CPU needed to update
-the histograms on the mapped file. However in case of
-a program crash histograms in memory are lost, event data
-on the output file will be available up to the last 
-AutoSave.
+the histograms on the mapped file.
+Histograms are saved at the end of a run automatically.
+with the name given. (e.g. hists_RUN.root where RUN 
+will be replaced by the actual run number.)
+
+If the mapped file exists at start of a new run filling of
+histograms may continue on this file. The current contents
+is saved in the same directory (e.g. /tmp) with the
+name extended by _save.root.
+If individual histograms should be cleared please consult
+section on <a href=#Help_on_ResetHists>ResetHists</a> 
+
 Histograms can still be displayed online by HistPresent
 running on the same or a different node. The command
 <b>Hists from M_analyze</b> should be used for this. 
 Also histograms are saved at the end of run.
+Additionally a <b>Save</b> button is provided which can
+only be activated if a run is paused.
 
 <a NAME=Help_on_Output_File></a>
 <H1>Output File</H1>

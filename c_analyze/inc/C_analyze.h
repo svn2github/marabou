@@ -41,7 +41,7 @@ private:
    TRootEmbeddedCanvas *fRateHist;
    TGTextButton        *fConfigButton, *fStartStopButton, *fClearButton, 
                       *fPauseButton, *fResetButton, *fQuitButton,
-                      *fSaveMapButton, *fDeleteMapButton,
+                      *fSaveMapButton,
                       *fParButton , *fMbsSetupButton, *fWhichHistButton;
    TGLabel            *fLabel, *fOutSize, *fRunTime, *fTotalEvents, *fRate,
                       *fStartTime, *fDeadTime, *fStatus, *fNev, *fTbSockNr;
@@ -142,7 +142,7 @@ public:
    Int_t GetComSocket(Int_t attachid = 0, Int_t attachsock = 0);
    void   SetRadioButtons(Bool_t);
    Int_t IsAnalyzeRunning(Int_t);
-   Int_t MessageToM_analyze(TString& mess);
+   Int_t MessageToM_analyze(const char *);
    TGTextEntry * GetDirText(){return fTeDir;}; 
 };
 #endif

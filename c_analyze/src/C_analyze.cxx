@@ -810,19 +810,21 @@ trying to attach?",
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFr, 150, 10, kHorizontalFrame);
    fLabel      = new TGLabel(fLabelFr, new TGString(
-   "Memory mapped file for Histgrams (must be local)"));
+   "Files for Histgrams, Memory mapped must be local (none: no M mapped file"));
    fLabel->ChangeBackground(antiquewhite1);
    fLabelFr->AddFrame(fLabel,fLO2); 
    fHFr->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // another  line
+
 //  memory mapped file 
    fHFr            = new TGCompositeFrame(this, 100, 20, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
-
-   fDeleteMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC );
-   fDeleteMapButton->ChangeBackground(blue);
-   fDeleteMapButton->Associate(this);
-   fHFrHalf->AddFrame(fDeleteMapButton, fLO1);
+/*
+   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC );
+   fSaveMapButton->ChangeBackground(blue);
+   fSaveMapButton->Associate(this);
+   fHFrHalf->AddFrame(fSaveMapButton, fLO1);
+   fSaveMapButton->SetState(kButtonDisabled);
 
    fHFrHalf->AddFrame(fRAuto = new TGRadioButton(fHFrHalf, "Autom", R_AUTO), fLO2);
    fRAuto->Associate(this);
@@ -835,8 +837,9 @@ trying to attach?",
       fRAuto->SetState(kButtonUp);
       fRAuto->SetToolTipText("Histograms will not be saved automatically");
    }
+*/
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
-   fLabel  = new TGLabel(fLabelFr, new TGString("Size"));
+   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Size"));
    fLabelFr->AddFrame(fLabel,fLO2);
    fHFrHalf->AddFrame(fLabelFr,fLO2);
 
@@ -855,14 +858,27 @@ trying to attach?",
    fTeMap = new TGTextEntry(fHFr, fTbMap = new TGTextBuffer(100), M_MAPF);
    fTbMap->AddText(0,(const char *)*fMap);
    fHFr->AddFrame(fTeMap,fLO2);
+
+   fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
+   fLabel  = new TGLabel(fLabelFr, new TGString("Mapped Name"));
+   fLabelFr->AddFrame(fLabel,fLO2);
+   fHFrHalf->AddFrame(fLabelFr,fLO2);
    this->AddFrame(fHFr,fLO1);                // mapped file line
    fTeMap->Associate(this);
+
 //   root file for histos
    fHFr     = new TGCompositeFrame(this, 100, 10, kHorizontalFrame);
    fHFrHalf = new TGCompositeFrame(fHFr, 100, 20, kHorizontalFrame);
    fLabelFr = new TGCompositeFrame(fHFrHalf, 150, 20, kHorizontalFrame);
+
+   fSaveMapButton = new TGTextButton(fHFrHalf, "Save", M_SAVEMAP, fYellowTextGC );
+   fSaveMapButton->ChangeBackground(blue);
+   fSaveMapButton->Associate(this);
+   fHFrHalf->AddFrame(fSaveMapButton, fLO1);
+   fSaveMapButton->SetState(kButtonDisabled);
+
    fLabel  = new TGLabel(fLabelFr, 
-                new TGString("Root file for saved histos"));
+                new TGString("File for saved histos"));
    fLabelFr->AddFrame(fLabel,fLO2); 
    fHFrHalf->AddFrame(fLabelFr,fLO2);
    fHFr->AddFrame(fHFrHalf,fLO2);
@@ -1077,7 +1093,7 @@ FhMainFrame::~FhMainFrame()
 }
 //_____________________________________________________________________________________
 //
-Int_t FhMainFrame::MessageToM_analyze(TString& mess) {
+Int_t FhMainFrame::MessageToM_analyze(const char * mess) {
 
   if (fComSocket == 0){
      cout << setred << "No connection to M_analyze open" << setblack << endl;
@@ -1892,14 +1908,14 @@ Bool_t FhMainFrame::StartDAQ()
           buf << spar.Data() << " ";
       else
           buf << "none ";
-      if(fRAuto->GetState() == kButtonDown){
+//      if(fRAuto->GetState() == kButtonDown){
          *fHistFile = fTbHistFile->GetString();
          (*fHistFile)(run) =fRunNr->Data();
          *fHistFile = fHistFile->Strip(TString::kBoth);
          buf << fHistFile->Data() << " ";
-      } else {
-        buf << "none ";
-      }
+//      } else {
+//        buf << "none ";
+//      }
 //     mmap file, size
 
       buf  << fTbMap->GetString() << " " << fTbMapSize->GetString() << " "; 
@@ -1964,6 +1980,7 @@ Bool_t FhMainFrame::StartDAQ()
               fPauseButton->SetText(new TGHotString("Pause"));
               fStartStopButton->SetState(kButtonUp);
               fPauseButton->SetState(kButtonUp);
+              fSaveMapButton->SetState(kButtonUp);
               fWasStarted = 1;
               if (fSockNr > 0) {
 retrysocket:
@@ -2026,8 +2043,7 @@ Bool_t FhMainFrame::StopDAQ(){
          return kFALSE;
       }
    } else {
-      TString StopCmd = "M_client terminate";              
-      MessageToM_analyze(StopCmd);
+      MessageToM_analyze("M_client terminate");
    }
    for(Int_t i=0; i <= MAXTIMEOUT; i++){
       cout << setblue << "c_ana: Waiting for M_analyze to stop" << setblack<< endl;
@@ -2190,22 +2206,16 @@ gMrbAnalyze->GetScaleDown()";
                          if(!ok) break;
                          if(bs <= 0) {WarnBox("Illegal number", this); break;}
                          else        fDownscale = bs;
-//                         DownscaleCmd += fTbDownscale->GetString();
-                         ostrstream buf;
-                         buf << fDownscale << ends;
-                         DownscaleCmd += buf.str(); 
-                         buf.rdbuf()->freeze(0);                        
+                         DownscaleCmd += fDownscale; 
                          cout << DownscaleCmd << endl;
                          if(fM_Status == M_PAUSING)
-                            MessageToM_analyze(DownscaleCmd);
+                            MessageToM_analyze(DownscaleCmd.Data());
                       }
                       break;
                   case M_RESETALL:
 //                      {
                       {
-                      TString ResetCmd = "M_client zero *";
-                      cout << ResetCmd << endl;
-                      if(fM_Status == M_PAUSING) MessageToM_analyze(ResetCmd);
+                      if(fM_Status == M_PAUSING) MessageToM_analyze("M_client zero *");
                       else   WarnBox("Only allowed when PAUSING", this);
                       }
                       break;
@@ -2215,7 +2225,7 @@ gMrbAnalyze->GetScaleDown()";
                       TString ResetCmd = "M_client zero ";
                       ResetCmd += GetString("Selection",fResetList->Data(), &ok, this);
                       cout << ResetCmd << endl;
-                      if(fM_Status == M_PAUSING) MessageToM_analyze(ResetCmd);
+                      if(fM_Status == M_PAUSING) MessageToM_analyze(ResetCmd.Data());
                       else   WarnBox("Only allowed when PAUSING", this);
                       }
                       break;
@@ -2514,7 +2524,7 @@ Note: Unit is 100 ns for historical reasons";
                            fM_Status=M_RUNNING;
                            fC_Status=M_RUNNING;
                            PauseCmd  += "resume";              
-                           MessageToM_analyze(PauseCmd);
+                           MessageToM_analyze(PauseCmd.Data());
                            fPauseButton->SetText(new TGHotString("Pause"));
                         } else {
                            if(fC_Status == M_PAUSING){
@@ -2531,7 +2541,7 @@ force Resume", this);
                               PauseCmd += "pause"; 
                               fPauseButton->SetText(new TGHotString("Resume"));
                            }             
-                           MessageToM_analyze(PauseCmd);
+                           MessageToM_analyze(PauseCmd.Data());
                         }
                         break;
                      } else {
@@ -2547,18 +2557,16 @@ force Resume", this);
                          break;
                      } else {
                         Bool_t was_running = kFALSE;
-                        TString PauseCmd = "M_client pause";
                         if(fM_Status == M_RUNNING){
                            was_running = kTRUE;
-                           MessageToM_analyze(PauseCmd);
+                           MessageToM_analyze("M_client pause");
                         }
                         TString ResetCmd = "M_client zero ";
                         ResetCmd += fResetList->Data();
                         cout << ResetCmd << endl;
-                        MessageToM_analyze(ResetCmd);
+                        MessageToM_analyze(ResetCmd.Data());
                         if(was_running){
-                           PauseCmd = "M_client resume";
-                           MessageToM_analyze(PauseCmd);
+                           MessageToM_analyze("M_client resume");
                         }
                      }
                      }
@@ -2566,10 +2574,13 @@ force Resume", this);
 
                   case M_SAVEMAP:
                       fM_Status = IsAnalyzeRunning(0);
-                      if(fM_Status == M_STOPPED || fM_Status == M_ABSENT
-                         || fM_Status == M_PAUSING || fM_Status == M_CONFIGURED)
-                           SaveMap();
-                      else WarnBox("Wait until absent, paused or configured", this);
+                      if (fM_Status == M_STOPPED || fM_Status == M_ABSENT
+                         || fM_Status == M_PAUSING || fM_Status == M_CONFIGURED) {
+                           if (fUseMap)  SaveMap();
+                           else          MessageToM_analyze("M_client savehists");
+                      } else {
+                         WarnBox("Wait until absent, paused or configured", this);
+                      }
                       break;
                   case M_LOADPAR:
                       fM_Status = IsAnalyzeRunning(0);
@@ -2578,7 +2589,7 @@ force Resume", this);
                          LoadCmd = LoadCmd 
                                     + fTbParFile->GetString();
                          cout << setmagenta << LoadCmd << setblack<< endl;
-                         MessageToM_analyze(LoadCmd);
+                         MessageToM_analyze(LoadCmd.Data());
 
                       } else WarnBox("Only allowed when Pausing", this);
                       break;
@@ -2662,6 +2673,7 @@ force Resume", this);
 //                        fMbsSetupButton->SetState(kButtonUp);
 //                     }
                      break;
+/*
                   case R_AUTO:
                      if(fAutoSave){
                         fRAuto->SetState(kButtonUp); 
@@ -2681,6 +2693,7 @@ force Resume", this);
                      }
                      gClient->NeedRedraw(fRAuto);
                      break;
+*/
                   case R_ACTIVE:
                      if(fWriteOutput){
                         fRActive->SetState(kButtonUp); 
