@@ -260,6 +260,7 @@ public:
 //      cout << "ClearTofl()" << endl; 
       fTofLabels = 0;
    }
+	void DrawSelectedFunctions();
   ClassDef(FitHist,0)      // A histogram presenter
 };
 #endif

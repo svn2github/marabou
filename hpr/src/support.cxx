@@ -1060,7 +1060,7 @@ TEnv *GetDefaults(TString & hname, Bool_t mustexist)
 		Int_t ip = defname.Index(";");
 		if (ip > 0) defname.Resize(ip);
       defname += ".def";
-      cout << "Look for : " << defname.Data() << endl;
+//      cout << "Look for : " << defname.Data() << endl;
       if (mustexist && gSystem->AccessPathName(defname.Data()))
          return 0;
 //      cout << "Look for : " << defname.Data() << endl;
@@ -1195,10 +1195,13 @@ Int_t DeleteOnFile(const char * fname, TList* list, TGWindow * win)
    TObjString * sel;
    while ( (sel = (TObjString*)next()) ) {
    	name = sel->GetString();
+		cout << name << " " << fname << endl;
    	if (name.BeginsWith(fname)) {
       	Int_t start  = name.Index(" ") + 1;
       	Int_t length = name.Length() - start;
       	name = name(start,length);
+			Int_t ip = name.Index(";");
+			if (ip > 0) name.Resize(ip);
       	TString question("Delete: ");
       	question += name.Data();
       	question += " from ";
@@ -1688,6 +1691,11 @@ Bool_t fixnames(TFile * * infile, Bool_t checkonly)
       obj = (TNamed*)key->ReadObj(); 
       name = obj->GetName();
       Bool_t changed = kFALSE;
+      Int_t isem = name.Index(";");
+		if (isem > 0) {
+		   name.Resize(isem);
+         changed = kTRUE;
+		}
       while (name.Index(notascii) >= 0) {
          name(notascii) = "_";
          changed = kTRUE;

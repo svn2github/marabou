@@ -2926,7 +2926,8 @@ void HistPresent::LoadFunction(const char* fname, const char* hname, const char*
 //   cout << fname << " " << hname << endl;
    TString sel = fname;
    TObject * fun = 0;
-//   sel = sel + " " + hname;
+   sel = sel + " " + hname;
+	TObjString tobjs((const char *)sel);
    TButton * b;
    b = (TButton *)strtoul(bp, 0, 16);
 //      cout << "bp " << b << endl;
@@ -2959,22 +2960,22 @@ void HistPresent::LoadFunction(const char* fname, const char* hname, const char*
             fun1->SetName(newname.Data());
 //               fAllCuts->Remove(tmp);
          }
-         fAllFunctions->Add(fun);
+         fAllFunctions->Add(new TObjString((const char *)sel));
       }
       gDirectory=gROOT;
 //     case not already selected
       b->SetFillColor(3);
       b->SetBit(kSelected);
    } else {
-      sel = hname;
-      Int_t isem = sel.Index(";");
-      if (isem > 0) sel.Resize(isem);
+//     sel = hname;
+//      Int_t isem = sel.Index(";");
+//      if (isem > 0) sel.Resize(isem);
 //      cout << sel.Data() << endl;
-      fun = fAllFunctions->FindObject(sel.Data());
-      if (fun) {
-         cout << "Remove " << fun->GetName()<< endl; 
-         fAllFunctions->Remove(fun);
-      }    
+//      fun = fAllFunctions->FindObject(sel.Data());
+//      if (fun) {
+//         cout << "Remove:" << tobjs.GetString()<< endl; 
+         fAllFunctions->Remove(&tobjs);
+//      }    
       b->SetFillColor(16);
       b->ResetBit(kSelected);
    }
@@ -3161,8 +3162,12 @@ void HistPresent::ListSelect()
    cout << "Selected Functions " << endl;
    cout << "----------------" << endl;
    fAllFunctions->Print();
+   if (count>0) cout << "----------------" << endl;
+   cout << "Selected User Contours " << endl;
    cout << "-------------------- " << endl;
    fSelectContour->Print();
+   if (count>0) cout << "----------------" << endl;
+   cout << "Selected Graphs " << endl;
    cout << "-------------------- " << endl;
    fSelectGraph->Print();
    cout << "-------------------- " << endl;

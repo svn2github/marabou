@@ -196,6 +196,7 @@ enum ERootCanvasCommands {
    kFHAddAxisY,
    kFHMarksToWindow,  
    kFHDrawWindows,  
+   kFHDrawFunctions,  
    kFHClearWindows,  
    kFHWindowsToHist,  
    kFHCutsToHist,  
@@ -757,6 +758,9 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
                   case  kFHDrawWindows:
                      fFitHist->DrawWindows();
                      break;
+                  case  kFHDrawFunctions:
+                     fFitHist->DrawSelectedFunctions();
+                     break;
                   case  kFHWindowsToHist:
                      fFitHist->AddWindowsToHist();
                      break;
@@ -1316,6 +1320,7 @@ void HandleMenus::BuildMenus()
    fViewMenu = new TGPopupMenu(fRootCanvas->GetParent());
    if (!edit_menus)fViewMenu->AddEntry("Launch Graphics Editor",        kEditEditor);
    fViewMenu->AddEntry("Event &Status", kViewEventStatus);
+   fViewMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
    fViewMenu->AddSeparator();
    fViewMenu->AddEntry("Show Colors",             kViewColors);
    fViewMenu->AddEntry("Show Fonts",              kViewFonts);
@@ -1489,6 +1494,7 @@ void HandleMenus::BuildMenus()
       fFitMenu->AddSeparator();
       fFitMenu->AddEntry("Add Functions to Hist", kFHFuncsToHist);
       fFitMenu->AddEntry("Write Functions to File",     kFHWriteFunc);
+      fFitMenu->AddEntry("Draw selected Functions",     kFHDrawFunctions);
       fFitMenu->AddSeparator();
 
   
@@ -1549,9 +1555,9 @@ void HandleMenus::BuildMenus()
    fAttrMenu->Associate((TGWindow*)this);
 
    fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
-   if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
+   if (fDisplayMenu) fRootsMenuBar->AddPopup("&Display", fDisplayMenu,  fMenuBarItemLayout, pmi);
    if(fh_menus){
       fRootsMenuBar->AddPopup("Cuts/Windows",    fCutsMenu,  fMenuBarItemLayout, pmi);
       fRootsMenuBar->AddPopup("Fit / Calibrate", fFitMenu,   fMenuBarItemLayout, pmi);

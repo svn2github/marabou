@@ -1225,6 +1225,8 @@ void FitHist::SaveUserContours()
 {
    TString hname = fHname;
    Bool_t ok;
+	Int_t ip = hname.Index(";");
+	if (ip > 0) hname.Resize(ip);
    hname =
        GetString("Save contours with name", hname.Data(), &ok, mycanvas);
    if (!ok) return;

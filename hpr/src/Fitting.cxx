@@ -753,13 +753,12 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
 //   SetMark(kFALSE);
 
    const char *funcname;
-   TString sfunc;
-   if (with_tail > 0)
-      sfunc = "Bg+Gauss_Tail_";
-   else
-      sfunc = "Bg+Gauss_";
-   if (func_numb < 10) sfunc += "0";
-   sfunc += func_numb;
+   TString sfunc(fHname);
+   Int_t ip = sfunc.Index(";");
+	if (ip > 0)sfunc.Resize(ip);
+   func_numb++;
+   sfunc.Prepend(Form("%d_", func_numb));
+   sfunc.Prepend("f");
    Bool_t ok;
    sfunc = GetString("Function name", (const char *) sfunc, &ok, mycanvas);
    if (!ok)
@@ -1295,14 +1294,6 @@ Int_t FitHist::Fit1dim(Int_t what, Int_t ndim)
    TString sfunc = fHname;
    Int_t ip = sfunc.Index(";");
 	if (ip > 0)sfunc.Resize(ip);
-  /*
-   TString sfunc = fSelHist->GetName();
-   Int_t us = sfunc.Index("E_");
-   if(us >= 0)sfunc.Remove(0,2);
-   us = sfunc.Index("_");
-   if(us >= 0)sfunc.Remove(0,us+1);
-*/
-//   sfunc="poly_";
    func_numb++;
    sfunc.Prepend(Form("%d_", func_numb));
    sfunc.Prepend("f");
@@ -1928,4 +1919,31 @@ Bool_t FitHist::SetLinBg()
    cHist->Update();
    hp->fFitOptUseLinBg = 1;
    return kTRUE;
+}
+//__________________________________________________________________________________
+
+void FitHist::DrawSelectedFunctions()
+{
+   if (!hp) return;
+	TIter next(hp->fAllFunctions);
+	TObjString * tobjs;
+	TFile * f;
+	cHist->cd();
+	while ( (tobjs = (TObjString *)next()) ) {
+	   TString ent = tobjs->GetString();
+		TString filename(ent);
+		Int_t isp = filename.Index(" ");
+		filename.Resize(isp);
+		f = new TFile(filename);
+		TString funcname(ent);
+		funcname.Remove(0, isp+1);
+		TF1 * func = (TF1*)f->Get(funcname);
+		if (func) {
+		   func->Draw("same");
+//			func->Print();
+	   }
+		f->Close();
+   }
+	cHist->Modified();
+	cHist->Update();
 }
