@@ -145,12 +145,15 @@ protected:
    Double_t fProjectBothRatio;
    Double_t fLogScaleMin;
    Double_t fAutoUpdateDelay;
+   Double_t fPeakThreshold;
+   Int_t    fPeakMwidth;
    TButton * fRebin2;
    TButton * fRebin4;
    TButton * fRebinOth;
    TButton * fRebinSumAvg;
    TButton * fValButton;
    TString * fHostToConnect;
+   Bool_t    fConnectedOnce;
    Int_t     fSocketToConnect;
    TSocket * fComSocket;
    Bool_t  fAskedFor;

@@ -250,6 +250,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fHostToConnect  = new TString("localhost");
    fComSocket       = 0;
    fSocketToConnect = 9090;
+   fConnectedOnce = kFALSE;
    fHelpBrowser = NULL;
    fUseHist = kFALSE;
    fApplyGraphCut = kFALSE;
@@ -617,6 +618,24 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
         b->Modified(kTRUE);b->Update();
       }
    }
+   void* dirp=gSystem->OpenDirectory(".");
+   const char * fn;
+   TString suffix(fHlistSuffix);
+   suffix += "$";
+   TRegexp rsuf(suffix);
+   while ( (fn=gSystem->GetDirEntry(dirp)) ) {
+      hint = fn;
+      if (hint.Index(rsuf) > 0) {
+         if (contains_filenames(fn) > 0) continue;
+         hint(rsuf) = "";
+         cmd = "mypres->ShowList(\"";
+         cmd = cmd + fname + "\",\"" + hint + "\")";
+         title = "ShowList "; title += hint;
+         sel.Resize(0);
+         fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
+      }
+   }
+   if (fCmdLine->GetSize() > 0) fCmdLine->Sort();
 
    if (fRootFile) fRootFile->Close();
    if (strstr(fname,".root")) {
@@ -639,10 +658,13 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
       rfile->Close();
    } else if (strstr(fname,"Socket")) {
       if (!fComSocket) {
-         *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
+         if (!fConnectedOnce) {
+            *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
                         ,&ok,maincanvas);
-         fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
+            fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
                         ,&ok,maincanvas);
+            fConnectedOnce = kTRUE;
+         }
          fComSocket = new TSocket(*fHostToConnect, fSocketToConnect);
          if (!fComSocket->IsValid()) {
             fComSocket->Close();
@@ -659,8 +681,9 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
       } 
       st = getstat(fComSocket);
       if (!st) {
-         cout << setred << 
-         "Cant connect to remote M_analyze" << setblack << endl;
+         cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
+         fComSocket->Close("force");
+         fComSocket = NULL;
          return;
       } else {
          nstat = st->GetListOfEntries()->GetSize();
@@ -679,7 +702,9 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
 //      lofF = GetFunctions(mfile);
 //      lofT = GetTrees(rfile);
 //      lofW = GetWindows(mfile);
-      mfile->Close();
+     mfile->Close();
+
+
      if (nstat > 0) {
          cmd = "mypres->SaveMap(\"";
          cmd = cmd + fname + "\")";
@@ -953,24 +978,6 @@ void HistPresent::ShowContents(const char *fname, const char* bp)
    }
 //
    if (fCmdLine->GetSize() > 0) {
-
-      void* dirp=gSystem->OpenDirectory(".");
-      const char * fn;
-      TString suffix(fHlistSuffix);
-      suffix += "$";
-      TRegexp rsuf(suffix);
-      while ( (fn=gSystem->GetDirEntry(dirp)) ) {
-         hint = fn;
-         if (hint.Index(rsuf) > 0) {
-            if (contains_filenames(fn) > 0) continue;
-            hint(rsuf) = "";
-            cmd = "mypres->ShowList(\"";
-            cmd = cmd + fname + "\",\"" + hint + "\")";
-            title = "ShowList "; title += hint;
-            sel.Resize(0);
-            fCmdLine->AddFirst(new CmdListEntry(cmd, title, hint, sel));
-         }
-      }
       if (fCmdLine->GetSize() > 3) {
          cmd = "mypres->ComposeList()";
          title = "Compose list";
@@ -1044,6 +1051,9 @@ void HistPresent::ShowStatOfAll(const char * fname, const char * bp)
       st = getstat(fComSocket);
       if (!st) {
          WarnBox(" cant get stat(fComSocket)");
+         cout << setred << "Cant get stat, Connection lost?" << setblack << endl;
+         fComSocket->Close("force");
+         fComSocket = NULL;
          return;
       }
    } else if (sname.Index(rname) > 0) {
@@ -1202,12 +1212,21 @@ void HistPresent::ShowList(const char* fcur, const char* lname, const char* bp)
             return;
          }
          hist = gethist(line.Data(), fComSocket); 
+      	if (!hist){
+         	cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
+         	fComSocket->Close("force");
+         	fComSocket = NULL;
+		    	wstream.close();
+   			fCmdLine->Delete(); 
+   			gDirectory=gROOT;
+            return;
+      	}
       }
-      if (!hist) {
-         cout << "Warning: " << line.Data() << " in" 
-              << fname.Data()<< " not found" << endl;
-         continue;
-      }
+//      if (!hist) {
+//        cout << "Warning: " << line.Data() << " from " 
+//              << fname.Data()<< " not found" << endl;
+//         continue;
+//      }
       if (is2dim(hist)) line.Prepend("2d ");
       else                line.Prepend("1d ");
       line +=  " " ;
@@ -1957,6 +1976,8 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
    TMrbStatistics * st = getstat(fComSocket);
    if (!st) {
        cout << " cant get stat(fComSocket)" << endl;
+       fComSocket->Close("force");
+       fComSocket = NULL;
        return;
    } else {
 //         st->Print();
@@ -1968,6 +1989,12 @@ void HistPresent::SaveFromSocket(const char * name, const char* bp)
    TIter nextentry(st->GetListOfEntries());
    while ( (stent = (TMrbStatEntry*)nextentry()) ) {
       hist = (TH1 *) gethist(stent->GetName(), fComSocket);
+      if (!hist){
+         cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
+         fComSocket->Close("force");
+         fComSocket = NULL;
+         break;
+      }
       f->cd();
       if (hist) hist->Write();
 //           cout << "Writing: " << stent->GetName()<< endl;
@@ -2373,7 +2400,11 @@ TH1* HistPresent::GetSelHistAt(Int_t pos, TList * hl)
           return NULL;
       }
       hist = gethist(hn, fComSocket);
-      if (!hist) cout << setred << "Cant get hist" << setblack << endl;
+      if (!hist){
+         cout << setred << "Cant get hist, Connection lost?" << setblack << endl;
+         fComSocket->Close("force");
+         fComSocket = NULL;
+      }
       return hist;
    }
 // watch out: is it .map or .root or in memory
@@ -3014,7 +3045,11 @@ TH1* HistPresent::GetHist(const char* fname, const char* hname)
       }
 //      Bool_t ok;
       hist = gethist(hname, fComSocket);
-      if (!hist) cout << setred << "Cant get hist" << setblack << endl;
+      if (!hist){
+         cout << setred << "Cant get hist, connection lost?" << setblack << endl;
+         fComSocket->Close("force");
+         fComSocket = NULL;
+      }
    } else if (strstr(fname,".map")) {
 //     look if this hist is in a list of histograms of possibly automatically
 //     updated hists

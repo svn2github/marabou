@@ -33,10 +33,12 @@ Int_t FitHist::FindPeaks(){
       cout << "FindPeaks in 2 dim not yet supported " << endl;
       return -1;
    }
-   Int_t Mwidth=11;
+   Int_t Mwidth = 11;
+   if (hp)  Mwidth = hp->fPeakMwidth;
    Int_t bin, i, L, start=0, wid;
    Stat_t fold, var;
-   Float_t threshold=4.;
+   Float_t threshold = 3.;
+   if (hp) threshold = hp->fPeakThreshold;
    Int_t nbins   = fSelHist->GetNbinsX();
 //   TAxis *yaxis = fSelHist->GetYaxis();
 //   Float_t ymin  = fSelHist->GetMinimum();
@@ -64,13 +66,16 @@ Int_t FitHist::FindPeaks(){
                wid=bin-start;
                h_width->Fill(wid);
 //               if(wid > 12)cout << " bin " << bin << " width " << wid << endl;
-               start += Mwidth;
+               start += 0.5 * Mwidth;
                if(start > 0){
                   Float_t x = fSelHist->GetBinCenter(start);
-                  Float_t y = ymax*fSelHist->GetBinContent(start)/(ymax-ymin);
-                  y += 0.02 * (ymax-ymin);
-                  Float_t y1 =  y + 0.04 * (ymax-ymin);
-                  TArrow *arr = new TArrow(x,y1,x,y, 0.025);
+
+//                  Float_t y = ymax*fSelHist->GetBinContent(start)/(ymax-ymin);
+//                  y += 0.02 * (ymax-ymin);
+ //                 Float_t y1 =  y + 0.04 * (ymax-ymin);
+//                  TArrow *arr = new TArrow(x,y1,x,y, 0.025);
+                  TLine *arr = new TLine(x,ymin,x, ymax);
+                  arr->SetLineColor(2);
                   fSelPad->cd();
                   arr->Draw();
                   peaks->Add(arr);

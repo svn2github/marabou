@@ -259,6 +259,9 @@ void HistPresent::RestoreOptions()
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "1"));
    fAutoUpdateDelay =
        atof(env.GetValue("HistPresent.AutoUpdateDelay", "2"));
+   fPeakMwidth = env.GetValue("HistPresent.fPeakMwidth", 11);
+   fPeakThreshold = env.GetValue("HistPresent.fPeakThreshold", 3.);
+
    fFitOptLikelihood = env.GetValue("HistPresent.FitOptLikelihood", 0);
    fFitOptQuiet = env.GetValue("HistPresent.FitOptQuiet", 0);
    fFitOptVerbose = env.GetValue("HistPresent.FitOptVerbose", 0);
@@ -411,6 +414,8 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.ProjectBothRatio", fProjectBothRatio);
    env.SetValue("HistPresent.LogScaleMin", fLogScaleMin);
    env.SetValue("HistPresent.AutoUpdateDelay", fAutoUpdateDelay);
+   env.SetValue("HistPresent.fPeakMwidth", fPeakMwidth);
+   env.SetValue("HistPresent.fPeakThreshold", fPeakThreshold);
 
    env.SaveLevel(kEnvUser);
    env.Save();
@@ -1078,7 +1083,7 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 3;
+   Int_t nopt = 5;
 //   Double_t *values = new Double_t[nopt];
    TArrayD values(nopt);
    TOrdCollection *row_lab = new TOrdCollection();
@@ -1087,10 +1092,15 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("LogScale_Minimum"));
    row_lab->Add(new TObjString("AutoUpdateDelay"));
    row_lab->Add(new TObjString("Max_Entries_in_HistList"));
+   row_lab->Add(new TObjString("Width of response func in fpeak"));
+   row_lab->Add(new TObjString("Threshold in fpeak"));
 
    values[vp++] = fLogScaleMin;
    values[vp++] = fAutoUpdateDelay;
    values[vp++] = fMaxListEntries;
+   values[vp++] = fPeakMwidth;
+   values[vp++] = fPeakThreshold;
+
 ;
 //   Int_t ret=TGMrbTableOfDoubles(win, title, 1, nopt, values,
 //                            0,row_lab);
@@ -1102,6 +1112,8 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
       fLogScaleMin     = values[vp++];
       fAutoUpdateDelay = values[vp++];
       fMaxListEntries  = (Int_t)values[vp++];
+      fPeakMwidth      = (Int_t)values[vp++];
+      fPeakThreshold   = values[vp++];
    }
 //   if(values) delete [] values;
 }

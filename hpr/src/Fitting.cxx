@@ -935,6 +935,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
          }
       }
       func->SetLineStyle(1);
+      func->SetFillStyle(0);
       if (fOrigHist != fSelHist) {
          TF1 *f1 = new TF1();
          func->Copy(*f1);
@@ -951,6 +952,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
       func->SetLineColor(2);
       func->Draw("same");
       func->SetLineStyle(2);
+      func->SetFillStyle(0);
       cout << setred << "No fit done, function drawn with start parameters"
           << setblack << endl;
    }
