@@ -777,9 +777,12 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 	TArrayI arrayData(16);
 
 	nofReadouts = this->GetNofReadouts();
-	mbsPath = this->GetHomeDir();
-	mbsPath += "/";
-	mbsPath += this->GetPath();
+	mbsPath = this->GetPath();
+	if (!mbsPath.BeginsWith("/")) {
+		mbsPath = this->GetHomeDir();
+		mbsPath += "/";
+		mbsPath += this->GetPath();
+	}
 
 	setupMode = this->GetMode();
 	smode = (EMbsSetupMode) (setupMode ? setupMode->GetIndex() : 0);
