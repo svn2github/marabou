@@ -60,6 +60,7 @@ const SMrbNamedX kDGFSetupConnect[] =
 				{DGFSetupPanel::kDGFSetupAbortBusySync,			"Abort Busy-Sync","Force return from busy-sync-loop"			},
 				{DGFSetupPanel::kDGFSetupRestartEsone,			"Restart ESONE","Restart ESONE server"			},
 				{DGFSetupPanel::kDGFSetupAbortEsone, 			"Abort ESONE Restart","Abort ESONE restart procedure"			},
+				{DGFSetupPanel::kDGFSetupUserPSAOnOff, 			"User PSA on/off",	"Turn user PSA on/off"			},
 				{DGFSetupPanel::kDGFSetupClose,					"Close",		"Close window"					},
 				{0, 											NULL,			NULL							}
 			};
@@ -360,6 +361,9 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 								break;
 							case kDGFSetupAbortEsone:
 								if (esoneCold) esoneCold->Abort();
+								break;
+							case kDGFSetupUserPSAOnOff:
+								this->TurnUserPSAOnOff(gDGFControlData->fUserPSA);
 								break;
 							case kDGFSetupClose:
 								gDGFControlData->fStatus |= fDGFFrame->GetActive();
@@ -750,7 +754,7 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 	
 	if (gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs");
+		gMrbLog->Flush(this->ClassName(), "AbortDGFs");
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
 		return(kFALSE);
 	}
@@ -759,7 +763,8 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 	dgfModule = gDGFControlData->FirstModule();
 	Int_t nofModules = 0;
 	isAborted = kFALSE;
-	cout << endl << "Wait " << flush;
+	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	if (!verbose) cout << "[Aborting Busy/sync loops - wait " << flush;
 	while (dgfModule) {
 		Int_t cl = nofModules / kNofModulesPerCluster;
 		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
@@ -777,15 +782,16 @@ Bool_t DGFSetupPanel::AbortDGFs() {
 		dgfModule = gDGFControlData->NextModule(dgfModule);
 		nofModules++;
 	}
-	cout << " done" << endl;
+	if (!verbose) cout << " done]" << endl;
+
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Aborting busy-sync loop failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs");
+		gMrbLog->Flush(this->ClassName(), "AbortDGFs");
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Aborting busy-sync loop failed", kMBIconStop);
 		return(kFALSE);
 	} else if (isAborted) {
 		gMrbLog->Out()	<< "Busy-sync loop terminated properly" << endl;
-		gMrbLog->Flush(this->ClassName(), "StartDGFs", setblue);
+		gMrbLog->Flush(this->ClassName(), "AbortDGFs", setblue);
 		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
@@ -839,3 +845,60 @@ Bool_t DGFSetupPanel::RestartEsone() {
 	return(kTRUE);
 }
 
+Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::TurnUserPSAOnOff
+// Purpose:        Turn user PSA on/off
+// Arguments:      Bool_t ActivateFlag   -- kTRUE if user PSA code is to be activated
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Controls the PSA feature.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	if (gDGFControlData->GetNofModules() == 0) {
+		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
+		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
+		return(kFALSE);
+	}
+
+	Int_t nerr = 0;
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	Int_t nofModules = 0;
+	Bool_t found = kFALSE;
+	TString onoff = ActivateFlag ? "ON" : "OFF";
+	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
+	if (!verbose) cout << "[Turning user PSA code " << onoff << " - wait " << flush;
+	while (dgfModule) {
+		Int_t cl = nofModules / kNofModulesPerCluster;
+		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+		UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
+			TMrbDGF * dgf = dgfModule->GetAddr();
+			found = kTRUE;
+			dgf->ActivateUserPSACode(ActivateFlag);
+			cout << "." << flush;
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
+	}
+	if (!verbose) cout << " done]" << endl;
+
+	if (nerr > 0) {
+		gMrbLog->Err()	<< "Aborting busy-sync loop failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Aborting busy-sync loop failed", kMBIconStop);
+		return(kFALSE);
+	} else if (found) {
+		gMrbLog->Out()	<< "Busy-sync loop terminated properly" << endl;
+		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff", setblue);
+		return(kTRUE);
+	} else {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	}
+}
