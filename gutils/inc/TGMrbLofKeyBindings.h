@@ -48,7 +48,7 @@ class TGMrbLofKeyBindings : public TMrbLofNamedX {
 								kGMrbKeyActionCopy,
 								kGMrbKeyActionCut,
 								kGMrbKeyActionUser		= 128,			// user may add his codes from here on
-								kGMrbKeyActionAnyKey	= 256			// codes to handles other chars
+								kGMrbKeyActionAnyKey	= 256			// codes to handle other chars
 							};
 							
 		enum				{	kGMrbKeyModifierMask	= kKeyShiftMask | kKeyLockMask | kKeyControlMask | kKeyMod1Mask };
