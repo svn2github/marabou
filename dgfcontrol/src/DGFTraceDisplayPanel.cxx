@@ -421,6 +421,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
 	TMrbLofDGFs lofDgfs;
+	lofDgfs.Clear();
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
@@ -445,71 +446,64 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 
 	if (!offlineMode) lofDgfs.WaitActive(5);
 
-	dgfModule = gDGFControlData->FirstModule();
-	nofModules = 0;
 	dataOkFlag = kFALSE;
-	while (dgfModule) {
-		cl = nofModules / kNofModulesPerCluster;
-		modNo = nofModules - cl * kNofModulesPerCluster;
-		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			if (!offlineMode) {
-				dgf = dgfModule->GetAddr();
-				if (!dgf->ActiveBit()) { 
-					traceBuffer.Reset();
-					nofWords = dgf->GetTrace_Stop(traceBuffer, 0);
-					if (gDGFControlData->IsDebug()) {
-						TMrbString fn = dgf->GetName();
-						fn += ".param.dat";
-						dgf->PrintParamsToFile(fn.Data());
-						fn = dgf->GetName();
-						fn += ".evtbuf.dat";
-						traceBuffer.PrintToFile(fn.Data(), dgf->GetTitle());
+	dgf = (TMrbDGF *) lofDgfs.First();
+	while (dgf) {
+		if (!offlineMode) {
+			if (!dgf->ActiveBit()) { 
+				traceBuffer.Reset();
+				nofWords = dgf->GetTrace_Stop(traceBuffer, 0);
+				if (gDGFControlData->IsDebug()) {
+					TMrbString fn = dgf->GetName();
+					fn += ".param.dat";
+					dgf->PrintParamsToFile(fn.Data());
+					fn = dgf->GetName();
+					fn += ".evtbuf.dat";
+					traceBuffer.PrintToFile(fn.Data(), dgf->GetTitle());
+				}
+				if (nofWords > 0) {
+					if (!dataOkFlag) {
+						traceFile = new TFile("trace.root", "RECREATE");
+						hl.open("trace.histlist", ios::out);
 					}
-					if (nofWords > 0) {
-						if (!dataOkFlag) {
-							traceFile = new TFile("trace.root", "RECREATE");
-							hl.open("trace.histlist", ios::out);
-						}
-						dataOkFlag = kTRUE;
-						if (traceBuffer.GetNofEvents() > 0) {
-							for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-								if ( (h = traceBuffer.FillHistogram(0, chn, kFALSE)) ) {
-									hl << dgfModule->GetName() << chn << endl;
-									hName = dgfModule->GetName();
-									hName += chn;
-									h->SetName(hName.Data());
-									TString title = h->GetTitle();
-									title.Prepend(": ");
-									title.Prepend(dgfModule->GetTitle());
-									h->SetTitle(title.Data());
-									h->Write();
-									if (gDGFControlData->IsVerbose()) {
-										cout	<< "[" << dgfModule->GetTitle()
-												<< "(chn" << chn
-												<< "): trace" << nofTraces
-												<< " -> histo " << hName
-												<< ", " << traceLength << " data points]" << endl;
-									}
-									nofTraces++;
+					dataOkFlag = kTRUE;
+					if (traceBuffer.GetNofEvents() > 0) {
+						for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+							if ( (h = traceBuffer.FillHistogram(0, chn, kFALSE)) ) {
+								hl << dgf->GetName() << chn << endl;
+								hName = dgf->GetName();
+								hName += chn;
+								h->SetName(hName.Data());
+								TString title = h->GetTitle();
+								title.Prepend(": ");
+								title.Prepend(dgf->GetTitle());
+								h->SetTitle(title.Data());
+								h->Write();
+								if (gDGFControlData->IsVerbose()) {
+									cout	<< "[" << dgf->GetTitle()
+											<< "(chn" << chn
+											<< "): trace" << nofTraces
+											<< " -> histo " << hName
+											<< ", " << traceLength << " data points]" << endl;
 								}
+								nofTraces++;
 							}
-							gMrbLog->Out()	<< "[" << dgfModule->GetName() << "] "
-											<< nofWords << " trace data written" << endl;
-							gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 						}
+						gMrbLog->Out()	<< "[" << dgf->GetName() << "] "
+										<< nofWords << " trace data written" << endl;
+						gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 					}
-					if (traceBuffer.GetNofEvents() == 0) {
-						gMrbLog->Err()	<< "[" << dgfModule->GetName() << "] DGF in C"
-										<< dgf->GetCrate() << ".N" << dgf->GetStation()
-										<< ": Unable to acquire traces (buffer empty)" << endl;
-						gMrbLog->Flush(this->ClassName(), "StartTrace");
-					}
+				}
+				if (traceBuffer.GetNofEvents() == 0) {
+					gMrbLog->Err()	<< "[" << dgf->GetName() << "] DGF in C"
+									<< dgf->GetCrate() << ".N" << dgf->GetStation()
+									<< ": Unable to acquire traces (buffer empty)" << endl;
+					gMrbLog->Flush(this->ClassName(), "StartTrace");
 				}
 			}
 		}
-		dgfModule = gDGFControlData->NextModule(dgfModule);
-		nofModules++;
-	}				
+		dgf = (TMrbDGF *) lofDgfs.After(dgf);
+	}
 
 	if (dataOkFlag) {
 		traceFile->Close();

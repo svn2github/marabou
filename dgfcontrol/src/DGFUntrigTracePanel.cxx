@@ -45,8 +45,12 @@ const SMrbNamedX kDGFUntrigTraceActions[] =
 				{0, 											NULL,					NULL					}
 			};
 
+enum	{	kNofTraceBuffers	=	1000	};
+
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
+
+static TArrayI * lofTraceBuffers[kNofTraceBuffers];
 
 ClassImp(DGFUntrigTracePanel)
 
@@ -78,6 +82,8 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 	TMrbLofNamedX lofModuleKeys;
 	
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
+
+	for (Int_t i = 0; i < kNofTraceBuffers; i++) lofTraceBuffers[i] = NULL;
 
 //	clear focus list
 	fFocusList.Clear();
@@ -293,13 +299,13 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TArrayI traceBuffer;
 	TFile * traceFile = NULL;
+	TArrayI * traceBuffer;
 	DGFModule * dgfModule;
 	Int_t modNo, cl;
 	TMrbDGF * dgf;
 	TH1F * h;
-	Bool_t selectFlag, dataOkFlag;
+	Bool_t selectFlag;
 	Int_t nofWords;
 	TString hTitle;
 	Int_t nofModules, nofTraces;
@@ -307,15 +313,14 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	UInt_t chnPattern;
 	Int_t xwait;
 	TMrbString intStr;
-	Int_t wpc[TMrbDGFData::kNofChannels];
 										
+	TArrayI wpc(TMrbDGFData::kNofChannels * kNofTraceBuffers);
+	wpc.Reset();
+
+	Bool_t verbose = (gDGFControlData->fStatus & DGFControlData::kDGFVerboseMode) != 0;
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
-	traceBuffer.Set(TMrbDGFData::kUntrigTraceLength * TMrbDGFData::kNofChannels);
-	
-	nofTraces = 0;
-
-	chnPattern = fSelectChannel->GetActive() >> 12;
+	chnPattern = (fSelectChannel->GetActive() >> 12) & 0xF;
 	if (chnPattern == 0) {
 		gMrbLog->Err()	<< "No channels selected" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartTrace");
@@ -328,6 +333,8 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	dgfModule = gDGFControlData->FirstModule();
 	selectFlag = kFALSE;
 	nofModules = 0;
+	TMrbLofDGFs lofDgfs;
+	lofDgfs.Clear();
 	while (dgfModule) {
 		cl = nofModules / kNofModulesPerCluster;
 		modNo = nofModules - cl * kNofModulesPerCluster;
@@ -340,7 +347,15 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 					fn += ".param.dat";
 					dgf->PrintParamsToFile(fn.Data());
 				}
-				dgf->GetUntrigTrace_Init(traceBuffer, chnPattern, xwait);
+				traceBuffer = lofTraceBuffers[nofModules];
+				if (traceBuffer == NULL) {
+					traceBuffer = new TArrayI();
+					lofTraceBuffers[nofModules] = traceBuffer;
+				}
+				traceBuffer->Set(TMrbDGFData::kUntrigTraceLength * TMrbDGFData::kNofChannels);
+				traceBuffer->Reset();
+				dgf->GetUntrigTrace_Init(*traceBuffer, chnPattern, xwait);
+				lofDgfs.AddModule(dgf, kTRUE);
 			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -351,66 +366,89 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 		return(kFALSE);
 	}
 
-	dgfModule = gDGFControlData->FirstModule();
-	dataOkFlag = kFALSE;
-	nofModules = 0;
-	while (dgfModule) {
-		cl = nofModules / kNofModulesPerCluster;
-		modNo = nofModules - cl * kNofModulesPerCluster;
-		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
-			if (!offlineMode) {
-				dgf = dgfModule->GetAddr();
-				UInt_t chnp = chnPattern;
-				nofWords = 0;
-				for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-					wpc[chn] = 0;
-					if (chnp & 1) {
-						dgf->GetUntrigTrace_Start(chn);
-						wpc[chn] = dgf->GetUntrigTrace_Stop(chn, traceBuffer);
-						nofWords += wpc[chn];
-					}
-					chnp >>= 1;
-				}		
-				dgf->GetUntrigTrace_Restore();
-				if (nofWords > 0) {
-					if (!dataOkFlag) {
-						traceFile = new TFile("untrigTrace.root", "RECREATE");
-						hl.open("untrigTrace.histlist", ios::out);
-					}
-					dataOkFlag = kTRUE;
-					hTitle = "Untrig traces for module ";
-					hTitle += dgfModule->GetName();
-					h = new TH1F(dgfModule->GetName(), hTitle.Data(), nofWords, 0., nofWords);
-					TMrbString chnList = "chn ";
-					Int_t n = 0;
-					for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
-						Int_t offset = chn * TMrbDGFData::kUntrigTraceLength;
-						if (wpc[chn] > 0) {
-							chnList += chn;
-							chnList += " ";
-							for (Int_t i = 0; i < wpc[chn]; i++, n++, offset++) h->Fill((Axis_t) n, traceBuffer[offset]);
-						}
-					}
-					hTitle += ": ";
-					hTitle += chnList.Data();
-					h->SetTitle(hTitle.Data());
-					h->Write();
-					hl << dgfModule->GetName() << endl;
-					nofTraces++;
-					gMrbLog->Out()	<< "StartTrace(): [" << dgfModule->GetName() << "] "
-									<< nofWords << " untrig trace data written" << endl;
-					gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
-				}
+	UInt_t chnp = chnPattern;
+	nofWords = 0;
+	if (!verbose) cout << "[Taking untrig traces for chn " << ends << flush;
+	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+		if (chnp & 1) {
+			if (!verbose) cout << chn << " " << ends << flush;
+			dgf = (TMrbDGF *) lofDgfs.First();
+			while (dgf) {
+				dgf->GetUntrigTrace_Start(chn);
+				dgf = (TMrbDGF *) lofDgfs.After(dgf);
+			}
+
+			if (!offlineMode) lofDgfs.WaitActive(5);
+
+			dgf = (TMrbDGF *) lofDgfs.First();
+			nofModules = 0;
+			while (dgf) {
+				traceBuffer = lofTraceBuffers[nofModules];
+				Int_t n = dgf->GetUntrigTrace_Stop(chn, *traceBuffer, 0);
+				wpc[chn * kNofTraceBuffers + nofModules] = n;
+				dgf = (TMrbDGF *) lofDgfs.After(dgf);
+				nofModules++;
+				nofWords += n;
 			}
 		}
-		dgfModule = gDGFControlData->NextModule(dgfModule);
-		nofModules++;
+		chnp >>= 1;
+	}
+	if (!verbose) cout << "done]" << endl;
+
+	dgf = (TMrbDGF *) lofDgfs.First();
+	while (dgf) {
+		dgf->GetUntrigTrace_Restore();
+		dgf = (TMrbDGF *) lofDgfs.After(dgf);
+	}
+
+	if (nofWords > 0) {
+		traceFile = new TFile("untrigTrace.root", "RECREATE");
+		hl.open("untrigTrace.histlist", ios::out);
+		nofTraces = 0;
+		dgf = (TMrbDGF *) lofDgfs.First();
+		nofModules = 0;
+		while (dgf) {
+			Int_t td = 0;
+			for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+				td += wpc[chn * kNofTraceBuffers + nofModules];
+			}
+			if (td > 0) {
+				hTitle = "Untrig traces for module ";
+				hTitle += dgf->GetName();
+				h = new TH1F(dgf->GetName(), hTitle.Data(), nofWords, 0., nofWords);
+				TMrbString chnList = "chn ";
+				Int_t n = 0;
+				traceBuffer = lofTraceBuffers[nofModules];
+				for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+					Int_t offset = chn * TMrbDGFData::kUntrigTraceLength;
+					Int_t wc = wpc[chn * kNofTraceBuffers + nofModules];
+					if (wc > 0) {
+						chnList += chn;
+						chnList += " ";
+						for (Int_t i = 0; i < wc; i++, n++, offset++) {
+							h->Fill((Axis_t) n, traceBuffer->At(offset));
+						}
+					}
+				}
+				hTitle += ": ";
+				hTitle += chnList.Data();
+				h->SetTitle(hTitle.Data());
+				h->Write();
+				hl << dgf->GetName() << endl;
+				nofTraces++;
+				gMrbLog->Out()	<< "StartTrace(): [" << dgf->GetName() << "] "
+								<< td << " untrig trace data written" << endl;
+				gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
+			}
+			dgf = (TMrbDGF *) lofDgfs.After(dgf);
+			nofModules++;
+		}
 	}				
-	if (dataOkFlag) {
+	if (nofTraces > 0) {
 		traceFile->Close();
 		hl.close();
 	}
-	if (offlineMode || dataOkFlag) {
+	if (offlineMode || (nofTraces > 0)) {
 		gMrbLog->Out()	<< "StartTrace(): " << nofTraces << " traces written to file \"untrigTrace.root\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartTrace", setblue);
 		return(kTRUE);
