@@ -65,7 +65,12 @@ class TMrbTemplate : public TObject {
 		TMrbTemplate(const TMrbTemplate &) {};		// default copy ctor
 
 		Bool_t Open(const Char_t * TemplateFile, TMrbLofNamedX * LofTagWords);	// open template file
-		inline void Close() { if (fIsActive) { fTemplStream.close(); fIsActive = kFALSE; } };	// close
+		inline void Close() { if (fIsActive)	{			// close
+													fTemplStream.close();
+													fTemplStream.clear();
+													fIsActive = kFALSE;
+												}
+							};
 
 		TMrbNamedX * Next(TString & Line, Bool_t ForceNextLine = kTRUE);	// decode next line
 		TString & Encode(TString & Line, const Char_t * TagReplacement);	// encode line by replacing the tagword

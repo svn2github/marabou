@@ -63,6 +63,7 @@ Bool_t TMrbTemplate::Open(const Char_t * TemplateFile, TMrbLofNamedX * LofTagWor
 		return(kFALSE);
 	}
 
+//	fTemplStream.clear();
 	fTemplStream.open(TemplateFile, ios::in);
 	if (!fTemplStream.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << TemplateFile << endl;
@@ -70,7 +71,6 @@ Bool_t TMrbTemplate::Open(const Char_t * TemplateFile, TMrbLofNamedX * LofTagWor
 		fIsActive = kFALSE;
 		return(fIsActive);
 	}
-
 	fIsActive = kTRUE;
 
 	fTemplateFile = TemplateFile;			// save name of template file
@@ -117,7 +117,7 @@ TMrbNamedX * TMrbTemplate::Next(TString & Line, Bool_t ForceNextLine) {
 	
 		fOrigLine.ReadLine(fTemplStream, kFALSE);
 		if (fTemplStream.eof()) {
-			Close();							// end of template file
+			this->Close();							// end of template file
 			fTagStatus = TMrbTemplate::kEOF;
 			fTag.Set(-1, "NoTag");
 			return(NULL);
