@@ -59,7 +59,7 @@
 
 #include <dirent.h>
 
-Bool_t kUseMap = kTRUE;
+//Bool_t kUseMap = kTRUE;
 // #include "/usr/local/include/uti/psinfo.h"
 
 static const char sepline[] =
@@ -414,6 +414,7 @@ trying to attach?",
    fTotal_time_elapsed = 0;
    fTotal_livetime = 0;
    fMfile = 0;
+   fUseMap = kFALSE;
    fSetup = 0;
 
    gClient->GetColorByName("white", white);
@@ -1048,7 +1049,7 @@ trying to attach?",
    else {
       SetButtonsToDefaults();
    }
-//   if(!kUseMap){
+//   if(!fUseMap){
 //      fPauseButton->SetState(kButtonDisabled);
 
 //   }
@@ -1198,7 +1199,7 @@ void FhMainFrame::SetTime(){
 // Save histograms from mapped file
   
 void FhMainFrame::SaveMap(Bool_t askforname){
-   if(!kUseMap) return;
+   if(!fUseMap) return;
    Bool_t mfile_was_closed = kFALSE;
    if(!fMfile){
       if(gSystem->AccessPathName(fTbMap->GetString(), kFileExists)){
@@ -1209,7 +1210,7 @@ void FhMainFrame::SaveMap(Bool_t askforname){
       if (fMfile->IsZombie()) { 
          fMfile->Close();
          fMfile = NULL;
-         kUseMap = kFALSE;
+         fUseMap = kFALSE;
          cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
       }
       mfile_was_closed = kTRUE; 
@@ -1467,13 +1468,13 @@ Bool_t FhMainFrame::CheckParams()
    fname = fTbMap->GetString();
    if (fname.CompareTo("none") == 0){
       cout << setblue << "No MapFile given " << setblack << endl;
-      kUseMap = kFALSE;
+      fUseMap = kFALSE;
    } else {
    	if(fname.Index("tmp") < 0 && fname.Index("scratch") < 0){
       	fname += " seems on NFS (not /tmp or /scratch)";
       	WarnBox((const char *)fname, this);
    	}
-      kUseMap = kTRUE;
+      fUseMap = kTRUE;
 //  is mapped file already existing?
    	fname = fTbMap->GetString();
    	if(!gSystem->AccessPathName(fname.Data())){
@@ -2598,7 +2599,17 @@ force Resume", this);
                            if (fUseMap)  SaveMap();
                            else          MessageToM_analyze("M_client savehists");
                       } else {
-                         WarnBox("Wait until absent, paused or configured", this);
+//                         WarnBox("Wait until absent, paused or configured", this);
+                         Bool_t was_running = kFALSE;
+                         if(fM_Status == M_RUNNING){
+                            was_running = kTRUE;
+                            MessageToM_analyze("M_client pause");
+                         }
+                         if (fUseMap)  SaveMap();
+                         else          MessageToM_analyze("M_client savehists");
+                         if(was_running){
+                            MessageToM_analyze("M_client resume");
+                         }
                       }
                       break;
                   case M_LOADPAR:
@@ -3207,12 +3218,12 @@ void FhMainFrame::Runloop(){
       if ( fWasStarted && fM_Status != M_RUNNING && fM_Status != M_PAUSING ) {
          gSystem->Sleep(1000);
       }
-      if(kUseMap && !fMfile && !gSystem->AccessPathName(fTbMap->GetString())){
+      if(fUseMap && !fMfile && !gSystem->AccessPathName(fTbMap->GetString())){
          fMfile = TMapFile::Create(fTbMap->GetString());
          if (fMfile->IsZombie()) { 
             fMfile->Close();
             fMfile = NULL;
-            kUseMap = kFALSE;
+            fUseMap = kFALSE;
             cout << setred << "Cant open mapfile: " << fTbMap->GetString() << setblack << endl;
          } else {
             cout << "Attach to MMapped file " << fMfile << endl;
@@ -3393,7 +3404,8 @@ void FhMainFrame::Runloop(){
 //                        cout << total << " " << fEvents_before << endl;
                      cout << setred << bell << 
                      "No events last " << fTotal_time_elapsed << " seconds"<< endl; 
-                     if(!CheckHostsUp())cout << "Seems a Lynx processor died"<< endl;
+                     if(!CheckHostsUp() && *fInputSource == "TcpIp")
+                        cout << "Seems a Lynx processor died"<< endl;
                      cout << setblack;
                   } else {
 //                        fTotal_time_no_event = 0;
@@ -3507,9 +3519,10 @@ int main(int argc, char **argv)
    }
    mainWindow = new FhMainFrame(gClient->GetRoot(), 400, 220, attachid, attachsock);
    cout << "Root Vers." <<  gROOT->GetVersion() << endl;
-   Int_t delay;
-   if ( kUseMap ) delay = 1000;
-   else           delay = 1000;
+   Int_t delay = 1000;
+//   if ( fUseMap ) delay = 1000;
+//   else           delay = 1000;
+   
    mt = new MyTimer(delay,kTRUE);
    theApp.Run();
 
