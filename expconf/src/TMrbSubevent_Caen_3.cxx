@@ -52,19 +52,39 @@ TMrbSubevent_Caen_3::TMrbSubevent_Caen_3(const Char_t * SevtName, const Char_t *
 //                 -  up to MAXEVENTS events per module
 //                 -  several modules per buffer
 //
-//                 31---------------16|15------8|7---------0
-//                 |                  |    wc   | modser#  | header
+//                 31------24|23----16|15------8|7---------0
+//                 |      010|        |    wc   | modser#  | header
 //                 |==================|====================|
-//                 |     channel      |        data        | channel data
+//                 |      000|  chn   |        data        | channel data
 //                 |------------------|---------|----------|
 //                 |        ...       |        ...         |
 //                 |==================|====================|
-//                 |         |         event count         | trailer
+//                 |      100|         event count         | trailer
 //                 31======================================0
 //
 //                 Data storage by the consumer (ROOT):
 //                 -  data stored in a TClonesArray/TUsrHit, channel by channel
 //                 -  each channel entry marked with event time
+//
+//                 31--------------------------------------0
+//                 |             buffer number             |
+//                 |---------------------------------------|
+//                 |      event number within buffer       |
+//                 |---------------------------------------|
+//                 |             module number             |
+//                 |---------------------------------------|
+//                 |            channel number             |
+//                 |---------------------------------------|
+//                 |          0        |  time st (32..47) |
+//                 |---------------------------------------|
+//                 |           time stamp (0..31)          |
+//                 |---------------------------------------|
+//                 |             word count (=2)           |
+//                 |---------------------------------------|
+//                 |                    0                  |
+//                 |---------------------------------------|
+//                 |                  data                 |
+//                 |---------------------------------------|
 //
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
