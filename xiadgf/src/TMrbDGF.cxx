@@ -62,6 +62,27 @@ const SMrbNamedXShort kMrbSwitchBusModes[] =
 								{0, 										NULL				}
 							};
 
+const SMrbNamedXShort kMrbPSANames[] =
+							{
+								{0, 	"Baseline"		},
+								{1, 	"CutOff01"		},
+								{2, 	"CutOff23"		},
+								{3, 	"T0Thresh01"	},
+								{4, 	"T0Thresh23"	},
+								{5, 	"T90Thresh" 	},
+								{6, 	"PSACh0"		},
+								{7, 	"PSACh1"		},
+								{8, 	"PSACh2"		},
+								{9, 	"PSACh3"		},
+								{10,	"PSALength01"	},
+								{11,	"PSALength23"	},
+								{12,	"PSAOffset01"	},
+								{13,	"PSAOffset23"	},
+								{14,	"TFACutOff0"	},
+								{15,	"TFACutOff1"	},
+								{0, 	NULL			}
+							};
+
 TMrbDGFData * gMrbDGFData = NULL;				// common data base for all DGF modules
 extern TMrbLogger * gMrbLog;
 
@@ -656,6 +677,47 @@ UInt_t TMrbDGF::GetSwitchBus() {
 
 	UInt_t switchBus = this->ReadICSR() & TMrbDGFData::kSwitchBus;
 	return(switchBus);
+}
+
+Bool_t TMrbDGF::ActivateUserPSACode(Bool_t Activate) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::ActivateUserPSACode
+// Purpose:        Activate user PSA
+// Arguments:      Bool_t Activate            -- kTRUE/kFALSE
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Activates user PSA code
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t csrBit;
+	if (Activate) {
+		csrBit = this->GetParValue("MODCSRB");
+		csrBit |= 1;
+		this->SetParValue("MODCSRB", csrBit);
+		for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+			csrBit = this->GetParValue(chn, "CHANCSRB");
+			csrBit |= 1;
+			this->SetParValue(chn, "CHANCSRB", csrBit);
+		}
+		gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": User PSA code activated" << endl;
+		gMrbLog->Flush(this->ClassName(), "ActivateUserPSACode", setblue);
+	} else {
+		csrBit = this->GetParValue("MODCSRB");
+		csrBit &= ~1;
+		this->SetParValue("MODCSRB", csrBit);
+		for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
+			csrBit = this->GetParValue(chn, "CHANCSRB");
+			csrBit &= ~1;
+			this->SetParValue(chn, "CHANCSRB", csrBit);
+		}
+		gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": User PSA code deactivated" << endl;
+		gMrbLog->Flush(this->ClassName(), "ActivateUserPSACode", setblue);
+	}
+	return(kTRUE);
 }
 
 Bool_t TMrbDGF::DownloadDSPCode(Int_t Retry, Bool_t TriedOnce) {
@@ -1387,6 +1449,38 @@ Bool_t TMrbDGF::SetParValue(const Char_t * ParamName, Int_t Value, Bool_t Update
 	return(kTRUE);
 }
 
+Bool_t TMrbDGF::SetParValue(Int_t Offset, Int_t Value, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetParValue
+// Purpose:        Set a param value
+// Arguments:      Int_t Offset         -- offset
+//                 Int_t Value          -- value
+//                 Bool_t UpdateDSP     -- kTRUE if DSP memory is to be updated
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets the value of a given parameter in memory.
+//                 Writes param value back to DSP if update flag is set.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fParams[Offset] = (UShort_t) (Value & 0xffff);		// set value in memory
+	if (UpdateDSP && !this->IsOffline()) {				// update param data in DSP?
+		if (!this->CheckConnect("SetParValue")) return(kFALSE);
+		if (!this->CheckActive("SetParValue")) return(kFALSE);
+		this->WritePSA(Offset);						// where to write to
+		Int_t cVal = Value & 0xffff;
+		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(16), cVal, kTRUE)) { 		// exec cnaf, 16 bit
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ".A0.F16 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "SetParValue");
+			return(kFALSE);
+		}
+	}
+
+	if (!UpdateDSP) fStatusM |= TMrbDGF::kParamsIncoreChanged;
+	return(kTRUE);
+}
+
 Int_t TMrbDGF::GetParValue(const Char_t * ParamName, Bool_t ReadFromDSP) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1474,6 +1568,38 @@ Int_t TMrbDGF::GetParValue(Int_t Channel, const Char_t * ParamName, Bool_t ReadF
 	paramName = ParamName;
 	paramName += Channel;
 	return(this->GetParValue(paramName.Data(), ReadFromDSP));
+}
+
+Int_t TMrbDGF::GetParValue(Int_t Offset, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetParValue
+// Purpose:        Get param value
+// Arguments:      Int_t Offset         -- param offset
+//                 Bool_t ReadFromDSP   -- kTRUE if param to be read from DSP
+// Results:        Int_t Value          -- value
+// Exceptions:
+// Description:    Reads the value of a given parameter from memory or DSP.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t pValue;
+
+	pValue = fParams[Offset] & 0xffff;					// incore value
+
+	if (ReadFromDSP && !this->IsOffline()) {									// reread from DSP?
+		if (!this->CheckConnect("GetParValue")) return(-1);
+		if (!this->CheckActive("GetParValue")) return(-1);
+		this->WritePSA(Offset);						// where to read from
+		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(0), pValue, kTRUE)) {	// exec cnaf, 16 bit
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ".A0.F0 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "GetParValue");
+			return(-1);
+		}
+		fParams[Offset] = (UInt_t) pValue & 0xffff;	// update incore data
+	}
+
+	return(pValue);
 }
 
 Bool_t TMrbDGF::FPGACodeLoaded(TMrbDGFData::EMrbFPGAType FPGAType) {
@@ -2107,6 +2233,9 @@ Int_t TMrbDGF::LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile) {
 			pLine = pLine.Strip(TString::kBoth);
 			if (pLine.Length() == 0) continue;						// empty line: ignore
 			if (pLine(0) == '#' && pLine(1) != '+') continue;		// comment (#): ignore
+			Int_t ncmt = pLine.Index("#", 0);
+			if (ncmt > 0) pLine.Resize(ncmt);
+			pLine = pLine.Strip(TString::kBoth);
 			pFields.Delete();
 			nFields = pLine.Split(pFields, ":");
 			pName = ((TObjString *) pFields[0])->GetString();
@@ -2261,6 +2390,264 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 	if (gMrbDGFData->fVerboseMode) {
 		gMrbLog->Out() << nofParams << " params written to " << paramFile << endl;
 		gMrbLog->Flush(this->ClassName(), "SaveParams", setblue);
+	}
+
+	return(nofParams);
+}
+
+Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::LoadPsaParams
+// Purpose:        Read PSA params from file
+// Arguments:      Char_t * ParamFile   -- file name
+//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
+// Results:        Int_t NofParams      -- number of params read
+// Exceptions:
+// Description:    Reads a set PSA values from file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t pOffset;
+	Int_t pValue;
+	TString pName;
+	TMrbNamedX * pKey;
+	ifstream pf;
+	Int_t nofParams;
+	TString paramFile;
+	TMrbString pLine;
+	TObjArray pFields;
+	TMrbString pStr;
+	Int_t line;
+	Int_t nFields;
+	TMrbSystem uxSys;
+	TMrbLofNamedX psaNames;
+		
+	Int_t psaVal[16];
+
+	psaNames.AddNamedX(kMrbPSANames);
+
+	if (!fDGFData->ParamNamesRead()) {
+		gMrbLog->Err() << "No param names read" << endl;
+		gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+		return(-1);
+	}
+
+	paramFile = ParamFile;
+	if (uxSys.CheckExtension(paramFile.Data(), ".psa")) {
+		pf.open(paramFile, ios::in);
+		if (!pf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+			return(-1);
+		}
+
+		line = 0;
+		nofParams = 0;
+		while (nofParams < 16) {
+			pLine.ReadLine(pf, kFALSE);
+			line++;
+			if (pf.eof()) break;
+			pLine = pLine.Strip(TString::kBoth);
+			if (pLine.Length() == 0) continue;						// empty line
+			if (pLine(0) == '#') continue;							// comment
+			Int_t ncmt = pLine.Index("#", 0);
+			if (ncmt > 0) pLine.Resize(ncmt);
+			pLine = pLine.Strip(TString::kBoth);
+			pFields.Delete();
+			nFields = pLine.Split(pFields, ":");
+			if (nFields < 3) {
+				gMrbLog->Err() << paramFile << " (line " << line << "): Wrong number of fields - " << nFields << endl;
+				gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+				continue;
+			}
+			pName = ((TObjString *) pFields[0])->GetString();
+			pKey = psaNames.FindByName(pName.Data());
+			if (pKey == NULL) {
+				gMrbLog->Err() << paramFile << " (line " << line << "): No such PSA name - " << pName << endl;
+				gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+				continue;
+			} else {
+				pStr = ((TObjString *) pFields[1])->GetString();
+				pStr.ToInteger(pOffset);
+				if (pOffset > 15) {
+					gMrbLog->Err() << paramFile << " (line " << line << "): [" << pName << "] PSA offset > 16" << endl;
+					gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+					continue;
+				}
+				pStr = ((TObjString *) pFields[2])->GetString();
+				pStr.ToInteger(pValue);				
+				psaVal[pOffset] = pValue;
+				nofParams++;
+			}
+		}
+		pf.close();
+	} else if (uxSys.CheckExtension(paramFile.Data(), ".psadmp")) {
+		pf.open(paramFile, ios::in);
+		if (!pf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+			return(-1);
+		}
+
+		line = 0;
+		nofParams = 0;
+		while (nofParams < 16) {
+			pLine.ReadLine(pf, kFALSE);
+			line++;
+			if (pf.eof()) break;
+			pLine = pLine.Strip(TString::kBoth);
+			if (pLine.Length() == 0) continue;						// empty line
+			if (pLine(0) == '#') continue;							// comment
+			Int_t ncmt = pLine.Index("#", 0);
+			if (ncmt > 0) pLine.Resize(ncmt);
+			pLine = pLine.Strip(TString::kBoth);
+			pStr = pLine;
+			pStr.ToInteger(pValue);				
+			psaVal[nofParams] = pValue;
+			nofParams++;
+		}
+		pf.close();
+	} else {
+		gMrbLog->Err() << "Wrong file extension - " << paramFile << " (should be .psa or .psadmp)" << endl;
+		gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+		return(-1);
+	}
+
+	if (UpdateDSP && !this->IsOffline()) {
+		if (!this->CheckConnect("LoadPsaParams")) return(-1);
+		pKey = fDGFData->FindParam("USERIN");
+		if (pKey == NULL) {
+			gMrbLog->Err() << "No such param - USERIN" << endl;
+			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+			return(-1);
+		}
+		pOffset = pKey->GetIndex();
+		for (Int_t i = 0; i < nofParams; i++) this->SetParValue(pOffset + i, psaVal[i]);
+	}
+
+	if (gMrbDGFData->fVerboseMode) {
+		gMrbLog->Out() << nofParams << " PSA params read from " << paramFile << endl;
+		gMrbLog->Flush(this->ClassName(), "LoadPsaParams", setblue);
+	}
+
+	return(nofParams);
+}
+
+Int_t TMrbDGF::SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SavePsaParams
+// Purpose:        Save PSA params to file
+// Arguments:      Char_t * ParamFile   -- file name
+//                 Bool_t ReadFromDSP   -- kTRUE if params to be read from DSP
+// Results:        Int_t NofParams      -- number of params written
+// Exceptions:
+// Description:    Saves PSA params to file. Param start at USERIN
+//                 Format is "unix style":
+//                       <name>:<offset>:<value>:<hexval>
+//                 Additional entries may be used to identify the module:
+//                       FileType:par
+//                       Module:<name>
+//                       Revision:<rev>
+//                       Crate:<crate>
+//                       Station:<station>
+//                       Cluster:<id>
+//                       XiaRelease:<release>
+//                       XiaDate:<date>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t pOffset;
+	UShort_t pValue;
+	TString pName;
+	TMrbNamedX * pKey;
+	ofstream pf;
+	Int_t nofParams;
+	TString paramFile;
+	TString paramPath;
+	TMrbString info;
+	TDatime dt;
+
+	TMrbLofNamedX psaNames;
+		
+	psaNames.AddNamedX(kMrbPSANames);
+
+	if (!fDGFData->ParamNamesRead()) {
+		gMrbLog->Err() << "No param names read" << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveParams");
+		return(-1);
+	}
+
+	if (ReadFromDSP && !this->IsOffline()) {
+		if (!this->CheckConnect("SaveParams")) return(-1);
+		this->ReadParamMemory(kTRUE, kTRUE);
+	}
+
+	if (!this->ParamValuesRead()) {
+		gMrbLog->Err() << "No param values read" << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveParams");
+		return(-1);
+	}
+
+	paramFile = ParamFile;
+	if (paramFile.Index("/") != 0 && paramFile.Index("./", 0) != 0) {
+		paramPath = gEnv->GetValue("TMrbDGF.SettingsPath", ".");
+		paramFile = paramPath + "/";
+		paramFile += ParamFile;
+	}
+	if (paramFile.Index(".psa") > 0) {
+		pf.open(paramFile, ios::out);
+		if (!pf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
+			gMrbLog->Flush(this->ClassName(), "SaveParams");
+			return(-1);
+		}
+
+		pf << "#----------------------------------------------------------------------------------------" << endl;
+		pf << "# Name          : "								<< paramFile << endl;
+		pf << "# Contents      : PSA settings for DGF-4C "		<< this->GetName()
+																<< " in C" << this->GetCrate()
+																<< ".N" << this->GetStation() << endl;
+		pf << "# Creation date : " 								<< dt.AsString() << endl;
+		pf << "# Created by    : " 								<< gSystem->Getenv("USER") << endl;
+		pf << "#" << endl;
+		pf << "# Data format   : <name>:<offset>:<value>:<hexval>" << endl;
+		pf << "#----------------------------------------------------------------------------------------" << endl;
+		pf << "#+FileType:psa" << endl;
+		pf << "#+Module:"										<< this->GetName() << endl;
+		pf << "#+Revision:"										<< this->GetRevision()->GetName() << endl;
+		pf << "#+Crate:"										<< this->GetCrate() << endl;
+		pf << "#+Station:" 										<< this->GetStation() << endl;
+		pf << "#+Cluster:"										<< this->GetClusterInfo(info) << endl;
+		pf << "#+XiaRelease:"									<< gEnv->GetValue("TMrbDGF.XiaRelease", "") << endl;
+		pf << "#+XiaDate:" 										<< gEnv->GetValue("TMrbDGF.XiaDate", "") << endl;
+		pf << "#........................................................................................" << endl;
+		pf << endl;
+		nofParams = 0;
+		pKey = fDGFData->FindParam("USERIN");
+		if (pKey == NULL) {
+			gMrbLog->Err() << "No such param - USERIN" << endl;
+			gMrbLog->Flush(this->ClassName(), "SavePsaParams");
+			return(-1);
+		}
+
+		pOffset = pKey->GetIndex();
+		for (Int_t i = 0; i < 16; i++) {
+			pValue = fParams[pOffset + i];
+			pf << psaNames[i]->GetName() << ":" << pOffset << ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10) << endl;
+			nofParams++;
+		}
+		pf.close();
+	} else {
+		gMrbLog->Err() << "Wrong file extension - " << paramFile << " (should be .par)" << endl;
+		gMrbLog->Flush(this->ClassName(), "SavePsaParams");
+		return(-1);
+	}
+
+	if (gMrbDGFData->fVerboseMode) {
+		gMrbLog->Out() << nofParams << " PSA params written to " << paramFile << endl;
+		gMrbLog->Flush(this->ClassName(), "SavePsaParams", setblue);
 	}
 
 	return(nofParams);

@@ -122,6 +122,8 @@ class TMrbDGF : public TNamed {
 		inline Bool_t DSPCodeLoaded() { return((fStatusM & TMrbDGF::kDSPCodeLoaded) != 0); };	// test if download ok
 		void ClearRegisters();											// initialize main dsp registers										
 
+		Bool_t ActivateUserPSACode(Bool_t Activate);					// user psa code
+
 		// parameter section
 		Bool_t ReadParamMemory(Bool_t ReadInputParams = kTRUE, Bool_t ReadOutputParams = kFALSE);	// read params from DSP
 		Bool_t ReadParamMemory(Int_t Channel);							// read params for a single channel
@@ -153,6 +155,8 @@ class TMrbDGF : public TNamed {
 		Int_t GetParValue(const Char_t * ParamName, Bool_t ReadFromDSP = kTRUE);				// get param
 		Bool_t SetParValue(Int_t Channel, const Char_t * ParamName, Int_t Value, Bool_t UpdateDSP = kTRUE);	// single chan
 		Int_t GetParValue(Int_t Channel, const Char_t * ParamName, Bool_t ReadFromDSP = kTRUE);
+		Bool_t SetParValue(Int_t Offset, Int_t Value, Bool_t UpdateDSP = kTRUE);
+		Int_t GetParValue(Int_t Offset, Bool_t ReadFromDSP = kTRUE);
 
 		Bool_t PrintParamsToFile(const Char_t * FileName = "", const Char_t * ParamName = "*");
 		Bool_t PrintParamsToFile(const Char_t * FileName, Int_t Channel);
@@ -168,6 +172,10 @@ class TMrbDGF : public TNamed {
 		Int_t LoadParams(const Char_t * ParamFile, Bool_t UpdateDSP = kTRUE);		// read params from file
 		Int_t LoadParamsToEnv(TEnv * Env, const Char_t * ParamFile);				// read param values to ROOT environment
 		Int_t SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP = kTRUE);		// save values to file
+
+		Int_t LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP = kTRUE);	// read psa params from file
+		Int_t SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP = kTRUE);	// save psa params to file
+
 		Bool_t SaveParams(TArrayS & TempStorage);									// save params temporarily
 		Bool_t RestoreParams(TArrayS & TempStorage);								// restore params temp storage
 		Bool_t SaveParams(EMrbDGFSaveIdx SaveIdx);
