@@ -2449,13 +2449,7 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, Bool_t UpdateDSP) {
 	paramFile = ParamFile;
 	if (uxSys.CheckExtension(paramFile.Data(), ".psa")) {
 		pf.open(paramFile, ios::in);
-		if (!pf.good()) {
-			gMrbLog->Err()	<< "[Warning] " << gSystem->GetError() << " - " << paramFile << endl;
-			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
-			gMrbLog->Err()	<< "[Warning] PSA values not set" << endl;
-			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
-			return(-1);
-		}
+		if (!pf.good()) return(-1);
 
 		line = 0;
 		nofParams = 0;
@@ -4648,6 +4642,7 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 
 	if (AutoTrigFlag) this->SetSwitchBus(0x2400, TMrbDGF::kBitSet);
 
+#if 0
 	Int_t ngc = this->GetNofGoodChannels();
 	if (ngc != nofChannels) {
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
@@ -4657,6 +4652,7 @@ Bool_t TMrbDGF::GetTrace_Init(Int_t TraceLength, UInt_t ChannelPattern, Int_t Xw
 		this->RestoreParams(TMrbDGF::kSaveTrace);
 		return(kFALSE);
 	}
+#endif
 
 	nofWords = TMrbDGFEventBuffer::kBufHeaderLength + TMrbDGFEventBuffer::kEventHeaderLength;
 	nofWords += nofChannels * (TMrbDGFEventBuffer::kChanHeaderLength + TraceLength);

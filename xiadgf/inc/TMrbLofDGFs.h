@@ -33,6 +33,7 @@ class TMrbLofDGFs : public TObjArray {
 			fStationMask = 0;
 			fDGFData = NULL;
 			fMultiCrate = kFALSE;
+			fAbortFlag = kFALSE;
 		};
 		
 		~TMrbLofDGFs() {};		 	// default dtor
@@ -58,6 +59,10 @@ class TMrbLofDGFs : public TObjArray {
 		inline TMrbEsone * Camac() { return(fCamac); }; 				// camac handle
 		
 		inline UInt_t GetStationMask() { return(fStationMask); };
+
+		inline void ResetAbort() { fAbortFlag = kFALSE; };
+		inline void Abort() { fAbortFlag = kTRUE; };
+		inline Bool_t IsAborted() { return(fAbortFlag); };
 
 		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofDGFs.html&"); };
 
@@ -92,6 +97,7 @@ class TMrbLofDGFs : public TObjArray {
 
 		UInt_t fStationMask;											// camac station mask: 1 bit per module
 
+		Bool_t fAbortFlag;												// used to abort wait loop
 		Bool_t fMultiCrate; 											// kTRUE if modules from different crates
 
 		TMrbDGFData * fDGFData; 										//! pointer to DGF data base

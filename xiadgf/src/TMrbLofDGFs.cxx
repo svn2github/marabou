@@ -569,7 +569,7 @@ TMrbDGF::EMrbWaitStatus TMrbLofDGFs::WaitActive(Int_t Timeout) {
 			csr = dgf->ReadCSR();
 			if (csr == 0xffffffff || (csr & TMrbDGFData::kActive) != 0) ok = kFALSE;
 			gSystem->ProcessEvents();
-			if (dgf->IsAborted()) {
+			if (this->IsAborted() || dgf->IsAborted()) {
 			gMrbLog->Err()	<< "Aborted after " << (time(NULL) - start) << " secs. Stopping current run." << endl;
 				gMrbLog->Flush(this->ClassName(), "WaitActive");
 				return(TMrbDGF::kWaitAborted);
