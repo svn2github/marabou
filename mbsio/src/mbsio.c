@@ -301,6 +301,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	int bps;
 	unsigned int ctype;
 	unsigned int buffer_type;
+	char * xp;
 
 	MBSBufferElem *tlist;
 
@@ -350,7 +351,12 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 				_mbs_output_error();
 				return(NULL);
 			}
-			ext = strchr(device, '.');
+			xp = device;
+			ext = NULL;
+			while (strchr(xp, '.') != NULL) {
+				ext = strchr(xp, '.');
+				xp = ext + 1;
+			}
 			if (ext != NULL) {
 				if (strcmp(ext, ".med") == 0) ctype = MBS_CTYPE_FILE_MED;
 				else if (strcmp(ext, ".lmd") == 0) ctype = MBS_CTYPE_FILE_LMD;
