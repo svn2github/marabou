@@ -1,4 +1,4 @@
-#!/usr/local/bin/xrcm
+#!/share/local_rh9/bin/xrcm
 
 // Script to generate html files from MARaBOU classes
 // Called by main Makefile.
