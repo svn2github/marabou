@@ -202,6 +202,9 @@ html:
 clean-html:
 	@rm -f html/*.html html/*.h
 
+changelog:
+	@$(MAKECHANGELOG)
+
 install:
 	@(if [ -d $(BINDIR) ]; then \
 	   inode1=`ls -id $(BINDIR) | awk '{ print $$1 }'`; \
