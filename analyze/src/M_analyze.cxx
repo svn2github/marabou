@@ -608,7 +608,8 @@ int main(int argc, char **argv) {
 	cout << " PutPid(TMrbAnalyze::M_RUNNING)" << endl;
 	PutPid(TMrbAnalyze::M_RUNNING);
 	u_analyze->SetRunStatus(TMrbAnalyze::M_RUNNING);
-
+   cout << "M_analyze start at: " << flush;
+   gSystem->Exec("date");
 //	read a given number of events from MBS (tcp or lmd file)
 	if ((input_mode & TMrbIOSpec::kInputMBS) == TMrbIOSpec::kInputMBS ) {
 		if ( ioSpec->IsTimeStampMode() ) {
@@ -682,7 +683,10 @@ int main(int argc, char **argv) {
 		gSystem->Exec((const char *)RmCmd);
 		if ( verboseMode ) cout << "M_analyze: removing " << our_pid_file << endl;
 	} 
-	cout << "M_analyze terminated, Events Processed: " << 
+	cout << "M_analyze terminated at: " << flush;
+   gSystem->Exec("date");
+
+   cout << "Events Processed: " << 
          u_analyze->GetEventsProcessed()<< endl;
 
    PlayQuart(3);
