@@ -129,13 +129,13 @@ TableOfLabels::TableOfLabels(const TGWindow *win, TString *title,
    fRowFrame      = new TGCompositeFrame(this, itemwidth*(fNcols+rl), 20, kHorizontalFrame);  
    fWidgets->AddFirst(fRowFrame);
 //   fActionFrame  = new TGCompositeFrame(fMainFrame, 100, 20, kHorizontalFrame);  
-   fCancelButton = new TGTextButton
-                         (fRowFrame, "Cancel", M_CANCEL);
-   fWidgets->AddFirst(fCancelButton);
-   fCancelButton->Resize(100,fCancelButton->GetDefaultHeight());
+//   fCancelButton = new TGTextButton
+//                         (fRowFrame, "Cancel", M_CANCEL);
+//   fWidgets->AddFirst(fCancelButton);
+//   fCancelButton->Resize(100,fCancelButton->GetDefaultHeight());
    
-   fRowFrame->AddFrame(fCancelButton,fLO1);
-   fCancelButton->SetCommand(cmd);
+//   fRowFrame->AddFrame(fCancelButton,fLO1);
+//   fCancelButton->SetCommand(cmd);
    this->AddFrame(fRowFrame,fLO1);                // frame into main frame
 
    if(title)this->SetWindowName((const char *)*title);
