@@ -190,6 +190,7 @@ class TMrbConfig : public TNamed {
 									kAnaVarArrClassInstance,
 									kAnaWdwDefinePointers,
 									kAnaWdwClassInstance,
+									kAnaWdwAdjustPointers,
 									kAnaUserInitialize,
 									kAnaUserReloadParams,
 									kAnaUserBookParams,
@@ -759,7 +760,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
 
 	protected:
-		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs, Bool_t Instantiate);	// common part of var/wdw definition
+		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);	// common part of var/wdw definition
 		Bool_t WriteUtilityProtos();
 		Bool_t CheckConfig();
 		

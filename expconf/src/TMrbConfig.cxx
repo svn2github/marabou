@@ -283,6 +283,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaVarArrClassInstance,		"VARARR_CLASS_INSTANCE" 		},
 								{TMrbConfig::kAnaWdwDefinePointers, 		"WDW_DEFINE_POINTERS"			},
 								{TMrbConfig::kAnaWdwClassInstance,			"WDW_CLASS_INSTANCE"			},
+								{TMrbConfig::kAnaWdwAdjustPointers, 		"WDW_ADJUST_POINTERS"			},
 								{TMrbConfig::kAnaUserInitialize,			"INCLUDE_USER_INITIALIZE"		},
 								{TMrbConfig::kAnaUserBookParams,			"INCLUDE_USER_BOOK_PARAMS"		},
 								{TMrbConfig::kAnaUserBookHistograms,		"INCLUDE_USER_BOOK_HISTOGRAMS"	},
@@ -2340,6 +2341,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						break;
 					case TMrbConfig::kAnaWdwDefinePointers:
 					case TMrbConfig::kAnaWdwClassInstance:
+					case TMrbConfig::kAnaWdwAdjustPointers:
 						if (gMrbLofUserVars != NULL) this->MakeAnalyzeCode(anaStrm, tagIdx, kIsWindow, anaTmpl);
 						break;
 					case TMrbConfig::kAnaFindVars:
@@ -3083,9 +3085,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 	TMrbVariable * varp;
 	TMrbWindow * wdwp;
 	UInt_t id, type;
-	Bool_t instantiate;
-	Int_t llow, lup;
-	Double_t xlow, xup;
 
 	TString varName;
 	TString className;
@@ -3095,7 +3094,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 	this->CheckConfig();		// check if config consistent
 
 	obj = gMrbLofUserVars->First();
-	instantiate = kTRUE;
 	while (obj) {
 		id = obj->GetUniqueID();
 		if (id & VarType) {
@@ -3138,21 +3136,14 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 				Template.Substitute("$varName", varName);
 				switch (type) {
 					case kWindowI:
-						llow = ((TMrbWindowI *) wdwp)->GetLowerLimit();
-						lup = ((TMrbWindowI *) wdwp)->GetUpperLimit();
-						if (llow == -1 && lup == -1) instantiate = kFALSE;
-						Template.Substitute("$varLower", llow);
-						Template.Substitute("$varUpper", lup);
+						Template.Substitute("$varLower", ((TMrbWindowI *) wdwp)->GetLowerLimit());
+						Template.Substitute("$varUpper", ((TMrbWindowI *) wdwp)->GetUpperLimit());
 						break;
 					case kWindowF:
-						xlow = ((TMrbWindowF *) wdwp)->GetLowerLimit();
-						xup = ((TMrbWindowF *) wdwp)->GetUpperLimit();
-						if (xlow == -1. && xup == -1.) instantiate = kFALSE;
-						Template.Substitute("$varLower", xlow);
-						Template.Substitute("$varUpper", xup);
+						Template.Substitute("$varLower", ((TMrbWindowF *) wdwp)->GetLowerLimit());
+						Template.Substitute("$varUpper", ((TMrbWindowF *) wdwp)->GetUpperLimit());
 						break;
 					case kWindow2D:
-						instantiate = kFALSE;
 						break;
 				}
 			}
@@ -3167,10 +3158,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm,	TMrbConfig::EMrbAnalyzeTa
 					if (!(id & kVarIsArray)) Template.WriteCode(AnaStrm);
 					break;
 				case TMrbConfig::kAnaWdwDefinePointers:
+				case TMrbConfig::kAnaWdwClassInstance:
 					if (id & kIsWindow) Template.WriteCode(AnaStrm);
 					break;
-				case TMrbConfig::kAnaWdwClassInstance:
-					if (id & kIsWindow && instantiate) Template.WriteCode(AnaStrm);
+				case TMrbConfig::kAnaWdwAdjustPointers:
+					if (id == kWindow2D) Template.WriteCode(AnaStrm);
 					break;
 				case TMrbConfig::kAnaFindVars:
 					Template.WriteCode(AnaStrm);
@@ -4820,7 +4812,7 @@ Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, const Char_t * VarDef
 		case kVarS:	proto = (TObject *) new TMrbVarS("Proto", ""); break;
 	}
 
-	sts = DefineVarOrWdw(vType, proto, VarDefs, kTRUE);
+	sts = DefineVarOrWdw(vType, proto, VarDefs);
 	delete proto;
 	return(sts);
 }
@@ -4864,7 +4856,7 @@ Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, Int_t Value, const Ch
 			return(kFALSE);
 	}
 
-	sts = DefineVarOrWdw(vType, proto, VarDefs, kTRUE);
+	sts = DefineVarOrWdw(vType, proto, VarDefs);
 	delete proto;
 	return(sts);
 }
@@ -4908,7 +4900,7 @@ Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, Float_t Value, const 
 			return(kFALSE);
 	}
 
-	sts = DefineVarOrWdw(vType, proto, VarDefs, kTRUE);
+	sts = DefineVarOrWdw(vType, proto, VarDefs);
 	delete proto;
 	return(sts);
 }
@@ -4952,7 +4944,7 @@ Bool_t TMrbConfig::DefineVariables(const Char_t * VarType, const Char_t * Value,
 		case kVarS:	proto = (TObject *) new TMrbVarS("Proto", Value); break;
 	}
 
-	sts = DefineVarOrWdw(vType, proto, VarDefs, kTRUE);
+	sts = DefineVarOrWdw(vType, proto, VarDefs);
 	delete proto;
 	return(sts);
 }
@@ -4996,7 +4988,7 @@ Bool_t TMrbConfig::DefineWindows(const Char_t * WdwType, const Char_t * WdwDefs)
 						return(kFALSE);
 	}
 
-	sts = DefineVarOrWdw(wType, proto, WdwDefs, kFALSE);
+	sts = DefineVarOrWdw(wType, proto, WdwDefs);
 	delete proto;
 
 	return(sts);
@@ -5041,7 +5033,7 @@ Bool_t TMrbConfig::DefineWindows(const Char_t * WdwType, Int_t Xlower, Int_t Xup
 						return(kFALSE);
 	}
 
-	sts = DefineVarOrWdw(wType, proto, WdwDefs, kTRUE);
+	sts = DefineVarOrWdw(wType, proto, WdwDefs);
 	delete proto;
 
 	return(sts);
@@ -5088,7 +5080,7 @@ Bool_t TMrbConfig::DefineWindows(const Char_t * WdwType, Double_t Xlower, Double
 						return(kFALSE);
 	}
 
-	sts = DefineVarOrWdw(wType, proto, WdwDefs, kTRUE);
+	sts = DefineVarOrWdw(wType, proto, WdwDefs);
 	delete proto;
 
 	return(sts);
@@ -5135,13 +5127,13 @@ Bool_t TMrbConfig::DefineWindows(const Char_t * WdwType, Int_t Npoints, Double_t
 						return(kFALSE);
 	}
 
-	sts = DefineVarOrWdw(wType, proto, WdwDefs, kTRUE);
+	sts = DefineVarOrWdw(wType, proto, WdwDefs);
 	delete proto;
 
 	return(sts);
 }
 
-Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs, Bool_t Instantiate) {
+Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::DefineVarOrWdw
@@ -5151,7 +5143,6 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 //                                               integer, float, or string
 //                 TObject * VarProto   -- prototype
 //                 Char_t * VarDefs     -- definition string
-//                 Bool_t Instantiate   -- kTRUE if there is a real object to be generated
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Real var/wdw definitions take place here.
@@ -5221,20 +5212,12 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 				case kVarS:
 					new TMrbVarS(varName.Data(), ((TMrbVarS *) VarProto)->Get()); break;
 				case kWindowI:
-					if (Instantiate) {
-						new TMrbWindowI(varName.Data(), ((TMrbWindowI *) VarProto)->GetLowerLimit(),
+					new TMrbWindowI(varName.Data(), ((TMrbWindowI *) VarProto)->GetLowerLimit(),
 												((TMrbWindowI *) VarProto)->GetUpperLimit());
-					} else {
-						new TMrbWindowI(varName.Data(), -1, -1);
-					}
 					break;
 				case kWindowF:
-					if (Instantiate) {
-						new TMrbWindowF(varName.Data(), ((TMrbWindowF *) VarProto)->GetLowerLimit(),
+					new TMrbWindowF(varName.Data(), ((TMrbWindowF *) VarProto)->GetLowerLimit(),
 												((TMrbWindowF *) VarProto)->GetUpperLimit());
-					} else {
-						new TMrbWindowF(varName.Data(), -1., -1.);
-					}
 					break;
 				case kWindow2D:
 					new TMrbWindow2D(varName.Data(), 1, NULL, NULL); break;
