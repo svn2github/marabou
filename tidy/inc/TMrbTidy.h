@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.5 2004-11-17 14:22:07 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.6 2004-11-17 14:30:08 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TMrbTidyOption : public TMrbNamedX {
 		Bool_t SetValue(Bool_t Flag);
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & Out = cout);
+		void Print(ostream & Out = cout, Bool_t Verbose = kTRUE);
 
 		void Reset();
 

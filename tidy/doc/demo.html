@@ -1,0 +1,40 @@
+<body bgcolor=lightblue>
+<b>Example of a HTML document (file "tidy.html")</b><br>
+<pre>
+&lt;!DOCTYPE HTML PUBLIC "-// IETF/DTD HTML 2.0// EN"&gt;
+&lt;html&gt;
+&lt;!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  --&gt;
+&lt;head&gt;&lt;title&gt;TMrbTidyDoc.html&lt;/title&gt;&lt;/head&gt;
+&lt;body bgcolor="#ebfcb0"&gt;
+&lt;h1&gt;TMrbTidyDoc: A MARaBOU class interfacing Dave Ragett's TidyLib&lt;/h1&gt;
+&lt;/body&gt;
+&lt;/html&gt;
+<p>
+</body>
+<b>ROOT script to invoke TIDY:</b><br>
+<pre>
+&nsp;&nsp;{
+&nsp;&nsp;&nsp;&nsp;&nsp;&nsp;gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+&nsp;&nsp;&nsp;&nsp;&nsp;&nsp;gSystem->Load("$MARABOU/lib/libTMrbTidy.so");
+&nsp;&nsp;&nsp;&nsp;&nsp;&nsp;gSystem->Load("$MARABOU/lib/libTidy.so");
+&nsp;&nsp;&nsp;&nsp;&nsp;&nsp;TMrbTidyDoc * tdoc = new TMrbTidyDoc("demo", "tidy.html");
+&nsp;&nsp;&nsp;&nsp;&nsp;&nsp;tdoc->Print();
+&nsp;&nsp;}
+</pre>
+<p>
+<b>Output from method TMrbTidyDoc::Print():</b><br>
+<pre>
+Document demo (file tidy.html): structure as analyzed by D. Raggett's TIDY
+----------------------------------------------------------------------------------------------
+[ 0] node root: type=Root(0) parent=root
+[ 1] . node HTML: type=DOCTYPE(1) parent=root text='&lt;!DOCTYPE HTML&gt;&lt;cr&gt;&lt;cr&gt;' PUBLIC=
+[ 1] . node html: type=StartTag(5) tagid=HTML(48) parent=root
+[ 2] .. node comment: type=Comment(2) parent=html text='&lt;!-- Author: Marabou team (marabou@physik.uni-muenchen.de)  --&gt;&lt;cr&gt;&lt;cr&gt;'
+[ 2] .. node head: type=StartTag(5) tagid=HEAD(46) parent=html
+[ 3] ... node title: type=StartTag(5) tagid=TITLE(111) parent=head
+[ 4] .... node text: type=Text(4) parent=title text='TMrbTidyDoc.html&lt;cr&gt;'
+[ 2] .. node body: type=StartTag(5) tagid=BODY(16) parent=html bgcolor=#EBFCB0
+[ 3] ... node h1: type=StartTag(5) tagid=H1(40) parent=body
+[ 4] .... node text: type=Text(4) parent=h1 text='TMrbTidyDoc: A MARaBOU class interfacing Dave Ragett's TidyLib&lt;cr&gt;'
+</pre>
+</body>
