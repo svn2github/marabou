@@ -578,6 +578,8 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		UpdateTriggerTable();									// initialize trigger table								
 
+		fSevtSize = 0;
+
 		fLofUserHistograms.Delete();							// init list of user-defined histograms
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofUserClasses.Delete();								// init list of user-added classes
@@ -5066,6 +5068,15 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 	}
 	mbsSetup->SetNofReadouts(1);
 	mbsSetup->ReadoutProc(0)->SetCratesToBeRead(c[0], c[1], c[2], c[3], c[4]);
+
+	if (fSevtSize > 0) {
+		TMrbEvent * evt = (TMrbEvent *) fLofEvents.First();
+		while (evt) {
+			mbsSetup->ReadoutProc(0)->SetSevtSize(evt->GetTrigger(), fSevtSize);
+			evt = (TMrbEvent *) fLofEvents.After(evt);
+		}
+	}
+		
 	mbsSetup->Save();
 	gMrbLog->Out() << "[.mbssetup: MBS setup updated]" << endl;
 	gMrbLog->Flush("", "", setblue);

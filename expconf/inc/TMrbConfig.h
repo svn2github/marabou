@@ -495,7 +495,8 @@ class TMrbConfig : public TNamed {
 		Bool_t CompileReadoutCode(const Char_t * Host, Bool_t CleanFlag = kTRUE);	// compile readout code
 		Bool_t CompileAnalyzeCode(Bool_t CleanFlag = kTRUE);						// compile analysis code
 
-		Bool_t UpdateMbsSetup();						// update .mbssetup database if online mode
+		inline void SetSevtSize(Int_t Size) { fSevtSize = Size; }; 	// set max size of subevent (for all events/triggers)
+		Bool_t UpdateMbsSetup();									// update .mbssetup database if online mode
 
 		void Print(ostream & OutStrm, const Char_t * Prefix = "");			// show data
 		inline virtual void Print() { Print(cout, ""); };
@@ -753,6 +754,8 @@ class TMrbConfig : public TNamed {
 		UInt_t fTriggerMask;				// trigger bits defined so far
 		Bool_t fSingleBitTriggersOnly;		// triggers 1,2,4, or 8 only
 		TArrayI fTriggersToBeHandled;		// trigger patterns to be handled
+
+		Int_t fSevtSize;					// subevent size to be used in .mbssetup
 
 		Bool_t fUserMacroToBeCalled;		// call user macro
 		TString fUserMacro; 				// macro name
