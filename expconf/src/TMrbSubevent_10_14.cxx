@@ -90,7 +90,7 @@ TMrbSubevent_10_14::TMrbSubevent_10_14(const Char_t * SevtName, const Char_t * S
 		fSevtType = 10; 	 			// set subevent type & subtype
 		fSevtSubtype = 14;
 		fLegalDataTypes = TMrbConfig::kDataUShort | TMrbConfig::kDataUInt; // word length: 16 or 32 bits
-		gMrbConfig->AddUserClass("TMrbSubevent_HB");	// we need this base class
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_HB");	// we need this base class
 		gDirectory->Append(this);
 	}
 }

@@ -535,7 +535,6 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 	TMrbConfig::EMrbAnalyzeTag tagIdx;
 	TMrbNamedX * analyzeTag;
 
-	Char_t * fp;
 	TString templatePath;
 	TString anaTemplateFile;
 
@@ -568,41 +567,41 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	fp = NULL;
+	TString fileSpec = "";
 	if (this->HasPrivateCode()) {
 		tf = "Subevent_";
 		tf += sevtNameUC;
 		tf += Extension;
 		tf += ".code";
 		tf1 = tf;
-		fp = gSystem->Which(templatePath.Data(), tf.Data());
-		if (fp == NULL) {
+		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += Extension;
 				tf += ".code";
 				tf2 = tf;
-				fp = gSystem->Which(templatePath.Data(), tf.Data());
+				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 			}
-			if (fp == NULL) {
+			if (fileSpec.IsNull()) {
 				tf = this->ClassName();
 				tf += Extension;
 				tf += ".code";
 				tf.ReplaceAll("TMrb", "");
 				tf3 = tf;
-				fp = gSystem->Which(templatePath.Data(), tf.Data());
+				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 			}
 		}
 	}
-	if (fp == NULL) {
+	if (fileSpec.IsNull()) {
 		tf = "Subevent";
 		tf += Extension;
 		tf += ".code";
 		tf4 = tf;
-		fp = gSystem->Which(templatePath.Data(), tf.Data());
+		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 	}
-	if (fp == NULL) {
+	if (fileSpec.IsNull()) {
 		gMrbLog->Err()	<< "Template file not found -" << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		gMrbLog->Err()	<< "          Searching on path " << templatePath << endl;
@@ -626,11 +625,11 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 	}
 
 	if (verboseMode) {
-		gMrbLog->Out()  << "[" << sevtNameLC << "] Using template file " << fp << endl;
+		gMrbLog->Out()  << "[" << sevtNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
 	
-	anaTemplateFile = fp;
+	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
 

@@ -219,7 +219,6 @@ Bool_t TMrbSubevent_DGF_1::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 
 	TMrbNamedX * rcFileTag;
 
-	Char_t * fp;
 	TString rcTemplateFile;
 	TString templatePath;
 	TString sevtNameUC;
@@ -234,19 +233,18 @@ Bool_t TMrbSubevent_DGF_1::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	fp = NULL;
 	tf = this->ClassName();
 	tf.ReplaceAll("TMrb", "");
 	tf += ".rc.code";
-	fp = gSystem->Which(templatePath.Data(), tf.Data());
-	if (fp == NULL) return(kTRUE);
+	TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+	if (fileSpec.IsNull()) return(kTRUE);
 
 	if (verboseMode) {
-		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fp << endl;
+		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
 	}
 	
- 	rcTemplateFile = fp;
+ 	rcTemplateFile = fileSpec;
 
 	if (!rcTmpl.Open(rcTemplateFile, &gMrbConfig->fLofRcFileTags)) return(kFALSE);
 

@@ -501,7 +501,6 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	TString mnemoLC, mnemoUC;
 	TString moduleNameLC, moduleNameUC;
 
-	Char_t * fp;
 	TString templatePath;
 	TString anaTemplateFile;
 
@@ -533,44 +532,44 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	TString ext = Extension;
 	if (ext(0) != '.') ext.Prepend("_");
 
-	fp = NULL;
+	TString fileSpec = "";
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
-		fp = gSystem->Which(templatePath.Data(), tf.Data());
-		if (fp == NULL) {
+		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += ext.Data();
 				tf += ".code";
-				fp = gSystem->Which(templatePath.Data(), tf.Data());
+				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 			}
-			if (fp == NULL) {
+			if (fileSpec.IsNull()) {
 				tf = "Module_";
 				tf += className;
 				tf += ext.Data();
 				tf += ".code";
-				fp = gSystem->Which(templatePath.Data(), tf.Data());
+				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 			}
 		}
 	}
-	if (fp == NULL) {
+	if (fileSpec.IsNull()) {
 		tf = "Module";
 		tf += ext.Data();
 		tf += ".code";
-		fp = gSystem->Which(templatePath.Data(), tf.Data());
+		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 	}
-	if (fp == NULL) return(kTRUE);
+	if (fileSpec.IsNull()) return(kTRUE);
 	
 	if (verboseMode) {
-		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fp << endl;
+		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
 	
-	anaTemplateFile = fp;
+	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
 
@@ -611,19 +610,18 @@ Bool_t TMrbModule::LoadCodeTemplates(const Char_t * TemplateFile) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TString templatePath;
-	Char_t * fp;
 	TString codeFile;
 
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/modules");
 
 	gSystem->ExpandPathName(templatePath);
-	fp = gSystem->Which(templatePath.Data(), TemplateFile);
-	if (fp == NULL) {
+	TString fileSpec = gSystem->Which(templatePath.Data(), TemplateFile);
+	if (fileSpec.IsNull()) {
 		gMrbLog->Err() << "No such file - " << templatePath << "/" << TemplateFile << endl;
 		gMrbLog->Flush(this->ClassName(), "LoadCodeTemplates");
 		return(kFALSE);
 	}
-	codeFile = fp;
+	codeFile = fileSpec;
 
 	if (!fCodeTemplates.ReadCodeFromFile(codeFile, &gMrbConfig->fLofModuleTags)) {
 		gMrbLog->Err() << TemplateFile << " - Error while loading code" << endl;

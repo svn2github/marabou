@@ -364,7 +364,6 @@ Bool_t TMrbXia_DGF_4C::ReadNameTable() {
 	ifstream param;
 	Int_t nofParams;
 	TString dataPath;
-	Char_t * fp;
 	TString paramFile;
 	TString pLine;
 
@@ -381,14 +380,14 @@ Bool_t TMrbXia_DGF_4C::ReadNameTable() {
 		return(kFALSE);
 	}
 
-	fp = gSystem->Which(dataPath.Data(), paramFile.Data());
-	if (fp == NULL) {
+	TString fileSpec = gSystem->Which(dataPath.Data(), paramFile.Data());
+	if (fileSpec.IsNull()) {
 		gMrbLog->Err() << "No such file - " << paramFile << ", searched on \"" << dataPath << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadNameTable");
 		return(kFALSE);
 	}
  
-	paramFile = fp;
+	paramFile = fileSpec;
 	param.open(paramFile, ios::in);
 	if (!param.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
@@ -472,7 +471,6 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 	TString mnemoLC, mnemoUC;
 	TString moduleNameLC, moduleNameUC;
 
-	Char_t * fp;
 	TString templatePath;
 	TString anaTemplateFile;
 
@@ -506,44 +504,44 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 	TString ext = Extension;
 	if (ext(0) != '.') ext.Prepend("_");
 
-	fp = NULL;
+	TString fileSpec = "";
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
-		fp = gSystem->Which(templatePath.Data(), tf.Data());
-		if (fp == NULL) {
+		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += ext.Data();
 				tf += ".code";
-				fp = gSystem->Which(templatePath.Data(), tf.Data());
+				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 			}
-			if (fp == NULL) {
+			if (fileSpec.IsNull()) {
 				tf = "Module_";
 				tf += className;
 				tf += ext.Data();
 				tf += ".code";
-				fp = gSystem->Which(templatePath.Data(), tf.Data());
+				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 			}
 		}
 	}
-	if (fp == NULL) {
+	if (fileSpec.IsNull()) {
 		tf = "Module";
 		tf += ext.Data();
 		tf += ".code";
-		fp = gSystem->Which(templatePath.Data(), tf.Data());
+		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 	}
-	if (fp == NULL) return(kTRUE);
+	if (fileSpec.IsNull()) return(kTRUE);
 	
 	if (verboseMode) {
-		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fp << endl;
+		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 	}
 	
-	anaTemplateFile = fp;
+	anaTemplateFile = fileSpec;
 
 	if (!anaTmpl.Open(anaTemplateFile, &gMrbConfig->fLofAnalyzeTags)) return(kFALSE);
 
@@ -687,7 +685,6 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 
 	TMrbNamedX * rcFileTag;
 
-	Char_t * fp;
 	TString rcTemplateFile;
 	TString templatePath;
 	TString moduleNameUC;
@@ -702,20 +699,19 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	fp = NULL;
 	tf = "Module_";
 	tf += this->ClassName();
 	tf.ReplaceAll("TMrb", "");
 	tf += ".rc.code";
-	fp = gSystem->Which(templatePath.Data(), tf.Data());
-	if (fp == NULL) return(kTRUE);
+	TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+	if (fileSpec.IsNull()) return(kTRUE);
 
 	if (verboseMode) {
-		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fp << endl;
+		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
 	}
 	
- 	rcTemplateFile = fp;
+ 	rcTemplateFile = fileSpec;
 
 	if (!rcTmpl.Open(rcTemplateFile, &gMrbConfig->fLofRcFileTags)) return(kFALSE);
 

@@ -28,14 +28,14 @@
 
 #include <pthread.h>  // pthread header file
 
-// global objects
-#include "%%ANALYZE_FILE%%Globals.h"
-
 %%BeginOfCode%%
 %B%// global defs supplied by user
 %I%#include "$iclFile"
 %%EndOfCode%%
 %%INCLUDE_USER_GLOBALS%%
+
+// global objects
+#include "%%ANALYZE_FILE%%Globals.h"
 
 %%INCLUDE_EVT_SEVT_MOD_GLOBALS%%
 
@@ -137,7 +137,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %%BeginOfCode%%
 %B%// instantiate user-defined event classes
 %C%	if (g$className == NULL) {		// event $className
-%C%		g$className = new g$className();
+%C%		g$className = new $className();
 %C% 		Bool_t err = g$className->IsZombie();
 %C% 		if (err) {
 %C% 			gMrbLog->Err()	<< "Something went wrong while creating user-defined event $className" << endl;

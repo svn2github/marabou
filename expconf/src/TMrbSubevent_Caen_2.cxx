@@ -95,7 +95,7 @@ TMrbSubevent_Caen_2::TMrbSubevent_Caen_2(const Char_t * SevtName, const Char_t *
 		fSevtType = 10; 	 							// set subevent type & subtype
 		fSevtSubtype = 42;
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
-		gMrbConfig->AddUserClass("TMrbSubevent_Caen");	// we need this base class
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen");	// we need this base class
 		gDirectory->Append(this);
 	}
 }

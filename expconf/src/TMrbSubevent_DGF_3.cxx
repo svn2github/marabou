@@ -124,7 +124,7 @@ TMrbSubevent_DGF_3::TMrbSubevent_DGF_3(const Char_t * SevtName, const Char_t * S
 		fSevtType = 10; 	 							// set subevent type & subtype
 		fSevtSubtype = 23;
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
-		gMrbConfig->AddUserClass("TMrbSubevent_DGF");	// we need this base class
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_DGF");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
@@ -223,7 +223,6 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 
 	TMrbNamedX * rcFileTag;
 
-	Char_t * fp;
 	TString rcTemplateFile;
 	TString templatePath;
 	TString sevtNameUC;
@@ -238,20 +237,19 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	fp = NULL;
 	tf = this->ClassName();
 	tf.ReplaceAll("TMrb", "");
 	tf += ".rc.code";
-	fp = gSystem->Which(templatePath.Data(), tf.Data());
+	TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
 
-	if (fp == NULL) return(kTRUE);
+	if (fileSpec.IsNull()) return(kTRUE);
 
 	if (verboseMode) {
-		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fp << endl;
+		gMrbLog->Out()  << "[" << this->GetName() << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeRcFile");
 	}
 	
- 	rcTemplateFile = fp;
+ 	rcTemplateFile = fileSpec;
 
 	if (!rcTmpl.Open(rcTemplateFile, &gMrbConfig->fLofRcFileTags)) return(kFALSE);
 

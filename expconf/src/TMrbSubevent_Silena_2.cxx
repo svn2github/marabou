@@ -93,7 +93,7 @@ TMrbSubevent_Silena_2::TMrbSubevent_Silena_2(const Char_t * SevtName, const Char
 		fSevtType = 10; 	 						// set subevent type & subtype
 		fSevtSubtype = 32;
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
-		gMrbConfig->AddUserClass("TMrbSubevent_Silena");	// we need this base class
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Silena");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
