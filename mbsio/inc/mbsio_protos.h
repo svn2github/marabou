@@ -33,4 +33,6 @@
 	extern "C" Int_t mbs_open_log(const Char_t *);
 	extern "C" Int_t mbs_open_lmd(const Char_t *);
 	extern "C" Int_t mbs_close_lmd();
+	extern "C" Int_t mbs_open_med(const Char_t *);
+	extern "C" Int_t mbs_close_med();
 

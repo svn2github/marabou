@@ -51,6 +51,9 @@ char loc_logbuf[MBS_L_STR];
 char log_file[MBS_L_STR];
 FILE * log_out = NULL;
 
+char med_file[MBS_L_STR];
+FILE * med_out = NULL;
+		
 char lmd_file[MBS_L_STR];
 FILE * lmd_out = NULL;
 		
@@ -1300,6 +1303,46 @@ int mbs_open_log(char *logfile) {
 	return(TRUE);
 }
 
+int mbs_open_med(char *medfile) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_open_med
+// Purpose:        Open a file write raw event data
+// Arguments:      char * medfile     -- med file
+// Results:        
+// Exceptions:     
+// Description:    Opens a file to store MBS event data.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	FILE * f;
+
+	if ((f = fopen(medfile, "w")) == NULL) {
+		sprintf(loc_errbuf, "?SYSERR-[mbs_open_med]- %s (%d)", sys_errlist[errno], errno);
+		_mbs_output_error();
+		return(FALSE);
+	}
+	strcpy(med_file, medfile);
+	med_out = f;
+	return(TRUE);
+}
+
+int mbs_close_med() {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_close_med
+// Purpose:        Close med file
+// Arguments:      --
+// Results:        
+// Exceptions:     
+// Description:    Closes med file if open.
+// Keywords:       
+///////////////////////////////////////////////////////////////////////////*/
+
+	if (med_out) fclose(med_out);
+	return(TRUE);
+}
+
 int mbs_open_lmd(char *lmdfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
@@ -1327,8 +1370,8 @@ int mbs_open_lmd(char *lmdfile) {
 int mbs_close_lmd() {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_open_lmd
-// Purpose:        CLose lmd file
+// Name:           mbs_close_lmd
+// Purpose:        Close lmd file
 // Arguments:      --
 // Results:        
 // Exceptions:     
