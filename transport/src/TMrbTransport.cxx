@@ -664,9 +664,9 @@ Bool_t TMrbTransport::CloseMEDFile() {
 	sts = mbs_close_med();
 	if (sts) {
 		gMrbLog->Out()	<< "MED file closed" << endl;
-		gMrbLog->Flush(this->ClassName(), "CloseLMDFile", setblue);
+		gMrbLog->Flush(this->ClassName(), "CloseMEDFile", setblue);
 	} else {
-		PrintMbsIoError("CloseLMDFile");
+		PrintMbsIoError("CloseMEDFile");
 		SetError();
 	}
 	return(sts);

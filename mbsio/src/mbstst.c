@@ -65,7 +65,7 @@ main(int argc, char *argv[])
 		fprintf(stderr, "                      input:  data source to read data from\n");
 		fprintf(stderr, "                      mode :  xfer mode: S = TCP/IP synchronous (default)\n");
 		fprintf(stderr, "                                         A = TCP/IP asynchronous\n");
-		fprintf(stderr, "                                         F = from file\n");
+		fprintf(stderr, "                                         F = from file (ext .lmd or .med\n");
 		fprintf(stderr, "                      nevts:  number of events to be collected (default: 0 = unlimited)\n");
 		fprintf(stderr, "                      show :  buffer items to be shown (default: \"ES\")\n");
 		fprintf(stderr, "                                         F = file header\n");

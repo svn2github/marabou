@@ -8,9 +8,7 @@
 // Revision:       
 // Date:           
 // Keywords:       
-////////////////////////////////////////////////////////////////////////////*/
-
-static char sccsid[]	=	"%W%";
+//////////////////////////////////////////////////////////////////////////// */
 
 /* include files needed by mbsio */
 
@@ -37,11 +35,6 @@ static char sccsid[]	=	"%W%";
 
 /* if you want to have remote tape access */
 
-#ifdef MBS_REMOTE_TAPE
-#	include "rmt.h"
-	static int f_force_local    =   FALSE;
-#endif
-
 extern int errno;
 
 char loc_errbuf[MBS_L_STR]; 		// where to store error messages
@@ -57,6 +50,8 @@ FILE * med_out = NULL;
 char lmd_file[MBS_L_STR];
 FILE * lmd_out = NULL;
 		
+int total = 0;
+
 void _mbs_show_fheader();
 void _mbs_show_bheader();
 void _mbs_show_evhe_10_1();
@@ -295,12 +290,13 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 // Exceptions:     mbs = NULL in case of errors
 // Description:    Opens an input stream for mbs data.
 // Keywords:
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE *input;
 	MBSDataIO *mbs;
 	char cmode;
 	char *dev;
+	char *ext;
 	int fno;
 	int bps;
 	unsigned int ctype;
@@ -341,19 +337,9 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 		}
 
 		if (ctype & MBS_CTYPE_REMOTE) {
-#ifdef MBS_REMOTE_TAPE
-			if ((fno = rmtopen(device, O_RDONLY, 0666)) == -1) {
-				sprintf(loc_errbuf, "?SYSERR-[mbs_open_file]- %s: %s (%d)",
-													device, sys_errlist[errno], errno);
-				_mbs_output_error();
-				return(NULL);
-			}
-			input = fdopen(fno, "r");
-#else
 			sprintf(loc_errbuf, "?NO_REM-[mbs_open_file]- %s: No REMOTE tape access", device);
 			_mbs_output_error();
 			return(NULL);
-#endif
 		} else {
 			if (strcmp(device, "-") == 0) {
 				input = stdin;
@@ -363,6 +349,11 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 													device, sys_errlist[errno], errno);
 				_mbs_output_error();
 				return(NULL);
+			}
+			ext = strchr(device, '.');
+			if (ext != NULL) {
+				if (strcmp(ext, ".med") == 0) ctype = MBS_CTYPE_FILE_MED;
+				else if (strcmp(ext, ".lmd") == 0) ctype = MBS_CTYPE_FILE_LMD;
 			}
 			fno = fileno(input);
 		}
@@ -450,7 +441,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	mbs->buf_valid = FALSE;
 
 	if (ctype == MBS_CTYPE_FILE) {
-	    buffer_type = _mbs_next_buffer(mbs);
+		buffer_type = _mbs_next_buffer(mbs);
 		if (buffer_type == MBS_BTYPE_ERROR || buffer_type == MBS_BTYPE_ABORT) return(NULL);
 		if (buffer_type == MBS_BTYPE_HEADER) mbs->buf_valid = FALSE;
 	}
@@ -468,7 +459,7 @@ int mbs_close_file(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Close i/o stream and free memory
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 	
 	if (!_mbs_check_active(mbs)) return(FALSE);
 
@@ -501,7 +492,7 @@ int mbs_free_dbase(MBSDataIO * mbs) {
 // Exceptions:     
 // Description:    Frees memory allocated so far.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 	
 	if (mbs != NULL) {
 		free(mbs->hdr_data);
@@ -524,11 +515,9 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 // Description:    Requests next buffer either from data source or from
 //                 buffer pool.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register MBSBufferPool * bpp;
-	int bytes;
-	int bytes_read;
 	int sc;
 	unsigned int buffer_type;
 	s_bufhe * bh;
@@ -607,7 +596,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 // Exceptions:     type = MBS_BTYPE_ERROR if error
 // Description:    Reads one buffer and determines buffer type
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register MBSBufferPool * bpp;
 	int bytes;
@@ -627,14 +616,10 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 
 	if (mbs->connection & MBS_CTYPE_FILE) {
 		if (mbs->connection & MBS_CTYPE_REMOTE) {
-#ifdef MBS_REMOTE_TAPE
-			bytes_read = rmtread(mbs->fileno, bpp->data, bytes);
-#else
 			sprintf(loc_errbuf, "?NO_REM-[_mbs_read_buffer]- %s: No REMOTE tape access",
 																mbs->device);
 			_mbs_output_error();
 			return(MBS_BTYPE_ABORT);
-#endif
 		} else {
 			bytes_read = read(mbs->fileno, bpp->data, bytes);
 		}	
@@ -701,13 +686,33 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 // Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
 // Description:    Sets ptrs to next event struct
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
-	register int i;
+	unsigned int _mbs_next_med_event(MBSDataIO *);
+	unsigned int _mbs_next_lmd_event(MBSDataIO *);
+
+	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
+
+	if (mbs->connection & MBS_CTYPE_FILE_MED)	return(_mbs_next_med_event(mbs));
+	else													return(_mbs_next_lmd_event(mbs));
+}
+
+unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           _mbs_next_lmd_event
+// Purpose:        Setup next event
+// Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
+// Results:        unsigned int etype  -- event type
+// Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
+// Description:    Sets ptrs to next event struct
+//                 (expects original LMD data from tcp or file)
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
 	s_bufhe *bh;
 	s_evhe *eh;
 	s_vehe *vh;
-	register char *ipnt;
 	unsigned int bo;
 	unsigned int btype, etype;
 	int evl;
@@ -719,10 +724,8 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	char *calloc();
 	void _mbs_output_error();
 
-	unsigned char eHdr[sizeof(s_evhe)];
+	unsigned char eHdr[sizeof(s_vehe)];
 	int ehs;
-
-	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
 
 	bh = mbs->bufpt;
 	bo = mbs->byte_order;
@@ -738,7 +741,7 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 
 		if (bh->h_begin == 1) {
 			sprintf(loc_errbuf,
-			"?EVTERR-[mbs_next_event]- %s (buf %d, evt 1): Illegal event spanning - unexp frag on top",
+			"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt 1): Illegal event spanning - unexp frag on top",
 						mbs->device, mbs->cur_bufno);
 			_mbs_output_error();
 			mbs->buf_valid = FALSE;
@@ -776,6 +779,7 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	} else {
 		if (mbs->evt_data != NULL) free(mbs->evt_data);
 		mbs->evt_data = calloc(1, evl);
+		memset(mbs->evt_data, 0, evl);
 	}
 	mbs->evtsiz = evl;
 	memcpy(mbs->evt_data, mbs->evtpt, frag1);
@@ -787,13 +791,13 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 	etype = (mbs->evttype)->type;
 	if (etype == MBS_ETYPE_ERROR || etype == MBS_ETYPE_ABORT) {
 		sprintf(loc_errbuf,
-		"?EVTERR-[mbs_next_event]- %s (buf %d, evt %d): Not a legal event type - %#lx",
+		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Not a legal event type - %#lx",
 					mbs->device, mbs->cur_bufno, mbs->evtno, etype);
 		_mbs_output_error();
 		return(etype);
 	}
 
-	memcpy(eHdr, mbs->evt_data, sizeof(s_evhe)); 	/* save header ###unswapped### */
+	memcpy(eHdr, mbs->evt_data, sizeof(s_vehe)); 	/* save header ###unswapped### */
 
 	s = (mbs->evttype)->convert;
 	(*s)(mbs);
@@ -808,7 +812,7 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 
 		if (bh->h_begin != 1) {
 			sprintf(loc_errbuf,
-			"?EVTERR-[mbs_next_event]- %s (buf %d, evt %d): Illegal event spanning - 2nd frag missing",
+			"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Illegal event spanning - 2nd frag missing",
 						mbs->device, mbs->cur_bufno, mbs->evtno);
 			_mbs_output_error();
 			return(MBS_ETYPE_ABORT);
@@ -827,7 +831,7 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 
 	if (frag1 != evl) {
 		sprintf(loc_errbuf,
-		"?EVTERR-[mbs_next_event]- %s (buf %d, evt %d): Illegal event fragmentation",
+		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Illegal event fragmentation",
 					mbs->device, mbs->cur_bufno, mbs->evtno);
 		_mbs_output_error();
 		return(MBS_ETYPE_ABORT);
@@ -841,7 +845,7 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 
 	if (!_mbs_check_sequence(mbs, MBS_TY_EVENT)) {
 		sprintf(loc_errbuf,
-		"?ILLSEQ-[mbs_next_event]- %s (buf %d): Illegal event sequence - last=%d <> this=%d",
+		"?ILLSEQ-[_mbs_next_lmd_event]- %s (buf %d): Illegal event sequence - last=%d <> this=%d",
 						mbs->device, mbs->evtno_mbs, ((s_vehe *) mbs->evt_data)->l_count);
 			_mbs_output_error();
 		return(MBS_ETYPE_ERROR);
@@ -863,6 +867,120 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 		ehs = sizeof(s_vehe);
 		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
+	} 
+
+	return((mbs->evttype)->type);
+}
+
+unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
+/*_________________________________________________________[C PUBLIC FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           mbs_next_event
+// Purpose:        Setup next event
+// Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
+// Results:        unsigned int etype  -- event type
+// Exceptions:     etype = MBS_ETYPE_ERROR or MBS_ETYPE_EOF
+// Description:    Sets ptrs to next event struct
+//                 (expects MBS event data from file)
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	s_evhe *eh;
+	s_vehe *vh;
+	unsigned int bo;
+	unsigned int btype, etype;
+	int evl;
+	int sc;
+	unsigned int (*s)();
+	int bytes_read;
+
+	MBSBufferElem *_mbs_check_type();
+	char *calloc();
+	void _mbs_output_error();
+
+	unsigned char eHdr[sizeof(s_evhe)];
+
+/**************************************************/
+/*	use FIXED byte ordering                       */
+	mbs->byte_order = BYTE_ORDER_REV;
+/**************************************************/
+
+	bo = mbs->byte_order;
+
+	bytes_read = read(mbs->fileno, eHdr, sizeof(s_evhe));
+	if (bytes_read == 0) return(MBS_ETYPE_EOF);
+	if (bytes_read == -1)
+	{
+		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): %s (%d)",
+													mbs->device, mbs->evtno, sys_errlist[errno], errno);
+		_mbs_output_error();
+		return(MBS_ETYPE_ABORT);
+	}
+	total += bytes_read;
+
+	eh = eHdr;
+	bto_get_long(&evl, &eh->l_dlen, 1, bo);
+	printf("@@ l_dlen=%ld total=%#lx %ld\n", evl, total, total);
+
+	evl = evl * sizeof(unsigned short) + sizeof(s_evhe);
+
+	if (evl <= mbs->evtsiz) {
+		memset(mbs->evt_data, 0, mbs->evtsiz);
+	} else {
+		if (mbs->evt_data != NULL) free(mbs->evt_data);
+		mbs->evt_data = calloc(1, evl);
+		memset(mbs->evt_data, 0, evl);
+	}
+
+	mbs->evtsiz = evl;
+
+	memcpy(mbs->evt_data, eHdr, sizeof(s_evhe));
+
+	bytes_read = read(mbs->fileno, mbs->evt_data + sizeof(s_evhe), evl - sizeof(s_evhe));
+	if (bytes_read != evl - sizeof(s_evhe)) {
+		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): short event data (this=%d, expected=%d)",
+														mbs->device, mbs->evtno, bytes_read + sizeof(s_evhe), evl);
+		_mbs_output_error();
+		return(MBS_ETYPE_ABORT);
+	}
+	total += bytes_read;
+
+	eh = (s_evhe *) mbs->evt_data;
+	bto_get_long(&etype, &eh->i_subtype, 1, bo);
+	printf("@@ type=%#lx\n", etype);
+
+	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
+
+	etype = (mbs->evttype)->type;
+	if (etype == MBS_ETYPE_ERROR || etype == MBS_ETYPE_ABORT) {
+		sprintf(loc_errbuf,
+		"?EVTERR-[_mbs_next_med_event]- %s (evt %d): Not a legal event type - %#lx",
+														mbs->device, mbs->evtno, etype);
+		_mbs_output_error();
+		return(etype);
+	}
+
+	s = (mbs->evttype)->convert;
+	(*s)(mbs);
+
+	mbs->nof_events++;
+	(mbs->evttype)->hit++;
+	mbs->sevtpt = NULL;
+	mbs->sevtno = 0;
+	mbs->sevt_wc = 0;
+
+	mbs->evtno_mbs = ((s_vehe *) mbs->evt_data)->l_count;
+
+	if ((mbs->evttype)->type == MBS_ETYPE_VME) {
+		vh = (s_vehe *) mbs->evt_data;
+		printf("@@ trigger=%d\n", vh->i_trigger);
+		triggers[vh->i_trigger].hit++;
+	}
+
+	sc = mbs->show_elems[MBS_X_EVENT].redu;
+	if (sc > 0 && ((mbs->nof_events % sc) == 0)) {
+		s = (mbs->evttype)->show;
+		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_EVENT].out);
 	}
 
 	return((mbs->evttype)->type);
@@ -878,7 +996,7 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 // Exceptions:     setype = MBS_STYPE_ERROR
 // Description:    Sets ptrs to next subevent struct
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_evhe *eh;
 	s_evhe *sh;
@@ -921,7 +1039,7 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 // Description:    Converts next subevent.
 //                 Needs 'mbs_next_sheader' to be called.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	int sc;
 	unsigned int (*s)();
@@ -952,7 +1070,7 @@ unsigned int mbs_next_sdata_raw(MBSDataIO *mbs) {
 // Description:    Reads next subevent in raw mode.
 //                 Needs 'mbs_next_sheader' to be called.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->sevttype = sevent_type_raw;
 	return(mbs_next_sdata(mbs));
@@ -969,7 +1087,7 @@ unsigned int mbs_next_sevent(MBSDataIO *mbs) {
 // Description:    Decodes next subevent.
 //                 Error if subevent type unknown.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int stype;
 	unsigned int stp, sstp;
@@ -1002,7 +1120,7 @@ unsigned int mbs_next_sevent_raw(MBSDataIO *mbs) {
 // Exceptions:     setype = MBS_STYPE_ERROR
 // Description:    Reads next subevent using raw mode.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int stype;
 
@@ -1026,9 +1144,7 @@ int mbs_pass_sevent(MBSDataIO *mbs, unsigned short *data) {
 //                 Subevent data are converted to a "stretched vector"
 //                 filled with zeros
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
-
-	void (*s)();
+/////////////////////////////////////////////////////////////////////////// */
 
 	if (!_mbs_check_active(mbs)) return(-1);
 
@@ -1047,7 +1163,7 @@ void mbs_set_sevt_minwc(MBSDataIO *mbs, unsigned int wc) {
 // Exceptions:     
 // Description:    Sets the minimal length of a subevent.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->sevt_minwc = wc;
 }
@@ -1066,7 +1182,7 @@ int mbs_set_stat(MBSDataIO *mbs, int redu, FILE *out) {
 // Exceptions:     |
 // Description:    Defines how often to show events statistics
 // Keywords:       |
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE *old;
 
@@ -1090,7 +1206,7 @@ int mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Shows header/data information on stdout.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	MBSBufferElem *tp;
 	register int i;
@@ -1179,7 +1295,7 @@ int mbs_show(MBSDataIO *mbs, char *show_elem, FILE *out) {
 // Exceptions:     
 // Description:    Shows header/data information on stdout.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	void _mbs_output_error();
 	void (*s)();
@@ -1220,7 +1336,7 @@ int mbs_set_show(MBSDataIO *mbs, char *show_elems, int redu, FILE *out) {
 // Exceptions:     
 // Description:    Defines buffer elements to be shown automatically
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE *old;
 	register char c;
@@ -1257,7 +1373,7 @@ int mbs_set_dump(MBSDataIO *mbs, int count) {
 // Exceptions:     
 // Description:    Defines every Nth buffer to be dumped to file.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	mbs->buf_to_be_dumped = count;
 	return(TRUE);
@@ -1277,7 +1393,7 @@ int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 // Exceptions:     
 // Description:    Defines how to process stream data
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	if (!_mbs_check_active(mbs)) return(FALSE);
 	if ((mbs->connection & (MBS_CTYPE_ASYNC | MBS_CTYPE_SYNC)) != 0) {
@@ -1301,7 +1417,7 @@ int mbs_open_log(char *logfile) {
 // Exceptions:     
 // Description:    Defines buffer elements to be shown automatically
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	FILE * f;
 
@@ -1325,7 +1441,7 @@ int mbs_open_med(char *medfile) {
 // Exceptions:     
 // Description:    Opens a file to store MBS event data.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	FILE * f;
 
@@ -1349,7 +1465,7 @@ int mbs_close_med() {
 // Exceptions:     
 // Description:    Closes med file if open.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	if (med_out) fclose(med_out);
 	return(TRUE);
@@ -1361,11 +1477,11 @@ int mbs_open_lmd(char *lmdfile) {
 // Name:           mbs_open_lmd
 // Purpose:        Open a file to dump lmd data
 // Arguments:      char * lmdfile     -- lmd file
-// Results:        
+/ Results:        
 // Exceptions:     
 // Description:    Opens a file to store original MBS data (LMD format)
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	FILE * f;
 
@@ -1389,7 +1505,7 @@ int mbs_close_lmd() {
 // Exceptions:     
 // Description:    Closes lmd file if open.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	if (lmd_out) fclose(lmd_out);
 	return(TRUE);
@@ -1406,7 +1522,7 @@ void mbs_pass_errors(char * errbuf) {
 // Exceptions:     
 // Description:    Defines a remote buffer to store errors.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	rem_errbuf = errbuf;
 }
@@ -1422,7 +1538,7 @@ void _mbs_show_fheader(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes file header data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_filhe *fh;
@@ -1487,7 +1603,7 @@ void _mbs_show_bheader(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes buffer header data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
 
@@ -1541,7 +1657,7 @@ void _mbs_show_evhe_10_1(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes event header data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_vehe *eh;
 
@@ -1574,7 +1690,7 @@ void _mbs_show_sev_10_1(MBSDataIO *mbs, FILE *out) {
 // Description:    Decodes subevent data and outputs them to stdout
 //                 See manual "GOOSY Buffer Structure" for details
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	int n;
@@ -1623,7 +1739,7 @@ unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Unpacks subevent data of type [10,1] (CAMAC)
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -1680,7 +1796,7 @@ void _mbs_show_sev_10_11(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes subevent data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -1724,7 +1840,7 @@ unsigned int *_mbs_unpack_sev_10_11(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Unpacks subevent data of type [10,11] (CAMAC w/o ids)
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -1765,7 +1881,7 @@ unsigned int *_mbs_unpack_sev_raw(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Unpacks raw data. No byte ordering will be done.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -1806,9 +1922,8 @@ void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes subevent data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
-	register int i;
 	s_veshe *sh;
 	unsigned long *dp;
 	char tstr[100];
@@ -1848,7 +1963,7 @@ unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Unpacks subevent data of type [9000,X] (TimeStamp or DeadTime)
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_veshe *sh;
 	char *dp;
@@ -1889,9 +2004,8 @@ void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes subevent data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
-	register int i;
 	s_veshe *sh;
 	unsigned long *dp;
 	char tstr[100];
@@ -1942,7 +2056,7 @@ void _mbs_show_sev_raw(MBSDataIO *mbs, FILE *out) {
 // Exceptions:     
 // Description:    Decodes subevent data and outputs them to stdout
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	s_veshe *sh;
@@ -1986,7 +2100,7 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 // Exceptions:     type = MBS_BTYPE_ERROR if error
 // Description:    Tests byte ordering, converts data, and determines data
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned long bo_tag;
 	unsigned int byte_order;
@@ -2066,7 +2180,7 @@ void _mbs_init_hit(MBSBufferElem *tlist) {
 // Exceptions:     
 // Description:    Initializes type counters
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	while (tlist->type != 0) {
 		tlist->hit = 0;
@@ -2084,7 +2198,7 @@ void _mbs_init_triggers() {
 // Exceptions:     
 // Description:    Initializes triggers & trigger counters
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	MBSBufferElem * tp;
@@ -2111,7 +2225,7 @@ MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem *ltdescr, MBSBu
 // Exceptions:     NULL on error
 // Description:    Tests buffer / event / subevent types.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	unsigned int t;
 	if (ltdescr != NULL && (btype == ltdescr->type)) return(ltdescr);
@@ -2135,7 +2249,7 @@ int _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
 // Exceptions:     FALSE if data not in order
 // Description:    Tests if subsequent buffers/events have increasing numbers.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
 	s_vehe *eh;
@@ -2160,7 +2274,7 @@ void _mbs_copy_fheader(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Copies file header data from input buffer to hdr_data.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register char *ipnt;
@@ -2206,9 +2320,8 @@ void _mbs_convert_bheader(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Converts header data according to byte order
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
-	register int i;
 	register char *ipnt;
 	unsigned int bo;
 	s_bufhe *bh;
@@ -2235,7 +2348,7 @@ void _mbs_convert_eheader(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Converts event header data.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register char *ipnt;
 	unsigned int bo;
@@ -2262,7 +2375,7 @@ void _mbs_convert_sheader(MBSDataIO *mbs) {
 // Exceptions:     
 // Description:    Converts subevent header data.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register char *ipnt;
 	unsigned int bo;
@@ -2291,7 +2404,7 @@ int _mbs_check_active(MBSDataIO *mbs) {
 // Description:    	Tests the addr given by mbs and outputs an error message
 //                  it isn't a valid mbs i/o struct.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	if (mbs == NULL || mbs->fileno == -1) {
 		sprintf(loc_errbuf, "?MBSNAC-[mbs_check_active]- MBSIO not active");
@@ -2317,7 +2430,7 @@ int _mbs_check_dbase(MBSDataIO *mbs) {
 // Description:    	Tests the addr given by mbs and outputs an error message
 //                  it isn't a valid mbs i/o struct.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	if (mbs == NULL) {
 		sprintf(loc_errbuf, "?MBSDNV-[mbs_check_dbase]- data base not valid");
@@ -2342,7 +2455,7 @@ void _mbs_output_error() {
 // Exceptions:     
 // Description:    Outputs an error message, either to stderr or to rem_errbuf.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	char datestr[MBS_L_STR];
 	time_t now;
@@ -2369,7 +2482,7 @@ void _mbs_output_log() {
 // Exceptions:     
 // Description:    Outputs a message to the log channel.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	char datestr[MBS_L_STR];
 	time_t now;
@@ -2393,7 +2506,7 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 // Description:    Connects to a MBS port.
 // Author:         M. Münch Hades/E12
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	int s;
 	int len;
@@ -2451,7 +2564,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 // Description:    Reads the info block.
 // Author:         M. Münch Hades/E12
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	long infoWord;
 	long swInfoWord;
@@ -2520,7 +2633,7 @@ int _mbs_read_stream(int fildes, char * buf, MBSServerInfo *info) {
 // Description:    Reads a buffer from remote stream.
 // Author:         M. Münch Hades/E12
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	int nof_read, nof_tot_read;
 
@@ -2548,7 +2661,7 @@ int _mbs_request_stream(int fildes) {
 // Description:    Sends a request to server.
 // Author:         M. Münch Hades/E12
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	return(write(fildes, "            ", 12));
 }
@@ -2565,7 +2678,7 @@ int _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
 // Description:    Disconnects from current MBS port.
 // Author:         M. Münch Hades/E12
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	switch (server_type) {
 		case MBS_CTYPE_SYNC:
@@ -2590,7 +2703,7 @@ void _mbs_init_pool(MBSDataIO * mbs) {
 // Description:    Initializes buffer numbers and data pointers in the
 //                 buffer pool.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -2614,7 +2727,7 @@ void _mbs_free_pool(MBSDataIO * mbs) {
 // Exceptions:     
 // Description:    Frees any memory allocated for the buffer pool.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -2635,7 +2748,7 @@ MBSBufferPool * _mbs_get_pool_pointer(MBSDataIO * mbs) {
 // Exceptions:     Returns NULL if all buffers occupied
 // Description:    Searches for an empty position in the buffer pool.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -2676,7 +2789,7 @@ void _mbs_store_bufno(MBSDataIO * mbs) {
 // Description:    Extracts buffer number from MBS data and stores it in
 //                 the pool header.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	MBSBufferPool * bpp;
 
@@ -2695,7 +2808,7 @@ MBSBufferPool * _mbs_find_subseq_buffer(MBSDataIO * mbs) {
 // Description:    Inspects the buffer pool to find a buffer with the right
 //                 buffer number = last+1.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register int i;
 	register MBSBufferPool * bpp;
@@ -2723,7 +2836,7 @@ void _mbs_dump_buffer(MBSDataIO * mbs) {
 //                 XXX is the device and NNN is the buffer number.
 //                 Then dumps bufsiz data to this file.
 // Keywords:       
-///////////////////////////////////////////////////////////////////////////*/
+/////////////////////////////////////////////////////////////////////////// */
 
 	register FILE * f;
 	char fname[MBS_L_STR];
