@@ -671,7 +671,10 @@ int main(int argc, char **argv) {
 	
 	if ( verboseMode ) cout	<< "M_analyze: Waiting for update_thread to terminate"
 						<< endl;
-   if (gComSocket > 0 || kUseMap) pthread_join(update_thread, NULL);
+   if (gComSocket > 0 || kUseMap) {
+	void *r;
+	pthread_join(update_thread, &r);
+	}
    if ( verboseMode ) cout	<< "M_analyze: update_thread terminated" << endl;
 	u_analyze->CloseRootTree();		// close user's output file(s)
 //	if(kUseMap){
@@ -682,7 +685,8 @@ int main(int argc, char **argv) {
 //   }
 	if (gComSocket > 0) {
       pthread_cancel(msg_thread);
-	   pthread_join(msg_thread, NULL);
+		void *r;
+	   pthread_join(msg_thread, &r);
    }
 	if(!gSystem->AccessPathName(our_pid_file.Data(), kFileExists)){
 		TString RmCmd = "rm  ";
@@ -724,7 +728,8 @@ void * update_handler(void * dummy) {
 	seconds=0;
 
 	while(1) {
-		usleep(990000);         // sleep 1 second
+		struct timespec t = { 1, 0 };
+		nanosleep(&t, NULL);         // sleep 1 second
 		pthread_mutex_lock(&global_data_mutex);
 		seconds ++;
 		TH1F * rh = u_analyze->UpdateRateHistory();
@@ -762,6 +767,7 @@ void * update_handler(void * dummy) {
 			pthread_mutex_unlock(&global_data_mutex);
 		}
 		if(u_analyze->GetRunStatus() == TMrbAnalyze::M_STOPPING){
+			cout << "update thread stopping" << endl;
 			pthread_mutex_lock(&global_data_mutex);
 			if ( M_prod ) M_prod->Update();  // updates all objects in shared memory
 			pthread_mutex_unlock(&global_data_mutex);
