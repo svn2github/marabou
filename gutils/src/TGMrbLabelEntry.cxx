@@ -81,6 +81,11 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	EntryGC = this->SetupGC(EntryGC, FrameOptions);
 
+	fUp = NULL;
+	fDown = NULL;
+	fBegin = NULL;
+	fEnd = NULL;
+
 	fLowerLimit = 0;
 	fUpperLimit = 0;
 	fIncrement = 1;

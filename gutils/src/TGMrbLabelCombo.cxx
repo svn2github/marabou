@@ -68,6 +68,11 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 	LabelGC = this->SetupGC(LabelGC, FrameOptions);
 	ComboGC = this->SetupGC(ComboGC, FrameOptions);
 
+	fUp = NULL;
+	fDown = NULL;
+	fBegin = NULL;
+	fEnd = NULL;
+
 	if (Label != NULL) {
 		label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
 		fHeap.AddFirst((TObject *) label);
