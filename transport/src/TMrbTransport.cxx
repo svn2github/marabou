@@ -33,6 +33,9 @@ using namespace std;
 
 #include "SetColor.h"
 
+// global pthread mutex to protect TMapped data
+extern pthread_mutex_t global_data_mutex;
+
 static TMrbTransport * gMrbTransport = NULL;
 
 static Char_t mbs_error_string[1024];
@@ -233,7 +236,9 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 	AbortOnError = 0;
 	if (NofEvents == 0) {
 		for (;;) {
+//			pthread_mutex_lock(&global_data_mutex);
 			EventType = mbs_next_event(fMBSDataIO);
+//			pthread_mutex_unlock(&global_data_mutex);
 			if (EventType == MBS_ETYPE_EOF) {
 				gMrbLog->Err()	<< "End of file " << fInputFile << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadEvents");
@@ -268,7 +273,9 @@ Int_t TMrbTransport::ReadEvents(Int_t NofEvents) {
 		}
 	} else {
 		for (i = 0; i < NofEvents; i++) {
+//			pthread_mutex_lock(&global_data_mutex);
 			EventType = mbs_next_event(fMBSDataIO);
+//			pthread_mutex_unlock(&global_data_mutex);
 			if (EventType == MBS_ETYPE_EOF) {
 				gMrbLog->Err()	<< "End of file " << fInputFile << endl;
 				gMrbLog->Flush(this->ClassName(), "ReadEvents");
