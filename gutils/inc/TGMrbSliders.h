@@ -8,13 +8,19 @@
 #include "TGFrame.h"
 #include "TGSlider.h"
 #include "TOrdCollection.h"
-#include "TStopwatch.h"
+// #include "TStopwatch.h"
+#include "TTimer.h"
 #include "TColor.h"
+
+class MyTimer;
+
 class TGMrbSliders : public TGTransientFrame {
 
 private:
    Int_t fNValues;
    Int_t * fVal;
+   Int_t * fValPrev;
+   Int_t * fFlags;
    Int_t fIdentifier;
    const TGWindow * fMyWindow;
    TGTextEntry  ** fTePointers;
@@ -22,20 +28,22 @@ private:
    TGHSlider    ** fSlPointers;
    TGVerticalFrame *fLabelFrame, *fSliderFrame, *fValueFrame;   
    TGLayoutHints *fBly, *fBfly1, *fLO4; 
-   TStopwatch * fStopwatch;
+//   TStopwatch * fStopwatch;
+   MyTimer * fTimer;
    TColor * fTeColor;
 
 public:
-   TGMrbSliders(const char *Title, Int_t * min, Int_t * max, Int_t * val,
-                TOrdCollection * RowLabels,  const Int_t NValues,
-                         const Int_t Identifier,
-                         Int_t * Return, const TGWindow *Win = 0,
-                         const char *HelpText = 0);
+   TGMrbSliders(const char *Title,  const Int_t NValues,
+                Int_t * min, Int_t * max, Int_t * val, 
+                TOrdCollection * Row_Labels = 0, Int_t * flags = 0, 
+                const TGWindow *Win = 0, const Int_t Identifier = 0,
+                Int_t * Return = 0, const char *HelpText = 0);
    virtual ~TGMrbSliders();
 
    virtual void CloseWindow();
    virtual Bool_t ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void SliderEvent(Int_t, Int_t, Int_t);
+   void Wakeup();
 ClassDef(TGMrbSliders,0)		// [GraphUtils] A box with sliders
 };
 #endif

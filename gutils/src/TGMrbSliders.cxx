@@ -33,29 +33,54 @@ namespace std {} using namespace std;
 // and a help text button                                                //
 //                                                                       //
 // required arguments:                                                   //
-//                                                                       //
-//  Double_t * Min, Max, Val : 3 dim array: min, max, value              //
-//  TOrdCollection * RowLabels,                                          //
+//     
+//  const Char_t *  Title                                                //
 //  Int_t NValues     : number of entries                                //
-//  Int_t identikfier : unique number passed in emit signal              //
-//  Int_t * retval    : 0 if ok pressed, -1 if cancel                    //                  
+//  Double_t * Min, Max, Val : min, max, value                           //
 //                                                                       //
 // optional arguments:                                                   //
 //                                                                       //
-// TGWindow *win       : pointer to parent window                        //  
-// const char *HelpText: help text                                       //   
+//  TOrdCollection * RowLabels                                          //
+//  Int_t * flags  : if bit 1 set TextEntry is colored with value = hue  //                                   //
+//  TGWindow *win       : pointer to parent window                       //  
+//  Int_t identifier : unique number passed in emit signal               //
+//  Int_t * retval    : 0 if ok pressed, -1 if cancel                    //                  
+//  const char *HelpText: help text                                      //   
 //                                                                       //
 //                                                                       //
 ///////////////////////////////////////////////////////////////////////////
 
-
 ClassImp(TGMrbSliders)
 
-TGMrbSliders::TGMrbSliders(const char *Title, Int_t * min, Int_t * max, Int_t * val, 
-                         TOrdCollection * Row_Labels, const Int_t NValues,
-                         const Int_t Identifier,
-                         Int_t * Return, const TGWindow *Win,
-                         const char *HelpText)
+//_____________________________________________________________________________________
+
+class MyTimer : public TTimer {
+
+private:
+  TGMrbSliders * fSlider;
+public:
+  
+   MyTimer(Long_t ms, Bool_t synch, TGMrbSliders * slider):TTimer(ms,synch){
+   fSlider = slider;
+//     cout << "init mytimer" << endl;
+   gSystem->AddTimer(this);
+}
+//_____________________________________________________________________________________
+Bool_t MyTimer::Notify() {
+ //  cout << " Notify reached" << endl;
+   fSlider->Wakeup();
+   Reset();
+   return kTRUE;
+}
+};
+//_____________________________________________________________________________________
+
+
+TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
+                         Int_t * min, Int_t * max, Int_t * val, 
+                         TOrdCollection * Row_Labels, Int_t * flags, 
+                         const TGWindow *Win, const Int_t Identifier,
+                         Int_t * Return, const char *HelpText)
 							    : TGTransientFrame(gClient->GetRoot(), Win, 100, 100)
 {
    ChangeOptions(kHorizontalFrame);
@@ -63,8 +88,18 @@ TGMrbSliders::TGMrbSliders(const char *Title, Int_t * min, Int_t * max, Int_t * 
    fNValues = NValues; 
    
    fVal = new Int_t[NValues];
-   for (Int_t i = 0; i < NValues; i++ ) fVal[i] = val[i];
-   fStopwatch = new TStopwatch();
+   fValPrev = new Int_t[NValues];
+   for (Int_t i = 0; i < NValues; i++ ) {
+     fValPrev[i] = fVal[i] = val[i];
+   }
+   if (flags) {
+      fFlags = new Int_t[NValues];
+      for (Int_t i = 0; i < NValues; i++ ) fFlags[i] = flags[i];
+   } else {
+      fFlags = NULL;
+   }
+//   fStopwatch = new TStopwatch();
+   fTimer = new MyTimer(50, kTRUE, this);
    ULong_t brown;
    gClient->GetColorByName("firebrick", brown);
    fTeColor = new TColor(999, 1, 0, 0);
@@ -166,14 +201,20 @@ TGMrbSliders::TGMrbSliders(const char *Title, Int_t * min, Int_t * max, Int_t * 
    // popup dialog and wait till user replies
    this->MapWindow();
    this->ChangeBackground(brown);
-
+   if (fFlags) {
+      for (Int_t i = 0; i < NValues; i++ ) {
+         if(fFlags[i] & 1) 
+           ProcessMessage(MK_MSG(kC_HSLIDER, kSL_POS) , i, fVal[i]);
+      }
+   }
+ 
 //   gClient->WaitFor(this);
 };
 
 TGMrbSliders::~TGMrbSliders()
 {
    // Delete dialog.
-
+//   cout << "dtor ~TGMrbSliders()" << endl;
    for (Int_t i = 0; i < fNValues; i++) {
       delete fSlPointers[i];
       delete fTePointers[i];                    
@@ -184,9 +225,12 @@ TGMrbSliders::~TGMrbSliders()
    delete [] fTePointers;                    
    delete [] fTbPointers;
    delete [] fVal;
+   delete [] fValPrev;
+   if (fFlags) delete [] fFlags;
 
    delete fTeColor;
-   delete fStopwatch;
+//   delete fStopwatch;
+   delete fTimer;
    delete fSliderFrame;
    delete fValueFrame;
    delete fBfly1; delete fBly;
@@ -202,7 +246,7 @@ void TGMrbSliders::CloseWindow()
 Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
    // Process slider messages.
-   Float_t etime, r, g, b;   
+   Float_t r, g, b;   
    Int_t row;
    switch (GET_MSG(msg)) {
       case kC_TEXTENTRY:
@@ -229,7 +273,7 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                fVal[row] = parm2;
 //               cout <<  row << " " << parm2 << endl;
 //               cout << fSlPointers[row] << endl;
-               if (row == 0 || row == 1){
+               if (fFlags && fFlags[row] & 1){
                   TColor::HLS2RGB((Float_t)parm2, 0.5, 1, r, g, b);
                   fTeColor->SetRGB(r, g, b);
                   Pixel_t p = fTeColor->GetPixel();
@@ -238,13 +282,6 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                fTbPointers[row]->Clear();
                fTbPointers[row]->AddText(0, Form("%ld", parm2));
                fClient->NeedRedraw(fTePointers[row]);
-               etime= fStopwatch->RealTime();
-               if (etime < 0.2) {
-                  fStopwatch->Continue();
-               } else {
-                  fStopwatch->Reset();
-                  SliderEvent(fIdentifier, row, fVal[row]);
-               }
                break;
          }
          break;
@@ -253,6 +290,7 @@ Bool_t TGMrbSliders::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
    }
    return kTRUE;
 }
+//______________________________________________________________
 
 void  TGMrbSliders::SliderEvent(Int_t id, Int_t row, Int_t val)
 {
@@ -264,4 +302,16 @@ void  TGMrbSliders::SliderEvent(Int_t id, Int_t row, Int_t val)
  
    Emit("SliderEvent(Int_t, Int_t, Int_t)", args);
 };
+//______________________________________________________________
 
+void  TGMrbSliders::Wakeup()
+{
+//   cout << "Wakeup()" << endl;
+   for (Int_t row = 0; row < fNValues; row++) { 
+      if (fVal[row] != fValPrev[row]) {
+         fValPrev[row] = fVal[row];
+         SliderEvent(fIdentifier, row, fVal[row]);
+      }
+   }
+}
+  
