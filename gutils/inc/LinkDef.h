@@ -37,4 +37,5 @@
 #pragma link C++ class TGMrbInputDialog;
 #pragma link C++ class TGMrbHelpWindow;
 #pragma link C++ class TGMrbMessageViewer;
+#pragma link C++ class TableOfLabels;
 #endif
