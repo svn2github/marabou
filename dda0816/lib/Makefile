@@ -13,8 +13,8 @@
 AR = ar
 INCLUDES = -I../dda08-16_new
 CFLAGS = -O6 $(INCLUDES) $(DEFS)
-OBJS = dda0816_SetPreScaler.o dda0816_SetPacerClock.o dda0816_SetOutputClock.o dda0816_SetCurve.o dda0816_SetUpdateGroup.o dda0816_ClearUpdateGroup.o dda0816_SetClockSource.o dda0816_SetOutputClockGeneration.o dda0816_ClearOutputClockGeneration.o dda0816_StartPacer.o dda0816_StopPacer.o dda0816_SetCycle.o
-SRCS = dda0816_SetPreScaler.c dda0816_SetPacerClock.c dda0816_SetOutputClock.c dda0816_SetCurve.c dda0816_SetUpdateGroup.c dda0816_ClearUpdateGroup.c dda0816_SetClockSource.c dda0816_SetOutputClockGeneration.c dda0816_ClearOutputClockGeneration.c dda0816_StartPacer.c dda0816_StopPacer.c dda0816_SetCycle.c
+OBJS = dda0816_SetPreScaler.o dda0816_SetPacerClock.o dda0816_SetOutputClock.o dda0816_SetCurve.o dda0816_SetUpdateGroup.o dda0816_ClearUpdateGroup.o dda0816_SetClockSource.o dda0816_SetOutputClockGeneration.o dda0816_ClearOutputClockGeneration.o dda0816_StartPacer.o dda0816_StopPacer.o dda0816_SetCycle.o dda0816_GetPacer.o
+SRCS = dda0816_SetPreScaler.c dda0816_SetPacerClock.c dda0816_SetOutputClock.c dda0816_SetCurve.c dda0816_SetUpdateGroup.c dda0816_ClearUpdateGroup.c dda0816_SetClockSource.c dda0816_SetOutputClockGeneration.c dda0816_ClearOutputClockGeneration.c dda0816_StartPacer.c dda0816_StopPacer.c dda0816_SetCycle.c dda0816_GetPacer.c
 INCLUDES = -I. -I../include
 
 DEFS = 

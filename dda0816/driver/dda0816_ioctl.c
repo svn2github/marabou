@@ -93,7 +93,7 @@ int dda0816_ioctl(struct inode* inode,struct file* file , unsigned int cmd, unsi
               break;
         case GETPACER:
               copy_from_user( &int_par_arg, (dda0816_int_par_t *) arg, sizeof(dda0816_int_par_t));
-              int_par_arg.retval = dda0816_SetCycle( inode, int_par_arg.param );
+              int_par_arg.retval = dda0816_GetPacer( inode, int_par_arg.param );
               int_par_arg.error = dda0816_errno;
               copy_to_user( (dda0816_int_par_t *) arg, &int_par_arg, sizeof(dda0816_int_par_t));
               break;

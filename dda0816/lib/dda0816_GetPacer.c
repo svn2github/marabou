@@ -9,7 +9,7 @@
 */
 #include <dda0816_P.h>
 
-        dda0816_StartPacer(int fd )
+        dda0816_GetPacer(int fd )
         {
           extern int errno;
           dda0816_no_par_t arg;
