@@ -99,6 +99,7 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 	ofstream f;
 
 	resFile = gSystem->ExpandPathName(ResourceFile);
+#if 0
 	if (resFile(0) == '/') {
 		gMrbLog->Err() << "Not a LOCAL file - " << resFile.Data() << endl;
 		gMrbLog->Flush(this->ClassName(), "Open");
@@ -111,6 +112,7 @@ Bool_t TMrbEnv::Open(const Char_t * ResourceFile) {
 		gMrbLog->Flush(this->ClassName(), "Open");
 		return(kFALSE);
 	}
+#endif
 	
 	fileExists = !gSystem->AccessPathName(resFile.Data(), (EAccessMode) F_OK);		// file existing?
 
