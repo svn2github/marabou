@@ -229,7 +229,6 @@ Int_t TMrbDGFData::ReadFPGACodeBinary(EMrbFPGAType FPGAType, const Char_t * Code
 	ifstream fpga;
 	Int_t size;
 	TString dataPath;
-	Char_t * fp;
 	TString codeFile;
 
 	TString sysfip;
@@ -259,14 +258,14 @@ Int_t TMrbDGFData::ReadFPGACodeBinary(EMrbFPGAType FPGAType, const Char_t * Code
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		fp = gSystem->Which(dataPath.Data(), CodeFile);
-		if (fp == NULL) {
+		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "[" << sysfip << "FPGA] No such file - " << CodeFile << endl;
 			gMrbLog->Err() << "(Searched on path " << dataPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadFPGACodeBinary");
 			return(-1);
 		}
-		codeFile = fp;
+		codeFile = fileSpec;
 	}
  
 	fpga.open(codeFile, ios::binary | ios::in);
@@ -397,14 +396,14 @@ Int_t TMrbDGFData::ReadFPGACodeAscii(EMrbFPGAType FPGAType, const Char_t * CodeF
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		fp = gSystem->Which(dataPath.Data(), CodeFile);
-		if (fp == NULL) {
+		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "[" << sysfip << "FPGA] No such file - " << CodeFile << endl;
 			gMrbLog->Err() << "(Searched on path " << dataPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadFPGACodeAscii");
 			return(-1);
 		}
-		codeFile = fp;
+		codeFile = fileSpec;
 	}
   
 	fpga.open(codeFile, ios::binary | ios::in);
@@ -593,14 +592,14 @@ Int_t TMrbDGFData::ReadDSPCodeBinary(const Char_t * CodeFile, Bool_t Forced) {
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		fp = gSystem->Which(dataPath.Data(), CodeFile);
-		if (fp == NULL) {
+		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "No such file - " << CodeFile << endl
 							<< "(Searched on path " << dataPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadDSPCodeBinary");
 			return(-1);
 		}
-		codeFile = fp;
+		codeFile = fileSpec;
 	}
  
 	dsp.open(codeFile, ios::binary | ios::in);
@@ -692,14 +691,14 @@ Int_t TMrbDGFData::ReadDSPCodeAscii(const Char_t * CodeFile, Bool_t Forced) {
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		fp = gSystem->Which(dataPath.Data(), CodeFile);
-		if (fp == NULL) {
+		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "No such file - " << CodeFile << endl
 							<< "(Searched on path " << dataPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadDSPCodeAscii");
 			return(-1);
 		}
-		codeFile = fp;
+		codeFile = fileSpec;
 	}
  
 	dsp.open(codeFile, ios::in);
@@ -803,13 +802,13 @@ Int_t TMrbDGFData::ReadNameTable(const Char_t * ParamFile, Bool_t Forced) {
 
 	paramFile = ParamFile;
 	if (!paramFile.BeginsWith("../") && !paramFile.BeginsWith("/")) {
-		fp = gSystem->Which(dataPath.Data(), ParamFile);
-		if (fp == NULL) {
+		TString fileSpec = gSystem->Which(dataPath.Data(), ParamFile);
+		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "No such file - " << ParamFile << ", searched on \"" << dataPath << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadNameTable");
 			return(-1);
 		}
-		paramFile = fp;
+		paramFile = fileSpec;
 	}
 
 	param.open(paramFile, ios::in);

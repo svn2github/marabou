@@ -2239,7 +2239,6 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 	TString macroTemplateFile;
 	ofstream macroStrm;
 	ifstream orgStrm;
-	const Char_t * fp;
 	TMrbTemplate macroTmpl;
 	TMrbNamedX * macroTag;
 	TMrbLofNamedX lofMacroTags;
@@ -2288,8 +2287,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 		return(kFALSE);
 	}
 
-	fp = gSystem->Which(templatePath.Data(), "UserMacro.C");
-	if (fp == NULL) {
+	TString fileSpec = gSystem->Which(templatePath.Data(), "UserMacro.C");
+	if (fileSpec.IsNull()) {
 		gMrbLog->Err() << "No such file - " << templatePath << "/" << "UserMacro.C"	<< endl;
 		gMrbLog->Flush(this->ClassName(), "Savemacro");
 		return(kFALSE);
@@ -2298,7 +2297,7 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 	this->StoreHeader();
 	this->StoreArg();
 
-	macroTemplateFile = fp;
+	macroTemplateFile = fileSpec;
 
 	lofMacroTags.AddNamedX(kGMrbMacroLofTags);
 	if (!macroTmpl.Open(macroTemplateFile, &lofMacroTags)) return(kFALSE);

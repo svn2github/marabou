@@ -94,7 +94,7 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 	TString defaultSetupPath;
 	TString setupFile;
 
-	Char_t * defaultSetupFile;
+	TString defaultSetupFile;
 	Int_t nofReadouts, n;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("mbssetup.log");
@@ -130,7 +130,7 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 
 		gSystem->ExpandPathName(defaultSetupPath);
 		defaultSetupFile = gSystem->Which(defaultSetupPath.Data(), "mbssetup_default");
-		if (defaultSetupFile == NULL) {
+		if (defaultSetupFile.IsNull()) {
 			gMrbLog->Err() << "No such file - mbssetup_default (path = " << defaultSetupPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName());
 			gMrbLog->Err() << "No default setup given - can't do the job, sorry" << endl;
@@ -139,7 +139,7 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 			gMbsSetup = this; 						// holds addr of current setup def
 			gDirectory->Append(this);
 
-			this->OpenDefaults(defaultSetupFile); // open defaults file
+			this->OpenDefaults(defaultSetupFile.Data()); // open defaults file
 
 			this->SetPrefix("TMbsSetup");			// resource names start with "TMbsSetup"
 

@@ -114,7 +114,6 @@ Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
 	TString mdfName;
 	TString mdfPath;
 	Bool_t searchIt;
-	const Char_t * fp;
 	TMrbNamedX * macroIdx;
 
 	TMrbSystem uxSys;
@@ -174,10 +173,9 @@ Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
 		return(kTRUE);
 	} else {
 		if (searchIt) {
-			fp = gSystem->Which(fPath, macroName.Data());
-			if (fp) {
-				macroPath = fp;
-				delete fp;
+			TString fileSpec = gSystem->Which(fPath, macroName.Data());
+			if (!fileSpec.IsNull()) {
+				macroPath = fileSpec;
 			} else {
 				gMrbLog->Err() << macroName << ": File not found, searched on " << fPath << endl;
 				gMrbLog->Flush(this->ClassName(), "AddMacro");
