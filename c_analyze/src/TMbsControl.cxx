@@ -46,11 +46,12 @@ TMbsControl::TMbsControl (const Char_t * node,const Char_t * version,
    if(!(fGuiNode.Contains("."))) {
       FILE *fp = gSystem->OpenPipe("dnsdomainname", "r");
       char line[60];
-      fgets(line,60,fp); line[strlen(line)-1]='\0';
-//   cout << line << endl;
-      gSystem->ClosePipe(fp);
-      fGuiNode += ".";
-      fGuiNode += line;
+      if (fgets(line,60,fp) != NULL) {
+		line[strlen(line)-1]='\0';
+     	 gSystem->ClosePipe(fp);
+     	 fGuiNode += ".";
+     	 fGuiNode += line;
+		}
    }
    fDisplay = gSystem->Getenv("DISPLAY");
    if(fDisplay.Length() <=4)fDisplay.Prepend(fGuiNode.Data());
