@@ -283,12 +283,13 @@ class TMrbModuleListEntry : public TObject {
 	public:
 		TMrbModuleListEntry(	Int_t NofParams = 0,						// ctor
 								Int_t IndexOfFirstParam = 0,
-								Int_t TimeOffeset = 0,
+								Int_t TimeOffset = 0,
 								TMrbNamedX * FirstParam = NULL,
 								TMrbNamedX * FirstHisto = NULL,
 								TMrbNamedX * FirstSingle = NULL) :
 										fNofParams(NofParams),
 										fIndexOfFirstParam(IndexOfFirstParam),
+										fTimeOffset(TimeOffset),
 										fFirstParam(FirstParam),
 										fFirstHisto(FirstHisto),
 										fFirstSingle(FirstSingle) {
@@ -392,6 +393,10 @@ public:
 
 		inline UShort_t * GetDataAddr() { return(fData); };
 		inline UShort_t GetData(Int_t Index) const { return(fData[Index]); };
+
+		inline UShort_t GetEnergy() const { return(fData[kHitEnergy]); };
+		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
+
 		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
 				
 		inline void SetBufferNumber(Int_t BufferNumber) { fBufferNumber = BufferNumber; };		// set data members
