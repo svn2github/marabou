@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.85 2004-11-29 13:45:49 rudi Exp $       $Id: TMrbConfig.cxx,v 1.85 2004-11-29 13:45:49 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.86 2004-11-29 14:01:47 rudi Exp $       $Id: TMrbConfig.cxx,v 1.86 2004-11-29 14:01:47 rudi Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4196,30 +4196,47 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 				return(kFALSE);
 			}
-			TObjArray lofLibs;
+
+// now check if root and marabou libs have changed
+// so we have to recompile anyway
 			TMrbSystem ux;
-			Int_t nofLibs = ux.FindFile(lofLibs, "*.so", "$MARABOU/lib:$ROOTSYS/lib");
 			Long_t aclicTime;
 			Long_t dmy, modTime;
 			Long64_t dmy64;
 			TString suffix = "+g";
 			TString timeStamp;
 			ux.GetDirName(timeStamp, aclic.Data());
-			timeStamp += "/.UserMacro";
+			timeStamp += "/.UserMacro"; 						// (1) check if there is a timestamp called ".UserMacro"
 			if (gSystem->GetPathInfo(timeStamp.Data(), &dmy, &dmy64, &dmy, &aclicTime) == 0) {
-				for (Int_t i = 0; i < nofLibs; i++) {
-					TString fName = ((TObjString *) lofLibs[i])->GetString();
-					gSystem->GetPathInfo(fName.Data(), &dmy, &dmy64, &dmy, &modTime);
-					if (modTime > aclicTime) {
-						suffix = "++g";
-						break;
+				TEnv * e = new TEnv(timeStamp.Data());			// (2) try to read defs for $ROOTSYS and $MARABOU then
+				TString rootSys = e->GetValue("ROOTSYS", "");
+				TString marabou = e->GetValue("MARABOU", "");
+				if (rootSys.CompareTo(gSystem->Getenv("ROOTSYS")) == 0
+				&&	marabou.CompareTo(gSystem->Getenv("MARABOU")) == 0) {	// if defs are as they should be
+					TObjArray lofLibs;										// (3) check timestamp against system libs
+					Int_t nofLibs = ux.FindFile(lofLibs, "*.so", "$MARABOU/lib:$ROOTSYS/lib");
+					for (Int_t i = 0; i < nofLibs; i++) {
+						TString fName = ((TObjString *) lofLibs[i])->GetString();
+						gSystem->GetPathInfo(fName.Data(), &dmy, &dmy64, &dmy, &modTime);
+						if (modTime > aclicTime) {				// found a more recent system lib -> recompile UserMacro.C
+							suffix = "++g";
+							break;
+						}
 					}
+				} else {								// $ROOTSYS or $MARABOU have changed since last call -> recompile UserMacro.C 
+					suffix = "++g";
 				}
 			} else {
-				suffix = "++g";
+				suffix = "++g"; 						// there is no timestamp ".UserMacro" -> recompile UserMacro.C
 			}
 			aclic += suffix;
-			gSystem->Exec("touch " + timeStamp);
+			ofstream um(timeStamp.Data(), ios::out);	// write current values of $ROOTSYS and $MARABOU to .UserMacro
+			if (um.good()) {
+				um << "ROOTSYS: " << gSystem->Getenv("ROOTSYS") << endl;
+				um << "MARABOU: " << gSystem->Getenv("MARABOU") << endl;
+				um.close();
+			}
+
 			if (gMrbConfig->IsVerbose()) {
 				gMrbLog->Out()  << "Compiling and/or loading user macro \"" << fileSpec
 								<< "\" (option \"" << suffix << "\")"<< endl;
