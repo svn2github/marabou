@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.48 2004-12-22 10:10:41 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.49 2004-12-22 12:17:38 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -24,6 +24,7 @@
 #include "TRegexp.h"
 #include "TOrdCollection.h"
 #include "TObjString.h"
+#include "TObjectTable.h"
 #include "TRandom.h"
 
 #include "TMrbAnalyze.h"
@@ -2700,9 +2701,9 @@ Int_t TMrbAnalyze::ReadCalibrationFromFile(const Char_t * CalibrationFile) {
 				if (nx) {
 					TMrbCalibrationListEntry * cle = (TMrbCalibrationListEntry *) nx->GetAssignedObject();
 					calFct = cle->GetAddress();
-				} else {
-					calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
+					delete calFct;
 				}
+				calFct = new TF1(calName.Data(), CalibLinear, xmin, xmax, 2);
 				calFct->SetParameter(0, offset);
 				calFct->SetParameter(1, gain);
 				this->AddCalibrationToList(calFct, hle->GetParam()->GetIndex());
@@ -3126,7 +3127,10 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t ModuleIndex, Int_t Rel
 		dcle = new TMrbDCorrListEntry(nmx, npx, DCorrAddr);
 		ncx->AssignObject(dcle);
 		fDCorrList.AddAt(ncx, npx->GetIndex());
+	} else {
+		dcle = (TMrbDCorrListEntry *) ncx->GetAssignedObject();
 	}
+	dcle->SetAddress(DCorrAddr);
 	ple->SetDCorrAddress(DCorrAddr);
 	return(kTRUE);
 }
@@ -3163,7 +3167,10 @@ Bool_t TMrbAnalyze::AddDCorrToList(TF1 * DCorrAddr, Int_t AbsParamIndex) {
 		dcle = new TMrbDCorrListEntry(ple->GetModule(), npx, DCorrAddr);
 		ncx->AssignObject(dcle);
 		fDCorrList.AddAt(ncx, AbsParamIndex);
+	} else {
+		dcle = (TMrbDCorrListEntry *) ncx->GetAssignedObject();
 	}
+	dcle->SetAddress(DCorrAddr);
 	ple->SetDCorrAddress(DCorrAddr);
 	return(kTRUE);
 }
@@ -3382,7 +3389,7 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Creates a new entry in histo list.
-// Keywords:       
+// Keywords:       ::AddHisto
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbNamedX * nmx;
@@ -3422,7 +3429,10 @@ Bool_t TMrbAnalyze::AddHistoToList(TH1 * HistoAddr, Int_t ModuleIndex, Int_t Rel
 		hle = new TMrbHistoListEntry(nmx, npx, HistoAddr);
 		nhx->AssignObject(hle);
 		fHistoList.AddAt(nhx, px + RelParamIndex);
+	} else {
+		hle = (TMrbHistoListEntry *) nhx->GetAssignedObject();
 	}
+	hle->SetAddress(HistoAddr);
 	ple->SetHistoAddress(HistoAddr);
 	if (RelParamIndex == 0) mle->SetFirstHisto(nhx);
 	return(kTRUE);
@@ -3479,7 +3489,10 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t ModuleInde
 		cle = new TMrbCalibrationListEntry(nmx, npx, CalibrationAddr);
 		ncx->AssignObject(cle);
 		fCalibrationList.AddAt(ncx, npx->GetIndex());
+	} else {
+		cle = (TMrbCalibrationListEntry *) ncx->GetAssignedObject();
 	}
+	cle->SetAddress(CalibrationAddr);
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }
@@ -3516,7 +3529,10 @@ Bool_t TMrbAnalyze::AddCalibrationToList(TF1 * CalibrationAddr, Int_t AbsParamIn
 		cle = new TMrbCalibrationListEntry(ple->GetModule(), npx, CalibrationAddr);
 		ncx->AssignObject(cle);
 		fCalibrationList.AddAt(ncx, AbsParamIndex);
+	} else {
+		cle = (TMrbCalibrationListEntry *) ncx->GetAssignedObject();
 	}
+	cle->SetAddress(CalibrationAddr);
 	ple->SetCalibrationAddress(CalibrationAddr);
 	return(kTRUE);
 }
