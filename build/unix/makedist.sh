@@ -11,6 +11,7 @@ EXCLUDEBIN=`for i in bin/* ; do echo --exclude $i; done `
 EXCLUDEGG=`for i in */src/G__* ; do echo --exclude $i; done `
 EXCLUDEO=`for i in */src/*.o ; do echo --exclude $i; done `
 EXCLUDED=`for i in */src/*.d ; do echo --exclude $i; done `
+EXCLUDECVS=`find . -name CVS -exec echo "--exclude {}" \;`
 
 echo "[Making MARaBOU distribution (version $CERN_LEVEL): $TARFILE]"
 
