@@ -6742,19 +6742,19 @@ Bool_t TMrbConfig::CheckConfig() {
 				while (sevt) {
 					if (sevt->NeedsModulesToBeAssigned()) {
 						if (sevt->GetNofModules() == 0) {
-							gMrbLog->Err()	<< "Subevent \"" << sevt->GetName()
+							gMrbLog->Err()	<< "[Event " << evt->GetName() << "] Subevent \"" << sevt->GetName()
 											<< "\" (serial " << sevt->GetSerial()
 											<< "): No modules assigned" << endl;
 							gMrbLog->Flush(this->ClassName(), "CheckConfig");
 							nofErrors++;
 						} else if (this->IsVerbose()) {
-							gMrbLog->Out()	<< "Subevent \"" << sevt->GetName()
+							gMrbLog->Out()	<< "[Event " << evt->GetName() << "] Subevent \"" << sevt->GetName()
 											<< "\" (serial " << sevt->GetSerial()
 											<< ") has " << sevt->GetNofModules() << " module(s) assigned" << endl;
 							gMrbLog->Flush(this->ClassName(), "CheckConfig");
 						}
 						if (!sevt->HistosToBeAllocated()) {
-							gMrbLog->Wrn()	<< "Subevent \"" << sevt->GetName()
+							gMrbLog->Wrn()	<< "[Event " << evt->GetName() << "] Subevent \"" << sevt->GetName()
 											<< "\" (serial " << sevt->GetSerial()
 											<< ") has " << sevt->GetNofModules()
 											<< " module(s) assigned - but no histogram(s) allocated" << endl;
@@ -6762,13 +6762,13 @@ Bool_t TMrbConfig::CheckConfig() {
 						}
 					}
 					if (sevt->GetNofParams() == 0) {
-						gMrbLog->Err()	<< "Subevent \"" << sevt->GetName()
+						gMrbLog->Err()	<< "[Event " << evt->GetName() << "] Subevent \"" << sevt->GetName()
 										<< "\" (serial " << sevt->GetSerial()
 										<< "): No params assigned" << endl;
 						gMrbLog->Flush(this->ClassName(), "CheckConfig");
 						nofErrors++;
 					} else if (this->IsVerbose()) {
-						gMrbLog->Out()	<< "Subevent \"" << sevt->GetName()
+						gMrbLog->Out()	<< "[Event " << evt->GetName() << "] Subevent \"" << sevt->GetName()
 										<< "\" (serial " << sevt->GetSerial()
 										<< ") has " << sevt->GetNofParams() << " param(s) assigned" << endl;
 						gMrbLog->Flush(this->ClassName(), "CheckConfig");
