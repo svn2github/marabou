@@ -178,7 +178,7 @@ void help() {
 	cout	<< "Usage:" << endl;
 	cout	<< "        gROOT->Macro(\"LoadUtilityLibs.C\")" << endl;
 	cout	<< "        .L spyHisto.C+" << endl;
-	cout 	<< "        spyHisto(HistoName, Refresh, Host, Socket)" << endl << endl;
+	cout 	<< "        spyHisto(HistoName [, Refresh] [, Host] [, Socket])" << endl << endl;
 	cout	<< "        HistoName       Name of histogram to be spyed on" << endl;
 	cout	<< "        Refresh         Spy interval in secs (default: 5)" << endl;
 	cout	<< "        Socket          Socket to listen to (default: 9090)" << endl;
@@ -195,7 +195,7 @@ static SpyTimer * spyTimer = NULL;
 
 void spyHisto(	const Char_t * HistoName,
 				Int_t Refresh = 5,
-				Int_t TcpPort = 9091,
+				Int_t TcpPort = 9090,
 				const Char_t * HostName = "localhost")
 //>>_________________________________________________(do not change this line)
 //
