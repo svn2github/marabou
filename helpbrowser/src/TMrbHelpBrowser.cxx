@@ -829,6 +829,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 //
    gStyle->SetTextFont(fTextFont + 3);   // char height in pixel
    gStyle->SetTextSize(fTextSize);
+   
    Int_t char_width = 5;
    if(fTextSize >= 8)  char_width = 5;
    if(fTextSize >= 10) char_width = 6;
@@ -837,7 +838,6 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
    if(fTextSize >= 18) char_width = 11;
    if(fTextSize >= 24) char_width = 15;
 
-   TText * tt = NULL;
    TString text(hs->GetText());
 
    Int_t nl = 0;
@@ -848,7 +848,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 // find number of lines
 
    nl = LineCount(text, &longest_line);
-//   cout << "longest_line " << longest_line<< endl;
+   cout << "longest_line " << longest_line<< endl;
 //   max window size (in pixel);
    fWwX = 720;
    fWwY = 720;
@@ -856,7 +856,11 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
 
    Int_t wwy = (extralines + nl)*(fTextSize + 2) + 4;
 //   optimized for char height 18 x 11
-   Int_t wwx_max = (Int_t)((Float_t) fWwX * (Float_t)char_width / 11.);
+//   Int_t wwx_max = (Int_t)((Float_t) fWwX * (Float_t)char_width / 11.);
+
+   Int_t wwx_max;
+   if (longest_line > line_length) wwx_max = line_length * char_width;
+   else                            wwx_max = longest_line * char_width;
 
    TString canvas_title(hname);
    if (canvas_title.EndsWith(".html"))
@@ -869,23 +873,33 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
       if(wwy < fWwY)fWwY = wwy;
       Int_t wwx =wwx_max;
       
-      if(longest_line > line_length) {
-         wwx = (Int_t) (fWwX * (Float_t)longest_line / line_length);
-      }
+//      if(longest_line > line_length) {
+//         wwx = (Int_t) (fWwX * (Float_t)longest_line / line_length);
+         wwx = longest_line * char_width;
+//      }
       ca = new TCanvas(hname, canvas_title, -fX0, fY0, wwx_max, fWwY + 60);
 
-      if(longest_line <= line_length) wwx = ca->GetWw() + 2 * ca->GetBorderSize();
-//      cout << "wwx  " << wwx << endl;
+      if(longest_line <= line_length) wwx = ca->GetWw() - 16;
+      cout << "wwx  " << wwx << " wwx_max  " << wwx_max <<  endl;
       ca->SetCanvasSize(wwx, wwy);
    }
    fCanvasList->Add(ca);
    MoveOrigin();
    ca->AddExec("ex1","TMrbHelpBrowser::HandleMouseClicks()");
+   TText * tt = new TText(0,0,"xxxxxxxxxx");
+   tt->Draw();
+   ca->Modified();
+   ca->Update();
+   UInt_t tw, th;
+   tt->GetBoundingBox(tw, th);
+   Float_t clength = 0.1 * gPad->AbsPixeltoX(tw);
+//   cout << tw << " " << th << " " << clength << endl;
+   delete tt;
 
    Float_t lspace = 1 / (Float_t)(nl+extralines);   // line spacing 
-   Float_t wh = (Float_t)gPad->XtoPixel(gPad->GetX2());
+//   Float_t wh = (Float_t)gPad->XtoPixel(gPad->GetX2());
 //   cout << "wh " << gPad->XtoPixel(gPad->GetX2())<<  endl;
-   Float_t clength = char_width / (Float_t)(wh);     // in NDC
+//   Float_t clength = char_width / (Float_t)(wh);     // in NDC
 
    Float_t x0 = 2 * clength;      // left margin
    Float_t yt = 1 - lspace;       // top margin, starting y
@@ -922,6 +936,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
             restofline = line(pointer, tag_start - pointer);   
 //            cout << "Rol |" <<  restofline << "|" << endl;
             tt = new TText(xt, yt, restofline.Data()); 
+//            tt->SetText(xt, yt, restofline.Data()); 
 //            tt = latex.DrawLatex(xt, yt, restofline.Data()); 
             if(heading){tt->SetTextFont(63);  tt->SetTextColor(46);}
             if(italic) {tt->SetTextFont(113); tt->SetTextColor(46);}
@@ -934,6 +949,11 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
             } else {
                tt->SetUniqueID(kTextOnly);
             }
+
+//            ca->Modified();
+//            ca->Update();
+//            tt->GetTextExtent(tw, th, restofline.Data());
+//            cout << restofline.Length() << " " << tw << " " << th << endl;
             xt += restofline.Length() * clength;
             its_ref   = kFALSE;
          }
@@ -986,6 +1006,7 @@ void TMrbHelpBrowser::DrawText(const char * hname, Int_t xoff, Int_t yoff)
          restofline = line(pointer, line.Length() - pointer);   
 //         cout << "TextLeft |" << restofline  << "|" << endl;
          tt = new TText(xt, yt, restofline.Data()); 
+//         tt->SetText(xt, yt, restofline.Data()); 
 //         tt = latex.DrawLatex(xt, yt, restofline.Data()); 
          tt->Draw();
          tt->SetUniqueID(kTextOnly);
