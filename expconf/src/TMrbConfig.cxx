@@ -4466,7 +4466,7 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 	Int_t vIndex;
 	Int_t n1, n2;
 
-	istrstream vline(VarDefs);
+	istringstream vline(VarDefs);
 
 	vType = VarType->GetIndex();
 
@@ -4494,8 +4494,8 @@ Bool_t TMrbConfig::DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, cons
 			}
 			varIndex = varIndex(0, n2);
 			varIndex = varIndex.Strip();
-			varIndex += " ";					// to keep istrstream happy: s.good() needs a blank at end of input stream ...
-			istrstream s(varIndex.Data());
+			varIndex += " ";					// to keep istringstream happy: s.good() needs a blank at end of input stream ...
+			istringstream s(varIndex.Data());
 			s >> vIndex;
 			if (!s.good()) {
 				gMrbLog->Err() << "Illegal array index - " << varName << endl;
