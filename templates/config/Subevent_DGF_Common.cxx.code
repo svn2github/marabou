@@ -28,8 +28,19 @@ Bool_t TMrbSubevent_DGF::FillSubevent(const UShort_t * SevtData, Int_t SevtWC, I
 	Int_t nofWordsPerChn;
 	while (SevtWC) {									 // subevent may contain several dgf buffers
 		DgfEventBufferHeader * bufHdr = (DgfEventBufferHeader *) dataPtr; 	 // points to start of buffer
-		Int_t bufWC = bufHdr->nofWords;  					 // buffer length
-		UInt_t runTask = bufHdr->formatDescr & 0x3;		// 0x100, 0x101, 0x200, 0x201 --> variable channel size
+		Int_t bufWC = bufHdr->nofWords; 					// buffer length
+		UInt_t runTask = bufHdr->formatDescr;				// check buffer format
+		UInt_t listMode = runTask & 0x300;					// list mode descriptor
+		if (listMode != 0x100 && listMode != 0x200) {		// normal or fast list mode
+			gMrbAnalyze->DumpData("sevt", recNo, this->ClassName(), "FillSubevent", "Wrong format descr", SevtData, SevtWC);
+			cerr	<< setred
+					<< this->ClassName() << "::FillSubevent(): At SevtWC = "
+					<< SevtWC << " (relWC = " << wordsProcessed << ") : Wrong format descriptor - 0x"
+					<< setbase(16) << runTask << setbase(10) << endl;
+					<< setblack << endl;
+			return(kTRUE);
+		}  				 // unable to decode data
+		runTask &= 0x3; 							// 0x100, 0x101, 0x200, 0x201 --> variable channel size
 		if (runTask == 2) nofWordsPerChn = 4;		// 0x102, 0x202 --> 4 words per chn	
 		else if (runTask == 3) nofWordsPerChn = 2;	// 0x103, 0x203 --> 2 words per chn
 		Int_t wc = bufWC;
