@@ -39,13 +39,13 @@ extern TMrbLogger * gMrbLog;			// access to message logger
 //////////////////////////////////////////////////////////////////////////////
 
 TMrbString::TMrbString() {
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fBase = TMrbString::kDefaultBase;
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 }
 
 TMrbString::TMrbString(const Char_t * Str) : TString(Str) {
-	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	fBase = TMrbString::kDefaultBase;
+	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 }
 
 TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, Int_t Base, Bool_t BaseId) {
@@ -65,7 +65,10 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, 
 //////////////////////////////////////////////////////////////////////////////
 
 	this->Resize(0);
+
 	if (Base == 0) Base = fBase;
+	if (!this->CheckBase(Base, "FromInteger")) return(*this);
+
 	if (Base == 2) {
 		while (IntVal) { this->Prepend((IntVal & 1) ? '1' : '0'); IntVal >>= 1; }
 		if (BaseId) this->Prepend("0b");
@@ -91,14 +94,8 @@ TMrbString & TMrbString::FromInteger(Int_t IntVal, Int_t Width, Char_t PadChar, 
 				if (PadChar != '\0') *s << setfill(PadChar);
 				*s << IntVal << ends;
 				break;
-
-			default:
-				gMrbLog->Err() << "Not a legal integer base - " << Base << endl;
-				gMrbLog->Flush("TMrbString", "FromInteger");
-				return(*this);
 		}
 		this->Insert(0, s->str().c_str());
-//		s->rdbuf()->freeze(0);
 		delete s;
 	}
 	return(*this);
@@ -120,6 +117,8 @@ TMrbString & TMrbString::AppendInteger(Int_t IntVal, Int_t Width, Char_t PadChar
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Base == 0) Base = fBase;
+	if (!this->CheckBase(Base, "AppendInteger")) return(*this);
+
 	TMrbString s(IntVal, Width, '0', Base, kFALSE);
 	this->Append(s.Data());
 	return(*this);
@@ -138,135 +137,94 @@ Bool_t TMrbString::ToInteger(Int_t & IntVal, Int_t Base) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t i;
-	Int_t idx;
-	Int_t baseId;
-	Bool_t isSigned;
-	TString pf;
+	Char_t * endptr;
 
 	IntVal = 0;
 
-	if (Base == 0) Base = fBase;
-	idx = this->CheckInteger(pf, Base, baseId, isSigned);
-	pf = pf.Strip(TString::kBoth);
-	if (idx == -1 || pf.Length() != 0) {
-		gMrbLog->Err() << "No a legal integer (base " << Base << ") - " << fData << endl;
+	if (!this->CheckBase(Base, "ToInteger")) return(kFALSE);
+
+	Int_t idx = this->Index("0b", 0);
+	if (idx != -1) {
+		Base = 2;
+		idx += 2;
+	} else {
+		idx = 0;
+	}
+	
+	IntVal = (Int_t) strtoul(&fData[idx], &endptr, Base);
+
+	if (*endptr != '\0') {
+		gMrbLog->Err() << "Not a legal integer - " << fData << endl;
 		gMrbLog->Flush("TMrbString", "ToInteger");
+		IntVal = 0;
 		return(kFALSE);
 	}
-
-	if (baseId == 2) {
-		for (i = idx; i < this->Length(); i++) {
-			IntVal <<= 1;
-			if (fData[i] == '1') IntVal += 1;
-		}
-	} else {
-		istringstream s(&fData[idx]);
-		switch (baseId) {
-			case 8: 	s >> setbase(8) >> IntVal; break;
-			case 16:	s >> setbase(16) >> IntVal; break;
-			case 10:	s >> IntVal; break;
-			default:	gMrbLog->Err() << "Not a legal integer base " << Base << endl;
-						gMrbLog->Flush("TMrbString", "ToInteger");
-						IntVal = 0;
-						return(kFALSE);
-		}
-	}	
-	if (isSigned) IntVal = -IntVal;
-	return(kTRUE);
+ 	return(kTRUE);
 }
 
-Int_t TMrbString::SplitOffInteger(TString & Prefix, Bool_t & IsSigned, Int_t Base) {
+Int_t TMrbString::SplitOffInteger(TString & Prefix, Int_t Base) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::SplitOffInteger
 // Purpose:        Return trailing integer
 // Arguments:      TString & Prefix    -- leading substring
-//                 Bool_t & IsSigned   -- kTRUE if signed number
 //                 Int_t Base          -- numerical base
-// Results:        Int_t IntVal        -- trailing integer part (unsigned)
+// Results:        Int_t IntVal        -- trailing integer part, -1 on error
 // Exceptions:
 // Description:    Inspects a string for trailing digits.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString pf;
-	Int_t i;
-	Int_t n;
-	Int_t idx;
-	Int_t baseId;
+	Int_t intVal;
 
 	if (Base == 0) Base = fBase;
-	idx = this->CheckInteger(pf, Base, baseId, IsSigned);
+	if (!this->CheckBase(Base, "SplitOffInteger")) return(-1);
+
+	Int_t idx = this->CheckInteger(Base);
 	if (idx == -1) {
 		gMrbLog->Err() << "No trailing integer (base " << Base << ") - " << fData << endl;
 		gMrbLog->Flush("TMrbString", "SplitOffInteger");
 		Prefix = fData;
-		return(0);
+		return(-1);
 	}
-	n = 0;
-	if (baseId == 2) {
-		for (i = idx; i < this->Length(); i++) {
-			n <<= 1;
-			if (fData[i] == '1') n += 1;
-		}
-	} else {
-		istringstream s(&fData[idx]);
-		switch (baseId) {
-			case 8: 	s >> setbase(8) >> n; break;
-			case 16:	s >> setbase(16) >> n; break;
-			case 10:	s >> n; break;
-			default:	gMrbLog->Err() << "Not a legal integer base " << Base << endl;
-						gMrbLog->Flush("TMrbString", "ToInteger");
-						return(0);
-		}
-	}	
 
-	Prefix.Replace(0, Prefix.Length(), pf.Data());
-	return(n);
+	TMrbString s = &fData[idx];
+	if (!s.ToInteger(intVal, Base)) {
+		Prefix = fData;
+		return(-1);
+	}
+
+	Prefix = (*this)(0, idx);
+	return(intVal);
 }
 
-Int_t TMrbString::Increment(Int_t Increment, Int_t Base, Bool_t WithSign) {
+Bool_t TMrbString::Increment(Int_t Increment, Int_t Base) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::Increment
 // Purpose:        Increment trailing integer
 // Arguments:      Int_t Increment     -- increment
 //                 Int_t Base          -- numerical base
-//                 Bool_t WithSign     -- include sign if present
-// Results:        Int_t IntVal        -- integer value
+// Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Increments the trailing integer of a string (if present).
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString prf;
-	Int_t n, ns;
-	Bool_t isSigned;
+	TString pf;
 
 	if (Base == 0) Base = fBase;
-	n = this->SplitOffInteger(prf, isSigned, Base);
-	if (prf.Length() > 0) ns = this->Length() - prf.Length(); else ns = 0;
-	if (isSigned) {
-		if (WithSign) {
-			if (n == 0) {
-				n = Increment;
-				if (n >= 0) ns--;
-			} else {
-				n = -n + Increment;
-			}
-		} else {
-			n += Increment;
-			if (n < 0) n = 0;
-			prf += '-';
-			ns--;
-		}
-	} else {
-		n += Increment;
-	}
-	this->Replace(0, this->Length(), prf);
-	this->AppendInteger(n, ns, Base);
-	return(n);
+	if (!this->CheckBase(Base, "Increment")) return(-1);
+
+	Int_t intVal = this->SplitOffInteger(pf, Base);
+	if (intVal == -1) return(kFALSE);
+
+	Int_t ns = (pf.Length() > 0) ? (this->Length() - pf.Length()) : 0;
+	intVal += Increment;
+	if (intVal < 0) intVal = 0;
+	this->Replace(0, this->Length(), pf);
+	this->AppendInteger(intVal, ns, Base);
+	return(intVal);
 }
 
 TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Char_t PadChar, Int_t Precision) {
@@ -284,13 +242,10 @@ TMrbString & TMrbString::FromDouble(Double_t DblVal, Int_t Width, Char_t PadChar
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t precision = (Precision > 0) ? Precision : TMrbString::kDefaultPrecision;
-
 	ostringstream * s = new ostringstream();
 	if (Width > 0) *s << setw(Width) << setfill(PadChar);
-	*s << setprecision(precision) << DblVal << ends;
+	*s << setprecision(Precision) << DblVal << ends;
 	this->Replace(0, this->Length(), s->str().c_str());
-//	s->rdbuf()->freeze(0);
 	delete s;
     return(*this);
 }
@@ -310,9 +265,7 @@ TMrbString & TMrbString::AppendDouble(Double_t DblVal, Int_t Width, Char_t PadCh
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t precision = (Precision > 0) ? Precision : TMrbString::kDefaultPrecision;
-
-	TMrbString s(DblVal, Width, PadChar, precision);
+	TMrbString s(DblVal, Width, PadChar, Precision);
 	this->Append(s.Data());
 	return(*this);
 }
@@ -329,59 +282,72 @@ Bool_t TMrbString::ToDouble(Double_t & DblVal) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t idx;
-	Bool_t isSigned;
-	TString pf;
+	Char_t * endptr;
 
-	idx = this->CheckDouble(pf, isSigned);
-	pf = pf.Strip(TString::kBoth);
+	DblVal = 0;
 
-	DblVal = 0.;
-
-	if (idx == -1 || pf.Length() != 0) {
+	Int_t idx = this->CheckDouble();
+	if (idx == -1) {
 		gMrbLog->Err() << "Not a legal double - " << fData << endl;
 		gMrbLog->Flush("TMrbString", "ToDouble");
 		return(kFALSE);
 	}
 
-	istringstream s(&fData[idx]);
-	s >> DblVal;
-	if (isSigned) DblVal = -DblVal;
-	return(kTRUE);
+	TString pf = (*this)(0, idx);
+	pf = pf.Strip(TString::kBoth);
+
+	if (idx == -1 || pf.Length() != 0) {
+		gMrbLog->Err() << "Not a legal double - " << fData << endl;
+		gMrbLog->Flush("TMrbString", "ToDouble");
+		DblVal = 0.;
+		return(kFALSE);
+	}
+
+	DblVal = strtod(&fData[idx], &endptr);
+
+	if (*endptr != '\0') {
+		gMrbLog->Err() << "Not a legal double - " << fData << endl;
+		gMrbLog->Flush("TMrbString", "ToDouble");
+		DblVal = 0.;
+		return(kFALSE);
+	}
+ 	return(kTRUE);
 }
 
-Double_t TMrbString::SplitOffDouble(TString & Prefix, Bool_t & IsSigned) {
+Double_t TMrbString::SplitOffDouble(TString & Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::SplitOffDouble
 // Purpose:        Return trailing double
 // Arguments:      TString & Prefix    -- leading substring
-//                 Bool_t & IsSigned   -- ktrue if signed number
 // Results:        Double_t DblVal     -- trailing double part (unsigned)
 // Exceptions:
 // Description:    Inspects a string for trailing digits.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString pf;
 	Int_t idx;
-	Double_t d;
+	Double_t dblVal;
 
-	idx = this->CheckDouble(pf, IsSigned);
+	idx = this->CheckDouble();
 	if (idx == -1) {
 		gMrbLog->Err() << "No trailing double - " << fData << endl;
 		gMrbLog->Flush("TMrbString", "SplitOffDouble");
 		Prefix = fData;
-		return(0.);
+		return(-1.);
 	}
 
-	istringstream s(&fData[idx]);
-	s >> d;
-	Prefix.Replace(0, Prefix.Length(), pf.Data());
-	return(d);
+	TMrbString s = &fData[idx];
+	if (!s.ToDouble(dblVal)) {
+		Prefix = fData;
+		return(-1.);
+	}
+
+	Prefix = (*this)(0, idx);
+	return(dblVal);
 }
 
-Double_t TMrbString::Increment(Double_t Increment, Bool_t WithSign) {
+Bool_t TMrbString::Increment(Double_t Increment, Bool_t WithSign) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::Increment
@@ -394,33 +360,18 @@ Double_t TMrbString::Increment(Double_t Increment, Bool_t WithSign) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString prf;
-	Int_t ns;
-	Double_t d;
-	Bool_t isSigned;
+	TString pf;
 
-	d = this->SplitOffDouble(prf, isSigned);
-	if (prf.Length() > 0) ns = this->Length() - prf.Length(); else ns = 0;
-	if (isSigned) {
-		if (WithSign) {
-			if (d == 0.) {
-				d = Increment;
-				if (d >= 0.) ns--;
-			} else {
-				d = -d + Increment;
-			}
-		} else {
-			d += Increment;
-			if (d < 0.) d = 0.;
-			prf += '-';
-			ns--;
-		}
-	} else {
-		d += Increment;
-	}
-	this->Replace(0, this->Length(), prf);
-	this->AppendDouble(d, ns);
-	return(d);
+	Double_t dblVal = this->SplitOffDouble(pf);
+	if (dblVal == -1.) return(kFALSE);
+
+	Int_t ns = (pf.Length() > 0) ? (this->Length() - pf.Length()) : 0;
+	dblVal += Increment;
+	if (dblVal < 0.) dblVal = 0.;
+
+	this->Replace(0, this->Length(), pf);
+	this->AppendDouble(dblVal, ns);
+	return(kTRUE);
 }
 
 Int_t TMrbString::Split(TObjArray & LofSubStrings, const Char_t * Separator, Bool_t RemoveWhiteSpace) {
@@ -558,137 +509,118 @@ void TMrbString::ProcessEscapeSequence(Char_t CharId, TString & Replacement) {
 	Replacement.Resize(0);		// nullify
 }
 
-Int_t TMrbString::CheckInteger(TString & Prefix, Int_t Base, Int_t & BaseId, Bool_t & IsSigned) const {
+Int_t TMrbString::CheckInteger(Int_t Base) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::CheckInteger
 // Purpose:        Check if string is valid integer
-// Arguments:      TString & Prefix       -- where to store prefix
-//                 Int_t Base             -- expected base
-//                 Int_t & BaseId         -- actual base id (0x, 0b)
-//                 Bool_t & IsSigned      -- kTRUE if signed number
+// Arguments:      Int_t Base             -- expected base
 // Results:        Int_t Index            -- where integer number starts
-// Exceptions:
+// Exceptions:     returns -1 on error
 // Description:    Test if string chars are legal integer digits.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t idxBin, idxOct, idxDec, idxHex;
-	Bool_t isBin, isOct, isDec, isHex;
-	Int_t i;
-	Int_t n = 0;
-	Int_t idx = 0;
-	Int_t code;
+	Int_t idx = -1;
 
-	IsSigned = kFALSE;
-	BaseId = Base;
-
-	if (this->Length() == 0) return(0);
-
-	idxBin = idxOct = idxDec = idxHex = -1;
-	isBin = isOct = isDec = isHex = kTRUE;
-
-	for (i = this->Length(); i > 0; i--) {
-		n = i - 1;
-		code = fData[n];
-		if (code >= '0' && code <= '9') {
-			if (code <= '7' && isOct) idxOct = n; else isOct = kFALSE;
-			if ((code == '0' || code == '1') && isBin) idxBin = n; else isBin = kFALSE;
-			if (isDec) idxDec = n;
-			if (isHex) idxHex = n;
-		} else if ((code >= 'a' && code <= 'f') || (code >= 'A' && code <= 'F')) {
-			isBin = isOct = isDec = kFALSE;
-			if (isHex) idxHex = n;
-		} else if (code == '-') {
-			IsSigned = kTRUE;
-			break;
-		} else if ((code == 'b' || code == 'B') && fData[n - 1] == '0' && idxBin == n + 1) {
-			n--;
-			if (fData[n - 1] == '-') { n--; IsSigned = kTRUE; }
-			Prefix.Replace(0, Prefix.Length(), fData, n);
-			BaseId = 2;
-			return(idxBin);
-		} else if ((code == 'x' || code == 'X') && fData[n - 1] == '0' && idxHex == n + 1) {
-			n--;
-			if (fData[n - 1] == '-') { n--; IsSigned = kTRUE; }
-			Prefix.Replace(0, Prefix.Length(), fData, n);
-			BaseId = 16;
-			return(idxHex);
-		} else break;
+	if (this->Length() > 0) {
+		switch (Base) {
+			case 2:
+				for (Int_t i = this->Length() - 1; i >= 0; i--) {
+					Char_t code = fData[i];
+					if (code == '0' && code == '1') idx = i; else break;
+				}
+				break;
+			case 8:
+				for (Int_t i = this->Length() - 1; i >= 0; i--) {
+					Char_t code = fData[i];
+					if (code >= '0' && code <= '7') idx = i; else break;
+				}
+				break;
+			case 10:
+				for (Int_t i = this->Length() - 1; i >= 0; i--) {
+					Char_t code = fData[i];
+					if (code >= '0' && code <= '9') idx = i; else break;
+					idx = i;
+				}
+				break;
+			case 16:
+				for (Int_t i = this->Length() - 1; i >= 0; i--) {
+					Char_t code = fData[i];
+					if ((code >= '0' && code <= '9')
+					||	(code >= 'a' && code <= 'f')
+					||	(code >= 'A' && code <= 'F')) idx = i;
+					else break;
+				}
+				break;
+			default:
+				gMrbLog->Err() << "Illegal base spec - " << Base << endl;
+				gMrbLog->Flush("TMrbString", "CheckInteger");
+				break;
+		}
 	}
-
-	if (fData[n] == '0') {
-		if (isBin) BaseId = 2;
-		else if (isOct) BaseId = 8;
-	}
-
-	switch (Base) {
-		case 2: 	idx = idxBin; break;
-		case 8: 	idx = idxOct; break;
-		case 10:	idx = idxDec; break;
-		case 16: 	idx = idxHex; break;
-	}
-
-	if (idx == -1) {
-		Prefix = fData;
-		return(-1);
-	} else {
-		n = idx;
-		if (fData[idx - 1] == '-') n--;
-		Prefix.Replace(0, Prefix.Length(), fData, n);
-		return(idx);
-	}
+	return(idx);
 }
 
-Int_t TMrbString::CheckDouble(TString & Prefix, Bool_t & IsSigned) const {
+Int_t TMrbString::CheckDouble() const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbString::CheckDouble
 // Purpose:        Check if string is valid integer
-// Arguments:      TString & Prefix       -- where to store prefix
+// Arguments:      --
 // Results:        Int_t Index            -- where double number starts
-// Exceptions:
+// Exceptions:     returns -1 on error
 // Description:    Test if string chars are legal double digits.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t dot;
-	Int_t i, n;
-	Int_t code;
-	Int_t idxDbl;
-	Int_t lng;
+	Int_t idx = -1;
 
-	if ((lng = this->Length()) == 0) return(0);
+	Int_t lng = this->Length();
 
-	if ((n = this->Index("e-", 0)) > 0) lng = n;
-	else if ((n = this->Index("e+", 0)) > 0) lng = n;
+	if (lng > 0) {
+		Int_t n;
+		if ((n = this->Index("e-", 0)) > 0) lng = n;
+		else if ((n = this->Index("e+", 0)) > 0) lng = n;
 
-	dot = kFALSE;
-	IsSigned = kFALSE;
-	idxDbl = -1;
-
-	for (i = lng; i > 0; i--) {
-		n = i - 1;
-		code = fData[n];
-		if (code >= '0' && code <= '9')	{
-			idxDbl = n;
-		} else if (code == '.') {
-			if (dot) break;
-			dot = kTRUE;
-			idxDbl = n;
-		} else if (code == '-') {
-			IsSigned = kTRUE;
-			break;
-		} else break;
+		Bool_t dot = kFALSE;
+		for (Int_t i = lng - 1; i >= 0; i--) {
+			Char_t code = fData[i];
+			if (code >= '0' && code <= '9')	{
+				idx = i;
+			} else if (code == '.') {
+				if (dot) break;
+				dot = kTRUE;
+				idx = i;
+			} else break;
+		}
 	}
-
-	if (idxDbl == -1) {
-		Prefix = fData;
-		return(-1);
-	} else {
-		n = idxDbl;
-		if (fData[n - 1] == '-') n--;
-		Prefix.Replace(0, Prefix.Length(), fData, n);
-	}
-	return(idxDbl);
+	return(idx);
 }
+
+Bool_t TMrbString::CheckBase(Int_t Base, Char_t * Method) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbString::CheckBase
+// Purpose:        Check if numerical base is valid
+// Arguments:      Int_t Base             -- base value ([0], 2, 8, 10, 16)
+//                 Char_t * Method        -- calling method
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Test if numerical base value is ok.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	switch (Base) {
+		case 0:
+		case 2:
+		case 8:
+		case 10:
+		case 16:	return(kTRUE);
+	}
+	gMrbLog->Err() << "Illegal base spec - " << Base << endl;
+	gMrbLog->Flush("TMrbString", Method);
+	return(kFALSE);
+}
+
+
