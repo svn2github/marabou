@@ -47,12 +47,12 @@ TMrbSerialComm::TMrbSerialComm(const Char_t * Device) : TNamed(Device, Device) {
 
 	TMrbString device;
 	TString prefix;
-	Bool_t isSigned;
+	Int_t n;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	device = Device;
-	Int_t n = device.SplitOffInteger(prefix, isSigned);
+	device.SplitOffInteger(prefix, n);
 	device = "tty";
 	device += n;
 	this->SetName(device.Data());

@@ -215,7 +215,6 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 	Int_t nstr;
 	TMrbNamedX * np;
 	TString prefix;
-	Bool_t isSigned;
 
 	np = (TMrbNamedX *) this->Last();
 	if (np == NULL) 		idx = 1;
@@ -228,7 +227,7 @@ void TMrbLofNamedX::AddNamedX(const Char_t * NameString, const Char_t * Separato
 		subStr = ((TObjString *) lofSubStr[i])->GetString().Data();
 		n = subStr.Index("=", 0);
 		if (n != -1) {
-			idx = subStr.SplitOffInteger(prefix, isSigned);
+			subStr.SplitOffInteger(prefix, idx);
 			subStr = (TString) subStr(0, n);
 		}
 		this->AddNamedX(new TMrbNamedX(idx, subStr.Data()));
