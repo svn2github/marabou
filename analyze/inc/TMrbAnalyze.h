@@ -7,7 +7,7 @@
 // Purpose:        Define base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.38 2004-10-13 08:42:26 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.39 2004-12-03 08:13:42 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -605,7 +605,9 @@ class TUsrHBX : public TObject {
 		inline Int_t GetIndex() const { return(fCurIndex); };
 		inline void ResetIndex() { fCurIndex = 0; fResetDone = kTRUE; };
 
-		TUsrHit * FindHit(TUsrHit & HitProfile) ;								// search for a given hit
+		TUsrHit * FindHit(TUsrHit & HitProfile) ;								// search for next hit with given profile
+		TUsrHit * FindHit(Int_t Channel);										// ... with given channel
+
 		TUsrHit * At(Int_t Index) const { return ((TUsrHit *) fHits->At(Index)); }; 	// return hit at given index
 		
 		TUsrHit * FindEvent(Int_t EventNumber); 							// find an event
