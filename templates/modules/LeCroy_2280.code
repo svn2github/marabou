@@ -1,0 +1,129 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// @(#)Name:       LeCroy_2280.code
+// @(#)Purpose:    Camac code for module LeCroy 2280
+// Description:    Contains pieces of camac code to operate a QDC of type
+//                 LeCroy 2280
+// @(#)Author:     R. Lutter
+// @(#)Revision:   SCCS:  %W%
+// @(#)Date:       %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+
+									/* init module $moduleName in $modulePosition */
+					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+					RDO_SETUP($moduleName, F(2), A(0));	/* setup read module $moduleName, start with param $chnName */
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module $moduleName */
+%%EndOfCode%%
+%%FINISH_READOUT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+		
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

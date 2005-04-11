@@ -46,6 +46,7 @@
 #pragma link C++ class TMrbSen_16P_2047;
 #pragma link C++ class TMrbSilena_7420;
 #pragma link C++ class TMrbLeCroy_2228A;
+#pragma link C++ class TMrbLeCroy_2280;
 #pragma link C++ class TMrbLeCroy_4432;
 #pragma link C++ class TMrbLeCroy_4434;
 #pragma link C++ class TMrbLeCroy_4448;
