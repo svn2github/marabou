@@ -26,7 +26,7 @@ SRCS		=	\
 
 ULIB 		=	../lib/libutils.a
 INC 		=	$(MBSROOT)/inc
-GD_INCL		=	/mbssys/include
+GD_INCL		=	/nfs/mbssys/include
 
 OBJS		=	\
 				$(ULIB)(root_env.o) \
@@ -43,7 +43,7 @@ LIBS		=	/lib/ces/libvme.a $(LIBDIR)/lib_mbs.a \
 				$(LIBDIR)/lib_tools.a $(LIBDIR)/lib_mbs.a \
 				$(LIBDIR)/libedit.a -lnetinet
 
-all:		if$(LEGALOS) $(OBJS) envtst uxtst dgfdown cc32 testParam histoDump
+all:		if$(LEGALOS) $(OBJS) envtst uxtst dgfdown cc32 testParam histoDump cptm
 
 envtst: 	if$(LEGALOS) envtst.o $(ULIB)
 			$(CC) $(CFLAGS) -o envtst envtst.c $(ULIB)
@@ -53,6 +53,9 @@ uxtst:  	if$(LEGALOS) uxtst.o $(ULIB)
 
 cc32: 	  	if$(LEGALOS) cc32.o $(ULIB)
 			$(CC) $(CFLAGS) -o cc32 cc32.c $(ULIB) $(LIBS)
+			
+cptm: 	  	if$(LEGALOS) cptm.o $(ULIB)
+			$(CC) $(CFLAGS) -o cptm cptm.c $(ULIB) $(LIBS)
 			
 mpiorl: 	if$(LEGALOS) mpiorl.o $(ULIB)
 			$(CC) $(CFLAGS) -o mpiorl mpiorl.c $(ULIB) $(LIBS)
