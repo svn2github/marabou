@@ -8,7 +8,7 @@ ClassImp(HprImage)
 //_________________________________________________________________________
 //
 // This class puts a file into a TNamed object, this allows 
-// the contents of tke file to written to a root file and retrieved by name
+// the contents of the file to written to a root file and retrieved by name
 //_________________________________________________________________________
 HprImage::HprImage(const Char_t * fname, TPad * pad) :
           TNamed(gSystem->BaseName(fname), ""), fPad(pad){
@@ -46,6 +46,7 @@ HprImage::~HprImage()
 //   if (fPad) {  
 //      delete fPad;
 //   }
+//   cout << "HprImage:: dtor" << endl;
    fPad = 0;
    if(fBuffer)delete fBuffer;
    fBuffer = 0; 
@@ -59,7 +60,7 @@ void HprImage:: RecursiveRemove(TObject * obj) {
       gROOT->GetListOfCleanups()->Remove(this);
       if (fPad) {
         fPad->GetListOfPrimitives()->Remove(this);
-        fPad->GetListOfPrimitives()->Delete("slow");
+//        fPad->GetListOfPrimitives()->Delete("slow");
       }
 //      cout << "HprImage::RecursiveRemove: delete this " <<  endl;
       delete this;

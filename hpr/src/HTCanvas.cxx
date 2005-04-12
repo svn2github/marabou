@@ -325,8 +325,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          in_image = kTRUE;
       }
    }
-   
-   switch (event) {
+
+   if (gROOT->GetEditorMode() && fEvent ==  kMouseMotion) fEvent = kButton1Motion;
+
+   switch (fEvent) {
 
    case kMouseMotion:
       // highlight object tracked over
@@ -364,7 +366,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kButton1Double:
       // triggered on the second button down within 350ms and within
       // 3x3 pixels of the first button down, button up finishes action
-      break;
+//      break;
 
    case kButton1Down:
 
@@ -433,6 +435,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       break;
 
+//   case kMouseMotion:
    case kButton1Motion:
 
       if (fSelected) {
@@ -490,7 +493,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    case kButton1Up:
       if (fSelected) {
          gPad = fSelectedPad;
- 
+//         cout << "kButton1Up: this " << this 
+//              << " fSelected " << fSelected << " gPad " << gPad << endl;
          if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
          if (in_image) {
 //            cout << "setting: " << fSelected << endl;
