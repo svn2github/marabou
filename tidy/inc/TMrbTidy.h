@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.8 2005-04-05 07:24:56 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.9 2005-04-12 06:45:09 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -338,6 +338,10 @@ class TMrbTidyNode : public TMrbNamedX {
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, TObjArray & LofAttr, Bool_t Recursive = kFALSE);
 
+		TMrbTidyNode * FindByAttr(const Char_t * AttrName, const Char_t * AttrVal, Bool_t Recursive = kFALSE);
+		inline TMrbTidyNode * FindByTag(const Char_t * Tag, Bool_t Recursive = kFALSE) { return(this->FindByAttr("tag", Tag, Recursive)); };
+		inline TMrbTidyNode * FindByCase(const Char_t * Case, Bool_t Recursive = kFALSE) { return(this->FindByAttr("case", Case, Recursive)); };
+
 		inline Bool_t HasChilds() { return(this->GetLofChilds()->GetEntries() > 0); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
@@ -347,6 +351,20 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputHtml(ostream & Out = cout);
 		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
 		void OutputHtmlTree(ostream & Out = cout);
+
+		Bool_t Substitute(const Char_t * ParamName, const Char_t * ParamValue, Bool_t Recursive = kFALSE);	// substitute arguments
+		Bool_t Substitute(const Char_t * ParamName, Int_t ParamValue, Int_t ParamBase = 10, Bool_t Recursive = kFALSE);
+		Bool_t Substitute(const Char_t * ParamName, Double_t ParamValue, Bool_t Recursive = kFALSE);
+		Bool_t CheckSubstitutions(Bool_t Recursive = kFALSE, Bool_t QuietMode = kFALSE);
+		void ClearSubstitutions(Bool_t Recursive = kFALSE);
+		void PrintSubstitutions(Bool_t Recursive = kFALSE, ostream & Out = cout);
+
+		Bool_t OutputSubstituted(const Char_t * Case = NULL, ostream & Out = cout);
+		Bool_t OutputSubstituted(TObjArray & LofCases, Int_t CaseLevel0, ostream & Out = cout);
+		inline Bool_t OutputSubstituted(TObjArray & LofCases, ostream & Out = cout) {
+			return(this->OutputSubstituted(LofCases, this->GetTreeLevel(), Out));
+		};
+
 
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
 
@@ -361,21 +379,25 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
 
+		Int_t InitSubstitutions(Bool_t Recursive = kFALSE, Bool_t ReInit = kFALSE);
+
 	protected:
-		TidyNode fHandle; 				// tidy node handle
-		TidyNodeType fType; 			// type
-		Int_t fTreeLevel;				// tree level
+		TidyNode fHandle; 					// tidy node handle
+		TidyNodeType fType; 				// type
+		Int_t fTreeLevel;					// tree level
 
-		Bool_t fIsMnode; 				// is special marabou node
-		Bool_t fHasEndTag;				// kTRUE if end tag needed
+		Bool_t fIsMnode; 					// is special marabou node
+		Bool_t fHasEndTag;					// kTRUE if end tag needed
 
-		TMrbTidyNode * fParent; 		// parent node
-		TObject * fTidyDoc;				// associated tidy document
+		TMrbTidyNode * fParent; 			// parent node
+		TObject * fTidyDoc;					// associated tidy document
 
-		TMrbLofNamedX fLofChilds;		// child nodes
-		TMrbLofNamedX fLofAttr; 		// list of attributes
+		TMrbLofNamedX fLofChilds;			// child nodes
+		TMrbLofNamedX fLofAttr; 			// list of attributes
 
-	ClassDef(TMrbTidyNode, 1) 			// [Utils] Tidy interface: node
+		TMrbLofNamedX fLofSubstitutions;	// buffer to hold current substitutions
+
+	ClassDef(TMrbTidyNode, 1) 				// [Utils] Tidy interface: node
 };
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -456,6 +478,7 @@ class TMrbTidyDoc : public TNamed {
 		inline TMrbTidyNode * GetHtml() { return(fTidyHtml); };
 		inline TMrbTidyNode * GetHead() { return(fTidyHead); };
 		inline TMrbTidyNode * GetBody() { return(fTidyBody); };
+		inline TMrbTidyNode * GetMbody() { return(fTidyMbody); };
 
 		inline void SetMnodeFlag(Bool_t Flag = kTRUE) { fHasMnodes = Flag; };
 		inline Bool_t HasMnodes() { return(fHasMnodes); };
@@ -478,6 +501,7 @@ class TMrbTidyDoc : public TNamed {
 		TMrbTidyNode * fTidyHtml;		// ptr to <html>...</html>
 		TMrbTidyNode * fTidyHead;		// prt to <head>...</head>
 		TMrbTidyNode * fTidyBody;		// ptr to <body>...</body>
+		TMrbTidyNode * fTidyMbody;		// ptr to <mb>...</mb>
 	
 		TMrbLofNamedX fLofOptions;			// list of options
 		TMrbLofNamedX fLofMnodes;			// list of special marabou nodes

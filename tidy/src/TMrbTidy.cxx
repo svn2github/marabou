@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.10 2005-04-05 07:24:56 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.11 2005-04-12 06:45:09 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -271,6 +271,7 @@ void TMrbTidyDoc::Reset(Bool_t Release) {
 	fTidyHtml = NULL;
 	fTidyHead = NULL;
 	fTidyBody = NULL;
+	fTidyMbody = NULL;
 
 	fLofOptions.Delete();							// empty list of options
 	fLofOptions.SetName("Tidy Options");
@@ -441,6 +442,9 @@ Bool_t TMrbTidyDoc::ParseBuffer(const Char_t * Buffer, Bool_t Repair) {
 	if (fTidyHtml) {
 		fTidyHead = (TMrbTidyNode *) fTidyHtml->GetLofChilds()->FindByIndex((Int_t) TidyTag_HEAD);
 		fTidyBody = (TMrbTidyNode *) fTidyHtml->GetLofChilds()->FindByIndex((Int_t) TidyTag_BODY);
+	}
+	if (fTidyBody) {
+		fTidyMbody = (TMrbTidyNode *) fTidyBody->GetLofChilds()->FindByName("mb");
 	}
 	return(kTRUE);
 }
@@ -1450,6 +1454,369 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	Out << "</table></div>" << endl;
 }
 
+Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::InitSubstitutions
+// Purpose:        Fill substitution buffer
+// Arguments:      Bool_t Recursive -- step down the tree if kTRUE
+//                 Bool_t ReInit    -- re-initialize if set
+// Results:        Int_t NofSubst   -- number of substitutions found
+// Exceptions:
+// Description:    Resets subst buffer and fills it
+//                 with items from "subst=..." string
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nSubst = fLofSubstitutions.GetEntriesFast();
+	if (ReInit || nSubst == 0) {
+		TMrbTidyAttr * aSubst = (TMrbTidyAttr *) fLofAttr.FindByName("subst");
+		nSubst = 0;
+		fLofSubstitutions.Delete();
+		if (aSubst) {
+			TObjArray sarr;
+			TMrbString subst = aSubst->GetValue();
+			nSubst = subst.Split(sarr, ",");
+			if (nSubst) {
+				for (Int_t i = 0; i < nSubst; i++) {
+					TString sstr = ((TObjString *) sarr[i])->GetString();
+					Int_t n = sstr.Index(":", 0);
+					if (n > 0) sstr.Resize(n);
+					fLofSubstitutions.AddNamedX(0, sstr.Data(), "");
+				}
+			}
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			node->InitSubstitutions(Recursive, ReInit);
+			node = this->GetNext(node);
+		}
+	}
+	return(nSubst);
+}
+
+void TMrbTidyNode::PrintSubstitutions(Bool_t Recursive, ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::PrintSubstitutions
+// Purpose:        Output substitutions
+// Arguments:      Bool_t Recursive -- step down the tree if kTRUE
+//                 ostream & Out    -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Outputs subst names (and values) to stream Out.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nSubst = this->InitSubstitutions(kFALSE, kFALSE);
+	if (nSubst > 0) {
+		Out << endl << "===========================================" << endl;
+		Out << "Node \"" << this->GetName()
+			<< "\" (level " << this->GetTreeLevel() << "): "
+			<< nSubst << " substitution(s)" << endl;
+		Out << "-------------------------------------------" << endl;
+		Out << Form("%-15s%s", "Param", "Subst") << endl;
+		Out << "..........................................." << endl;
+		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
+		while (nx) {
+			if (nx->GetIndex() == 0) {
+				Out << Form("%-15s%s", nx->GetName(), "<n.a>") << endl;
+			} else {
+				Out << Form("%-15s%s", nx->GetName(), nx->GetTitle()) << endl;
+			}
+			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			node->PrintSubstitutions(Recursive, Out);
+			node = this->GetNext(node);
+		}
+	}
+}
+
+void TMrbTidyNode::ClearSubstitutions(Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::ClearSubstitutions
+// Purpose:        Clear current substitution settings
+// Arguments:      Bool_t Recursive -- step down the tree if kTRUE
+// Results:        --
+// Exceptions:
+// Description:    Resets all substitutions to "n.a" (empty).
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->InitSubstitutions(kFALSE, kFALSE);
+	TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
+	while (nx) {
+		nx->ChangeIndex(0);
+		nx->SetTitle("");
+		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			node->ClearSubstitutions(Recursive);
+			node = this->GetNext(node);
+		}
+	}
+}
+
+Bool_t TMrbTidyNode::CheckSubstitutions(Bool_t Recursive, Bool_t QuietMode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::CheckSubstitutions
+// Purpose:        Check if substitutions are ok
+// Arguments:      Bool_t Recursive -- step down the tree if kTRUE
+//                 Bool_t QuietMode   -- no error/warning message if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if all substitutions have values assigned.
+//                 If CheckCode=kTRUE it searches for #param# in text nodes
+//                 and compares with entries in subst table.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok = kTRUE;
+	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
+		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
+		Bool_t ok = kTRUE;
+		while (nx) {
+			if (nx->GetIndex() == 0) {
+				if (!QuietMode) {
+					gMrbLog->Err() << (ok ? "Substitution missing for param(s) >> " : ", ");
+					gMrbLog->Err() << nx->GetName();
+				}
+				ok = kFALSE;
+			}
+			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
+		}
+		if (!QuietMode && !ok) {
+			gMrbLog->Err() << " <<" << endl;
+			gMrbLog->Flush(this->ClassName(), "CheckSubstitutions");
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			if (!node->CheckSubstitutions(Recursive, QuietMode)) ok = kFALSE;
+			node = this->GetNext(node);
+		}
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, const Char_t * ParamValue, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Substitute
+// Purpose:        Substitute param with value
+// Arguments:      Char_t * ParamName    -- param name
+//                 Char_t * ParamValue   -- value to be substituted
+//                 Bool_t Recursive      -- step down the tree if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Substitutes given param (#param#) with string.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok = kTRUE;
+	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
+		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.FindByName(ParamName);
+		if (nx) {
+			nx->ChangeIndex(1);
+			nx->SetTitle(ParamValue);
+			ok = kTRUE;
+		} else {
+			gMrbLog->Err()	<< "Node \"" << this->GetName()
+							<< "\" (level " << this->GetTreeLevel()
+							<< "): Param not found - " << ParamName << endl;
+			gMrbLog->Flush(this->ClassName(), "Substitute");
+			ok = kFALSE;
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			if (!node->Substitute(ParamName, ParamValue, Recursive)) ok = kFALSE;
+			node = this->GetNext(node);
+		}
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Int_t ParamValue, Int_t ParamBase, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Substitute
+// Purpose:        Substitute param with value
+// Arguments:      Char_t * ParamName    -- param name
+//                 Int_t ParamValue      -- value to be substituted
+//                 Int_t ParamBase       -- num base to be used for conversion
+//                 Bool_t Recursive      -- step down the tree if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Substitutes given param (#param#) with int.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok = kTRUE;
+	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
+		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.FindByName(ParamName);
+		if (nx) {
+			nx->ChangeIndex(1);
+			TMrbString val;
+			val.FromInteger(ParamValue, 0, ' ', ParamBase, kTRUE);
+			nx->SetTitle(val.Data());
+			ok = kTRUE;
+		} else {
+			gMrbLog->Err()	<< "Node \"" << this->GetName()
+							<< "\" (level " << this->GetTreeLevel()
+							<< "): Param not found - " << ParamName << endl;
+			gMrbLog->Flush(this->ClassName(), "Substitute");
+			ok = kFALSE;
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			if (!node->Substitute(ParamName, ParamValue, ParamBase, Recursive)) ok = kFALSE;
+			node = this->GetNext(node);
+		}
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Double_t ParamValue, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Substitute
+// Purpose:        Substitute param with value
+// Arguments:      Char_t * ParamName    -- param name
+//                 Double_t ParamValue   -- value to be substituted
+//                 Bool_t Recursive      -- step down the tree if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Substitutes given param (#param#) with double.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t ok = kTRUE;
+	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
+		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.FindByName(ParamName);
+		if (nx) {
+			nx->ChangeIndex(1);
+			TMrbString val;
+			val.FromDouble(ParamValue);
+			nx->SetTitle(val.Data());
+			ok = kTRUE;
+		} else {
+			gMrbLog->Err()	<< "Node \"" << this->GetName()
+							<< "\" (level " << this->GetTreeLevel()
+							<< "): Param not found - " << ParamName << endl;
+			gMrbLog->Flush(this->ClassName(), "Substitute");
+			ok = kFALSE;
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			if (!node->Substitute(ParamName, ParamValue, Recursive)) ok = kFALSE;
+			node = this->GetNext(node);
+		}
+	}
+	return(ok);
+}
+
+Bool_t TMrbTidyNode::OutputSubstituted(const Char_t * Case, ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputSubstituted
+// Purpose:        Output text with substitutions
+// Arguments:      Char_t * Case    -- attribute "case=..."
+//                 ostream & Out    -- output stream
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Replaces params by their substitutions and outputs text.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray lofCases;
+	lofCases.Delete();
+	TMrbString caseString = Case;
+	caseString.Split(lofCases, ":");
+	return(this->OutputSubstituted(lofCases, this->GetTreeLevel(), Out));
+}
+
+Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCases, Int_t CaseLevel0, ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputSubstituted
+// Purpose:        Output text with substitutions
+// Arguments:      TObjArray & LofCases* Case	 -- array containing attributes "case=..."
+//                 Int_t CaseLevel0              -- tree level case#0 belongs to
+//                 ostream & Out                 -- output stream
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Replaces params by their substitutions and outputs text.
+//                 Works for pure text nodes as well as for
+//                 nodes with attr "string=..."
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t level = this->GetTreeLevel() - CaseLevel0;
+	TString caseValue = (level >= 0 && level < LofCases.GetEntriesFast()) ? ((TObjString *) LofCases[level])->GetString() : "";
+	caseValue = caseValue.Strip(TString::kBoth);
+
+	cout << "@@ " << this->GetName() << ": level=" << level << " case=|" << caseValue << "|" << endl;
+	if (!caseValue.IsNull()) {
+		TMrbTidyAttr * aCase = (TMrbTidyAttr *) fLofAttr.FindByName("case");
+		if (aCase == NULL || caseValue.CompareTo(aCase->GetValue()) != 0) return(kFALSE);
+	}
+
+	TString buf;
+	Bool_t ok = kFALSE;
+
+	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
+	if (aString) {
+		buf = aString->GetValue();
+		ok = kTRUE;
+		cout << "@@ " << this->GetName() << ": has attr string=|" << aString->GetValue() << "|" << endl;
+	} else if (this->IsText()) {
+		this->GetText(buf);
+		ok = kTRUE;
+		cout << "@@ " << this->GetName() << ": is text" << endl;
+	}
+	if (ok) {
+		cout << "@@ " << this->GetName() << " buf BEFORE subst --- " << buf << endl;
+		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
+		while (nx) {
+			if (nx->GetIndex() != 0) {
+				TString param = nx->GetName();
+				param.Prepend("#");
+				param += "#";
+				buf.ReplaceAll(param.Data(), nx->GetTitle());
+			}
+			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
+		}
+//		Out << buf << endl;
+		cout << "@@ " << this->GetName() << " buf AFTER subst --- " << buf << endl;
+	}
+
+	cout << "@@ " << this->GetName() << ": entering recursion" << endl;
+	TMrbTidyNode * node = this->GetFirst();
+	while (node) {
+		node->OutputSubstituted(LofCases, CaseLevel0, Out);
+		node = this->GetNext(node);
+	}
+
+	return(ok);
+}
+
 TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, const Char_t * NodeAttributes, Bool_t Recursive) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1472,7 +1839,7 @@ TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, const Char_t * NodeAt
 		node = this->GetFirst();
 		while (node) {
 			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(lofAttr)) return(node);
-			TMrbTidyNode * child = node->Find(NodeName, lofAttr, kTRUE);
+			TMrbTidyNode * child = node->Find(NodeName, lofAttr, Recursive);
 			if (child) return(child);
 			node = this->GetNext(node);
 		}
@@ -1503,7 +1870,7 @@ TMrbTidyNode * TMrbTidyNode::Find(const Char_t * NodeName, TObjArray & LofAttr, 
 		node = this->GetFirst();
 		while (node) {
 			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(LofAttr)) return(node);
-			TMrbTidyNode * child = node->Find(NodeName, LofAttr, kTRUE);
+			TMrbTidyNode * child = node->Find(NodeName, LofAttr, Recursive);
 			if (child) return(child);
 			node = this->GetNext(node);
 		}
@@ -1537,7 +1904,7 @@ Int_t TMrbTidyNode::Find(TObjArray & LofNodes, const Char_t * NodeName, const Ch
 		node = this->GetFirst();
 		while (node) {
 			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(lofAttr)) LofNodes.Add(node);
-			node->Find(LofNodes, NodeName, lofAttr, kTRUE);
+			node->Find(LofNodes, NodeName, lofAttr, Recursive);
 			node = this->GetNext(node);
 		}
 	} else {
@@ -1568,7 +1935,7 @@ Int_t TMrbTidyNode::Find(TObjArray & LofNodes, const Char_t * NodeName,  TObjArr
 		node = this->GetFirst();
 		while (node) {
 			if (nodeName.CompareTo(node->GetName()) == 0 && node->CompareAttributes(LofAttr)) LofNodes.Add(node);
-			node->Find(LofNodes, NodeName, LofAttr, kTRUE);
+			node->Find(LofNodes, NodeName, LofAttr, Recursive);
 			node = this->GetNext(node);
 		}
 	} else {
@@ -1576,6 +1943,35 @@ Int_t TMrbTidyNode::Find(TObjArray & LofNodes, const Char_t * NodeName,  TObjArr
 		if (node != NULL && node->CompareAttributes(LofAttr)) LofNodes.Add(node);
 	}
 	return(LofNodes.GetEntriesFast());
+}
+
+TMrbTidyNode * TMrbTidyNode::FindByAttr(const Char_t * AttrName, const Char_t * AttrValue, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::FindByAttr
+// Purpose:        Find a node by its attr
+// Arguments:      const Char_t * AttrName   -- attr name
+//                 const Char_t * AttrValue  -- ... value
+//                 Bool_t Recursive          -- kTRUE if to be searched recursively
+// Results:        TMrbTidyNode * Node       -- resulting node
+// Exceptions:
+// Description:    Searches for a specified node
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbTidyNode * node;
+	TString aValue = AttrValue;
+	node = this->GetFirst();
+	while (node) {
+		TMrbTidyAttr * attr = (TMrbTidyAttr *) fLofAttr.FindByName(AttrName);
+		if (attr && aValue.CompareTo(attr->GetValue()) == 0) return(node);
+		if (Recursive) {
+			TMrbTidyNode * child = node->FindByAttr(AttrName, AttrValue, Recursive);
+			if (child) return(child);
+		}
+		node = this->GetNext(node);
+	}
+	return(NULL);
 }
 
 Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAttributes) {
@@ -1609,6 +2005,9 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 					continue;
 				}
 				TString attrVal = attr(n + 1, attr.Length() - n - 1);
+				attrVal = attrVal.Strip(TString::kBoth);
+				if (attrVal(0) == '"') attrVal = attrVal(1, attrVal.Length() - 1);
+				if (attrVal(attrVal.Length()) == '"') attrVal.Resize(attrVal.Length() - 1);
 				attr.Resize(n);
 				LofAttr.Add(new TNamed(attr.Data(), attrVal.Data()));
 			}
