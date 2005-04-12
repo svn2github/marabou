@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.9 2005-04-12 06:45:09 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.10 2005-04-12 14:02:30 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -159,6 +159,13 @@ class TMrbTidyAttr : public TMrbNamedX {
 
 class TMrbTidyNode : public TMrbNamedX {
 
+	public:
+
+		enum EMrbTidySubstType	{	kMrbTidySubstLocal		=	BIT(0),
+									kMrbTidySubstParent 	=	BIT(1),
+									kMrbTidySubstDone		=	BIT(2)
+								};
+
  	public:
 		TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TObject * Doc);
 		virtual ~TMrbTidyNode() {};
@@ -180,6 +187,8 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		Bool_t HasTextChildsOnly();
 		const Char_t * CollectTextFromChilds(TString & Buffer);
+
+		inline TMrbTidyNode * Parent() { return(fParent); };
 
 		void FillTree();
 		void DeleteTree();
@@ -352,19 +361,17 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
 		void OutputHtmlTree(ostream & Out = cout);
 
-		Bool_t Substitute(const Char_t * ParamName, const Char_t * ParamValue, Bool_t Recursive = kFALSE);	// substitute arguments
-		Bool_t Substitute(const Char_t * ParamName, Int_t ParamValue, Int_t ParamBase = 10, Bool_t Recursive = kFALSE);
-		Bool_t Substitute(const Char_t * ParamName, Double_t ParamValue, Bool_t Recursive = kFALSE);
-		Bool_t CheckSubstitutions(Bool_t Recursive = kFALSE, Bool_t QuietMode = kFALSE);
+		Bool_t Substitute(const Char_t * ParamName, const Char_t * ParamValue, Bool_t Recursive = kFALSE, Bool_t Verbose = kFALSE);	// substitute arguments
+		Bool_t Substitute(const Char_t * ParamName, Int_t ParamValue, Int_t ParamBase = 10, Bool_t Recursive = kFALSE, Bool_t Verbose = kFALSE);
+		Bool_t Substitute(const Char_t * ParamName, Double_t ParamValue, Bool_t Recursive = kFALSE, Bool_t Verbose = kFALSE);
+		Bool_t CheckSubstitutions(Bool_t Recursive = kFALSE, Bool_t Verbose = kTRUE);
 		void ClearSubstitutions(Bool_t Recursive = kFALSE);
 		void PrintSubstitutions(Bool_t Recursive = kFALSE, ostream & Out = cout);
 
-		Bool_t OutputSubstituted(const Char_t * Case = NULL, ostream & Out = cout);
-		Bool_t OutputSubstituted(TObjArray & LofCases, Int_t CaseLevel0, ostream & Out = cout);
-		inline Bool_t OutputSubstituted(TObjArray & LofCases, ostream & Out = cout) {
-			return(this->OutputSubstituted(LofCases, this->GetTreeLevel(), Out));
-		};
+		inline TMrbLofNamedX * GetLofSubstitutions() { return(&fLofSubstitutions); };
 
+		Bool_t OutputSubstituted(const Char_t * CaseString = NULL, ostream & Out = cout);
+		Bool_t OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out = cout);
 
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
 
