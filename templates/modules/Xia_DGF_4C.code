@@ -74,7 +74,7 @@
 %%MODULE_DEFS%%
 
 %%BeginOfCode%%
-	dgfReadIntSca = root_env_getval_i("TMrbDGF.ReadInternalScalers", 0);
+	dgfIntScaInv = root_env_getval_i("TMrbDGF.ReadInternalScalers", 0);
 	dgfIntScaCnt = 0;
 %%EndOfCode%%
 %%INIT_COMMON_CODE%%
@@ -458,7 +458,7 @@ void dgf_set_ref_time(volatile unsigned long * dgf);
 
 %%BeginOfCode%%
 	unsigned int dgfAoutBuf[$nofModules];
-	int dgfReadIntSca, dgfIntScaCnt;
+	int dgfIntScaInv, dgfIntScaCnt;
 %%EndOfCode%%
 %%DEFINE_GLOBALS_ONCE_ONLY%%
 
