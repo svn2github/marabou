@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.1 2005-04-14 09:02:31 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.2 2005-04-14 14:15:47 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -49,21 +49,32 @@ class TMrbCPTM : public TNamed {
 		Int_t GetAuxDelay();
 		Int_t GetAuxWidth();
 
-		Bool_t  SetMask(Int_t Mask);
+		Bool_t SetMask(Int_t Mask);
+		Bool_t SetMask(const Char_t * Mask);
 		Int_t GetMask();
 
-		Bool_t  SetTimeWindowAux(Int_t Window);
+		Bool_t SetTimeWindowAux(Int_t Window);
 		Int_t GetTimeWindowAux();
 
-		Bool_t  SetDac(Int_t DacNo, Int_t DacValue);
+		Bool_t SetDac(Int_t DacNo, Int_t DacValue);
 		Int_t GetDac(Int_t DacNo);
+		inline Bool_t ClearDac(Int_t DacNo) { return(this->SetDac(DacNo, 0)); };
 
-		Bool_t  ResetRead();
-		Bool_t  ResetWrite();
-		Bool_t  ResetMemory();
-		Bool_t  Reset(Bool_t MemoryFlag = kFALSE);
+		Bool_t ResetRead();
+		Bool_t ResetWrite();
+		Bool_t ResetMemory();
+		Bool_t ResetDacs();
+		Bool_t Reset();
 
-		Bool_t  EnableSynch();
+		Bool_t EnableSynch();
+
+		Bool_t DownloadAlteraCode(const Char_t * CodeFile = "altera.rbf");
+
+		Int_t GetReadAddr();
+		Int_t GetWriteAddr();
+
+		Bool_t Save(const Char_t * SaveFile = "cptm.par");
+		Bool_t Restore(const Char_t * SaveFile = "cptm.par");
 
 	 	void Print(Option_t * option) const { TObject::Print(option); };
 		void Print(ostream & Out = cout);
@@ -78,6 +89,13 @@ class TMrbCPTM : public TNamed {
 		Bool_t SetStation(Int_t Station);
 
 		inline TMrbEsone * Camac() { return(&fCamac); }; 				// camac handle
+
+		Bool_t CheckValue(Int_t Value, Int_t MaxValue, const Char_t * ArgName = "Arg", const Char_t * Method = "CheckValue");
+
+	protected:
+		Bool_t ReadAllDacs(TArrayI & DacBits);
+		Bool_t WriteAllDacs(TArrayI & DacBits);
+		const Char_t * ConvertMask(TString & Mask, Int_t MaskValue);
 
 	protected:
 		TString fCamacHost; 	// host name
