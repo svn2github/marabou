@@ -52,7 +52,6 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(HPRH))
 INCLUDEFILES += $(HPRDEP)
 
 ##### extra libs needed #####
-GLIBS         = $(ROOTGLIBS)
 OHPRLIBS      := -L$(LPATH) -lTMrbUtils -lTGMrbUtils -lTMrbHelpBrowser
 
 ##### local rules #####
@@ -63,9 +62,9 @@ include/%.h:    $(HPRDIRI)/%.h
 $(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
 #		@echo "sources: $(HPRS)"
 		@echo "OHPRLIBS: $(OHPRLIBS)"
-#		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(MRBLIBS) $(GLIBS) \
+		@echo "ROOTGLIBS: $(ROOTGLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(ROOTGLIBS) \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)

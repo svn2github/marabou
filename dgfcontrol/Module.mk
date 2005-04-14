@@ -38,7 +38,6 @@ ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(DGFCH))
 INCLUDEFILES += $(DGFCDEP)
 
 ##### extra libs needed #####
-GLIBS         = $(ROOTGLIBS)
 ODGFCLIBS      := -L$(LPATH) -lTMrbDGF -lTMrbEsone -lEsoneClient \
                  -lTMrbUtils -lTGMrbUtils -lHpr -lTMrbHelpBrowser
 
@@ -50,9 +49,8 @@ include/%.h:    $(DGFCDIRI)/%.h
 $(DGFCEXE):     $(DGFCSO)$(DGFCO) $(DGFCMAINO) $(MRBLIBS)
 #		@echo "sources: $(DGFCS)"
 		@echo "ODGFCLIBS: $(ODGFCLIBS)"
-#		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCLIB) $(MRBLIBS) $(GLIBS) \
 		@echo "$(DGFCEXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(DGFCMAINO) $(DGFCO) $(DGFCDO) $(ODGFCLIBS) $(ROOTGLIBS) \
             -o $(DGFCEXE)
 
 $(DGFCLIB):     $(DGFCDO) $(DGFCO)

@@ -45,7 +45,6 @@ INCLUDEFILES += $(CANDEP)
 INCLUDEFILES += $(MBSCDEP)
 
 ##### extra libs needed #####
-GLIBS         = $(ROOTGLIBS)
 CANLIBS       = $(LPATH)/libTMrbUtils.$(SOEXT) \
 				$(LPATH)/libTGMrbUtils.$(SOEXT) \
 				$(LPATH)/libTMrbHelpBrowser.$(SOEXT) \
@@ -58,7 +57,7 @@ include/%.h:    $(CANDIRI)/%.h
 
 $(CANEXE):     $(CANDO) $(CANO) $(CANLIBS) $(MBSCLIB)
 		@echo "$(CANEXE) start linking"
-		$(LD) -g $(LDFLAGS) $(CANO) $(CANLIBS) $(MBSCLIB) $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(CANO) $(CANLIBS) $(MBSCLIB) $(ROOTGLIBS) \
             -o $(CANEXE)
 
 $(MBSCLIB):     $(MBSCDO) $(MBSCO) $(MAINLIBS) $(MBSCLIBDEP)

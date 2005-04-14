@@ -29,7 +29,6 @@ ALLOBJS     += obj/mbsio.o obj/byte_order.o
 INCLUDEFILES += $(MBSIODEP)
 
 ##### extra libs needed #####
-GLIBS         = $(ROOTGLIBS)
 MRBLIBS       = $(LPATH)/libTMrbUtils.$(SOEXT) $(LPATH)/libTGMrbUtils.$(SOEXT)\
                 $(LPATH)/libTMbsSetup.$(SOEXT)
 ##### local rules #####
@@ -46,18 +45,18 @@ $(MBSTSTEXE):      $(MBSIOO) $(MODDIRS)/mbstst.o
 		@echo "$(MBSIOO)"
 		@echo "----------------------------------------------------"
 
-		$(LD) -g $(LDFLAGS) $(MBSIOO) $(MRBLIBS) $(MBSCLIB) $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(MBSIOO) $(MRBLIBS) $(MBSCLIB) $(ROOTGLIBS) \
             -o $(MBSTSTEXE)
 
 
 all-mbsio:       $(MBSIOEXE)
 
 clean-mbsio:
-		@echo "------in clean-mbsio---------------------"
-		@echo "$(MBSIOO)"
-		@echo "$(MBSIOS)"
-		@echo "$(MBSIODEP)"
-		@echo "----------------------------------------------------"
+#		@echo "------in clean-mbsio---------------------"
+#		@echo "$(MBSIOO)"
+#		@echo "$(MBSIOS)"
+#		@echo "$(MBSIODEP)"
+#		@echo "----------------------------------------------------"
 		@rm -f $(MBSIOO) $(MBSTSTEXE)
       
 clean::         clean-mbsio
