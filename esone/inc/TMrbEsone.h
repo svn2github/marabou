@@ -9,7 +9,7 @@
 // Description:    Class definitions to establish an
 //                 ESONE client/server connection.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEsone.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEsone.h,v 1.6 2005-04-14 14:17:51 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -223,7 +223,7 @@ class TMrbEsone : public TObject {
 		
 		TString fHost;								// host name
 		TString fHostInet;							// full inet address
-		UInt_t fHostAddr;							// ESONE host address
+		Int_t fHostAddr;							// ESONE host address
 		TString fServerProg;						// server program
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number

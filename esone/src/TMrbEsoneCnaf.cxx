@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsoneCnaf.cxx,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEsoneCnaf.cxx,v 1.7 2005-04-14 14:17:51 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -339,10 +339,8 @@ Bool_t TMrbEsoneCnaf::SetF(Int_t Function) {
 		fFunction = Function;
 		if (IS_F_READ(Function)) 					fType = kCnafTypeRead;
 		else if (IS_F_WRITE(Function)) 				fType = kCnafTypeWrite;
-		else if (IS_F_CNTL(Function)) {
-			if (Function == 8 || Function == 27)	fType = kCnafTypeReadStatus;
-			else									fType = kCnafTypeControl;
-		} else return(kFALSE);
+		else if (IS_F_CNTL(Function))				fType = kCnafTypeControl;
+		else return(kFALSE);
 		return(kTRUE);
 	}
 	return(kFALSE);
