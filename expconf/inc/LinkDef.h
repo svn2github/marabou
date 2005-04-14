@@ -26,6 +26,7 @@
 #pragma link C++ class TMrbSubevent_10_12;
 #pragma link C++ class TMrbSubevent_10_13;
 #pragma link C++ class TMrbSubevent_10_14;
+#pragma link C++ class TMrbSubevent_10_15;
 #pragma link C++ class TMrbSubevent_DGF_1;
 #pragma link C++ class TMrbSubevent_DGF_2;
 #pragma link C++ class TMrbSubevent_DGF_3;
