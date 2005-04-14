@@ -61,21 +61,17 @@ include/%.h:    $(HPRDIRI)/%.h
 
 $(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
 #		@echo "sources: $(HPRS)"
-		@echo "OHPRLIBS: $(OHPRLIBS)"
-		@echo "ROOTGLIBS: $(ROOTGLIBS)"
 		@echo "$(HPREXE) linking exe ----------------------------------"
 		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(ROOTGLIBS) \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)
-		@echo "objs in libHpr.so: $(HPRO)"
 #		@echo "objs: $(HPRO)"
 		@echo "$(HPREXE) make shared lib ------------------------------------"
 		@$(MAKELIB) $(PLATFORM) $(LD) "$(LDFLAGS)" \
 		   "$(SOFLAGS)" libHpr.$(SOEXT) $@ "$(HPRO) $(HPRDO)"
 
 $(HPRDS):     $(HPRDH) $(HPRL)
-		@echo "includes: $(HPRDH)"
 		@echo "Generating dictionary $@..."
 		$(ROOTCINT) -f $@ -c -Iinclude $(HPRDH)
 
