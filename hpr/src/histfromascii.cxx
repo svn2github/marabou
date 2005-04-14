@@ -3,6 +3,8 @@
 #include "TGraphAsymmErrors.h"
 #include "TH1D.h"
 #include "TH2F.h"
+#include "TH3F.h"
+#include "TNtupleD.h"
 #include "TString.h"
 #include "TSystem.h"
 #include "TGWindow.h"
@@ -15,6 +17,47 @@
 
 namespace std {} using namespace std;
 
+//________________________________________________________________________________________
+
+void HistPresent::NtupleFromASCII(TGWindow * win)
+{
+   const Char_t helpText[] = "Read values from ASCII file and fill ntuple \n\
+Values in variable list must ne separated by colons (:)";
+   TOrdCollection *row_lab = new TOrdCollection(); 
+   TOrdCollection *values  = new TOrdCollection();
+   row_lab->Add(new TObjString("Input file name"));
+   row_lab->Add(new TObjString("Output file name"));
+   row_lab->Add(new TObjString("Ntuple name"));
+   row_lab->Add(new TObjString("Ntuple title"));
+   row_lab->Add(new TObjString("List of vars, separated by :"));
+   Int_t nrows = 5;
+   values->Add(new TObjString("nt.asc"));
+   values->Add(new TObjString("nt.root"));
+   values->Add(new TObjString("nt0"));
+   values->Add(new TObjString("My Ntuples"));
+   values->Add(new TObjString("x:y:z"));
+
+   Int_t ret,  itemwidth=180; 
+
+   new TGMrbTableFrame(win, &ret, "Define parameters", 
+                     itemwidth, 1, nrows, values,
+                     0, row_lab, 0, 0, helpText);
+//      delete row_lab;
+   if (ret < 0) {
+      return;
+   }
+   TString fname(((TObjString*)values->At(0))->GetString());
+   TString oname(((TObjString*)values->At(1))->GetString());
+   TString name (((TObjString*)values->At(2))->GetString());
+   TString title(((TObjString*)values->At(3))->GetString());
+   TString varlist(((TObjString*)values->At(4))->GetString());
+   TFile * outf = new TFile(oname, "RECREATE");
+   TNtupleD * nt = new TNtupleD(name, title, varlist);
+   Long64_t n = nt->ReadFile(fname);
+   nt->Write();
+   outf->Close();
+   cout << "Rows read: " << n << endl;
+}
 //________________________________________________________________________________________
 
 void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mode)
@@ -45,12 +88,12 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
    ok = kTRUE;
    Double_t x[6];
    Int_t nval;
-   if      (mode == kSpectrum || mode == k1dimHist)  nval = 1;
+   if      (mode == kSpectrum || mode == k1dimHist)          nval = 1;
    else if (mode == kSpectrumError || mode == k1dimHistWeight 
-         || mode == k2dimHist || mode == kGraph)     nval = 2;
-   else if (mode == k2dimHistWeight)                 nval = 3;
-   else if (mode == kGraphError)                     nval = 4;
-   else if (mode == kGraphAsymmError)                nval = 6;
+         || mode == k2dimHist || mode == kGraph)            nval = 2;
+   else if (mode == k2dimHistWeight || mode == k3dimHist)   nval = 3;
+   else if (mode == kGraphError || mode == k3dimHistWeight) nval = 4;
+   else if (mode == kGraphAsymmError)                       nval = 6;
    else {
       cout << "Invalid mode: " << mode << endl;
       return;
@@ -102,11 +145,13 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
 
    Bool_t its_1dimhist = kFALSE;
    Bool_t its_2dimhist = kFALSE;
+   Bool_t its_3dimhist = kFALSE;
    Bool_t its_graph    = kFALSE;
    if (mode == kGraph || mode == kGraphError) its_graph= kTRUE;
    if (mode == kSpectrum || mode == kSpectrum 
      || mode == k1dimHist || mode == k1dimHistWeight) its_1dimhist = kTRUE;
    if (mode == k2dimHist || mode == k2dimHistWeight)  its_2dimhist = kTRUE;
+   if (mode == k3dimHist || mode == k3dimHistWeight)  its_3dimhist = kTRUE;
 
    TString hname = fGraphFile;
    Int_t ip = hname.Index(".");
@@ -115,13 +160,13 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
    htitle.Prepend("Values from ");
    if (!its_graph) hname.Prepend("h_");
 
-   Int_t nbinx, nbiny, nrows;
-   Axis_t xlow, xup, ylow , yup;
-   Double_t xmin, xmax, ymin, ymax;
+   Int_t nbinx, nbiny, nbinz, nrows;
+   Axis_t xlow, xup, ylow, yup, zlow, zup;
+   Double_t xmin, xmax, ymin, ymax, zmin, zmax;
    TMrbString temp;
 
-   if (its_1dimhist || its_2dimhist ) {
-      hname.Prepend("h_");
+   if (its_1dimhist || its_2dimhist || its_3dimhist ) {
+//      hname.Prepend("h_");
       TOrdCollection *row_lab = new TOrdCollection(); 
       TOrdCollection *values  = new TOrdCollection();
       row_lab->Add(new TObjString("Histogram name"));
@@ -151,7 +196,7 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
       	values->Add(new TObjString(Form("%d",nbinx )));
       	values->Add(new TObjString(Form("%f", xlow)));
       	values->Add(new TObjString(Form("%f", xup)));
-         if (its_2dimhist) {
+         if (its_2dimhist || its_3dimhist) {
          	nbiny = 100;
          	ymin = yval[TMath::LocMin(n, yval.GetArray())]; 
          	ymax = yval[TMath::LocMax(n, yval.GetArray())]; 
@@ -164,6 +209,20 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
       		values->Add(new TObjString(Form("%d", nbiny )));
       		values->Add(new TObjString(Form("%f", ylow)));
       		values->Add(new TObjString(Form("%f", yup)));
+         }
+         if (its_3dimhist) {
+         	nbinz = 100;
+         	zmin = zval[TMath::LocMin(n, zval.GetArray())]; 
+         	zmax = zval[TMath::LocMax(n, zval.GetArray())]; 
+         	zlow = zmin - 1;
+         	zup  = zmax + 1;
+         	nrows += 3;
+      		row_lab->Add(new TObjString("Nbins Y"));
+      		row_lab->Add(new TObjString("Low edge Y"));
+      		row_lab->Add(new TObjString("Upper edge Y"));
+      		values->Add(new TObjString(Form("%d", nbinz )));
+      		values->Add(new TObjString(Form("%f", zlow)));
+      		values->Add(new TObjString(Form("%f", zup)));
          }
       }
 
@@ -243,6 +302,35 @@ tryagain:
          } else if (mode == k2dimHistWeight) {
             for (Int_t i = 0; i < n; i++) {
                hist2->Fill(xval[i], yval[i], zval[i]);
+            }
+         }
+      }
+      if (its_3dimhist) {
+         temp = ((TObjString*)values->At(8))->GetString();
+         if (!temp.ToInteger(nbinz)) {
+            cout << "Illegal integer: " << temp << endl;
+            goto tryagain;      
+         }
+         temp = ((TObjString*)values->At(9))->GetString();
+         if (!temp.ToDouble(zlow)) {
+            cout << "Illegal double: " << temp << endl;
+            goto tryagain;      
+         }
+         temp = ((TObjString*)values->At(10))->GetString();
+         if (!temp.ToDouble(zup)) {
+            cout << "Illegal double: " << temp << endl;
+            goto tryagain;      
+         }
+         TH3F * hist3 = new TH3F(hname, htitle, nbinx, xlow, xup, 
+                                nbiny, ylow, yup, nbinz, zlow, zup);
+         hist = hist3;
+         if (mode == k3dimHist) {
+            for (Int_t i = 0; i < n; i++) {
+               hist3->Fill(xval[i], yval[i], zval[i]);
+            }
+         } else if (mode == k3dimHistWeight) {
+            for (Int_t i = 0; i < n; i++) {
+               hist3->Fill(xval[i], yval[i], zval[i], wval[i]);
             }
          }
       }

@@ -166,6 +166,9 @@ enum ERootCanvasCommands {
    kFH1dimHistWeight,
    kFH2dimHist, 
    kFH2dimHistWeight, 
+   kFH3dimHist, 
+   kFH3dimHistWeight, 
+   kFHNtuple, 
    kFHGraph, 
    kFHGraphError,
    kFHGraphAsymmError,
@@ -1085,6 +1088,15 @@ again:
                   case kFH2dimHistWeight:
                      fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k2dimHistWeight); 
                      break;
+                 case kFH3dimHist:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k3dimHist); 
+                     break;
+                  case kFH3dimHistWeight:
+                     fHistPresent->HistFromASCII(fRootCanvas, HistPresent::k3dimHistWeight); 
+                     break;
+                  case kFHNtuple:
+                     fHistPresent->NtupleFromASCII(fRootCanvas); 
+                     break;
                   case kFHGraph:
                      fHistPresent->HistFromASCII(fRootCanvas, HistPresent::kGraph); 
                      break;
@@ -1454,12 +1466,15 @@ void HandleMenus::BuildMenus()
          HfromAMenu->AddEntry("X-values of histogram",   kFH1dimHist); 
          HfromAMenu->AddEntry("X-values, weights of histogram",	kFH1dimHistWeight);
          HfromAMenu->AddEntry("X-, Y-values of 2dim histogram",	kFH2dimHist); 
-         HfromAMenu->AddEntry("X-, Y-values, weights values of 2dim histogram",	kFH2dimHistWeight); 
+         HfromAMenu->AddEntry("X-, Y-values, weights of 2dim histogram",	kFH2dimHistWeight); 
+         HfromAMenu->AddEntry("X-, Y-, Z-values of 3dim histogram",	kFH3dimHist); 
+         HfromAMenu->AddEntry("X-, Y-, Z-values, weights of 3dim histogram",	kFH3dimHistWeight); 
 
          TGPopupMenu * GfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
          GfromAMenu->AddEntry("X, Y of TGraph (without errors)",	kFHGraph); 
          GfromAMenu->AddEntry("X, Y, ErrorX, ErrorY of TGraphErrors",	kFHGraphError);
          GfromAMenu->AddEntry("X, Y, EXlow, EXhigh, EYlow, EYhigh of TGraphAsymmErrors",	kFHGraphAsymmError);
+         fFileMenu->AddEntry("ASCII data from file to Ntuple", kFHNtuple);
          fFileMenu->AddPopup("ASCII data from file to histogram ",  HfromAMenu);
          fFileMenu->AddPopup("ASCII data from file to graph",  GfromAMenu);
 

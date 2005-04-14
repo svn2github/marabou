@@ -344,8 +344,10 @@ protected:
     Float_t fXXXXX;
 
 public:
-enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimHistWeight,
-                       k2dimHist, k2dimHistWeight, kGraph, kGraphError, kGraphAsymmError};
+enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, 
+                       k1dimHistWeight, k2dimHist, k2dimHistWeight, 
+                       kGraph, kGraphError, kGraphAsymmError,
+                       k3dimHist, k3dimHistWeight,};
 
    HistPresent(const Text_t *name = "mypres" , const Text_t *title = "mypres");
    ~HistPresent();
@@ -447,6 +449,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist, k1dimH
 
    void CutsFromASCII(TGWindow * win = 0); 
    void HistFromASCII(TGWindow * win = 0, EHfromASCIImode mode = kNotDefined); 
+   void NtupleFromASCII(TGWindow * win = 0); 
    void SaveMap(const char*, const char* bp =0);  
    void SaveFromSocket(const char*, const char* bp =0);  
    TH1*  GetHist(const char*, const char*, const char*); 

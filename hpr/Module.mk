@@ -65,8 +65,7 @@ $(HPREXE):     $(HPRSO)$(HPRO) $(HPRMAINO) $(MRBLIBS)
 		@echo "OHPRLIBS: $(OHPRLIBS)"
 #		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRLIB) $(MRBLIBS) $(GLIBS) \
 		@echo "$(HPREXE) linking exe ----------------------------------"
-		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) \
-            $(ROOTSYS)/lib/libGed.so $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(HPRMAINO) $(HPRO) $(HPRDO) $(OHPRLIBS) $(GLIBS) \
             -o $(HPREXE)
 
 $(HPRLIB):     $(HPRDO) $(HPRO)
