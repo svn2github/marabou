@@ -33,7 +33,6 @@ ALLEXECS    += $(MACROBEXE)
 INCLUDEFILES += $(MACROBDEP)
 
 ##### extra libs needed #####
-GLIBS         = $(ROOTGLIBS)
 MRBLIBS       = $(LPATH)/libTMrbUtils.$(SOEXT) $(LPATH)/libTGMrbUtils.$(SOEXT)
 ##### local rules #####
 
@@ -42,7 +41,7 @@ include/%.h:    $(MACROBDIRI)/%.h
 
 $(MACROBEXE):    $(MACROBO) $(MRBLIBS)
 		@echo "$(MACROBEXE) start linking"
-		$(LD) -g $(LDFLAGS) $(MACROBO) $(MRBLIBS) $(GLIBS) \
+		$(LD) -g $(LDFLAGS) $(MACROBO) $(MRBLIBS) $(ROOTGLIBS) \
             -o $(MACROBEXE)
 
 $(MACROBDO):     $(MACROBDS)
@@ -51,7 +50,7 @@ $(MACROBDO):     $(MACROBDS)
 all-macrobrowser:       $(MACROBEXE) $(MBSCLIB)
 
 clean-macrobrowser:
-		@rm -f $(MACROBO)$(MACROBEXE)
+		@rm -f $(MACROBO) $(MACROBEXE)
 
 clean::         clean-macrobrowser
 
