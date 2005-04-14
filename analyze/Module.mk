@@ -49,7 +49,6 @@ INCLUDEFILES += $(ANDEP)
 INCLUDEFILES += $(MRBADEP)
 
 ##### extra libs needed #####
-GLIBS         = $(ROOTGLIBS)
 ##### local rules #####
 
 include/%.h:    $(ANDIRI)/%.h
@@ -79,7 +78,7 @@ $(ANDO):     $(ANDS)
 all-analyze:       $(ANOBJ) $(MRBALIB)
 
 clean-analyze:
-		@rm -f $(ANO) $(MRBAO) $(MRBADO) $(MRBADS) $(ANOBJ) $(MRBALIB)
+		@rm -f $(ANO) $(MRBAO) $(MUTEXO) $(MRBADO) $(MRBADS) $(ANOBJ) $(MRBALIB)
 
 clean::         clean-analyze
 
