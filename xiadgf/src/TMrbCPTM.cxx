@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.2 2005-04-14 14:15:47 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.3 2005-04-18 10:02:50 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,7 @@ const SMrbNamedX kMrbCptmMaskBits[] = {
 			{	BIT(4), "Q3"	},
 			{	BIT(5), "Q2"	},
 			{	BIT(6), "Q1",	},
-			{	BIT(6), "Ge"	}
+			{	BIT(7), "Ge"	}
 		};
 
 ClassImp(TMrbCPTM)
@@ -345,14 +345,52 @@ Bool_t TMrbCPTM::SetGeDGG(Int_t Delay, Int_t Width) {
 	if (!this->CheckValue(Delay, 0xFF, "delay", "SetGeDGG")) return(kFALSE);
 	if (!this->CheckValue(Width, 0xFF, "width", "SetGeDGG")) return(kFALSE);
 
+	if (!this->SetGeDelay(Delay)) return(kFALSE);
+	if (!this->SetGeWidth(Width)) return(kFALSE);
+	return(kTRUE);
+}
+
+Bool_t TMrbCPTM::SetGeDelay(Int_t Delay) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::SetGeDelay
+// Purpose:        Set Ge delay
+// Arguments:      Int_t Delay    -- delay in 25ns ticks
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets the Ge delay.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("SetGeDelay")) return(kFALSE);
+	if (!this->CheckValue(Delay, 0xFF, "delay", "SetGeDelay")) return(kFALSE);
+
 	if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(16), Delay, kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F16 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetGeDGG");
+		gMrbLog->Flush(this->ClassName(), "SetGeDelay");
 		return(kFALSE);
 	}
+	return(kTRUE);
+}
+
+Bool_t TMrbCPTM::SetGeWidth(Int_t Width) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::SetGeDelay
+// Purpose:        Set Ge width
+// Arguments:      Int_t Width    -- width in 25ns ticks
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets the Ge width.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("SetGeWidth")) return(kFALSE);
+	if (!this->CheckValue(Width, 0xFF, "width", "SetGeWidth")) return(kFALSE);
+
 	if (!fCamac.ExecCnaf(fCrate, fStation, A(1), F(16), Width, kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A1.F16 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetGeDGG");
+		gMrbLog->Flush(this->ClassName(), "SetGeWidth");
 		return(kFALSE);
 	}
 	return(kTRUE);
@@ -419,14 +457,52 @@ Bool_t TMrbCPTM::SetAuxDGG(Int_t Delay, Int_t Width) {
 	if (!this->CheckValue(Delay, 0xFF, "delay", "SetAuxDGG")) return(kFALSE);
 	if (!this->CheckValue(Width, 0xFF, "width", "SetAuxDGG")) return(kFALSE);
 
+	if (!this->SetAuxDelay(Delay)) return(kFALSE);
+	if (!this->SetAuxWidth(Width)) return(kFALSE);
+	return(kTRUE);
+}
+
+Bool_t TMrbCPTM::SetAuxDelay(Int_t Delay) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::SetAuxDelay
+// Purpose:        Set Aux delay
+// Arguments:      Int_t Delay    -- delay in 25ns ticks
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets the Aux delay.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("SetAuxDelay")) return(kFALSE);
+	if (!this->CheckValue(Delay, 0xFF, "delay", "SetAuxDelay")) return(kFALSE);
+
 	if (!fCamac.ExecCnaf(fCrate, fStation, A(2), F(16), Delay, kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A2.F16 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetAuxDGG");
+		gMrbLog->Flush(this->ClassName(), "SetAuxDelay");
 		return(kFALSE);
 	}
+	return(kTRUE);
+}
+
+Bool_t TMrbCPTM::SetAuxWidth(Int_t Width) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::SetAuxDelay
+// Purpose:        Set Aux width
+// Arguments:      Int_t Width    -- width in 25ns ticks
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets the Aux width.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("SetAuxWidth")) return(kFALSE);
+	if (!this->CheckValue(Width, 0xFF, "width", "SetAuxWidth")) return(kFALSE);
+
 	if (!fCamac.ExecCnaf(fCrate, fStation, A(3), F(16), Width, kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A3.F16 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "SetAuxDGG");
+		gMrbLog->Flush(this->ClassName(), "SetAuxWidth");
 		return(kFALSE);
 	}
 	return(kTRUE);
@@ -706,6 +782,274 @@ Int_t TMrbCPTM::GetWriteAddr() {
 		return(-1);
 	}
 	return(addr);
+}
+
+Bool_t TMrbCPTM::SaveSettings(const Char_t * SaveFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SaveSettings
+// Purpose:        Save settings to file
+// Arguments:      Char_t * SaveFile    -- file name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Saves settings to file.
+//                 Format is "unix style":
+//                       <name>:<value>:<hexval>[:<trueval>:<unit>]
+//                 Additional entries may be used to identify the module:
+//                       FileType:par
+//                       Module:<name>
+//                       Crate:<crate>
+//                       Station:<station>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("SaveSettings")) return(kFALSE);
+
+	ofstream sf;
+	TString saveFile;
+	TString savePath;
+	TDatime dt;
+
+	saveFile = SaveFile;
+	if (saveFile.Index("/") != 0 && saveFile.Index("./", 0) != 0) {
+		savePath = gEnv->GetValue("TMrbCPTM.SettingsPath", "");
+		if (savePath.IsNull()) savePath = gEnv->GetValue("TMrbDGF.SettingsPath", ".");
+		saveFile = savePath + "/";
+		saveFile += SaveFile;
+	}
+	if (saveFile.Index(".par") > 0) {			// write ascii data
+		sf.open(saveFile, ios::out);
+		if (!sf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << saveFile << endl;
+			gMrbLog->Flush(this->ClassName(), "SaveSettings");
+			return(kFALSE);
+		}
+
+		sf << "#----------------------------------------------------------------------------------------" << endl;
+		sf << "# Name          : "								<< SaveFile << endl;
+		sf << "# Contents      : Settings for C_PTM "			<< this->GetName()
+																<< " in C" << this->GetCrate()
+																<< ".N" << this->GetStation() << endl;
+		sf << "# Creation date : " 								<< dt.AsString() << endl;
+		sf << "# Created by    : " 								<< gSystem->Getenv("USER") << endl;
+		sf << "#" << endl;
+		sf << "# Data format   : <name>:<value>:<hexval>[:<trueval>:<unit>]" << endl;
+		sf << "#----------------------------------------------------------------------------------------" << endl;
+		sf << "#+FileType:par" << endl;
+		sf << "#+Module:"										<< this->GetName() << endl;
+		sf << "#+Crate:"										<< this->GetCrate() << endl;
+		sf << "#+Station:" 										<< this->GetStation() << endl;
+		sf << "#........................................................................................" << endl;
+		sf << endl;
+		Int_t val = this->GetGeDelay();
+		sf << "DelayGe:" << val << ":0x" << setbase(16) << val << setbase(10);
+		if (val) sf << ":" << (Double_t) (val * 25. / 1000.) << ":us"; else sf << "::";
+		sf << endl;
+		val = this->GetGeWidth();
+		sf << "WidthGe:" << val << ":0x" << setbase(16) << val << setbase(10);
+		if (val) sf << ":" << (Double_t) (val * 25. / 1000.) << ":us"; else sf << "::";
+		sf << endl;
+		val = this->GetAuxDelay();
+		sf << "DelayAux:" << val << ":0x" << setbase(16) << val << setbase(10);
+		if (val) sf << ":" << (Double_t) (val * 25. / 1000.) << ":us"; else sf << "::";
+		sf << endl;
+		val = this->GetAuxWidth();
+		sf << "WidthAux:" << val << ":0x" << setbase(16) << val << setbase(10);
+		if (val) sf << ":" << (Double_t) (val * 25. / 1000.) << ":us"; else sf << "::";
+		sf << endl;
+		val = this->GetTimeWindowAux();
+		sf << "TimeWindowAux:" << val << ":0x" << setbase(16) << val << setbase(10);
+		if (val) sf << ":" << (Double_t) (val * 25. / 1000.) << ":us"; else sf << "::";
+		sf << endl;
+		val = this->GetMask();
+		sf << "Mask:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
+		val = this->GetDac(0);
+		sf << "Dac0:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
+		val = this->GetDac(1);
+		sf << "Dac1:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
+		val = this->GetDac(2);
+		sf << "Dac2:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
+		val = this->GetDac(3);
+		sf << "Dac3:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
+ 		sf.close();
+	} else {
+		gMrbLog->Err() << "Wrong file extension - " << SaveFile << " (should be .par)" << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveSettings");
+		return(kFALSE);
+	}
+
+	return(kTRUE);
+}
+
+
+Bool_t TMrbCPTM::RestoreSettings(const Char_t * RestoreFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::RestoreSettings
+// Purpose:        Read settings from file
+// Arguments:      Char_t * RestoreFile    -- file name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Restores settings from file.
+//                 Format is "unix style":
+//                       <name>:<value>:<hexval>[:<trueval>:<unit>]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("RestoreSettings")) return(kFALSE);
+
+	ifstream rf;
+	TString restFile;
+
+	if (gSystem->AccessPathName(RestoreFile, kFileExists) == 0) {
+		restFile = RestoreFile;
+	} else {
+		gMrbLog->Err() << "Settings file not found - " << RestoreFile << endl;
+		gMrbLog->Flush(this->ClassName(), "RestoreSettings");
+		return(kFALSE);
+	}
+
+	if (restFile.Index(".par") > 0) {			// write ascii data
+		rf.open(restFile, ios::out);
+		if (!rf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << restFile << endl;
+			gMrbLog->Flush(this->ClassName(), "RestoreSettings");
+			return(kFALSE);
+		}
+		Int_t lineCnt = 0;
+		TMrbString rLine;
+		for (;;) {
+			rLine.ReadLine(rf, kFALSE);
+			lineCnt++;
+			if (rf.eof()) break;
+			rLine = rLine.Strip(TString::kBoth);
+			if (rLine.Length() == 0) continue;						// empty line
+			if (rLine(0) == '#') continue;							// comment
+			TObjArray rFields;
+			rFields.Delete();
+			Int_t nFields = rLine.Split(rFields, ":");
+			if (nFields < 3) {
+				gMrbLog->Err() << restFile << " (line " << lineCnt << "): Wrong number of fields - " << nFields << endl;
+				gMrbLog->Flush(this->ClassName(), "RestoreSettings");
+				continue;
+			}
+			TString rName = ((TObjString *) rFields[0])->GetString();
+			TMrbString rVal	= (((TObjString *) rFields[1])->GetString()).Data();
+			Int_t val;
+			rVal.ToInteger(val);
+			if (rName.CompareTo("DelayGe") == 0)			this->SetGeDelay(val);
+			else if (rName.CompareTo("WidthGe") == 0)		this->SetGeWidth(val);
+			else if (rName.CompareTo("DelayAux") == 0)		this->SetAuxDelay(val);
+			else if (rName.CompareTo("WidthAux") == 0)		this->SetAuxWidth(val);
+			else if (rName.CompareTo("TimeWindowAux") == 0)	this->SetTimeWindowAux(val);
+			else if (rName.CompareTo("Mask") == 0)			this->SetMask(val);
+			else if (rName.CompareTo("Dac0") == 0)			this->SetDac(0, val);
+			else if (rName.CompareTo("Dac1") == 0)			this->SetDac(1, val);
+			else if (rName.CompareTo("Dac2") == 0)			this->SetDac(2, val);
+			else if (rName.CompareTo("Dac3") == 0)			this->SetDac(3, val);
+			else  {
+				gMrbLog->Err() << restFile << " (line " << lineCnt << "): No such key word - " << rName << " (ignored)" << endl;
+				gMrbLog->Flush(this->ClassName(), "RestoreSettings");
+				continue;
+			}
+		}
+		rf.close();
+	} else {
+		gMrbLog->Err() << "Wrong file extension - " << restFile << " (should be .par)" << endl;
+		gMrbLog->Flush(this->ClassName(), "RestoreSettings");
+		return(kFALSE);
+	}
+
+	return(kTRUE);
+}
+
+Bool_t TMrbCPTM::DownloadAlteraCode(const Char_t * CodeFile) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::DownloadAlteraCode
+// Purpose:        Download code
+// Arguments:      Char_t * CodeFile    -- file name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Reads binary data from file and loads down to altera chip
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("DownloadAlteraCode")) return(kFALSE);
+
+	ifstream cf;
+	TString codeFile;
+
+	Bool_t ok = kTRUE;
+
+	if (gSystem->AccessPathName(CodeFile, kFileExists) == 0) {
+		codeFile = CodeFile;
+	} else {
+		gMrbLog->Err() << "Codefile not found - " << CodeFile << endl;
+		gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+		return(kFALSE);
+	}
+
+	if (codeFile.Index(".rbf") > 0) {			// write ascii data
+		cf.open(codeFile, ios::out);
+		if (!cf.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - " << codeFile << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			return(kFALSE);
+		}
+		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(28), kTRUE)) { 		// enable program mode
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F28 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(13), kTRUE)) { 		// check status
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F13 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		if (fCamac.GetX() || fCamac.GetQ()) {
+			gMrbLog->Err()	<< "Q/X error afer F28 (enter pgm mode): Q=" << (fCamac.GetQ() ? "1" : "0") << " X=" << (fCamac.GetX() ? "1" : "0") << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(30), kTRUE)) { 		// start download
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F30 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		if (!fCamac.GetX() || fCamac.GetQ()) {
+			gMrbLog->Err()	<< "Q/X error afer F30 (start download): Q=" << (fCamac.GetQ() ? "1" : "0") << " X=" << (fCamac.GetX() ? "1" : "0") << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		Char_t byte;
+		Int_t nofBytes = 0;
+		TArrayI codeData;
+		codeData.Set(kMrbCptmMaxCodeSize);
+		codeData.Reset(0);
+		for (;;) {
+			cf.get(byte);
+			if (cf.eof()) break;
+			codeData[nofBytes++] = byte;
+		}
+		cf.close();
+		if (fCamac.BlockXfer(fCrate, fStation, A(0), F(16), codeData, 0, nofBytes, kTRUE) == -1) {		// start block xfer, 16 bit
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F16 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		if (!fCamac.GetQ()) {
+			gMrbLog->Err()	<< "Q error afer F16 (write code): Q=" << (fCamac.GetQ() ? "1" : "0") << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(29), kTRUE)) { 		// start download
+			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F29 failed" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+			ok = kFALSE;
+		}
+	}
+	return(ok);
 }
 
 void TMrbCPTM::Print(ostream & Out) {

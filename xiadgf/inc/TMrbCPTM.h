@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.2 2005-04-14 14:15:47 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.3 2005-04-18 10:02:50 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -32,6 +32,9 @@
 class TMrbCPTM : public TNamed {
 
 	public:
+		enum	{	kMrbCptmMaxCodeSize =	128 * 1024	};
+
+	public:
 		TMrbCPTM(const Char_t * ModuleName = "CPTM") : TNamed(ModuleName, "Clock & Programmable Trigger Module") {};	// default ctor
 
 		TMrbCPTM(	const Char_t * ModuleName, 								// ctor: host, crate, station
@@ -44,6 +47,10 @@ class TMrbCPTM : public TNamed {
 
 		Bool_t SetGeDGG(Int_t Delay, Int_t Width);
 		Bool_t SetAuxDGG(Int_t Delay, Int_t Width);
+		Bool_t SetGeDelay(Int_t Delay);
+		Bool_t SetGeWidth(Int_t Width);
+		Bool_t SetAuxDelay(Int_t Delay);
+		Bool_t SetAuxWidth(Int_t Width);
 		Int_t GetGeDelay();
 		Int_t GetGeWidth();
 		Int_t GetAuxDelay();
@@ -73,12 +80,12 @@ class TMrbCPTM : public TNamed {
 		Int_t GetReadAddr();
 		Int_t GetWriteAddr();
 
-		Bool_t Save(const Char_t * SaveFile = "cptm.par");
-		Bool_t Restore(const Char_t * SaveFile = "cptm.par");
+		Bool_t SaveSettings(const Char_t * SaveFile = "cptm.par");
+		Bool_t RestoreSettings(const Char_t * RestoreFile = "cptm.par");
 
 	 	void Print(Option_t * option) const { TObject::Print(option); };
 		void Print(ostream & Out = cout);
-		void PrintBuffer(ostream & Out = cout);
+		void PrintBuffer(ostream & Out = cout) {};
 
 		Bool_t Connect();
 		inline Bool_t IsConnected() { return(fCamac.IsConnected()); };
@@ -87,6 +94,9 @@ class TMrbCPTM : public TNamed {
 		Bool_t SetCamacHost(const Char_t * HostName);
 		Bool_t SetCrate(Int_t Crate);
 		Bool_t SetStation(Int_t Station);
+		inline const Char_t * GetCamacHost() { return(fCamacHost); };
+		inline Int_t  GetCrate() { return(fCrate); };
+		inline Int_t GetStation() { return(fStation); };
 
 		inline TMrbEsone * Camac() { return(&fCamac); }; 				// camac handle
 
