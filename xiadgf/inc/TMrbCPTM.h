@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.3 2005-04-18 10:02:50 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.4 2005-04-18 14:02:02 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -20,6 +20,56 @@
 
 #include "TMrbLofNamedX.h"
 #include "TMrbEsone.h"
+
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent
+// Purpose:        Class defs describing module C_PTM
+// Description:    
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbCPTMEvent : public TObject {
+
+	public:
+		TMrbCPTMEvent() { this->Reset(); }; 		// default ctor
+		~TMrbCPTMEvent() {}; 						// default dtor
+
+		void Reset();
+
+		inline Long64_t GetTimeStamp() { return(fTimeStamp); };
+		inline Int_t GetTimeAux() { return(fTimeAux); };
+		Long64_t GetTimeStampAdjusted();
+		inline void SetTimeStamp(Long64_t * TsAddr) { fTimeStamp = *TsAddr; };
+		inline void SetTimeStamp(Int_t LowWord, Int_t MiddleWord, Int_t HighWord) {
+			fTimeStamp = (HighWord << 32) | (MiddleWord << 16) | LowWord;
+		};
+		inline void SetTimeAux(Int_t TimeAux) { fTimeAux = TimeAux; };
+
+		inline UInt_t GetCounterT1() { return(fCounterT1); };
+		inline void SetCounterT1(UInt_t Counts) { fCounterT1 = Counts; };
+
+		inline UInt_t GetCounterT2() { return(fCounterT2); };
+		inline void SetCounterT2(UInt_t Counts) { fCounterT2 = Counts; };
+
+		inline UInt_t GetPattern() { return(fPattern); };
+		inline void SetPattern(UInt_t Pattern) { fPattern = Pattern; };
+		const Char_t * Pattern2Ascii(TString & PatStr);
+
+	 	void Print(Option_t * option) const { TObject::Print(option); };
+		void Print(ostream & Out = cout);
+
+	protected:
+		Long64_t fTimeStamp;
+		Long64_t fTimeStampAdjusted;
+		Int_t fTimeAux;
+		UInt_t fCounterT1;
+		UInt_t fCounterT2;
+		UInt_t fPattern;
+
+	ClassDef(TMrbCPTMEvent, 1)		// [C_PTM] Event structure
+};
+		
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +125,7 @@ class TMrbCPTM : public TNamed {
 
 		Bool_t EnableSynch();
 
-		Bool_t DownloadAlteraCode(const Char_t * CodeFile = "altera.rbf");
+		Bool_t DownloadAlteraCode(const Char_t * CodeFile = "cptm.rbf");
 
 		Int_t GetReadAddr();
 		Int_t GetWriteAddr();
@@ -101,6 +151,9 @@ class TMrbCPTM : public TNamed {
 		inline TMrbEsone * Camac() { return(&fCamac); }; 				// camac handle
 
 		Bool_t CheckValue(Int_t Value, Int_t MaxValue, const Char_t * ArgName = "Arg", const Char_t * Method = "CheckValue");
+
+		Int_t ReadNext();
+		Bool_t ReadEvent(TMrbCPTMEvent & Event);
 
 	protected:
 		Bool_t ReadAllDacs(TArrayI & DacBits);

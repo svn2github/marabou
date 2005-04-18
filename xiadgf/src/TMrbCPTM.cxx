@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.3 2005-04-18 10:02:50 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.4 2005-04-18 14:02:02 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -41,6 +41,110 @@ const SMrbNamedX kMrbCptmMaskBits[] = {
 		};
 
 ClassImp(TMrbCPTM)
+ClassImp(TMrbCPTMEvent)
+
+void TMrbCPTMEvent::Reset() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent::Reset
+// Purpose:        Reset event
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Resets event data.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = 0;
+	fTimeAux = 0;
+	fTimeStampAdjusted = 0;
+	fCounterT1 = 0;
+	fCounterT2 = 0;
+	fPattern = 0;
+}
+
+Long64_t TMrbCPTMEvent::GetTimeStampAdjusted() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent::GetTimeStampAdjusted
+// Purpose:        Return time stamp depending on Q bits
+// Arguments:      --
+// Results:        Long64_t TimeStamp   -- time stamp
+// Exceptions:
+// Description:    Checks if on of bits Q1...Q4 is set.
+//                 If so replaces LSW of time stamp by time aux value.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Long64_t t = fTimeStamp;
+	if (fPattern & 0x0F000000) {
+		t &= 0xFFFFFFFF0000;
+		t |= fTimeAux & 0xFFFF;
+	} else {
+		t = fTimeStamp;
+	}
+	return(t);
+}
+
+const Char_t * TMrbCPTMEvent::Pattern2Ascii(TString & PatStr) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent::Pattern2Ascii
+// Purpose:        Convert hit pattern to ascii
+// Arguments:      TString & PatStr     -- where to store pattern string
+// Results:        Char_t * PatStr      -- pointer to PatStr
+// Exceptions:
+// Description:    Converts pattern word to string.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	PatStr.Resize(0);
+	UInt_t pat = fPattern;
+	Bool_t first;
+	for (Int_t i = 1; i <= 24; i++) {
+		if (pat & 1) {
+			if (!first) PatStr += " + G";
+			first = kFALSE;
+			PatStr += i;
+		}
+		pat >>= 1;
+	}
+	for (Int_t i = 1; i <= 4; i++) {
+		if (pat & 1) {
+			if (!first) PatStr += " + Q";
+			first = kFALSE;
+			PatStr += i;
+		}
+		pat >>= 1;
+	}
+	for (Int_t i = 1; i <= 2; i++) {
+		if (pat & 1) {
+			if (!first) PatStr += " + T";
+			first = kFALSE;
+			PatStr += i;
+		}
+		pat >>= 1;
+	}
+	return(PatStr.Data());
+}
+
+void TMrbCPTMEvent::Print(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent::Print
+// Purpose:        Print event data
+// Arguments:      ostream & Out  -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Outputs data to stream.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString pstr;
+	Out << Form("%15lld %10d %10d %10d %#10x", fTimeStamp, fTimeAux, fCounterT1, fCounterT2, fPattern);
+	if (fPattern) Out << " = " << this->Pattern2Ascii(pstr);
+	Out << endl;
+}
 
 TMrbCPTM::TMrbCPTM(const Char_t * ModuleName, const Char_t * HostName, Int_t Crate, Int_t Station) : TNamed(ModuleName, "") {
 //__________________________________________________________________[C++ CTOR]
@@ -997,31 +1101,9 @@ Bool_t TMrbCPTM::DownloadAlteraCode(const Char_t * CodeFile) {
 			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
 			return(kFALSE);
 		}
-		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(28), kTRUE)) { 		// enable program mode
-			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F28 failed" << endl;
-			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
-			ok = kFALSE;
-		}
-		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(13), kTRUE)) { 		// check status
-			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F13 failed" << endl;
-			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
-			ok = kFALSE;
-		}
-		if (fCamac.GetX() || fCamac.GetQ()) {
-			gMrbLog->Err()	<< "Q/X error afer F28 (enter pgm mode): Q=" << (fCamac.GetQ() ? "1" : "0") << " X=" << (fCamac.GetX() ? "1" : "0") << endl;
-			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
-			ok = kFALSE;
-		}
-		if (!fCamac.ExecCnaf(fCrate, fStation, A(0), F(30), kTRUE)) { 		// start download
-			gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F30 failed" << endl;
-			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
-			ok = kFALSE;
-		}
-		if (!fCamac.GetX() || fCamac.GetQ()) {
-			gMrbLog->Err()	<< "Q/X error afer F30 (start download): Q=" << (fCamac.GetQ() ? "1" : "0") << " X=" << (fCamac.GetX() ? "1" : "0") << endl;
-			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
-			ok = kFALSE;
-		}
+		this->SaveSettings(".cptm.par");
+		fCamac.ExecCnaf(fCrate, fStation, A(0), F(28), kTRUE);	// enable program mode
+		fCamac.ExecCnaf(fCrate, fStation, A(0), F(30), kTRUE);	// start download
 		Char_t byte;
 		Int_t nofBytes = 0;
 		TArrayI codeData;
@@ -1048,6 +1130,22 @@ Bool_t TMrbCPTM::DownloadAlteraCode(const Char_t * CodeFile) {
 			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
 			ok = kFALSE;
 		}
+		if (ok) {
+			gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation
+							<< ": Code successfully loaded from file " << CodeFile
+							<< " (" << nofBytes << " bytes)" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode", setblue);
+		} else {
+			gMrbLog->Wrn()	<< fName << " in C" << fCrate << ".N" << fStation
+							<< ": Code loaded *WITH ERRORS* from file " << CodeFile
+							<< " (" << nofBytes << " bytes)" << endl;
+			gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
+		}
+		this->Reset();
+		this->RestoreSettings(".cptm.par");
+	} else {
+		gMrbLog->Err() << "Wrong file extension - " << CodeFile << " (should be \".rbf\")" << endl;
+		gMrbLog->Flush(this->ClassName(), "DownloadAlteraCode");
 	}
 	return(ok);
 }
@@ -1064,7 +1162,7 @@ void TMrbCPTM::Print(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Out << endl << "C_PTM - CLock and Programmable Trigger Module:" << endl;
+	Out << endl << "C_PTM - Clock and Programmable Trigger Module:" << endl;
 	Out << "----------------------------------------------" << endl;
 	Out << "Name                 : " << this->GetName() << endl;
 	Out << "Camac address        : C" << fCrate << ".N" << fStation << endl;
@@ -1135,6 +1233,91 @@ Bool_t TMrbCPTM::CheckValue(Int_t Value, Int_t MaxValue, const Char_t * ArgName,
 		gMrbLog->Flush(this->ClassName(), Method);
 		return(kFALSE);
 	}
+	return(kTRUE);
+}
+
+Int_t TMrbCPTM::ReadNext() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::ReadNext
+// Purpose:        Read next word
+// Arguments:      --
+//                 Int_t Data   -- data word
+// Results:        --
+// Exceptions:
+// Description:    Reads one word from cptm buffer.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("ReadNext")) return(-1);
+
+	Int_t wc;
+	if (!fCamac.ExecCnaf(fCrate, fStation, A(13), F(0), wc, kTRUE)) { 		// exec cnaf, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A13.F0 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadNext");
+		return(-1);
+	}
+	if (wc == 0) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": wc = 0" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadNext");
+		return(-1);
+	}
+	Int_t data;
+	if (!fCamac.ExecCnaf(fCrate, fStation, A(6), F(0), data, kTRUE)) { 		// exec cnaf, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A6.F0 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadNext");
+		return(-1);
+	}
+	return(data);
+}
+
+Bool_t TMrbCPTM::ReadEvent(TMrbCPTMEvent & Event) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::ReadNext
+// Purpose:        Read next word
+// Arguments:      --
+//                 Int_t Data   -- data word
+// Results:        --
+// Exceptions:
+// Description:    Reads one word from cptm buffer.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("ReadEvent")) return(kFALSE);
+
+	Event.Reset();
+
+	Int_t wc;
+	if (!fCamac.ExecCnaf(fCrate, fStation, A(13), F(0), wc, kTRUE)) { 		// exec cnaf, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A13.F0 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvent");
+		return(kFALSE);
+	}
+	if (wc % 10) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": out of phase (wc = " << wc << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvent");
+		return(kFALSE);
+	}
+	if (wc < 10) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": no more events (wc = " << wc << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvent");
+		return(kFALSE);
+	}
+
+	TArrayI data(10);
+	if (fCamac.BlockXfer(fCrate, fStation, A(6), F(0), data, 0, 10, kTRUE) == -1) {		// start block xfer, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A0.F16 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvent");
+		return(kFALSE);
+	}
+	Event.SetTimeStamp(data[0], data[1], data[2]);
+	Event.SetTimeAux(data[3]);
+	Event.SetCounterT1(data[5] << 16 | data[4]);
+	Event.SetCounterT2(data[7] << 16 | data[6]);
+	Event.SetPattern(data[9] << 16 | data[8]);
 	return(kTRUE);
 }
 

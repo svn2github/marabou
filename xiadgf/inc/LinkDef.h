@@ -10,4 +10,5 @@
 #pragma link C++ class TMrbDGFEventBuffer;
 #pragma link C++ class TMrbDGFHistogramBuffer;
 #pragma link C++ class TMrbCPTM;
+#pragma link C++ class TMrbCPTMEvent;
 #endif
