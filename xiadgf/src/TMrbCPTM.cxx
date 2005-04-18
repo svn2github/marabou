@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.4 2005-04-18 14:02:02 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.5 2005-04-18 14:20:28 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1150,6 +1150,33 @@ Bool_t TMrbCPTM::DownloadAlteraCode(const Char_t * CodeFile) {
 	return(ok);
 }
 
+Bool_t TMrbCPTM::PrintBuffer(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent::PrintBuffer
+// Purpose:        Print event buffer
+// Arguments:      ostream & Out  -- output stream
+// Results:        --
+// Exceptions:
+// Description:    Outputs data to stream.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("PrintBuffer")) return(kFALSE);
+
+	Int_t wc = this->CheckWordCount("PrintBuffer");
+	if (wc < 0) return(kFALSE);
+
+	Out << Form("%15s %10s %10s %10s %s", "TimeStamp", "TsAux", "T1", "T2", "Pattern");
+	Out << "---------------------------------------------------------------------------------------" << endl;
+	TMrbCPTMEvent e;
+	for (; wc; wc -= 10) {
+		if (!this->ReadEvent(e)) return(kFALSE);
+		e.Print();
+	}
+	return(kTRUE);
+}
+
 void TMrbCPTM::Print(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1251,12 +1278,8 @@ Int_t TMrbCPTM::ReadNext() {
 
 	if (!this->CheckConnect("ReadNext")) return(-1);
 
-	Int_t wc;
-	if (!fCamac.ExecCnaf(fCrate, fStation, A(13), F(0), wc, kTRUE)) { 		// exec cnaf, 16 bit
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A13.F0 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadNext");
-		return(-1);
-	}
+	Int_t wc = this->GetWordCount();
+	if (wc == -1) return(-1);
 	if (wc == 0) {
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": wc = 0" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadNext");
@@ -1274,13 +1297,13 @@ Int_t TMrbCPTM::ReadNext() {
 Bool_t TMrbCPTM::ReadEvent(TMrbCPTMEvent & Event) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCPTM::ReadNext
-// Purpose:        Read next word
+// Name:           TMrbCPTM::ReadEvent
+// Purpose:        Read next event
 // Arguments:      --
-//                 Int_t Data   -- data word
+//                 TMrbCPTMEvent & Event  -- event structure
 // Results:        --
 // Exceptions:
-// Description:    Reads one word from cptm buffer.
+// Description:    Reads one event from cptm buffer.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1288,24 +1311,8 @@ Bool_t TMrbCPTM::ReadEvent(TMrbCPTMEvent & Event) {
 
 	Event.Reset();
 
-	Int_t wc;
-	if (!fCamac.ExecCnaf(fCrate, fStation, A(13), F(0), wc, kTRUE)) { 		// exec cnaf, 16 bit
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A13.F0 failed" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEvent");
-		return(kFALSE);
-	}
-	if (wc % 10) {
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ": out of phase (wc = " << wc << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEvent");
-		return(kFALSE);
-	}
-	if (wc < 10) {
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ": no more events (wc = " << wc << ")" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadEvent");
-		return(kFALSE);
-	}
+	Int_t wc = this->CheckWordCount("ReadEvent");
+	if (wc <= 0) return(kFALSE);
 
 	TArrayI data(10);
 	if (fCamac.BlockXfer(fCrate, fStation, A(6), F(0), data, 0, 10, kTRUE) == -1) {		// start block xfer, 16 bit
@@ -1319,6 +1326,59 @@ Bool_t TMrbCPTM::ReadEvent(TMrbCPTMEvent & Event) {
 	Event.SetCounterT2(data[7] << 16 | data[6]);
 	Event.SetPattern(data[9] << 16 | data[8]);
 	return(kTRUE);
+}
+
+Int_t TMrbCPTM::GetWordCount() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::GetWordCount
+// Purpose:        Get buffer word count
+// Arguments:      --
+// Results:        Int_t WordCount      -- word count
+// Exceptions:
+// Description:    Reads word count.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("GetWordCount")) return(-1);
+
+	Int_t wc;
+	if (!fCamac.ExecCnaf(fCrate, fStation, A(13), F(0), wc, kTRUE)) { 		// exec cnaf, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A13.F0 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetWordCount");
+		return(-1);
+	}
+	return(wc);
+}
+
+Int_t TMrbCPTM::CheckWordCount(const Char_t * Method) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::CheckWordCount
+// Purpose:        Check buffer word count
+// Arguments:      Char_t * Method      -- calling method
+// Results:        Int_t WordCount      -- word count
+// Exceptions:
+// Description:    Checks if buffer word count is modulo 10.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("CheckWordCount")) return(kFALSE);
+
+	Int_t wc = this->GetWordCount();
+	if (wc % 10) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": out of phase (wc = " << wc << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvent");
+		return(-1);
+	}
+	if (wc < 10) {
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": no more events (wc = " << wc << ")" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadEvent");
+		return(-1);
+	}
+	return(wc);
 }
 
 Bool_t TMrbCPTM::CheckConnect(const Char_t * Method) {

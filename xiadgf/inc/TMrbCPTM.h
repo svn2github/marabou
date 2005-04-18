@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.4 2005-04-18 14:02:02 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.5 2005-04-18 14:20:28 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -130,12 +130,15 @@ class TMrbCPTM : public TNamed {
 		Int_t GetReadAddr();
 		Int_t GetWriteAddr();
 
+		Int_t GetWordCount();
+		Int_t CheckWordCount(const Char_t * Method = "CheckWordCount");
+
 		Bool_t SaveSettings(const Char_t * SaveFile = "cptm.par");
 		Bool_t RestoreSettings(const Char_t * RestoreFile = "cptm.par");
 
 	 	void Print(Option_t * option) const { TObject::Print(option); };
 		void Print(ostream & Out = cout);
-		void PrintBuffer(ostream & Out = cout) {};
+		Bool_t PrintBuffer(ostream & Out = cout);
 
 		Bool_t Connect();
 		inline Bool_t IsConnected() { return(fCamac.IsConnected()); };
