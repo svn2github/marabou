@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.9 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEsone.cxx,v 1.10 2005-04-18 14:21:29 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -254,7 +254,7 @@ Bool_t TMrbEsone::StartServer(const Char_t * HostName) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	if (!this->CheckConnection("StartServer")) return(kFALSE);
+//	if (!this->CheckConnection("StartServer")) return(kFALSE);
 
 	switch (this->GetServerIndex()) {
 		case kES_MBS:
