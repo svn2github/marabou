@@ -20,12 +20,13 @@ include config/Makefile.$(ARCH)
 
 ##### Modules to build #####
 
-MODULES       = build utils gutils tidy tidylib \
-				expconf analyze \
-                helpbrowser hpr c_analyze macrobrowser \
-				camcli esone mbssetup mbsio transport \
-				xiadgf dgfcontrol \
-				polar snake
+MODULES       = build utils gutils \
+                helpbrowser hpr \
+                tidy tidylib \
+                expconf analyze c_analyze  macrobrowser \
+                camcli esone mbssetup mbsio transport \
+	        xiadgf dgfcontrol \
+                polar snake
 
 ##### ROOT libraries #####
 
@@ -55,8 +56,10 @@ endif
 ROOTCFLAGS    := $(shell root-config --cflags)
 #ROOTLIBS      := $(shell root-config --libs)
 ROOTLIBS      := $(shell root-config --new --libs)
+ROOTLIBS      += -lGed
 #ROOTGLIBS     := $(shell root-config --glibs)
 ROOTGLIBS     := $(shell root-config --new --glibs)
+ROOTGLIBS      += -lGed
 
 ROOTCINT      :=rootcint
 ##### utilities #####
@@ -80,7 +83,7 @@ MAKECOMPDATA  = build/win/compiledata.sh
 MAKEMAKEINFO  = build/win/makeinfo.sh
 endif
 
-##### compiler directives #####      back->Save(edgelx, edgeux, 0,0,0,0);
+##### compiler directives #####
 
 
 COMPILEDATA   = include/compiledata.h
@@ -92,7 +95,7 @@ MAKEINFO      = cint/MAKEINFO
 ALLHDRS      :=
 ALLLIBS      :=
 HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so
-ALLEXECS     := bin/mbs2asc
+ALLEXECS     := 
 INCLUDEFILES :=
 ALLOBJ       :=
 
@@ -119,9 +122,9 @@ ALLOBJ       :=
 
 all:            marabouexecs
 
-fast:           marabouexecs
-
 hpr:            hprexecs
+
+fast:           marabouexecs
 
 HistPresent:    hprexecs
 
@@ -182,6 +185,8 @@ dist:
 
 clean::	
 	@rm -f __compiledata __makeinfo *~ core
+	@rm */src/G__* 
+	@rm */src/*.d
 
 ifeq ($(CXX),KCC)
 clean::
@@ -301,7 +306,9 @@ install-expconf:
 		$(INSTALL) lib/libTMrbConfig.so $(LIBDIR)
 
 showbuild:
+	@echo "MARABOU            = $(MARABOU)"
 	@echo "ROOTSYS            = $(ROOTSYS)"
+	@echo "ROOTGLIBS          = $(ROOTGLIBS)"
 	@echo "PLATFORM           = $(PLATFORM)"
 	@echo "OPT                = $(OPT)"
 	@echo ""
