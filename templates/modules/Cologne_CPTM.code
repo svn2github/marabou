@@ -1,0 +1,154 @@
+/*_________________________________________________________________[CODE FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           Cologne_CPTM.code
+// Purpose:        Camac code for module C_PTM (Univ. Cologne)
+// Description:    Contains pieces of camac code to operate C_PTM module
+// Author:         R. Lutter
+// Revision:       SCCS:  %W%
+// Date:           %G%
+// Keywords:       
+////////////////////////////////////////////////////////////////////////////*/
+
+%%BeginOfCode%%
+/* definitions for C_PTM / Clock & Programmable Trigger Module */
+/*		inline functions */
+#define CPTM_READ_GE_DELAY(cptm)	CIO_READ_R2B(cptm, A(0), F(0))
+#define CPTM_WRITE_GE_DELAY(cptm, data)	CIO_WRITE_R2B(cptm, A(0), F(16), data)
+#define CPTM_READ_GE_WIDTH(cptm)	CIO_READ_R2B(cptm, A(1), F(0))
+#define CPTM_WRITE_GE_WIDTH(cptm, data)	CIO_WRITE_R2B(cptm, A(1), F(16), data)
+#define CPTM_READ_AUX_DELAY(cptm)	CIO_READ_R2B(cptm, A(2), F(0))
+#define CPTM_WRITE_AUX_DELAY(cptm, data)	CIO_WRITE_R2B(cptm, A(2), F(16), data)
+#define CPTM_READ_AUX_WIDTH(cptm)	CIO_READ_R2B(cptm, A(3), F(0))
+#define CPTM_WRITE_AUX_WIDTH(cptm, data)	CIO_WRITE_R2B(cptm, A(3), F(16), data)
+#define CPTM_READ_TIME_WDW_AUX(cptm)	CIO_READ_R2B(cptm, A(4), F(0))
+#define CPTM_WRITE_TIME_WDW_AUX(cptm, data)	CIO_WRITE_R2B(cptm, A(4), F(16), data)
+#define CPTM_READ_MASK(cptm)	CIO_READ_R2B(cptm, A(5), F(0))
+#define CPTM_WRITE_MASK(cptm, data)	CIO_WRITE_R2B(cptm, A(5), F(16), data)
+#define CPTM_READ_NEXT(cptm)	CIO_READ_R2B(cptm, A(6), F(0))
+#define CPTM_READ_WPTR(cptm)	CIO_READ_R2B(cptm, A(13), F(0))
+#define CPTM_RESET_WPTR(cptm)	CIO_READ_R2B(cptm, A(2), F(8))
+#define CPTM_READ_RPTR(cptm)	CIO_READ_R2B(cptm, A(14), F(0))
+#define CPTM_RESET_RPTR(cptm)	CIO_READ_R2B(cptm, A(1), F(8))
+#define CPTM_RESET_RW(cptm)	CIO_READ_R2B(cptm, A(3), F(8))
+#define CPTM_CLEAR_MEMORY(cptm)	CIO_READ_R2B(cptm, A(6), F(8))
+#define CPTM_SYNCH_ENABLE(cptm)	CIO_READ_R2B(cptm, A(4), F(8))
+#define CPTM_SYNCH_ENABLE_RESET(cptm)	CIO_READ_R2B(cptm, A(5), F(8))
+
+%%EndOfCode%%
+%%MODULE_DEFS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_COMMON_CODE%%
+
+%%BeginOfCode%%
+	f_ut_send_msg("m_read_meb", "Initializing module $moduleNameLC in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
+	CPTM_RESET_RW($moduleNameLC);	/* reset read and write pointers */
+%%EndOfCode%%
+%%INIT_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INIT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%READ_CHANNEL%%
+
+%%BeginOfCode%%
+	cptm_wc = CPTM_READ_WPTR($moduleNameLC);	/* read wc = write pointer */
+	RDO_SETUP($moduleNameLC, F(0), A(6));		/* setup read */
+	RDO_BLT_16(cptm_wc); 			/* xfer 'wc' words @ 16 bit */
+	if (cptm_wc & 1) RDO_2MEM_16(0xffff);	/* align to 32 bit boundaries */
+%%EndOfCode%%
+%%READ_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%INCREMENT_CHANNEL%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SKIP_CHANNELS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%WRITE_SUBADDR%% 
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STORE_DATA%% 
+
+%%BeginOfCode%%
+	CPTM_RESET_RW($moduleNameLC);		/* $moduleNameLC: reset read and write pointers */
+	CPTM_CLEAR_MEMORY($moduleNameLC);	/* clear memory */
+%%EndOfCode%%
+%%CLEAR_MODULE%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%SETUP_READOUT%%	
+
+%%BeginOfCode%%
+	CPTM_RESET_RW($moduleNameLC);		/* reset read and write pointers */
+	CPTM_SYNCH_ENABLE($moduleNameLC);	/* re-enable busy-synch loop */
+%%EndOfCode%%
+%%FINISH_READOUT%%	
+
+%%BeginOfCode%%
+	CPTM_SYNCH_ENABLE_RESET($moduleNameLC); /* $moduleNameLC: reset internal clock and enable busy-synch loop */
+%%EndOfCode%%
+%%START_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%START_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%STOP_ACQUISITION_GROUP%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%UTILITIES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_PROTOTYPES%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_GLOBALS_ONCE_ONLY%%
+
+%%BeginOfCode%%
+
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_INIT%%
+
+%%BeginOfCode%%
+	int cptm_wc;
+%%EndOfCode%%
+%%DEFINE_LOCAL_VARS_READOUT%%

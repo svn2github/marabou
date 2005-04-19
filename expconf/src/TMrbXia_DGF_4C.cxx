@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.13 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.14 2005-04-19 08:32:16 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -43,7 +43,7 @@ TMrbXia_DGF_4C::TMrbXia_DGF_4C(const Char_t * ModuleName, const Char_t * ModuleP
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbXia_DGF_4C
-// Purpose:        Create an ADC of type Xia 4418/V
+// Purpose:        Create a module of type Xia 4418/V
 // Arguments:      Char_t * ModuleName      -- name of camac module
 //                 Char_t * ModulePosition  -- B.C.N for this module
 // Results:        --

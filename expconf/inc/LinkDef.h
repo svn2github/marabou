@@ -38,6 +38,7 @@
 #pragma link C++ class TMrbSubevent_Sis_1;
 #pragma link C++ class TMrbSubevent_Sis_2;
 #pragma link C++ class TMrbSubevent_Sis_3;
+#pragma link C++ class TMrbSubevent_CPTM;
 #pragma link C++ class TMrbSubeventRaw;
 #pragma link C++ class TMrbSubevent_Data_S;
 #pragma link C++ class TMrbSubevent_Data_I;
@@ -69,5 +70,6 @@
 #pragma link C++ class TMrbSis_3600;
 #pragma link C++ class TMrbSis_3801;
 #pragma link C++ class TMrbSis_3820;
+#pragma link C++ class TMrbCologne_CPTM;
 #pragma link C++ class TMrbModuleRaw;
 #endif
