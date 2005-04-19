@@ -8,7 +8,7 @@
 // Class:          TMrbTemplate     -- decode templates
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTemplate.h,v 1.8 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbTemplate.h,v 1.9 2005-04-19 08:27:37 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -107,6 +107,7 @@ class TMrbTemplate : public TObject {
 		Bool_t fIsActive;			// flag to store open status
 		Bool_t fHasOtherTags;		// kTRUE if line has some more tags pending
 		Bool_t fInIfClause;         // kTRUE if inside %%IF_xxx%%, kFALSE if inside %%IFNOT_xxx%% or %%ELSE_xxx%%
+		Bool_t fVerbose;			// kTRUE if verbose
 
 		TString fTemplateFile; 		// name of template file
 		ifstream fTemplStream;		// stream where to read data from

@@ -10,10 +10,11 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTemplate.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbTemplate.cxx,v 1.8 2005-04-19 08:27:37 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
+#include "TEnv.h"
 #include "TObjArray.h"
 #include "TMrbTemplate.h"
 #include "TMrbString.h"
@@ -76,6 +77,8 @@ Bool_t TMrbTemplate::Open(const Char_t * TemplateFile, TMrbLofNamedX * LofTagWor
 	fTemplateFile = TemplateFile;			// save name of template file
 	fLofTagWords = LofTagWords;
 	fLineCount = 0;
+
+	fVerbose = gEnv->GetValue("TMrbTemplate.VerboseMode", kFALSE);
 
 	return(fIsActive);
 }
@@ -268,6 +271,11 @@ Bool_t TMrbTemplate::Substitute(const Char_t * ArgName, const Char_t * ArgValue)
 		return(kFALSE);
 	}
 
+	if (fVerbose) {
+		gMrbLog->Out()	<< "%%" << fTag.GetName() << "%%: " << ArgName << " = " << ArgValue << endl;
+		gMrbLog->Flush(this->ClassName(), "Substitute");
+	}
+
 	code = (TObjString *) fExpansionBuffer.First();
 	while (code) {
 		code->String().ReplaceAll(ArgName, ArgValue);
@@ -330,8 +338,10 @@ Bool_t TMrbTemplate::WriteCode(ostream & Out) {
 						<< "%%: Expansion buffer is empty (prefix = \"" << fPrefix << "\")" << endl;
 		gMrbLog->Flush(this->ClassName(), "WriteCode");
 		return(kFALSE);
+	} else if (fVerbose) {
+		gMrbLog->Out()	<< "%%" << fTag.GetName() << "%%: prefix = \"" << fPrefix << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "WriteCode");
 	}
-
 	code = (TObjString *) fExpansionBuffer.First();
 	while (code) {
 		Out 	<< code->String() << endl;
@@ -402,6 +412,11 @@ Bool_t TMrbTemplate::InitializeCode(const Char_t * Prefix) {
 		prefix = Prefix;
 		fPrefix = prefix;
 		nofPrefs = prefix.Split(lofPrefs, ":");
+	}
+
+	if (fVerbose) {
+		gMrbLog->Out()	<< "%%" << fTag.GetName() << "%%: prefix = \"" << fPrefix << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "InitializeCode");
 	}
 
 	code = (TObjString *) fCodeBuffer.First();
