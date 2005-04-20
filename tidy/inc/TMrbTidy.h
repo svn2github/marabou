@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.10 2005-04-12 14:02:30 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.11 2005-04-20 14:12:45 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -89,6 +89,7 @@ class TMrbTidyAttr : public TMrbNamedX {
 
 		inline void SetValue(const Char_t * Value) { fValue = Value; };
 		inline const Char_t * GetValue() { return(fValue.Data()); };
+		Bool_t GetValue(TString & ValStr, TString & CmtStr);
 
 		inline TidyAttrId GetId() { return((TidyAttrId) this->GetIndex()); };
 
@@ -161,8 +162,9 @@ class TMrbTidyNode : public TMrbNamedX {
 
 	public:
 
-		enum EMrbTidySubstType	{	kMrbTidySubstLocal		=	BIT(0),
-									kMrbTidySubstParent 	=	BIT(1),
+		enum EMrbTidySubstType	{	kMrbTidySubstUndefined	=	0,
+									kMrbTidySubstLocal		=	BIT(0),
+									kMrbTidySubstInherited 	=	BIT(1),
 									kMrbTidySubstDone		=	BIT(2)
 								};
 
@@ -338,9 +340,9 @@ class TMrbTidyNode : public TMrbNamedX {
 		inline TidyNode GetHandle() { return(fHandle); };
 
 		Bool_t CheckMnode();
-		Bool_t IsMnode() { return(fIsMnode); };
+		inline Bool_t IsMnode() const { return(fIsMnode); };
 		Bool_t CheckEndTag();
-		Bool_t HasEndTag() { return(fHasEndTag); };
+		inline Bool_t HasEndTag() const { return(fHasEndTag); };
 
 		TMrbTidyNode * Find(const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
 		TMrbTidyNode * Find(const Char_t * NodeName, TObjArray & LofAttr, Bool_t Recursive = kFALSE);
@@ -361,12 +363,15 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
 		void OutputHtmlTree(ostream & Out = cout);
 
+		Int_t InitSubstitutions(Bool_t Recursive = kFALSE, Bool_t ReInit = kFALSE);
 		Bool_t Substitute(const Char_t * ParamName, const Char_t * ParamValue, Bool_t Recursive = kFALSE, Bool_t Verbose = kFALSE);	// substitute arguments
 		Bool_t Substitute(const Char_t * ParamName, Int_t ParamValue, Int_t ParamBase = 10, Bool_t Recursive = kFALSE, Bool_t Verbose = kFALSE);
 		Bool_t Substitute(const Char_t * ParamName, Double_t ParamValue, Bool_t Recursive = kFALSE, Bool_t Verbose = kFALSE);
 		Bool_t CheckSubstitutions(Bool_t Recursive = kFALSE, Bool_t Verbose = kTRUE);
 		void ClearSubstitutions(Bool_t Recursive = kFALSE);
 		void PrintSubstitutions(Bool_t Recursive = kFALSE, ostream & Out = cout);
+		Int_t GetSubstitutionType(const Char_t * ParamName) const;
+		Int_t GetSubstitutionsInUse(TMrbLofNamedX & LofSubst);
 
 		inline TMrbLofNamedX * GetLofSubstitutions() { return(&fLofSubstitutions); };
 
@@ -384,9 +389,8 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputHtmlForMX(ostream & Out = cout);
 		Bool_t OutputHtmlForMC(ostream & Out = cout);
 
-		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
-
-		Int_t InitSubstitutions(Bool_t Recursive = kFALSE, Bool_t ReInit = kFALSE);
+		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level, TMrbLofNamedX & LofSubst);
+		const Char_t * MarkSubstitutions(TString & Buffer, TMrbLofNamedX & LofSubst);
 
 	protected:
 		TidyNode fHandle; 					// tidy node handle
