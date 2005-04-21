@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.11 2005-04-20 14:12:45 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.12 2005-04-21 14:09:26 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -163,9 +163,10 @@ class TMrbTidyNode : public TMrbNamedX {
 	public:
 
 		enum EMrbTidySubstType	{	kMrbTidySubstUndefined	=	0,
-									kMrbTidySubstLocal		=	BIT(0),
+									kMrbTidySubstLocalDef	=	BIT(0),
 									kMrbTidySubstInherited 	=	BIT(1),
-									kMrbTidySubstDone		=	BIT(2)
+									kMrbTidySubstInUse	 	=	BIT(2),
+									kMrbTidySubstValueSet	=	BIT(3)
 								};
 
  	public:
@@ -189,7 +190,7 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		Bool_t HasTextChildsOnly();
 		const Char_t * CollectTextFromChilds(TString & Buffer);
-
+		Int_t CollectSubstUsedByChilds(TMrbLofNamedX & LofSubst, Bool_t TextChildsOnly = kTRUE);
 		inline TMrbTidyNode * Parent() { return(fParent); };
 
 		void FillTree();
@@ -371,7 +372,6 @@ class TMrbTidyNode : public TMrbNamedX {
 		void ClearSubstitutions(Bool_t Recursive = kFALSE);
 		void PrintSubstitutions(Bool_t Recursive = kFALSE, ostream & Out = cout);
 		Int_t GetSubstitutionType(const Char_t * ParamName) const;
-		Int_t GetSubstitutionsInUse(TMrbLofNamedX & LofSubst);
 
 		inline TMrbLofNamedX * GetLofSubstitutions() { return(&fLofSubstitutions); };
 
@@ -385,12 +385,13 @@ class TMrbTidyNode : public TMrbNamedX {
 		Int_t DecodeAttrString(TObjArray & LofAttr, const Char_t * AttrStr);
 		Bool_t CompareAttributes(TObjArray & LofAttr);
 
+		Bool_t OutputHtmlForMB(ostream & Out = cout);
 		Bool_t OutputHtmlForMH(ostream & Out = cout);
 		Bool_t OutputHtmlForMX(ostream & Out = cout);
 		Bool_t OutputHtmlForMC(ostream & Out = cout);
 
-		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level, TMrbLofNamedX & LofSubst);
-		const Char_t * MarkSubstitutions(TString & Buffer, TMrbLofNamedX & LofSubst);
+		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
+		const Char_t * MarkSubstitutions(TString & Buffer);
 
 	protected:
 		TidyNode fHandle; 					// tidy node handle

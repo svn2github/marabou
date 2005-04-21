@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.14 2005-04-21 07:04:26 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.15 2005-04-21 14:09:26 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -278,8 +278,8 @@ void TMrbTidyDoc::Reset(Bool_t Release) {
 
 	fLofMnodes.Delete();								// empty list of marabou nodes
 	fLofMnodes.SetName("Special MARaBOU Tags");
-	fLofMnodes.AddNamedX(TidyTag_MNODE_MH, "mh", "header"); 		// define special nodes
-	fLofMnodes.AddNamedX(TidyTag_MNODE_MB, "mb", "body");
+	fLofMnodes.AddNamedX(TidyTag_MNODE_MB, "mb", "body"); 		// define special nodes
+	fLofMnodes.AddNamedX(TidyTag_MNODE_MH, "mh", "header");
 	fLofMnodes.AddNamedX(TidyTag_MNODE_MX, "mx", "expand");
 	fLofMnodes.AddNamedX(TidyTag_MNODE_MC, "mc", "code");
 }
@@ -577,6 +577,33 @@ const Char_t *  TMrbTidyNode::CollectTextFromChilds(TString & Buffer) {
 		}
 	}
 	return(isPureText ? Buffer.Data() : NULL);
+}
+
+Int_t TMrbTidyNode::CollectSubstUsedByChilds(TMrbLofNamedX & LofSubst, Bool_t TextChildsOnly) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::CollectSubstUsedByChilds()
+// Purpose:        Collect substitutions from childs
+// Arguments:      TMrbLofNamedX & LofSubst   -- list of substitutions
+// Results:        Int_t NofSubst             -- number of subst in list
+// Exceptions:
+// Description:    Collects substitutions used by childs.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	LofSubst.Delete();
+	TMrbTidyNode * child = (TMrbTidyNode *) fLofChilds.First();
+	while (child) {
+		if (!TextChildsOnly || child->IsText()) {
+			TMrbNamedX * nx = (TMrbNamedX *) child->GetLofSubstitutions()->First();
+			while (nx) {
+				if (nx->GetIndex() & kMrbTidySubstInUse) LofSubst.AddNamedX(nx);
+				nx = (TMrbNamedX *) child->GetLofSubstitutions()->After(nx);
+			}
+		}
+		child = (TMrbTidyNode *) fLofChilds.After(child);
+	}
+	return(LofSubst.GetEntriesFast());
 }
 
 void TMrbTidyNode::FillTree() {
@@ -1261,15 +1288,13 @@ Bool_t TMrbTidyNode::OutputHtml(ostream & Out) {
 			if (text.IsNull()) {
 				Out << "<br>" << endl;
 			} else {
-				TMrbLofNamedX lofSubst;
-				this->GetSubstitutionsInUse(lofSubst);
 				TString code = "code";
 				Int_t level = fTreeLevel - 5;
 				if (level > 0) {
 					code += "-level";
 					code += level;
 				}
-				Out << "<pre class=\"" << code << "\">" << this->MarkSubstitutions(text, lofSubst) << "</pre><br>" << endl;
+				Out << "<pre class=\"" << code << "\">" << this->MarkSubstitutions(text) << "</pre><br>" << endl;
 			}
 		} else {
 			Out << text << endl;
@@ -1304,7 +1329,9 @@ Bool_t TMrbTidyNode::OutputHtmlForMnodes(ostream & Out) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Bool_t popUp = kFALSE;
-	if (this->GetIndex() == TidyTag_MNODE_MH) {
+	if (this->GetIndex() == TidyTag_MNODE_MB) {
+		popUp = this->OutputHtmlForMB(Out);
+	} else if (this->GetIndex() == TidyTag_MNODE_MH) {
 		popUp = this->OutputHtmlForMH(Out);
 	} else if (this->GetIndex() == TidyTag_MNODE_MX) {
 		popUp = this->OutputHtmlForMX(Out);
@@ -1312,6 +1339,22 @@ Bool_t TMrbTidyNode::OutputHtmlForMnodes(ostream & Out) {
 		popUp = this->OutputHtmlForMC(Out);
 	}
 	return(popUp);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMB(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMH
+// Purpose:        Special html output for node <mh>
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for <mh>...</mh> [header]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ProcessMnodeHeader(Out, "header0", 0);
+	return(kFALSE);
 }
 
 Bool_t TMrbTidyNode::OutputHtmlForMH(ostream & Out) {
@@ -1326,11 +1369,10 @@ Bool_t TMrbTidyNode::OutputHtmlForMH(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbLofNamedX lofSubstInUse;
-	this->ProcessMnodeHeader(Out, "header1", 0, lofSubstInUse);
+	this->ProcessMnodeHeader(Out, "header1", 0);
 	TString hdata;
 	if (this->CollectTextFromChilds(hdata)) {
-		Out << "<pre class=\"code\">" << this->MarkSubstitutions(hdata, lofSubstInUse) << "</pre><br>" << endl;
+		Out << "<pre class=\"code\">" << this->MarkSubstitutions(hdata) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
 	}
@@ -1349,9 +1391,8 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbLofNamedX lofSubstInUse;
 	Int_t level = fTreeLevel - 4;
-	this->ProcessMnodeHeader(Out, "header2", level, lofSubstInUse);
+	this->ProcessMnodeHeader(Out, "header2", level);
 	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
 	if (aString) {
 		TString code = "code";
@@ -1360,7 +1401,7 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 			code += level;
 		}
 		TString buf = aString->GetValue();
-		Out << "<pre class=\"" << code << "\">" << this->MarkSubstitutions(buf, lofSubstInUse) << "</pre><br>" << endl;
+		Out << "<pre class=\"" << code << "\">" << this->MarkSubstitutions(buf) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
 	}
@@ -1379,12 +1420,11 @@ Bool_t TMrbTidyNode::OutputHtmlForMC(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbLofNamedX lofSubstInUse;
-	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4, lofSubstInUse);
+	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
 	return(kFALSE);
 }
 
-void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level, TMrbLofNamedX & LofSubstInUse) {
+void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::OutputHtmlForMC
@@ -1392,7 +1432,6 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 // Arguments:      ostream & Out     -- output stream
 //                 Char_t * CssClass -- class name in css style
 //                 Int_t Level       -- tree level as compared to <mb> tag
-//                 TMrbLofNamedX & LofSubstInUse  -- list of substitutions in use
 // Results:        --
 // Exceptions:
 // Description:    Outputs html header for marabou nodes
@@ -1412,6 +1451,11 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		Out << "<b>&lt;" << this->GetName() << "&gt;</b><br>" << endl;
 	}
 	Out << "<table><tr><td width=\"20%\"></td><td width=\"20%\"></td><td width=\"40%\"></td></tr>" << endl;
+	Bool_t isMbody = (this->GetIndex() == TidyTag_MNODE_MB);
+	if (isMbody) {
+		Out << "<tr><td>Input from:</td><td colspan=\"2\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetDocFile() << "</td></tr>" << endl;
+		Out << "<tr><td>Tidy config from:</td><td colspan=\"2\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetCfgFile() << "</td></tr>" << endl;
+	}
 	TMrbTidyAttr * aCmt = (TMrbTidyAttr *) fLofAttr.FindByName("comment");
 	if (aCmt) {
 		TString cstr = aCmt->GetValue();
@@ -1446,14 +1490,22 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 				<< "</pre></td></tr>" << endl;
 		}
 	}
-	TMrbLofNamedX lofSubstInUse;
-	LofSubstInUse.Delete();
-	this->GetSubstitutionsInUse(LofSubstInUse);
-	nx = (TMrbNamedX *) LofSubstInUse.First();
+	if (this->HasTextChildsOnly()) {
+		TMrbLofNamedX lofSubst;
+		this->CollectSubstUsedByChilds(lofSubst);
+		nx = (TMrbNamedX *) lofSubst.First();
+		while (nx) {
+			TMrbNamedX * mx = fLofSubstitutions.FindByName(nx->GetName());
+			if (mx) mx->ChangeIndex(mx->GetIndex() | kMrbTidySubstInUse);
+			nx = (TMrbNamedX *) lofSubst.After(nx);
+		}
+	}
+	nx = (TMrbNamedX *) fLofSubstitutions.First();
 	Bool_t firstSubst = kTRUE;
-	TString sTitle = "Substitutions (local)";
+	TString sTitle = "Substitutions ";
+	sTitle += isMbody ? " (global)" : " (local)";
 	while (nx) {
-		if (nx->GetIndex() & kMrbTidySubstLocal) {
+		if (nx->GetIndex() & kMrbTidySubstLocalDef) {
 			if (firstSubst) Out << "<tr><td>" << sTitle << ":</td>"; else Out << "<tr><td></td>";
 			firstSubst = kFALSE;
 			TString sdescr = nx->GetTitle();
@@ -1463,23 +1515,25 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 				Out << "<td><pre class=\"arg1\">" << nx->GetName() << "</pre></td><td>" << sdescr << "</td></tr>" << endl;
 			}
 		}
-		nx = (TMrbNamedX *) LofSubstInUse.After(nx);
+		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 	}
 	sTitle = firstSubst ? "Substitutions (inherited)" : "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;(inherited)";
-	nx = (TMrbNamedX *) LofSubstInUse.First();
+	nx = (TMrbNamedX *) fLofSubstitutions.First();
 	firstSubst = kTRUE;
 	while (nx) {
-		if (nx->GetIndex() & kMrbTidySubstInherited) {
-			if (firstSubst) Out << "<tr><td>" << sTitle << ":</td>"; else Out << "<tr><td></td>";
-			firstSubst = kFALSE;
-			TString sdescr = nx->GetTitle();
-			if (sdescr.IsNull()) {
-				Out << "<td><pre class=\"arg1\">" << nx->GetName() << "</pre></td></tr>" << endl;
-			} else {
-				Out << "<td><pre class=\"arg1\">" << nx->GetName() << "</pre></td><td>" << sdescr << "</td></tr>" << endl;
+		if (nx->GetIndex() & kMrbTidySubstInUse) {
+			if (nx->GetIndex() & kMrbTidySubstInherited) {
+				if (firstSubst) Out << "<tr><td>" << sTitle << ":</td>"; else Out << "<tr><td></td>";
+				firstSubst = kFALSE;
+				TString sdescr = nx->GetTitle();
+				if (sdescr.IsNull()) {
+					Out << "<td><pre class=\"arg1\">" << nx->GetName() << "</pre></td></tr>" << endl;
+				} else {
+					Out << "<td><pre class=\"arg1\">" << nx->GetName() << "</pre></td><td>" << sdescr << "</td></tr>" << endl;
+				}
 			}
 		}
-		nx = (TMrbNamedX *) LofSubstInUse.After(nx);
+		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 	}
 	TMrbTidyAttr * aIter = (TMrbTidyAttr *) fLofAttr.FindByName("iter");
 	if (aIter) Out << "<tr><td>Iteration:</td><td colspan=\"2\">" << aIter->GetValue() << "</td></tr>" << endl;
@@ -1520,7 +1574,7 @@ Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
 						sstr.Resize(n);
 						sstr = sstr.Strip(TString::kBoth);
 					}
-					fLofSubstitutions.AddNamedX(kMrbTidySubstLocal, sstr.Data(), sdescr.Data(), new TObjString(""));
+					fLofSubstitutions.AddNamedX(kMrbTidySubstLocalDef, sstr.Data(), sdescr.Data(), new TObjString(""));
 				}
 			}
 		}
@@ -1531,6 +1585,40 @@ Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
 				fLofSubstitutions.AddNamedX(kMrbTidySubstInherited, nx->GetName(), nx->GetTitle(), nx->GetAssignedObject());
 			}
 			nx = (TMrbNamedX *) lofParentSubst->After(nx);
+		}
+		Bool_t ok;
+		TString buf;
+		TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
+		if (aString) {
+			buf = aString->GetValue();
+			ok = kTRUE;
+		} else if (this->IsText()) {
+			this->GetText(buf);
+			ok = kTRUE;
+		}
+		if (ok) {
+			nx = (TMrbNamedX *) fLofSubstitutions.First();
+			while (nx) {
+				TString param = nx->GetName();		// (1) #...&1U# -> upper case first char
+				param.Prepend("#");
+				param += "&1U#";
+				if (buf.Index(param.Data(), 0) >= 0) {
+					nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
+				} else {
+					param = nx->GetName();				// (2) #...&UC# -> upper case
+					param.Prepend("#");
+					param += "&UC#";
+					if (buf.Index(param.Data(), 0) >= 0) {
+						nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
+					} else {
+						param = nx->GetName();			// (3) #...# -> normal substitution
+						param.Prepend("#");
+						param += "#";
+						if (buf.Index(param.Data(), 0) >= 0) nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
+					}
+				}
+				nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
+			}
 		}
 	}
 	if (Recursive) {
@@ -1560,12 +1648,13 @@ void TMrbTidyNode::PrintSubstitutions(Bool_t Recursive, ostream & Out) {
 	if (nSubst > 0) {
 		TString nodeName = this->GetName();
 		if (nodeName.CompareTo("mb") == 0) {
-			Out << Form("%-10s%5s  %-30s%-6s%-15s%-15s%-15s%s",			"Node",
+			Out << Form("%-10s%5s  %-30s%-6s%-15s%-12s%-6s%-15s%s",	"Node",
 																		"level",
 																		"mtag",
 																		"  #s",
 																		"param",
 																		"mode",
+																		"used",
 																		"value",
 																		"description") << endl;
 			Out << "--------------------------------------------------------------------------------------------------------------" << endl;
@@ -1576,28 +1665,33 @@ void TMrbTidyNode::PrintSubstitutions(Bool_t Recursive, ostream & Out) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 		Bool_t firstSubst = kTRUE;
 		while (nx) {
-			TString mode;
-			if (nx->GetIndex() & kMrbTidySubstLocal) mode = "local";
+			TString mode = "undef";
+			if (nx->GetIndex() & kMrbTidySubstLocalDef) mode = "local";
 			else if (nx->GetIndex() & kMrbTidySubstInherited) mode = "inherited";
-			TString sValue = ((nx->GetIndex() & kMrbTidySubstDone) == 0) ? "<n.a>" : ((TObjString *) nx->GetAssignedObject())->GetString();
+			TString used;
+			if (nx->GetIndex() & kMrbTidySubstInUse) used = "yes";
+			else if (nx->GetIndex() & kMrbTidySubstInUse) used = "somewhere";
+			TString sValue = ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) ? "<n.a>" : ((TObjString *) nx->GetAssignedObject())->GetString();
 			if (firstSubst) {
-				Out << Form("%-10s %3d   %-30s %3d  %-15s%-15s%-15s%s",	nodeName.Data(),
-																		this->GetTreeLevel(),
-																		tag.Data(),
-																		nSubst,
-																		nx->GetName(),
-																		mode.Data(),
-																		sValue.Data(),
-																		nx->GetTitle()) << endl;
+				Out << Form("%-10s %3d   %-30s %3d  %-15s%-12s%-6s%-15s%s",	nodeName.Data(),
+																				this->GetTreeLevel(),
+																				tag.Data(),
+																				nSubst,
+																				nx->GetName(),
+																				mode.Data(),
+																				used.Data(),
+																				sValue.Data(),
+																				nx->GetTitle()) << endl;
 			} else {
-				Out << Form("%-10s%7s%-30s%6s%-15s%-15s%-15s%s",		"",
-																		"",
-																		"",
-																		"",
-																		nx->GetName(),
-																		mode.Data(),
-																		sValue.Data(),
-																		nx->GetTitle()) << endl;
+				Out << Form("%-10s%7s%-30s%6s%-15s%-12s%-6s%-15s%s",			"",
+																				"",
+																				"",
+																				"",
+																				nx->GetName(),
+																				mode.Data(),
+																				used.Data(),
+																				sValue.Data(),
+																				nx->GetTitle()) << endl;
 			}
 			firstSubst = kFALSE;
 			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
@@ -1627,7 +1721,7 @@ void TMrbTidyNode::ClearSubstitutions(Bool_t Recursive) {
 	this->InitSubstitutions(kFALSE, kFALSE);
 	TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 	while (nx) {
-		nx->ChangeIndex(nx->GetIndex() & ~kMrbTidySubstDone);
+		nx->ChangeIndex(nx->GetIndex() & ~kMrbTidySubstValueSet);
 		((TObjString *) nx->GetAssignedObject())->SetString("");
 		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 	}
@@ -1660,7 +1754,7 @@ Bool_t TMrbTidyNode::CheckSubstitutions(Bool_t Recursive, Bool_t VerboseMode) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 		Bool_t ok = kTRUE;
 		while (nx) {
-			if ((nx->GetIndex() & kMrbTidySubstDone) == 0) {
+			if ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) {
 				if (VerboseMode) {
 					if (ok) {
 						gMrbLog->Err()	<< "Node \"" << this->GetName() << "\" (level " << this->GetTreeLevel()
@@ -1724,7 +1818,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, const Char_t * ParamVa
 	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.FindByName(ParamName);
 		if (nx) {
-			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstDone);
+			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstValueSet);
 			((TObjString *) nx->GetAssignedObject())->SetString(ParamValue);
 			ok = kTRUE;
 		} else if (Verbose) {
@@ -1738,7 +1832,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, const Char_t * ParamVa
 	if (Recursive) {
 		TMrbTidyNode * node = this->GetFirst();
 		while (node) {
-			if ((node->GetSubstitutionType(ParamName) & kMrbTidySubstLocal) == 0) {
+			if ((node->GetSubstitutionType(ParamName) & kMrbTidySubstLocalDef) == 0) {
 				if(!node->Substitute(ParamName, ParamValue, Recursive, Verbose)) ok = kFALSE;
 			}
 			node = this->GetNext(node);
@@ -1767,7 +1861,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Int_t ParamValue, Int_
 	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.FindByName(ParamName);
 		if (nx) {
-			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstDone);
+			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstValueSet);
 			TMrbString val;
 			val.FromInteger(ParamValue, 0, ' ', ParamBase, kTRUE);
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
@@ -1783,7 +1877,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Int_t ParamValue, Int_
 	if (Recursive) {
 		TMrbTidyNode * node = this->GetFirst();
 		while (node) {
-			if ((node->GetSubstitutionType(ParamName) & kMrbTidySubstLocal) == 0) {
+			if ((node->GetSubstitutionType(ParamName) & kMrbTidySubstLocalDef) == 0) {
 				if(!node->Substitute(ParamName, ParamValue, ParamBase, Recursive, Verbose)) ok = kFALSE;
 			}
 			node = this->GetNext(node);
@@ -1811,7 +1905,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Double_t ParamValue, B
 	if (this->InitSubstitutions(kFALSE, kFALSE) > 0) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.FindByName(ParamName);
 		if (nx) {
-			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstDone);
+			nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstValueSet);
 			TMrbString val;
 			val.FromDouble(ParamValue);
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
@@ -1827,7 +1921,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Double_t ParamValue, B
 	if (Recursive) {
 		TMrbTidyNode * node = this->GetFirst();
 		while (node) {
-			if ((node->GetSubstitutionType(ParamName) & kMrbTidySubstLocal) == 0) {
+			if ((node->GetSubstitutionType(ParamName) & kMrbTidySubstLocalDef) == 0) {
 				if(!node->Substitute(ParamName, ParamValue, Recursive, Verbose)) ok = kFALSE;
 			}
 			node = this->GetNext(node);
@@ -1896,45 +1990,26 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 	if (ok) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 		while (nx) {
-			if (nx->GetIndex() & kMrbTidySubstDone) {
-				TString param = nx->GetName();		// (1) #...&1U# -> upper case first char
-				param.Prepend("#");
-				param += "&1U#";
-				TString subst = ((TObjString *) nx->GetAssignedObject())->GetString();
-				subst(0,1).ToUpper();
-				buf.ReplaceAll(param.Data(), subst.Data());
-				param = nx->GetName();				// (2) #...&UC# -> upper case
-				param.Prepend("#");
-				param += "&UC#";
-				subst = ((TObjString *) nx->GetAssignedObject())->GetString();
-				subst.ToUpper();
-				buf.ReplaceAll(param.Data(), subst.Data());
-				param = nx->GetName();				// (3) #...# -> normal substitution
-				param.Prepend("#");
-				param += "#";
-				subst = ((TObjString *) nx->GetAssignedObject())->GetString();
-				buf.ReplaceAll(param.Data(), subst.Data());
-			} else {
-				Bool_t found = kFALSE;
-				TString param = nx->GetName();		// (1) #...&1U# -> upper case first char
-				param.Prepend("#");
-				param += "&1U#";
-				if (buf.Index(param.Data(), 0) >= 0) {
-					found = kTRUE;
-				} else {
+			if (nx->GetIndex() & kMrbTidySubstInUse) {
+				if (nx->GetIndex() & kMrbTidySubstValueSet) {
+					TString param = nx->GetName();		// (1) #...&1U# -> upper case first char
+					param.Prepend("#");
+					param += "&1U#";
+					TString subst = ((TObjString *) nx->GetAssignedObject())->GetString();
+					subst(0,1).ToUpper();
+					buf.ReplaceAll(param.Data(), subst.Data());
 					param = nx->GetName();				// (2) #...&UC# -> upper case
 					param.Prepend("#");
 					param += "&UC#";
-					if (buf.Index(param.Data(), 0) >= 0) {
-						found = kTRUE;
-					} else {
-						param = nx->GetName();				// (3) #...# -> normal substitution
-						param.Prepend("#");
-						param += "#";
-						if (buf.Index(param.Data(), 0) >= 0) found = kTRUE;
-					}
-				}
-				if (found) {
+					subst = ((TObjString *) nx->GetAssignedObject())->GetString();
+					subst.ToUpper();
+					buf.ReplaceAll(param.Data(), subst.Data());
+					param = nx->GetName();				// (3) #...# -> normal substitution
+					param.Prepend("#");
+					param += "#";
+					subst = ((TObjString *) nx->GetAssignedObject())->GetString();
+					buf.ReplaceAll(param.Data(), subst.Data());
+				} else {
 					gMrbLog->Err()	<< "Node \"" << this->GetName() << "\" (level "
 									<< this->GetTreeLevel() << "): param \"" << nx->GetName() << "\" used but not substituted" << endl;
 					gMrbLog->Flush(this->ClassName(), "OutputSubstituted");
@@ -1960,82 +2035,21 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 	return(ok);
 }
 
-Int_t TMrbTidyNode::GetSubstitutionsInUse(TMrbLofNamedX & LofSubst) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTidyNode::GetSubstitutionsInUse
-// Purpose:        Return a list of subst in use
-// Arguments:      TMrbLofNamedX & LofSubst  -- where to store substitutions
-// Results:        Int_t NofSubst            -- number of subst in list
-// Exceptions:
-// Description:    Collects (recursively) substitutions used in text.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TString buf;
-	Bool_t ok = kFALSE;
-
-	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
-	if (aString) {
-		buf = aString->GetValue();
-		ok = kTRUE;
-	} else if (this->IsText()) {
-		this->GetText(buf);
-		ok = kTRUE;
-	}
-	if (ok) {
-		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
-		while (nx) {
-			if (nx->GetIndex() != 0) {
-				TString param = nx->GetName();			// (1) #...&1U# -> upper case first char
-				param.Prepend("#");
-				param += "&1U#";
-				if (buf.Index(param.Data(), 0) >= 0) {
-					if (LofSubst.FindByName(nx->GetName()) == NULL) LofSubst.AddNamedX(nx);
-				} else {
-					param = nx->GetName();				// (2) #...&UC# -> upper case
-					param.Prepend("#");
-					param += "&UC#";
-					if (buf.Index(param.Data(), 0) >= 0) {
-						if (LofSubst.FindByName(nx->GetName()) == NULL) LofSubst.AddNamedX(nx);
-					} else {
-						param = nx->GetName();			// (3) #...# -> normal substitution
-						param.Prepend("#");
-						param += "#";
-						if (buf.Index(param.Data(), 0) >= 0) {
-							if (LofSubst.FindByName(nx->GetName()) == NULL) LofSubst.AddNamedX(nx);
-						}
-					}
-				}
-			}
-			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
-		}
-	}
-
-	TMrbTidyNode * node = this->GetFirst();
-	while (node) {
-		node->GetSubstitutionsInUse(LofSubst);
-		node = this->GetNext(node);
-	}
-	return(LofSubst.GetEntriesFast());
-}
-
-const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer, TMrbLofNamedX & LofSubst) {
+const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::MarkSubstitutions
 // Purpose:        Mark substitutions for html output
 // Arguments:      TString & Buffer          -- buffer containing text
-//                 TMrbLofNamedX & LofSubst  -- list of substitutions
 // Results:        Char_t * BufPtr           -- points to 'Buffer'
 // Exceptions:
 // Description:    Marks (= changes background color) for all substitutions in text
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx = (TMrbNamedX *) LofSubst.First();
+	TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 	while (nx) {
-		if (nx->GetIndex() != 0) {
+		if (nx->GetIndex() & kMrbTidySubstInUse) {
 			TString param = nx->GetName();			// (1) #...&1U# -> upper case first char
 			param.Prepend("#");
 			param += "&1U#";
@@ -2060,7 +2074,7 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer, TMrbLofNamedX &
 			subst += "</em>";
 			Buffer.ReplaceAll(param.Data(), subst.Data());
 		}
-		nx = (TMrbNamedX *) LofSubst.After(nx);
+		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 	}
 	return(Buffer.Data());
 }
