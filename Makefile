@@ -62,6 +62,11 @@ ROOTGLIBS     := $(shell root-config --new --glibs)
 ROOTGLIBS      += -lGed
 
 ROOTCINT      :=rootcint
+
+RV1 	      := $(shell root-config --version)
+RV2           := $(subst /,,$(RV1))
+ROOTVERS      := $(subst .,,$(RV2))
+
 ##### utilities #####
 
 MAKEDEP       = build/unix/depend.sh
@@ -105,7 +110,7 @@ ALLOBJ       :=
 .PRECIOUS: include/%.h obj/%.o
 
 %.o: %.cxx
-	$(CXX) $(OPT) $(CXXFLAGS) -o $@ -c $<
+	$(CXX) $(OPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -o $@ -c $<
 
 %.o: %.c
 	$(CC) $(OPT) $(CFLAGS) -o $@ -c $<
