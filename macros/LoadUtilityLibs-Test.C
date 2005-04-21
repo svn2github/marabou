@@ -13,5 +13,6 @@
 {
 	cout << "[Loading *LOCAL* utility libs from " << gSystem->ExpandPathName("$LMARABOU/lib") << "]" << endl;
 	gSystem->Load("$LMARABOU/lib/libTMrbUtils.so");
+	gSystem->Load("$ROOTSYS/lib/libGed.so");
 	gSystem->Load("$LMARABOU/lib/libTGMrbUtils.so");
 }

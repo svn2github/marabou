@@ -13,6 +13,7 @@
 {
 	cout << "[Loading MARaBOU libs from " << gSystem->ExpandPathName("$MARABOU/lib") << "]" << endl;
 	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+	gSystem->Load("$ROOTSYS/lib/libGed.so");
 	gSystem->Load("$MARABOU/lib/libTGMrbUtils.so");
 	gSystem->Load("$MARABOU/lib/libHelpBrowser.so");
 	gSystem->Load("$MARABOU/lib/libMutex.so");
