@@ -16,13 +16,6 @@
 %B%// Keywords:       
 %B%//////////////////////////////////////////////////////////////////////////////
 %B%
-%B%	Int_t wc;
-%B%	Int_t moduleNumber;
-%B%	Int_t chn;
-%B%	UShort_t * dataPtr;
-%B% 	Int_t data;
-%B%	Int_t wordsProcessed;
-%B%						
 %C% fTimeStamp = TimeStamp; 				// store time since last "start acquisition"
 %C% this->SetTimeStamp(TimeStamp);			// passed as argument by parent event
 %C%
@@ -75,13 +68,13 @@
 %C% 		if (moduleNumber > 0) {
 %C% 			for (Int_t k = 0; k < 3; k++) timeStamp[k] = *dataPtr++;
 %C% 			Int_t tsAux = *dataPtr++;
-%C% 			evtData[kHitCounterT1] = *dataPtr++;
-%C% 			evtData[kHitCounterT1 + 1] = *dataPtr++;
-%C% 			evtData[kHitCounterT2] = *dataPtr++;
-%C% 			evtData[kHitCounterT2 + 1] = *dataPtr++;
-%C% 			evtData[kHitPattern] = *dataPtr++;
-%C% 			evtData[kHitPattern + 1] = *dataPtr++;
-%C% 			if (evtData[kHitPattern + 1] & 0x0F00) timeStamp[2] = tsAux;
+%C% 			evtData[TUsrHit::kHitCounterT1] = *dataPtr++;
+%C% 			evtData[TUsrHit::kHitCounterT1 + 1] = *dataPtr++;
+%C% 			evtData[TUsrHit::kHitCounterT2] = *dataPtr++;
+%C% 			evtData[TUsrHit::kHitCounterT2 + 1] = *dataPtr++;
+%C% 			evtData[TUsrHit::kHitPattern] = *dataPtr++;
+%C% 			evtData[TUsrHit::kHitPattern + 1] = *dataPtr++;
+%C% 			if (evtData[TUsrHit::kHitPattern + 1] & 0x0F00) timeStamp[2] = tsAux;
 %C% 			mle->IncrChannelHits(0);			// count this channel
 %C% 			this->GetHitBuffer()->AddHit(	eventsProcessed,
 %C% 											moduleNumber,
@@ -89,7 +82,7 @@
 %C% 											timeStamp[0],
 %C% 											timeStamp[1],
 %C% 											timeStamp[2],
-%C% 											&evtData,
+%C% 											evtData,
 %C% 											6);
 %C% 		}
 %C% 		SevtWC -= 10;						// remaining subevent data
@@ -98,7 +91,6 @@
 %C% 	eventsProcessed++;
 %C% }
 %C% return(kTRUE);
-%C%}
 %E%}			
 //- dummy prefixes, never used
 %VR%

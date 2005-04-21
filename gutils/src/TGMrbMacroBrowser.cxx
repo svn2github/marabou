@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.7 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.8 2005-04-21 07:03:32 rudi Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -814,7 +814,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	titleBar = "ROOT Macro Browser: ";
 	titleBar += macroName;
 
-	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 3, 3);
+	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 1, 1, 1);
 	HEAP(frameLayout);
 	frameGC->SetLH(frameLayout);
 	fMacroInfo = new TGGroupFrame(this, "Info", kVerticalFrame, frameGC->GC(), frameGC->Font(), frameGC->BG());

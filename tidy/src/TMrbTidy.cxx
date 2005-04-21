@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.13 2005-04-20 14:12:45 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.14 2005-04-21 07:04:26 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1662,7 +1662,12 @@ Bool_t TMrbTidyNode::CheckSubstitutions(Bool_t Recursive, Bool_t VerboseMode) {
 		while (nx) {
 			if ((nx->GetIndex() & kMrbTidySubstDone) == 0) {
 				if (VerboseMode) {
-					gMrbLog->Err() << (ok ? "Substitution missing for param(s) >> " : ", ");
+					if (ok) {
+						gMrbLog->Err()	<< "Node \"" << this->GetName() << "\" (level " << this->GetTreeLevel()
+										<< "): Subst missing for param(s) >> ";
+					} else {
+						gMrbLog->Err()	<< ",";
+					}
 					gMrbLog->Err() << nx->GetName();
 				}
 				ok = kFALSE;
@@ -1891,7 +1896,7 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 	if (ok) {
 		TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 		while (nx) {
-			if (nx->GetIndex() == kMrbTidySubstDone) {
+			if (nx->GetIndex() & kMrbTidySubstDone) {
 				TString param = nx->GetName();		// (1) #...&1U# -> upper case first char
 				param.Prepend("#");
 				param += "&1U#";
