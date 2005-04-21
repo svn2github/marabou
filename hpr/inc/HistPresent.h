@@ -378,6 +378,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    void SetTransLevelsHLS();
    void SetColorPalette();
    void SetCurlyAttributes(TGWindow * win = 0, FitHist * fh = 0);
+   void SetCurlyAtt();
    void SetPadAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetGeneralAttributes(TGWindow * win = 0, FitHist * fh = 0);
    void SetTitleAttributes(TGWindow * win = 0, FitHist * fh = 0);

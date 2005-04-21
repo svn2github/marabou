@@ -1,3 +1,5 @@
+#define ENABLE_CURLYDEFAULTS 40304
+
 #include "TROOT.h"
 #include "TEnv.h"
 #include "TColor.h"
@@ -15,6 +17,7 @@
 #include "TArc.h"
 #include "TMarker.h"
 #include "TLatex.h"
+#include "TCurlyArc.h"
 #include "TCurlyLine.h"
 
 #include "TGMrbInputDialog.h"
@@ -554,6 +557,7 @@ void HistPresent::RestoreOptions()
    SetStatAtt();
    SetPadAtt();
    SetGeneralAtt();
+   SetCurlyAtt();
    if (fForceStyle > 0) gROOT->ForceStyle();
    else                 gROOT->ForceStyle(kFALSE);
 
@@ -817,10 +821,10 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    enum e_CurlySet { 
       kArrowAngle      ,
       kArrowSize       ,
-      kArrowWidth      ,
-      kArrowStyle      ,
-      kArrowColor      ,
-      kArrowFill       ,
+//      kArrowWidth      ,
+//      kArrowStyle      ,
+//      kArrowColor      ,
+//      kArrowFill       ,
       kArrowShape     ,
       kCurlyWaveLength ,
       kCurlyAmplitude  ,
@@ -835,10 +839,10 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    Int_t vp = 0;
    row_lab->Add(new TObjString("ArrowAngle "));     
    row_lab->Add(new TObjString("ArrowSize  "));     
-   row_lab->Add(new TObjString("ArrowLineWidth"));     
-   row_lab->Add(new TObjString("ArrowLineStyle"));     
-   row_lab->Add(new TObjString("ArrowColor "));     
-   row_lab->Add(new TObjString("ArrowFillStyle"));     
+//   row_lab->Add(new TObjString("ArrowLineWidth"));     
+//   row_lab->Add(new TObjString("ArrowLineStyle"));     
+//   row_lab->Add(new TObjString("ArrowColor "));     
+//   row_lab->Add(new TObjString("ArrowFillStyle"));     
    row_lab->Add(new TObjString("ArrowForm"));         
    row_lab->Add(new TObjString("CurlyWaveLength"));         
    row_lab->Add(new TObjString("CurlyAmplitude"));         
@@ -850,10 +854,10 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    TList *values = new TList();
    AddObjString(fArrowAngle ,values);
    AddObjString(fArrowSize  ,values);
-   AddObjString(fArrowWidth  ,values);
-   AddObjString(fArrowStyle  ,values, kAttLineS);
-   AddObjString(fArrowColor  ,values, kAttColor);
-   AddObjString(fArrowFill  ,values, kAttFillS);
+//   AddObjString(fArrowWidth  ,values);
+//   AddObjString(fArrowStyle  ,values, kAttLineS);
+//   AddObjString(fArrowColor  ,values, kAttColor);
+//   AddObjString(fArrowFill  ,values, kAttFillS);
    AddObjString(fArrowShape ,values, kAttArrow);
    AddObjString(fCurlyWaveLength ,values);
    AddObjString(fCurlyAmplitude  ,values);
@@ -877,10 +881,10 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    vp = 0;
    fArrowAngle      = GetDouble(values, vp); vp++;
    fArrowSize       = GetDouble(values, vp); vp++;
-   fArrowWidth      = GetInt(values, vp); vp++;
-   fArrowStyle      = GetInt(values, vp); vp++;
-   fArrowColor      = GetInt(values, vp); vp++;
-   fArrowFill       = GetInt(values, vp); vp++;
+//   fArrowWidth      = GetInt(values, vp); vp++;
+//   fArrowStyle      = GetInt(values, vp); vp++;
+//   fArrowColor      = GetInt(values, vp); vp++;
+//   fArrowFill       = GetInt(values, vp); vp++;
    fArrowShape      = GetInt(values, vp); vp++;
    fCurlyWaveLength = GetDouble(values, vp); vp++;
    fCurlyAmplitude  = GetDouble(values, vp); vp++;
@@ -906,10 +910,10 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    SaveOptions();
    gEnv->SetValue("HistPresent.ArrowAngle" ,fArrowAngle);
    gEnv->SetValue("HistPresent.ArrowSize"  ,fArrowSize );
-   gEnv->SetValue("HistPresent.ArrowWidth" ,fArrowWidth);
-   gEnv->SetValue("HistPresent.ArrowStyle" ,fArrowStyle);
-   gEnv->SetValue("HistPresent.ArrowColor" ,fArrowColor);
-   gEnv->SetValue("HistPresent.ArrowFill"  ,fArrowFill );
+//   gEnv->SetValue("HistPresent.ArrowWidth" ,fArrowWidth);
+//   gEnv->SetValue("HistPresent.ArrowStyle" ,fArrowStyle);
+//   gEnv->SetValue("HistPresent.ArrowColor" ,fArrowColor);
+//   gEnv->SetValue("HistPresent.ArrowFill"  ,fArrowFill );
    gEnv->SetValue("HistPresent.ArrowShape" ,fArrowShape);
    gEnv->SetValue("HistPresent.CurlyWaveLength" ,fCurlyWaveLength);
    gEnv->SetValue("HistPresent.CurlyAmplitude"  ,fCurlyAmplitude);
@@ -917,6 +921,8 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    gEnv->SetValue("HistPresent.CurlyStyle" ,fCurlyStyle);
    gEnv->SetValue("HistPresent.CurlyColor" ,fCurlyColor);
    gEnv->SetValue("HistPresent.IsCurly"    ,fIsCurly);
+
+   SetCurlyAtt();
 
    if (win && flag.GetSum() > 0) {
       TRootCanvas * cimp = (TRootCanvas*)win;
@@ -939,10 +945,10 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
                TArrow * a = (TArrow*)obj;
                if (flag[kArrowAngle] != 0)      a->SetAngle(fArrowAngle);
                if (flag[kArrowSize]  != 0)      a->SetArrowSize(fArrowSize);
-               if (flag[kArrowWidth] != 0)      a->SetLineWidth(fArrowWidth);
-               if (flag[kArrowStyle] != 0)      a->SetLineStyle(fArrowStyle);
-               if (flag[kArrowFill]  != 0)      a->SetFillStyle(fArrowFill);
-               if (flag[kArrowColor] != 0)      a->SetFillColor(fArrowColor);
+//               if (flag[kArrowWidth] != 0)      a->SetLineWidth(fArrowWidth);
+//               if (flag[kArrowStyle] != 0)      a->SetLineStyle(fArrowStyle);
+//               if (flag[kArrowFill]  != 0)      a->SetFillStyle(fArrowFill);
+//               if (flag[kArrowColor] != 0)      a->SetFillColor(fArrowColor);
                if (flag[kArrowShape] != 0)     {a->SetDrawOption(ArrowOption[fArrowShape]); 
                                                 a->SetOption(ArrowOption[fArrowShape]);};
             }
@@ -951,6 +957,28 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
          canvas->Update();
       } 
    }
+}
+//_______________________________________________________________________
+
+void HistPresent::SetCurlyAtt()
+{
+#if ROOTVERSION > ENABLE_CURLYDEFAULTS
+   const char * ArrowOption[] = 
+      {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
+	TCurlyLine::SetDefaultWaveLength(fCurlyWaveLength);
+	TCurlyLine::SetDefaultAmplitude(fCurlyAmplitude);
+	TCurlyLine::SetDefaultIsCurly(fIsCurly);
+	TCurlyArc::SetDefaultWaveLength(fCurlyWaveLength);
+	TCurlyArc::SetDefaultAmplitude(fCurlyAmplitude);
+	TCurlyArc::SetDefaultIsCurly(fIsCurly);
+
+	TArrow::SetDefaultAngle(fArrowAngle);
+	TArrow::SetDefaultArrowSize(fArrowSize);
+	TArrow::SetDefaultOption(ArrowOption[fArrowShape]);
+#endif
+	gStyle->SetLineColor(fCurlyColor);
+	gStyle->SetLineStyle(fCurlyStyle);
+	gStyle->SetLineWidth(fCurlyWidth);
 }
 //_______________________________________________________________________
 
@@ -1512,14 +1540,14 @@ void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
    AddObjString(fNdivisionsZ, values);
    AddObjString(fAxisColorZ,  values, kAttColor) ;
    AddObjString(fLabelColorZ, values, kAttColor);
-   AddObjString(fLabelFontZ,  values);
+   AddObjString(fLabelFontZ,  values, kAttFont);
    AddObjString(fLabelOffsetZ,values);
    AddObjString(fLabelSizeZ,  values);
    AddObjString(fTickLengthZ, values);
    AddObjString(fTitleOffsetZ,values);
    AddObjString(fTitleSizeZ,  values);
    AddObjString(fTitleColorZ, values, kAttColor);
-   AddObjString(fTitleFontZ,  values);
+   AddObjString(fTitleFontZ,  values, kAttFont);
 
 
    Bool_t ok; 
@@ -1624,14 +1652,14 @@ void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
    AddObjString(fNdivisionsY, values);
    AddObjString(fAxisColorY,  values, kAttColor) ;
    AddObjString(fLabelColorY, values, kAttColor);
-   AddObjString(fLabelFontY,  values);
+   AddObjString(fLabelFontY,  values, kAttFont);
    AddObjString(fLabelOffsetY,values);
    AddObjString(fLabelSizeY,  values);
    AddObjString(fTickLengthY, values);
    AddObjString(fTitleOffsetY,values);
    AddObjString(fTitleSizeY,  values);
    AddObjString(fTitleColorY, values, kAttColor);
-   AddObjString(fTitleFontY,  values);
+   AddObjString(fTitleFontY,  values, kAttFont);
 
 
    Bool_t ok; 
