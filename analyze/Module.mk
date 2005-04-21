@@ -78,7 +78,7 @@ $(ANDO):     $(ANDS)
 all-analyze:       $(ANOBJ) $(MRBALIB)
 
 clean-analyze:
-		@rm -f $(ANO) $(MRBAO) $(MUTEXO) $(MRBADO) $(MRBADS) $(ANOBJ) $(MRBALIB)
+		@rm -f $(ANO) $(MRBAO) $(MRBADO) $(MUTEXO) $(MRBADS) $(ANOBJ) $(MRBALIB)
 
 clean::         clean-analyze
 

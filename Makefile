@@ -95,7 +95,7 @@ MAKEINFO      = cint/MAKEINFO
 ALLHDRS      :=
 ALLLIBS      :=
 HPRLIBS      := lib/libHpr.so lib/libTMrbHelpBrowser.so lib/libTMrbUtils.so lib/libTGMrbUtils.so
-ALLEXECS     := 
+ALLEXECS     :=
 INCLUDEFILES :=
 ALLOBJ       :=
 

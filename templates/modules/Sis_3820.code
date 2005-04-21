@@ -38,6 +38,7 @@
 #define SIS_3820_R_READ_FIFO			0xA00L
 
 #define SIS_3820_A_STATUS(module)				((unsigned long *) (module + SIS_3820_R_STATUS))
+#define SIS_3820_A_IDENT(module)				((unsigned long *) (module + SIS_3820_R_IDENT))
 #define SIS_3820_A_IRQSTATUS(module)			((unsigned long *) (module + SIS_3820_R_IRQSTATUS))
 #define SIS_3820_A_ACQ_PRESET(module)			((unsigned long *) (module + SIS_3820_R_ACQ_PRESET))
 #define SIS_3820_A_ACQ_COUNT(module)			((unsigned long *) (module + SIS_3820_R_ACQ_COUNT))
@@ -61,12 +62,12 @@
 
 #define SIS_3820_READ_STATUS(module)			*SIS_3820_A_STATUS(module)
 #define SIS_3820_READ_IRQS(module)				*SIS_3820_A_IRQSTATUS(module)
-#define SIS_3801_SET_CTRL_BIT(module, b)		*SIS_3801_A_STATUS(module) = b
+#define SIS_3820_SET_CTRL_BIT(module, b)		*SIS_3820_A_STATUS(module) = b
 #define SIS_3820_DISABLE_COPY(module, b)		*SIS_3820_A_COPY_DISABLE(module) = b
 #define SIS_3820_INHIBIT_COUNTING(module, b) 	*SIS_3820_A_INHIBIT_COUNTING(module) = b
 #define SIS_3820_WRITE_FIFO_THRESH(module, b)	*SIS_3820_A_FIFO_WC_THRESH(module) = 0
 #define SIS_3820_RESET(module)					*SIS_3820_A_KEY_RESET(module) = 0
-#define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_CLEAR_FIFO(module) = 0
+#define SIS_3820_CLEAR_FIFO(module)				*SIS_3820_A_KEY_FIFO_RESET(module) = 0
 #define SIS_3820_OPER_ENABLE(module)			*SIS_3820_A_KEY_OPER_ENABLE(module) = 0
 #define SIS_3820_OPER_DISABLE(module)			*SIS_3820_A_KEY_OPER_DISABLE(module) = 0
 
@@ -105,9 +106,9 @@
 					SIS_3820_CLEAR_FIFO($moduleName);
 					SIS_3820_SET_CTRL_BIT($moduleName, SIS_3820_CS_B_INPUT_MODE_1 | SIS_3820_CS_B_OUTPUT_MODE_0 | SIS_3820_CS_B_LNE_SOURCE_1);
 					SIS_3820_WRITE_FIFO_THRESH($moduleName, 1);
-					SIS_3820_INHIBIT_COUNTING(module, $unusedChannels)
-					SIS_3820_DISABLE_COPY(module, $unusedChannels)
-					SIS_3820_sis_3820_module_info($moduleName);
+					SIS_3820_INHIBIT_COUNTING($moduleName, $unusedChannels);
+					SIS_3820_DISABLE_COPY($moduleName, $unusedChannels);
+					sis_3820_module_info($moduleName);
 
 %%EndOfCode%%
 %%INIT_MODULE%%
