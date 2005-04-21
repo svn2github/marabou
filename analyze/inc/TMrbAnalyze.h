@@ -7,7 +7,7 @@
 // Purpose:        Define base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.39 2004-12-03 08:13:42 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.40 2005-04-21 07:03:07 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -398,8 +398,9 @@ class TMrbModuleListEntry : public TObject {
 class TUsrHit : public TObject {
 
 	public:
-		enum	{	kHitFastTrigger	=	0	};				// hit data layout
-		enum	{	kHitEnergy		=	1	};				// depending on param RUNTASK
+// hit data layout depending on param RUNTASK
+		enum	{	kHitFastTrigger	=	0	};
+		enum	{	kHitEnergy		=	1	};
 		enum	{	kHitXiaPSA		=	2	};
 		enum	{	kHitUserPSA		=	3	};
 		enum	{	kHitGSLTHi		=	4	};
@@ -409,7 +410,8 @@ class TUsrHit : public TObject {
 		enum	{	kHitLast		=	kHitRaw	};
 		enum	{	kMaxHitData 	=	kHitLast + 1	};
 
-		enum	{	kHitPSA1		=	2	};					// martin lauer's PSA array
+// alternate layout used by martin lauer's PSA code
+		enum	{	kHitPSA1		=	2	};
 		enum	{	kHitPSA_T0		=	kHitPSA1	};
 		enum	{	kHitPSA2		=	3	};
 		enum	{	kHitPSA_Tslope	=	kHitPSA2	};
@@ -422,7 +424,12 @@ class TUsrHit : public TObject {
 		enum	{	kHitPSA6		=	7	};
 		enum	{	kHitPSA_T90		=	kHitPSA6	};
 
-public:
+// alternate layout used by c_ptm module
+		enum	{	kHitPattern 	=	0	};	// 32 bit hit pattern
+		enum	{	kHitCounterT1	=	2	};	// 32 bit counter T1
+		enum	{	kHitCounterT2	=	4	};	// 32 bit counter T2
+
+	public:
 		TUsrHit() { this->Reset(); };
 		TUsrHit(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
 										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
@@ -454,6 +461,10 @@ public:
 		inline UShort_t GetFastTrigger() const { return(fData[kHitFastTrigger]); };
 		Double_t GetCalEnergy(Bool_t Randomize = kTRUE) const;
 		Double_t GetDCorrEnergy(Bool_t Randomize = kTRUE) const;
+
+		inline UInt_t GetPatternWord() { return(* (UInt_t *) &fData[kHitPattern]); }; // for c_ptm modules only
+		inline UInt_t GetCounterT1() { return(* (UInt_t *) &fData[kHitCounterT1]); };
+		inline UInt_t GetCounterT2() { return(* (UInt_t *) &fData[kHitCounterT2]); };
 
 		virtual inline Bool_t IsSortable() const { return(kTRUE); };	// hit may be sorted by time stamp
 				
