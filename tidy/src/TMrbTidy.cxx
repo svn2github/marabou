@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.15 2005-04-21 14:09:26 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.16 2005-04-21 14:43:02 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -2047,6 +2047,9 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Buffer.ReplaceAll("&lt;", "<");
+	Buffer.ReplaceAll("&gt;", ">");
+	Buffer.ReplaceAll("&amp;", "&");
 	TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 	while (nx) {
 		if (nx->GetIndex() & kMrbTidySubstInUse) {
