@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.5 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -137,14 +137,14 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 	HEAP(fPatternFrame);
 	this->AddFrame(fPatternFrame, groupGC->LH());
 
-	fLeftFrame = new TGMrbCheckButtonGroup(this, "-",	&fLofCoincPatternsLeft, 1, 
+	fLeftFrame = new TGMrbCheckButtonGroup(this, "-",	&fLofCoincPatternsLeft, -1, 1, 
 														frameGC, buttonGC,
 														NULL,
 														kVerticalFrame);
 	HEAP(fLeftFrame);
 	fPatternFrame->AddFrame(fLeftFrame, patFrameLayout);
 
-	fRightFrame = new TGMrbCheckButtonGroup(this, "-",	&fLofCoincPatternsRight, 1, 
+	fRightFrame = new TGMrbCheckButtonGroup(this, "-",	&fLofCoincPatternsRight, -1, 1, 
 														groupGC, buttonGC,
 														NULL,
 														kVerticalFrame);
@@ -158,7 +158,7 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, 1, 
+	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, -1, 1, 
 												DGFEditCoincPatternPanel::kButtonWidth,
 												DGFEditCoincPatternPanel::kButtonHeight,
 												frameGC, NULL, buttonGC);

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.19 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.20 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -146,7 +146,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), 1, 
+							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -161,14 +161,14 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -183,7 +183,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 	HEAP(fHFrame);
 	this->AddFrame(fHFrame, frameGC->LH());
 
-	fSelectChannel = new TGMrbCheckButtonGroup(fHFrame,  "Channel(s)", &fLofChannels, 1,
+	fSelectChannel = new TGMrbCheckButtonGroup(fHFrame,  "Channel(s)", &fLofChannels, -1, 1,
 												groupGC, buttonGC, lofSpecialButtons);
 	HEAP(fSelectChannel);
  	fSelectChannel->SetState(kDGFChannelMask, kButtonDown);
@@ -214,7 +214,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * aButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 2, 1, 2, 1);
 	labelGC->SetLH(aButtonLayout);
 	HEAP(aButtonLayout);
-	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fActions, 1, groupGC, labelGC);
+	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, groupGC, labelGC);
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	fActionFrame->JustifyButton(kTextCenterX);

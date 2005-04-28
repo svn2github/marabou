@@ -8,7 +8,7 @@
 // Class:          DGFRunControlPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRunControlPanel.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.h,v 1.7 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -45,6 +45,7 @@
 #include "DGFSaveModuleSettingsPanel.h"
 #include "DGFCopyModuleSettingsPanel.h"
 #include "DGFMiscPanel.h"
+#include "DGFCptmPanel.h"
 #include "DGFControlCommon.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
@@ -89,7 +90,8 @@ class DGFRunControlPanel : public TGMainFrame {
 									kDGFRunControlTabSave,
 									kDGFRunControlTabRestore,
 									kDGFRunControlTabCopy,
-									kDGFRunControlTabFiles
+									kDGFRunControlTabFiles,
+									kDGFRunControlTabCptm
 								};
 
 
@@ -134,6 +136,7 @@ class DGFRunControlPanel : public TGMainFrame {
 		TGCompositeFrame * fRestoreTab;
 		TGCompositeFrame * fCopyTab;
 		TGCompositeFrame * fFilesTab;
+		TGCompositeFrame * fCptmTab;
 
 		DGFSetupPanel * fSetupPanel;
 		DGFInstrumentPanel * fInstrumentPanel;
@@ -149,6 +152,7 @@ class DGFRunControlPanel : public TGMainFrame {
 		DGFRestoreModuleSettingsPanel * fRestoreModuleSettingsPanel;
 		DGFCopyModuleSettingsPanel * fCopyModuleSettingsPanel;
 		DGFSetFilesPanel * fSetFilesPanel;
+		DGFCptmPanel * fCptmPanel;
 
 		TMrbLofMacros * fLofMacros; 				// list of macros
 

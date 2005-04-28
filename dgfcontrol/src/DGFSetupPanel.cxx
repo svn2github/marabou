@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.25 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.26 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -169,7 +169,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * dgfButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
 	labelGC->SetLH(dgfButtonLayout);
 	HEAP(dgfButtonLayout);
-	fDGFFrame = new TGMrbCheckButtonGroup(this, "DGF General", &fSetupDGFModes, 1, groupGC, labelGC, NULL, kVerticalFrame);
+	fDGFFrame = new TGMrbCheckButtonGroup(this, "DGF General", &fSetupDGFModes, -1, 1, groupGC, labelGC, NULL, kVerticalFrame);
 	HEAP(fDGFFrame);
 	this->AddFrame(fDGFFrame, groupGC->LH());
 	fDGFFrame->Associate(this);
@@ -232,7 +232,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fCodeFrame);
 	this->AddFrame(fCodeFrame, groupGC->LH());
 	
-	fCodes = new TGMrbCheckButtonList(fCodeFrame, NULL, &fSetupDGFCodes, 1,
+	fCodes = new TGMrbCheckButtonList(fCodeFrame, NULL, &fSetupDGFCodes, -1, 1,
 											kTabWidth, kLEHeight,
 											frameGC, labelGC, buttonGC, lofSpecialButtons);
 	HEAP(fCodes);
@@ -247,7 +247,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -262,14 +262,14 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	fModules->AddFrame(fSelectFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fSelectFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fSelectFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fSelectFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fSelectFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -280,7 +280,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	fAllSelect->Associate(this);
 
 // Connect buttons
-	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fSetupConnect, 1, groupGC, labelGC);
+	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fSetupConnect, -1, 1, groupGC, labelGC);
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	fActionFrame->JustifyButton(kTextCenterX);

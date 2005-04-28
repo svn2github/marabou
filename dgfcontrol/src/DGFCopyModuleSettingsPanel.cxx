@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.6 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -196,7 +196,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	rbuttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, -1, 1, 
 										kTabWidth, kLEHeight,
 										frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
@@ -211,7 +211,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 	this->AddFrame(fVFrame, frameGC->LH());
 	
 	gDGFControlData->SetLH(groupGC, frameGC, vFrameLayout);
-	fCopyBits = new TGMrbCheckButtonGroup(fVFrame, "Settings",	&fLofCopyBits, 1,
+	fCopyBits = new TGMrbCheckButtonGroup(fVFrame, "Settings",	&fLofCopyBits, -1, 1,
 																groupGC, buttonGC,
 																lofSpecialButtons,
 																kVerticalFrame);
@@ -219,7 +219,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 	fVFrame->AddFrame(fCopyBits, groupGC->LH());
 	fCopyBits->SetState(0xffffffff, kButtonDown);
 	
-	fChannels = new TGMrbCheckButtonGroup(fVFrame, "to Channels",	&fLofChannels, 1,
+	fChannels = new TGMrbCheckButtonGroup(fVFrame, "to Channels",	&fLofChannels, -1, 1,
 																groupGC, buttonGC,
 																lofSpecialButtons,
 																kHorizontalFrame);
@@ -232,7 +232,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-								gDGFControlData->CopyKeyList(&fLofDestModuleKeys[cl], cl, 1, kTRUE), 1, 
+								gDGFControlData->CopyKeyList(&fLofDestModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 								kTabWidth, kLEHeight,
 								frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -247,14 +247,14 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -266,7 +266,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 
 // buttons
 	gDGFControlData->SetLH(groupGC, frameGC, vFrameLayout);
-	fButtonFrame = new TGMrbTextButtonGroup(this, "Action", &fLofButtons, 1, groupGC, buttonGC, kHorizontalFrame);
+	fButtonFrame = new TGMrbTextButtonGroup(this, "Action", &fLofButtons, -1, 1, groupGC, buttonGC, kHorizontalFrame);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, groupGC->LH());
 	fButtonFrame->Associate(this);

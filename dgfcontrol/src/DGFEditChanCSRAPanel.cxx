@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.5 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -126,7 +126,7 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry 
 	buttonGC->SetLH(csraButtonLayout);
 	HEAP(csraButtonLayout);
 
-	fCSRAFrame = new TGMrbCheckButtonGroup(this, title.Data(), &fLofCSRABits, 1, groupGC, buttonGC, NULL, kVerticalFrame);
+	fCSRAFrame = new TGMrbCheckButtonGroup(this, title.Data(), &fLofCSRABits, -1, 1, groupGC, buttonGC, NULL, kVerticalFrame);
 	HEAP(fCSRAFrame);
 	this->AddFrame(fCSRAFrame, groupGC->LH());
 
@@ -139,7 +139,7 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry 
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, 1, 
+	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, -1, 1, 
 												DGFEditChanCSRAPanel::kButtonWidth,
 												DGFEditChanCSRAPanel::kButtonHeight,
 												frameGC, NULL, buttonGC);

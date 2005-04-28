@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.6 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -19,6 +19,8 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TEnv.h"
+
+#include "TMrbSystem.h"
 
 #include "DGFControlData.h"
 #include "DGFSetFilesPanel.h"
@@ -39,6 +41,17 @@ static Char_t * kDGFFileTypesFPGACode[]	=	{
 static Char_t * kDGFFileTypesDSPCode[]	=	{
 												"DSP code (BIN)", 		"dgf*.bin",
 												"DSP code (ASCII)", 	"dgf*.exe",
+												"All files",			"*",
+												NULL,					NULL
+											};
+
+static Char_t * kDGFFileTypesCptmCode[]	=	{
+												"CPTM code", 			"*.rbf",
+												"All files",			"*",
+												NULL,					NULL
+											};
+
+static Char_t * kDGFFileTypesAll[]	=	{
 												"All files",			"*",
 												NULL,					NULL
 											};
@@ -125,17 +138,17 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 	fUserFrame->AddFrame(fUserRunDataEntry, frameGC->LH());
 	fUserRunDataEntry->GetEntry()->SetText(gDGFControlData->fRunDataFile.Data());
 
-//	system defs
+//	dgf defs
 	TGLayoutHints * systemLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, systemLayout);
 	HEAP(systemLayout);
-	fSystemFrame = new TGGroupFrame(this, "System", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fSystemFrame);
-	this->AddFrame(fSystemFrame, systemLayout);
+	fSystemDgfFrame = new TGGroupFrame(this, "System (DGF)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fSystemDgfFrame);
+	this->AddFrame(fSystemDgfFrame, systemLayout);
 
 	fSystemDSPCodeFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesDSPCode;
 	fSystemDSPCodeFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
-	fSystemDSPCodeEntry = new TGMrbFileEntry(fSystemFrame, "DSP Code File",
+	fSystemDSPCodeEntry = new TGMrbFileEntry(fSystemDgfFrame, "DSP Code File",
 																200, kDGFSetFilesSystemDSPCode,
 																kLEWidth,
 																kLEHeight,
@@ -143,12 +156,12 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 																&fSystemDSPCodeFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemDSPCodeEntry);
-	fSystemFrame->AddFrame(fSystemDSPCodeEntry, frameGC->LH());
+	fSystemDgfFrame->AddFrame(fSystemDSPCodeEntry, frameGC->LH());
 	fSystemDSPCodeEntry->GetEntry()->SetText(gDGFControlData->fDSPCodeFile.Data());
 
 	fSystemDSPParamsFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesDSPParams;
 	fSystemDSPParamsFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
-	fSystemDSPParamsEntry = new TGMrbFileEntry(fSystemFrame, "DSP Params Table",
+	fSystemDSPParamsEntry = new TGMrbFileEntry(fSystemDgfFrame, "DSP Params Table",
 																200, kDGFSetFilesSystemDSPParams,
 																kLEWidth,
 																kLEHeight,
@@ -156,12 +169,12 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 																&fSystemDSPParamsFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemDSPParamsEntry);
-	fSystemFrame->AddFrame(fSystemDSPParamsEntry, frameGC->LH());
+	fSystemDgfFrame->AddFrame(fSystemDSPParamsEntry, frameGC->LH());
 	fSystemDSPParamsEntry->GetEntry()->SetText(gDGFControlData->fDSPParamsFile.Data());
 
 	fSystemSystemFPGAFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesFPGACode;
 	fSystemSystemFPGAFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
-	fSystemSystemFPGAConfigEntry = new TGMrbFileEntry(fSystemFrame, "FPGA Configuration [System]",
+	fSystemSystemFPGAConfigEntry = new TGMrbFileEntry(fSystemDgfFrame, "FPGA Configuration [System]",
 																200, kDGFSetFilesSystemSystemFPGAConfig,
 																kLEWidth,
 																kLEHeight,
@@ -169,13 +182,13 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 																&fSystemSystemFPGAFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemSystemFPGAConfigEntry);
-	fSystemFrame->AddFrame(fSystemSystemFPGAConfigEntry, frameGC->LH());
+	fSystemDgfFrame->AddFrame(fSystemSystemFPGAConfigEntry, frameGC->LH());
 	fSystemSystemFPGAConfigEntry->GetEntry()->SetText(gDGFControlData->fSystemFPGAConfigFile.Data());
 
 	fSystemFippiFPGAFileInfo[TMrbDGFData::kRevD].fFileTypes = (const Char_t **) kDGFFileTypesFPGACode;
 	fSystemFippiFPGAFileInfo[TMrbDGFData::kRevD].fIniDir = StrDup(gDGFControlData->fLoadPath);
 
-	fSystemFippiFPGAConfig[TMrbDGFData::kRevD] = new TGMrbFileEntry(fSystemFrame, "FPGA Configuration [Fippi] RevD",
+	fSystemFippiFPGAConfig[TMrbDGFData::kRevD] = new TGMrbFileEntry(fSystemDgfFrame, "FPGA Configuration [Fippi] RevD",
 																200, kDGFSetFilesSystemFippiFPGAConfig,
 																kLEWidth,
 																kLEHeight,
@@ -183,13 +196,13 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 																&fSystemFippiFPGAFileInfo[TMrbDGFData::kRevD], kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemFippiFPGAConfig[TMrbDGFData::kRevD]);
-	fSystemFrame->AddFrame(fSystemFippiFPGAConfig[TMrbDGFData::kRevD], frameGC->LH());
+	fSystemDgfFrame->AddFrame(fSystemFippiFPGAConfig[TMrbDGFData::kRevD], frameGC->LH());
 	fSystemFippiFPGAConfig[TMrbDGFData::kRevD]->GetEntry()->SetText(gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data());
 
 	fSystemFippiFPGAFileInfo[TMrbDGFData::kRevE].fFileTypes = (const Char_t **) kDGFFileTypesFPGACode;
 	fSystemFippiFPGAFileInfo[TMrbDGFData::kRevE].fIniDir = StrDup(gDGFControlData->fLoadPath);
 
-	fSystemFippiFPGAConfig[TMrbDGFData::kRevE] = new TGMrbFileEntry(fSystemFrame, "FPGA Configuration [Fippi] RevE",
+	fSystemFippiFPGAConfig[TMrbDGFData::kRevE] = new TGMrbFileEntry(fSystemDgfFrame, "FPGA Configuration [Fippi] RevE",
 																200, kDGFSetFilesSystemFippiFPGAConfig,
 																kLEWidth,
 																kLEHeight,
@@ -197,8 +210,55 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 																&fSystemFippiFPGAFileInfo[TMrbDGFData::kRevE], kFDOpen,
 																frameGC, labelGC, entryGC);
 	HEAP(fSystemFippiFPGAConfig[TMrbDGFData::kRevE]);
-	fSystemFrame->AddFrame(fSystemFippiFPGAConfig[TMrbDGFData::kRevE], frameGC->LH());
+	fSystemDgfFrame->AddFrame(fSystemFippiFPGAConfig[TMrbDGFData::kRevE], frameGC->LH());
 	fSystemFippiFPGAConfig[TMrbDGFData::kRevE]->GetEntry()->SetText(gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data());
+
+	fSystemDgfSettingsPathInfo.fFileTypes = (const Char_t **) kDGFFileTypesAll;
+	fSystemDgfSettingsPathInfo.fIniDir = StrDup(gDGFControlData->fDgfSettingsPath);
+	fSystemDgfSettingsEntry = new TGMrbFileEntry(fSystemDgfFrame, "DGF Param Settings",
+																200, kDGFSetFilesSystemDgfSettings,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
+																&fSystemDgfSettingsPathInfo, kFDOpen,
+																frameGC, labelGC, entryGC);
+	HEAP(fSystemDgfSettingsEntry);
+	fSystemDgfFrame->AddFrame(fSystemDgfSettingsEntry, frameGC->LH());
+	fSystemDgfSettingsEntry->GetEntry()->SetText(gDGFControlData->fDgfSettingsPath.Data());
+
+//	cptm defs
+	fSystemCptmFrame = new TGGroupFrame(this, "System (CPTM)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fSystemCptmFrame);
+	this->AddFrame(fSystemCptmFrame, systemLayout);
+
+	fSystemCptmCodeFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesCptmCode;
+	TMrbSystem ux;
+	TString cptmLoadPath;
+	ux.GetDirName(cptmLoadPath, gDGFControlData->fCptmCodeFile);
+	fSystemCptmCodeFileInfo.fIniDir = StrDup(cptmLoadPath);
+	fSystemCptmCodeEntry = new TGMrbFileEntry(fSystemCptmFrame, "CPTM Code File",
+																200, kDGFSetFilesSystemCptmCode,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
+																&fSystemCptmCodeFileInfo, kFDOpen,
+																frameGC, labelGC, entryGC);
+	HEAP(fSystemCptmCodeEntry);
+	fSystemCptmFrame->AddFrame(fSystemCptmCodeEntry, frameGC->LH());
+	fSystemCptmCodeEntry->GetEntry()->SetText(gDGFControlData->fCptmCodeFile.Data());
+
+	fSystemCptmSettingsPathInfo.fFileTypes = (const Char_t **) kDGFFileTypesAll;
+	fSystemCptmSettingsPathInfo.fIniDir = StrDup(gDGFControlData->fCptmSettingsPath);
+	fSystemCptmSettingsEntry = new TGMrbFileEntry(fSystemCptmFrame, "CPTM Settings",
+																200, kDGFSetFilesSystemCptmSettings,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
+																&fSystemCptmSettingsPathInfo, kFDOpen,
+																frameGC, labelGC, entryGC);
+	HEAP(fSystemCptmSettingsEntry);
+	fSystemCptmFrame->AddFrame(fSystemCptmSettingsEntry, frameGC->LH());
+	fSystemCptmSettingsEntry->GetEntry()->SetText(gDGFControlData->fCptmSettingsPath.Data());
 
 //	buttons
 	TGLayoutHints * aFrameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
@@ -213,7 +273,7 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	
-	fButtonFrame = new TGMrbTextButtonList(fActionFrame, NULL, &fLofButtons, 1,
+	fButtonFrame = new TGMrbTextButtonList(fActionFrame, NULL, &fLofButtons, -1, 1,
 												kButtonWidth,
 												kButtonHeight,
 												frameGC, NULL, labelGC);
@@ -257,6 +317,9 @@ Bool_t DGFSetFilesPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Para
 							gDGFControlData->fSystemFPGAConfigFile = fSystemSystemFPGAConfigEntry->GetEntry()->GetText();
 							gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fSystemFippiFPGAConfig[TMrbDGFData::kRevD]->GetEntry()->GetText();
 							gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fSystemFippiFPGAConfig[TMrbDGFData::kRevE]->GetEntry()->GetText();
+							gDGFControlData->fDgfSettingsPath = fSystemDgfSettingsEntry->GetEntry()->GetText();
+							gDGFControlData->fCptmSettingsPath = fSystemCptmSettingsEntry->GetEntry()->GetText();
+							gDGFControlData->fCptmCodeFile = fSystemCptmCodeEntry->GetEntry()->GetText();
 							gDGFControlData->fRunDataFile = fUserRunDataEntry->GetEntry()->GetText();
 							break;
 						default:	break;

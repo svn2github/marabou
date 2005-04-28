@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFOffsetsPanel.cxx,v 1.10 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFOffsetsPanel.cxx,v 1.11 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -137,7 +137,7 @@ DGFOffsetsPanel::DGFOffsetsPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -152,14 +152,14 @@ DGFOffsetsPanel::DGFOffsetsPanel(TGCompositeFrame * TabFrame) :
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -186,7 +186,7 @@ DGFOffsetsPanel::DGFOffsetsPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fActionFrame);
 	fHFrame->AddFrame(fActionFrame, groupGC->LH());
 	
-	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, 1,
+	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fActionButtons);

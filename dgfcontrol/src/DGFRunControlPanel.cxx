@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.11 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.12 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -210,6 +210,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	fRestoreModuleSettingsPanel = NULL;
 	fCopyModuleSettingsPanel = NULL;
 	fSetFilesPanel = NULL;
+	fCptmPanel = NULL;
 
 	fSystemTab = fRunControlTab->AddTab("System");
 	fModulesTab = fRunControlTab->AddTab("Modules");
@@ -225,6 +226,7 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	fRestoreTab = fRunControlTab->AddTab("Restore");
 	fCopyTab = fRunControlTab->AddTab("Copy");
 	fFilesTab = fRunControlTab->AddTab("Files");
+	fCptmTab = fRunControlTab->AddTab("CPTM");
 
 	fRunControlTab->SetTab(kDGFRunControlTabSystem);
 	this->SendMessage(this, MK_MSG(kC_COMMAND, kCM_TAB), kDGFRunControlTabSystem, 0);
@@ -465,6 +467,14 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 	                   			if (fMiscPanel == NULL) fMiscPanel = new DGFMiscPanel(fMiscTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
+							}
+							break;
+						case kDGFRunControlTabCptm:
+							if (fCptmPanel == NULL) fCptmPanel = new DGFCptmPanel(fCptmTab);
+							if (fCptmPanel->GetNofCptmModules() == 0) {
+								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No CPTM module found", kMBIconStop);
+							} else {
+								fCptmPanel->InitializeValues();
 							}
 							break;
 

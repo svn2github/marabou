@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.12 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.13 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -152,7 +152,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels, -1, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
@@ -721,7 +721,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fMCABaselineFrame->AddFrame(fDummyLabel, frameGC->LH());
 
 //	buttons
-	fModuleButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fInstrModuleActions, 1, groupGC, buttonGC);
+	fModuleButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fInstrModuleActions, -1, 1, groupGC, buttonGC);
 	HEAP(fModuleButtonFrame);
 	this->AddFrame(fModuleButtonFrame, buttonGC->LH());
 	fModuleButtonFrame->Associate(this);

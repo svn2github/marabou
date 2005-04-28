@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditModICSRPanel.cxx,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFEditModICSRPanel.cxx,v 1.7 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -128,12 +128,12 @@ DGFEditModICSRPanel::DGFEditModICSRPanel(const TGWindow * Window, TGTextEntry * 
 	this->AddFrame(fICSRFrame, groupGC->LH());
 
 	fDSPTriggerFrame = new TGMrbRadioButtonGroup(this, "DSP trigger", &fLofDSPTriggerBits,
-																		1, groupGC, buttonGC, kVerticalFrame);
+																	-1, 1, groupGC, buttonGC, kVerticalFrame);
 	HEAP(fDSPTriggerFrame);
 	fICSRFrame->AddFrame(fDSPTriggerFrame, groupGC->LH());
 
 	fFastTriggerFrame = new TGMrbRadioButtonGroup(this, "Fast trigger", &fLofFastTriggerBits,
-																		1, groupGC, buttonGC, kVerticalFrame);
+																	-1, 1, groupGC, buttonGC, kVerticalFrame);
 	HEAP(fFastTriggerFrame);
 	fICSRFrame->AddFrame(fFastTriggerFrame, groupGC->LH());
 
@@ -147,7 +147,7 @@ DGFEditModICSRPanel::DGFEditModICSRPanel(const TGWindow * Window, TGTextEntry * 
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, 1, 
+	fButtonFrame = new TGMrbTextButtonList(this, NULL, &fLofButtons, -1, 1, 
 												DGFEditModICSRPanel::kButtonWidth,
 												DGFEditModICSRPanel::kButtonHeight,
 												frameGC, NULL, buttonGC);

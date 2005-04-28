@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.4 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -19,6 +19,7 @@
 #include "TMrbNamedX.h"
 #include "TMrbEnv.h"
 #include "TMrbLogger.h"
+#include "TMrbSystem.h"
 
 #include "DGFControlData.h"
 #include "DGFControlCommon.h"
@@ -85,8 +86,12 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	else													fStatus &= ~DGFControlData::kDGFOfflineMode;
 
 // paths and filenames
+	TString errMsg;
+	Bool_t panic = kFALSE;
+
 	env.Find(fDataPath, "DGFControl:TMrbDGF", "DataPath", gSystem->WorkingDirectory());
 	gSystem->ExpandPathName(fDataPath);
+	if (!this->CheckAccess(fDataPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg)) panic = kTRUE;
 
 	fRunDataFile = fDataPath;
 	fRunDataFile += "/";
@@ -95,6 +100,7 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 
 	env.Find(fLoadPath, "DGFControl:TMrbDGF", "LoadPath", "$MARABOU/data/xiadgf/v2.80");
 	gSystem->ExpandPathName(fLoadPath);
+	if (!this->CheckAccess(fLoadPath.Data(), kDGFAccessDirectory, errMsg)) panic = kTRUE;
 
 	fDSPCodeFile = fLoadPath;
 	fDSPCodeFile += "/";
@@ -102,18 +108,21 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	env.Find(path, "DGFControl:TMrbDGF", "DSPCode", "dsp/DGFcodeE.bin");
 	fDSPCodeFile += path;
 	gSystem->ExpandPathName(fDSPCodeFile);
+	if (!this->CheckAccess(fDSPCodeFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
 
 	fDSPParamsFile = fLoadPath;
 	fDSPParamsFile += "/";
 	env.Find(path, "DGFControl:TMrbDGF", "ParamNames", "dsp/dfgcodeE.var");
 	fDSPParamsFile += path;
 	gSystem->ExpandPathName(fDSPParamsFile);
+	if (!this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
 
 	fSystemFPGAConfigFile = fLoadPath;
 	fSystemFPGAConfigFile += "/";
 	env.Find(path, "DGFControl:TMrbDGF", "SystemFPGACode", "Firmware/dgf4c.bin");
 	fSystemFPGAConfigFile += path;
 	gSystem->ExpandPathName(fSystemFPGAConfigFile);
+	if (!this->CheckAccess(fSystemFPGAConfigFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
 
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fLoadPath;
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += "/";
@@ -121,6 +130,7 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4D.bin");
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += path;
 	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevD]);
+	if (!this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
 
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fLoadPath;
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += "/";
@@ -128,12 +138,35 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4E.bin");
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += path;
 	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevE]);
+	if (!this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+
+	env.Find(fDgfSettingsPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
+	gSystem->ExpandPathName(fDgfSettingsPath);
+	if (!this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessDirectory, errMsg)) panic = kTRUE;
+	this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessWrite, errMsg, kTRUE);
+
+	env.Find(fCptmCodeFile, "DGFControl:TMrbCPTM", "CodeFile", "$MARABOU/data/cptm/cptm.rbf");
+	gSystem->ExpandPathName(fCptmCodeFile);
+	if (!this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+
+	env.Find(path, "DGFControl", "CptmSettingsPath", "");
+	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "SettingsPath", "../cptmSettings");
+	fCptmSettingsPath = path;
+	gSystem->ExpandPathName(fCptmSettingsPath);
+	if (!this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory, errMsg)) panic = kTRUE;
+	this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessWrite, errMsg, kTRUE);
 
 	fLofChannels.SetName("DGF channels");
 	fLofChannels.AddNamedX(kDGFChannelNumbers);
 	fLofChannels.SetPatternMode();
 
 	fHistPresent = new HistPresent();
+
+	if (panic) {
+		gMrbLog->Err() << "Can't continue. Correct errors, then start over. Sorry" << endl;
+		gMrbLog->Flush(this->ClassName());
+		gSystem->Exit(1);
+	}
 
 	this->SetupModuleList();
 }
@@ -758,3 +791,57 @@ TMrbLofNamedX * DGFControlData::CopyKeyList(TMrbLofNamedX * KeyList, Int_t Clust
 	}
 	return(KeyList);
 };
+
+Bool_t DGFControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFControlData::CheckAccess
+// Purpose:        Check access to file or path
+// Arguments:      Char_t * FileOrPath    -- file or path spec
+//                 Int_t AccessMode       -- access mode: kDGFAccessXXX
+//                 TString & ErrMsg       -- resulting error message
+//                 Bool_t WarningOnly     -- kTRUE -> warning
+// Results:        kTRUE/kFALSE  
+// Exceptions:     
+// Description:    Checks if file or path exists and is readable/writable
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbSystem ux;
+	ErrMsg = "";
+	Bool_t ok = kTRUE;
+
+	if (AccessMode & kDGFAccessRegular && !ux.IsRegular(FileOrPath)) {
+		ErrMsg = "Not a regular file - ";
+		ErrMsg += FileOrPath;
+		if (WarningOnly) gMrbLog->Wrn() << ErrMsg << endl; else gMrbLog->Err() << ErrMsg << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccess");
+		ok = kFALSE;
+	} else if (AccessMode & kDGFAccessDirectory && !ux.IsDirectory(FileOrPath)) {
+		ErrMsg = "Not a directory - ";
+		ErrMsg += FileOrPath;
+		if (WarningOnly) gMrbLog->Wrn() << ErrMsg << endl; else gMrbLog->Err() << ErrMsg << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccess");
+		ok = kFALSE;
+	}
+
+	if (AccessMode & kDGFAccessRead && !ux.HasReadPermission(FileOrPath)) {
+		if (ErrMsg.Length() > 0) ErrMsg += "\n";
+		ErrMsg = "Not readable - ";
+		ErrMsg += FileOrPath;
+		if (WarningOnly) gMrbLog->Wrn() << ErrMsg << endl; else gMrbLog->Err() << ErrMsg << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccess");
+		ok = kFALSE;
+	}
+	if (AccessMode & kDGFAccessWrite && !ux.HasWritePermission(FileOrPath)) {
+		if (ErrMsg.Length() > 0) ErrMsg += "\n";
+		ErrMsg = "Not writable - ";
+		ErrMsg += FileOrPath;
+		if (WarningOnly) gMrbLog->Wrn() << ErrMsg << endl; else gMrbLog->Err() << ErrMsg << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckAccess");
+		ok = kFALSE;
+	}
+
+	return(ok);
+}
+

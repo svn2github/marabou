@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.5 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -196,7 +196,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, -1, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
@@ -260,7 +260,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * rbLayout = new TGLayoutHints(kLHintsRight, 1, 1, 1, 1);
 	rbuttonGC->SetLH(rbLayout);
 	HEAP(rbLayout);
-	fFitTraceYesNo = new TGMrbRadioButtonList(fFitFrame,  "Fit trace", &fFitTraceButtons, 1, 
+	fFitTraceYesNo = new TGMrbRadioButtonList(fFitFrame,  "Fit trace", &fFitTraceButtons, -1, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fFitTraceYesNo);
@@ -395,7 +395,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fDispTraceNoEntry->AddToFocusList(&fFocusList);
 	fDispTraceNoEntry->Associate(this);
 
-	fDispStatBox = new TGMrbRadioButtonList(fDisplayFrame,  "Stat box", &fDispStatBoxButtons, 1, 
+	fDispStatBox = new TGMrbRadioButtonList(fDisplayFrame,  "Stat box", &fDispStatBoxButtons, -1, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fDispStatBox);
@@ -442,7 +442,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauActions, 1, groupGC, buttonGC);
+	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauActions, -1, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	fButtonFrame->Associate(this);

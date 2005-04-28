@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.6 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -158,7 +158,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), 1, 
+							gDGFControlData->CopyKeyList(&fLofDGFModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -173,14 +173,14 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -195,7 +195,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fHFrame);
 	this->AddFrame(fHFrame, frameGC->LH());
 
-	fSelectChannel = new TGMrbCheckButtonGroup(fHFrame,  "Channel(s)", &fLofChannels, 1,
+	fSelectChannel = new TGMrbCheckButtonGroup(fHFrame,  "Channel(s)", &fLofChannels, -1, 1,
 												groupGC, buttonGC, lofSpecialButtons);
 	HEAP(fSelectChannel);
  	fSelectChannel->SetState(kDGFChannelMask, kButtonDown);
@@ -280,7 +280,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry->AddToFocusList(&fFocusList);
 	fRunTimeEntry->Associate(this);
 
-	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fTauFitTimeScaleButtons, 1, 
+	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fTauFitTimeScaleButtons, -1, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fTimeScale);
@@ -291,7 +291,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
 	buttonGC->SetLH(btnLayout);
 	HEAP(btnLayout);
-	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauFitActions, 1, groupGC, buttonGC);
+	fButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fTauFitActions, -1, 1, groupGC, buttonGC);
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	fButtonFrame->Associate(this);

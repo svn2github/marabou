@@ -8,7 +8,7 @@
 // Class:          DGFSetFilesPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFSetFilesPanel.h,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFSetFilesPanel.h,v 1.5 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -51,6 +51,9 @@ class DGFSetFilesPanel : public TGCompositeFrame {
 									kDGFSetFilesSystemDSPParams,
 									kDGFSetFilesSystemSystemFPGAConfig,
 									kDGFSetFilesSystemFippiFPGAConfig,
+									kDGFSetFilesSystemDgfSettings,
+									kDGFSetFilesSystemCptmCode,
+									kDGFSetFilesSystemCptmSettings,
 									kDGFSetFilesApply,
 								};
 
@@ -64,18 +67,27 @@ class DGFSetFilesPanel : public TGCompositeFrame {
 		TList fHeap;									//! list of objects created on heap
 		TGGroupFrame * fUserFrame; 						// user
 		TGMrbLabelEntry * fUserRunDataEntry;			//		run data file
-		TGGroupFrame * fSystemFrame; 					// system
+		TGGroupFrame * fSystemDgfFrame; 				// system (dgf)
 		TGMrbFileEntry * fSystemDSPCodeEntry;			//		DSP code
 		TGMrbFileEntry * fSystemDSPParamsEntry; 		//		params
 		TGMrbFileEntry * fSystemSystemFPGAConfigEntry;	//		FPGA config (system)
 		TGMrbFileEntry * fSystemFippiFPGAConfig[TMrbDGFData::kNofRevs];	//		... (fippi, rev D, E)
+		TGMrbFileEntry * fSystemDgfSettingsEntry;		//		dgf settings
+		TGGroupFrame * fSystemCptmFrame; 				// system (cptm)
+		TGMrbFileEntry * fSystemCptmCodeEntry;			//		C_PTM module
+		TGMrbFileEntry * fSystemCptmSettingsEntry;		//		cptm settings
+
 		TGGroupFrame * fActionFrame;
 		TGMrbTextButtonList * fButtonFrame; 			// buttons: apply/close
 
+														// file info
 		TGFileInfo fSystemDSPCodeFileInfo;				//		DSP code
 		TGFileInfo fSystemDSPParamsFileInfo; 			//		params
 		TGFileInfo fSystemSystemFPGAFileInfo;			//		FPGA config (system)
 		TGFileInfo fSystemFippiFPGAFileInfo[TMrbDGFData::kNofRevs];	//		... (fippi, revD, revE)
+		TGFileInfo fSystemDgfSettingsPathInfo;			//		dgf settings
+		TGFileInfo fSystemCptmCodeFileInfo;				//		CPTM code
+		TGFileInfo fSystemCptmSettingsPathInfo;			//		cptm settings
 
 		TMrbLofNamedX fLofButtons; 
 		TGMrbFocusList fFocusList;

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.10 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.11 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -143,7 +143,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -158,14 +158,14 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -187,7 +187,7 @@ DGFSaveModuleSettingsPanel::DGFSaveModuleSettingsPanel(TGCompositeFrame * TabFra
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	
-	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, 1,
+	fActionButtons = new TGMrbTextButtonList(fActionFrame, NULL, &fActions, -1, 1,
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fActionButtons);
@@ -289,13 +289,19 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	Bool_t verbose;
-	TString sPath;
 	UInt_t modIdx;
 	Int_t cl, modNo;
 			
 	fileInfoSave.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
-	env.Find(sPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
-	fileInfoSave.fIniDir = StrDup(sPath);
+	if (!gDGFControlData->CheckAccess(gDGFControlData->fDgfSettingsPath.Data(), (Int_t) DGFControlData::kDGFAccessWrite, errMsg)) {
+		fileInfoSave.fIniDir = StrDup(gSystem->WorkingDirectory());
+		errMsg += "\nFalling back to \"";
+		errMsg += gSystem->WorkingDirectory();
+		errMsg += "\"";
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", errMsg.Data(), kMBIconExclamation);
+	} else {
+		fileInfoSave.fIniDir = StrDup(gDGFControlData->fDgfSettingsPath);
+	}
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fileInfoSave);
 	if (fileInfoSave.fFilename == NULL || *fileInfoSave.fFilename == '\0') return(kFALSE);

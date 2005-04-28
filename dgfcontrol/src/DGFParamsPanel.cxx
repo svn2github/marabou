@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.11 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.12 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -140,7 +140,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 
 	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 		fCluster[cl] = new TGMrbCheckButtonList(fModules,  NULL,
-							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), 1, 
+							gDGFControlData->CopyKeyList(&fLofModuleKeys[cl], cl, 1, kTRUE), -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC, lofSpecialButtons);
 		HEAP(fCluster[cl]);
@@ -155,14 +155,14 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 	fModules->AddFrame(fGroupFrame, frameGC->LH());
 	
 	for (Int_t i = 0; i < kNofModulesPerCluster; i++) {
-		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], 1, 
+		fGroupSelect[i] = new TGMrbPictureButtonList(fGroupFrame,  NULL, &gSelect[i], -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 		HEAP(fGroupSelect[i]);
 		fGroupFrame->AddFrame(fGroupSelect[i], frameGC->LH());
 		fGroupSelect[i]->Associate(this);
 	}
-	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, 1, 
+	fAllSelect = new TGMrbPictureButtonList(fGroupFrame,  NULL, &allSelect, -1, 1, 
 							kTabWidth, kLEHeight,
 							frameGC, labelGC, buttonGC);
 	HEAP(fAllSelect);
@@ -212,7 +212,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 		c++;
 		bit <<= 1;
 	}
-	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials, 13, 
+	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials, -1, 13, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fAlpha);
@@ -271,7 +271,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * aButtonLayout = new TGLayoutHints(kLHintsCenterX | kLHintsExpandX, 5, 1, 10, 1);
 	labelGC->SetLH(aButtonLayout);
 	HEAP(aButtonLayout);
-	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fActions, 1, groupGC, labelGC);
+	fActionFrame = new TGMrbTextButtonGroup(this, "Actions", &fActions, -1, 1, groupGC, labelGC);
 	HEAP(fActionFrame);
 	this->AddFrame(fActionFrame, groupGC->LH());
 	fActionFrame->JustifyButton(kTextCenterX);

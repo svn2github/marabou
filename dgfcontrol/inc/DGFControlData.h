@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.7 2005-04-28 10:27:14 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -57,6 +57,7 @@ class DGFControlData : public TNamed {
 	friend class DGFSaveModuleSettingsPanel;
 	friend class DGFMiscPanel;
 	friend class DGFModule;
+	friend class DGFCptmPanel;
 
 	public:
 		// global status bits
@@ -70,6 +71,12 @@ class DGFControlData : public TNamed {
 								kDGFUserPSA 			= BIT(7)
 							};
 		
+		enum EDGFAccessBit	{	kDGFAccessDirectory 	= BIT(0),
+								kDGFAccessRegular	 	= BIT(1),
+								kDGFAccessRead	 		= BIT(2),
+								kDGFAccessWrite 		= BIT(3)
+							};
+
 	public:
 		DGFControlData();				// default ctor
 
@@ -143,6 +150,8 @@ class DGFControlData : public TNamed {
 		Int_t GetResource(Int_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource, Int_t Base = 10);
 		Bool_t GetResource(Bool_t & Result, const Char_t * Prefix, Int_t Serial, const Char_t * Name, const Char_t * Resource);
 	
+		Bool_t CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly = kFALSE);
+
 	protected:
 		TList fHeap;								//!
 
@@ -172,15 +181,18 @@ class DGFControlData : public TNamed {
 		Bool_t fIndivSwitchBusTerm;					// kTRUE if switchbus should be terminated individually
 		Bool_t fUserPSA;							// kTRUE if user PSA code should be used
 
-		TString fLoadPath;							// where to load DSP/FPGA code from
+		TString fLoadPath;						// where to load DSP/FPGA code from
 		TString fDSPCodeFile;						// ... DSP code
 		TString fDSPParamsFile;						// ... param table
 		TString fSystemFPGAConfigFile;				// ... FPGA config (system)
 		TString fFippiFPGAConfigFile[TMrbDGFData::kNofRevs];		// ...             (fippi, rev D,E)
+		TString fCptmCodeFile;						// where to load CPTM code from
 
 		TString fDataPath;							// where to read user's setup files from
-		TString fSettingsFile; 						// ... param settings
 		TString fRunDataFile;						// ... run data
+
+		TString fDgfSettingsPath; 					// param settings (dgf)
+		TString fCptmSettingsPath; 					// ... (cptm)
 
 		HistPresent * fHistPresent;					//! the famous histogram presenter
 		
