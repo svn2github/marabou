@@ -12,6 +12,8 @@
 %%BeginOfCode%%
 /* definitions for C_PTM / Clock & Programmable Trigger Module */
 /*		inline functions */
+#define MV_PER_MULT 	35		/* millivolts per multiplicity step */
+#define DAC_NO_MULT 	1		/* dac used to for multiplicity */
 #define CPTM_READ_GE_DELAY(cptm)	CIO_READ_R2B(cptm, A(0), F(0))
 #define CPTM_WRITE_GE_DELAY(cptm, data)	CIO_WRITE_R2B(cptm, A(0), F(16), data)
 #define CPTM_READ_GE_WIDTH(cptm)	CIO_READ_R2B(cptm, A(1), F(0))

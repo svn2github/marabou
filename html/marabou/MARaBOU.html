@@ -75,6 +75,11 @@ and C.Broude</H3></CENTER>
                 <A HREF="TMrbSubevent_10_14.html">TMrbSubevent_10_14</A>:
                 same as [10,11]; data will be stored in a <a href="TUsrHitBuffer.html">TUsrHitBuffer</a> together with a time stamp
                 <LI>
+                <A HREF="TMrbSubevent_10_15.html">TMrbSubevent_10_15</A>:
+                stores raw data in an intermediate buffer. User has to provide his own method
+				TUsrSevtXXX::DecodeBuffer()
+				(via <A HREF="TMrbConfig.html#TMrbConfig:IncludeUserCode">TMrbConfig::IncludeUserCode()</A>) to transfer data to parameters.
+                <LI>
                 <A HREF="TMrbSubevent_DGF_1.html">TMrbSubevent_DGF_1</A>: 
                subevent [10,21], handles data from a XIA DGF-4C module
                 <LI>
@@ -544,6 +549,6 @@ and C.Broude</H3></CENTER>
 </UL>
 <P>
 (<A HREF="mailto:MARaBOU@Physik.Uni-Muenchen.DE"><I>MARaBOU</I></A><I>, 
-Last Update 11-Apr-2005, <A HREF="mailto:Rudi.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</A>) </I></P>
+Last Update 14-Apr-2005, <A HREF="mailto:Rudi.Lutter@Physik.Uni-Muenchen.DE">R. Lutter</A>) </I></P>
 </BODY>
 </HTML>
