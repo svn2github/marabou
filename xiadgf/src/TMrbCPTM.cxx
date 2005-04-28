@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.7 2005-04-28 12:56:09 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.8 2005-04-28 13:11:27 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -61,6 +61,25 @@ void TMrbCPTMEvent::Reset() {
 	fCounterT1 = 0;
 	fCounterT2 = 0;
 	fPattern = 0;
+}
+
+void TMrbCPTMEvent::SetTimeStamp(Int_t LowWord, Int_t MiddleWord, Int_t HighWord) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTMEvent::SetTimeStamp
+// Purpose:        Set time stamp
+// Arguments:      Int_t LowWord     -- bits 0..15
+//                 Int_t MiddleWord  -- bits 16..31
+//                 Int_t HighWord    -- bits 32..47
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Converts 3 16 bit items to a 48 bit time stamp
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fTimeStamp = HighWord;
+	fTimeStamp <<= 32;
+	fTimeStamp |= (MiddleWord << 16) | LowWord;
 }
 
 Long64_t TMrbCPTMEvent::GetTimeStampAdjusted() {

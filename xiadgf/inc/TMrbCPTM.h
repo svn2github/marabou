@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.7 2005-04-28 12:56:09 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.8 2005-04-28 13:11:27 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -41,9 +41,7 @@ class TMrbCPTMEvent : public TObject {
 		inline Int_t GetTimeAux() { return(fTimeAux); };
 		Long64_t GetTimeStampAdjusted();
 		inline void SetTimeStamp(Long64_t * TsAddr) { fTimeStamp = *TsAddr; };
-		inline void SetTimeStamp(Int_t LowWord, Int_t MiddleWord, Int_t HighWord) {
-			fTimeStamp = (HighWord << 32) | (MiddleWord << 16) | LowWord;
-		};
+		void SetTimeStamp(Int_t LowWord, Int_t MiddleWord, Int_t HighWord);
 		inline void SetTimeAux(Int_t TimeAux) { fTimeAux = TimeAux; };
 
 		inline UInt_t GetCounterT1() { return(fCounterT1); };
