@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.5 2005-04-18 14:20:28 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.6 2005-04-28 10:28:11 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,9 @@ class TMrbCPTMEvent : public TObject {
 class TMrbCPTM : public TNamed {
 
 	public:
-		enum	{	kMrbCptmMaxCodeSize =	128 * 1024	};
+		enum	{	kMrbCptmMaxCodeSize 		=	128 * 1024	};
+		enum	{	kMrbCptmMilliVoltsPerMult	=	35	};
+		enum	{	kMrbCptmDacNoMult			=	1	};
 
 	public:
 		TMrbCPTM(const Char_t * ModuleName = "CPTM") : TNamed(ModuleName, "Clock & Programmable Trigger Module") {};	// default ctor
@@ -117,13 +119,16 @@ class TMrbCPTM : public TNamed {
 		Int_t GetDac(Int_t DacNo);
 		inline Bool_t ClearDac(Int_t DacNo) { return(this->SetDac(DacNo, 0)); };
 
+		Bool_t SetMultiplicity(Int_t Mult);
+		Int_t GetMultiplicity();
+
 		Bool_t ResetRead();
 		Bool_t ResetWrite();
 		Bool_t ResetMemory();
 		Bool_t ResetDacs();
 		Bool_t Reset();
 
-		Bool_t EnableSynch();
+		Bool_t EnableSynch(Bool_t Reset = kFALSE);
 
 		Bool_t DownloadAlteraCode(const Char_t * CodeFile = "cptm.rbf");
 

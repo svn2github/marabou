@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.12 2005-04-21 14:09:26 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.13 2005-04-28 10:27:59 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -392,6 +392,8 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
 		const Char_t * MarkSubstitutions(TString & Buffer);
+		const Char_t * PrepareForHtmlOutput(TString & Buffer);
+		const Char_t * PrepareForCodeOutput(TString & Buffer);
 
 	protected:
 		TidyNode fHandle; 					// tidy node handle

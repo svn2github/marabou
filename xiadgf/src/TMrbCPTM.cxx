@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.5 2005-04-18 14:20:28 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.6 2005-04-28 10:28:11 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -780,12 +780,12 @@ Int_t TMrbCPTM::GetTimeWindowAux() {
 	return(window);
 }
 
-Bool_t TMrbCPTM::EnableSynch() {
+Bool_t TMrbCPTM::EnableSynch(Bool_t Reset) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCPTM::EnableSynch
 // Purpose:        Enable synch
-// Arguments:      --
+// Arguments:      Bool_t Reset  -- kTRUE -> reset internal clock
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Enables the busy-synch loop.
@@ -793,8 +793,9 @@ Bool_t TMrbCPTM::EnableSynch() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->CheckConnect("EnableSynch")) return(kFALSE);
-	if (!fCamac.ExecCnaf(fCrate, fStation, A(4), F(8), kTRUE)) { 		// exec cnaf, 16 bit
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A4.F8 failed" << endl;
+	Int_t enaSynch = 	Reset ? A(5) : A(4);
+	if (!fCamac.ExecCnaf(fCrate, fStation, enaSynch, F(8), kTRUE)) { 		// exec cnaf, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A4/5.F8 failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "EnableSynch");
 		return(kFALSE);
 	}
@@ -816,7 +817,7 @@ Bool_t TMrbCPTM::SetDac(Int_t DacNo, Int_t DacValue) {
 
 	if (!this->CheckConnect("SetDac")) return(kFALSE);
 	if (!this->CheckValue(DacNo, 3, "dacNo", "SetDac")) return(kFALSE);
-	if (!this->CheckValue(DacValue, 0xFF, "dacVal", "SetDac")) return(kFALSE);
+	if (!this->CheckValue(DacValue, 0xFFF, "dacVal", "SetDac")) return(kFALSE);
 
 	TArrayI dac(4);
 	if (!this->ReadAllDacs(dac)) return(kFALSE);
@@ -842,6 +843,49 @@ Int_t TMrbCPTM::GetDac(Int_t DacNo) {
 	TArrayI dac(4);
 	if (!this->ReadAllDacs(dac)) return(-1);
 	return(dac[DacNo]);
+}
+
+Bool_t TMrbCPTM::SetMultiplicity(Int_t Mult) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::SetMultiplicity
+// Purpose:        Set multiplicity value
+// Arguments:      Int_t Mult   -- multiplicity to be set
+// Results:        kFALSE/kTRUE
+// Exceptions:
+// Description:    Sets mult value in steps of 35mV
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("SetMultiplicity")) return(kFALSE);
+	if (!this->CheckValue(Mult, 4095/kMrbCptmMilliVoltsPerMult, "multVal", "SetMultiplicity")) return(kFALSE);
+	Int_t mult = kMrbCptmMilliVoltsPerMult * Mult - 10;
+	if (mult < 0) mult = 0;
+
+	TArrayI dac(4);
+	if (!this->ReadAllDacs(dac)) return(kFALSE);
+	dac[kMrbCptmDacNoMult] = mult;
+	return(this->WriteAllDacs(dac));
+}
+
+Int_t TMrbCPTM::GetMultiplicity() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::GetMultiplicity
+// Purpose:        Get multiplicity value
+// Arguments:      --
+// Results:        Int_t Mult   -- multiplicity
+// Exceptions:
+// Description:    Reads dac value and calculates multiplicity.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("GetMultiplicity")) return(kFALSE);
+
+	TArrayI dac(4);
+	if (!this->ReadAllDacs(dac)) return(kFALSE);
+	Int_t mult = dac[kMrbCptmDacNoMult];
+	return((mult + kMrbCptmMilliVoltsPerMult - 1)/kMrbCptmMilliVoltsPerMult);
 }
 
 Int_t TMrbCPTM::GetReadAddr() {
@@ -1202,6 +1246,8 @@ void TMrbCPTM::Print(ostream & Out) {
 	Out << "                dac1 : " << this->GetDac(1) << endl;
 	Out << "                dac2 : " << this->GetDac(2) << endl;
 	Out << "                dac3 : " << this->GetDac(3) << endl;
+	Out << "Multiplicity   (dac" << kMrbCptmDacNoMult << "): " << this->GetMultiplicity()
+		<< " (1 mult = " << kMrbCptmMilliVoltsPerMult << "mV)" << endl;
 	TString mStr;
 	Out << "Mask register        : " << this->ConvertMask(mStr, this->GetMask()) << endl;
 	Out << "SRAM pointers (read) : " << this->GetReadAddr() << endl;

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.16 2005-04-21 14:43:02 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.17 2005-04-28 10:27:59 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1284,17 +1284,11 @@ Bool_t TMrbTidyNode::OutputHtml(ostream & Out) {
 		TString text;
 		this->GetText(text);
 		if (fParent->IsMnode()) {
-			text = text.Strip(TString::kBoth);
-			if (text.IsNull()) {
+			TString t = text.Strip(TString::kBoth);
+			if (t.IsNull()) {
 				Out << "<br>" << endl;
 			} else {
-				TString code = "code";
-				Int_t level = fTreeLevel - 5;
-				if (level > 0) {
-					code += "-level";
-					code += level;
-				}
-				Out << "<pre class=\"" << code << "\">" << this->MarkSubstitutions(text) << "</pre><br>" << endl;
+				Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(text) << "</pre><br>" << endl;
 			}
 		} else {
 			Out << text << endl;
@@ -1344,12 +1338,12 @@ Bool_t TMrbTidyNode::OutputHtmlForMnodes(ostream & Out) {
 Bool_t TMrbTidyNode::OutputHtmlForMB(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTidyNode::OutputHtmlForMH
-// Purpose:        Special html output for node <mh>
+// Name:           TMrbTidyNode::OutputHtmlForMB
+// Purpose:        Special html output for node <mb>
 // Arguments:      ostream & Out    -- output stream
 // Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
 // Exceptions:
-// Description:    Outputs html data for <mh>...</mh> [header]
+// Description:    Outputs html data for <mb>...</mb> [body]
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1372,7 +1366,7 @@ Bool_t TMrbTidyNode::OutputHtmlForMH(ostream & Out) {
 	this->ProcessMnodeHeader(Out, "header1", 0);
 	TString hdata;
 	if (this->CollectTextFromChilds(hdata)) {
-		Out << "<pre class=\"code\">" << this->MarkSubstitutions(hdata) << "</pre><br>" << endl;
+		Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(hdata) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
 	}
@@ -1395,13 +1389,12 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 	this->ProcessMnodeHeader(Out, "header2", level);
 	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
 	if (aString) {
-		TString code = "code";
-		if (level > 0) {
-			code += "-level";
-			code += level;
-		}
+		TMrbTidyAttr * aIndent = (TMrbTidyAttr *) fLofAttr.FindByName("indent");
+		Int_t aInd = aIndent ? atoi(aIndent->GetValue()) : 1;
 		TString buf = aString->GetValue();
-		Out << "<pre class=\"" << code << "\">" << this->MarkSubstitutions(buf) << "</pre><br>" << endl;
+		buf = buf.Strip(TString::kBoth);
+		for (;aInd--;) buf.Prepend("   ");
+		Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(buf) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
 	}
@@ -1458,9 +1451,10 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 	TMrbTidyAttr * aCmt = (TMrbTidyAttr *) fLofAttr.FindByName("comment");
 	if (aCmt) {
-		TString cstr = aCmt->GetValue();
-		cstr = cstr.Strip(TString::kBoth);
-		Out << "<tr><td>Comment:</td><td colspan=\"2\">" << cstr << "</td></tr>" << endl;
+		TString cmt = aCmt->GetValue();
+		if (cmt.BeginsWith("//")) cmt = cmt(2, 1000);
+		cmt = cmt.Strip(TString::kBoth);
+		Out << "<tr><td>Comment:</td><td colspan=\"2\">" << cmt << "</td></tr>" << endl;
 	}
 	TMrbTidyAttr * aDescr = (TMrbTidyAttr *) fLofAttr.FindByName("descr");
 	if (aDescr) {
@@ -1977,7 +1971,10 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 	Bool_t ok = kFALSE;
 
 	TMrbTidyAttr * aCmt = (TMrbTidyAttr *) fLofAttr.FindByName("comment");
-	if (aCmt) Out << "// " << aCmt->GetValue() << endl;
+	if (aCmt) {
+		TString cmt = aCmt->GetValue();
+		if (cmt.BeginsWith("//")) Out << cmt << endl;
+	}
 
 	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
 	if (aString) {
@@ -1997,18 +1994,18 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 					param += "&1U#";
 					TString subst = ((TObjString *) nx->GetAssignedObject())->GetString();
 					subst(0,1).ToUpper();
-					buf.ReplaceAll(param.Data(), subst.Data());
+					buf.ReplaceAll(param, subst);
 					param = nx->GetName();				// (2) #...&UC# -> upper case
 					param.Prepend("#");
 					param += "&UC#";
 					subst = ((TObjString *) nx->GetAssignedObject())->GetString();
 					subst.ToUpper();
-					buf.ReplaceAll(param.Data(), subst.Data());
+					buf.ReplaceAll(param, subst);
 					param = nx->GetName();				// (3) #...# -> normal substitution
 					param.Prepend("#");
 					param += "#";
 					subst = ((TObjString *) nx->GetAssignedObject())->GetString();
-					buf.ReplaceAll(param.Data(), subst.Data());
+					buf.ReplaceAll(param, subst);
 				} else {
 					gMrbLog->Err()	<< "Node \"" << this->GetName() << "\" (level "
 									<< this->GetTreeLevel() << "): param \"" << nx->GetName() << "\" used but not substituted" << endl;
@@ -2017,10 +2014,7 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 			}
 			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 		}
-		buf.ReplaceAll("&lt;", "<");
-		buf.ReplaceAll("&gt;", ">");
-		buf.ReplaceAll("&amp;", "&");
-		Out << buf << endl;
+		Out << this->PrepareForCodeOutput(buf) << endl;
 	}
 
 	TMrbTidyNode * node = this->GetFirst();
@@ -2035,6 +2029,41 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 	return(ok);
 }
 
+const Char_t * TMrbTidyNode::PrepareForCodeOutput(TString & Buffer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::PrepareForCodeOutput
+// Purpose:        Prepare buffer to be output as plain code
+// Arguments:      TString & Buffer          -- buffer containing text
+// Results:        Char_t * BufPtr           -- points to 'Buffer'
+// Exceptions:
+// Description:    Do some finish before starting real code output.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Buffer.ReplaceAll("&lt;", "<");
+	Buffer.ReplaceAll("&gt;", ">");
+	Buffer.ReplaceAll("&amp;", "&");
+	return(Buffer.Data());
+}
+
+const Char_t * TMrbTidyNode::PrepareForHtmlOutput(TString & Buffer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::PrepareForHtmlOutput
+// Purpose:        Prepare buffer to be output as html
+// Arguments:      TString & Buffer          -- buffer containing text
+//                 Int_t Indent              -- indentation level
+// Results:        Char_t * BufPtr           -- points to 'Buffer'
+// Exceptions:
+// Description:    Do some finish before starting html output.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Buffer.ReplaceAll("\t", "   ");
+	return(this->MarkSubstitutions(Buffer));
+}
+
 const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -2047,9 +2076,6 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Buffer.ReplaceAll("&lt;", "<");
-	Buffer.ReplaceAll("&gt;", ">");
-	Buffer.ReplaceAll("&amp;", "&");
 	TMrbNamedX * nx = (TMrbNamedX *) fLofSubstitutions.First();
 	while (nx) {
 		if (nx->GetIndex() & kMrbTidySubstInUse) {
@@ -2060,7 +2086,11 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 			subst(0,1).ToUpper();
 			subst.Prepend("<em>"); 
 			subst += "</em>";
-			Buffer.ReplaceAll(param.Data(), subst.Data());
+			Buffer.ReplaceAll(param, subst);
+			param = nx->GetName();
+			param.Prepend("#");
+			param += "&amp;1U#";
+			Buffer.ReplaceAll(param, subst);
 			param = nx->GetName();				// (2) #...&UC# -> upper case
 			param.Prepend("#");
 			param += "&UC#";
@@ -2068,14 +2098,18 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 			subst.ToUpper();
 			subst.Prepend("<em>"); 
 			subst += "</em>";
-			Buffer.ReplaceAll(param.Data(), subst.Data());
+			Buffer.ReplaceAll(param, subst);
+			param = nx->GetName();
+			param.Prepend("#");
+			param += "&amp;UC#";
+			Buffer.ReplaceAll(param, subst);
 			param = nx->GetName();			// (3) #...# -> normal substitution
 			param.Prepend("#");
 			param += "#";
 			subst = nx->GetName();
 			subst.Prepend("<em>"); 
 			subst += "</em>";
-			Buffer.ReplaceAll(param.Data(), subst.Data());
+			Buffer.ReplaceAll(param, subst);
 		}
 		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 	}
