@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.15 2005-04-28 10:52:52 rudi Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.16 2005-04-28 12:56:09 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -300,7 +300,16 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	Int_t cl, modNo;
 				
 	fileInfoRestore.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
-	fileInfoRestore.fIniDir = StrDup(gDGFControlData->fDgfSettingsPath);
+	if (!gDGFControlData->CheckAccess(gDGFControlData->fDgfSettingsPath.Data(),
+						(Int_t) DGFControlData::kDGFAccessDirectory | DGFControlData::kDGFAccessRead, errMsg)) {
+		fileInfoRestore.fIniDir = StrDup(gSystem->WorkingDirectory());
+		errMsg += "\nFalling back to \"";
+		errMsg += gSystem->WorkingDirectory();
+		errMsg += "\"";
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", errMsg.Data(), kMBIconExclamation);
+	} else {
+		fileInfoRestore.fIniDir = StrDup(gDGFControlData->fDgfSettingsPath);
+	}
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fileInfoRestore);
 	if (fileInfoRestore.fFilename == NULL || *fileInfoRestore.fFilename == '\0') return(kFALSE);

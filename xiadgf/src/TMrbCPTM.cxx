@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.6 2005-04-28 10:28:11 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.7 2005-04-28 12:56:09 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1010,7 +1010,8 @@ Bool_t TMrbCPTM::SaveSettings(const Char_t * SaveFile) {
 		if (val) sf << ":" << (Double_t) (val * 25. / 1000.) << ":us"; else sf << "::";
 		sf << endl;
 		val = this->GetMask();
-		sf << "Mask:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
+		TString mStr;
+		sf << "Mask:" << val << ":0x" << setbase(16) << val << setbase(10) << ":" << this->ConvertMask(mStr, val, kTRUE) << ":" << endl;
 		val = this->GetDac(0);
 		sf << "Dac0:" << val << ":0x" << setbase(16) << val << setbase(10) << "::" << endl;
 		val = this->GetDac(1);
@@ -1254,13 +1255,14 @@ void TMrbCPTM::Print(ostream & Out) {
 	Out << "             (write) : " << this->GetWriteAddr() << endl << endl;
 }
 
-const Char_t * TMrbCPTM::ConvertMask(TString & Mask, Int_t MaskValue) {
+const Char_t * TMrbCPTM::ConvertMask(TString & Mask, Int_t MaskValue, Bool_t TextOnly) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCPTM::ConvertMask
 // Purpose:        Decode mask bits
 // Arguments:      TString & Mask    -- string to store mask bits in ascii
 //                 Int_t MaskValue   -- mask bits
+//                 Bool_t TextOnly   -- output ascii text only
 // Results:        --
 // Exceptions:
 // Description:    Converts mask from number to ascii.
@@ -1268,15 +1270,16 @@ const Char_t * TMrbCPTM::ConvertMask(TString & Mask, Int_t MaskValue) {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbString mstr;
-	mstr.FromInteger(MaskValue, 0, ' ', 16);
+	if (!TextOnly) mstr.FromInteger(MaskValue, 0, ' ', 16);
 
 	TMrbLofNamedX maskBits;
 	maskBits.AddNamedX(kMrbCptmMaskBits);
 
 	Bool_t first = kTRUE;
+	TString eq = TextOnly ? "" : " = ";
 	for (Int_t i = 0; i <= 7; i++) {
 		if (MaskValue & 1) {
-			mstr += first ? " = " : " + ";
+			mstr += first ? eq : " + ";
 			first = kFALSE;
 			mstr += ((TObjString *) maskBits[i])->GetString();
 		}

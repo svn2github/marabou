@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.6 2005-04-28 10:28:11 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.7 2005-04-28 12:56:09 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -166,7 +166,7 @@ class TMrbCPTM : public TNamed {
 	protected:
 		Bool_t ReadAllDacs(TArrayI & DacBits);
 		Bool_t WriteAllDacs(TArrayI & DacBits);
-		const Char_t * ConvertMask(TString & Mask, Int_t MaskValue);
+		const Char_t * ConvertMask(TString & Mask, Int_t MaskValue, Bool_t TextOnly = kFALSE);
 
 	protected:
 		TString fCamacHost; 	// host name

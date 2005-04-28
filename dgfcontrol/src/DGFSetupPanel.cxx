@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.26 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.27 2005-04-28 12:56:09 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -668,18 +668,23 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 					new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You didn't select a download option", kMBIconStop);
 					return(kFALSE);
 				}
+				TString errMsg;
 				ofstream dlf(".DgfDownload.rc", ios::out);
 				dlf << "DownloadOptions:	" << dlOpt << endl;
 				TString relPath;
 				TMrbSystem ux;
 				dlf << "LoadPath: 	" << gDGFControlData->fLoadPath << endl;
 				relPath = gDGFControlData->fSystemFPGAConfigFile;
+				if (!gDGFControlData->CheckAccess(relPath.Data(), DGFControlData::kDGFAccessRead, errMsg)) nerr++;
 				dlf << "SystemFPGACode: 	" << ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
 				relPath = gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevD];
+				if (!gDGFControlData->CheckAccess(relPath.Data(), DGFControlData::kDGFAccessRead, errMsg)) nerr++;
 				dlf << "FippiFPGACode.RevD: 	" <<  ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
 				relPath = gDGFControlData->fFippiFPGAConfigFile[TMrbDGFData::kRevE];
+				if (!gDGFControlData->CheckAccess(relPath.Data(), DGFControlData::kDGFAccessRead, errMsg)) nerr++;
 				dlf << "FippiFPGACode.RevE: 	" << ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
 				relPath = gDGFControlData->fDSPCodeFile;
+				if (!gDGFControlData->CheckAccess(relPath.Data(), DGFControlData::kDGFAccessRead, errMsg)) nerr++;
 				dlf << "DspCode:		" << ux.GetRelPath(relPath, gDGFControlData->fLoadPath) << endl;
 				Int_t nofCrates = 0;
 				for (Int_t cr = 0; cr < kNofCrates; cr++) {
@@ -692,22 +697,24 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				dlf << "NofCrates:			" << nofCrates << endl;
 				dlf.close();
 
-				TString dlPgm = gEnv->GetValue("TMrbDGF.ProgramToDownloadCode", "/nfs/mbssys/standalone/dgfdown");
-				gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
-				gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
+				if (nerr == 0) {
+					TString dlPgm = gEnv->GetValue("TMrbDGF.ProgramToDownloadCode", "/nfs/mbssys/standalone/dgfdown");
+					gMrbLog->Out()	<< "Calling program \"" << camacHost << ":" << dlPgm << "\" via rsh" << endl;
+					gMrbLog->Flush(this->ClassName(), "ReloadDGFs", setblue);
 
-				TString dlPath = gSystem->Getenv("PWD");
-				if (dlPath.IsNull()) dlPath = gSystem->WorkingDirectory();
+					TString dlPath = gSystem->Getenv("PWD");
+					if (dlPath.IsNull()) dlPath = gSystem->WorkingDirectory();
 
-				gSystem->Exec(Form("rsh %s 'cd %s; %s %s'", camacHost.Data(), dlPath.Data(), dlPgm.Data(), ".DgfDownload.rc"));
-				for (Int_t i = 0; i < 100; i++) {
-					if (!gSystem->AccessPathName(".dgfdown.ok", (EAccessMode) F_OK)) {
-						TEnv * e = new TEnv(".dgfdown.ok");
-						nerr += e->GetValue("Download.Errors", 0);
-						delete e;
-						break;
+					gSystem->Exec(Form("rsh %s 'cd %s; %s %s'", camacHost.Data(), dlPath.Data(), dlPgm.Data(), ".DgfDownload.rc"));
+					for (Int_t i = 0; i < 100; i++) {
+						if (!gSystem->AccessPathName(".dgfdown.ok", (EAccessMode) F_OK)) {
+							TEnv * e = new TEnv(".dgfdown.ok");
+							nerr += e->GetValue("Download.Errors", 0);
+							delete e;
+							break;
+						}
+						usleep(1000);
 					}
-					usleep(1000);
 				}
 
 				if (nerr == 0) {

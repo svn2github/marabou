@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.12 2005-04-28 10:52:52 rudi Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.13 2005-04-28 12:56:09 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -279,7 +279,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TGFileInfo fileInfoSave;
-	TString saveLog, saveDir, paramFile, psaFile, valueFile;
+	TString saveDir, paramFile, psaFile, valueFile;
 	TMrbSystem uxSys;
 	TMrbEnv env;
 	Int_t nerr;
@@ -288,12 +288,14 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 	Int_t nofModules;
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
-	Bool_t verbose;
 	UInt_t modIdx;
 	Int_t cl, modNo;
 			
+	Bool_t verbose = gDGFControlData->IsVerbose();
+
 	fileInfoSave.fFileTypes = (const Char_t **) kDGFFileTypesSettings;
-	if (!gDGFControlData->CheckAccess(gDGFControlData->fDgfSettingsPath.Data(), (Int_t) DGFControlData::kDGFAccessWrite, errMsg)) {
+	if (!gDGFControlData->CheckAccess(gDGFControlData->fDgfSettingsPath.Data(),
+						(Int_t) DGFControlData::kDGFAccessDirectory | DGFControlData::kDGFAccessWrite, errMsg)) {
 		fileInfoSave.fIniDir = StrDup(gSystem->WorkingDirectory());
 		errMsg += "\nFalling back to \"";
 		errMsg += gSystem->WorkingDirectory();
@@ -311,8 +313,10 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 		cmd = "mkdir -p ";
 		cmd += saveDir;
 		gSystem->Exec(cmd);
-		gMrbLog->Out() << "Creating directory - " << saveDir << endl;
-		gMrbLog->Flush(this->ClassName(), "SaveDatabase", setblue);
+		if (verbose) {
+			gMrbLog->Out() << "Creating directory - " << saveDir << endl;
+			gMrbLog->Flush(this->ClassName(), "SaveDatabase", setblue);
+		}
 	}
 	
 	if (!uxSys.IsDirectory(saveDir.Data())) {
@@ -327,7 +331,6 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;
-	verbose = gDGFControlData->IsVerbose();
 	if (dgfModule) {
 		TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Saving module params ...", 400, "blue", NULL, kTRUE);
 		pgb->SetRange(0, gDGFControlData->GetNofModules());

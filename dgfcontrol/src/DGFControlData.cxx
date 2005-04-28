@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.4 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.5 2005-04-28 12:56:09 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -91,7 +91,7 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 
 	env.Find(fDataPath, "DGFControl:TMrbDGF", "DataPath", gSystem->WorkingDirectory());
 	gSystem->ExpandPathName(fDataPath);
-	if (!this->CheckAccess(fDataPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg)) panic = kTRUE;
+	this->CheckAccess(fDataPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
 	fRunDataFile = fDataPath;
 	fRunDataFile += "/";
@@ -100,7 +100,7 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 
 	env.Find(fLoadPath, "DGFControl:TMrbDGF", "LoadPath", "$MARABOU/data/xiadgf/v2.80");
 	gSystem->ExpandPathName(fLoadPath);
-	if (!this->CheckAccess(fLoadPath.Data(), kDGFAccessDirectory, errMsg)) panic = kTRUE;
+	this->CheckAccess(fLoadPath.Data(), kDGFAccessDirectory, errMsg, kTRUE);
 
 	fDSPCodeFile = fLoadPath;
 	fDSPCodeFile += "/";
@@ -108,21 +108,21 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	env.Find(path, "DGFControl:TMrbDGF", "DSPCode", "dsp/DGFcodeE.bin");
 	fDSPCodeFile += path;
 	gSystem->ExpandPathName(fDSPCodeFile);
-	if (!this->CheckAccess(fDSPCodeFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+	this->CheckAccess(fDSPCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 	fDSPParamsFile = fLoadPath;
 	fDSPParamsFile += "/";
 	env.Find(path, "DGFControl:TMrbDGF", "ParamNames", "dsp/dfgcodeE.var");
 	fDSPParamsFile += path;
 	gSystem->ExpandPathName(fDSPParamsFile);
-	if (!this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+	this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 	fSystemFPGAConfigFile = fLoadPath;
 	fSystemFPGAConfigFile += "/";
 	env.Find(path, "DGFControl:TMrbDGF", "SystemFPGACode", "Firmware/dgf4c.bin");
 	fSystemFPGAConfigFile += path;
 	gSystem->ExpandPathName(fSystemFPGAConfigFile);
-	if (!this->CheckAccess(fSystemFPGAConfigFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+	this->CheckAccess(fSystemFPGAConfigFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fLoadPath;
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += "/";
@@ -130,7 +130,7 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4D.bin");
 	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += path;
 	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevD]);
-	if (!this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+	this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data(), kDGFAccessRead, errMsg, kTRUE);
 
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fLoadPath;
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += "/";
@@ -138,23 +138,23 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4E.bin");
 	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += path;
 	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevE]);
-	if (!this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+	this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data(), kDGFAccessRead, errMsg, kTRUE);
 
 	env.Find(fDgfSettingsPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
 	gSystem->ExpandPathName(fDgfSettingsPath);
-	if (!this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessDirectory, errMsg)) panic = kTRUE;
-	this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessWrite, errMsg, kTRUE);
+	this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
-	env.Find(fCptmCodeFile, "DGFControl:TMrbCPTM", "CodeFile", "$MARABOU/data/cptm/cptm.rbf");
+	env.Find(path, "DGFControl", "CptmCodeFile", "");
+	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "CodeFile", "cptm.rbf");
+	fCptmCodeFile = path;
 	gSystem->ExpandPathName(fCptmCodeFile);
-	if (!this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg)) panic = kTRUE;
+	this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 	env.Find(path, "DGFControl", "CptmSettingsPath", "");
 	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "SettingsPath", "../cptmSettings");
 	fCptmSettingsPath = path;
 	gSystem->ExpandPathName(fCptmSettingsPath);
-	if (!this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory, errMsg)) panic = kTRUE;
-	this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessWrite, errMsg, kTRUE);
+	this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
 	fLofChannels.SetName("DGF channels");
 	fLofChannels.AddNamedX(kDGFChannelNumbers);
@@ -827,7 +827,7 @@ Bool_t DGFControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, 
 
 	if (AccessMode & kDGFAccessRead && !ux.HasReadPermission(FileOrPath)) {
 		if (ErrMsg.Length() > 0) ErrMsg += "\n";
-		ErrMsg = "Not readable - ";
+		ErrMsg = "No such file or directory - ";
 		ErrMsg += FileOrPath;
 		if (WarningOnly) gMrbLog->Wrn() << ErrMsg << endl; else gMrbLog->Err() << ErrMsg << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckAccess");
@@ -835,7 +835,7 @@ Bool_t DGFControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, 
 	}
 	if (AccessMode & kDGFAccessWrite && !ux.HasWritePermission(FileOrPath)) {
 		if (ErrMsg.Length() > 0) ErrMsg += "\n";
-		ErrMsg = "Not writable - ";
+		ErrMsg = "No write access to file/directory - ";
 		ErrMsg += FileOrPath;
 		if (WarningOnly) gMrbLog->Wrn() << ErrMsg << endl; else gMrbLog->Err() << ErrMsg << endl;
 		gMrbLog->Flush(this->ClassName(), "CheckAccess");
