@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.11 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.12 2005-04-28 10:52:52 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -305,30 +305,14 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 
 	new TGFileDialog(fClient->GetRoot(), this, kFDSave, &fileInfoSave);
 	if (fileInfoSave.fFilename == NULL || *fileInfoSave.fFilename == '\0') return(kFALSE);
-	saveLog = fileInfoSave.fFilename;
-	TString base;
-	uxSys.GetBaseName(base, saveLog.Data());
-	TString dir;
-	uxSys.GetDirName(dir, saveLog.Data());
-	saveDir = dir;
-	saveDir += "/data/";
-	saveDir += base;
+	saveDir = fileInfoSave.fFilename;
+
 	if (!uxSys.Exists(saveDir.Data())) {
 		cmd = "mkdir -p ";
 		cmd += saveDir;
 		gSystem->Exec(cmd);
-		if (!uxSys.IsDirectory(saveDir.Data())) {
-			gMrbLog->Err() << "Can't create directory - " << saveDir << endl;
-			gMrbLog->Flush(this->ClassName(), "SaveDatabase");
-			return(kFALSE);
-		} else {
-			saveLog.Prepend("touch ");
-			gSystem->Exec(saveLog.Data());
-			if (gDGFControlData->IsVerbose()) {
-				gMrbLog->Out() << "Creating directory \"" << saveDir << "\"" << endl;
-				gMrbLog->Flush(this->ClassName(), "SaveDatabase", setblue);
-			}
-		}			
+		gMrbLog->Out() << "Creating directory - " << saveDir << endl;
+		gMrbLog->Flush(this->ClassName(), "SaveDatabase", setblue);
 	}
 	
 	if (!uxSys.IsDirectory(saveDir.Data())) {

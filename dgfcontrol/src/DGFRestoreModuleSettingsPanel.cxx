@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.14 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.15 2005-04-28 10:52:52 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -305,13 +305,6 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fileInfoRestore);
 	if (fileInfoRestore.fFilename == NULL || *fileInfoRestore.fFilename == '\0') return(kFALSE);
 	loadDir = fileInfoRestore.fFilename;
-	TString base;
-	uxSys.GetBaseName(base, loadDir.Data());
-	TString dir;
-	uxSys.GetDirName(dir, loadDir.Data());
-	loadDir = dir;
-	loadDir += "/data/";
-	loadDir += base;
 	if (!uxSys.IsDirectory(loadDir.Data())) {
 		errMsg = "No such directory - ";
 		errMsg += loadDir;
