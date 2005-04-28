@@ -8,7 +8,7 @@
 // Class:          TGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbButtonFrame.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbButtonFrame.h,v 1.4 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 
 	public:
 		TGMrbButtonFrame(const TGWindow * Parent, const Char_t * Label, UInt_t ButtonType,
-											TMrbLofNamedX * Buttons, Int_t NofCL,
+											TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 											Int_t Width, Int_t Height,
 											TGMrbLayout * FrameGC, TGMrbLayout * LabelGC, TGMrbLayout * ButtonGC,
 											UInt_t FrameOptions, UInt_t ButtonOptions);
@@ -118,6 +118,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 	protected:
 		const TGWindow * fParent; 						// parent window
 		UInt_t fType;								// button type: text, radio, or check, list or group
+		Int_t fButtonId;							// button id to be used with Associate()
 		TString fLabel; 							// label text
 		TMrbLofNamedX fButtons;						// list of buttons: labels, indices, widgets
 		Int_t fWidth;								// frame width

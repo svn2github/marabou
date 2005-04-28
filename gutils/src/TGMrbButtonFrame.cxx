@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.5 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -22,7 +22,7 @@ ClassImp(TGMrbButtonFrame)
 ClassImp(TGMrbSpecialButton)
 
 TGMrbButtonFrame::TGMrbButtonFrame(const TGWindow * Parent, const Char_t * Label, UInt_t ButtonType,
-											TMrbLofNamedX * Buttons, Int_t NofCL,
+											TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 											Int_t Width, Int_t Height,
 											TGMrbLayout * FrameGC, TGMrbLayout * LabelGC, TGMrbLayout * ButtonGC,
 											UInt_t FrameOptions, UInt_t ButtonOptions) {
@@ -34,6 +34,7 @@ TGMrbButtonFrame::TGMrbButtonFrame(const TGWindow * Parent, const Char_t * Label
 //                 Char_t * Label                -- label text
 //                 UInt_t ButtonType             -- type of button (radio/check, composite/group)
 //                 TMrbLofNamedX Buttons         -- button names and their indices
+//                 Int_t BtnId                   -- (global) button id
 //                 Int_t NofCL                   -- button grid CxL: number of columns/lines
 //                 Int_t Width                   -- frame width
 //                 Int_t Height                  -- frame height
@@ -61,6 +62,7 @@ TGMrbButtonFrame::TGMrbButtonFrame(const TGWindow * Parent, const Char_t * Label
 	fButtonGC = this->SetupGC(ButtonGC, FrameOptions);
 	fFrameOptions = FrameOptions;
 	fButtonOptions = ButtonOptions;
+	fButtonId = BtnId;
 
 	fButtons.Delete();
 
@@ -99,6 +101,8 @@ void TGMrbButtonFrame::PlaceButtons() {
 	TGPictureButton * pbtn;
 	TGMrbSpecialButton * sbtn1, * sbtn2;
 	
+	Int_t btnId;
+
 	subOptions = fFrameOptions & (kVerticalFrame | kHorizontalFrame | kChildFrame);
  	if (fNofCL > 1) {
 		btnOptions = (fFrameOptions & kVerticalFrame) ? kHorizontalFrame : kVerticalFrame;
@@ -134,31 +138,32 @@ void TGMrbButtonFrame::PlaceButtons() {
 		} else {
 			subFrame = btnFrame;
 		}
+		btnId = (fButtonId == -1) ? nx->GetIndex() : fButtonId;
 		switch (fType & (kGMrbCheckButton | kGMrbRadioButton | kGMrbTextButton | kGMrbPictureButton)) {
 			case kGMrbCheckButton:
 				cbtn = new TGCheckButton(subFrame,	nx->GetName(),
-													nx->GetIndex(),
+													btnId,
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) cbtn);
 				btn = (TGButton *) cbtn;
 				break;
 			case kGMrbRadioButton:
 				rbtn = new TGRadioButton(subFrame,	nx->GetName(),
-													nx->GetIndex(),
+													btnId,
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) rbtn);
 				btn = (TGButton *) rbtn;
 				break;
 			case kGMrbTextButton:
 				tbtn = new TGTextButton(subFrame,	nx->GetName(),
-													nx->GetIndex(),
+													btnId,
 													fButtonGC->GC(), fButtonGC->Font(), fButtonOptions);
 				fHeap.AddFirst((TObject *) tbtn);
 				btn = (TGButton *) tbtn;
 				break;
 			case kGMrbPictureButton:
 				pbtn = new TGPictureButton(subFrame, fParentClient->GetPicture(nx->GetName()),
-													nx->GetIndex(),
+													btnId,
 													fButtonGC->GC(), fButtonOptions);
 				fHeap.AddFirst((TObject *) pbtn);
 				btn = (TGButton *) pbtn;

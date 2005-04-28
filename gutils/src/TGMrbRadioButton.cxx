@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbRadioButton.cxx,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbRadioButton.cxx,v 1.3 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 // Layout: A list of radio buttons
 //Begin_Html
@@ -27,7 +27,7 @@ ClassImp(TGMrbRadioButtonGroup)
 
 TGMrbRadioButtonList::TGMrbRadioButtonList(const TGWindow * Parent,
 												const Char_t * Label,
-												TMrbLofNamedX * Buttons, Int_t NofCL,
+												TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 												Int_t Width, Int_t Height,
 												TGMrbLayout * FrameGC,
 												TGMrbLayout * LabelGC,
@@ -36,7 +36,7 @@ TGMrbRadioButtonList::TGMrbRadioButtonList(const TGWindow * Parent,
 												UInt_t ButtonOptions) :
 										TGCompositeFrame(Parent, Width, Height, FrameOptions, FrameGC->BG()),
 										TGMrbButtonFrame(Parent, Label, kGMrbRadioButton | kGMrbButtonList,
-												Buttons, NofCL, Width, Height,
+												Buttons, BtnId, NofCL, Width, Height,
 												FrameGC, LabelGC, ButtonGC, FrameOptions, ButtonOptions) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -45,6 +45,7 @@ TGMrbRadioButtonList::TGMrbRadioButtonList(const TGWindow * Parent,
 // Arguments:      TGWindow * Parent               -- parent window
 //                 Char_t * Label                  -- label text (NULL means "no label")
 //                 TMrbLofNamedX * Buttons         -- button names and indices
+//                 Int_t BtnId                    -- (global) button id
 //                 Int_t NofCL                     -- button grid CxL: number of columns/lines
 //                 Int_t Width                     -- frame width
 //                 Int_t Height                    -- frame height
@@ -75,14 +76,14 @@ TGMrbRadioButtonList::TGMrbRadioButtonList(const TGWindow * Parent,
 
 TGMrbRadioButtonGroup::TGMrbRadioButtonGroup(const TGWindow * Parent,
 												const Char_t * Label,
-												TMrbLofNamedX * Buttons, Int_t NofCL,
+												TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 												TGMrbLayout * FrameGC,
 												TGMrbLayout * ButtonGC,
 												UInt_t FrameOptions,
 												UInt_t ButtonOptions) :
 								TGGroupFrame(Parent, Label, FrameOptions, FrameGC->GC(), FrameGC->Font(), FrameGC->BG()),
 								TGMrbButtonFrame(Parent, Label, kGMrbRadioButton | kGMrbButtonGroup,
-												Buttons, NofCL, 0, 0,
+												Buttons, BtnId, NofCL, 0, 0,
 												FrameGC, NULL, ButtonGC, FrameOptions, ButtonOptions) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -91,6 +92,7 @@ TGMrbRadioButtonGroup::TGMrbRadioButtonGroup(const TGWindow * Parent,
 // Arguments:      TGWindow * Parent              -- parent window
 //                 Char_t * Label                 -- label text
 //                 TMrbLofNamedX * Buttons        -- button names and indices
+//                 Int_t BtnId                    -- (global) button id
 //                 Int_t NofCL                    -- button grid CxL: number of columns/lines
 //                 TGMrbLayout * FrameGC          -- graphic context & layout (frame)
 //                 TGMrbLayout * ButtonGC         -- ... (button)

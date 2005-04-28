@@ -11,7 +11,7 @@
 //                                             group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbPictureButton.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbPictureButton.h,v 1.4 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ class TGMrbPictureButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 
 	public:
 		TGMrbPictureButtonList(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons, Int_t NofCL,
+													TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 													Int_t Width, Int_t Height,
 													TGMrbLayout * FrameGC,
 													TGMrbLayout * LabelGC = NULL,
@@ -70,7 +70,7 @@ class TGMrbPictureButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 
 	public:
 		TGMrbPictureButtonGroup(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons, Int_t NofCL,
+													TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 													TGMrbLayout * FrameGC,
 													TGMrbLayout * ButtonGC = NULL,
 													UInt_t FrameOptions = kHorizontalFrame,

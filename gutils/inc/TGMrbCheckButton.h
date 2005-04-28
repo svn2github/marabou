@@ -11,7 +11,7 @@
 //                                           group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbCheckButton.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbCheckButton.h,v 1.4 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -38,7 +38,7 @@ class TGMrbCheckButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 
 	public:
 		TGMrbCheckButtonList(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons, Int_t NofCL,
+													TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 													Int_t Width, Int_t Height,
 													TGMrbLayout * FrameGC,
 													TGMrbLayout * LabelGC = NULL,
@@ -71,7 +71,7 @@ class TGMrbCheckButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 
 	public:
 		TGMrbCheckButtonGroup(const TGWindow * Parent, const Char_t * Label,
-													TMrbLofNamedX * Buttons, Int_t NofCL,
+													TMrbLofNamedX * Buttons, Int_t BtnId, Int_t NofCL,
 													TGMrbLayout * FrameGC,
 													TGMrbLayout * ButtonGC = NULL,
 													TObjArray * LofSpecialButtons = NULL,

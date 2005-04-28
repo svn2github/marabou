@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMessageViewer.cxx,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbMessageViewer.cxx,v 1.3 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 //
 //Begin_Html
@@ -90,7 +90,7 @@ TGMrbMessageViewer::TGMrbMessageViewer( const TGWindow * Parent,
 	TGLayoutHints * frameLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX);
 	HEAP(frameLayout);
 	frameGC->SetLH(frameLayout);
-	fAction = new TGMrbTextButtonList(this, NULL, &fLofActions, 1, Width, 10, frameGC, labelGC, buttonGC);
+	fAction = new TGMrbTextButtonList(this, NULL, &fLofActions, -1, 1, Width, 10, frameGC, labelGC, buttonGC);
 	HEAP(fAction);
 	this->AddFrame(fAction, frameGC->LH());
 	fAction->Associate(this);

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.8 2005-04-21 07:03:32 rudi Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.9 2005-04-28 10:25:49 rudi Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -678,7 +678,7 @@ TGMrbMacroList::TGMrbMacroList(const TGWindow * Parent, TMrbLofMacros * LofMacro
 		fLofButtons.AddNamedX(new TMrbNamedX(macro->GetIndex(), macro->GetName(), macroTitle));
 		macro = fLofMacros->NextMacro(macro);
 	}
-	fButtonList = new TGMrbTextButtonList(this, NULL, &fLofButtons, 1, Width, Height,
+	fButtonList = new TGMrbTextButtonList(this, NULL, &fLofButtons, -1, 1, Width, Height,
 														FrameGC, NULL, ButtonGC, FrameOptions, ButtonOptions);
 	HEAP(fButtonList);
 	this->AddFrame(fButtonList, FrameGC->LH());
@@ -954,7 +954,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 			macroArg->fButtons.SetPatternMode();
 			macroArg->fButtons.AddNamedX(kGMrbMacroYesNoButtons);
 			macroArg->fRadio = new TGMrbRadioButtonList(fMacroArgs, argTitle.Data(),
-														&macroArg->fButtons, 1,
+														&macroArg->fButtons, -1, 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1005,7 +1005,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 				}
 				if (n == TGMrbMacroArg::kGMrbMacroEntryRadio) {
 					macroArg->fRadio = new TGMrbRadioButtonList(fMacroArgs, argTitle.Data(),
-														&macroArg->fButtons, macroArg->fNofCL,
+														&macroArg->fButtons, -1, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC, macroArg->fOrientation);
@@ -1017,7 +1017,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 					}
 				} else if (n == TGMrbMacroArg::kGMrbMacroEntryCheck) {
 					macroArg->fCheck = new TGMrbCheckButtonList(fMacroArgs, argTitle.Data(),
-														&macroArg->fButtons, macroArg->fNofCL,
+														&macroArg->fButtons, -1, macroArg->fNofCL,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC,
@@ -1097,7 +1097,7 @@ TGMrbMacroFrame::TGMrbMacroFrame(const TGWindow * Parent, const TGWindow * Main,
 	HEAP(actionLayout);
 	buttonGC->SetLH(actionLayout);
 
-	fAction = new TGMrbTextButtonGroup(this, "Action", &fLofActions, 2, frameGC, buttonGC);
+	fAction = new TGMrbTextButtonGroup(this, "Action", &fLofActions, -1, 2, frameGC, buttonGC);
 	HEAP(fAction);
 	this->AddFrame(fAction, frameGC->LH());
 	fAction->Associate(this);
@@ -1519,7 +1519,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fArgNumber->SetRange(1, TGMrbMacroEdit::kMaxNofArgs);
 	fArgNumber->SetIncrement(1);
 
-	fArgAction = new TGMrbTextButtonList(fMacroArg, NULL, &fLofArgActions, 1, frameWidth / 2, TGMrbMacroEdit::kLineHeight,
+	fArgAction = new TGMrbTextButtonList(fMacroArg, NULL, &fLofArgActions, -1, 1, frameWidth / 2, TGMrbMacroEdit::kLineHeight,
 														frameGC, labelGC, buttonGC);
 	HEAP(fArgAction);
 	fMacroArg->AddFrame(fArgAction, frameGC->LH());
@@ -1542,7 +1542,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroLayout->AddFrame(fArgTitle, frameGC->LH());
 
 	fArgType = new TGMrbRadioButtonList(fMacroLayout, "Type",
-														&fLofArgTypes, 3,
+														&fLofArgTypes, -1, 3,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1550,7 +1550,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroLayout->AddFrame(fArgType, frameGC->LH());
 
 	fArgEntryType = new TGMrbRadioButtonList(fMacroLayout, "Entry type",
-														&fLofEntryTypes, 3,
+														&fLofEntryTypes, -1, 3,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1578,7 +1578,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroLayout->AddFrame(fArgValues, frameGC->LH());
 
 	fArgAddLofValues = new TGMrbRadioButtonList(fMacroLayout, "Add list of values",
-														&fYesNo, 1,
+														&fYesNo, -1, 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1604,7 +1604,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroLayout->AddFrame(fArgIncrement, frameGC->LH());
 
 	fArgBase = new TGMrbRadioButtonList(fMacroLayout, "Base",
-														&fLofIntegerBases, 1,
+														&fLofIntegerBases, -1, 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1612,7 +1612,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	fMacroLayout->AddFrame(fArgBase, frameGC->LH());
 
 	fArgOrientation = new TGMrbRadioButtonList(fMacroLayout, "Orientation",
-														&fLofOrientations, 1,
+														&fLofOrientations, -1, 1,
 														frameWidth - 20,
 														TGMrbMacroFrame::kLineHeight,
 														frameGC, labelGC, buttonGC);
@@ -1629,7 +1629,7 @@ TGMrbMacroEdit::TGMrbMacroEdit(const TGWindow * Parent, const TGWindow * Main, T
 	HEAP(actionLayout);
 	buttonGC->SetLH(actionLayout);
 
-	fAction = new TGMrbTextButtonGroup(this, "Macro action", &fLofActions, 1, frameGC, buttonGC);
+	fAction = new TGMrbTextButtonGroup(this, "Macro action", &fLofActions, -1, 1, frameGC, buttonGC);
 	HEAP(fAction);
 	this->AddFrame(fAction, frameGC->LH());
 	fAction->Associate(this);
