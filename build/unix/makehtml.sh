@@ -13,6 +13,7 @@
     gSystem.Load("libTMbsSetup.so");
     gSystem.Load("libTMrbEsone.so");
     gSystem.Load("libTMrbDGF.so");
+    gSystem.Load("libGed.so");
     gSystem.Load("libTGMrbUtils.so");
     gSystem.Load("libTMrbHelpBrowser.so");
     gSystem.Load("libTMrbTidy.so");
