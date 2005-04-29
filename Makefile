@@ -25,7 +25,7 @@ MODULES       = build utils gutils \
                 tidy tidylib \
                 expconf analyze c_analyze  macrobrowser \
                 camcli esone mbssetup mbsio transport \
-	        xiadgf dgfcontrol \
+	        	xiadgf dgfcontrol cptmcontrol \
                 polar snake
 
 ##### ROOT libraries #####
