@@ -8,7 +8,7 @@
 // Class:          DGFCptmPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFCptmPanel.h,v 1.1 2005-04-28 13:00:26 rudi Exp $       
+// Revision:       $Id: DGFCptmPanel.h,v 1.2 2005-04-29 11:37:06 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -33,8 +33,6 @@
 #include "TGMrbMacroBrowser.h"
 #include "TGMrbLofKeyBindings.h"
 
-#include "DGFModule.h"
-#include "DGFControlCommon.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
