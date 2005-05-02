@@ -6,6 +6,7 @@
 #include "TCurlyLine.h"
 #include "TEllipse.h"
 #include "TEnv.h"
+#include "TF1.h"
 #include "TGaxis.h"
 #include "TRegexp.h"
 #include "TImage.h"
@@ -117,6 +118,7 @@ void HTCanvas::InitEditCommands()
    labels->Add(new TObjString("Insert image (gif, jpg"));
    labels->Add(new TObjString("Insert histogram "));
    labels->Add(new TObjString("Insert graph"));
+   labels->Add(new TObjString("Insert Function"));
    labels->Add(new TObjString("Text (Latex) from file"));
    labels->Add(new TObjString("Text (Latex) from keyboard"));
    labels->Add(new TObjString("Insert compound object"));
@@ -132,6 +134,7 @@ void HTCanvas::InitEditCommands()
    methods->Add(new TObjString("InsertImage()"));
    methods->Add(new TObjString("InsertHist()"));
    methods->Add(new TObjString("InsertGraph()"));
+   methods->Add(new TObjString("InsertFunction()"));
    methods->Add(new TObjString("InsertTextF()"));
    methods->Add(new TObjString("InsertTextK()"));
    methods->Add(new TObjString("InsertGObjects()"));
@@ -1572,6 +1575,9 @@ Int_t getmb(TString& cmd, Int_t sind)
 
 TString lat2root(TString& cmd) 
 {
+// this tries to translate standard Latex into ROOTs
+// latex like formular processor TLatex format
+
 //     cout << "Orig: " << cmd << endl;
 //    remove latex's $ (mathstyle), replace \ by #, ~ by space
    Int_t ind;
@@ -1700,8 +1706,6 @@ TString lat2root(TString& cmd)
 
 void HTCanvas::InsertText(Bool_t from_file)
 {
-// this tries to translate standard Latex into ROOTs
-// latex like formular processor TLatex format
 
    TList *row_lab = new TList(); 
    TList *values  = new TList();
@@ -1915,6 +1919,108 @@ void HTCanvas::InsertText(Bool_t from_file)
    }
    Modified();
    Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::InsertFunction()
+{
+   static Int_t Npar = 2;
+   static Double_t par[10] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+   static TString func_name("fun1");
+   static TString xtitle("x");
+   static TString ytitle("y");
+   static Double_t from = 0;
+   static Double_t to   = 10;
+   static Int_t same_pad = 0;
+   static Int_t new_pad = 1;
+   static Int_t new_canvas = 0;
+
+   Bool_t ok;
+   Npar = GetInteger("Number of parameters", Npar, &ok, fRootCanvas);
+   if (!ok) return;
+   if (Npar < 1) {
+      WarnBox("Number of parameters < 1", fRootCanvas);
+      return;
+   }
+   if (Npar > 10) {
+      WarnBox("Number of parameters > 10", fRootCanvas);
+      return;
+   }
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   row_lab->Add(new TObjString("Function Name"));
+   row_lab->Add(new TObjString("X axis title"));
+   row_lab->Add(new TObjString("Y axis title"));
+   row_lab->Add(new TObjString("Lower limit (from)"));
+   row_lab->Add(new TObjString("Upper limit (to)"));
+
+   TString text;
+   TString * tpointer = 0; 
+   const char * history = 0;
+   tpointer = &text;
+   const char hist_file[] = {"text_formulas.txt"};
+   history = hist_file;
+   if (gROOT->GetVersionInt() < 40000) history = NULL;
+
+   AddObjString(func_name.Data(), values);
+   AddObjString(xtitle.Data(), values);
+   AddObjString(ytitle.Data(), values);
+   AddObjString(from, values);
+   AddObjString(to,   values);
+   for (Int_t i =0; i < Npar; i++) {
+      row_lab->Add(new TObjString(Form("Value of Parameter %d",i)));
+      AddObjString(par[i],   values);
+   }
+   row_lab->Add(new TObjString("Use new(selected) pad"));
+   AddObjString(new_pad, values, kAttRadioB);
+   row_lab->Add(new TObjString("Use same (selected) pad"));
+   AddObjString(same_pad, values, kAttRadioB);
+   row_lab->Add(new TObjString("Create separate canvas"));
+   AddObjString(new_canvas, values, kAttRadioB);
+
+   Int_t itemwidth = 440;
+
+   ok = GetStringExt("Define formula", tpointer, itemwidth, fRootCanvas,
+                      history, NULL, row_lab, values);
+   if (!ok) return;
+   Int_t vp = 0;
+
+   func_name = GetText(values, vp++);
+   if (gROOT->GetListOfFunctions()->FindObject(func_name)) {
+      cout << "Function with name: " << func_name << " already exists"
+           << endl;
+      return;
+   }
+   xtitle    = GetText(values, vp++);
+   ytitle    = GetText(values, vp++);
+   from      = GetDouble(values, vp++);
+   to        = GetDouble(values, vp++);
+   for (Int_t i =0; i < Npar; i++) {
+      par[i] = GetDouble(values, vp++);
+   }
+   new_pad  = GetInt(values, vp++);
+   same_pad  = GetInt(values, vp++);
+   new_canvas  = GetInt(values, vp++);
+   if (new_pad != 0) {
+   	TPad* pad = GetEmptyPad();
+   	if (pad) {
+   	  gROOT->SetSelectedPad(pad);
+   	} else {
+      	WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
+	//      cout << "Please create a new Pad in this Canvas" << endl;
+      	return;
+   	} 
+   }
+   TF1 * f = new TF1(func_name.Data(), tpointer->Data(), from, to);
+   if (gROOT->GetListOfFunctions()->FindObject(func_name) == 0) {
+       WarnBox("Error in formula, watch printout", fRootCanvas);
+      return;
+   }
+   f->SetParameters(par);
+   if (new_canvas != 0) TCanvas *cc = new TCanvas("cc", "cc", 600,400);
+   if (same_pad != 0) f->Draw("same");
+   else                     f->Draw();
+   gPad->Update();
 }
 //______________________________________________________________________________
 

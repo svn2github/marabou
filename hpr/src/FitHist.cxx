@@ -2080,13 +2080,15 @@ void FitHist::Superimpose(Int_t mode)
       hdisp->SetLineColor(fColSuperimpose);
       cHist->cd();
       TString drawopt = fSelHist->GetDrawOption();
+      if (!drawopt.Contains("E", TString::kIgnoreCase))
+         drawopt += "hist";
       drawopt += "same";
-//      cout << "drawopt " << drawopt << endl;
+      cout << "drawopt |" << drawopt << "|" << endl;
 //      fSelHist->DrawCopy(drawopt.Data());
 //      TH1* hnew =  (TH1*)hdisp->Clone();
       TH1* hcop = hdisp->DrawCopy(drawopt.Data());
-      hcop->SetDrawOption(drawopt.Data());
-      hcop->SetOption(drawopt.Data());
+//      hcop->SetDrawOption(drawopt.Data());
+//      hcop->SetOption(drawopt.Data());
 //      hdisp->GetXaxis()->SetName("xaxis");
       Float_t x1 = 0.2;
       Float_t x2 = 0.3;

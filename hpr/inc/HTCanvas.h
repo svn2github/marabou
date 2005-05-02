@@ -118,6 +118,7 @@ public:
    void    ShowGallery();
    void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
    void    InsertText(Bool_t);
+   void    InsertFunction();
    void    InsertTextF(){InsertText(kTRUE);};
    void    InsertTextK(){InsertText(kFALSE);};
    TPad*   GetEmptyPad();
