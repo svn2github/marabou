@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.31 2004-09-28 13:51:41 rudi Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.32 2005-05-02 08:45:43 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3262,12 +3262,12 @@ Double_t TMrbDGF::FromFixedPoint(UInt_t * DspFixPt) {
 
 	Double_t value;
 	value = (Double_t) DspFixPt[1] / 65636 + (Double_t) DspFixPt[0];
-	if (gMrbDGFData->fVerboseMode) {
-		cout	<< this->ClassName() << "::FromFixedPoint(): high word [0]="
-				<< DspFixPt[0] << " (0x" << setbase(16) << DspFixPt[0] << setbase(10)
-				<< "), low word [1]=" << DspFixPt[1] << " (0x" << setbase(16) << DspFixPt[1] << setbase(10) << ")"
-				<< " --> Value = " << value << endl;
-	}
+#ifdef DEBUG
+	cout	<< this->ClassName() << "::FromFixedPoint(): high word [0]="
+			<< DspFixPt[0] << " (0x" << setbase(16) << DspFixPt[0] << setbase(10)
+			<< "), low word [1]=" << DspFixPt[1] << " (0x" << setbase(16) << DspFixPt[1] << setbase(10) << ")"
+			<< " --> Value = " << value << endl;
+#endif
 	return(value);
 }
 
@@ -3327,14 +3327,13 @@ UInt_t * TMrbDGF::ToDouble(Double_t Value, UInt_t * DspDouble) {
 	DspDouble[1] = m1;
 	DspDouble[2] = m0;
 
-	if (gMrbDGFData->fVerboseMode) {
-		cout	<< this->ClassName() << "::ToDouble(): Value=" << Value
-				<< " --> exp=" << exp
-				<< ", m1=" << m1 << " (0x" << setbase(16) << m1 << setbase(10)
-				<< "), m0=" << m0 << " (0x" << setbase(16) << m0 << setbase(10) << ")"
-				<< endl;
-	}
-
+#ifdef DEBUG
+	cout	<< this->ClassName() << "::ToDouble(): Value=" << Value
+			<< " --> exp=" << exp
+			<< ", m1=" << m1 << " (0x" << setbase(16) << m1 << setbase(10)
+			<< "), m0=" << m0 << " (0x" << setbase(16) << m0 << setbase(10) << ")"
+			<< endl;
+#endif
 	return(DspDouble);
 }
 
@@ -4530,20 +4529,23 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 	datFile += ".histoDump.dat";
 
 	TString hdPgm = gEnv->GetValue("TMrbDGF.ProgramToDumpHistos", "/nfs/mbssys/standalone/histoDump");
-	if (gMrbDGFData->fVerboseMode) {
-		gMrbLog->Out()	<< "Calling program \"" << fCamacHost << ":" << hdPgm << "\" via rsh" << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
-	}
 	TString hdPath = gSystem->Getenv("PWD");
 	if (hdPath.IsNull()) hdPath = gSystem->WorkingDirectory();
-	gSystem->Exec(Form("rsh %s 'cd %s; %s %d %d %#x %s b'",
+	TString cmd = Form("rsh %s 'cd %s; %s %d %d %#x %s b'",
 							fCamacHost.Data(),
 							hdPath.Data(),
 							hdPgm.Data(),
 							this->GetCrate(),
 							this->GetStation(),
 							ChannelPattern,
-							datFile.Data()));
+							datFile.Data());
+	if (gMrbDGFData->fVerboseMode) {
+		gMrbLog->Out()	<< "Calling program \"" << fCamacHost << ":" << hdPgm << "\" via rsh" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
+		gMrbLog->Out()	<< ">> " << cmd << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "ReadHistogramsViaRsh", setblue);
+	}
+	gSystem->Exec(cmd.Data());
 
 	Bool_t fileOk = kFALSE;
 	TString hsFile = ".";
