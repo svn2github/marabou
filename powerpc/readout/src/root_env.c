@@ -15,6 +15,10 @@ static char sccsid[]	=	"%W%";
 #include <stdio.h>
 
 #define ENV_L_STR	128
+#define ENV_N_DOTS	10
+
+#define TRUE	1
+#define FALSE	0
 
 /*_______________________________________________________________[C STRUCTURE]
 //////////////////////////////////////////////////////////////////////////////
@@ -25,9 +29,9 @@ static char sccsid[]	=	"%W%";
 ////////////////////////////////////////////////////////////////////////////*/
 
 typedef struct {
-	char system[ENV_L_STR];
-	char prog[ENV_L_STR];
-	char name[ENV_L_STR];
+	int nsubs;
+	char resstr[ENV_L_STR];
+	char * substr[ENV_N_DOTS + 1];
 	char value[ENV_L_STR];
 	void * next;
 } TEnvEntry;
@@ -212,17 +216,11 @@ void root_env_print() {
 
 	entry = firstEntry;
 	if (entry) {
-		printf("%-50s%-15s\n", "Resource", "Value");
+		printf("%-50s %-15s\n", "Resource", "Value");
 		printf("-------------------------------------------------------------------------------------\n");
 	}
 	while (entry) {
-		strcpy(str, entry->system);
-		strcat(str, ".");
-		strcat(str, entry->prog);
-		strcat(str, ".");
-		strcat(str, entry->name);
-		strcat(str, ":");
-		printf("%-50s%-15s\n", str, entry->value);
+		printf("%-50s:%-15s\n", entry->resstr, entry->value);
 		entry = (TEnvEntry *) entry->next;
 	}
 	printf("\n[%d entries]\n\n", nofEntries);
@@ -243,15 +241,23 @@ TEnvEntry * _env_find_resource(const char * ResourceName) {
 	int i;
 	TEnvEntry e;
 	TEnvEntry * entry;
+	int n1, n2, match;
 	
 	_env_decode_name(&e, ResourceName);
 	
 	entry = firstEntry;
 	while (entry) {
-		if (strcmp(e.name, entry->name) == 0) {
-			if (entry->prog[0] == '*' || e.prog[0] == '*' || strcmp(e.prog, entry->prog) == 0) {
-				if (entry->system[0] == '*' || e.system[0] == '*' || strcmp(e.system, entry->system) == 0) return(entry);
+		if (entry->nsubs >= e.nsubs) {
+			n1 = e.nsubs - 1;
+			n2 = entry->nsubs - 1;
+			match = TRUE;
+			for (i = 0; i < e.nsubs; i++, n1--, n2--) {
+				if (strcmp(e.substr[n1], "*") != 0 && strcmp(e.substr[n1], entry->substr[n2]) != 0) {
+					match = FALSE;
+					break;
+				}
 			}
+			if (match) return(entry);
 		}
 		entry = (TEnvEntry *) entry->next;
 	}
@@ -267,31 +273,20 @@ void _env_decode_name(TEnvEntry * Entry, const char * ResourceName) {
 //                 char * ResourceName    -- resource name, string
 // Results:        TEnvEntry * Entry      -- resource name, decoded
 // Exceptions:     
-// Description:    Decodes a resource name <System>.<Prog>.<Name>
+// Description:    Decodes a resource name
 // Keywords:       
 ///////////////////////////////////////////////////////////////////////////*/
 
 	char * sp;
-	char resName[ENV_L_STR];
-		
-	strcpy(resName, ResourceName);
 	
-	strcpy(Entry->system, "*");
-	strcpy(Entry->prog, "*");
-		
-	sp = strrchr(resName, '.');
-	if (sp == NULL) {
-		strcpy(Entry->name, resName);
-	} else {
+	Entry->nsubs = 0;
+	strcpy(Entry->resstr, ResourceName);
+	sp = Entry->resstr;
+	for(;;) {
+		Entry->substr[Entry->nsubs++] = sp;
+		sp = strchr(sp, '.');
+		if (sp == NULL) break;
 		*sp = '\0';
-		strcpy(Entry->name, sp + 1);
-		sp = strrchr(resName, '.');
-		if (sp == NULL) {
-			strcpy(Entry->prog, resName);
-		} else {
-			*sp = '\0';
-			strcpy(Entry->prog, sp + 1);
-			strcpy(Entry->system, resName);
-		}
+		sp++;
 	}
 }

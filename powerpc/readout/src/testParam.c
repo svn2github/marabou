@@ -141,7 +141,7 @@ int main(int argc, char * argv[]) {
 	loop = atoi(argv[5]);
 	setparam = atoi(argv[6]);
 
- 	cc32_init((unsigned long *) 0xee550000L, 3);				/* vme addr mapping for crates 1 ... 3 */
+ 	cc32_init((unsigned long *) 0xee550000L, crate);				/* vme addr mapping for crates 1 ... 3 */
 
 	printf("----------------------------------------------------------------------\n");
 	printf("testParam.C:\n");

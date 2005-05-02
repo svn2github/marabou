@@ -199,7 +199,7 @@ int main(int argc, char * argv[]) {
 					exit(1);
 	}
 
-	quiet = *argv[5];
+	quiet = *argv[6];
 	beQuiet = 0;
 	switch (quiet) {
 		case 'q':
