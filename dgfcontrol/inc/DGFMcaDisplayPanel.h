@@ -8,7 +8,7 @@
 // Class:          DGFMcaDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFMcaDisplayPanel.h,v 1.7 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -17,6 +17,7 @@
 #include "TList.h"
 
 #include "TRootEmbeddedCanvas.h"
+#include "TTimer.h"
 #include "TCanvas.h"
 #include "TGWindow.h"
 #include "TGFrame.h"
@@ -40,6 +41,7 @@
 #include "TGMrbLabelCombo.h"
 #include "TGMrbMacroBrowser.h"
 #include "TGMrbLofKeyBindings.h"
+#include "TGMrbProgressBar.h"
 
 #include "DGFControlCommon.h"
 
@@ -58,21 +60,37 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 
 				
 		// cmd ids to dispatch over X events in this panel
-		enum EDGFMcaCmdId 	{
-										kDGFMcaDisplayRunTime, 			//		runtime
-										kDGFMcaDisplayTimeScale,		//				time scale
-										kDGFMcaDisplayAcquire,			//		actions start accu
-										kDGFMcaDisplayAbort,			//				abort accu
-										kDGFMcaDisplayReset, 			//				reset
-										kDGFMcaDisplaySelectAll,		// select	all
-										kDGFMcaDisplaySelectNone,		//				none
-										kDGFMcaDisplaySelectColumn		//				column
-									};
+		enum EDGFMcaCmdId		{
+									kDGFMcaDisplayRunTime, 			//		runtime
+									kDGFMcaDisplayTimeScale,		//				time scale
+									kDGFMcaDisplaySelectDisplay, 	//		module/channel
+									kDGFMcaDisplayRefreshDisplay, 	//		refresh
+									kDGFMcaDisplayAcquire,			//		actions start accu
+									kDGFMcaDisplayStop,				//				stop accu
+									kDGFMcaDisplayHisto, 			//				display histogram
+									kDGFMcaDisplayHistoClear, 		//				... & clear
+									kDGFMcaDisplaySelectAll,		//  	select	all
+									kDGFMcaDisplaySelectNone,		//				none
+									kDGFMcaDisplaySelectColumn,		//				column
+									kDGFMcaDisplaySelectChannel,	//		select	channel
+									kDGFMcaDisplaySelectTimeScale	//				time scale
+								};
 
 		enum EDGFMcaTimeScaleId {
-									kDGFMcaTimeScaleSecs = kDGFChannel3 << 1,		//	seconds
-									kDGFMcaTimeScaleMins = kDGFChannel3 << 2,		//	minutes
-									kDGFMcaTimeScaleHours = kDGFChannel3 << 3,		//	hours
+									kDGFMcaTimeScaleSecs =	BIT(0),		//	seconds
+									kDGFMcaTimeScaleMins =	BIT(1),		//	minutes
+									kDGFMcaTimeScaleHours = BIT(2),		//	hours
+									kDGFMcaTimeScaleInfin = BIT(3)		//	infin
+								};
+
+		enum EDGFMcaRunState	 {
+									kDGFMcaRunStopped = 0,
+									kDGFMcaRunPausing,
+									kDGFMcaIsRunning
+								};
+
+		enum					{	kDGFAccuTimerID,
+									kDGFRefreshTimerID
 								};
 
 	public:
@@ -80,15 +98,19 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 		virtual ~DGFMcaDisplayPanel() { fHeap.Delete(); };
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
+		virtual Bool_t HandleTimer(TTimer * Timer);
+
+		Bool_t McaPause();
+		Bool_t McaResume();
 
 	protected:
 		Bool_t ResetValues();													// clear entry fields
 		Bool_t Update(Int_t EntryId);											// update program state on X events
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
 		Bool_t AcquireHistos(); 												// start accu
+		Bool_t StoreHistos();
+		Bool_t DisplayHisto(Bool_t ClearMCA = kFALSE);
 
-		void SetRunning(Bool_t RunFlag);										// run flip-flop
-		
 	protected:
 		TList fHeap;								//! list of objects created on heap
 		TGGroupFrame * fModules;			 		// module list
@@ -103,18 +125,38 @@ class DGFMcaDisplayPanel : public TGCompositeFrame {
 		TGMrbLabelEntry * fRunTimeEntry; 			//		runtime
 		TGMrbRadioButtonList * fTimeScale; 			//		time scale
 
+		TGGroupFrame * fDisplayFrame; 				// display
+		TGMrbLabelCombo * fDisplayModule; 			//		module
+		TGMrbRadioButtonList * fDisplayChannel;		//		channel
+		TGMrbLabelEntry * fRefreshTimeEntry; 		//		refresh
+
 		TGMrbTextButtonGroup * fButtonFrame;
 
-		TMrbLofNamedX fLofChannels;				//! channel numbers
-
 		TMrbLofNamedX fLofDGFModuleKeys[kNofClusters];
-		
-		Bool_t fIsRunning;							// kTRUE if trace acquisition running
 		
 		TMrbLofNamedX fMcaTimeScaleButtons;
 		TMrbLofNamedX fMcaActions;
 
+		TMrbLofNamedX fLofModuleKeys;				//! ... key list
+		TMrbLofNamedX fLofChannels;					//! channel numbers
+
 		TGMrbFocusList fFocusList;
+
+		TGMrbProgressBar * fProgressBar;			// progress bar to show accu state
+		TTimer * fAccuTimer;						// accu timer
+		Bool_t fStopAccu;							// kTRUE if accu has to be stopped
+		EDGFMcaRunState fRunState;					// run state
+		Int_t fSecsToWait;							// seconds to wait
+		Int_t fStopWatch;							// stopwatch
+
+		TTimer * fRefreshTimer;						// refresh timer
+
+		TGGroupFrame * fCanvasFrame; 				// display
+		TRootEmbeddedCanvas * fCanvas;				// canvas to display histogram
+
+		DGFModule * fModuleToBeDisplayed;			// module selected for display
+
+		FitHist * fFitHist; 						// canvas
 
 	ClassDef(DGFMcaDisplayPanel, 0) 	// [DGFControl] Accumulate/display MCA spectra
 };

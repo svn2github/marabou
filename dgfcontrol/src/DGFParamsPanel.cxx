@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.12 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.13 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -212,7 +212,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 		c++;
 		bit <<= 1;
 	}
-	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials, -1, 13, 
+	fAlpha = new TGMrbRadioButtonList(fSelectFrame, NULL, &fLofInitials, kDGFParamsSelectChannel, 13, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fAlpha);
@@ -345,20 +345,23 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 					break;
 					
 				case kCM_RADIOBUTTON:
-					{
-						fAlpha->SetState(Param1);
-						TMrbNamedX * nx = fLofInitials.FindByIndex(Param1);
-						TString x = nx->GetName();
-						Char_t c = x(0);
-						nx = (TMrbNamedX *) fLofParams.First();
-						while (nx) {
-							x = nx->GetName();
-							if (x(0) == c) {
-								fSelectParam->GetComboBox()->Select(nx->GetIndex());
-								break;
+					switch (Param1) {
+						case kDGFParamsSelectChannel:
+							{
+								UInt_t btn = fAlpha->GetActive();
+								TMrbNamedX * nx = fLofInitials.FindByIndex(btn);
+								TString x = nx->GetName();
+								Char_t c = x(0);
+								nx = (TMrbNamedX *) fLofParams.First();
+								while (nx) {
+									x = nx->GetName();
+									if (x(0) == c) {
+										fSelectParam->GetComboBox()->Select(nx->GetIndex());
+										break;
+									}
+									nx = (TMrbNamedX *) fLofParams.After(nx);
+								}
 							}
-							nx = (TMrbNamedX *) fLofParams.After(nx);
-						}
 					}
 					break;
 

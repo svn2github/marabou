@@ -7,7 +7,7 @@
 // Purpose:        Common defs for the DGF-4C GUI
 // Description:    Defines common values to be used for DGFControl
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlCommon.h,v 1.8 2004-09-28 13:47:31 rudi Exp $       
+// Revision:       $Id: DGFControlCommon.h,v 1.9 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -22,10 +22,10 @@ namespace std {} using namespace std;
 
 // channel ids to be used by checkbuttons
 enum EDGFChannels			{
-									kDGFChannel0			= BIT(12),
-									kDGFChannel1			= BIT(13),
-									kDGFChannel2			= BIT(14),
-									kDGFChannel3			= BIT(15)
+									kDGFChannel0			= BIT(0),
+									kDGFChannel1			= BIT(1),
+									kDGFChannel2			= BIT(2),
+									kDGFChannel3			= BIT(3)
 								};
 
 enum						{	kDGFChannelMask			= kDGFChannel0 | kDGFChannel1 | kDGFChannel2 | kDGFChannel3 };
@@ -42,13 +42,13 @@ enum						{	kNofCrates				= 8 	};
 // lifo to store objects located on heap
 #define HEAP(x)	fHeap.AddFirst(x)
 
-const SMrbNamedXShort kDGFChannelNumbers[] =
+const SMrbNamedX kDGFChannelNumbers[] =
 							{
-								{kDGFChannel0,	"0" 		},
-								{kDGFChannel1,	"1" 		},
-								{kDGFChannel2,	"2" 		},
-								{kDGFChannel3,	"3" 		},
-								{0, 			NULL		}
+								{kDGFChannel0,	"0", "Chn0"		},
+								{kDGFChannel1,	"1", "Chn1" 	},
+								{kDGFChannel2,	"2", "Chn2" 	},
+								{kDGFChannel3,	"3", "Chn3" 	},
+								{0, 			NULL,	NULL	}
 							};
 
 // geometry settings

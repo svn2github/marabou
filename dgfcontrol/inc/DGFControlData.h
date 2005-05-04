@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.7 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -61,21 +61,21 @@ class DGFControlData : public TNamed {
 
 	public:
 		// global status bits
-		enum EDGFStatusBit {	kDGFVerboseMode 		= BIT(0),
-								kDGFDebugMode			= BIT(1),
-								kDGFModNumGlobal		= BIT(2),
-								kDGFOfflineMode			= BIT(3),
-								kDGFSimulStartStop		= BIT(4),
-								kDGFSyncClocks		 	= BIT(5),
-								kDGFIndivSwitchBusTerm	= BIT(6),
-								kDGFUserPSA 			= BIT(7)
-							};
+		enum EDGFStatusBit		{	kDGFVerboseMode 		= BIT(0),
+									kDGFDebugMode			= BIT(1),
+									kDGFModNumGlobal		= BIT(2),
+									kDGFOfflineMode			= BIT(3),
+									kDGFSimulStartStop		= BIT(4),
+									kDGFSyncClocks		 	= BIT(5),
+									kDGFIndivSwitchBusTerm	= BIT(6),
+									kDGFUserPSA 			= BIT(7)
+								};
 		
-		enum EDGFAccessBit	{	kDGFAccessDirectory 	= BIT(0),
-								kDGFAccessRegular	 	= BIT(1),
-								kDGFAccessRead	 		= BIT(2),
-								kDGFAccessWrite 		= BIT(3)
-							};
+		enum EDGFAccessBit		{	kDGFAccessDirectory 	= BIT(0),
+									kDGFAccessRegular	 	= BIT(1),
+									kDGFAccessRead	 		= BIT(2),
+									kDGFAccessWrite 		= BIT(3)
+								};
 
 	public:
 		DGFControlData();				// default ctor

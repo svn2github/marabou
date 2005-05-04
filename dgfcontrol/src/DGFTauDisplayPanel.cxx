@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.5 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.6 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -196,7 +196,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, -1, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame,  "Channel", &fLofChannels, kDGFTauSelectChannel, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fSelectChannel);
@@ -532,12 +532,8 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					break;
 				case kCM_RADIOBUTTON:
 					switch (Param1) {
-						case kDGFChannel0:
-						case kDGFChannel1:
-						case kDGFChannel2:
-						case kDGFChannel3:
-							fSelectChannel->SetState((UInt_t) Param1);
-							gDGFControlData->SetSelectedChannelIndex(Param1);
+						case kDGFTauSelectChannel:
+							gDGFControlData->SetSelectedChannelIndex(fSelectChannel->GetActive());
 							break;
 					}
 					break;

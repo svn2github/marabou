@@ -8,7 +8,7 @@
 // Class:          DGFRunControlPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRunControlPanel.h,v 1.7 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -108,6 +108,8 @@ class DGFRunControlPanel : public TGMainFrame {
 		
 	protected:
 		void PopupMessageViewer();
+		void McaPause();
+		void McaResume();
 	
 	protected:
 		TList fHeap;								//! list of objects created on heap

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.12 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.13 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -371,6 +371,14 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 						fRunControlTab->GetTabTab(i)->ChangeBackground(gDGFControlData->fColorGray);
 					}
 					fRunControlTab->GetTabTab(Param1)->ChangeBackground(gDGFControlData->fColorGold);
+
+					if (fMcaDisplayPanel) {
+						if (Param1 == kDGFRunControlTabMCA || Param1 == kDGFRunControlTabCptm) {
+							fMcaDisplayPanel->McaResume();
+						} else {
+							fMcaDisplayPanel->McaPause();
+						}
+					}
 
 					switch (Param1) {
 

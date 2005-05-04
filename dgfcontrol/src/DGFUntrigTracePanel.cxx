@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.20 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.21 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -326,7 +326,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
-	chnPattern = (fSelectChannel->GetActive() >> 12) & 0xF;
+	chnPattern = (fSelectChannel->GetActive()) & 0xF;
 	if (chnPattern == 0) {
 		gMrbLog->Err()	<< "No channels selected" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartTrace");

@@ -1,12 +1,12 @@
 //__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            DGFInstrumentPanel
+// Name:           DGFInstrumentPanel
 // Purpose:        A GUI to control the XIA DGF-4C
 // Description:    Instrument Panel
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.13 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.14 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -152,7 +152,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	buttonGC->SetLH(scbLayout);
 	HEAP(scbLayout);
-	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels, -1, 1, 
+	fSelectChannel = new TGMrbRadioButtonList(fSelectFrame, "Channel", &fLofChannels, kDGFInstrSelectChannel, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
 	HEAP(fSelectChannel);
@@ -805,9 +805,12 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					}
 					break;
 				case kCM_RADIOBUTTON:
-					fSelectChannel->SetState((UInt_t) Param1);
-					gDGFControlData->SetSelectedChannelIndex(Param1);
-					this->InitializeValues(kFALSE);
+					switch (Param1) {
+						case kDGFInstrSelectChannel:
+							gDGFControlData->SetSelectedChannelIndex(fSelectChannel->GetActive());
+							this->InitializeValues(kFALSE);
+							break;
+					}
 					break;
 				case kCM_COMBOBOX:
 					gDGFControlData->SetSelectedModuleIndex(Param2);

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.16 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.17 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -26,7 +26,6 @@
 
 #include "TMrbDGFData.h"
 #include "TMrbDGFHistogramBuffer.h"
-#include "TGMrbProgressBar.h"
 
 #include "DGFControlData.h"
 #include "DGFMcaDisplayPanel.h"
@@ -36,8 +35,9 @@
 const SMrbNamedX kDGFTauButtons[] =
 			{
 				{DGFMcaDisplayPanel::kDGFMcaDisplayAcquire, 		"Start", "Start run to accumulate histograms"	},
-				{DGFMcaDisplayPanel::kDGFMcaDisplayAbort,			"Abort",			"Abort accumulation"	},
-				{DGFMcaDisplayPanel::kDGFMcaDisplayReset,			"Reset",			"Reset to default values"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayHisto,			"Display",	"Display histogram"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayHistoClear,		"Display + Clear",	"Display histogram, then reset dgf"	},
+				{DGFMcaDisplayPanel::kDGFMcaDisplayStop,			"Stop",		"Stop accumulation"	},
 				{0, 															NULL,				NULL						}
 			};
 
@@ -46,13 +46,12 @@ const SMrbNamedXShort kDGFMcaTimeScaleButtons[] =
 								{DGFMcaDisplayPanel::kDGFMcaTimeScaleSecs, 		"secs"		},
 								{DGFMcaDisplayPanel::kDGFMcaTimeScaleMins, 		"mins"		},
 								{DGFMcaDisplayPanel::kDGFMcaTimeScaleHours, 	"hours" 	},
+								{DGFMcaDisplayPanel::kDGFMcaTimeScaleInfin, 	"infin" 	},
 								{0, 											NULL		}
 							};
 
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
-
-static Bool_t abortAccu = kFALSE;
 
 static TString btnText;
 
@@ -202,22 +201,21 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
  	fSelectChannel->SetState(kDGFChannelMask, kButtonDown);
 	fHFrame->AddFrame(fSelectChannel, frameGC->LH());
 
-// accu settings
+// run time
 	TGLayoutHints * accuLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, accuLayout);
 	HEAP(accuLayout);
-	fAccuFrame = new TGGroupFrame(fHFrame, "Accu Settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fAccuFrame = new TGGroupFrame(fHFrame, "Run Time", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fAccuFrame);
 	fHFrame->AddFrame(fAccuFrame, frameGC->LH());
 
 	TGLayoutHints * teLayout = new TGLayoutHints(kLHintsTop, 1, 1, 1, 1);
 	entryGC->SetLH(teLayout);
 	HEAP(teLayout);
-	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, "Run time",
-																200, kDGFMcaDisplayRunTime,
+	fRunTimeEntry = new TGMrbLabelEntry(fAccuFrame, NULL, 200,	kDGFMcaDisplayRunTime,
 																kLEWidth,
 																kLEHeight,
-																kEntryWidth,
+																200,
 																frameGC, labelGC, entryGC, buttonGC, kTRUE);
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
@@ -228,12 +226,80 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	fRunTimeEntry->AddToFocusList(&fFocusList);
 	fRunTimeEntry->Associate(this);
 
-	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons, -1, 1, 
+	fTimeScale = new TGMrbRadioButtonList(fAccuFrame,  NULL, &fMcaTimeScaleButtons,
+													-1, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, rbuttonGC);
 	HEAP(fTimeScale);
 	fAccuFrame->AddFrame(fTimeScale, frameGC->LH());
 	fTimeScale->SetState(DGFMcaDisplayPanel::kDGFMcaTimeScaleSecs, kButtonDown);
+
+//	display: module/channel
+	TGLayoutHints * selectLayout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
+	gDGFControlData->SetLH(groupGC, frameGC, selectLayout);
+	HEAP(selectLayout);
+	fDisplayFrame = new TGGroupFrame(this, "Display", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fDisplayFrame);
+	this->AddFrame(fDisplayFrame, groupGC->LH());
+
+	TGLayoutHints * smfLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 10, 1, 10, 1);
+	frameGC->SetLH(smfLayout);
+	HEAP(smfLayout);
+	TGLayoutHints * smlLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
+	labelGC->SetLH(smlLayout);
+	HEAP(smlLayout);
+	TGLayoutHints * smcLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX | kLHintsExpandY, 1, 1, 1, 1);
+	comboGC->SetLH(smcLayout);
+	HEAP(smcLayout);
+
+	Bool_t clearList = kTRUE;
+	for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
+		gDGFControlData->CopyKeyList(&fLofModuleKeys, cl, gDGFControlData->GetPatInUse(cl), clearList);
+		clearList = kFALSE;
+	}
+
+	fDisplayModule = new TGMrbLabelCombo(fDisplayFrame,  "Module",
+											&fLofModuleKeys,
+											DGFMcaDisplayPanel::kDGFMcaDisplaySelectDisplay, 2,
+											kTabWidth, kLEHeight,
+											kEntryWidth,
+											frameGC, labelGC, comboGC, buttonGC, kTRUE);
+	HEAP(fDisplayModule);
+	fDisplayFrame->AddFrame(fDisplayModule, frameGC->LH());
+	fDisplayModule->GetComboBox()->Select(((TMrbNamedX *) fLofModuleKeys.First())->GetIndex());
+	fDisplayModule->Associate(this); 	// get informed if module selection changes
+
+	TGLayoutHints * scfLayout = new TGLayoutHints(kLHintsLeft, 80, 1, 10, 1);
+	frameGC->SetLH(scfLayout);
+	HEAP(scfLayout);
+	TGLayoutHints * sclLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
+	labelGC->SetLH(sclLayout);
+	HEAP(sclLayout);
+	TGLayoutHints * scbLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
+	buttonGC->SetLH(scbLayout);
+	HEAP(scbLayout);
+	fDisplayChannel = new TGMrbRadioButtonList(fDisplayFrame, "Channel", &fLofChannels,
+													kDGFMcaDisplaySelectChannel, 1, 
+													kTabWidth, kLEHeight,
+													frameGC, labelGC, rbuttonGC);
+	HEAP(fDisplayChannel);
+	fDisplayChannel->SetState(1);
+	fDisplayChannel->Associate(this);	// get informed if channel number changes
+	fDisplayFrame->AddFrame(fDisplayChannel, frameGC->LH());
+
+	fRefreshTimeEntry = new TGMrbLabelEntry(fDisplayFrame, "Refresh (s)", 200,	kDGFMcaDisplayRefreshDisplay,
+																kLEWidth,
+																kLEHeight,
+																100,
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fRefreshTimeEntry);
+	fDisplayFrame->AddFrame(fRefreshTimeEntry, frameGC->LH());
+	fRefreshTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fRefreshTimeEntry->GetEntry()->SetText("0");
+	fRefreshTimeEntry->SetRange(0, 60);
+	fRefreshTimeEntry->SetIncrement(10);
+	fRefreshTimeEntry->AddToFocusList(&fFocusList);
+	fRefreshTimeEntry->Associate(this);
 
 //	buttons
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
@@ -244,10 +310,15 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	fButtonFrame->Associate(this);
 
-//	no accu running
-	fIsRunning = kFALSE;
-	
+// canvas
+//	fCanvasFrame = new TGGroupFrame(this, "Histogram", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+//	HEAP(fCanvasFrame);
+//	this->AddFrame(fCanvasFrame, frameGC->LH());
+//	fCanvas = new TRootEmbeddedCanvas("mca", fCanvasFrame, 400, 600);
+
 	this->ResetValues();
+	fAccuTimer = NULL;
+	fRefreshTimer = NULL;
 
 	dgfFrameLayout = new TGLayoutHints(kLHintsBottom | kLHintsLeft | kLHintsExpandX, 2, 1, 2, 1);
 	HEAP(dgfFrameLayout);
@@ -285,17 +356,16 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					if (Param1 < kDGFMcaDisplaySelectColumn) {
 						switch (Param1) {
 							case kDGFMcaDisplayAcquire:
-								if (fIsRunning) {
-									this->SetRunning(kFALSE);
-									new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Aborting histogram acquisition", kMBIconExclamation);
-								} else {
-									this->AcquireHistos();
-								}
+								this->AcquireHistos();
 								break;
-							case kDGFMcaDisplayAbort:
-								abortAccu = kTRUE;
+							case kDGFMcaDisplayHisto:
+								this->DisplayHisto(kFALSE);
 								break;
-							case kDGFMcaDisplayReset:
+							case kDGFMcaDisplayHistoClear:
+								this->DisplayHisto(kTRUE);
+								break;
+							case kDGFMcaDisplayStop:
+								fStopAccu = kTRUE;
 								break;
 							case kDGFMcaDisplaySelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
@@ -319,6 +389,26 @@ Bool_t DGFMcaDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 						}
 					}
 
+					break;
+				case kCM_RADIOBUTTON:
+					switch (Param1) {
+						case kDGFMcaDisplaySelectChannel:
+							{
+								UInt_t chn = fDisplayChannel->GetActive();
+								UInt_t chnPattern = fSelectChannel->GetActive();
+								if ((chnPattern & chn) == 0) {
+									gMrbLog->Err()	<< "Display channel not active - 0x" << chn << endl;
+									gMrbLog->Flush(this->ClassName(), "ProcessMessage");
+									fDisplayChannel->SetState(0);
+								} else {
+									fDisplayChannel->SetState(chn);
+								}
+							}
+							break;
+					}
+					break;
+				case kCM_COMBOBOX:
+					fModuleToBeDisplayed = gDGFControlData->GetModule(Param2);
 					break;
 			}
 			break;
@@ -351,30 +441,35 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbDGFHistogramBuffer histoBuffer;
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	Int_t modNo, cl;
-	Int_t nofModules, nofHistos, nofWords;
-	TMrbString intStr;
+	Int_t nofModules;
 	Int_t accuTime;
 	TString timeScale;
 										
-	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
+	if (fRunState == kDGFMcaIsRunning) {
+		gMrbLog->Err()	<< "Accu in progress - press \"Stop\" first" << endl;
+		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Warning", "Accu in progress - press \"Stop\" first", kMBIconExclamation);
+		return(kFALSE);
+	}
+
 	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
-	intStr = fRunTimeEntry->GetEntry()->GetText();
+	TMrbString intStr = fRunTimeEntry->GetEntry()->GetText();
 	intStr.ToInteger(accuTime);
 	Int_t waitInv = 0;
 	switch (tp->GetIndex()) {
 		case kDGFMcaTimeScaleSecs:	waitInv = 1; break;
 		case kDGFMcaTimeScaleMins:	waitInv = 60; break;
 		case kDGFMcaTimeScaleHours: waitInv = 60 * 60; break;
+		case kDGFMcaTimeScaleInfin: waitInv = 0; break;
 	}
-	Int_t secsToWait = accuTime * waitInv;
+	fSecsToWait = accuTime * waitInv;
 
-	UInt_t chnPattern = fSelectChannel->GetActive() >> 12;
+	UInt_t chnPattern = fSelectChannel->GetActive();
 	if (chnPattern == 0) {
 		gMrbLog->Err()	<< "No channels selected" << endl;
 		gMrbLog->Flush(this->ClassName(), "AcquireHistos");
@@ -391,7 +486,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 			if (!offlineMode) {
 				dgf = dgfModule->GetAddr();
 				dgf->AccuHist_Init(chnPattern);
-				dgf->AccuHist_Start();
+				dgf->AccuHist_Start(kTRUE);
 			}
 		}
 		dgfModule = gDGFControlData->NextModule(dgfModule);
@@ -404,37 +499,102 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 		return(kFALSE);
 	}
 
-	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Accumulating ...", 400, "blue", NULL, kTRUE);
-	pgb->SetRange(0, secsToWait);
-	abortAccu = kFALSE;
-	if (offlineMode) secsToWait = 1;
-	for (Int_t i = 0; i < secsToWait; i++) {
-		sleep(1);
-		pgb->Increment(1, Form("%d of %d sec(s)", i, secsToWait));
-		gSystem->ProcessEvents();
-		if (abortAccu) {
-			gMrbLog->Err() << "Aborted after " << i << " secs. Stopping current run." << endl;
-			gMrbLog->Flush(this->ClassName(), "AccuHistograms");
-			break;
-		}	
-	}
-	delete pgb;
+	fProgressBar = new TGMrbProgressBar(fClient->GetRoot(), this, "Accumulating ...", 400, "blue", NULL, kTRUE);
+	fProgressBar->SetRange(0, (fSecsToWait == 0) ? 60 : fSecsToWait);
 
-	nofHistos = 0;
-	nofModules = 0;
-	dgfModule = gDGFControlData->FirstModule();
+	if (offlineMode) fSecsToWait = 1;
+	fRunState = kDGFMcaIsRunning;
+	fStopAccu = kFALSE;
+	fStopWatch = 0;
+	if (fAccuTimer == NULL) {
+		fAccuTimer = new TTimer(this, 1000, kFALSE);
+		fAccuTimer->SetTimerID(kDGFAccuTimerID);
+	}
+	fAccuTimer->Start(1000);
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::HandleTimer(TTimer * Timer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::HandleTimer
+// Purpose:        Handle timer requests
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Method will be called on timer requests.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Timer->GetTimerID() == kDGFAccuTimerID) {
+		Bool_t stopIt = kFALSE;
+		fStopWatch++;			// count seconds
+
+		if (fStopAccu) {
+			gMrbLog->Out() << "Accu stopped after " << fStopWatch << " secs." << endl;
+			gMrbLog->Flush(this->ClassName(), "HandleTimer", setblue);
+			stopIt = kTRUE;
+		}
+
+		if (fSecsToWait != 0 && fStopWatch > fSecsToWait) stopIt = kTRUE;
+
+		if (stopIt) {
+			Timer->Stop();
+			fRunState = kDGFMcaRunStopped;
+			if (fRefreshTimer) fRefreshTimer->Stop();
+			delete fProgressBar;
+			fProgressBar = NULL;
+			this->StoreHistos();
+		} else if (fProgressBar) {
+			if (fSecsToWait == 0) {
+				if ((fStopWatch % 60) == 0) fProgressBar->Reset();
+				fProgressBar->Increment(1, Form("%d secs", fStopWatch));
+			} else {
+				fProgressBar->Increment(1, Form("%d of %d sec(s)", fStopWatch, fSecsToWait));
+			}
+		}
+	} else if (Timer->GetTimerID() == kDGFRefreshTimerID) {
+		this->DisplayHisto(kFALSE);
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::StoreHistos() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::StoreHistos
+// Purpose:        Store resulting histograms
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Saves histograms to file
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbDGFHistogramBuffer histoBuffer;
+	TMrbString intStr;
+	TString timeScale;
+										
+	Bool_t verbose = gDGFControlData->IsVerbose();
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+
+	Int_t nofHistos = 0;
+	Int_t nofModules = 0;
+	UInt_t chnPattern = fSelectChannel->GetActive();
+
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	TFile * mcaFile = NULL;
 	ofstream listFile;
 	while (dgfModule) {
-		cl = nofModules / kNofModulesPerCluster;
-		modNo = nofModules - cl * kNofModulesPerCluster;
+		Int_t cl = nofModules / kNofModulesPerCluster;
+		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
 		if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
 			if (!offlineMode) {
-				dgf = dgfModule->GetAddr();
+				TMrbDGF * dgf = dgfModule->GetAddr();
 				histoBuffer.Reset();
 				histoBuffer.SetModule(dgf);
 				if (dgf->AccuHist_Stop(0)) {
-					nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
+					Int_t nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, chnPattern);
 					if (nofWords > 0) {
 						if (verbose) histoBuffer.Print();
 						for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
@@ -475,6 +635,189 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	return(kTRUE);
 }
 
+Bool_t DGFMcaDisplayPanel::DisplayHisto(Bool_t ClearMCA) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::DisplayHisto
+// Purpose:        Display selected histogram
+// Arguments:      Bool_t ClearMCA   -- clear mca if kTRUE
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Displays selected histogram.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbDGFHistogramBuffer histoBuffer;
+										
+	Bool_t verbose = gDGFControlData->IsVerbose();
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+
+	TMrbString intStr = fRefreshTimeEntry->GetEntry()->GetText();
+	Int_t refresh;
+	intStr.ToInteger(refresh);
+	if (refresh > 0) {
+		if (fRefreshTimer == NULL) {
+			fRefreshTimer = new TTimer(this, 1000 * refresh, kFALSE);
+			fRefreshTimer->SetTimerID(kDGFRefreshTimerID);
+		}
+		fRefreshTimer->Start(1000 * refresh, kTRUE);
+	} else if (fRefreshTimer) {
+		fRefreshTimer->Stop();
+	}
+
+	DGFModule * dgfModule = fModuleToBeDisplayed;
+	if (dgfModule == NULL) {
+		gMrbLog->Err()  << "No module selected for display" << endl;
+		gMrbLog->Flush(this->ClassName(), "DisplayHisto");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No module selected", kMBIconExclamation);
+		return(kFALSE);
+	}
+
+	UInt_t displPattern = fDisplayChannel->GetActive();
+	if (displPattern == 0) {
+		gMrbLog->Err()  << "No channel selected for display" << endl;
+		gMrbLog->Flush(this->ClassName(), "DisplayHisto");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "No channel selected", kMBIconExclamation);
+		return(kFALSE);
+	}
+
+	if (!offlineMode) {
+		TMrbDGF * dgf = dgfModule->GetAddr();
+		if (fRunState == kDGFMcaIsRunning) dgf->AccuHist_Stop(0);
+		histoBuffer.Reset();
+		histoBuffer.SetModule(dgf);
+		Int_t nofWords = dgf->ReadHistogramsViaRsh(histoBuffer, displPattern);
+		if (nofWords > 0) {
+			if (verbose) histoBuffer.Print();
+			Int_t chn = 0;
+			for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++, chn++) {
+				if (displPattern & 1)break;
+				displPattern >>= 1;
+			}
+			if (histoBuffer.IsActive(chn)) {
+				histoBuffer.FillHistogram(chn, kFALSE);
+				TH1F * hist = histoBuffer.Histogram(chn);
+				TString fhCanvas = "fhMcaCanvas";
+				fFitHist = (FitHist *) gROOT->FindObject(fhCanvas.Data());
+				if (fFitHist) {
+					fFitHist->GetCanvas()->cd();
+					fFitHist->SetHist(hist);
+				} else {
+					gROOT->cd();
+					Window_t wdum;
+					Int_t ax, ay, w, h;
+					w = this->GetWidth();
+					h = this->GetHeight();
+					gVirtualX->TranslateCoordinates(	this->GetId(), this->GetParent()->GetId(),
+														w + 10, h / 2,
+														ax, ay, wdum);
+					fFitHist = new FitHist(				fhCanvas.Data(), hist->GetTitle(),
+														hist,
+														hist->GetName(),
+														ax, ay, w / 2, h / 2);
+					HEAP(fFitHist);
+				}
+			}
+		}
+		if (fRunState == kDGFMcaIsRunning) {
+			UInt_t chnPattern = fSelectChannel->GetActive();
+			if (ClearMCA) {
+				dgf->AccuHist_Init(chnPattern);
+				dgf->AccuHist_Start(kTRUE);
+			} else {
+				dgf->InhibitNewRun(kTRUE);
+				dgf->AccuHist_Init(chnPattern);
+				dgf->AccuHist_Start(kFALSE);
+				dgf->InhibitNewRun(kFALSE);
+			}
+		}
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::McaPause() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::McaPause
+// Purpose:        Stop MCA run temporarily
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    If MCA is running it will be stopped.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fRunState == kDGFMcaIsRunning) {
+		Bool_t verbose = gDGFControlData->IsVerbose();
+		Bool_t offlineMode = gDGFControlData->IsOffline();
+		if (fAccuTimer) fAccuTimer->Stop();
+		if (fRefreshTimer) fRefreshTimer->Stop();
+		Int_t nofModules = 0;
+		DGFModule * dgfModule = gDGFControlData->FirstModule();
+		while (dgfModule) {
+			Int_t cl = nofModules / kNofModulesPerCluster;
+			Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+			if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
+				if (!offlineMode) {
+					TMrbDGF * dgf = dgfModule->GetAddr();
+					dgf->AccuHist_Stop(0);
+					dgf->InhibitNewRun();				}
+			}
+			dgfModule = gDGFControlData->NextModule(dgfModule);
+			nofModules++;
+		}
+		if (verbose) {
+			gMrbLog->Out()  << "MCA run pausing" << endl;
+			gMrbLog->Flush(this->ClassName(), "McaPause", setmagenta);
+		}
+		fRunState = kDGFMcaRunPausing;
+	}
+	return(kTRUE);
+}
+
+Bool_t DGFMcaDisplayPanel::McaResume() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFMcaDisplayPanel::McaResume
+// Purpose:        Resume MCA run
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    If MCA is running accumulation will continue.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fRunState == kDGFMcaRunPausing) {
+		Bool_t verbose = gDGFControlData->IsVerbose();
+		Bool_t offlineMode = gDGFControlData->IsOffline();
+		DGFModule * dgfModule = gDGFControlData->FirstModule();
+		Int_t nofModules = 0;
+		while (dgfModule) {
+			Int_t cl = nofModules / kNofModulesPerCluster;
+			Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+			if ((fCluster[cl]->GetActive() & (0x1 << modNo)) != 0) {
+				if (!offlineMode) {
+					UInt_t chnPattern = fSelectChannel->GetActive();
+					TMrbDGF * dgf = dgfModule->GetAddr();
+					dgf->AccuHist_Init(chnPattern);
+					dgf->AccuHist_Start(kFALSE);
+					dgf->InhibitNewRun(kFALSE);
+				}
+			}
+			dgfModule = gDGFControlData->NextModule(dgfModule);
+			nofModules++;
+		}
+		if (fAccuTimer) fAccuTimer->Start();
+		if (fRefreshTimer) fRefreshTimer->Start(-1, kTRUE);
+		if (verbose) {
+			gMrbLog->Out()  << "MCA resumes running" << endl;
+			gMrbLog->Flush(this->ClassName(), "McaResume", setmagenta);
+		}
+		fRunState = kDGFMcaIsRunning;
+	}
+	return(kTRUE);
+}
+
 Bool_t DGFMcaDisplayPanel::Update(Int_t EntryId) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -507,6 +850,11 @@ Bool_t DGFMcaDisplayPanel::ResetValues() {
 //////////////////////////////////////////////////////////////////////////////
 
 	fRunTimeEntry->GetEntry()->SetText("10");
+	fRefreshTimeEntry->GetEntry()->SetText("0");
+	fRunState = kDGFMcaRunStopped;
+	fStopAccu = kFALSE;
+	fStopWatch = 0;
+	fSecsToWait = 0;
 	return(kTRUE);
 }
 
@@ -522,40 +870,4 @@ void DGFMcaDisplayPanel::MoveFocus(Int_t EntryId) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-}
-
-void DGFMcaDisplayPanel::SetRunning(Bool_t RunFlag) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           DGFMcaDisplayPanel::SetRunning
-// Purpose:        Reflect run status
-// Arguments:      Bool_t RunFlag     -- run status
-// Results:        --
-// Exceptions:     
-// Description:    
-// Keywords:       
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbNamedX * nx;
-	TGTextButton * btn;
-		
-	TMrbDGF * dgf;
-		
-	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-
-	nx = fMcaActions.FindByIndex(kDGFMcaDisplayAcquire);
-	btn = (TGTextButton *) fButtonFrame->GetButton(kDGFMcaDisplayAcquire);
-
-	if (RunFlag) {
-		btnText = "Stop acquisition";
-		btn->SetText(btnText);
-		btn->ChangeBackground(gDGFControlData->fColorRed);
-		fIsRunning = kTRUE;
-	} else {
-		btnText = nx->GetName();
-		btn->SetText(btnText);
-		btn->ChangeBackground(gDGFControlData->fColorGray);
-		fIsRunning = kFALSE;
-	}
-	btn->Layout();
 }

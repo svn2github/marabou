@@ -8,7 +8,7 @@
 // Class:          DGFTauDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTauDisplayPanel.h,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.h,v 1.5 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -58,6 +58,7 @@ class DGFTauDisplayPanel : public TGCompositeFrame {
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFTauCmdId 	{
 									kDGFTauSelectModule, 				//		module
+									kDGFTauSelectChannel, 				//		channel
 									kDGFTauTraceLength,					//		trace 	length
 									kDGFTauTraceNofTraces,				//				number of traces
 									kDGFTauFitFrom, 					//		fit 	from

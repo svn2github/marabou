@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.6 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.7 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -426,7 +426,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 	}
 	Int_t secsToWait = accuTime * waitInv;
 
-	UInt_t chnPattern = fSelectChannel->GetActive() >> 12;
+	UInt_t chnPattern = fSelectChannel->GetActive();
 	if (chnPattern == 0) {
 		gMrbLog->Err()	<< "No channels selected" << endl;
 		gMrbLog->Flush(this->ClassName(), "TauFit");

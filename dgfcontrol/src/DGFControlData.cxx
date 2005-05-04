@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.5 2005-04-28 12:56:09 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.6 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -545,7 +545,7 @@ Int_t DGFControlData::ChannelIndex2Number(Int_t ChannelIndex) {
 //////////////////////////////////////////////////////////////////////////////
 
 	for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) {
-		if (ChannelIndex & BIT(12)) return(i);
+		if (ChannelIndex & 1) return(i);
 		ChannelIndex >>= 1;
 	};
 	return(-1);

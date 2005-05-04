@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.20 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.21 2005-05-04 13:36:57 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -388,7 +388,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 	traceBuffer.Set(4 * 8192);
 	
 	nofTraces = 0;
-	chnPattern = fSelectChannel->GetActive() >> 12;
+	chnPattern = fSelectChannel->GetActive();
 	nofChannels = 0;
 	for (Int_t chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (chnPattern & (1 << chn)) nofChannels++;
