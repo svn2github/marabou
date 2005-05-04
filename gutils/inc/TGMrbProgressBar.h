@@ -9,7 +9,7 @@
 //                                             showing a progress bar
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbProgressBar.h,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbProgressBar.h,v 1.3 2005-05-04 13:37:36 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -58,6 +58,8 @@ class TGMrbProgressBar: public TGTransientFrame {
 			if (Detail && fDetail)  fDetail->SetText(Detail);
 		}; 
 		inline void SetBarColor(const Char_t * Color) { fBar->SetBarColor(Color); }; 
+		inline void SetPosition(Int_t Position) { fBar->SetPosition(Position); }; 
+		inline void Reset() { fBar->Reset(); }; 
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbProgressBar.html&"); };
 

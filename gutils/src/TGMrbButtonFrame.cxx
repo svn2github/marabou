@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.5 2005-04-28 10:25:49 rudi Exp $       
+// Revision:       $Id: TGMrbButtonFrame.cxx,v 1.6 2005-05-04 13:37:36 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -293,11 +293,13 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 				namedX = (TMrbNamedX *) fButtons.After((TObject *) namedX);
 			}
 		} else {
+			fRBState = 0;
 			while (namedX) {
 				button = (TGButton *) namedX->GetAssignedObject();
 				if (button->GetState() != kButtonDisabled) {
 					if ((UInt_t) namedX->GetIndex() == Pattern) {
 						button->SetState(State);
+						fRBState |= Pattern;
 					} else {
 						button->SetState(kButtonUp);
 					}
@@ -338,7 +340,7 @@ void TGMrbButtonFrame::SetState(UInt_t Pattern, EButtonState State) {
 	}
 }
 
-UInt_t TGMrbButtonFrame::GetActive() const {
+UInt_t TGMrbButtonFrame::GetActive() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbButtonFrame::GetActive
@@ -357,10 +359,21 @@ UInt_t TGMrbButtonFrame::GetActive() const {
 	pattern = 0;
 
 	namedX = (TMrbNamedX *) fButtons.First();
-	while (namedX) {
-		button = (TGButton *) namedX->GetAssignedObject();
-		if (button->GetState() == kButtonDown) pattern |= namedX->GetIndex();
-		namedX = (TMrbNamedX *) fButtons.After((TObject *) namedX);
+	if (fType & kGMrbRadioButton) {
+		while (namedX) {
+			button = (TGButton *) namedX->GetAssignedObject();
+			UInt_t bState = button->GetState();
+			if (bState == kButtonDown && ((fRBState & namedX->GetIndex()) == 0)) pattern |= namedX->GetIndex();
+			namedX = (TMrbNamedX *) fButtons.After((TObject *) namedX);
+		}
+		if (pattern == 0) pattern = fRBState;
+		this->SetState(pattern);
+	} else {
+		while (namedX) {
+			button = (TGButton *) namedX->GetAssignedObject();
+			if (button->GetState() == kButtonDown) pattern |= namedX->GetIndex();
+			namedX = (TMrbNamedX *) fButtons.After((TObject *) namedX);
+		}
 	}
 	return(pattern);
 }
