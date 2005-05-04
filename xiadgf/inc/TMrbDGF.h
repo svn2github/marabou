@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.11 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.12 2005-05-04 13:38:18 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -16,6 +16,7 @@
 #include <time.h>
 
 #include "TROOT.h"
+#include "TTimer.h"
 #include "TNamed.h"
 #include "TEnv.h"
 #include "TH1.h"
@@ -298,7 +299,7 @@ class TMrbDGF : public TNamed {
 		Bool_t AccuHistograms(Int_t Time, const Char_t * Scale = "secs",
 													UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);	// accumulate histogram
 			Bool_t AccuHist_Init(UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);
-			Bool_t AccuHist_Start();
+			Bool_t AccuHist_Start(Bool_t ClearMCA = kTRUE);
 			Bool_t AccuHist_Stop(Int_t SecsToWait = 10);
 
 		Int_t ReadHistograms(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPattern); 	// get mca data via esone
@@ -311,8 +312,9 @@ class TMrbDGF : public TNamed {
 												Bool_t DrawIt = kTRUE); 			// perform tau fit
 
 		// run control
-		Bool_t StartRun(Bool_t ClearMCA = kTRUE);									// start run / clear MCA data
+		Bool_t StartRun(Bool_t NewRun = kTRUE);										// start (new) run
 		Bool_t StopRun();															// stop run
+		inline void InhibitNewRun(Bool_t Flag = kTRUE) { fInhibitNewRun = Flag; };	// inhibit new run									// inhibit new run from outside
 		inline void AbortRun() { fStatusM |= TMrbDGF::kDSPAborted; };				// abort run
 		inline Bool_t IsAborted() { return((fStatusM & TMrbDGF::kDSPAborted) != 0); };
 				
@@ -382,6 +384,8 @@ class TMrbDGF : public TNamed {
 
 		UShort_t ReadDspAddr(Int_t Addr);
 
+		virtual Bool_t HandleTimer(TTimer * Timer);
+
 	protected:
 		void ResetDGF();												// reset data base
 		void SetupDGF(Bool_t LocalData = kFALSE);						// initialize data base
@@ -422,6 +426,8 @@ class TMrbDGF : public TNamed {
 		UInt_t fStatusM; 												// soft status (module)
 		EMrbWaitStatus fStatusW;										// wait status
 		
+		Bool_t fInhibitNewRun;											// kTRUE -> 'new run' disabled
+
 		Int_t fModNum;													// module number
 
 		TMrbEsone fCamac;												//! camac handle via esone rpc
@@ -438,6 +444,10 @@ class TMrbDGF : public TNamed {
 		TF1 * fGaussian;												//! gaussian fit
 
 		TMrbDGFData * fDGFData; 										// pointer to DGF data base
+
+		TTimer * fAccuTimer;						// accu timer
+		Int_t fSecsToWait;							// seconds to wait
+		Int_t fStopWatch;							// stopwatch
 
 		TArrayS fTmpParTrace;						// temp param storage
 		TArrayS fTmpParUntrigTrace;

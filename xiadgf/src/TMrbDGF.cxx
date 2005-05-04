@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.32 2005-05-02 08:45:43 rudi Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.33 2005-05-04 13:38:18 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -145,6 +145,8 @@ TMrbDGF::TMrbDGF(	const Char_t * DGFName,
 		fTauDistr = NULL;								// tau distribution
 		fGaussian = NULL;								// gaussian fit
 
+		fInhibitNewRun = kFALSE;						// 'new run' enabled
+
 		this->SetClusterID();
 		this->SetRevision();							// module revision unknown
 
@@ -207,6 +209,8 @@ TMrbDGF::TMrbDGF(	const Char_t * DGFName,
 
 		fTauDistr = NULL;								// tau distribution
 		fGaussian = NULL;								// gaussian fit
+
+		fInhibitNewRun = kFALSE;						// 'new run' enabled
 
 		this->SetClusterID();
 		this->SetRevision();							// module revision unknown
@@ -3139,7 +3143,7 @@ Bool_t TMrbDGF::CheckBufferSize(const Char_t * Method, Int_t BufSize) {
 	return(kTRUE);
 }
 	
-Bool_t TMrbDGF::StartRun(Bool_t ClearMCA) {
+Bool_t TMrbDGF::StartRun(Bool_t NewRun) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::StartRun
@@ -3161,7 +3165,16 @@ Bool_t TMrbDGF::StartRun(Bool_t ClearMCA) {
 		gMrbLog->Flush(this->ClassName(), "StartRun");
 		return(kFALSE);
 	}
-	if (ClearMCA) csr |= TMrbDGFData::kNewRun;
+
+	if (fInhibitNewRun) {
+		if (NewRun && gMrbDGFData->fVerboseMode) {
+			cout << setmagenta << this->ClassName() << "::StartRun(): NewRun bit disabled" << setblack << endl;
+		}
+		NewRun = kFALSE;
+	}
+
+	if (NewRun) csr |= TMrbDGFData::kNewRun;
+
 	this->WriteCSR(csr | TMrbDGFData::kRunEna);
 	this->Wait();
 	fStatusM &= ~TMrbDGF::kDSPAborted;
@@ -3538,8 +3551,6 @@ Bool_t TMrbDGF::SetDelay(Int_t Channel, Double_t Delay, Bool_t UpdateDSP) {
 	Int_t trgDelay = 0;
 	Int_t pafLength, peakSep, peakSample, dec, dec2;
 
-	cout << "@@ " << Channel << " " << Delay << endl;
-
 	if (UpdateDSP && !this->CheckConnect("SetDelay")) return(kFALSE);
 	if (!this->CheckChannel("SetDelay", Channel)) return(kFALSE);
 
@@ -3553,7 +3564,6 @@ Bool_t TMrbDGF::SetDelay(Int_t Channel, Double_t Delay, Bool_t UpdateDSP) {
 	pafLength = trgDelay + (Int_t) (Delay * 40 + .5) + 8;
 	this->SetParValue(Channel, "PAFLENGTH", pafLength, UpdateDSP);
     this->SetParValue(Channel, "TRIGGERDELAY", trgDelay, UpdateDSP);
-	cout << "@@ PAFLENGTH=" << pafLength << " TRIGGERDELAY=" << trgDelay << endl;
    
 	if (gMrbDGFData->fVerboseMode) {
 		cout 	<< this->ClassName() << "::SetDelay(): PEAKSEP" << Channel
@@ -4531,7 +4541,7 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 	TString hdPgm = gEnv->GetValue("TMrbDGF.ProgramToDumpHistos", "/nfs/mbssys/standalone/histoDump");
 	TString hdPath = gSystem->Getenv("PWD");
 	if (hdPath.IsNull()) hdPath = gSystem->WorkingDirectory();
-	TString cmd = Form("rsh %s 'cd %s; %s %d %d %#x %s b'",
+	TString cmd = Form("rsh %s 'cd %s; %s %d %d %#x %s b q'",
 							fCamacHost.Data(),
 							hdPath.Data(),
 							hdPgm.Data(),
@@ -4556,6 +4566,7 @@ Int_t TMrbDGF::ReadHistogramsViaRsh(TMrbDGFHistogramBuffer & Buffer, UInt_t Chan
 			fileOk = kTRUE;
 			break;
 		}
+		gSystem->ProcessEvents();
 		usleep(1000);
 	}
 	if (!fileOk) {
@@ -4676,7 +4687,7 @@ Bool_t TMrbDGF::AccuHist_Init(UInt_t ChannelPattern) {
 	return(sts);
 }
 
-Bool_t TMrbDGF::AccuHist_Start() {
+Bool_t TMrbDGF::AccuHist_Start(Bool_t ClearMCA) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::AccuHist_Start
@@ -4685,7 +4696,7 @@ Bool_t TMrbDGF::AccuHist_Start() {
 //////////////////////////////////////////////////////////////////////////////
 
 	this->SetParValue("RUNTASK", TMrbDGFData::kRunMCA, kTRUE);
-	this->StartRun();			// start & clear MCA
+	this->StartRun(ClearMCA);			// start (+ clear)
 	fStatusW = TMrbDGF::kWaitActive;
 	return(kTRUE);
 }
@@ -4698,20 +4709,43 @@ Bool_t TMrbDGF::AccuHist_Stop(Int_t SecsToWait) {
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
-	if (SecsToWait > 0) {
-		for (Int_t i = 0; i < SecsToWait; i++) {
-			sleep(1);
-			gSystem->ProcessEvents();
-			if (this->IsAborted()) {
-				gMrbLog->Err() << "Aborted after " << i << " secs. Stopping current run." << endl;
-				gMrbLog->Flush(this->ClassName(), "AccuHistograms");
-				fStatusW = TMrbDGF::kWaitAborted;
-				break;
-			}
-		}
+	fSecsToWait = SecsToWait;
+	if (fSecsToWait > 0) {
+		fAccuTimer = new TTimer(this, 1000, kFALSE);
+		fAccuTimer->Start();
+		fStopWatch = 0;
+	} else {
+		this->StopRun();
+		this->RestoreParams(kSaveAccuHist);
 	}
-	this->StopRun();
-	this->RestoreParams(kSaveAccuHist);
+	return(kTRUE);
+}
+
+Bool_t TMrbDGF::HandleTimer(TTimer * Timer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::AccuHist_Stop
+// Purpose:        Stop histogramming
+// Results:        kTRUE/kFALSE
+//////////////////////////////////////////////////////////////////////////////
+
+	fStopWatch++;
+
+	Bool_t stopIt = (fStopWatch > fSecsToWait);
+
+	if (this->IsAborted()) {
+		gMrbLog->Err() << "Aborted after " << fStopWatch << " secs. Stopping current run." << endl;
+		gMrbLog->Flush(this->ClassName(), "HandleTimer");
+		fStatusW = TMrbDGF::kWaitAborted;
+		stopIt = kTRUE;
+	}
+
+	if (stopIt) {
+		Timer->Stop();
+		this->StopRun();
+		this->RestoreParams(kSaveAccuHist);
+	}
+
 	return(kTRUE);
 }
 
