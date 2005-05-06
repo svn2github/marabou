@@ -8,7 +8,7 @@
 // Class:          DGFRunControlPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRunControlPanel.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.h,v 1.9 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -131,8 +131,8 @@ class DGFRunControlPanel : public TGMainFrame {
 		TGCompositeFrame * fUntrigTracesTab;
 		TGCompositeFrame * fOffsetsTab;
 		TGCompositeFrame * fMCATab;
-		TGCompositeFrame * fTauFit1Tab;
-		TGCompositeFrame * fTauFit2Tab;
+		TGCompositeFrame * fTauDisplayTab;
+		TGCompositeFrame * fTauFitTab;
 		TGCompositeFrame * fMiscTab;
 		TGCompositeFrame * fSaveTab;
 		TGCompositeFrame * fRestoreTab;

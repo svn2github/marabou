@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.21 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.22 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -41,7 +41,7 @@ namespace std {} using namespace std;
 const SMrbNamedX kDGFTraceDisplayActions[] =
 			{
 				{DGFTraceDisplayPanel::kDGFTraceDisplayAutoTrig,	"Start trace",	"Take trace, enable trigger for each channel"	},
-				{DGFTraceDisplayPanel::kDGFTraceDisplayAbort,		"Abort",			"Abort trace taking"		},
+				{DGFTraceDisplayPanel::kDGFTraceDisplayStop,		"Stop",			"Stop trace taking"		},
 				{0, 												NULL,				NULL						}
 			};
 
@@ -187,7 +187,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 	fHFrame->AddFrame(fTFrame, groupGC->LH());
 
 	fTraceLength = new TGMrbLabelEntry(fTFrame, NULL,
-																200, kDGFTraceDisplayXwait,
+																200, kDGFTraceDisplayTraceLength,
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
@@ -273,7 +273,7 @@ Bool_t DGFTraceDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t 
 							case kDGFTraceDisplayAutoTrig:
 								this->StartTrace(kTRUE);
 								break;
-							case kDGFTraceDisplayAbort:
+							case kDGFTraceDisplayStop:
 								lofDgfs.Abort();
 								break;
 							case kDGFTraceDisplaySelectAll:

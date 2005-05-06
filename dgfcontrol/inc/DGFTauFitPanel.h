@@ -8,7 +8,7 @@
 // Class:          DGFTauFitPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTauFitPanel.h,v 1.2 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFTauFitPanel.h,v 1.3 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -65,7 +65,7 @@ class DGFTauFitPanel : public TGCompositeFrame {
 										kDGFTauFitRunTime, 			//		runtime
 										kDGFTauFitTimeScale,		//				time scale
 										kDGFTauFitStartFit,			//		actions start accu
-										kDGFTauFitAbort,			//				abort accu
+										kDGFTauFitStop,			//				stop accu
 										kDGFTauFitReset, 			//				reset
 										kDGFTauFitSelectAll,		// select	all
 										kDGFTauFitSelectNone,		//				none

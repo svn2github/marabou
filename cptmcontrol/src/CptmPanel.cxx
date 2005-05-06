@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmPanel.cxx,v 1.1 2005-04-29 11:35:22 rudi Exp $       
+// Revision:       $Id: CptmPanel.cxx,v 1.2 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -718,6 +718,12 @@ Bool_t CptmPanel::SaveSettings(Int_t ModuleIndex) {
 	if (fileInfoSave.fFilename == NULL || *fileInfoSave.fFilename == '\0') return(kFALSE);
 	TString saveDir = fileInfoSave.fFilename;
 
+	TString baseName1, baseName2, dirName;				// check if user did a double click
+	uxSys.GetBaseName(baseName1, saveDir.Data());		// as a result the last 2 parts of the returned path
+	uxSys.GetDirName(dirName, saveDir.Data());			// will be identical
+	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
+	if (baseName1.CompareTo(baseName2.Data()) == 0) saveDir = dirName;	// double click: strip off last part
+	
 	if (!uxSys.Exists(saveDir.Data())) {
 		TString cmd = "mkdir -p ";
 		cmd += saveDir;
@@ -796,6 +802,13 @@ Bool_t CptmPanel::RestoreSettings(Int_t ModuleIndex) {
 	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fileInfoRestore);
 	if (fileInfoRestore.fFilename == NULL || *fileInfoRestore.fFilename == '\0') return(kFALSE);
 	TString loadDir = fileInfoRestore.fFilename;
+
+	TString baseName1, baseName2, dirName;				// check if user did a double click
+	uxSys.GetBaseName(baseName1, loadDir.Data());		// as a result the last 2 parts of the returned path
+	uxSys.GetDirName(dirName, loadDir.Data());			// will be identical
+	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
+	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
+	
 	if (!uxSys.IsDirectory(loadDir.Data())) {
 		errMsg = "No such directory - ";
 		errMsg += loadDir;

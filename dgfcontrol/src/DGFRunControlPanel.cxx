@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.13 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.14 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -219,8 +219,8 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 	fUntrigTracesTab = fRunControlTab->AddTab("Untrig Traces");
 	fOffsetsTab = fRunControlTab->AddTab("Offsets");
 	fMCATab = fRunControlTab->AddTab("MCA");
-	fTauFit1Tab = fRunControlTab->AddTab("TauFit1");
-	fTauFit2Tab = fRunControlTab->AddTab("TauFit2");
+	fTauDisplayTab = fRunControlTab->AddTab("TauDisplay");
+	fTauFitTab = fRunControlTab->AddTab("TauFit");
 	fMiscTab = fRunControlTab->AddTab("Misc");
 	fSaveTab = fRunControlTab->AddTab("Save");
 	fRestoreTab = fRunControlTab->AddTab("Restore");
@@ -435,7 +435,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFRunControlTabTauFit1:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fTauDisplayPanel == NULL) fTauDisplayPanel = new DGFTauDisplayPanel(fTauFit1Tab);
+	                   			if (fTauDisplayPanel == NULL) fTauDisplayPanel = new DGFTauDisplayPanel(fTauDisplayTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}
@@ -443,7 +443,7 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 
 						case kDGFRunControlTabTauFit2:
 							if (gDGFControlData->IsOffline() || gDGFControlData->CheckIfStarted()) {
-	                   			if (fTauFitPanel == NULL) fTauFitPanel = new DGFTauFitPanel(fTauFit2Tab);
+	                   			if (fTauFitPanel == NULL) fTauFitPanel = new DGFTauFitPanel(fTauFitTab);
 							} else {
 								new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DGF module(s) not started", kMBIconStop);
 							}

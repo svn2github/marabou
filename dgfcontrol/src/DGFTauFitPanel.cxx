@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.7 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.8 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -35,7 +35,7 @@
 const SMrbNamedX kDGFTauButtons[] =
 			{
 				{DGFTauFitPanel::kDGFTauFitStartFit, 	"Start",	"Start tau fit"	},
-				{DGFTauFitPanel::kDGFTauFitAbort,		"Abort",	"Abort accumulation"	},
+				{DGFTauFitPanel::kDGFTauFitStop,		"Stop", 	"Stop accumulation"	},
 				{DGFTauFitPanel::kDGFTauFitReset,		"Reset",	"Reset to default values"	},
 				{0, 									NULL,		NULL						}
 			};
@@ -344,7 +344,7 @@ Bool_t DGFTauFitPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 									this->TauFit();
 								}
 								break;
-							case kDGFTauFitAbort:
+							case kDGFTauFitStop:
 								abortAccu = kTRUE;
 								break;
 							case kDGFTauFitReset:

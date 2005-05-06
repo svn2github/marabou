@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.6 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.7 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -225,10 +225,24 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	fTraceFrame->AddFrame(fTraceLengthEntry, frameGC->LH());
 	fTraceLengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 	fTraceLengthEntry->GetEntry()->SetText("8001");
-	fTraceLengthEntry->SetRange(1, 8001);
+	fTraceLengthEntry->SetRange(100, 8001);
 	fTraceLengthEntry->SetIncrement(100);
 	fTraceLengthEntry->AddToFocusList(&fFocusList);
 	fTraceLengthEntry->Associate(this);
+
+	fXwaitEntry = new TGMrbLabelEntry(fTraceFrame, "Xwait states",
+																200, kDGFTauXwait,
+																kLEWidth,
+																kLEHeight,
+																(Int_t) (1.5 * kEntryWidth),
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fXwaitEntry);
+	fTraceFrame->AddFrame(fXwaitEntry, frameGC->LH());
+	fXwaitEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fXwaitEntry->GetEntry()->SetText("10");
+	fXwaitEntry->SetRange(0, 1000);
+	fXwaitEntry->SetIncrement(1);
+	fXwaitEntry->AddToFocusList(&fFocusList);
 
 	fNofTracesEntry = new TGMrbLabelEntry(fTraceFrame, "Number of traces",
 																200, kDGFTauTraceNofTraces,
@@ -587,12 +601,13 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 
 	Int_t nofBuffers;
 	Int_t nofTraces;
-	Int_t traceLength;
+	Int_t traceLength, xwait;
 	Int_t nt, nw, bs, tpb;
 	Int_t event0;
 	Int_t fitFrom, fitTo;
 	Double_t fitError, fitA0, fitA1, fitA2, fitChiSquare;
 	Bool_t fitFlag;
+	UInt_t chnPattern;
 
 	Int_t nofEvents, nofGoodTaus, totalEvents;
 	Double_t tau, tauSum, tauMean;
@@ -603,11 +618,14 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 		
 	dgf = gDGFControlData->GetSelectedModule()->GetAddr();
 	chn = gDGFControlData->GetSelectedChannel();
+	chnPattern = gDGFControlData->GetSelectedChannelIndex();
 
 	fileName = this->TraceFileName();
 
 	intStr = fTraceLengthEntry->GetEntry()->GetText();
 	intStr.ToInteger(traceLength);
+	intStr = fXwaitEntry->GetEntry()->GetText();
+	intStr.ToInteger(xwait);
 	intStr = fNofTracesEntry->GetEntry()->GetText();
 	intStr.ToInteger(nofTraces);
 
@@ -679,31 +697,6 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	dgf->ClearChannelMask();
 	dgf->ClearTriggerMask();
 
-	for (Int_t i = 0; i < TMrbDGFData::kNofChannels; i++) {
-		dgf->SetChanCSRA(i, TMrbDGFData::kChanCSRAMask, TMrbDGF::kBitClear);
-		dgf->SetParValue(i, "TRACELENGTH", 0);
-	}
-
- 	dgf->SetChanCSRA(chn, TMrbDGFData::kEnableTrigger | TMrbDGFData::kGoodChannel, TMrbDGF::kBitOr);
-	dgf->SetParValue(chn, "TRACELENGTH", traceLength);
-
- 	dgf->SetParValue("SYNCHWAIT", 0);
- 	dgf->SetParValue("INSYNCH", 1);
- 	dgf->SetParValue("COINCPATTERN", 0xffff);
- 	dgf->SetCoincWait();
-
-	dgf->WriteParamMemory(kTRUE);
-
-	if (gDGFControlData->IsDebug()) {
-		TMrbString fn = dgf->GetName();
-		fn += ".chn";
-		fn += chn;
-		fn += ".param.dat";
-		dgf->PrintParamsToFile(fn.Data(), chn);
-	}
-
-	dgf->SetParValue("RUNTASK", TMrbDGFData::kRunLinear, kTRUE);
-
 	fTauDistr = new TH1F("hTauDistr", "Tau distribution", 100, 0., 100.);
 	
 	nt = nofTraces;
@@ -719,11 +712,9 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 		nofEvents = 0;
 		dgf->SetParValue("MAXEVENTS", (nt > tpb) ? tpb : nt, kTRUE);
 
-		dgf->StartRun();
-		dgf->WaitActive(20);
-		dgf->StopRun();
-
-		nofWords = dgf->ReadEventBuffer(buffer);
+		dgf->GetTrace_Init(traceLength, chnPattern, xwait, kTRUE);
+		dgf->GetTrace_Start();
+		nofWords = dgf->GetTrace_Stop(buffer, 20);
 
 		if (gDGFControlData->IsDebug()) {
 			TMrbString fn = dgf->GetName();
@@ -867,6 +858,8 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 				
 				fTauDistr = (TH1F *) fTraceFile->Get("hTauDistr");
 				if (fTauDistr) {
+					TString canvas = "fhTauDistr";
+					fFitTau = (FitHist *) gROOT->FindObject(canvas.Data());
 					if (fFitTau) {
 						fFitTau->GetCanvas()->cd();
 						fFitTau->SetHist(fTauDistr);
@@ -877,14 +870,12 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 						w = this->GetWidth();
 						h = this->GetHeight();
 						gVirtualX->TranslateCoordinates(	this->GetId(), this->GetParent()->GetId(),
-															w + 10, h / 2,
+															(Int_t) (w * .125), h / 2,
 															ax, ay, wdum);
-						fhName = fTauDistr->GetName();
-						fhName.Prepend("f");
-						fFitTau = new FitHist(				fhName.Data(), fTauDistr->GetTitle(),
+						fFitTau = new FitHist(				canvas.Data(), fTauDistr->GetTitle(),
 															fTauDistr,
 															fTauDistr->GetName(),
-															ax, ay, (Int_t) (w * 1.7), h / 2);
+															ax, ay, (Int_t) (w * .75), h / 2);
 						HEAP(fFitTau);
 						fTraceFile->cd();
 					}
@@ -907,6 +898,9 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 			fHistogram = (TH1F *) fTraceFile->Get(fHistoName.Data());
 			if (fHistogram) {
 				fHistogram->SetStats(fDispStatBox->GetActive() == kDGFTauDispStatBoxYes);
+				fHistogram->SetName("hTrace");
+				TString canvas = "fhFitTrace";
+				fFitTrace = (FitHist *) gROOT->FindObject(canvas.Data());
 				if (fFitTrace) {
 					fFitTrace->GetCanvas()->cd();
 					fFitTrace->SetHist(fHistogram);
@@ -917,14 +911,14 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 					w = this->GetWidth();
 					h = this->GetHeight();
 					gVirtualX->TranslateCoordinates(	this->GetId(), this->GetParent()->GetId(),
-														w + 10, -40,
+														(Int_t) (w * .125), h / 2,
 														ax, ay, wdum);
 					fhName = fHistogram->GetName();
 					fhName.Prepend("f");
 					fFitTrace = new FitHist(			fhName.Data(), fHistogram->GetTitle(),
 														fHistogram,
 														fHistogram->GetName(),
-														ax, ay, (Int_t) (w * 1.7), h / 2);
+														ax, ay, (Int_t) (w * .75), h / 2);
 					HEAP(fFitTrace);
 					fTraceFile->cd();
 				}
@@ -967,7 +961,8 @@ Bool_t DGFTauDisplayPanel::ResetValues() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fTraceLengthEntry->GetEntry()->SetText("200");
+	fTraceLengthEntry->GetEntry()->SetText("8001");
+	fXwaitEntry->GetEntry()->SetText("10");
 	fNofTracesEntry->GetEntry()->SetText("1");
 	fFitFromEntry->GetEntry()->SetText("0");
 	fFitToEntry->GetEntry()->SetText("200");

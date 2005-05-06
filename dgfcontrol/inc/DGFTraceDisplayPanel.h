@@ -8,7 +8,7 @@
 // Class:          DGFTraceDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTraceDisplayPanel.h,v 1.10 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.h,v 1.11 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -53,10 +53,11 @@ class DGFTraceDisplayPanel : public TGCompositeFrame {
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFTraceDisplayActionId 	{
+														kDGFTraceDisplayTraceLength,
 														kDGFTraceDisplayXwait,
 														kDGFTraceDisplayNormal,
 														kDGFTraceDisplayAutoTrig,
-														kDGFTraceDisplayAbort,
+														kDGFTraceDisplayStop,
 														kDGFTraceDisplaySelectAll,
 														kDGFTraceDisplaySelectNone,
 														kDGFTraceDisplaySelectColumn

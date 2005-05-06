@@ -8,7 +8,7 @@
 // Class:          DGFTauDisplayPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFTauDisplayPanel.h,v 1.5 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.h,v 1.6 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -60,6 +60,7 @@ class DGFTauDisplayPanel : public TGCompositeFrame {
 									kDGFTauSelectModule, 				//		module
 									kDGFTauSelectChannel, 				//		channel
 									kDGFTauTraceLength,					//		trace 	length
+									kDGFTauXwait,						//				xwait states
 									kDGFTauTraceNofTraces,				//				number of traces
 									kDGFTauFitFrom, 					//		fit 	from
 									kDGFTauFitTo,						//				to
@@ -122,6 +123,7 @@ class DGFTauDisplayPanel : public TGCompositeFrame {
 		TGGroupFrame * fTraceFrame; 				//	trace
 		TGMrbLabelEntry * fTraceLengthEntry; 		//		length
 		TGMrbLabelEntry * fNofTracesEntry; 			//		number of traces
+		TGMrbLabelEntry * fXwaitEntry;				//		wait states
 
 		TGHorizontalFrame * fHFrame;
 

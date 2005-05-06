@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.16 2005-04-28 12:56:09 rudi Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.17 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -314,6 +314,13 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 	new TGFileDialog(fClient->GetRoot(), this, kFDOpen, &fileInfoRestore);
 	if (fileInfoRestore.fFilename == NULL || *fileInfoRestore.fFilename == '\0') return(kFALSE);
 	loadDir = fileInfoRestore.fFilename;
+
+	TString baseName1, baseName2, dirName;				// check if user did a double click
+	uxSys.GetBaseName(baseName1, loadDir.Data());		// as a result the last 2 parts of the returned path
+	uxSys.GetDirName(dirName, loadDir.Data());			// will be identical
+	uxSys.GetBaseName(baseName2, dirName.Data());		// example: single click returns /a/b/c, double click /a/b/c/c
+	if (baseName1.CompareTo(baseName2.Data()) == 0) loadDir = dirName;	// double click: strip off last part
+	
 	if (!uxSys.IsDirectory(loadDir.Data())) {
 		errMsg = "No such directory - ";
 		errMsg += loadDir;

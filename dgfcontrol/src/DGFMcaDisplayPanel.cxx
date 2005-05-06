@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.17 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.18 2005-05-06 08:43:43 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -309,12 +309,6 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fButtonFrame);
 	this->AddFrame(fButtonFrame, buttonGC->LH());
 	fButtonFrame->Associate(this);
-
-// canvas
-//	fCanvasFrame = new TGGroupFrame(this, "Histogram", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-//	HEAP(fCanvasFrame);
-//	this->AddFrame(fCanvasFrame, frameGC->LH());
-//	fCanvas = new TRootEmbeddedCanvas("mca", fCanvasFrame, 400, 600);
 
 	this->ResetValues();
 	fAccuTimer = NULL;
@@ -697,8 +691,9 @@ Bool_t DGFMcaDisplayPanel::DisplayHisto(Bool_t ClearMCA) {
 			if (histoBuffer.IsActive(chn)) {
 				histoBuffer.FillHistogram(chn, kFALSE);
 				TH1F * hist = histoBuffer.Histogram(chn);
-				TString fhCanvas = "fhMcaCanvas";
-				fFitHist = (FitHist *) gROOT->FindObject(fhCanvas.Data());
+				hist->SetName("hMca");
+				TString canvas = "fhMcaCanvas";
+				fFitHist = (FitHist *) gROOT->FindObject(canvas.Data());
 				if (fFitHist) {
 					fFitHist->GetCanvas()->cd();
 					fFitHist->SetHist(hist);
@@ -709,9 +704,9 @@ Bool_t DGFMcaDisplayPanel::DisplayHisto(Bool_t ClearMCA) {
 					w = this->GetWidth();
 					h = this->GetHeight();
 					gVirtualX->TranslateCoordinates(	this->GetId(), this->GetParent()->GetId(),
-														w + 10, h / 2,
+														0, h / 2,
 														ax, ay, wdum);
-					fFitHist = new FitHist(				fhCanvas.Data(), hist->GetTitle(),
+					fFitHist = new FitHist(				canvas.Data(), hist->GetTitle(),
 														hist,
 														hist->GetName(),
 														ax, ay, w / 2, h / 2);
