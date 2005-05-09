@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.17 2005-04-28 10:27:59 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.18 2005-05-09 13:19:11 marabou Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1665,7 +1665,7 @@ void TMrbTidyNode::PrintSubstitutions(Bool_t Recursive, ostream & Out) {
 			TString used;
 			if (nx->GetIndex() & kMrbTidySubstInUse) used = "yes";
 			else if (nx->GetIndex() & kMrbTidySubstInUse) used = "somewhere";
-			TString sValue = ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) ? "<n.a>" : ((TObjString *) nx->GetAssignedObject())->GetString();
+			TString sValue = ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) ? "<n.a>" : ((TObjString *) nx->GetAssignedObject())->GetString().Data();
 			if (firstSubst) {
 				Out << Form("%-10s %3d   %-30s %3d  %-15s%-12s%-6s%-15s%s",	nodeName.Data(),
 																				this->GetTreeLevel(),

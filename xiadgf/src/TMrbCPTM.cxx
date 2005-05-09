@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.8 2005-04-28 13:11:27 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.9 2005-05-09 13:19:11 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -97,7 +97,7 @@ Long64_t TMrbCPTMEvent::GetTimeStampAdjusted() {
 
 	Long64_t t = fTimeStamp;
 	if (fPattern & 0x0F000000) {
-		t &= 0xFFFFFFFF0000;
+		t &= 0xFFFFFFFF0000LL;
 		t |= fTimeAux & 0xFFFF;
 	} else {
 		t = fTimeStamp;
@@ -1298,7 +1298,7 @@ const Char_t * TMrbCPTM::ConvertMask(TString & Mask, Int_t MaskValue, Bool_t Tex
 	TString eq = TextOnly ? "" : " = ";
 	for (Int_t i = 0; i <= 7; i++) {
 		if (MaskValue & 1) {
-			mstr += first ? eq : " + ";
+			mstr += first ? eq.Data() : " + ";
 			first = kFALSE;
 			mstr += ((TObjString *) maskBits[i])->GetString();
 		}
