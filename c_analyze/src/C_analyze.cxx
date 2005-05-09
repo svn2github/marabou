@@ -744,8 +744,10 @@ trying to attach?",
 //      cout << masters[k] << endl;
    }
    Bool_t gotit = kFALSE;
+   *fMaster = fMaster->Strip(TString::kBoth);
+   if (fMaster->Length() == 0) *fMaster = "ppc-0";
    for(Int_t k=0; k<NPPC; k++){
-      if (!strcmp(fMaster->Data(), masters[k])) {
+     if (!strcmp(fMaster->Data(), masters[k])) {
          fCbMaster->Select(k+1);
          gotit = kTRUE;
       }
@@ -753,7 +755,7 @@ trying to attach?",
    if (!gotit) {
       fCbMaster->AddEntry(fMaster->Data(), NPPC+1);
       fCbMaster->Select(NPPC+1);
-      cout << " select: " <<NPPC+1 << " "  << fMaster->Data() << endl;
+//      cout << " select: " <<NPPC+1 << " "  << fMaster->Data() << endl;
     }
    fCbMaster->Resize(150, 20);
    fCbMaster->Associate(this);
@@ -769,6 +771,8 @@ trying to attach?",
       fCbReadout->AddEntry(slaves[k], k+1);
    }
    gotit = kFALSE;
+   *fReadout = fReadout->Strip(TString::kBoth);
+   if (fReadout->Length() == 0) *fReadout = *fMaster;
    for (Int_t k=0; k<NPPC; k++) {
       if (!strcmp(*fReadout, slaves[k])) {
          fCbReadout->Select(k+1);
