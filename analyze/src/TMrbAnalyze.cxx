@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.49 2004-12-22 12:17:38 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.50 2005-05-09 16:01:27 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4365,6 +4365,30 @@ TUsrHit * TUsrHBX::FindHit(Int_t Channel) {
 	while (++curIndex < this->GetNofHits()) {
 		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
 		if (hit->GetChannel() == Channel) {
+			fCurIndex = curIndex;
+			return(hit);
+		}
+	}
+	return(NULL);
+}
+
+TUsrHit * TUsrHBX::FindHit(Int_t ModuleIndex, Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHBX::FindHit
+// Purpose:        Search for next with given channel number
+// Arguments:      Int_t ModuleIndex   -- module index
+//                 Int_t Channel       -- channel
+// Results:        TUsrHit * Hit       -- next hit matching channel number
+// Exceptions:
+// Description:    Searches for next entry with given module/channel number.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t curIndex = fCurIndex;
+	while (++curIndex < this->GetNofHits()) {
+		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
+		if (hit->GetModuleNumber() == ModuleIndex && hit->GetChannel() == Channel) {
 			fCurIndex = curIndex;
 			return(hit);
 		}
