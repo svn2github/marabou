@@ -11,4 +11,7 @@
 #pragma link C++ class TMrbDGFHistogramBuffer;
 #pragma link C++ class TMrbCPTM;
 #pragma link C++ class TMrbCPTMEvent;
+#pragma link C++ class TMrbDGFClusterMember;
+#pragma link C++ class TMrbDGFCluster;
+#pragma link C++ class TMrbLofDGFClusters;
 #endif
