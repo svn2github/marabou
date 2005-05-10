@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.1 2005-05-10 15:08:12 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.2 2005-05-10 16:54:46 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -55,7 +55,7 @@ Bool_t TMrbDGFClusterMember::SetSide(const Char_t * Side) {
 		gMrbLog->Flush(this->ClassName(), "SetSide");
 		return(kFALSE);
 	}
-	fSide = Side;
+	fSide = side;
 	return(kTRUE);
 }
 
@@ -172,9 +172,16 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 
 	TMrbString cluName;
 
- 	ifstream cFile(ClusterFile, ios::in);
+	TString cluFile = ClusterFile;
+	if (cluFile.EndsWith(".ps")) {
+		TString cmd = Form("./nigel2cluster %s cluster.dat", cluFile.Data());
+		gSystem->Exec(cmd.Data());
+		cluFile = "cluster.dat";
+	}
+
+ 	ifstream cFile(cluFile.Data(), ios::in);
 	if (!cFile.good()) {
-		gMrbLog->Err() << gSystem->GetError() << " - " << ClusterFile << endl;
+		gMrbLog->Err() << gSystem->GetError() << " - " << cluFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadFile");
 		return(-1);
 	}

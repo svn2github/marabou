@@ -8,7 +8,7 @@
 // Class:          TMrbDGFCluster            -- cluster data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCluster.h,v 1.1 2005-05-10 15:08:12 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.h,v 1.2 2005-05-10 16:54:46 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -164,6 +164,8 @@ class TMrbLofDGFClusters : public TMrbLofNamedX {
 
 	public:
 		Int_t ReadFile(const Char_t * ClusterFile = "cluster.dat");
+
+		inline Int_t GetNofClusters() { return(this->GetEntriesFast()); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm);
