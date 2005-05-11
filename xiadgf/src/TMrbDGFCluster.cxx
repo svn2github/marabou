@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.3 2005-05-11 08:40:03 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.4 2005-05-11 09:20:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -252,13 +252,12 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 	Int_t lineNo = 0;
 	Int_t nofClusters = 0;
 	Int_t cluIdx = 0;
-	Int_t clux = 0;
 	TMrbDGFCluster * clu = NULL;
 	while (kTRUE) {
 		cLine.ReadLine(cFile, kFALSE);
 		if (cFile.eof()) {
 			cFile.close();
-			if (clu && clu->GetNofMembers() > 0) this->AddNamedX(clux, cluName.Data(), NULL, clu);
+			if (clu && clu->GetNofMembers() > 0) this->AddNamedX(cluIdx, cluName.Data(), NULL, clu);
 			return(nofClusters);
 		}
 		cLine = cLine.Strip(TString::kBoth);
@@ -276,7 +275,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 
 		Int_t cIdx = atoi(((TObjString *) sLine[kMrbDGFClusterIdx])->GetString().Data());
 		if (cIdx != cluIdx) {
-			if (clu) this->AddNamedX(clux, cluName.Data(), NULL, clu);
+			if (clu) this->AddNamedX(cluIdx, cluName.Data(), NULL, clu);
 			cluName = "clu";
 			cluName += cIdx;
 			clu = new TMrbDGFCluster(cIdx, cluName.Data());
@@ -290,7 +289,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		TString capsId = ((TObjString *) sLine[kMrbDGFClusterCapsId])->GetString();
 
 		Bool_t ok = kTRUE;
-		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(0, cluNo, capsId(0));
+		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(cluIdx, cluNo, capsId(0));
 
 		cluMem->SetHex(atoi(((TObjString *) sLine[kMrbDGFClusterHex])->GetString().Data()));
 		cluMem->SetVoltage(atoi(((TObjString *) sLine[kMrbDGFClusterVoltage])->GetString().Data()));
@@ -309,20 +308,12 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			dgfName = "dgf";
 			dgfName += cluMem->GetSlot(1);
 			cluMem->SetDgf(1, dgfName.Data());
-			clux = cluIdx;
 		} else {
 			cluMem->SetDgf(0, ((TObjString *) sLine[kMrbDGFClusterDgf1])->GetString().Data());
 			cluMem->SetDgf(1, ((TObjString *) sLine[kMrbDGFClusterDgf2])->GetString().Data());
-			TMrbString d = cluMem->GetDgf(0);
-			d = d(3,5);
-			d.ToInteger(clux);
-			clux /= 10;
 		}
 
-		if (ok) {
-			cluMem->SetClusterIndex(clux);
-			clu->AddMember(cluMem);
-		}
+		if (ok) clu->AddMember(cluMem);
 	}
 }	
 
