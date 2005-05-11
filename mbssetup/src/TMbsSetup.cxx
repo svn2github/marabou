@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.24 2005-01-10 12:59:24 rudi Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.25 2005-05-11 20:17:43 marabou Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -635,17 +635,10 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TInetAddress * ia;
-
-	TString hName;
-	TString hAddr;
-	TString userName;
-
-	Int_t n1, n2;
-	Bool_t isOK;
-	Int_t nofHosts;
 
 	ofstream rhosts;
+
+	Bool_t isOK = kTRUE;
 
 	rhosts.open(RhostsFile, ios::out);
 	if (!rhosts.good()) {
@@ -654,25 +647,34 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 		return(kFALSE);
 	}
 
-	userName = gSystem->Getenv("USER");
+	TString userName = gSystem->Getenv("USER");
 
-	TString hString = gSystem->Getenv("HOSTNAME");
-	hString += ":";
+	TMrbString hString = gEnv->GetValue("TMbsSetup.DefaultHostName", "");
+	if (hString.IsNull()) {
+		TMrbString hString = gSystem->Getenv("HOSTNAME");
+		if (hString.IsNull()) {
+			gMrbLog->Err()	<< "Can't determine hostname - $HOSTNAME is empty" << endl;
+			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+			isOK = kFALSE;
+		}
+	}
 	for (Int_t i = 0; i < kNofPPCs; i++) {
+		hString += ":";
 		hString += "ppc-";
 		hString += i;
-		hString += ":";
 	}
 
-	isOK = kTRUE;
-	nofHosts = 0;
-	n1 = 0;
+	Int_t nofHosts = 0;
 	Bool_t once = kFALSE;
 	TString domain = "";
-	while ((n2 = hString.Index(":", n1)) != -1) {
-		hName = hString(n1, n2 - n1);
-		ia = new TInetAddress(gSystem->GetHostByName(hName));
-		hAddr = ia->GetHostName();
+	TObjArray hNames;
+	Int_t nh = hString.Split(hNames, ":", kTRUE);
+	for (Int_t i = 0; i < nh; i++) {
+		TString hName = ((TObjString *) hNames[i])->GetString();
+		hName = hName.Strip(TString::kBoth);
+		if (hName.IsNull()) continue;
+		TInetAddress * ia = new TInetAddress(gSystem->GetHostByName(hName));
+		TString hAddr = ia->GetHostName();
 		if (hAddr.CompareTo("UnknownHost") == 0) {
 			gMrbLog->Err() << "Can't resolve host name - " << hName << " (ignored)" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
@@ -724,7 +726,6 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 			rhosts << hAddr << " " << userName << endl;
 			nofHosts++;
 		}
-		n1 = n2 + 1;
 	}
 	rhosts.close();
 
