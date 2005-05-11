@@ -8,7 +8,7 @@
 // Class:          TMrbDGFCluster            -- cluster data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCluster.h,v 1.2 2005-05-10 16:54:46 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.h,v 1.3 2005-05-11 08:40:03 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -19,6 +19,26 @@
 #include "TEnv.h"
 
 #include "TMrbLofNamedX.h"
+
+enum	EMrbDGFClusterIdx	{	kMrbDGFClusterIdx = 0,
+								kMrbDGFClusterNo,
+								kMrbDGFClusterCapsId,
+								kMrbDGFClusterHex,
+								kMrbDGFClusterVoltage,
+								kMrbDGFClusterColor,
+								kMrbDGFClusterAF,
+								kMrbDGFClusterSide,
+								kMrbDGFClusterHeight,
+								kMrbDGFClusterAngle,
+								kMrbDGFClusterCrate,
+								kMrbDGFClusterSlot1,
+								kMrbDGFClusterSlot2,
+								kMrbDGFClusterDgf1,
+								kMrbDGFClusterDgf2
+							};
+
+enum	{	kMrbDGFClusterIdxShort =	kMrbDGFClusterSlot2 + 1	};
+enum	{	kMrbDGFClusterIdxLong = 	kMrbDGFClusterDgf2 + 1	};
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -38,23 +58,24 @@ class TMrbDGFClusterMember : public TObject {
 			fCapsuleId = CapsuleId;
 			fHex = 0;
 			fVoltage = 0;
-			fColor = "";
-			fAF = "";
-			fSide = "";
+			fColor = "void";
+			fAF = "void";
+			fSide = "void";
 			fIsRight = kFALSE;
-			fHeight = "";
+			fHeight = "void";
 			fIsUp = kFALSE;
-			fAngle = "";
+			fAngle = "void";
 			fIsForward = kFALSE;
 			fCrate = 0;
 			fSlot[0] = 0;
 			fSlot[1] = 0;
-			fDgf[0] = "";
-			fDgf[1] = "";
+			fDgf[0] = "undef";
+			fDgf[1] = "undef";
 		}
 		virtual ~TMrbDGFClusterMember() {};
 
-		inline Int_t GetClusterIndex() { return(fClusterIndex); };
+		inline void SetClusterIndex(Int_t CluIndex) { fClusterIndex = CluIndex; };
+ 		inline Int_t GetClusterIndex() { return(fClusterIndex); };
 		inline Int_t GetClusterNo() { return(fClusterNo); };
 		inline Char_t GetCapsuleId() { return(fCapsuleId); };
 		inline void SetHex(Int_t Hex) { fHex = Hex; };
@@ -123,6 +144,8 @@ class TMrbDGFCluster : public TMrbNamedX {
 
 		TMrbDGFCluster(Int_t ClusterIndex = 0, const Char_t * ClusterName = "Clu0") : TMrbNamedX(ClusterIndex, ClusterName) {
 			fMembers.Delete();
+			fClusterNo = 0;
+			fCrate = -1;
 		};
 		virtual ~TMrbDGFCluster() {};
 
@@ -130,12 +153,17 @@ class TMrbDGFCluster : public TMrbNamedX {
 		inline void SetClusterNo(Int_t ClusterNo) { fClusterNo = ClusterNo; };
 		inline Int_t GetClusterNo() { return(fClusterNo); };
 
-		inline void AddMember(TMrbDGFClusterMember * CluMember) { fMembers.Add(CluMember); };
-		inline TMrbDGFClusterMember * GetMember(Char_t SubNo) {
-			if (fMembers.GetEntriesFast() > SubNo) return((TMrbDGFClusterMember *) fMembers[SubNo]); else return(NULL);
+		Bool_t AddMember(TMrbDGFClusterMember * CluMember);
+		inline TMrbDGFClusterMember * GetMember(Int_t CapsNo) {
+			if (fMembers.GetEntriesFast() > CapsNo) return((TMrbDGFClusterMember *) fMembers[CapsNo]); else return(NULL);
 		}
 
 		inline Int_t GetNofMembers() { return(fMembers.GetEntriesFast()); };
+		inline Int_t GetCrate() { return(fCrate); };
+		inline const Char_t * GetColor() { return(fColor.Data()); };
+		inline const Char_t * GetSide() { return(fSide.Data()); };
+		inline const Char_t * GetHeight() { return(fHeight.Data()); };
+		inline const Char_t * GetAngle() { return(fAngle.Data()); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm);
@@ -143,6 +171,12 @@ class TMrbDGFCluster : public TMrbNamedX {
 		
 	protected:
 		Int_t fClusterNo;
+		Int_t fCrate;
+		TString fColor;
+		TString fSide;
+		TString fHeight;
+		TString fAngle;
+
 		TObjArray fMembers;
 
 	ClassDef(TMrbDGFCluster, 1)		// [XIA DGF-4C] DGF cluster data
@@ -163,7 +197,9 @@ class TMrbLofDGFClusters : public TMrbLofNamedX {
 		virtual ~TMrbLofDGFClusters() {};
 
 	public:
-		Int_t ReadFile(const Char_t * ClusterFile = "cluster.dat");
+		Int_t ReadFile(const Char_t * ClusterFile = "cluster.def");
+
+		TMrbDGFCluster * GetCluster(Int_t CluNumber);
 
 		inline Int_t GetNofClusters() { return(this->GetEntriesFast()); };
 

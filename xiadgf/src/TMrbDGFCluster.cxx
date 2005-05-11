@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.2 2005-05-10 16:54:46 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.3 2005-05-11 08:40:03 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -47,9 +47,11 @@ Bool_t TMrbDGFClusterMember::SetSide(const Char_t * Side) {
 
 	TString side = Side;
 	side.ToLower();
-	fSide = "";
+	fSide = "void";
+	if (side.CompareTo("void") == 0) return(kTRUE);
+
 	if (side.CompareTo("right") == 0)		fIsRight = kTRUE;
-	else if ((side.CompareTo("left") == 0)) fIsRight = kFALSE;
+	else if (side.CompareTo("left") == 0)	fIsRight = kFALSE;
 	else {
 		gMrbLog->Err() << "Wrong side data - " << Side << " (should be \"right\" or \"left\")" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetSide");
@@ -73,9 +75,11 @@ Bool_t TMrbDGFClusterMember::SetHeight(const Char_t * Height) {
 
 	TString height = Height;
 	height.ToLower();
-	fHeight = "";
+	fHeight = "void";
+	if (height.CompareTo("void") == 0) return(kTRUE);
+
 	if (height.CompareTo("up") == 0)			fIsUp = kTRUE;
-	else if ((height.CompareTo("down") == 0))	fIsUp = kFALSE;
+	else if (height.CompareTo("down") == 0) 	fIsUp = kFALSE;
 	else {
 		gMrbLog->Err() << "Wrong height data - " << Height << " (should be \"up\" or \"down\")" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetHeight");
@@ -99,9 +103,11 @@ Bool_t TMrbDGFClusterMember::SetAngle(const Char_t * Angle) {
 
 	TString angle = Angle;
 	angle.ToLower();
-	fAngle = "";
-	if (angle.CompareTo("forward") == 0)			fIsForward = kTRUE;
-	else if ((angle.CompareTo("backward") == 0))	fIsForward = kFALSE;
+	fAngle = "void";
+	if (angle.CompareTo("void") == 0) return(kTRUE);
+
+	if (angle.CompareTo("forward") == 0)		fIsForward = kTRUE;
+	else if (angle.CompareTo("backward") == 0)	fIsForward = kFALSE;
 	else {
 		gMrbLog->Err() << "Wrong angle data - " << Angle << " (should be \"forward\" or \"backward\")" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetAngle");
@@ -158,6 +164,62 @@ void TMrbDGFCluster::Print(ostream & Out) {
 	}
 }
 
+Bool_t TMrbDGFCluster::AddMember(TMrbDGFClusterMember * Member) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFCluster::AddMember
+// Purpose:        Add a member to cluster
+// Arguments:      TMrbDGFClusterMember * Member   -- cluster member
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Adds a new member.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->GetNofMembers() > 0) {
+		Bool_t ok = kTRUE;
+		if (fCrate != Member->GetCrate()) {
+			gMrbLog->Err() << "Wrong crate number - " << Member->GetCrate() << " (should be " << fCrate << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddMember");
+			ok = kFALSE;
+		}
+		if (fClusterNo != Member->GetClusterNo()) {
+			gMrbLog->Err() << "Wrong cluster number - " << Member->GetClusterNo() << " (should be " << fClusterNo << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddMember");
+			ok = kFALSE;
+		}
+		if (fColor.CompareTo(Member->GetColor()) != 0) {
+			gMrbLog->Err() << "Wrong cluster color - " << Member->GetColor() << " (should be " << fColor << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddMember");
+			ok = kFALSE;
+		}
+		if (fSide.CompareTo(Member->GetSide()) != 0) {
+			gMrbLog->Err() << "Wrong cluster side - " << Member->GetSide() << " (should be " << fSide << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddMember");
+			ok = kFALSE;
+		}
+		if (fHeight.CompareTo(Member->GetHeight()) != 0) {
+			gMrbLog->Err() << "Wrong cluster height - " << Member->GetHeight() << " (should be " << fHeight << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddMember");
+			ok = kFALSE;
+		}
+		if (fAngle.CompareTo(Member->GetAngle()) != 0) {
+			gMrbLog->Err() << "Wrong cluster angle - " << Member->GetAngle() << " (should be " << fAngle << ")" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddMember");
+			ok = kFALSE;
+		}
+		if (!ok) return(kFALSE);
+	}
+	fCrate = Member->GetCrate();
+	fClusterNo = Member->GetClusterNo();
+	fColor = Member->GetColor();
+	fSide = Member->GetSide();
+	fHeight = Member->GetHeight();
+	fAngle = Member->GetAngle();
+	fMembers.Add(Member);
+	return(kTRUE);
+}
+
 Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -174,9 +236,9 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 
 	TString cluFile = ClusterFile;
 	if (cluFile.EndsWith(".ps")) {
-		TString cmd = Form("./nigel2cluster %s cluster.dat", cluFile.Data());
+		TString cmd = Form("./nigel2cluster %s cluster.def", cluFile.Data());
 		gSystem->Exec(cmd.Data());
-		cluFile = "cluster.dat";
+		cluFile = "cluster.def";
 	}
 
  	ifstream cFile(cluFile.Data(), ios::in);
@@ -190,12 +252,13 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 	Int_t lineNo = 0;
 	Int_t nofClusters = 0;
 	Int_t cluIdx = 0;
+	Int_t clux = 0;
 	TMrbDGFCluster * clu = NULL;
 	while (kTRUE) {
 		cLine.ReadLine(cFile, kFALSE);
 		if (cFile.eof()) {
 			cFile.close();
-			if (clu && clu->GetNofMembers() > 0) this->AddNamedX(cluIdx, cluName.Data(), NULL, clu);
+			if (clu && clu->GetNofMembers() > 0) this->AddNamedX(clux, cluName.Data(), NULL, clu);
 			return(nofClusters);
 		}
 		cLine = cLine.Strip(TString::kBoth);
@@ -203,16 +266,17 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 
 		TObjArray sLine;
 		sLine.Delete();
-		Int_t n = cLine.Split(sLine, " ", kTRUE);
-		if (n != 15) {
-			gMrbLog->Err() << "Wrong number of items in line " << lineNo << " - " << n << " (should be 15)" << endl;
+		Int_t nIdx = cLine.Split(sLine, " ", kTRUE);
+		if (nIdx != kMrbDGFClusterIdxShort && nIdx != kMrbDGFClusterIdxLong) {
+			gMrbLog->Err()	<< "Wrong number of items in line " << lineNo << " - " << nIdx
+							<< " (should be " << kMrbDGFClusterIdxShort << " or " << kMrbDGFClusterIdxLong << ")" << endl;
 			gMrbLog->Flush(this->ClassName(), "ReadFile");
 			continue;
 		}
 
-		Int_t cIdx = atoi(((TObjString *) sLine[0])->GetString().Data());
+		Int_t cIdx = atoi(((TObjString *) sLine[kMrbDGFClusterIdx])->GetString().Data());
 		if (cIdx != cluIdx) {
-			if (clu) this->AddNamedX(cIdx, cluName.Data(), NULL, clu);
+			if (clu) this->AddNamedX(clux, cluName.Data(), NULL, clu);
 			cluName = "clu";
 			cluName += cIdx;
 			clu = new TMrbDGFCluster(cIdx, cluName.Data());
@@ -220,28 +284,45 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			nofClusters++;
 		}
 
-		Int_t cluNo = atoi(((TObjString *) sLine[1])->GetString());
+		Int_t cluNo = atoi(((TObjString *) sLine[kMrbDGFClusterNo])->GetString());
 		clu->SetClusterNo(cluNo);
 
-		TString capsId = ((TObjString *) sLine[2])->GetString();
+		TString capsId = ((TObjString *) sLine[kMrbDGFClusterCapsId])->GetString();
 
 		Bool_t ok = kTRUE;
-		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(cIdx, cluNo, capsId(0));
+		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(0, cluNo, capsId(0));
 
-		cluMem->SetHex(atoi(((TObjString *) sLine[3])->GetString().Data()));
-		cluMem->SetVoltage(atoi(((TObjString *) sLine[4])->GetString().Data()));
-		cluMem->SetColor(((TObjString *) sLine[5])->GetString().Data());
-		cluMem->SetAF(((TObjString *) sLine[6])->GetString().Data());
-		if (!cluMem->SetSide(((TObjString *) sLine[7])->GetString().Data())) ok = kFALSE;
-		if (!cluMem->SetHeight(((TObjString *) sLine[8])->GetString().Data())) ok = kFALSE;
-		if (!cluMem->SetAngle(((TObjString *) sLine[9])->GetString().Data())) ok = kFALSE;
-		cluMem->SetCrate(atoi(((TObjString *) sLine[10])->GetString().Data()));
-		cluMem->SetSlot(0, atoi(((TObjString *) sLine[11])->GetString().Data()));
-		cluMem->SetSlot(1, atoi(((TObjString *) sLine[12])->GetString().Data()));
-		cluMem->SetDgf(0, ((TObjString *) sLine[13])->GetString().Data());
-		cluMem->SetDgf(1, ((TObjString *) sLine[14])->GetString().Data());
+		cluMem->SetHex(atoi(((TObjString *) sLine[kMrbDGFClusterHex])->GetString().Data()));
+		cluMem->SetVoltage(atoi(((TObjString *) sLine[kMrbDGFClusterVoltage])->GetString().Data()));
+		cluMem->SetColor(((TObjString *) sLine[kMrbDGFClusterColor])->GetString().Data());
+		cluMem->SetAF(((TObjString *) sLine[kMrbDGFClusterAF])->GetString().Data());
+		if (!cluMem->SetSide(((TObjString *) sLine[kMrbDGFClusterSide])->GetString().Data())) ok = kFALSE;
+		if (!cluMem->SetHeight(((TObjString *) sLine[kMrbDGFClusterHeight])->GetString().Data())) ok = kFALSE;
+		if (!cluMem->SetAngle(((TObjString *) sLine[kMrbDGFClusterAngle])->GetString().Data())) ok = kFALSE;
+		cluMem->SetCrate(atoi(((TObjString *) sLine[kMrbDGFClusterCrate])->GetString().Data()));
+		cluMem->SetSlot(0, atoi(((TObjString *) sLine[kMrbDGFClusterSlot1])->GetString().Data()));
+		cluMem->SetSlot(1, atoi(((TObjString *) sLine[kMrbDGFClusterSlot2])->GetString().Data()));
+		if (nIdx == kMrbDGFClusterIdxShort) {
+			TMrbString dgfName = "dgf";
+			dgfName += cluMem->GetSlot(0);
+			cluMem->SetDgf(0, dgfName.Data());
+			dgfName = "dgf";
+			dgfName += cluMem->GetSlot(1);
+			cluMem->SetDgf(1, dgfName.Data());
+			clux = cluIdx;
+		} else {
+			cluMem->SetDgf(0, ((TObjString *) sLine[kMrbDGFClusterDgf1])->GetString().Data());
+			cluMem->SetDgf(1, ((TObjString *) sLine[kMrbDGFClusterDgf2])->GetString().Data());
+			TMrbString d = cluMem->GetDgf(0);
+			d = d(3,5);
+			d.ToInteger(clux);
+			clux /= 10;
+		}
 
-		if (ok) clu->AddMember(cluMem);
+		if (ok) {
+			cluMem->SetClusterIndex(clux);
+			clu->AddMember(cluMem);
+		}
 	}
 }	
 
@@ -257,6 +338,21 @@ void TMrbLofDGFClusters::Print(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	Out << endl << "DGF Cluster Data:" << endl;
+	Out << Form("%3s %-4s %4s %4s %-10s %2s %-6s %-5s %-9s %s %2s %2s %s",
+					"#",
+					"id",
+					"hex",
+					"V",
+					"color",
+					"AF",
+					"side",
+					"hght",
+					"angle",
+					"C",
+					"N1", "N2", "DGF") << endl;
+	Out << "---------------------------------------------------------------------------------" << endl;
+
 	TMrbNamedX * nx = (TMrbNamedX *) this->First();
 	while (nx) {
 		TMrbDGFCluster * clu = (TMrbDGFCluster *) nx->GetAssignedObject();
@@ -264,4 +360,23 @@ void TMrbLofDGFClusters::Print(ostream & Out) {
 		Out << endl;
 		nx = (TMrbDGFCluster *) this->After(nx);
 	}
+	Out << endl;
 }
+
+TMrbDGFCluster *  TMrbLofDGFClusters::GetCluster(Int_t CluNo) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLofDGFClusters::GetCluster
+// Purpose:        Get cluster by its number
+// Arguments:      Int_t CluNo              -- cluster number
+// Results:        TMrbDGFCluster * Cluster -- cluster
+// Exceptions:
+// Description:    Returns cluster.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = (TMrbNamedX *) this->FindByIndex(CluNo);
+	if (nx) return((TMrbDGFCluster *) nx->GetAssignedObject());
+	return(NULL);
+}
+
