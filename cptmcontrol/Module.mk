@@ -73,9 +73,9 @@ all-cptmcontrol:       $(CptmCEXE)
 clean-cptmcontrol:
 		@rm -f $(CptmCO) $(CptmCMAINO) $(CptmCDO) $(CptmCDS)
 
-clean::         clean-Cptmcontrol
+clean::         clean-cptmcontrol
 
-distclean-cptmcontrol: clean-Cptmcontrol
+distclean-cptmcontrol: clean-cptmcontrol
 		@rm -f $(CptmCDEP) $(CptmCDS) $(CptmCEXE) $(CptmCLIB)
 
 distclean::     distclean-cptmcontrol
