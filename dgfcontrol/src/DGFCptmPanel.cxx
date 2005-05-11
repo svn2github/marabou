@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.2 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.3 2005-05-11 12:13:42 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -146,194 +146,196 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 	comboGC->SetLH(smcLayout);
 	HEAP(smcLayout);
 
-	this->GetLofCptmModules();
-
-	fSelectModule = new TGMrbLabelCombo(fSelectFrame,  "Module",
+	Int_t n = this->GetLofCptmModules();
+	if (n > 0) {
+		fSelectModule = new TGMrbLabelCombo(fSelectFrame,  "Module",
 											&fLofCptmModules,
 											DGFCptmPanel::kDGFCptmSelectModule, 2,
 											kTabWidth, kLEHeight,
 											kEntryWidth,
 											frameGC, labelGC, comboGC, buttonGC, kTRUE);
-	HEAP(fSelectModule);
-	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
-	fCptmIndex = 0;
-	fSelectModule->GetComboBox()->Select(fCptmIndex);
-	fSelectModule->Associate(this);
+		HEAP(fSelectModule);
+		fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
+		fCptmIndex = 0;
+		fSelectModule->GetComboBox()->Select(fCptmIndex);
+		fSelectModule->Associate(this);
 
-	TGLayoutHints * layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
-	frameGC->SetLH(layout);
-	HEAP(layout);
-	fH1Frame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
-	HEAP(fH1Frame);
-	this->AddFrame(fH1Frame, frameGC->LH());
+		TGLayoutHints * layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
+		frameGC->SetLH(layout);
+		HEAP(layout);
+		fH1Frame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
+		HEAP(fH1Frame);
+		this->AddFrame(fH1Frame, frameGC->LH());
 
-	gDGFControlData->SetLH(groupGC, frameGC, layout);
-	fGeFrame = new TGGroupFrame(fH1Frame, "DGG (Ge)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fGeFrame);
-	fH1Frame->AddFrame(fGeFrame, frameGC->LH());
+		gDGFControlData->SetLH(groupGC, frameGC, layout);
+		fGeFrame = new TGGroupFrame(fH1Frame, "DGG (Ge)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+		HEAP(fGeFrame);
+		fH1Frame->AddFrame(fGeFrame, frameGC->LH());
 
-	fGeDelayEntry = new TGMrbLabelEntry(fGeFrame, "Delay [us]",
+		fGeDelayEntry = new TGMrbLabelEntry(fGeFrame, "Delay [us]",
 												200, kDGFCptmGeDelayEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fGeDelayEntry);
-	fGeFrame->AddFrame(fGeDelayEntry, frameGC->LH());
-	fGeDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fGeDelayEntry->GetEntry()->SetText("0");
-	fGeDelayEntry->SetRange(0., 255 * 0.025);
-	fGeDelayEntry->SetIncrement(0.1);
-	fGeDelayEntry->AddToFocusList(&fFocusList);
-	fGeDelayEntry->Associate(this);
+		HEAP(fGeDelayEntry);
+		fGeFrame->AddFrame(fGeDelayEntry, frameGC->LH());
+		fGeDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+		fGeDelayEntry->GetEntry()->SetText("0");
+		fGeDelayEntry->SetRange(0., 255 * 0.025);
+		fGeDelayEntry->SetIncrement(0.1);
+		fGeDelayEntry->AddToFocusList(&fFocusList);
+		fGeDelayEntry->Associate(this);
 
-	fGeWidthEntry = new TGMrbLabelEntry(fGeFrame, "Width [us]",
+		fGeWidthEntry = new TGMrbLabelEntry(fGeFrame, "Width [us]",
 												200, kDGFCptmGeWidthEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fGeWidthEntry);
-	fGeFrame->AddFrame(fGeWidthEntry, frameGC->LH());
-	fGeWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fGeWidthEntry->GetEntry()->SetText("0");
-	fGeWidthEntry->SetRange(0., 255 * 0.025);
-	fGeWidthEntry->SetIncrement(0.1);
-	fGeWidthEntry->AddToFocusList(&fFocusList);
-	fGeWidthEntry->Associate(this);
+		HEAP(fGeWidthEntry);
+		fGeFrame->AddFrame(fGeWidthEntry, frameGC->LH());
+		fGeWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+		fGeWidthEntry->GetEntry()->SetText("0");
+		fGeWidthEntry->SetRange(0., 255 * 0.025);
+		fGeWidthEntry->SetIncrement(0.1);
+		fGeWidthEntry->AddToFocusList(&fFocusList);
+		fGeWidthEntry->Associate(this);
 
-	fAuxFrame = new TGGroupFrame(fH1Frame, "DGG (Aux)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fGeFrame);
-	fH1Frame->AddFrame(fAuxFrame, frameGC->LH());
+		fAuxFrame = new TGGroupFrame(fH1Frame, "DGG (Aux)", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+		HEAP(fGeFrame);
+		fH1Frame->AddFrame(fAuxFrame, frameGC->LH());
 
-	fAuxDelayEntry = new TGMrbLabelEntry(fAuxFrame, "Delay [us]",
+		fAuxDelayEntry = new TGMrbLabelEntry(fAuxFrame, "Delay [us]",
 												200, kDGFCptmAuxDelayEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fAuxDelayEntry);
-	fAuxFrame->AddFrame(fAuxDelayEntry, frameGC->LH());
-	fAuxDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fAuxDelayEntry->GetEntry()->SetText("0");
-	fAuxDelayEntry->SetRange(0., 255 * 0.025);
-	fAuxDelayEntry->SetIncrement(0.1);
-	fAuxDelayEntry->AddToFocusList(&fFocusList);
-	fAuxDelayEntry->Associate(this);
+		HEAP(fAuxDelayEntry);
+		fAuxFrame->AddFrame(fAuxDelayEntry, frameGC->LH());
+		fAuxDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+		fAuxDelayEntry->GetEntry()->SetText("0");
+		fAuxDelayEntry->SetRange(0., 255 * 0.025);
+		fAuxDelayEntry->SetIncrement(0.1);
+		fAuxDelayEntry->AddToFocusList(&fFocusList);
+		fAuxDelayEntry->Associate(this);
 
-	fAuxWidthEntry = new TGMrbLabelEntry(fAuxFrame, "Width [us]",
+		fAuxWidthEntry = new TGMrbLabelEntry(fAuxFrame, "Width [us]",
 												200, kDGFCptmAuxWidthEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fAuxWidthEntry);
-	fAuxFrame->AddFrame(fAuxWidthEntry, frameGC->LH());
-	fAuxWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fAuxWidthEntry->GetEntry()->SetText("0");
-	fAuxWidthEntry->SetRange(0., 255 * 0.025);
-	fAuxWidthEntry->SetIncrement(0.1);
-	fAuxWidthEntry->AddToFocusList(&fFocusList);
-	fAuxWidthEntry->Associate(this);
+		HEAP(fAuxWidthEntry);
+		fAuxFrame->AddFrame(fAuxWidthEntry, frameGC->LH());
+		fAuxWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+		fAuxWidthEntry->GetEntry()->SetText("0");
+		fAuxWidthEntry->SetRange(0., 255 * 0.025);
+		fAuxWidthEntry->SetIncrement(0.1);
+		fAuxWidthEntry->AddToFocusList(&fFocusList);
+		fAuxWidthEntry->Associate(this);
 
-	fTimeWdwEntry = new TGMrbLabelEntry(fAuxFrame, "Time wdw [us]",
+		fTimeWdwEntry = new TGMrbLabelEntry(fAuxFrame, "Time wdw [us]",
 												200, kDGFCptmTimeWdwEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fTimeWdwEntry);
-	fAuxFrame->AddFrame(fTimeWdwEntry, frameGC->LH());
-	fTimeWdwEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTimeWdwEntry->GetEntry()->SetText("0");
-	fTimeWdwEntry->SetRange(0., 255 * 0.025);
-	fTimeWdwEntry->SetIncrement(0.1);
-	fTimeWdwEntry->AddToFocusList(&fFocusList);
-	fTimeWdwEntry->Associate(this);
+		HEAP(fTimeWdwEntry);
+		fAuxFrame->AddFrame(fTimeWdwEntry, frameGC->LH());
+		fTimeWdwEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+		fTimeWdwEntry->GetEntry()->SetText("0");
+		fTimeWdwEntry->SetRange(0., 255 * 0.025);
+		fTimeWdwEntry->SetIncrement(0.1);
+		fTimeWdwEntry->AddToFocusList(&fFocusList);
+		fTimeWdwEntry->Associate(this);
 
-	fMultFrame = new TGGroupFrame(fH1Frame, "Multiplicity", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fMultFrame);
-	fH1Frame->AddFrame(fMultFrame, frameGC->LH());
+		fMultFrame = new TGGroupFrame(fH1Frame, "Multiplicity", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+		HEAP(fMultFrame);
+		fH1Frame->AddFrame(fMultFrame, frameGC->LH());
 
-	fMultValueEntry = new TGMrbLabelEntry(fMultFrame, "Multiplicity",
+		fMultValueEntry = new TGMrbLabelEntry(fMultFrame, "Multiplicity",
 												200, kDGFCptmMultValueEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fMultValueEntry);
-	fMultFrame->AddFrame(fMultValueEntry, frameGC->LH());
-	fMultValueEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMultValueEntry->GetEntry()->SetText("0");
-	fMultValueEntry->SetRange(0, (4095 + 34) / 35);
-	fMultValueEntry->SetIncrement(1);
-	fMultValueEntry->AddToFocusList(&fFocusList);
-	fMultValueEntry->Associate(this);
+		HEAP(fMultValueEntry);
+		fMultFrame->AddFrame(fMultValueEntry, frameGC->LH());
+		fMultValueEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+		fMultValueEntry->GetEntry()->SetText("0");
+		fMultValueEntry->SetRange(0, (4095 + 34) / 35);
+		fMultValueEntry->SetIncrement(1);
+		fMultValueEntry->AddToFocusList(&fFocusList);
+		fMultValueEntry->Associate(this);
 
-	fMultDacEntry = new TGMrbLabelEntry(fMultFrame, "DAC [mV]",
+		fMultDacEntry = new TGMrbLabelEntry(fMultFrame, "DAC [mV]",
 												200, kDGFCptmMultDacEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC, buttonGC, kTRUE);
-	HEAP(fMultValueEntry);
-	fMultFrame->AddFrame(fMultDacEntry, frameGC->LH());
-	fMultDacEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMultDacEntry->GetEntry()->SetText("0");
-	fMultDacEntry->SetRange(0, 4095);
-	fMultDacEntry->SetIncrement(35);
-	fMultDacEntry->AddToFocusList(&fFocusList);
-	fMultDacEntry->Associate(this);
+		HEAP(fMultValueEntry);
+		fMultFrame->AddFrame(fMultDacEntry, frameGC->LH());
+		fMultDacEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+		fMultDacEntry->GetEntry()->SetText("0");
+		fMultDacEntry->SetRange(0, 4095);
+		fMultDacEntry->SetIncrement(35);
+		fMultDacEntry->AddToFocusList(&fFocusList);
+		fMultDacEntry->Associate(this);
 
-	fH2Frame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
-	HEAP(fH2Frame);
-	this->AddFrame(fH2Frame, frameGC->LH());
+		fH2Frame = new TGHorizontalFrame(this, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
+		HEAP(fH2Frame);
+		this->AddFrame(fH2Frame, frameGC->LH());
 
-	TMrbLofNamedX maskRegBits;
-	maskRegBits.SetName("Mask Register");
-	maskRegBits.AddNamedX(kDGFCptmMaskRegisterBits);
-	maskRegBits.SetPatternMode();
+		TMrbLofNamedX maskRegBits;
+		maskRegBits.SetName("Mask Register");
+		maskRegBits.AddNamedX(kDGFCptmMaskRegisterBits);
+		maskRegBits.SetPatternMode();
 
-	fCptmMaskReg = new TGMrbCheckButtonGroup(fH2Frame, "Mask Register",	&maskRegBits, kDGFCptmMaskRegisterBtns, 1,
+		fCptmMaskReg = new TGMrbCheckButtonGroup(fH2Frame, "Mask Register",	&maskRegBits, kDGFCptmMaskRegisterBtns, 1,
 																groupGC, buttonGC,
 																NULL,
 																kHorizontalFrame);
-	HEAP(fCptmMaskReg);
-	fH2Frame->AddFrame(fCptmMaskReg, groupGC->LH());
-	fCptmMaskReg->SetState(0xffffffff, kButtonUp);
-	fCptmMaskReg->Associate(this);
+		HEAP(fCptmMaskReg);
+		fH2Frame->AddFrame(fCptmMaskReg, groupGC->LH());
+		fCptmMaskReg->SetState(0xffffffff, kButtonUp);
+		fCptmMaskReg->Associate(this);
 	
-	fAddrFrame = new TGGroupFrame(fH2Frame, "Addr Pointers", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fAddrFrame);
-	fH2Frame->AddFrame(fAddrFrame, frameGC->LH());
+		fAddrFrame = new TGGroupFrame(fH2Frame, "Addr Pointers", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+		HEAP(fAddrFrame);
+		fH2Frame->AddFrame(fAddrFrame, frameGC->LH());
 
-	fAddrReadEntry = new TGMrbLabelEntry(fAddrFrame, "Read",
+		fAddrReadEntry = new TGMrbLabelEntry(fAddrFrame, "Read",
 												200, kDGFCptmAddrReadEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC);
-	HEAP(fAddrReadEntry);
-	fAddrFrame->AddFrame(fAddrReadEntry, frameGC->LH());
-	fAddrReadEntry->GetEntry()->SetState(kFALSE);
+		HEAP(fAddrReadEntry);
+		fAddrFrame->AddFrame(fAddrReadEntry, frameGC->LH());
+		fAddrReadEntry->GetEntry()->SetState(kFALSE);
 
-	fAddrWriteEntry = new TGMrbLabelEntry(fAddrFrame, "Write",
+		fAddrWriteEntry = new TGMrbLabelEntry(fAddrFrame, "Write",
 												200, kDGFCptmAddrWriteEntry,
 												kLEWidth,
 												kLEHeight,
 												kEntryWidth,
 												frameGC, labelGC, entryGC);
-	HEAP(fAddrWriteEntry);
-	fAddrFrame->AddFrame(fAddrWriteEntry, frameGC->LH());
-	fAddrWriteEntry->GetEntry()->SetState(kFALSE);
+		HEAP(fAddrWriteEntry);
+		fAddrFrame->AddFrame(fAddrWriteEntry, frameGC->LH());
+		fAddrWriteEntry->GetEntry()->SetState(kFALSE);
 
 //	buttons
-	fCptmButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fCptmActions, -1, 1, groupGC, buttonGC);
-	HEAP(fCptmButtonFrame);
-	this->AddFrame(fCptmButtonFrame, buttonGC->LH());
-	fCptmButtonFrame->Associate(this);
+		fCptmButtonFrame = new TGMrbTextButtonGroup(this, "Actions", &fCptmActions, -1, 1, groupGC, buttonGC);
+		HEAP(fCptmButtonFrame);
+		this->AddFrame(fCptmButtonFrame, buttonGC->LH());
+		fCptmButtonFrame->Associate(this);
 
-	this->InitializeValues(fCptmIndex);
+		this->InitializeValues(fCptmIndex);
+
+	}
 
 	MapSubwindows();
 	Resize(GetDefaultSize());

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmPanel.cxx,v 1.2 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: CptmPanel.cxx,v 1.3 2005-05-11 12:13:42 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -162,7 +162,12 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	comboGC->SetLH(smcLayout);
 	HEAP(smcLayout);
 
-	this->GetLofCptmModules();
+	Int_t n  = this->GetLofCptmModules();
+	if (n <= 0) {
+		gMrbLog->Err() << "No CPTM module found. Sorry" << endl;
+		gMrbLog->Flush(this->ClassName());
+		gSystem->Exit(1);
+	}
 
 	fSelectModule = new TGMrbLabelCombo(fSelectFrame,  "Module",
 											&fLofCptmModules,
