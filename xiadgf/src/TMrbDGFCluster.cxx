@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.5 2005-05-11 16:12:34 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.6 2005-05-11 18:35:13 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -293,6 +293,14 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		clu->SetClusterNo(cluNo);
 
 		TString capsId = ((TObjString *) sLine[kMrbDGFClusterCapsId])->GetString();
+		capsId.ToUpper();
+		Int_t capsNo = (Int_t) (capsId(0) - 'A');
+		if (capsNo < 0 || capsNo > 2) {
+			gMrbLog->Err()	<< "Wrong capsule id in " << lineNo << " - " << capsId
+							<< " (should be A, B, or C)" << endl;
+			gMrbLog->Flush(this->ClassName(), "ReadFile");
+			continue;
+		}
 
 		Bool_t ok = kTRUE;
 		TMrbDGFClusterMember * cluMem = new TMrbDGFClusterMember(cluIdx, cluNo, capsId(0));
@@ -309,10 +317,12 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		cluMem->SetSlot(1, atoi(((TObjString *) sLine[kMrbDGFClusterSlot2])->GetString().Data()));
 		if (nIdx == kMrbDGFClusterIdxShort) {
 			TMrbString dgfName = "dgf";
-			dgfName += cluMem->GetSlot(0);
+			dgfName += cluIdx;
+			dgfName += capsNo * 2 + 1;
 			cluMem->SetDgf(0, dgfName.Data());
 			dgfName = "dgf";
-			dgfName += cluMem->GetSlot(1);
+			dgfName += cluIdx;
+			dgfName += capsNo * 2 + 2;
 			cluMem->SetDgf(1, dgfName.Data());
 		} else {
 			cluMem->SetDgf(0, ((TObjString *) sLine[kMrbDGFClusterDgf1])->GetString().Data());
