@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.6 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.7 2005-05-11 16:12:34 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -282,9 +282,12 @@ Int_t DGFControlData::SetupModuleList() {
 							dgfTitle += " ";
 							this->GetResource(dgfHex, "DGFControl.Module", i, dgfName.Data(), "ClusterHexNum", 16);
 							TMrbString h;
+							h.FromInteger(dgfHex, 0, ' ');
+							dgfTitle += h;
+							dgfTitle += " (";
 							h.FromInteger(dgfHex, 0, ' ', 16);
 							dgfTitle += h;
-							dgfTitle += " ";
+							dgfTitle += ") ";
 							dgfTitle += this->GetResource(dgfColor, "DGFControl.Module", i, dgfName.Data(), "ClusterColor");
 							dgfTitle += " ";
 							dgfTitle += this->GetResource(dgfSegment, "DGFControl.Module", i, dgfName.Data(), "ClusterSegments");

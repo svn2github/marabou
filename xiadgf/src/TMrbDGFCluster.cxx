@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.4 2005-05-11 09:20:32 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.5 2005-05-11 16:12:34 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -260,8 +260,14 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 			if (clu && clu->GetNofMembers() > 0) this->AddNamedX(cluIdx, cluName.Data(), NULL, clu);
 			return(nofClusters);
 		}
+		cLine.ReplaceAll("\t", " ");
 		cLine = cLine.Strip(TString::kBoth);
 		if (cLine(0) == '#' || cLine.Length() == 0) continue;
+		Int_t x = cLine.Index("#", 0);
+		if (x > 0) {
+			cLine = cLine(0, x);
+			cLine = cLine.Strip(TString::kBoth);
+		}
 
 		TObjArray sLine;
 		sLine.Delete();
