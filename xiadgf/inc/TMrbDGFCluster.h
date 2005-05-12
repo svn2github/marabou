@@ -8,7 +8,7 @@
 // Class:          TMrbDGFCluster            -- cluster data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCluster.h,v 1.3 2005-05-11 08:40:03 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.h,v 1.4 2005-05-12 19:21:24 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -71,6 +71,7 @@ class TMrbDGFClusterMember : public TObject {
 			fSlot[1] = 0;
 			fDgf[0] = "undef";
 			fDgf[1] = "undef";
+			fCmt = "";
 		}
 		virtual ~TMrbDGFClusterMember() {};
 
@@ -105,9 +106,12 @@ class TMrbDGFClusterMember : public TObject {
 		inline void SetDgf(Int_t SlotNo, const Char_t * DgfName) { fDgf[SlotNo] = DgfName; };
 		inline const Char_t * GetDgf(Int_t SlotNo) { return(fDgf[SlotNo].Data()); };
 
+		inline void SetCmt(const Char_t * Cmt) { fCmt = Cmt; };
+		inline const Char_t * GetCmt() { return(fCmt.Data()); };
+
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & OutStrm);
-		virtual inline void Print() { Print(cout); };
+		void Print(ostream & OutStrm, Bool_t CmtFlag = kFALSE);
+		virtual inline void Print(Bool_t CmtFlag) { Print(cout, CmtFlag); };
 		
 	protected:
 		Int_t fClusterIndex;
@@ -126,6 +130,7 @@ class TMrbDGFClusterMember : public TObject {
 		Int_t fCrate;
 		Int_t fSlot[2];
 		TString fDgf[2];
+		TString fCmt;
 		
 	ClassDef(TMrbDGFClusterMember, 1)		// [XIA DGF-4C] DGF cluster member
 };
@@ -166,8 +171,8 @@ class TMrbDGFCluster : public TMrbNamedX {
 		inline const Char_t * GetAngle() { return(fAngle.Data()); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & OutStrm);
-		virtual inline void Print() { Print(cout); };
+		void Print(ostream & OutStrm, Bool_t CmtFlag = kFALSE);
+		virtual inline void Print(Bool_t CmtFlag) { Print(cout, CmtFlag); };
 		
 	protected:
 		Int_t fClusterNo;

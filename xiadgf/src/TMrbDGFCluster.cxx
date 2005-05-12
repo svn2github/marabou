@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFCluster.cxx,v 1.6 2005-05-11 18:35:13 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.cxx,v 1.7 2005-05-12 19:21:24 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -117,19 +117,20 @@ Bool_t TMrbDGFClusterMember::SetAngle(const Char_t * Angle) {
 	return(kTRUE);
 }
 
-void TMrbDGFClusterMember::Print(ostream & Out) {
+void TMrbDGFClusterMember::Print(ostream & Out, Bool_t CmtFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGFClusterMember::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out    -- output stream
+//                 Bool_t CmtFlag   -- output comment if kTRUE
 // Results:        --
 // Exceptions:
 // Description:    Outputs data to stream.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Out << Form("%3d %2d %c %4d %4d %-10s %s %-6s %-5s %-9s %1d %2d %2d %s %s",
+	Out << Form("%3d %2d %c %4d %4d %-10s %s %-6s %-7s %-9s %1d %2d %2d %s %s",
 					fClusterIndex,
 					fClusterNo,
 					fCapsuleId,
@@ -142,15 +143,18 @@ void TMrbDGFClusterMember::Print(ostream & Out) {
 					fAngle.Data(),
 					fCrate,
 					fSlot[0], fSlot[1],
-					fDgf[0].Data(), fDgf[1].Data()) << endl;
+					fDgf[0].Data(), fDgf[1].Data());
+	if (CmtFlag && fCmt.Length() > 0) Out << "\t" << fCmt;
+	Out << endl;
 }
 
-void TMrbDGFCluster::Print(ostream & Out) {
+void TMrbDGFCluster::Print(ostream & Out, Bool_t CmtFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGFCluster::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out    -- output stream
+//                 Bool_t CmtFlag   -- output comment if kTRUE
 // Results:        --
 // Exceptions:
 // Description:    Outputs data to stream.
@@ -159,7 +163,7 @@ void TMrbDGFCluster::Print(ostream & Out) {
 
 	TMrbDGFClusterMember * cluMem = (TMrbDGFClusterMember *) fMembers.First();
 	while (cluMem) {
-		cluMem->Print(Out);
+		cluMem->Print(Out, CmtFlag);
 		cluMem = (TMrbDGFClusterMember *) fMembers.After(cluMem);
 	}
 }
@@ -255,6 +259,7 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 	TMrbDGFCluster * clu = NULL;
 	while (kTRUE) {
 		cLine.ReadLine(cFile, kFALSE);
+		TString cmt = "";
 		if (cFile.eof()) {
 			cFile.close();
 			if (clu && clu->GetNofMembers() > 0) this->AddNamedX(cluIdx, cluName.Data(), NULL, clu);
@@ -262,9 +267,16 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		}
 		cLine.ReplaceAll("\t", " ");
 		cLine = cLine.Strip(TString::kBoth);
-		if (cLine(0) == '#' || cLine.Length() == 0) continue;
+		if (cLine.Length() == 0 || cLine(0) == '#' || cLine.BeginsWith("//")) continue;
 		Int_t x = cLine.Index("#", 0);
 		if (x > 0) {
+			cmt = cLine(x, 1000);
+			cLine = cLine(0, x);
+			cLine = cLine.Strip(TString::kBoth);
+		}
+		x = cLine.Index("//", 0);
+		if (x > 0) {
+			cmt = cLine(x, 1000);
 			cLine = cLine(0, x);
 			cLine = cLine.Strip(TString::kBoth);
 		}
@@ -316,18 +328,25 @@ Int_t TMrbLofDGFClusters::ReadFile(const Char_t * ClusterFile) {
 		cluMem->SetSlot(0, atoi(((TObjString *) sLine[kMrbDGFClusterSlot1])->GetString().Data()));
 		cluMem->SetSlot(1, atoi(((TObjString *) sLine[kMrbDGFClusterSlot2])->GetString().Data()));
 		if (nIdx == kMrbDGFClusterIdxShort) {
-			TMrbString dgfName = "dgf";
-			dgfName += cluIdx;
-			dgfName += capsNo * 2 + 1;
+			TMrbString dgfName = "";
+			if (cluMem->GetSlot(0) > 0) {
+				dgfName = "dgf";
+				dgfName += cluIdx;
+				dgfName += capsNo * 2 + 1;
+			}
 			cluMem->SetDgf(0, dgfName.Data());
-			dgfName = "dgf";
-			dgfName += cluIdx;
-			dgfName += capsNo * 2 + 2;
+			dgfName = "";
+			if (cluMem->GetSlot(1) > 0) {
+				dgfName = "dgf";
+				dgfName += cluIdx;
+				dgfName += capsNo * 2 + 2;
+			}
 			cluMem->SetDgf(1, dgfName.Data());
 		} else {
 			cluMem->SetDgf(0, ((TObjString *) sLine[kMrbDGFClusterDgf1])->GetString().Data());
 			cluMem->SetDgf(1, ((TObjString *) sLine[kMrbDGFClusterDgf2])->GetString().Data());
 		}
+		if (cmt.Length() > 0) cluMem->SetCmt(cmt.Data());
 
 		if (ok) clu->AddMember(cluMem);
 	}
@@ -346,7 +365,7 @@ void TMrbLofDGFClusters::Print(ostream & Out) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Out << endl << "DGF Cluster Data:" << endl;
-	Out << Form("%3s %-4s %4s %4s %-10s %2s %-6s %-5s %-9s %s %2s %2s %s",
+	Out << Form("%3s %-4s %4s %4s %-10s %2s %-6s %-7s %-9s %s %2s %2s %s",
 					"#",
 					"id",
 					"hex",
@@ -354,11 +373,11 @@ void TMrbLofDGFClusters::Print(ostream & Out) {
 					"color",
 					"AF",
 					"side",
-					"hght",
+					"height",
 					"angle",
 					"C",
-					"N1", "N2", "DGF") << endl;
-	Out << "---------------------------------------------------------------------------------" << endl;
+					"N1", "N2", "DGFs") << endl;
+	Out << "--------------------------------------------------------------------------------" << endl;
 
 	TMrbNamedX * nx = (TMrbNamedX *) this->First();
 	while (nx) {
