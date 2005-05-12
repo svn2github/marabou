@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.7 2005-05-12 20:01:54 marabou Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.8 2005-05-12 20:10:03 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -452,7 +452,7 @@ Int_t TMrbCaen_V775::SetFullScaleRange(Int_t NanoSeconds) {
 //                 Full range values from 140 to 1200 nsecs correspond to
 //                 register values from 0xFF to 0x1E with linear interpolation.
 //                 Formula is therefore
-//                      r(t) = 256 + (225/1060) * (140 - t)
+//                      r(t) = 0xFF - (225/1060) * (t - 140)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -465,6 +465,7 @@ Int_t TMrbCaen_V775::SetFullScaleRange(Int_t NanoSeconds) {
 
 	Double_t fac = (0xFF - 0x1E) / (1200. - 140.);
 	fFullScaleRange = 0xFF - fac * (NanoSeconds - 140);
+	if (fFullScaleRange < 0x1E) fFullScaleRange = 0x1E;
 	fFullScaleRangeNsecs = NanoSeconds;
 	return(fFullScaleRange);
 }
