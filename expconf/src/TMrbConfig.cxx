@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.90 2005-04-14 08:57:47 rudi Exp $       $Id: TMrbConfig.cxx,v 1.90 2005-04-14 08:57:47 rudi Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.91 2005-05-13 13:09:47 marabou Exp $       $Id: TMrbConfig.cxx,v 1.91 2005-05-13 13:09:47 marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -5203,6 +5203,14 @@ Int_t TMrbConfig::PrintErrors(Bool_t ErrorsOnly) const {
 
 	TObjArray err;
 	Int_t nofErrors = gMrbLog->GetErrors(err);
+	TObjArray wrn;
+	Int_t nofWarnings = (ErrorsOnly) ? 0 : gMrbLog->GetWarnings(wrn);
+
+	if (nofErrors == 0 && nofWarnings == 0) {
+		cout	<< setgreen << "[No errors during config step]" << setblack << endl;
+		return(0);
+	}
+
 	if (nofErrors > 0) {
 		cerr	<< setred << endl
 				<< "ERROR(S) while processing config script:" << setblack << endl;
@@ -5211,8 +5219,6 @@ Int_t TMrbConfig::PrintErrors(Bool_t ErrorsOnly) const {
 
 	if (ErrorsOnly) return(nofErrors);
 
-	TObjArray wrn;
-	Int_t nofWarnings = gMrbLog->GetWarnings(wrn);
 	if (nofWarnings > 0) {
 		cerr	<< setmagenta << endl
 				<< "WARNING(S) while processing config script:" << setblack << endl;
