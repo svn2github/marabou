@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCamacModule.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCamacModule.cxx,v 1.6 2005-05-13 13:01:34 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,6 +64,7 @@ TMrbCamacModule::TMrbCamacModule(const Char_t * ModuleName, const Char_t * Modul
 		fCNAF.SetBit(TMrbCNAF::kCnafBranch | TMrbCNAF::kCnafCrate | TMrbCNAF::kCnafStation, TMrbCNAF::kCnafStation); 	// defined by B.C.N, but N is needed
 
 		if (fCNAF.Ascii2Int(ModulePosition)) {					// decode position B.C.N
+				fCNAF.Int2Ascii(fPosition, kTRUE);				// set module position
 				if (!gMrbConfig->CheckModuleAddress(this)) this->MakeZombie(); 	// check position
 		} else {
 			this->MakeZombie();
@@ -82,8 +83,6 @@ TMrbCamacModule::TMrbCamacModule(const Char_t * ModuleName, const Char_t * Modul
 			} else {
 				gMrbConfig->SetMultiBorC(TMrbCNAF::kCnafCrate);
 			}
-
-			fCNAF.Int2Ascii(fPosition, kTRUE);			// module position
 
 			cType = gMrbConfig->GetCrateType(fCrate);
 			if (cType == TMrbConfig::kCrateUnused || cType == TMrbConfig::kCrateCamac) {

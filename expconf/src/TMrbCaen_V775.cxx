@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V775.cxx,v 1.8 2005-05-12 20:10:03 marabou Exp $       
+// Revision:       $Id: TMrbCaen_V775.cxx,v 1.9 2005-05-13 13:01:34 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -464,7 +464,7 @@ Int_t TMrbCaen_V775::SetFullScaleRange(Int_t NanoSeconds) {
 	}
 
 	Double_t fac = (0xFF - 0x1E) / (1200. - 140.);
-	fFullScaleRange = 0xFF - fac * (NanoSeconds - 140);
+	fFullScaleRange = (Int_t) (0xFF - fac * (NanoSeconds - 140));
 	if (fFullScaleRange < 0x1E) fFullScaleRange = 0x1E;
 	fFullScaleRangeNsecs = NanoSeconds;
 	return(fFullScaleRange);

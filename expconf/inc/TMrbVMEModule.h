@@ -8,7 +8,7 @@
 // Class:          TMrbVMEModule        -- base class for vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEModule.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbVMEModule.h,v 1.7 2005-05-13 13:01:34 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,6 @@ class TMrbVMEModule : public TMrbModule {
 	protected:
 		UInt_t fBaseAddr;					// base address
 		UInt_t fAddrModifier;				// address modifier
-
 		Int_t fSegmentSize; 				// segment size
 
 	ClassDef(TMrbVMEModule, 1)		// [Config] Base class for VME modules

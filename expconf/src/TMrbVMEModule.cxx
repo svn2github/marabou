@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.5 2005-05-13 13:01:34 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -60,8 +60,12 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 		fPosition = "C0.";
 		fPosition.AppendInteger(BaseAddr, 0, 0, 16);
 
-		for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params
-			fChannelSpec.Add((TObject *) new TMrbVMEChannel(this, nch));
+		if (!gMrbConfig->CheckModuleAddress(this)) this->MakeZombie(); 	// check position
+
+		if (!this->IsZombie()) {
+			for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params
+				fChannelSpec.Add((TObject *) new TMrbVMEChannel(this, nch));
+			}
 		}
 	}
 }

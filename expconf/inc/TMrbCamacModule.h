@@ -8,7 +8,7 @@
 // Class:          TMrbCamacModule      -- base class for camac modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacModule.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCamacModule.h,v 1.7 2005-05-13 13:01:34 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,6 +52,7 @@ class TMrbCamacModule : public TMrbModule {
 		inline Int_t GetCNAF(TMrbCNAF::EMrbCNAF cnaf) const {		// get single cnaf member
 			return(fCNAF.Get(cnaf));
 		};
+		inline TMrbCNAF * GetCNAF() { return(&fCNAF); };
 
 		inline Int_t GetStation() const { return(fCNAF.Get(TMrbCNAF::kCnafStation)); };
 		
