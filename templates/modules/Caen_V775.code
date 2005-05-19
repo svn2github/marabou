@@ -120,6 +120,9 @@
 #define CAEN_V775_OVER_RANGE_CHECK_ON(module)	*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_OVER_RANGE_DIS
 #define CAEN_V775_OVER_RANGE_CHECK_OFF(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_OVER_RANGE_DIS
 
+#define CAEN_V775_EMPTY_PROG_ENABLE(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_EMPTY_PROG_ENA
+#define CAEN_V775_EMPTY_PROG_DISABLE(module)	*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_EMPTY_PROG_ENA
+
 #define CAEN_V775_CLEAR_DATA(module)	*CAEN_V775_A_BITSET2(module) = CAEN_V775_B_BITSET2_CLEAR_DATA; \
 											*CAEN_V775_A_BITCLEAR2(module) = CAEN_V775_B_BITSET2_CLEAR_DATA
 
@@ -150,7 +153,7 @@
 %ORC%					CAEN_V775_OVER_RANGE_CHECK_$onOrOff($moduleName);			/* $dont check for range overflow */
 %CST%					CAEN_V775_COMMON_$startOrStop_ON($moduleName);  			/* runs in COMMON $startOrStop mode */
 %E% 					CAEN_V775_SET_FULL_SCALE_RANGE($moduleName,$fullScaleRange); 	/* full scale range is $fullScaleNsecs ns */
-%E%					CAEN_V785_EMPTY_PROG_ENABLE($moduleName);
+%E%					CAEN_V775_EMPTY_PROG_ENABLE($moduleName);
 %E%					CAEN_V775_CLEAR_DATA($moduleName);
 %E%					CAEN_V775_RESET_EVENT_COUNTER($moduleName);
 %%EndOfCode%%
