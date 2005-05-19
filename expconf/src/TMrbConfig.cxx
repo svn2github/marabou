@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.91 2005-05-13 13:09:47 marabou Exp $       $Id: TMrbConfig.cxx,v 1.91 2005-05-13 13:09:47 marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.92 2005-05-19 12:49:10 marabou Exp $       $Id: TMrbConfig.cxx,v 1.92 2005-05-19 12:49:10 marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -5148,6 +5148,30 @@ Bool_t TMrbConfig::TagToBeProcessed(const Char_t * CodeFile, Int_t TagIndex) con
 	tag += ":";
 	tag += TagIndex;
 	return(fLofOnceOnlyTags.FindObject(tag.Data()) == NULL);
+}
+
+Bool_t TMrbConfig::ExecRootMacro(const Char_t * Macro) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::ExecRootMacro
+// Purpose:        Execute ROOT macro
+// Arguments:      Char_t * Macro   -- macro name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Checks if macro file is present. Execs via gROOT->Macro()
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString macroPath = gEnv->GetValue("Unix.*.Root.MacroPath", ".:macros:$(MARABOU)/macros");
+	gSystem->ExpandPathName(macroPath);
+	TString macroFile = gSystem->Which(macroPath.Data(), Macro);
+	if (macroFile.IsNull()) {
+        gMrbLog->Err() << "Macro file not found - " << Macro << " (searched on .rootrc:Unix.*.Root.MacroPath)" << endl;
+		gMrbLog->Flush(this->ClassName(), "ExecRootMacro");
+		return(kFALSE);
+	}
+	gROOT->Macro(macroFile.Data());
+	return(kTRUE);
 }
 
 void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {

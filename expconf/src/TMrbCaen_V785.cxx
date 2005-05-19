@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V785.cxx,v 1.9 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCaen_V785.cxx,v 1.10 2005-05-19 12:49:10 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -303,6 +303,9 @@ Bool_t TMrbCaen_V785::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 				fCodeTemplates.Substitute("$onOrOff", "OFF");
 				fCodeTemplates.Substitute("$dont", "don't");
 			}
+			fCodeTemplates.Substitute("$moduleName", this->GetName());
+			fCodeTemplates.WriteCode(RdoStrm);
+			fCodeTemplates.InitializeCode("%E%");
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.WriteCode(RdoStrm);
 			for (i = 0; i < fNofChannels; i++, chn++) {
