@@ -931,7 +931,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_event
+// Name:           _mbs_next_med_event
 // Purpose:        Setup next event
 // Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
 // Results:        unsigned int etype  -- event type [subtype,type]
@@ -948,11 +948,13 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	int evl;
 	int sc;
 	unsigned int (*s)();
-	int bytes_read;
+	int bytes_read, bytes_requested;
 
 	MBSBufferElem *_mbs_check_type();
 	char *calloc();
 	void _mbs_output_error();
+
+	off_t filepos;
 
 	unsigned char eHdr[sizeof(s_evhe)];
 
@@ -963,15 +965,22 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	bo = mbs->byte_order;
 
+	filepos = lseek(mbs->fileno, (off_t) 0, SEEK_CUR);
+
 	bytes_read = read(mbs->fileno, eHdr, sizeof(s_evhe));
-	if (bytes_read == 0) return(MBS_ETYPE_EOF);
-	if (bytes_read == -1)
-	{
+
+	if (bytes_read != sizeof(s_evhe)) {
+		lseek(mbs->fileno, filepos, SEEK_SET);
+		return(MBS_ETYPE_WAIT);
+	} else if (bytes_read == 0) {
+		return(MBS_ETYPE_EOF);
+	} else if (bytes_read == -1) {
 		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): %s (%d)",
 													mbs->device, mbs->evtno, strerror(errno), errno);
 		_mbs_output_error();
 		return(MBS_ETYPE_ABORT);
 	}
+
 	total += bytes_read;
 
 	eh = eHdr;
@@ -991,13 +1000,14 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	memcpy(mbs->evt_data, eHdr, sizeof(s_evhe));
 
-	bytes_read = read(mbs->fileno, mbs->evt_data + sizeof(s_evhe), evl - sizeof(s_evhe));
-	if (bytes_read != evl - sizeof(s_evhe)) {
-		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): short event data (this=%d, expected=%d)",
-														mbs->device, mbs->evtno, bytes_read + sizeof(s_evhe), evl);
-		_mbs_output_error();
-		return(MBS_ETYPE_ABORT);
+	bytes_requested = evl - sizeof(s_evhe);
+
+	bytes_read = read(mbs->fileno, mbs->evt_data + sizeof(s_evhe), bytes_requested);
+	if (bytes_read != bytes_requested) {
+		lseek(mbs->fileno, filepos, SEEK_SET);
+		return(MBS_ETYPE_WAIT);
 	}
+
 	total += bytes_read;
 
 	eh = (s_evhe *) mbs->evt_data;
@@ -2628,7 +2638,7 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 // Results:        int fildes               -- file descriptor or -1 if error
 // Exceptions:     -1 if error
 // Description:    Connects to a MBS port.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2686,7 +2696,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 // Results:        MBSServerInfo * info  -- addr of info block or NULL if error.
 // Exceptions:     NULL on error
 // Description:    Reads the info block.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2755,7 +2765,7 @@ int _mbs_read_stream(int fildes, char * buf, MBSServerInfo *info) {
 // Results:        int bytes_read       -- number of bytes read by this request
 // Exceptions:     
 // Description:    Reads a buffer from remote stream.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2783,7 +2793,7 @@ int _mbs_request_stream(int fildes) {
 // Results:        0/-1
 // Exceptions:     
 // Description:    Sends a request to server.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2800,7 +2810,7 @@ int _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
 // Results:        0/1
 // Exceptions:     
 // Description:    Disconnects from current MBS port.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
