@@ -149,10 +149,6 @@ void HistPresent::RestoreOptions()
        env.GetValue("HistPresent.HostToConnect", fHostToConnect->Data());
    fSocketToConnect =
        env.GetValue("HistPresent.SocketToConnect", fSocketToConnect);
-   fAutoExec_1 = env.GetValue("HistPresent.AutoExec_1", 1);
-   fAutoExec_2 = env.GetValue("HistPresent.AutoExec_2", 1);
-   fAutoProj_X = env.GetValue("HistPresent.AutoProj_X", 0);
-   fAutoProj_Y = env.GetValue("HistPresent.AutoProj_Y", 0);
 
    fLabelMaxDigits=  env.GetValue("HistPresent.LabelMaxDigits",  5);  
 
@@ -425,10 +421,6 @@ void HistPresent::SaveOptions()
    env.SetValue("HistPresent.FitOptUseLinBg", fFitOptUseLinBg);
    env.SetValue("HistPresent.MaxListEntries", fMaxListEntries);
    env.SetValue("HistPresent.DisplayCalibrated", fDisplayCalibrated);
-   env.SetValue("HistPresent.AutoExec_1", fAutoExec_1);
-   env.SetValue("HistPresent.AutoExec_2", fAutoExec_2);
-   env.SetValue("HistPresent.AutoProj_X", fAutoProj_X);
-   env.SetValue("HistPresent.AutoProj_Y", fAutoProj_Y);
 //  char options
    env.SetValue("HistPresent.ColorPalette", f2DimColorPalette->Data());
    env.SetValue("HistPresent.GraphFile", fGraphFile.Data());
@@ -2014,11 +2006,10 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 19;
+   Int_t nopt = 15;
    enum e_opt { e_force, e_listsonly, e_psfile, e_enablecal, e_displaycal, 
                 e_fitted, e_treehists, e_treenew, e_treevers, e_savelast,
-                e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp, 
-                e_auto_1, e_auto_2, e_auto_x, e_auto_y
+                e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp 
    };
    const char *opt[] = {
       "Force style, i.e show histograms with current style",
@@ -2039,10 +2030,6 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
       "Really stack (instead of superimpose)",
       "Use Regular expression syntax",
 
-      "Auto exec macro 1-dim",
-      "Auto exec macro 2-dim",
-      "Auto exec project X",
-      "Auto exec project Y"
    };
 // *INDENT-OFF* 
    const char helptext[] = 
@@ -2107,32 +2094,6 @@ files ending with .root) is used in file/histo selection\n\
 masks. One may switch to the more powerful Regular expression.\n\
 For details consult a book on Unix.\n\
 ______________________________________________________________ \n\
-Auto exec macro 1-dim:\n\
----------------------\n\
-A macro (default name auto_exec_1.C) is executed when the left\n\
-mouse button is pressed in a pad containing a 1-dim histogram. \n\
-The default behaviour is as follows:\n\
-   In a pad with several hists: display this hist enlarged \n\
-   On a histogram contour:      print info for this channel\n\
-   In the statistics box:       print full statistics\n\
-   On a function:               print its parameters.\n\
-_______________________________________________________________\n\
-Auto exec macro 2-dim:\n\
----------------------\n\
-A macro (default name auto_exec_2.C) is executed when the left\n\
-mouse button is pressed in a pad containing a 2-dim histogram. \n\
-The default behaviour is as follows:\n\
-   In a pad with several hists: display this hist enlarged \n\
-\n\
-   When the mouse is moved:     \n\
-   Open a new window and display a histogram containing the\n\
-   projection on the x-axis taking only the channels with the\n\
-   y-values pointed to by the mouse.\n\
-   This feature can be switched by the options:\n\
-\n\
-Auto exec project X \n\
-and\n\
-Auto exec project Y \n\
 \n\
 ";
 // *INDENT-ON* 
@@ -2157,10 +2118,6 @@ Auto exec project Y \n\
       else if (i == e_allasfirst && fShowAllAsFirst)    flags[i] = 1;
       else if (i == e_realstack && fRealStack)          flags[i] = 1;
       else if (i == e_useregexp && fUseRegexp)          flags[i] = 1;
-      else if (i == e_auto_1 && fAutoExec_1)            flags[i] = 1;
-      else if (i == e_auto_2 && fAutoExec_2)            flags[i] = 1;
-      else if (i == e_auto_x && fAutoProj_X)            flags[i] = 1;
-      else if (i == e_auto_y && fAutoProj_Y)            flags[i] = 1;
    }
    Int_t retval;
    Int_t itemwidth = 240;
@@ -2189,10 +2146,6 @@ Auto exec project Y \n\
    fShowAllAsFirst = 0;
    fRealStack = 0;
    fUseRegexp = 0;
-   fAutoExec_1 = 0;
-   fAutoExec_2 = 0;
-   fAutoProj_X = 0;
-   fAutoProj_Y = 0;
    for (Int_t i = 0; i < nopt; i++) {
       if (flags[i] != 0) {
          if      (i == e_enablecal)  fEnableCalibration = 1;
@@ -2210,13 +2163,8 @@ Auto exec project Y \n\
          else if (i == e_allasfirst) fShowAllAsFirst = 1;
          else if (i == e_realstack)  fRealStack = 1;
          else if (i == e_useregexp)  fUseRegexp = 1;
-         else if (i == e_auto_1) fAutoExec_1 = 1;
-         else if (i == e_auto_2) fAutoExec_2 = 1;
-         else if (i == e_auto_x) fAutoProj_X = 1;
-         else if (i == e_auto_y) fAutoProj_Y = 1;
       }
    }
-   cout<< fAutoExec_1 << " " << fAutoExec_2 << endl;
    if (fForceStyle > 0) gROOT->ForceStyle();
    else                 gROOT->ForceStyle(kFALSE);
    SaveOptions();

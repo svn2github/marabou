@@ -158,10 +158,6 @@ protected:
    Int_t * fGreyPaletteInv;
    Int_t   fMaxListEntries;
    TString * fHelpDir;
-   Bool_t  fAutoExec_1;
-   Bool_t  fAutoExec_2;
-   Bool_t  fAutoProj_X;
-   Bool_t  fAutoProj_Y;
    Double_t fProjectBothRatio;
    Double_t fLogScaleMin;
    Double_t fLinScaleMin;
@@ -478,11 +474,7 @@ enum EHfromASCIImode { kNotDefined, kSpectrum, kSpectrumError, k1dimHist,
    Bool_t GetShowPSFile(){return fShowPSFile;};
    Bool_t GetShowFittedCurves(){return fShowFittedCurves;};
    Bool_t GetEnableCalibration(){return fEnableCalibration;};
-   Bool_t GetAutoExec_1(){return fAutoExec_1;};
    Double_t GetAutoUpdateDelay(){return fAutoUpdateDelay;};
-   Bool_t GetAutoExec_2(){return fAutoExec_2;};
-   Bool_t GetAutoProj_X(){return fAutoProj_X;};
-   Bool_t GetAutoProj_Y(){return fAutoProj_Y;};
    TMrbHelpBrowser * GetHelpBrowser(){return fHelpBrowser;};
    void auto_exec_1();
    void auto_exec_2();

@@ -489,7 +489,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 //   else               
       dy = .999 / (Float_t) (Nentries);
 
-   cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
+//   cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
    y0 = 1.;
    y = y0 - dy;
    TString sel;
