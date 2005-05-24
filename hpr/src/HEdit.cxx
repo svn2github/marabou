@@ -326,20 +326,26 @@ void HTCanvas::InsertHist()
          hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
       }
    } else {
-      if (fname.Length() > 0 && gname.Length()) {
-         TFile * rfile = new TFile(fname.Data());
-         if (!rfile->IsOpen()) {
-            cout << "Cant open file: " << fname.Data() << endl;
-            return;
+      if (gname.Length()) {
+         if (fname.Length() > 0) {
+            TFile * rfile = new TFile(fname.Data());
+            if (!rfile->IsOpen()) {
+               cout << "Cant open file: " << fname.Data() << endl;
+               return;
+            }
+            hist = (TH1*)rfile->Get(gname.Data());
+         } else {
+            hist = (TH1F*)gROOT->FindObject(gname.Data());
          }
-         hist = (TH1*)rfile->Get(gname.Data());
          if (!hist) {
-            cout << "Cant find graph: " << gname.Data() << endl;
+            cout << "Cant find histogram: " << gname.Data() << endl;
             return;
          } else {
             hist->SetDirectory(gROOT);
          }
-      }
+      } else {
+         cout << "No Histogram defined" << endl;
+      }      
    }
    if (!hist) return;
    TString hn = hist->GetName();
@@ -592,11 +598,15 @@ void HTCanvas::InsertImage()
 //        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
    }
 
-   pad->SetTopMargin(.02);
-   pad->SetBottomMargin(0.02);
-   pad->SetLeftMargin(0.02);
-   pad->SetRightMargin(0.02);
-   hprimg->Draw("xxx");
+   pad->SetTopMargin(.0);
+   pad->SetBottomMargin(0.0);
+   pad->SetLeftMargin(0.0);
+   pad->SetRightMargin(0.0);
+   img->SetConstRatio(kTRUE);
+   img->SetEditable(kTRUE);
+   img->SetImageQuality(TAttImage::kImgBest);
+   img->Draw("xxx");
+//   hprimg->Paint();
    Update();
 }
 
@@ -1927,10 +1937,13 @@ void HTCanvas::InsertFunction()
    static Int_t Npar = 2;
    static Double_t par[10] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
    static TString func_name("fun1");
+   static TString new_func_name("ff");
    static TString xtitle("x");
    static TString ytitle("y");
    static Double_t from = 0;
    static Double_t to   = 10;
+   static Color_t fcol = kBlue;
+   static Int_t pad_opacity = 30;
    static Int_t same_pad = 0;
    static Int_t new_pad = 1;
    static Int_t new_canvas = 0;
@@ -1948,6 +1961,9 @@ void HTCanvas::InsertFunction()
    }
    TList *row_lab = new TList(); 
    TList *values  = new TList();
+tryagain:
+   row_lab->Clear();
+   values->Clear();
    row_lab->Add(new TObjString("Function Name"));
    row_lab->Add(new TObjString("X axis title"));
    row_lab->Add(new TObjString("Y axis title"));
@@ -1971,6 +1987,10 @@ void HTCanvas::InsertFunction()
       row_lab->Add(new TObjString(Form("Value of Parameter %d",i)));
       AddObjString(par[i],   values);
    }
+   row_lab->Add(new TObjString("Drawing color"));
+   AddObjString(fcol, values, kAttColor);
+   row_lab->Add(new TObjString("Opacity of pad (0-100)"));
+   AddObjString(pad_opacity, values);
    row_lab->Add(new TObjString("Use new(selected) pad"));
    AddObjString(new_pad, values, kAttRadioB);
    row_lab->Add(new TObjString("Use same (selected) pad"));
@@ -1979,44 +1999,57 @@ void HTCanvas::InsertFunction()
    AddObjString(new_canvas, values, kAttRadioB);
 
    Int_t itemwidth = 440;
-
    ok = GetStringExt("Define formula", tpointer, itemwidth, fRootCanvas,
                       history, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
 
-   func_name = GetText(values, vp++);
-   if (gROOT->GetListOfFunctions()->FindObject(func_name)) {
-      cout << "Function with name: " << func_name << " already exists"
-           << endl;
-      return;
-   }
+   new_func_name = GetText(values, vp++);
    xtitle    = GetText(values, vp++);
    ytitle    = GetText(values, vp++);
    from      = GetDouble(values, vp++);
    to        = GetDouble(values, vp++);
    for (Int_t i =0; i < Npar; i++) {
       par[i] = GetDouble(values, vp++);
-   }
-   new_pad  = GetInt(values, vp++);
-   same_pad  = GetInt(values, vp++);
+   }  
+   fcol        = GetInt(values, vp++);
+   pad_opacity = GetInt(values, vp++);
+   new_pad     = GetInt(values, vp++);
+   same_pad    = GetInt(values, vp++);
    new_canvas  = GetInt(values, vp++);
+   if (new_func_name == func_name 
+       && gROOT->GetListOfFunctions()->FindObject(func_name)) {
+      IncrementIndex(&func_name);
+   } else {
+      func_name = new_func_name;
+   }
+   if (gROOT->GetListOfFunctions()->FindObject(func_name)) {
+      cout << "Function with name: " << func_name << " already exists"
+           << endl;
+      goto tryagain;
+   }
    if (new_pad != 0) {
    	TPad* pad = GetEmptyPad();
    	if (pad) {
    	  gROOT->SetSelectedPad(pad);
    	} else {
-      	WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
+      	WarnBox("Please create a new Pad in this Canvas\n\
+or select \"Use same (selected) pad\"", fRootCanvas); 
 	//      cout << "Please create a new Pad in this Canvas" << endl;
-      	return;
+         goto tryagain;
    	} 
    }
    TF1 * f = new TF1(func_name.Data(), tpointer->Data(), from, to);
    if (gROOT->GetListOfFunctions()->FindObject(func_name) == 0) {
        WarnBox("Error in formula, watch printout", fRootCanvas);
-      return;
+      goto tryagain;
    }
    f->SetParameters(par);
+   f->SetLineColor(fcol);
+   if (pad_opacity > 0) {
+      if (pad_opacity > 100) pad_opacity = 100;
+      gPad->SetFillStyle(4000 + pad_opacity);
+   }
    if (new_canvas != 0) TCanvas *cc = new TCanvas("cc", "cc", 600,400);
    if (same_pad != 0) f->Draw("same");
    else                     f->Draw();

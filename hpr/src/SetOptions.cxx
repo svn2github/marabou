@@ -1,3 +1,4 @@
+
 #define ENABLE_CURLYDEFAULTS 40304
 
 #include "TROOT.h"
@@ -19,6 +20,7 @@
 #include "TLatex.h"
 #include "TCurlyArc.h"
 #include "TCurlyLine.h"
+#include "Buttons.h"
 
 #include "TGMrbInputDialog.h"
 #include "TGMrbTableFrame.h"
@@ -32,217 +34,6 @@
 #include <fstream>
 #include <sstream>
 
-
-//_______________________________________________________________________
-// *INDENT-OFF* 
-//const char AutoExecMacro_1[]=
-//"
-void HistPresent::auto_exec_1()
-{
-   //example of macro called when a pad is redrawn
-   //one must create a TExec object in the following way
-   // TExec ex(\"ex\",\".x exec1.C\");
-   // ex.Draw();
-   // this macro prints the bin number and the bin content when one clicks
-   //on the histogram contour of any histogram in a pad
-   
-   int event = gPad->GetEvent();
-//   cout << "event "<< event << endl;
-   if (event != 1) return;
-   int px = gPad->GetEventX();
-   TObject *select = gPad->GetSelected();
-   if (!select) return;
-//   cout << "selected: " << select->GetName() << endl;
-   if (select->InheritsFrom("TH1")) {
-      TH1 *h = (TH1*)select;
-      Float_t xx = gPad->AbsPixeltoX(px);
-      Float_t x  = gPad->PadtoX(xx);
-      Int_t binx = h->GetXaxis()->FindBin(x);
-      cout << "hist: "  <<  h->GetName()<< " bin= " << binx 
-           << " cont= " << h->GetBinContent(binx)<< endl;
-   }
-   if (!strncmp(select->GetName(), "stats",5)) {
-      cout << "stat box selected" << endl;
-      TList * l = gPad->GetListOfPrimitives();
-      TIter next(l);
-      TObject * o;
-     while ( (o = next()) ) {
-         if(o->InheritsFrom("TH1")){
-            TH1* h = (TH1*)o;
-       cout << "-------------------------------------------------------" << endl;
-            cout << "Statistics for histogram: " << h->GetName() << endl;
-//       cout << "-------------------------------------------------------" << endl;
-//            h->Print();
-       cout << "-------------------------------------------------------" << endl;
-            cout << "Entries:   " << h->GetEntries() << endl;            
-            cout << "Integral:  " << h->Integral()   << endl;            
-            cout << "Mean:      " << h->GetMean()    << endl;            
-            cout << "RMS:       " << h->GetRMS()     << endl;
-            Int_t fbin = h->GetXaxis()->GetFirst()-1;         
-            Stat_t uf = h->Integral(0,fbin);
-            cout << "UnderFlow: " << uf << endl;            
-            Int_t lbin = h->GetXaxis()->GetLast()+1;         
-            Stat_t of = h->Integral(lbin,h->GetNbinsX()+1);
-            cout << "OverFlow:  " << of << endl;            
-//            cout << ":" << h->() << endl;            
-            break;
-         }
-      }
-   }
-   if (!strncmp(select->GetName(), "TFrame",6) || !strncmp(select->GetName(), "cmany",5) ) {
-//      cout << "TFrame selected" << endl;
-      if(gPad == gPad->GetMother()){
-//         cout << "not in divided" << endl;
-         return;
-      } 
-//      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
-      Bool_t cr = kTRUE;
-//      if (ca && ca->GetCommonRotate()) cr = kTRUE;
-      HistPresent * hp = (HistPresent*)gROOT->FindObject("mypres");
-      if(!hp) return;
-      TList * l = gPad->GetListOfPrimitives();
-      TIter next(l);
-      TObject * o;
-      while ( (o = next()) ) {
-//         o->Print();
-         if (cr && o->InheritsFrom("TH2")) continue;
-         
-         if(o->InheritsFrom("TH1") ){
-            TH1* h = (TH1*)o;
-            TString hname(h->GetName());
-            Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-            if(last_us >0){
-               hname.Remove(last_us);
-               h->SetName(hname.Data());
-            }
-            hp->ShowHist(h);
-            return;
-         }
-      }
-   }
-   if (select->InheritsFrom("TF1")) {
-      TF1 * f = (TF1*)select;
-       f->Print();
-   }
-}
-
-//";
-//__________________________________________________________________________
-
-//const char AutoExecMacro_2[]=
-//"
-void HistPresent::auto_exec_2()
-{
-   //example of macro called when a mouse event occurs in a pad.
-   // Example:
-   // Root > TFile f("hsimple.root");
-   // Root > hpxpy.Draw();
-   // Root > c1.AddExec("ex2",".x exec2.C");
-   // When moving the mouse in the canvas, a second canvas shows the
-   // projection along X of the bin corresponding to the Y position
-   // of the mouse. The resulting histogram is fitted with a gaussian.
-   // A "dynamic" line shows the current bin position in Y.
-   // This more elaborated example can be used as a starting point
-   // to develop more powerful interactive applications exploiting CINT
-   // as a development engine.
-   //
-
-   static Double_t phi;
-   static Double_t theta;
-   int event = gPad->GetEvent();
-//   cout << "event "<< event << endl;
-   if (event != 1 && event != 51&& event != 11) return;
-   TObject *select = gPad->GetSelected();
-   if(!select) return;
-//   cout << "auto_exec_2() selected " << select->GetName() << endl;
-   
-   HistPresent * hpr = (HistPresent*)gROOT->FindObject("mypres");
-   if(!hpr) return;
-   if ((event == 1 || event == 11) && select->InheritsFrom("TH2")) {
-//      cout << "TFrame selected" << endl;
-      if(gPad == gPad->GetMother()){
-//         cout << "not in divided" << endl;
-         return;
-      } 
-      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
-      Bool_t cr = ca->GetCommonRotate();
-         
-      TList * l = gPad->GetListOfPrimitives();
-      TIter next(l);
-      TObject * o;
-      while ( (o = next()) ){
-         if (o->InheritsFrom("TH2")) {
-            TH1* h = (TH1*)o;
-            if (cr && !strncmp(h->GetDrawOption(), "lego", 4)) { 
-            	if (event == 1) {
-               	phi = gPad->GetPhi();
-               	theta = gPad->GetTheta();
-            	} else if (event == 11) {
-               	Double_t phi_n = gPad->GetPhi();
-               	Double_t theta_n = gPad->GetTheta();
-               	if (phi != phi_n || theta != theta_n) {
-                  	TList * pl = gPad->GetMother()->GetListOfPrimitives();
-                  	TIter nextpad(pl);
-                  	TObject * p;
-                  	while ( (p = nextpad()) ) {
-                     	if (p->InheritsFrom("TPad")) {
-                        	TPad* pp = (TPad*)p;
-                        	pp->SetPhi(phi_n);
-                        	pp->SetTheta(theta_n);
-                        	pp->Modified();
-                        	pp->Update();
-                     	}
-                  	}
-               	}                   
-            	}
-            } else {
-               if (event == 1) hpr->ShowHist(h);
-            }
-            return;
-         }
-      }
-   }
-   if(!hpr->GetAutoProj_X() && !hpr->GetAutoProj_Y()) return;
-  
-   if (!select->InheritsFrom("TH2")) {gPad->SetUniqueID(0); return;}
-   gPad->GetCanvas()->FeedbackMode(kTRUE);
-
-   //erase old position and draw a line at current position
-   int pyold = gPad->GetUniqueID();
-//   int px = gPad->GetEventX();
-   int py = gPad->GetEventY();
-   float uxmin = gPad->GetUxmin();
-   float uxmax = gPad->GetUxmax();
-   int pxmin = gPad->XtoAbsPixel(uxmin);
-   int pxmax = gPad->XtoAbsPixel(uxmax);
-   if(pyold) gVirtualX->DrawLine(pxmin,pyold,pxmax,pyold);
-   gVirtualX->DrawLine(pxmin,py,pxmax,py);
-   gPad->SetUniqueID(py);
-   Float_t upy = gPad->AbsPixeltoY(py);
-   Float_t y = gPad->PadtoY(upy);
-
-   //create or set the new canvas c2
-   TVirtualPad *padsav = gPad;
-   TCanvas *c2 = (TCanvas*)gROOT->GetListOfCanvases()->FindObject("c2");
-   if(c2) delete c2->GetPrimitive("Projection");
-   else   c2 = new TCanvas("c2");
-   c2->cd();
-
-   //draw slice corresponding to mouse position
-   TH2 *h = (TH2*)select;
-   Int_t biny = h->GetYaxis()->FindBin(y);
-   TH1D *hp = h->ProjectionX("",biny,biny);
-   char title[80];
-   sprintf(title,"Projection of biny=%d",biny);
-   hp->SetName("Projection");
-   hp->SetTitle(title);
-   hp->Fit("gaus","ql");
-    hp->Draw();
-   c2->Update();
-   padsav->cd();
-}
-//";
-// *INDENT-ON* 
 //_______________________________________________________________________
 
 void HistPresent::RestoreOptions()
@@ -313,8 +104,8 @@ void HistPresent::RestoreOptions()
    fRealStack         = env.GetValue("HistPresent.RealStack", 1);
    fUseRegexp         = env.GetValue("HistPresent.UseRegexp", 0);
    fProjectBothRatio  = env.GetValue("HistPresent.ProjectBothRatio", 0.6);
-   fDivMarginX        = env.GetValue("HistPresent.DivMarginX", 0.05);
-   fDivMarginY        = env.GetValue("HistPresent.DivMarginY", 0.05);
+   fDivMarginX        = env.GetValue("HistPresent.DivMarginX", 0.001);
+   fDivMarginY        = env.GetValue("HistPresent.DivMarginY", 0.001);
    fLogScaleMin = atof(env.GetValue("HistPresent.LogScaleMin", "0.1"));
    fLinScaleMin = atof(env.GetValue("HistPresent.LinScaleMin", "0"));
    fAutoUpdateDelay =
@@ -1940,6 +1731,7 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       fh->GetSelHist()->SetDrawOption(fDrawOpt2Dim->Data());
    }
    SaveOptions();
+   if (fh) fh->UpdateDrawOptions();
 }
 
 //_______________________________________________________________________
@@ -2093,14 +1885,20 @@ void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
 //   if (fShowDateBox)gStyle->SetOptDate(21);
 //   else             gStyle->SetOptDate(0);
 
+   gStyle->SetOptFit(0);
+   gStyle->SetOptStat(0);
+   if (fh){
+      fh->GetCanvas()->Modified();
+      fh->GetCanvas()->Update();
+   }
    if (fShowStatBox) {
       gStyle->SetOptStat(fOptStat);
       gStyle->SetOptFit(fShowFitBox);
-   } else {
-      gStyle->SetOptFit(0);
-      gStyle->SetOptStat(0);
+   }    gStyle->SetOptTitle(fShowTitle);
+   if (fh){
+      fh->GetCanvas()->Modified();
+      fh->GetCanvas()->Update();
    }
-   gStyle->SetOptTitle(fShowTitle);
    SaveOptions();
 }
 
@@ -2216,11 +2014,11 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
 {
-   Int_t nopt = 17;
+   Int_t nopt = 19;
    enum e_opt { e_force, e_listsonly, e_psfile, e_enablecal, e_displaycal, 
-      e_fitted, e_treehists, e_treenew, e_treevers, e_savelast,
-      e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp, e_auto_1, e_auto_2,
-      e_auto_x, e_auto_y
+                e_fitted, e_treehists, e_treenew, e_treevers, e_savelast,
+                e_savezoom, e_useattr, e_allasfirst, e_realstack, e_useregexp, 
+                e_auto_1, e_auto_2, e_auto_x, e_auto_y
    };
    const char *opt[] = {
       "Force style, i.e show histograms with current style",
@@ -2228,15 +2026,19 @@ void HistPresent::SetVariousOptions(TGWindow * win, FitHist * fh)
       "Show PS file after creation",
       "Enable calibration",
       "Auto Display calibrated hist",
+
       "Display compents of fit function",
       "Remember hist limits when showing trees",
       "Ask always for hist limits when showing trees",
       "Keep old hists when showing trees (add version # to name)",
       "Remember Expand settings (Marks)",
+
       "Remember Zoomings (by left mouse)",
       "Use Attribute Macro",
       "In Show Selected: Show All As First",
+      "Really stack (instead of superimpose)",
       "Use Regular expression syntax",
+
       "Auto exec macro 1-dim",
       "Auto exec macro 2-dim",
       "Auto exec project X",
@@ -2414,6 +2216,7 @@ Auto exec project Y \n\
          else if (i == e_auto_y) fAutoProj_Y = 1;
       }
    }
+   cout<< fAutoExec_1 << " " << fAutoExec_2 << endl;
    if (fForceStyle > 0) gROOT->ForceStyle();
    else                 gROOT->ForceStyle(kFALSE);
    SaveOptions();

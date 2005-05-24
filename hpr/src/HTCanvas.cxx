@@ -279,7 +279,7 @@ HTCanvas::~HTCanvas()
    if(fFitHist) {
       fFitHist->UpdateCut();
       fFitHist->SetCanvasIsDeleted();
-      cout << "HTCanvas: delete fFitHist " << this << endl;
+//      cout << "HTCanvas: delete fFitHist " << this << endl;
       delete fFitHist;
    }
 };

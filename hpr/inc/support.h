@@ -92,6 +92,7 @@ void     RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
 void     Canvas2LP(TCanvas * canvas, const Char_t * opt = 0, TGWindow * = 0,
                Bool_t autops = kFALSE);
 void     Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
+TEnv *   GetDefaults(const char *, Bool_t mustexist = kTRUE);
 TEnv *   GetDefaults(TString &, Bool_t mustexist = kTRUE);
 TH1 *    gethist( const char * hname, TSocket * sock);
 TMrbStatistics * getstat(TSocket * sock);
@@ -115,6 +116,7 @@ void     WriteOutGraph(TGraph * g, TRootCanvas * mycanvas = 0);
 Bool_t   fixnames(TFile * * infile, Bool_t checkonly);
 TGraph * PaintArea (TH1 *h, Int_t binl, Int_t binh, Int_t color); 
 Int_t    getcol();
+void    IncrementIndex(TString * arg);
 TString * GetStringArg(TString * arg,  Int_t nth);
 TList * BuildList(const char *bp);
 Int_t FindHistsInFile(const char * rootf, const char * listf); 

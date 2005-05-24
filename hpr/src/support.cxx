@@ -439,7 +439,8 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    Int_t xwid_default = 250;
    Int_t ywid_default = 600;
 
-   Int_t xw = xwid_default, yw = ywid_default;
+   Int_t xw = xwid_default;
+   Int_t yw = ywid_default;
    if (xwid > 0) xwid_default = xwid;
    Int_t Nentries = fcmdline->GetSize();
    Int_t maxlen_tit = 0;
@@ -463,12 +464,11 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    pname.Prepend("CP_");
    HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
                                    -xpos, ypos, xw, yw, hpr, 0);
+   Int_t item_height = TMath::Min(24, 10000/Nentries);
+   cHCont->SetCanvasSize(xw, item_height * Nentries);
    ypos += 50;
-   if (ypos > 500)
-      ypos = 5;
-//    Float_t expandx = (Float_t)(maxlen_tit + maxlen_nam + 1)/19.;
-//    Float_t expandx = (Float_t)(maxlen_nam + 1)/22.;
-//   if(expandx < 1.) expandx=1.;
+   if (ypos > 500) ypos = 5;
+
    Float_t expandx = xw / 250.;
    if(expandx < 1.) expandx=1.;
    Float_t expandy = (Float_t) Nentries / 25;
@@ -484,10 +484,12 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
 //   x1 = 1.;
    x1 = 0.99;
 
-   if (Nentries <= 3) dy = .99 / (Float_t) (Nentries + 1);
-   else               dy = .99 / (Float_t) (Nentries);
+//   if (Nentries <= 3) 
+//      dy = .999 / (Float_t) (Nentries + 1);
+//   else               
+      dy = .999 / (Float_t) (Nentries);
 
-//   cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
+   cout << "Nentries, dy " << Nentries << " " <<  dy << endl;
    y0 = 1.;
    y = y0 - dy;
    TString sel;
@@ -495,7 +497,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    for (Int_t i = 0; i < Nentries; i++) {
       Float_t xcmd = xcmd_no_sel;
       CmdListEntry *cle = (CmdListEntry *) fcmdline->At(i);
-//      cout << "new: " << cle->fCmd << endl;
+ //     cout << "new: " << cle->fCmd << endl;
       if (anysel) {
          sel = cle->fSel;
          if (sel != "NoOp" && sel.Length() > 0) {
@@ -515,7 +517,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
       title = cle->fNam;
       title.Resize(maxlen_nam + 1);
 //      title += cle->fTit;
-
+//      cout << "y, dy " << y << " " << dy << endl;
       CommandButton(cle->fCmd, title, xcmd, y, x1, y + dy, kFALSE);
 //      if((cle->fTit).Length()>0)b->SetToolTipText((const char *)cle->fTit,500);
 
@@ -524,6 +526,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    }
    Int_t usedxw = cHCont->GetWw();
    Int_t usedyw = cHCont->GetWh();
+   
 //   Int_t newxw = (Int_t) ((Float_t) usedxw * expandx);
    Int_t newxw = usedxw;
    Int_t newyw;
@@ -541,7 +544,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
       newxw = xwid_default;
    } 
    cHCont->SetWindowSize(newxw, TMath::Min(ywid_default+10, newyw+20));
-   cHCont->SetCanvasSize(usedxw, newyw);
+   cHCont->SetCanvasSize(usedxw, usedyw);
    cHCont->SetEditable(kFALSE);
    cHCont->Update();
    return cHCont;
@@ -1159,10 +1162,18 @@ void Canvas2RootFile(TCanvas * canvas, TGWindow * win)
 
 TEnv *GetDefaults(TString & hname, Bool_t mustexist)
 {
+   return GetDefaults(hname.Data(), mustexist);
+}
+
+//_________________________________________________________________________________________
+
+TEnv *GetDefaults(const char * hname, Bool_t mustexist)
+{
    TEnv *lastset = 0;
    TString defname;
    TEnv env(".rootrc");         // inspect ROOT's environment
    defname = env.GetValue("HistPresent.LastSettingsName", defname.Data());
+//   cout << "Got : " << defname.Data() << endl;
    if (defname.Length() > 0) {
       defname += "_";
       defname += hname;
@@ -1172,7 +1183,7 @@ TEnv *GetDefaults(TString & hname, Bool_t mustexist)
 //      cout << "Look for : " << defname.Data() << endl;
       if (mustexist && gSystem->AccessPathName(defname.Data()))
          return 0;
-//      cout << "Look for : " << defname.Data() << endl;
+//      cout << "Looked for : " << defname.Data() << endl;
       lastset = new TEnv(defname.Data());	// inspect ROOT's environment
    }
    return lastset;
@@ -1960,6 +1971,32 @@ Int_t getcol()
    delete colobj;
    delete ccol;
    return ind; 
+}
+//________________________________________________________________
+void IncrementIndex(TString * arg)
+{
+// find number at end of string and increment,
+// if no number found add "_0";
+   Int_t len = arg->Length();
+   if (len < 0) return;
+   Int_t ind = len - 1;
+   Int_t first_digit = ind;
+   TString subs;
+   while (ind > 0) {
+      subs = (*arg)(ind, len - ind);
+      cout << subs << endl;
+      if (!subs.IsDigit()) break;
+      first_digit = ind;
+      ind--;
+   }
+   if (first_digit == ind) {
+     *arg += "_0";
+   } else { 
+      subs = (*arg)(first_digit, len - first_digit);
+      Int_t num = atol(subs.Data());
+      arg->Resize(first_digit);
+      *arg += (num + 1);
+   }
 }
 //________________________________________________________________
 

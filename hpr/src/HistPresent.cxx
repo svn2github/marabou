@@ -889,7 +889,7 @@ Should we create a new file with corrected names?", maincanvas)) {
                cout << setred << "Too many entries in list: " << nstat << endl;
                cout << "this might crash X, please use selection mask"<< endl;
                cout << "to reduce number of entries below: " <<  fMaxListEntries  << endl;
-               cout << "On your own risk you may increase value: " << fMaxListEntries << endl;
+               cout << "On your own risk you may increase value beyond: " << fMaxListEntries << endl;
                cout << "WARNING: not all hists will be shown" << setblack << endl;
             }
             not_shown++;
@@ -1082,6 +1082,7 @@ Should we create a new file with corrected names?", maincanvas)) {
          ycanvas = 5 + 50 * fHistLists->GetSize();
          TString cmd_title(fname);
          if (strlen(dir) > 0) cmd_title = cmd_title + "_" + dir;
+//         cout << "HistPresent: CommandPanel: " << fCmdLine->GetSize() << endl;
          HTCanvas *ccont = CommandPanel(cmd_title.Data(), fCmdLine, 
                            260, ycanvas, this, fWinwidx_hlist);
          if (fHistLists)fHistLists->Add(ccont);
@@ -2977,7 +2978,7 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
    TString stitle("Stacked: ");
    
 //   TString ytitle("");
-   Int_t nbins = 0; 
+   Int_t nbins = 0, binlx = 0, binux = 0, binly = 0, binuy = 0; 
    THStack * hs = new THStack("hstack","");
    fAnyFromSocket = kFALSE;
    for(Int_t i=0; i<nsel; i++) {
@@ -2986,8 +2987,22 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
 //         cout << " Hist not found at: " << i << endl;  
          continue;
       }  
+      hname = hist->GetName();
+      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
+      if(last_us >0)hname.Remove(last_us);
+      last_us = hname.Last(';');    // chop off version
+      if (last_us >0) hname.Remove(last_us);
       if (i == 0) {
          nbins = hist->GetNbinsX();
+         TEnv * lastset = GetDefaults(hname);
+	      if (lastset && lastset->Lookup("fBinlx")) {
+            binlx = lastset->GetValue("fBinlx", 1);
+            binux = lastset->GetValue("fBinux", nbins);
+            if (hist->GetDimension() == 2) {
+               binly = lastset->GetValue("fBinly", 1);
+               binuy = lastset->GetValue("fBinuy", hist->GetNbinsY());
+            }
+         }
       } else {
          if (nbins != hist->GetNbinsX()) {
             cout << "Number of bins " << hist->GetNbinsX() << " in "
@@ -2995,25 +3010,29 @@ void HistPresent::StackSelectedHists(TList * hlist, const char* title)
             continue;
          }
       }
+      if (binlx != 0 && binux != 0) hist->GetXaxis()->SetRange(binlx, binux);
       TString fname = ((TObjString *)hlist->At(i))->String();
       if (fname.Index("Socket") == 0) fAnyFromSocket = kTRUE;
-      hname = hist->GetName();
- //     cout << "Bef: " << hname << endl;
-
-      Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
-      if(last_us >0)hname.Remove(last_us);
-      last_us = hname.Last(';');    // chop off version
-      if (last_us >0) hname.Remove(last_us);
       if (stitle.Length() > 0) stitle += ", ";
       stitle += hname.Data();
-//      cout << "Aft: "  << hname << endl;
       hs->Add(hist);
       hist->SetFillColor(i+2);
-      hist->SetFillStyle(1001);
-      hist->SetDrawOption("hist");
+      if (hist->GetDimension() == 1) {
+         hist->SetLineColor(i+2);
+         hist->SetFillStyle(1001);
+         hist->SetDrawOption("hist");
+      }
    }
-   if (fRealStack)hs->Draw();
+   if (fRealStack || hist->GetDimension() == 2) hs->Draw();
    else           hs->Draw("nostack");
+   if (binlx != 0 && binux != 0) {
+      hs->GetXaxis()->SetRange(binlx, binux);
+      hs->GetHistogram()->GetXaxis()->SetRange(binlx, binux);
+   }
+   if (hist->GetDimension() == 2 && binly != 0 && binuy != 0) { 
+      hs->GetYaxis()->SetRange(binly, binuy);
+      hs->GetHistogram()->GetYaxis()->SetRange(binly, binuy);
+   }
    hs->SetTitle(stitle.Data());
 
    for(Int_t i=0; i<nsel; i++) {
@@ -3187,20 +3206,23 @@ void HistPresent::ShowSelectedHists(TList * hlist, const char* title)
             hist->SetFillStyle(1001);
             hist->SetFillColor(44);
          } else hist->SetFillStyle(0);
+
 //         hist->Draw(fDrawOpt2Dim->Data());
    		TString cmd1("((HistPresent*)gROOT->FindObject(\""); 
    		cmd1 += GetName();
    		cmd1 += "\"))->auto_exec_1()";
          p->AddExec("ex1", cmd1.Data());
 //
-         p->SetRightMargin(0.01);
-//         p->SetLeftMargin(0.01);
+//         p->SetRightMargin(0.02);
+//         if (hist->GetMaximum() > 999)p->SetLeftMargin(0.2);
          TAxis * xa = hist->GetXaxis();
          TAxis * ya = hist->GetYaxis();
          ya->SetLabelSize(gStyle->GetLabelSize("Y") * 0.5 * ny); // nb y det text size
          xa->SetLabelSize(gStyle->GetLabelSize("X") * 0.5 * ny);
          xa->SetTitleSize(gStyle->GetTitleSize("X") * 0.5 * ny);
          ya->SetTitleSize(gStyle->GetTitleSize("Y") * 0.5 * ny);
+         if (nx > 3)xa->SetNdivisions(205);
+         if (ny > 3)ya->SetNdivisions(205);
           
 //        hist->SetTitleSize(gStyle->GetTitleSize("C") * 0.8 * ny);
       }  
@@ -3497,4 +3519,133 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    c1->GetCanvasImp()->ShowEditor();
    c1->GetCanvasImp()->ShowToolBar();
    if (fRootFile) fRootFile->Close();
+}
+//_______________________________________________________________________
+
+void HistPresent::auto_exec_1()
+{
+   //example of macro called when a pad is redrawn
+   //one must create a TExec object in the following way
+   // TExec ex(\"ex\",\".x exec1.C\");
+   // ex.Draw();
+   // this macro prints the bin number and the bin content when one clicks
+   //on the histogram contour of any histogram in a pad
+   
+   int event = gPad->GetEvent();
+//   cout << "event "<< event << endl;
+   if (event ==  kKeyPress) {
+      char ch = (char)gPad->GetEventX();
+      if ( ch == 'C' ||ch == 'c') { 
+         HTCanvas * htc = (HTCanvas *)gPad->GetCanvas();
+         TRootCanvas *rc =  (TRootCanvas*)htc->GetCanvasImp(); 
+         rc->ShowEditor(kFALSE);
+         rc->SendCloseMessage();
+         return;
+      }
+   }
+   if (event != kButton1Down) return;
+   TObject *select = gPad->GetSelected();
+   if (!select) return;
+//   cout << "selected: " << select->GetName() << endl;
+   if (!strncmp(select->GetName(), "TFrame",6) || !strncmp(select->GetName(), "cmany",5) ) {
+//      cout << "TFrame selected" << endl;
+      if(gPad == gPad->GetMother()){
+//         cout << "not in divided" << endl;
+         return;
+      } 
+//      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
+      Bool_t cr = kTRUE;
+//      if (ca && ca->GetCommonRotate()) cr = kTRUE;
+      HistPresent * hp = (HistPresent*)gROOT->FindObject("mypres");
+      if(!hp) return;
+      TList * l = gPad->GetListOfPrimitives();
+      TIter next(l);
+      TObject * o;
+      while ( (o = next()) ) {
+//         o->Print();
+         if (cr && o->InheritsFrom("TH2")) continue;
+         
+         if(o->InheritsFrom("TH1") ){
+            TH1* h = (TH1*)o;
+            TString hname(h->GetName());
+            Int_t last_us = hname.Last('_');    // chop off us added by GetSelHistAt
+            if(last_us >0){
+               hname.Remove(last_us);
+               h->SetName(hname.Data());
+            }
+            hp->ShowHist(h);
+            return;
+         }
+      }
+   }
+}
+//__________________________________________________________________________
+
+void HistPresent::auto_exec_2()
+{
+   static Double_t phi;
+   static Double_t theta;
+   int event = gPad->GetEvent();
+   if (event ==  kKeyPress) {
+      char ch = (char)gPad->GetEventX();
+      if ( ch == 'C' ||ch == 'c') { 
+         HTCanvas * htc = (HTCanvas *)gPad->GetCanvas();
+         TRootCanvas *rc =  (TRootCanvas*)htc->GetCanvasImp(); 
+         rc->ShowEditor(kFALSE);
+         rc->SendCloseMessage();
+         return;
+      }
+   }
+//   cout << "event "<< event << endl;
+   if (event != kButton1Down && event != kMouseMotion && event != kButton1Up) return;
+   TObject *select = gPad->GetSelected();
+   if(!select) return;
+//   cout << "auto_exec_2() selected " << select->GetName() << endl;
+   
+   HistPresent * hpr = (HistPresent*)gROOT->FindObject("mypres");
+   if(!hpr) return;
+   if ((event == kButton1Down || event == kButton1Up ) && select->InheritsFrom("TH2")) {
+//      cout << "TFrame selected" << endl;
+      if(gPad == gPad->GetMother()){
+//         cout << "not in divided" << endl;
+         return;
+      } 
+      HTCanvas * ca = (HTCanvas *)gPad->GetCanvas();
+      Bool_t cr = ca->GetCommonRotate();
+         
+      TList * l = gPad->GetListOfPrimitives();
+      TIter next(l);
+      TObject * o;
+      while ( (o = next()) ){
+         if (o->InheritsFrom("TH2")) {
+            TH1* h = (TH1*)o;
+            if (cr && !strncmp(h->GetDrawOption(), "lego", 4)) { 
+            	if (event == 1) {
+               	phi = gPad->GetPhi();
+               	theta = gPad->GetTheta();
+            	} else if (event == 11) {
+               	Double_t phi_n = gPad->GetPhi();
+               	Double_t theta_n = gPad->GetTheta();
+               	if (phi != phi_n || theta != theta_n) {
+                  	TList * pl = gPad->GetMother()->GetListOfPrimitives();
+                  	TIter nextpad(pl);
+                  	TObject * p;
+                  	while ( (p = nextpad()) ) {
+                     	if (p->InheritsFrom("TPad")) {
+                        	TPad* pp = (TPad*)p;
+                        	pp->SetPhi(phi_n);
+                        	pp->SetTheta(theta_n);
+                        	pp->Modified();
+                        	pp->Update();
+                     	}
+                  	}
+               	}                   
+            	}
+            } else {
+               if (event == kButton1Down) hpr->ShowHist(h);
+            }
+            return;
+         }
+      }
+   }
 }

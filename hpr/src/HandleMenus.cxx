@@ -26,6 +26,7 @@
 #include "support.h"
 #include "HTimer.h"
 #include "SetColor.h"
+#include "TGMrbInputDialog.h" 
 #include "TMrbHelpBrowser.h" 
 #include "TGMrbTableFrame.h" 
 
@@ -138,6 +139,8 @@ enum ERootCanvasCommands {
    kFHCalAllAsSel,
    kFHCommonRotate,
    kFHAllAsFirst,
+   kFHStackMax,
+   kFHStackMin,
    kFHStack,
    kFHCanvas2LP,
    kFHCanvas2LPplain,
@@ -277,7 +280,8 @@ enum ERootCanvasCommands {
    kOptionStatDef,
    kOptionXaxis,
    kOptionYaxis,
-   kOptionZaxis
+   kOptionZaxis,
+   kFH_NoAction
 };
 static const char *gOpenTypes[] = { "ROOT files",   "*.root",
                                     "All files",    "*",
@@ -518,6 +522,41 @@ again:
                      }
                      break;
 
+                  case kFHStackMax:
+                     {
+                     THStack * st = (THStack *)fHCanvas->GetListOfPrimitives()
+                                               ->FindObject("hstack");
+                     if (st) {
+                        fHCanvas->cd();
+                        Bool_t ok;
+                        Double_t val = GetFloat("Yscale Max Val",st->GetMaximum(),
+                                                 &ok, fRootCanvas);
+                        if (ok) {
+                           st->SetMaximum(val);
+                           fHCanvas->Modified();
+                           fHCanvas->Update();
+                        }  
+                     }
+                     }
+                     break;
+
+                  case kFHStackMin:
+                     {
+                     THStack * st = (THStack *)fHCanvas->GetListOfPrimitives()
+                                               ->FindObject("hstack");
+                     if (st) {
+                        fHCanvas->cd();
+                        Bool_t ok;
+                        Double_t val = GetFloat("Yscale Min Val",st->GetMinimum(),
+                                                 &ok, fRootCanvas);
+                        if (ok) {
+                           st->SetMinimum(val); 
+                           fHCanvas->Modified();
+                           fHCanvas->Update();
+                        }  
+                     }
+                     }
+                     break;
                   case kFHStack:
                      {
                      THStack * st = (THStack *)fHCanvas->GetListOfPrimitives()
@@ -1413,6 +1452,25 @@ void HandleMenus::BuildMenus()
          }
       }
 
+   } else {
+
+      pm = fRootsMenuBar->GetPopup("Options");
+      if (pm) {
+         l = pm->GetListOfEntries();
+         if (l) {
+            TIter next(l);
+            while ( (e = (TGMenuEntry *)next()) ) {
+               TString en = e->GetName();
+               if (en == "Statistics" || en == "Histogram Title"
+                   || en == "Fit Parameters")
+                    pm->DeleteEntry(e);
+            }
+//            fRootsMenuBar->RemovePopup("Options");
+         }
+         pm->AddEntry("To change: \"Statistics / title display\" use: Hpr-Options", kFH_NoAction);
+         pm->DisableEntry(kFH_NoAction);
+      }
+
    }
    if (fFitHist) {
            pm = fRootsMenuBar->GetPopup("Inspect");
@@ -1657,6 +1715,8 @@ void HandleMenus::BuildMenus()
             if (fHistPresent->fRealStack) fDisplayMenu->CheckEntry(kFHStack);
             else                          fDisplayMenu->UnCheckEntry(kFHStack);
             
+      	   fDisplayMenu->AddEntry("Set Minimum of Yscale", kFHStackMin);
+      	   fDisplayMenu->AddEntry("Set Maximum of Yscale", kFHStackMax);
          }
       	fDisplayMenu->AddSeparator();
 	//      fDisplayMenu->AddEntry("Help",  kFH_Help_ShowSelected);

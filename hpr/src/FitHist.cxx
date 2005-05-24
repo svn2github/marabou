@@ -531,9 +531,21 @@ void FitHist::handle_mouse()
    static TLine * upedge = 0;
    static TBox * box = 0;
    static Int_t nrows = 4;
-
+   Int_t px, py;
    if (gROOT->GetEditorMode() != 0) return;
    Int_t event = gPad->GetEvent();
+   if (event ==  kKeyPress) {
+//    cout << "px: "  << (char)gPad->GetEventX() << endl;
+      char ch = (char)gPad->GetEventX();
+      if ( ch == 'C' ||ch == 'c') { 
+         TRootCanvas *rc =  (TRootCanvas*)cHist->GetCanvasImp(); 
+//        if (cHist->GetAutoExec()) cHist->ToggleAutoExec();
+//         gSystem->Sleep(200);
+         rc->ShowEditor(kFALSE);
+         rc->SendCloseMessage();
+         return;
+      }
+   }
    TObject *select = gPad->GetSelected();
    if (!select) return;
    if (event == kButton1Up && skip_after_TCUTG) {
@@ -548,8 +560,8 @@ void FitHist::handle_mouse()
          return;
       }
    }
-//   if (gROOT->GetEditorMode() != 0) return;
-   
+   px = gPad->GetEventX();
+   py = gPad->GetEventY();
 //  check if lin / log scale changed
    if (hp && hp->fRememberZoom) {
    	if (gPad->GetLogx() !=  fLogx ||
@@ -578,8 +590,9 @@ void FitHist::handle_mouse()
          }
       }
    }
-   Int_t px = gPad->GetEventX();
-   Int_t py = gPad->GetEventY();
+   if ( (!fLiveStat1dim && fDimension == 1) || (!fLiveStat2dim && fDimension == 2) ||
+         fDimension == 3 )  return;
+
    if (event == kButton1Down) {
       if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
          ||  (select->InheritsFrom("TCanvas") && IsInsideFrame(cHist, px, py))) {
@@ -846,7 +859,6 @@ void FitHist::handle_mouse()
             	}
             }
          }
-
          if ( event == kButton1Motion) {  
       	   gVirtualX->DrawBox(px1old, py1old, px2old, py2old, TVirtualX::kHollow);
          	ratio2 = (gPad->AbsPixeltoX(px) - gPad->GetUxmin())/(gPad->GetUxmax() - gPad->GetUxmin());
@@ -963,23 +975,11 @@ void FitHist::DisplayHist(TH1 * hist, Int_t win_topx, Int_t win_topy,
    } else if (is2dim(hist)) {
       fSelPad->cd();
       Draw2Dim();
-      if (hp && hp->fAutoExec_2 ) {
-   		TString cmd("((HistPresent*)gROOT->FindObject(\""); 
-   		cmd += GetName();
-   		cmd += "\"))->auto_exec_2()";
-         cHist->AddExec("ex2", cmd.Data());
-      }
    } else {
       fSelPad->cd();
       if (fLogy)
          cHist->SetLogy();
       Draw1Dim();
-      if (hp && hp->fAutoExec_1 ) {
-   		TString cmd("((HistPresent*)gROOT->FindObject(\""); 
-   		cmd += GetName();
-   		cmd += "\"))->auto_exec_1()";
-         cHist->AddExec("ex1", cmd.Data());
-      }
    }
    cHist->Update();
    cHist->GetFrame()->SetBit(TBox::kCannotMove);
@@ -2083,10 +2083,10 @@ void FitHist::Superimpose(Int_t mode)
       if (!drawopt.Contains("E", TString::kIgnoreCase))
          drawopt += "hist";
       drawopt += "same";
-      cout << "drawopt |" << drawopt << "|" << endl;
+//      cout << "drawopt |" << drawopt << "|" << endl;
 //      fSelHist->DrawCopy(drawopt.Data());
 //      TH1* hnew =  (TH1*)hdisp->Clone();
-      TH1* hcop = hdisp->DrawCopy(drawopt.Data());
+        hdisp->DrawCopy(drawopt.Data());
 //      hcop->SetDrawOption(drawopt.Data());
 //      hcop->SetOption(drawopt.Data());
 //      hdisp->GetXaxis()->SetName("xaxis");
@@ -3185,18 +3185,25 @@ void FitHist::UpdateDrawOptions()
    if (!hp) return;
    SetSelectedPad();
    TString drawopt;
-   if (hp->fShowContour)
-      drawopt = "";
-   if (hp->fShowErrors)
-      drawopt += "e1";
-   if (hp->fFill1Dim) {
-      fSelHist->SetFillStyle(1001);
-      fSelHist->SetFillColor(hp->f1DimFillColor);
-   } else
-      fSelHist->SetFillStyle(0);
+   if (fDimension == 1) {
+   	if (hp->fShowContour)
+      	drawopt = "";
+   	if (hp->fShowErrors)
+      	drawopt += "e1";
+   	if (hp->fFill1Dim) {
+      	fSelHist->SetFillStyle(1001);
+      	fSelHist->SetFillColor(hp->f1DimFillColor);
+   	} else
+      	fSelHist->SetFillStyle(0);
 //   cout << "UpdateDrawOptions() " << drawopt.Data() << endl;
-   fSelHist->SetOption(drawopt.Data());
-   fSelHist->SetDrawOption(drawopt.Data());
+      fSelHist->SetOption(drawopt.Data());
+      fSelHist->SetDrawOption(drawopt.Data());
+   } else if (fDimension  == 2) {
+      fSelHist->SetOption(hp->fDrawOpt2Dim->Data());
+      fSelHist->SetDrawOption(hp->fDrawOpt2Dim->Data());
+   }
+   fLiveStat1dim = hp->fLiveStat1dim;
+   fLiveStat2dim = hp->fLiveStat2dim;
 }
 //______________________________________________________________________________________
   
