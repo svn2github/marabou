@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCamacScaler.cxx,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCamacScaler.cxx,v 1.6 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -22,26 +22,3 @@ namespace std {} using namespace std;
 #include "TMrbCamacScaler.h"
 
 ClassImp(TMrbCamacScaler)
-
-void TMrbCamacScaler::Print(ostream & OutStrm, const Char_t * Prefix) const {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbCamacScaler::Print
-// Purpose:        Output current scaler definitions
-// Arguments:      ofstream & OutStrm   -- output stream
-//                 Char_t * Prefix      -- prefix to be output in front
-// Results:        --
-// Exceptions:
-// Description:    Outputs current scaler definition to stdout.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TString pos;
-
-	OutStrm << endl;
-	OutStrm << Prefix << "Scaler Definition:" << endl;
-	OutStrm << Prefix << "   Name          : " << this->GetName() << endl;
-	OutStrm << Prefix << "   Module        : " << this->GetTitle() << endl;
-	OutStrm << Prefix << "   Type          : CAMAC" << endl;
-	OutStrm << Prefix << "   Location      : " << this->GetPosition() << endl;
-}

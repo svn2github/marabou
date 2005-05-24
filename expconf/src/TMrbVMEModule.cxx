@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEModule.cxx,v 1.5 2005-05-13 13:01:34 marabou Exp $       
+// Revision:       $Id: TMrbVMEModule.cxx,v 1.6 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,7 +64,9 @@ TMrbVMEModule::TMrbVMEModule(const Char_t * ModuleName, const Char_t * ModuleID,
 
 		if (!this->IsZombie()) {
 			for (Int_t nch = 0; nch < NofChannels; nch++) { 		// create array of params
-				fChannelSpec.Add((TObject *) new TMrbVMEChannel(this, nch));
+				TMrbVMEChannel * vc = new TMrbVMEChannel(this, nch);
+				fChannelSpec.Add(vc);
+				vc->SetOffset(nch);
 			}
 		}
 	}
@@ -90,14 +92,14 @@ void TMrbVMEModule::Print(ostream & OutStrm, const Char_t * Prefix) const {
 
 	OutStrm << Prefix << endl;
 	OutStrm << Prefix << "Module Definition:" << endl;
-	OutStrm << Prefix << "   Name          : "	<< GetName() << endl;
-	OutStrm << Prefix << "   Type          : "	<< GetTitle() << endl;
-	OutStrm << Prefix << "   Range         : "	<< fRange << endl;
-	OutStrm << Prefix << "   Base Address  : "	<< setiosflags(ios::showbase) << setbase(16)
+	OutStrm << Prefix << "   Name              : "	<< GetName() << endl;
+	OutStrm << Prefix << "   Type              : "	<< GetTitle() << endl;
+	OutStrm << Prefix << "   Range             : "	<< fRange << endl;
+	OutStrm << Prefix << "   Base Address      : "	<< setiosflags(ios::showbase) << setbase(16)
 												<< fBaseAddr
 												<< resetiosflags(ios::showbase) << setbase(10)
 												<< endl;
-	OutStrm << Prefix << "   Channels      : "	<< this->GetNofChannelsUsed()
+	OutStrm << Prefix << "   Channels          : "	<< this->GetNofChannelsUsed()
 												<< " out of " << this->GetNofChannels() << endl;
 	found = kFALSE;
 	nch = 0;
@@ -105,10 +107,7 @@ void TMrbVMEModule::Print(ostream & OutStrm, const Char_t * Prefix) const {
 		chn = (TMrbVMEChannel *) fChannelSpec[nch];
 		arrayFlag = (chn->GetStatus() == TMrbConfig::kChannelArray);
 		if (chn->IsUsed()) {
-			if (!found) {
-				OutStrm << Prefix << "                       Addr          Name       Subevent"
-						<< endl;
-			}
+			if (!found) OutStrm << Prefix << Form("%-23s%-18s%-15s%-15s", "", "Addr", "Name", "Subevent") << endl;
 			found = kTRUE;
 			chn->Print(OutStrm, arrayFlag, kTRUE, Prefix);
 		}

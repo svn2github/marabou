@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbVMEChannel.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbVMEChannel.cxx,v 1.5 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -48,7 +48,7 @@ TMrbVMEChannel::TMrbVMEChannel(TMrbVMEModule * Module, Int_t Channel) : TMrbModu
 	}
 }
 
-void TMrbVMEChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix) const {
+void TMrbVMEChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCamacChannel::Show
@@ -63,36 +63,26 @@ void TMrbVMEChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	const Char_t * parent;
+	TString parent;
+
+	TMrbString addr = fPosition;
+	addr += " +";
+	addr += fOffset;
 
 	if (IsUsed()) {
 		if (SevtFlag) parent = UsedBy()->GetName(); else parent = Parent()->GetName();
 
-		OutStrm << Prefix << setw(23) << " ";
-		OutStrm << setiosflags(ios::left);
-		OutStrm << setw(13) << "+" << setiosflags(ios::showbase) << setbase(16)
-				<< fOffset
-				<< setbase(10) << resetiosflags(ios::showbase) << endl;
+		OutStrm << Prefix << Form("%-23s%-18s", "", addr.Data());
 		TMrbString par(this->GetName());
 		if (this->GetStatus() == TMrbConfig::kChannelArray) {
 			if (ArrayFlag) {
 				par += "[";
 				par += this->GetIndexRange();
 				par += "]";
-			} else {
-				par += 0;
 			}
 		}
-		OutStrm << setw(10) << par;
-		OutStrm << setw(10) << parent;
-		OutStrm << resetiosflags(ios::left) << endl;
+		OutStrm << Form("%-15s%s", par.Data(), parent.Data()) << endl;
 	} else {
-		OutStrm << Prefix << setw(23) << " ";
-		OutStrm << setiosflags(ios::left);
-		OutStrm << setw(13) << "+" << setiosflags(ios::showbase) << setbase(16)
-				<< fOffset
-				<< setbase(10) << resetiosflags(ios::showbase) << endl;
-		OutStrm << resetiosflags(ios::left) << " n.a";
-		OutStrm << endl;
+		OutStrm << Prefix << Form("%-23s%-18s", "", addr.Data()) << endl;
 	}
 }

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.92 2005-05-19 12:49:10 marabou Exp $       $Id: TMrbConfig.cxx,v 1.92 2005-05-19 12:49:10 marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.93 2005-05-24 17:52:32 marabou Exp $       $Id: TMrbConfig.cxx,v 1.93 2005-05-24 17:52:32 marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -5174,6 +5174,30 @@ Bool_t TMrbConfig::ExecRootMacro(const Char_t * Macro) {
 	return(kTRUE);
 }
 
+void TMrbConfig::Print(Char_t * File) const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::Print
+// Purpose:        Output current config to file
+// Arguments:      Char_t * File  -- file name
+// Results:        --
+// Exceptions:
+// Description:    Outputs current configuration to file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	ofstream f(File, ios::out);
+	if (!f.good()) {
+		gMrbLog->Err() << gSystem->GetError() << " - " << File << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+	} else {
+		Print(f);
+		gMrbLog->Out()	<< "[" << File << ": Printout of config data]" << endl;
+		gMrbLog->Flush("", "", setblue);
+		f.close();
+	}
+}
+
 void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -5188,8 +5212,6 @@ void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	TMrbEvent * evt;
-	TMrbCamacScaler * scaler;
-	TString fname;
 
 	OutStrm << Prefix << endl;
 	OutStrm << Prefix << "Exp Configuration:" << endl;
@@ -5204,12 +5226,14 @@ void TMrbConfig::Print(ostream & OutStrm, const Char_t * Prefix) const {
 			evt = (TMrbEvent *) fLofEvents.After(evt);
 		}
 	}
-	if (fNofScalers > 0) {
-		scaler = (TMrbCamacScaler *) fLofScalers.First();
-		while (scaler) {
-			scaler->Print(OutStrm, Prefix);
-			scaler = (TMrbCamacScaler *) fLofScalers.After(scaler);
+	TMrbModule * module = (TMrbModule *) fLofModules.First();
+	while (module) {
+		if (module->IsCamac()) {
+			((TMrbCamacModule *) module)->Print(OutStrm, Prefix);
+		} else {
+			((TMrbVMEModule *) module)->Print(OutStrm, Prefix);
 		}
+		module = (TMrbModule *) fLofModules.After(module);
 	}
 }
 

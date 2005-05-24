@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.11 2004-11-05 12:25:26 marabou Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.12 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -144,6 +144,10 @@ class TMrbModule : public TNamed {
 
 		void PrintRegister(ostream & OutStrm, const Char_t * RegName, const Char_t * Prefix = "") const;	 // show register settings
 		inline void PrintRegister(const Char_t * RegName) const { PrintRegister(cout, RegName, ""); };
+
+		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(ostream & OutStrm, const Char_t * Prefix = "") const {};	// show data
+		inline virtual void Print() const { Print(cout, ""); };
 
 		virtual inline Int_t GetNofSubDevices() const { return(1); }; 						// 1 subdevice per default
 		virtual inline Bool_t HasRandomReadout() const { return(kTRUE); };					// modules allow random readout normally

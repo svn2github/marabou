@@ -8,7 +8,7 @@
 // Class:          TMrbModuleChannel    -- base class to describe a single channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleChannel.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModuleChannel.h,v 1.6 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -88,14 +88,17 @@ class TMrbModuleChannel : public TNamed {
 		inline void SetStatus(TMrbConfig::EMrbChannelStatus Status) { fStatus = Status; };	// set status bits
 		Int_t GetIndex() const;												// get index with respect to array head
 
+		inline void SetOffset(Int_t Offset) { fOffset = Offset; };			// set channel offset within module
+		inline Int_t GetOffset() const { return(fOffset); }; 				// get offset
+
 		inline Bool_t IsUsed() const { return(fIsUsed); };					// param in use?
 
 		inline EMrbHistoMode GetHistoMode() const { return(fHistoMode); };	// histogram to be allocated?
 		inline void SetHistoMode(EMrbHistoMode HistoMode) { fHistoMode = HistoMode; };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") const {};	 // show registers
-		inline virtual void Print() const { Print(cout, kFALSE, kFALSE, ""); };
+		virtual void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") {};	 // show registers
+		inline void Print() { Print(cout, kFALSE, kFALSE, ""); };
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleChannel.html&"); };
 
@@ -108,6 +111,7 @@ class TMrbModuleChannel : public TNamed {
 		TMrbConfig::EMrbChannelStatus fStatus; 	// status bits
 
 		Int_t fAddr;							// channel address
+		Int_t fOffset;							// channel offset
 		Bool_t fIsUsed;							// kTRUE if used
 		EMrbHistoMode fHistoMode;				// histogram to be booked for this param?
 

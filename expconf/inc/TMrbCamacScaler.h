@@ -8,7 +8,7 @@
 // Class:          TMrbCamacScaler      -- base class for camac scalers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacScaler.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCamacScaler.h,v 1.6 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -46,10 +46,6 @@ class TMrbCamacScaler : public TMrbCamacModule, public TMrbScaler {
 								TMrbCamacModule(ScalerName, ScalerID, ScalerPosition, SubDevice, NofChannels, Range),
 								TMrbScaler() {	fHistosToBeAllocated = kFALSE; };
 		~TMrbCamacScaler() {};											// default dtor
-
-		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
-		inline virtual void Print() const { Print(cout, ""); };
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacScaler.html&"); };
 

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCamacModule.cxx,v 1.6 2005-05-13 13:01:34 marabou Exp $       
+// Revision:       $Id: TMrbCamacModule.cxx,v 1.7 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -88,7 +88,9 @@ TMrbCamacModule::TMrbCamacModule(const Char_t * ModuleName, const Char_t * Modul
 			if (cType == TMrbConfig::kCrateUnused || cType == TMrbConfig::kCrateCamac) {
 				gMrbConfig->SetCrateType(fCrate, TMrbConfig::kCrateCamac);			// mark camac crate active
 				for (nch = 0; nch < NofChannels; nch++) { 		// create array of params
-					fChannelSpec.Add(new TMrbCamacChannel(this, nch, fCNAF));
+					TMrbCamacChannel * cc = new TMrbCamacChannel(this, nch, fCNAF);
+					fChannelSpec.Add(cc);
+					cc->SetOffset(nch);
 				}
 			} else {
 				gMrbLog->Err()	<< ModuleName << ": Crate C" << fCrate
@@ -121,21 +123,18 @@ void TMrbCamacModule::Print(ostream & OutStrm, const Char_t * Prefix) const {
 
 	OutStrm << Prefix << endl;
 	OutStrm << Prefix << "Module Definition:" << endl;
-	OutStrm << Prefix << "   Name          : " << GetName() << endl;
-	OutStrm << Prefix << "   Type          : " << GetTitle() << endl;
-	OutStrm << Prefix << "   Range         : " << fRange << endl;
-	OutStrm << Prefix << "   Location      : " << fCNAF.Int2Ascii(cnafAscii) << endl;
-	OutStrm << Prefix << "   Channels      : " << this->GetNofChannelsUsed() << " out of " << this->GetNofChannels() << endl;
+	OutStrm << Prefix << "   Name              : " << GetName() << endl;
+	OutStrm << Prefix << "   Type              : " << GetTitle() << endl;
+	OutStrm << Prefix << "   Range             : " << fRange << endl;
+	OutStrm << Prefix << "   Location          : " << fCNAF.Int2Ascii(cnafAscii) << endl;
+	OutStrm << Prefix << "   Channels          : " << this->GetNofChannelsUsed() << " out of " << this->GetNofChannels() << endl;
 	found = kFALSE;
 	nch = 0;
 	while (nch < fNofChannels) {
 		chn = (TMrbCamacChannel *) fChannelSpec[nch];
 		arrayFlag = (chn->GetStatus() == TMrbConfig::kChannelArray);
 		if (chn->IsUsed()) {
-			if (!found) {
-				OutStrm << Prefix << "                       Addr          Name       Subevent"
-						<< endl;
-			}
+			if (!found) OutStrm << Prefix << Form("%-23s%-18s%-15s%-15s", "", "Addr", "Name", "Subevent") << endl;
 			found = kTRUE;
 			chn->Print(OutStrm, arrayFlag, kTRUE, Prefix);
 		}

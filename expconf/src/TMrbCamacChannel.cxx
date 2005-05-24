@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCamacChannel.cxx,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCamacChannel.cxx,v 1.5 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -53,7 +53,7 @@ TMrbCamacChannel::TMrbCamacChannel(TMrbCamacModule * Module, Int_t Channel, TMrb
 	}
 }
 
-void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix) const {
+void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbCamacChannel::Show
@@ -69,17 +69,15 @@ void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFla
 //////////////////////////////////////////////////////////////////////////////
 
 	TString cnafAscii;
-	const Char_t * parent;
-	const Char_t * cnaf;
+	TString parent;
+	TString cnaf;
 
 	cnaf = fCNAF.Int2Ascii(cnafAscii);
 
 	if (this->IsUsed()) {
 		if (SevtFlag) parent = this->UsedBy()->GetName(); else parent = Parent()->GetName();
 
-		OutStrm << Prefix << setw(23) << " ";
-		OutStrm << setiosflags(ios::left);
-		OutStrm << setw(13) << cnaf;
+		OutStrm << Prefix << Form("%-23s%-18s", "", cnaf.Data());
 		TMrbString par(this->GetName());
 		if (this->GetStatus() == TMrbConfig::kChannelArray) {
 			if (ArrayFlag) {
@@ -90,15 +88,8 @@ void TMrbCamacChannel::Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFla
 				par += 0;
 			}
 		}
-		OutStrm << setw(10) << par;
-		OutStrm << setw(10) << parent;
-		OutStrm << resetiosflags(ios::left) << endl;
+		OutStrm << Form("%-15s%s", par.Data(), parent.Data()) << endl;
 	} else {
-		OutStrm << Prefix << setw(23) << " ";
-		OutStrm << setiosflags(ios::left);
-		OutStrm << setw(13) << cnaf;
-		OutStrm << resetiosflags(ios::left);
-		OutStrm << " n.a";
-		OutStrm << endl;
+		OutStrm << Prefix << Form("%-23s%-18s", "", cnaf.Data()) << endl;
 	}
 }

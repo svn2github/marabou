@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.16 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.17 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -471,8 +471,9 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 			}
 			cp->MarkUsed(this);
 			cp->SetHistoMode(histoMode);
-			this->AddParam(cp);
 
+			this->AddParam(cp);
+			
 			if (useLongNames) gMrbConfig->UseLongParamNames();
 
 			if (!softModFlag && this->FindModule((const Char_t *) module->GetName()) == NULL) this->AddModule(module);
@@ -1593,14 +1594,15 @@ void TMrbSubevent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	OutStrm << endl;
 	OutStrm << Prefix << "       Parameters    : " << fNofParams << endl;
 	if (fNofParams > 0) {
-		OutStrm << Prefix << "                       Addr         Name      Module"
-				<< endl;
+		OutStrm << Prefix << Form("%-23s%-18s%-15s%s", "", "Addr", "Name", "Module") << endl;
 		param = (TMrbModuleChannel *) fLofParams.First();
+		Int_t po = 0;
 		while (param) {
 			if (param->GetStatus() == TMrbConfig::kChannelArray) {
 				param->Print(OutStrm, kTRUE, kFALSE, Prefix);
 				pOffs = param->GetAddr() + param->GetIndexRange();
-				param = (pOffs <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(pOffs) : NULL;
+				po += pOffs;
+				param = (po <= fLofParams.GetLast()) ? (TMrbModuleChannel *) fLofParams.At(po) : NULL;
 			} else {
 				param->Print(OutStrm, kFALSE, kFALSE, Prefix);
 				param = (TMrbModuleChannel *) fLofParams.After(param);

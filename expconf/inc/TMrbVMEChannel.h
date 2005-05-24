@@ -8,7 +8,7 @@
 // Class:          TMrbVMEChannel    -- base class to describe a VME channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEChannel.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbVMEChannel.h,v 1.6 2005-05-24 17:52:32 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -46,17 +46,15 @@ class TMrbVMEChannel : public TMrbModuleChannel {
 
 		~TMrbVMEChannel() {};											// default dtor
 
-		inline Int_t GetOffset() const { return(fOffset); }; 					// get channel offset
 		inline const Char_t * GetPosition() const { return(fPosition.Data()); };	// crate & addr
 
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEChannel.html&"); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") const;	 	// show registers
-		inline virtual void Print() const { Print(cout, kFALSE, kFALSE, ""); };
+		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "");	 	// show registers
+		inline void Print() { Print(cout, kFALSE, kFALSE, ""); };
 
 	protected:
-		Int_t fOffset;									// channel offset
 		TMrbString fPosition;							// crate & addr
 
 	ClassDef(TMrbVMEChannel, 1) 	// [Config] Base class for channels of a VME module
