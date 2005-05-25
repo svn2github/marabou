@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.93 2005-05-24 17:52:32 marabou Exp $       $Id: TMrbConfig.cxx,v 1.93 2005-05-24 17:52:32 marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.94 2005-05-25 12:48:35 marabou Exp $       $Id: TMrbConfig.cxx,v 1.94 2005-05-25 12:48:35 marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4192,20 +4192,12 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 		fUserMacroToBeCalled = kTRUE;
 		TString aclic = fileSpec;
 		if (AclicFlag) {
-			TString cplusIncludePath = gSystem->Getenv("CPLUS_INCLUDE_PATH");
+			TString aclicInclude = gSystem->GetIncludePath();
 			TString mrbInclude = gSystem->ExpandPathName("$MARABOU/include");
-			if (!cplusIncludePath.Contains(mrbInclude.Data())) {
-				gMrbLog->Wrn()	<< mrbInclude << " is missing in your environment" << endl;
-				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
-				gMrbLog->Wrn()	<< endl
-								<< "                      Execute command" << endl
-								<< "                      ==> "
-								<< setblue
-								<< "export CPLUS_INCLUDE_PATH=$MARABOU/include:$CPLUS_INCLUDE_PATH" << endl
-								<< setmagenta
-								<< "                      or add it to your profile permanently" << endl;
-				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
-				return(kFALSE);
+			if (!aclicInclude.Contains(mrbInclude.Data())) {
+				aclicInclude += " -I";
+				aclicInclude += mrbInclude;
+				gSystem->SetIncludePath(aclicInclude.Data());
 			}
 
 // now check if root and marabou libs have changed
@@ -4259,8 +4251,13 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 				gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 			}
 		}	
-		gROOT->LoadMacro(aclic.Data());
-		if (gMrbConfig->IsVerbose()) {
+		Int_t errCode;
+		Int_t sts = gROOT->LoadMacro(aclic.Data(), &errCode);
+		if (sts == -1 || errCode != 0) {
+			gMrbLog->Err()  << "Compile  step failed for user macro \"" << fileSpec << "\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
+			return(kFALSE);
+		} else if (gMrbConfig->IsVerbose()) {
 			gMrbLog->Out()  << "Initializing user macro \"" << fileSpec << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "CallUserMacro");
 		}	
