@@ -7,7 +7,7 @@
 // Purpose:        Common defs for the DGF-4C GUI
 // Description:    Defines common values to be used for DGFControl
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlCommon.h,v 1.9 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFControlCommon.h,v 1.10 2005-05-25 13:38:47 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -53,7 +53,7 @@ const SMrbNamedX kDGFChannelNumbers[] =
 
 // geometry settings
 enum						{	kTabWidth 				= 1100					};
-enum						{	kTabHeight 				= 850					};
+enum						{	kTabHeight 				= 950					};
 enum						{	kVFrameWidth			= kTabWidth / 2 		};
 enum						{	kVFrameHeight			= kTabHeight / 2 		};
 enum						{	kLEWidth				= kAutoWidth			};
