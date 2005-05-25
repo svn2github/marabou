@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_10_12.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_10_12.cxx,v 1.7 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -94,9 +94,10 @@ TMrbSubevent_10_12::TMrbSubevent_10_12(const Char_t * SevtName, const Char_t * S
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,12]: hdr + chn + data");
+		fSevtDescr = "hdr + chn + data";
 		fSevtType = 10; 	 						// set subevent type & subtype
 		fSevtSubtype = 12;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		gDirectory->Append(this);
 	}

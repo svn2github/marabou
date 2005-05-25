@@ -8,7 +8,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Silena_1.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Silena_1.cxx,v 1.5 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -77,9 +77,10 @@ TMrbSubevent_Silena_1::TMrbSubevent_Silena_1(const Char_t * SevtName, const Char
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,31]: Silena 4418 data with zero suppression");
+		fSevtDescr = "Silena 4418 data with zero suppression";
 		fSevtType = 10; 	 						// set subevent type & subtype
 		fSevtSubtype = 31;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		gDirectory->Append(this);
 	}

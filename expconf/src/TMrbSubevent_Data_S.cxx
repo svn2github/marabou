@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Data_S.cxx,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Data_S.cxx,v 1.6 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -67,9 +67,10 @@ TMrbSubevent_Data_S::TMrbSubevent_Data_S(const Char_t * SevtName, const Char_t *
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("Subevent [10,64]: UShort_t (16 bit) data");
+		fSevtDescr = "UShort_t (16 bit) data";
 		fSevtType = 10; 	 			// set subevent type & subtype
 		fSevtSubtype = 64;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		fNofWords = NofWords;
 		gDirectory->Append(this);

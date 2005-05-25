@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.7 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -120,9 +120,10 @@ TMrbSubevent_DGF_3::TMrbSubevent_DGF_3(const Char_t * SevtName, const Char_t * S
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,23]: XIA DGF-4C data, multi-module, multi-event");
+		fSevtDescr = "XIA DGF-4C data, multi-module, multi-event, stored in hit buffer";
 		fSevtType = 10; 	 							// set subevent type & subtype
 		fSevtSubtype = 23;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_DGF");	// we need this base class
 		gDirectory->Append(this);

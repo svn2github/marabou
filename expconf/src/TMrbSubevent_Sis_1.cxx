@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Sis_1.cxx,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_1.cxx,v 1.3 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -92,9 +92,10 @@ TMrbSubevent_Sis_1::TMrbSubevent_Sis_1(const Char_t * SevtName, const Char_t * S
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,51]: SIS data, multi-module, single-event (MAXEVENTS=1)");
+		fSevtDescr = "SIS data, multi-module, single-event (MAXEVENTS=1)";
 		fSevtType = 10; 	 						// set subevent type & subtype
 		fSevtSubtype = 51;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;	// only 16 bit words
 		gDirectory->Append(this);
 	}

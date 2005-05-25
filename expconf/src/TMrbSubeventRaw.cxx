@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubeventRaw.cxx,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubeventRaw.cxx,v 1.5 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -56,9 +56,10 @@ TMrbSubeventRaw::TMrbSubeventRaw(const Char_t * SevtName, const Char_t * SevtTit
 	UInt_t dty;
 
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("User-defined subevent");
+		fSevtDescr = "User-defined subevent";
 		fSevtType = Type; 	 			// set subevent type & subtype
 		fSevtSubtype = Subtype;
+		if (*SevtTitle == '\0') this->SetTitle(fSevtDescr.Data());
 		dty = gMrbConfig->GetLofDataTypes()->CheckPattern(this->ClassName(), "CTOR", LegalDataTypes);
 		if (dty == TMrbLofNamedX::kIllIndexBit) {
 			this->MakeZombie();

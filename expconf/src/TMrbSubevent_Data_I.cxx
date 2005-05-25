@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Data_I.cxx,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Data_I.cxx,v 1.6 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -67,9 +67,10 @@ TMrbSubevent_Data_I::TMrbSubevent_Data_I(const Char_t * SevtName, const Char_t *
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,65]: UInt_t (32 bit) data");
+		fSevtDescr = "UInt_t (32 bit) data";
 		fSevtType = 10; 	 			// set subevent type & subtype
 		fSevtSubtype = 65;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUInt;	// only 32 bit words
 		fNofWords = NofWords;
 		gDirectory->Append(this);

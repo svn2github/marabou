@@ -8,7 +8,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_10_11.cxx,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_10_11.cxx,v 1.6 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -72,9 +72,10 @@ TMrbSubevent_10_11::TMrbSubevent_10_11(const Char_t * SevtName, const Char_t * S
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,11]: zero-padded data");
+		fSevtDescr = "zero-padded data";
 		fSevtType = 10; 	 			// set subevent type & subtype
 		fSevtSubtype = 11;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort | TMrbConfig::kDataUInt; // word length: 16 or 32 bits
 		gDirectory->Append(this);
 	}

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_Caen_2.cxx,v 1.8 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_2.cxx,v 1.9 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -91,9 +91,10 @@ TMrbSubevent_Caen_2::TMrbSubevent_Caen_2(const Char_t * SevtName, const Char_t *
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->IsZombie()) {
-		if (*SevtTitle == '\0') SetTitle("CAMAC subevent [10,42]: CAEN data, multi-module, multi-event");
+		fSevtDescr = "CAEN data, multi-module, multi-event, stored in hit buffer";
 		fSevtType = 10; 	 							// set subevent type & subtype
 		fSevtSubtype = 42;
+		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
 		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_Caen");	// we need this base class
 		gDirectory->Append(this);

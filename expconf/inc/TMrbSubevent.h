@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.7 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.8 2005-05-25 09:33:53 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -120,6 +120,7 @@ class TMrbSubevent : public TNamed {
 
 		inline UInt_t GetType() const { return(fSevtType); }; 				// subevent's type & subtype
 		inline UInt_t GetSubtype() const { return(fSevtSubtype); };
+		inline const Char_t * GetDescr() { return(fSevtDescr.Data()); };
 
 		virtual Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kFALSE); };  // generate part of code
 
@@ -186,6 +187,7 @@ class TMrbSubevent : public TNamed {
 		UInt_t fSevtType;					// subevent type
 		UInt_t fSevtSubtype;				// subevent subtype
 		UInt_t fLegalDataTypes; 			// datatypes legal for this type of subevent
+		TString fSevtDescr; 				// description
 
 		Int_t fSerial;						// header words: unique subevent id
 		Int_t fCrate;						// crate number

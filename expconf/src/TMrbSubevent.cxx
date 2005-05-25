@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.17 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.18 2005-05-25 09:33:54 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1585,6 +1585,7 @@ void TMrbSubevent::Print(ostream & OutStrm, const Char_t * Prefix) const {
 	OutStrm << Prefix << "       Name          : " << this->GetName() << endl;
 	OutStrm << Prefix << "       Title         : " << this->GetTitle() << endl;
 	OutStrm << Prefix << "       Type/Subtype  : [" << fSevtType << "," << fSevtSubtype << "]" << endl;
+	OutStrm << Prefix << "       Description   : " << fSevtDescr << endl;
 	OutStrm << Prefix << "       Trigger(s)    : ";
 	evt = (TMrbEvent *) fLofEvents.First();
 	while (evt) {
