@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.50 2005-05-09 16:01:27 marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.51 2005-05-26 20:58:21 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4361,11 +4361,12 @@ TUsrHit * TUsrHBX::FindHit(Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t curIndex = fCurIndex;
+	Int_t curIndex = fResetDone ? -1 : fCurIndex;
 	while (++curIndex < this->GetNofHits()) {
 		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
 		if (hit->GetChannel() == Channel) {
 			fCurIndex = curIndex;
+			fResetDone = kFALSE;
 			return(hit);
 		}
 	}
@@ -4385,11 +4386,12 @@ TUsrHit * TUsrHBX::FindHit(Int_t ModuleIndex, Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t curIndex = fCurIndex;
+	Int_t curIndex = fResetDone ? -1 : fCurIndex;
 	while (++curIndex < this->GetNofHits()) {
 		TUsrHit * hit = (TUsrHit *) fHits->At(curIndex);
 		if (hit->GetModuleNumber() == ModuleIndex && hit->GetChannel() == Channel) {
 			fCurIndex = curIndex;
+			fResetDone = kFALSE;
 			return(hit);
 		}
 	}
