@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.33 2005-05-04 13:38:18 rudi Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.34 2005-05-26 13:20:26 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3838,6 +3838,49 @@ Double_t TMrbDGF::GetPSAOffset(Int_t Channel, Bool_t ReadFromDSP) {
 
 	psaOffset = (Double_t) this->GetParValue(Channel, "PSAOFFSET", ReadFromDSP);
 	return(psaOffset / 40);
+}
+
+Bool_t TMrbDGF::SetCFD(Int_t Channel, Int_t CfdVal, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetCFD
+// Purpose:        Set hardware CFD
+// Arguments:      Int_t Channel        -- channel number
+//                 Int_t CfdVal         -- cfd value
+//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Sets TRACKDAC for a given channel.
+//                 Offset in Volts (after DAC amplification).
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (UpdateDSP && !this->CheckConnect("SetCFD")) return(kFALSE);
+	if (!this->CheckChannel("SetCFD", Channel)) return(kFALSE);
+
+	this->SetParValue(Channel, "CFDREG", CfdVal, UpdateDSP);
+
+	return(kTRUE);
+}
+
+Int_t TMrbDGF::GetCFD(Int_t Channel, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetCFD
+// Purpose:        Read hardware CFD
+// Arguments:      Int_t Channel        -- channel number
+//                 Bool_t ReadFromDSP   -- kTRUE if param to be read from DSP
+// Results:        Int_t CfdVal         -- cfd value
+// Exceptions:
+// Description:    Returns cfd for a given channel.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ReadFromDSP && !this->CheckConnect("GetCFD")) return(-1);
+	if (!this->CheckChannel("GetCFD", Channel)) return(-1);
+
+	Int_t cfdVal = this->GetParValue(Channel, "CFDREG", ReadFromDSP);
+	return(cfdVal);
 }
 
 Bool_t TMrbDGF::UpdateSlowFilter(Int_t Channel, Bool_t UpdateDSP) {

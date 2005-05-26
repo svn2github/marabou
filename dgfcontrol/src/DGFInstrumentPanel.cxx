@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.14 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.15 2005-05-26 13:20:26 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -36,6 +36,21 @@ const SMrbNamedX kDGFInstrumentModuleButtons[] =
 			{
 				{DGFInstrumentPanel::kDGFInstrButtonShow,		"Show params", 	"Show actual param settings"	},
 				{0, 											NULL,		NULL									}
+			};
+
+const SMrbNamedX kDGFInstrCFDOnOff[] =
+			{
+				{DGFInstrumentPanel::kDGFInstrCFDOn,	"on",	"Enable hardware CFD"},
+				{DGFInstrumentPanel::kDGFInstrCFDOff,	"off",	"Disable hardware CFD"},
+				{0, 			NULL,	NULL	}
+			};
+
+const SMrbNamedX kDGFInstrCFDFraction[] =
+			{
+				{DGFInstrumentPanel::kDGFInstrCFDFract00,	"0.5",		"Attenuation 0.5"},
+				{DGFInstrumentPanel::kDGFInstrCFDFract01,	"0.25",		"Attenuation 0.25"},
+				{DGFInstrumentPanel::kDGFInstrCFDFract10,	"0.125",	"Attenuation 0.125"},
+				{0, 			NULL,	NULL	}
 			};
 
 extern DGFControlData * gDGFControlData;
@@ -95,6 +110,14 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 //	Initialize several lists
 	fInstrModuleActions.SetName("Instrument module actions");
 	fInstrModuleActions.AddNamedX(kDGFInstrumentModuleButtons);
+
+	fInstrCFDOnOff.SetName("CFD on/off");
+	fInstrCFDOnOff.AddNamedX(kDGFInstrCFDOnOff);
+	fInstrCFDOnOff.SetPatternMode();
+
+	fInstrCFDFraction.SetName("CFD fraction");
+	fInstrCFDFraction.AddNamedX(kDGFInstrCFDFraction);
+	fInstrCFDFraction.SetPatternMode();
 
 	fLofChannels.SetName("DGF channels");
 	fLofChannels.AddNamedX(kDGFChannelNumbers);
@@ -504,6 +527,18 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTracePSAOffsetEntry->AddToFocusList(&fFocusList);
 	fTracePSAOffsetEntry->Associate(this);
 
+// place an unvisible label to pad group frame vertically
+	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 80, 0);
+	frameGC->SetLH(dmyLayout);
+	fDummyLabel = new TGLabel(fTracePSAFrame, "", frameGC->GC(), frameGC->Font(), kChildFrame, frameGC->BG());
+	HEAP(fDummyLabel);
+	fTracePSAFrame->AddFrame(fDummyLabel, frameGC->LH());
+	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 80, 0);
+	frameGC->SetLH(dmyLayout);
+	fDummyLabel = new TGLabel(fTraceLengthDelayFrame, "", frameGC->GC(), frameGC->Font(), kChildFrame, frameGC->BG());
+	HEAP(fDummyLabel);
+	fTraceLengthDelayFrame->AddFrame(fDummyLabel, frameGC->LH());
+	
 // right: cfd
 	TGLayoutHints * cfdLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, cfdLayout);
@@ -512,33 +547,88 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fCFDFrame);
 	fRightFrame->AddFrame(fCFDFrame, groupGC->LH());
 
-	TGGroupFrame * fCFDFractionFrame = new TGGroupFrame(fCFDFrame, "-", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fCFDFractionFrame);
-	fCFDFrame->AddFrame(fCFDFractionFrame, groupGC->LH());
+	TGGroupFrame * fCFDDataFrame = new TGGroupFrame(fCFDFrame, "-", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fCFDDataFrame);
+	fCFDFrame->AddFrame(fCFDDataFrame, groupGC->LH());
 	TGLayoutHints * cfrLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(cfrLayout);
 	HEAP(cfrLayout);
-	fCFDFractionEntry = new TGMrbLabelEntry(fCFDFractionFrame, "Fraction 1/2^",
-																200, kDGFInstrCFDFractionEntry,
+
+	fCFDRegEntry = new TGMrbLabelEntry(fCFDDataFrame, "CFDREG",
+																200, kDGFInstrCFDRegEntry,
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
-																frameGC, labelGC, entryGC, buttonGC);
-	HEAP(fCFDFractionEntry);
-	fCFDFractionFrame->AddFrame(fCFDFractionEntry, frameGC->LH());
-	fCFDFractionEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fCFDFractionEntry->GetEntry()->SetText("0");
-	fCFDFractionEntry->SetRange(0, 16);
-	fCFDFractionEntry->AddToFocusList(&fFocusList);
-	fCFDFractionEntry->Associate(this);
+																frameGC, labelGC, entryGC);
+	HEAP(fCFDRegEntry);
+	fCFDDataFrame->AddFrame(fCFDRegEntry, frameGC->LH());
+	fCFDRegEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fCFDRegEntry->GetEntry()->SetText("0");
+	fCFDRegEntry->SetRange(0, 0x1 << 16);
+	fCFDRegEntry->AddToFocusList(&fFocusList);
+	fCFDRegEntry->Associate(this);
 
-// place an unvisible label to pad group frame vertically
-	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 35, 0);
-	frameGC->SetLH(dmyLayout);
-	fDummyLabel = new TGLabel(fCFDFractionFrame, "", frameGC->GC(), frameGC->Font(), kChildFrame, frameGC->BG());
-	HEAP(fDummyLabel);
-	fCFDFractionFrame->AddFrame(fDummyLabel, frameGC->LH());
-	
+	fCFDOnOffButton = new TGMrbRadioButtonList(fCFDDataFrame, "CFD enable", &fInstrCFDOnOff, kDGFInstrCFDOnOffButton, 1, 
+													kTabWidth, kLEHeight,
+													frameGC, labelGC, comboGC);
+	HEAP(fCFDOnOffButton);
+	fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOff);
+	fCFDOnOffButton->Associate(this);
+	fCFDDataFrame->AddFrame(fCFDOnOffButton, frameGC->LH());
+
+	fCFDDelayBeforeLEEntry = new TGMrbLabelEntry(fCFDDataFrame, "Delay before LE [ns]",
+																200, kDGFInstrCFDDelayBeforeLEEntry,
+																kLEWidth,
+																kLEHeight,
+																2 * kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fCFDDelayBeforeLEEntry);
+	fCFDDataFrame->AddFrame(fCFDDelayBeforeLEEntry, frameGC->LH());
+	fCFDDelayBeforeLEEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fCFDDelayBeforeLEEntry->GetEntry()->SetText("0");
+	fCFDDelayBeforeLEEntry->SetRange(0, 15 * 25);
+	fCFDDelayBeforeLEEntry->SetIncrement(25);
+	fCFDDelayBeforeLEEntry->AddToFocusList(&fFocusList);
+	fCFDDelayBeforeLEEntry->Associate(this);
+
+	fCFDDelayBipolarEntry = new TGMrbLabelEntry(fCFDDataFrame, "Delay bipolar signal [ns]",
+																200, kDGFInstrCFDDelayBipolarEntry,
+																kLEWidth,
+																kLEHeight,
+																2 * kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fCFDDelayBipolarEntry);
+	fCFDDataFrame->AddFrame(fCFDDelayBipolarEntry, frameGC->LH());
+	fCFDDelayBipolarEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fCFDDelayBipolarEntry->GetEntry()->SetText("0");
+	fCFDDelayBipolarEntry->SetRange(0, 15 * 25);
+	fCFDDelayBipolarEntry->SetIncrement(25);
+	fCFDDelayBipolarEntry->AddToFocusList(&fFocusList);
+	fCFDDelayBipolarEntry->Associate(this);
+
+	fCFDWalkEntry = new TGMrbLabelEntry(fCFDDataFrame, "Walk",
+																200, kDGFInstrCFDWalkEntry,
+																kLEWidth,
+																kLEHeight,
+																2 * kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC, kTRUE);
+	HEAP(fCFDWalkEntry);
+	fCFDDataFrame->AddFrame(fCFDWalkEntry, frameGC->LH());
+	fCFDWalkEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fCFDWalkEntry->GetEntry()->SetText("0");
+	fCFDWalkEntry->SetRange(0, 31 * 8);
+	fCFDWalkEntry->SetIncrement(8);
+	fCFDWalkEntry->AddToFocusList(&fFocusList);
+	fCFDWalkEntry->Associate(this);
+
+	fCFDFractionButton = new TGMrbRadioButtonList(fCFDDataFrame, "Fraction", &fInstrCFDFraction, kDGFInstrCFDFractionButton, 1, 
+													kTabWidth, kLEHeight,
+													frameGC, labelGC, comboGC);
+	HEAP(fCFDFractionButton);
+	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
+	fCFDFractionButton->Associate(this);
+	fCFDDataFrame->AddFrame(fCFDFractionButton, frameGC->LH());
+
 // left: csra
 	TGLayoutHints * csraLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, csraLayout);
@@ -802,13 +892,42 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 											gDGFControlData->GetSelectedChannelIndex());
 		
 							break;	
+						case kDGFInstrCFDRegEntry:
+							this->UpdateValue(kDGFInstrCFDRegEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+							break;	
+						case kDGFInstrCFDDelayBeforeLEEntry:
+							this->UpdateValue(kDGFInstrCFDDelayBeforeLEEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+							break;	
+						case kDGFInstrCFDDelayBipolarEntry:
+							this->UpdateValue(kDGFInstrCFDDelayBipolarEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+							break;	
+						case kDGFInstrCFDWalkEntry:
+							this->UpdateValue(kDGFInstrCFDWalkEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+		
+							break;	
 					}
 					break;
 				case kCM_RADIOBUTTON:
 					switch (Param1) {
 						case kDGFInstrSelectChannel:
 							gDGFControlData->SetSelectedChannelIndex(fSelectChannel->GetActive());
+							fCFDOnOffButton->GetActive();
 							this->InitializeValues(kFALSE);
+							break;
+						case kDGFInstrCFDOnOffButton:
+						case kDGFInstrCFDFractionButton:
+							this->InitializeCFD();
 							break;
 					}
 					break;
@@ -938,7 +1057,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	dblStr = dgf->GetOffset(chn);
 	fDACVoltEntry->GetEntry()->SetText(dblStr.Data());
 // CFDFractionEntry:
-
+	this->InitializeCFD();
 // MCAEnergyEntry:
 	intStr = dgf->GetParValue(chn, "ENERGYLOW");
 	fMCAEnergyEntry->GetEntry()->SetText(intStr.Data());
@@ -1182,6 +1301,12 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dblStr.ToDouble(dblVal);
 			dgf->SetDelay(chn, dblVal);
 			break;
+		case kDGFInstrCFDRegEntry:
+		case kDGFInstrCFDDelayBeforeLEEntry:
+		case kDGFInstrCFDDelayBipolarEntry:
+		case kDGFInstrCFDWalkEntry:
+			this->UpdateCFD(dgf, chn);
+			break;
 		case kDGFInstrStatRegChanCSRAEntry:
 			entry = fStatRegChanCSRAEntry->GetEntry();
 			intStr = entry->GetText();
@@ -1252,9 +1377,6 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			intStr = dgf->GetParValue(chn, "TRACKDAC");
 			fDACOffsetEntry->GetEntry()->SetText(intStr);
 			break;
-		case kDGFInstrCFDFractionEntry:
-			entry = fCFDFractionEntry->GetEntry();
-			break;
 		case kDGFInstrMCAEnergyEntry:
 			entry = fMCAEnergyEntry->GetEntry();
 			intStr = entry->GetText();
@@ -1280,6 +1402,101 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			entry = fMCABaselineBinsEntry->GetEntry();
 			break;
 	}
+	return(kTRUE);
+}
+
+Bool_t DGFInstrumentPanel::InitializeCFD() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::InitializeCFD
+// Purpose:        Setup values for hardware cfd
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Fills entry fields for hardware cfd
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
+	TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+	Int_t chn = gDGFControlData->GetSelectedChannel();
+
+	Int_t cfdVal = dgf->GetCFD(chn);
+	Int_t cfdDel = cfdVal & 0xF;
+	TMrbString cfdStr = cfdDel * 25;
+	fCFDDelayBeforeLEEntry->GetEntry()->SetText(cfdStr.Data());
+	cfdDel = (cfdVal >> 4) & 0xF;
+	cfdStr = cfdDel * 25;
+	fCFDDelayBipolarEntry->GetEntry()->SetText(cfdStr.Data());
+
+	if (fCFDOnOffButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDOn) cfdVal |= BIT(13);
+	else																	cfdVal &= ~BIT(13);
+	if (cfdVal & BIT(13))	fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOn);
+	else					fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOff);
+
+	Int_t cfd = (cfdVal >> 8) & 0x1F;
+	cfd = ~cfd & 0x1F;
+	cfdStr = cfd * 8;
+	fCFDWalkEntry->GetEntry()->SetText(cfdStr.Data());
+
+	cfdVal &= ~(BIT(14)|BIT(15));
+	if (fCFDFractionButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDFract01) cfdVal |= BIT(14);
+	else if (fCFDFractionButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDFract10) cfdVal |= BIT(15);
+
+	if (cfdVal & BIT(14))		fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract01);
+	else if (cfdVal & BIT(15))	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract10);
+	else						fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
+
+	cfdStr.FromInteger(cfdVal, 0, ' ' , 16);
+	fCFDRegEntry->GetEntry()->SetText(cfdStr.Data());
+
+	return(kTRUE);
+}
+
+Bool_t DGFInstrumentPanel::UpdateCFD(TMrbDGF * Module, Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::UpdateCFD
+// Purpose:        Update hardware cfd
+// Arguments:      TMrbDGF * Module     -- module
+//                 Int_t Channel        -- channel
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Updates hardware cfd
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
+	Int_t cfdVal = 0;
+
+	TMrbString cfdStr = fCFDDelayBeforeLEEntry->GetEntry()->GetText();
+	Int_t cfd;
+	cfdStr.ToInteger(cfd);
+	cfd = (cfd + 24) / 25;
+	cfdVal += (cfd & 0xF);
+
+	cfdStr = fCFDDelayBipolarEntry->GetEntry()->GetText();
+	cfdStr.ToInteger(cfd);
+	cfd = (cfd + 24) / 25;
+	cfdVal += ((cfd << 4) & 0xF0);
+
+	if (fCFDOnOffButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDOn) cfdVal |= BIT(13);
+	else																	cfdVal &= ~BIT(13);
+
+	cfdStr = fCFDWalkEntry->GetEntry()->GetText();
+	cfdStr.ToInteger(cfd);
+	cfd = (cfd + 7) / 8;
+	cfd = ~cfd;
+	cfd &= 0x1F;
+	cfd <<= 8;
+	cfdVal |= cfd;
+
+	Module->SetCFD(Channel, cfdVal);
+	cfdStr.FromInteger(Module->GetCFD(Channel), 0, ' ', 16);
+	fCFDRegEntry->GetEntry()->SetText(cfdStr.Data());
+
 	return(kTRUE);
 }
 
@@ -1345,9 +1562,6 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 			break;
 		case kDGFInstrDACOffsetEntry:
 			entry = fDACOffsetEntry->GetEntry();
-			break;
-		case kDGFInstrCFDFractionEntry:
-			entry = fCFDFractionEntry->GetEntry();
 			break;
 		case kDGFInstrMCAEnergyEntry:
 			entry = fMCAEnergyEntry->GetEntry();

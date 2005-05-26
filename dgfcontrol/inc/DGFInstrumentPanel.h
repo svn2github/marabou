@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.7 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.8 2005-05-26 13:20:26 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -73,7 +73,12 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrDACVVEntry,			  	//		V/V
 									kDGFInstrDACOffsetEntry,		 	//		DAC
 									kDGFInstrDACVoltEntry,		  		//		Volt
-									kDGFInstrCFDFractionEntry,	  		//		fraction
+									kDGFInstrCFDRegEntry,		  		//		CFD register
+									kDGFInstrCFDOnOffButton,			//		CFD on/off
+									kDGFInstrCFDDelayBeforeLEEntry, 	//		CFD delay before LE
+									kDGFInstrCFDDelayBipolarEntry,	 	//		CFD delay bipolar
+									kDGFInstrCFDWalkEntry,  		 	//		CFD walk
+									kDGFInstrCFDFractionButton, 		//		CFD walk
 									kDGFInstrMCAEnergyEntry, 			//		energy
 									kDGFInstrMCAEnergyBinsEntry,		//		combine bins
 									kDGFInstrMCABaselineDCEntry,		//		DC
@@ -81,6 +86,17 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrButtonApplyChanges,		//		apply changes & calc corrections
 									kDGFInstrButtonShow,				//		show params
 								};
+
+		enum EDGFInstrCDFOnOff 	{
+										kDGFInstrCFDOn	=	BIT(0),
+										kDGFInstrCFDOff =	BIT(1)
+								};
+
+		enum EDGFInstrCDFFraction 	{
+										kDGFInstrCFDFract00	=	BIT(0),
+										kDGFInstrCFDFract01	=	BIT(1),
+										kDGFInstrCFDFract10	=	BIT(2),
+									};
 
 	public:
 		DGFInstrumentPanel(TGCompositeFrame * TabFrame);
@@ -99,6 +115,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		Bool_t UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t ChannelId);		// update entry value
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
 		Bool_t SetGFLT(Bool_t OnFlag = kTRUE);									// set/clear gflt
+		Bool_t UpdateCFD(TMrbDGF * Module, Int_t Channel);						// update cfd
+		Bool_t InitializeCFD();													// init cfd
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -143,8 +161,14 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		TGMrbLabelEntry * fDACOffsetEntry;		 	//					DAC
 		TGMrbLabelEntry * fDACVoltEntry;		  	//					Volt
 		TGGroupFrame * fCFDFrame;					//			CFD
-		TGGroupFrame * fCFDFractionFrame;			//				fraction
+		TGGroupFrame * fCFDDataFrame;				//				data
+		TGMrbLabelEntry * fCFDRegEntry; 		  	//
+		TGMrbLabelEntry * fCFDDelayBeforeLEEntry;	//
+		TGMrbLabelEntry * fCFDDelayBipolarEntry;	//
+		TGMrbLabelEntry * fCFDWalkEntry;		  	//
 		TGMrbLabelEntry * fCFDFractionEntry;	  	//
+		TGMrbRadioButtonList * fCFDOnOffButton;
+		TGMrbRadioButtonList * fCFDFractionButton;
 		TGGroupFrame * fMCAFrame;					//			MCA
 		TGGroupFrame * fMCAEnergyFrame;				//				energy
 		TGMrbLabelEntry * fMCAEnergyEntry; 			//					energy
@@ -162,6 +186,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 
 		TMrbLofNamedX fInstrChnActions;				// list of actions
 		TMrbLofNamedX fInstrModuleActions;
+		TMrbLofNamedX fInstrCFDOnOff;
+		TMrbLofNamedX fInstrCFDFraction;
 
 		TGMrbFocusList fFocusList;
 

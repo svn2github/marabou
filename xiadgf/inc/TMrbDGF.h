@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.12 2005-05-04 13:38:18 rudi Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.13 2005-05-26 13:20:26 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -238,6 +238,9 @@ class TMrbDGF : public TNamed {
 
 		Int_t SetOffset(Int_t Channel, Double_t Offset, Bool_t UpdateDSP=kTRUE);		// set offset
 		Double_t GetOffset(Int_t Channel, Bool_t ReadFromDSP = kTRUE);					// get offset
+
+		Bool_t SetCFD(Int_t Channel, Int_t CfdVal, Bool_t UpdateDSP=kTRUE);				// set cfd
+		Int_t GetCFD(Int_t Channel, Bool_t ReadFromDSP = kTRUE);						// get cfd
 
 		Bool_t UpdateSlowFilter(Int_t Channel, Bool_t UpdateDSP = kTRUE);				// update slow filter
 
