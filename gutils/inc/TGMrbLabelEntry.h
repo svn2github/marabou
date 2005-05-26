@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.5 2005-05-26 16:07:39 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -124,6 +124,11 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
+
+		inline const Char_t * GetText() { return(fEntry->GetText()); };	// get text
+		void SetText(const Char_t * Text);								// set text
+
+		void CreateToolTip(Int_t Value);			// create tooltip: bin, oct, dec, hex values
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
