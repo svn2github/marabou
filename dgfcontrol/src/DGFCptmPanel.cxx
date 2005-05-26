@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.3 2005-05-11 12:13:42 marabou Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.4 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -181,7 +181,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fGeDelayEntry);
 		fGeFrame->AddFrame(fGeDelayEntry, frameGC->LH());
 		fGeDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-		fGeDelayEntry->GetEntry()->SetText("0");
+		fGeDelayEntry->SetText("0");
 		fGeDelayEntry->SetRange(0., 255 * 0.025);
 		fGeDelayEntry->SetIncrement(0.1);
 		fGeDelayEntry->AddToFocusList(&fFocusList);
@@ -196,7 +196,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fGeWidthEntry);
 		fGeFrame->AddFrame(fGeWidthEntry, frameGC->LH());
 		fGeWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-		fGeWidthEntry->GetEntry()->SetText("0");
+		fGeWidthEntry->SetText("0");
 		fGeWidthEntry->SetRange(0., 255 * 0.025);
 		fGeWidthEntry->SetIncrement(0.1);
 		fGeWidthEntry->AddToFocusList(&fFocusList);
@@ -215,7 +215,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fAuxDelayEntry);
 		fAuxFrame->AddFrame(fAuxDelayEntry, frameGC->LH());
 		fAuxDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-		fAuxDelayEntry->GetEntry()->SetText("0");
+		fAuxDelayEntry->SetText("0");
 		fAuxDelayEntry->SetRange(0., 255 * 0.025);
 		fAuxDelayEntry->SetIncrement(0.1);
 		fAuxDelayEntry->AddToFocusList(&fFocusList);
@@ -230,7 +230,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fAuxWidthEntry);
 		fAuxFrame->AddFrame(fAuxWidthEntry, frameGC->LH());
 		fAuxWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-		fAuxWidthEntry->GetEntry()->SetText("0");
+		fAuxWidthEntry->SetText("0");
 		fAuxWidthEntry->SetRange(0., 255 * 0.025);
 		fAuxWidthEntry->SetIncrement(0.1);
 		fAuxWidthEntry->AddToFocusList(&fFocusList);
@@ -245,7 +245,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fTimeWdwEntry);
 		fAuxFrame->AddFrame(fTimeWdwEntry, frameGC->LH());
 		fTimeWdwEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-		fTimeWdwEntry->GetEntry()->SetText("0");
+		fTimeWdwEntry->SetText("0");
 		fTimeWdwEntry->SetRange(0., 255 * 0.025);
 		fTimeWdwEntry->SetIncrement(0.1);
 		fTimeWdwEntry->AddToFocusList(&fFocusList);
@@ -264,7 +264,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fMultValueEntry);
 		fMultFrame->AddFrame(fMultValueEntry, frameGC->LH());
 		fMultValueEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-		fMultValueEntry->GetEntry()->SetText("0");
+		fMultValueEntry->SetText("0");
 		fMultValueEntry->SetRange(0, (4095 + 34) / 35);
 		fMultValueEntry->SetIncrement(1);
 		fMultValueEntry->AddToFocusList(&fFocusList);
@@ -279,7 +279,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fMultValueEntry);
 		fMultFrame->AddFrame(fMultDacEntry, frameGC->LH());
 		fMultDacEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-		fMultDacEntry->GetEntry()->SetText("0");
+		fMultDacEntry->SetText("0");
 		fMultDacEntry->SetRange(0, 4095);
 		fMultDacEntry->SetIncrement(35);
 		fMultDacEntry->AddToFocusList(&fFocusList);
@@ -481,30 +481,30 @@ void DGFCptmPanel::InitializeValues(Int_t ModuleIndex) {
 
 	intVal = cptm->GetGeDelay();
 	dblStr.FromDouble((Double_t) intVal * .025);
-	fGeDelayEntry->GetEntry()->SetText(dblStr.Data());
+	fGeDelayEntry->SetText(dblStr.Data());
 
 	intVal = cptm->GetGeWidth();
 	dblStr.FromDouble((Double_t) intVal * .025);
-	fGeWidthEntry->GetEntry()->SetText(dblStr.Data());
+	fGeWidthEntry->SetText(dblStr.Data());
 
 	intVal = cptm->GetAuxDelay();
 	dblStr.FromDouble((Double_t) intVal * .025);
-	fAuxDelayEntry->GetEntry()->SetText(dblStr.Data());
+	fAuxDelayEntry->SetText(dblStr.Data());
 
 	intVal = cptm->GetAuxWidth();
 	dblStr.FromDouble((Double_t) intVal * .025);
-	fAuxWidthEntry->GetEntry()->SetText(dblStr.Data());
+	fAuxWidthEntry->SetText(dblStr.Data());
 
 	intVal = cptm->GetTimeWindowAux();
 	dblStr.FromDouble((Double_t) intVal * .025);
-	fTimeWdwEntry->GetEntry()->SetText(dblStr.Data());
+	fTimeWdwEntry->SetText(dblStr.Data());
 
 	intVal = cptm->GetMultiplicity();
 	intStr.FromInteger(intVal);
-	fMultValueEntry->GetEntry()->SetText(intStr.Data());
+	fMultValueEntry->SetText(intStr.Data());
 	intVal = cptm->GetDac(1);
 	intStr.FromInteger(intVal);
-	fMultDacEntry->GetEntry()->SetText(intStr.Data());
+	fMultDacEntry->SetText(intStr.Data());
 
 	intVal = cptm->GetMask();
 	fCptmMaskReg->SetState(0xFF, kButtonUp);
@@ -513,13 +513,13 @@ void DGFCptmPanel::InitializeValues(Int_t ModuleIndex) {
 	intVal = cptm->GetReadAddr();
 	intStr.FromInteger(intVal);
 	fAddrReadEntry->GetEntry()->SetState(kTRUE);
-	fAddrReadEntry->GetEntry()->SetText(intStr.Data());
+	fAddrReadEntry->SetText(intStr.Data());
 	fAddrReadEntry->GetEntry()->SetState(kFALSE);
 
 	intVal = cptm->GetWriteAddr();
 	intStr.FromInteger(intVal);
 	fAddrWriteEntry->GetEntry()->SetState(kTRUE);
-	fAddrWriteEntry->GetEntry()->SetText(intStr.Data());
+	fAddrWriteEntry->SetText(intStr.Data());
 	fAddrWriteEntry->GetEntry()->SetState(kFALSE);
 }
 

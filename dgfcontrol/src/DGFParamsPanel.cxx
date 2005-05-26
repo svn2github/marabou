@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.13 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.14 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -256,7 +256,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 				fParVal[n]->GetEntry()->SetEnabled(kFALSE);
 			} else {
 				fParVal[n]->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-				fParVal[n]->GetEntry()->SetText("0");
+				fParVal[n]->SetText("0");
 				fParVal[n]->SetRange(0, 100000);
 				fParVal[n]->SetIncrement(1);
 				fParVal[n]->Associate(this);
@@ -415,9 +415,9 @@ Bool_t DGFParamsPanel::ReadParams() {
 						} else {
 							intStr = parVal;
 						}
-						fParVal[n]->GetEntry()->SetText(intStr.Data());
+						fParVal[n]->SetText(intStr.Data());
 					} else {
-						fParVal[n]->GetEntry()->SetText(" ");
+						fParVal[n]->SetText(" ");
 					}
 				}
 			}
@@ -507,7 +507,7 @@ Bool_t DGFParamsPanel::ApplyParams(Bool_t Marked) {
 						if (Marked && foundMarked) {
 							dgf->SetParValue(px->GetName(), markedVal, kTRUE);
 						} else {
-							intStr = fParVal[n]->GetEntry()->GetText();
+							intStr = fParVal[n]->GetText();
 							TString pName = px->GetName();
 							intStr = intStr.Strip();
 							if (intStr.Length() > 0) {

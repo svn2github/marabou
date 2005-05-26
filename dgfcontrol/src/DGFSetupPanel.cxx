@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.27 2005-04-28 12:56:09 rudi Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.28 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -221,7 +221,7 @@ DGFSetupPanel::DGFSetupPanel(TGCompositeFrame * TabFrame) :
 	fCAMACFrame->AddFrame(fCAMACHostEntry, frameGC->LH());
 	camacHost = gDGFControlData->fCAMACHost.Data();
 	if (camacHost.Length() == 0) env.Find(camacHost, "DGFControl:TMrbDGF:TMrbEsone", "HostName", "ppc-0");
-	fCAMACHostEntry->GetEntry()->SetText(camacHost.Data());
+	fCAMACHostEntry->SetText(camacHost.Data());
 	fCAMACHostEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeCharInt);
 	fCAMACHostEntry->SetRange(0, DGFSetupPanel::kNofPPCs - 1);
 	gDGFControlData->fCAMACHost = camacHost;
@@ -445,7 +445,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 		}
 	}
 	
-	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
+	TString camacHost = fCAMACHostEntry->GetText();
 	gDGFControlData->fCAMACHost = camacHost;
 
 	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
@@ -581,7 +581,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 		}
 	}
 	
-	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
+	TString camacHost = fCAMACHostEntry->GetText();
 	gDGFControlData->fCAMACHost = camacHost;
 
 	Int_t hostAddr = esoneCold->ConnectToHost(camacHost.Data(), kTRUE);
@@ -869,7 +869,7 @@ Bool_t DGFSetupPanel::RestartEsone() {
 		return(kFALSE);
 	}
 	
-	TString camacHost = fCAMACHostEntry->GetEntry()->GetText();
+	TString camacHost = fCAMACHostEntry->GetText();
 	gDGFControlData->fCAMACHost = camacHost;
 
 	if (!offlineMode) {

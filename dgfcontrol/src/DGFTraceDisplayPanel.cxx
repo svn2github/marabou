@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.22 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.23 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -195,7 +195,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceLength);
 	fTFrame->AddFrame(fTraceLength, frameGC->LH());
 	fTraceLength->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fTraceLength->GetEntry()->SetText("0");
+	fTraceLength->SetText("0");
 	fTraceLength->SetRange(0, 8000);
 	fTraceLength->SetIncrement(100);
 	fTraceLength->AddToFocusList(&fFocusList);
@@ -213,7 +213,7 @@ DGFTraceDisplayPanel::DGFTraceDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fXwait);
 	fXFrame->AddFrame(fXwait, frameGC->LH());
 	fXwait->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fXwait->GetEntry()->SetText("0");
+	fXwait->SetText("0");
 	fXwait->SetRange(0, 1000);
 	fXwait->SetIncrement(1);
 	fXwait->AddToFocusList(&fFocusList);
@@ -400,7 +400,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 		return(kFALSE);
 	}
 
-	intStr = fTraceLength->GetEntry()->GetText();
+	intStr = fTraceLength->GetText();
 	intStr.ToInteger(traceLength);
 
 	Int_t tLength = 0;
@@ -420,7 +420,7 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 		return(kTRUE);
 	}
 
-	intStr = fXwait->GetEntry()->GetText();
+	intStr = fXwait->GetText();
 	intStr.ToInteger(xwait);
 	selectFlag = kFALSE;
 	dgfModule = gDGFControlData->FirstModule();

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.21 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.22 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -202,7 +202,7 @@ DGFUntrigTracePanel::DGFUntrigTracePanel(TGCompositeFrame * TabFrame) :
 	HEAP(fXwait);
 	fXFrame->AddFrame(fXwait, frameGC->LH());
 	fXwait->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fXwait->GetEntry()->SetText("0");
+	fXwait->SetText("0");
 	fXwait->SetRange(0, 1000);
 	fXwait->SetIncrement(1);
 	fXwait->AddToFocusList(&fFocusList);
@@ -334,7 +334,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 		return(kFALSE);
 	}
 
-	intStr = fXwait->GetEntry()->GetText();
+	intStr = fXwait->GetText();
 	intStr.ToInteger(xwait);
 	dgfModule = gDGFControlData->FirstModule();
 	selectFlag = kFALSE;

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.7 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.8 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -224,7 +224,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceLengthEntry);
 	fTraceFrame->AddFrame(fTraceLengthEntry, frameGC->LH());
 	fTraceLengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fTraceLengthEntry->GetEntry()->SetText("8001");
+	fTraceLengthEntry->SetText("8001");
 	fTraceLengthEntry->SetRange(100, 8001);
 	fTraceLengthEntry->SetIncrement(100);
 	fTraceLengthEntry->AddToFocusList(&fFocusList);
@@ -239,7 +239,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fXwaitEntry);
 	fTraceFrame->AddFrame(fXwaitEntry, frameGC->LH());
 	fXwaitEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fXwaitEntry->GetEntry()->SetText("10");
+	fXwaitEntry->SetText("10");
 	fXwaitEntry->SetRange(0, 1000);
 	fXwaitEntry->SetIncrement(1);
 	fXwaitEntry->AddToFocusList(&fFocusList);
@@ -253,7 +253,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fNofTracesEntry);
 	fTraceFrame->AddFrame(fNofTracesEntry, frameGC->LH());
 	fNofTracesEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fNofTracesEntry->GetEntry()->SetText("1");
+	fNofTracesEntry->SetText("1");
 	fNofTracesEntry->SetRange(0, 99);
 	fNofTracesEntry->SetIncrement(1);
 	fNofTracesEntry->AddToFocusList(&fFocusList);
@@ -293,7 +293,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fFitFromEntry);
 	fFitFrame->AddFrame(fFitFromEntry, frameGC->LH());
 	fFitFromEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fFitFromEntry->GetEntry()->SetText("0");
+	fFitFromEntry->SetText("0");
 	fFitFromEntry->SetRange(0, 8001);
 	fFitFromEntry->SetIncrement(100);
 	fFitFromEntry->AddToFocusList(&fFocusList);
@@ -403,7 +403,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDispTraceNoEntry);
 	fDisplayFrame->AddFrame(fDispTraceNoEntry, frameGC->LH());
 	fDispTraceNoEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fDispTraceNoEntry->GetEntry()->SetText("0");
+	fDispTraceNoEntry->SetText("0");
 	fDispTraceNoEntry->SetRange(0, 99);
 	fDispTraceNoEntry->SetIncrement(1);
 	fDispTraceNoEntry->AddToFocusList(&fFocusList);
@@ -436,7 +436,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDispCurTauEntry);
 	fDisplayFrame->AddFrame(fDispCurTauEntry, frameGC->LH());
 	fDispCurTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fDispCurTauEntry->GetEntry()->SetText("0.0");
+	fDispCurTauEntry->SetText("0.0");
 	fDispTraceNoEntry->AddToFocusList(&fFocusList);
 	fDispTraceNoEntry->Associate(this);
 
@@ -449,7 +449,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDispBestTauEntry);
 	fDisplayFrame->AddFrame(fDispBestTauEntry, frameGC->LH());
 	fDispBestTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fDispBestTauEntry->GetEntry()->SetText("0.0");
+	fDispBestTauEntry->SetText("0.0");
 	fDispBestTauEntry->GetEntry()->SetState(kFALSE);
 
 //	buttons
@@ -524,12 +524,12 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFTauButtonTauOK:
-							dblStr = fDispCurTauEntry->GetEntry()->GetText();
+							dblStr = fDispCurTauEntry->GetText();
 							dblStr.ToDouble(tau);
 							dgf->SetTau(chn, tau);
 							break;
 						case kDGFTauButtonBestTau:
-							dblStr = fDispBestTauEntry->GetEntry()->GetText();
+							dblStr = fDispBestTauEntry->GetText();
 							dblStr.ToDouble(tau);
 							dgf->SetTau(chn, tau);
 							break;
@@ -622,11 +622,11 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 
 	fileName = this->TraceFileName();
 
-	intStr = fTraceLengthEntry->GetEntry()->GetText();
+	intStr = fTraceLengthEntry->GetText();
 	intStr.ToInteger(traceLength);
-	intStr = fXwaitEntry->GetEntry()->GetText();
+	intStr = fXwaitEntry->GetText();
 	intStr.ToInteger(xwait);
-	intStr = fNofTracesEntry->GetEntry()->GetText();
+	intStr = fNofTracesEntry->GetText();
 	intStr.ToInteger(nofTraces);
 
 	nw = traceLength + TMrbDGFEventBuffer::kTotalHeaderLength;
@@ -646,14 +646,14 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	fFitFromEntry->SetRange(0, traceLength);
 	fFitToEntry->SetRange(0, traceLength);
 
-	intStr = fFitFromEntry->GetEntry()->GetText();
+	intStr = fFitFromEntry->GetText();
 	intStr.ToInteger(fitFrom);
-	intStr = fFitToEntry->GetEntry()->GetText();
+	intStr = fFitToEntry->GetText();
 	intStr.ToInteger(fitTo);
 	if (fitTo > traceLength) {
 		fitTo = traceLength;
 		intStr = fitTo;
-		fFitToEntry->GetEntry()->SetText(intStr.Data());
+		fFitToEntry->SetText(intStr.Data());
 	}
 	if (fitFrom < 0 || fitTo < 0 || fitFrom >= fitTo) {
 		gMrbLog->Err() << "Illegal fit region - [" << fitFrom << "," << fitTo << "]" << endl;
@@ -662,15 +662,15 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	}
 	fFitFromEntry->SetRange(0, traceLength);
 
-	dblStr = fFitErrorEntry->GetEntry()->GetText();
+	dblStr = fFitErrorEntry->GetText();
 	dblStr.ToDouble(fitError);
-	dblStr = fFitChiSquareEntry->GetEntry()->GetText();
+	dblStr = fFitChiSquareEntry->GetText();
 	dblStr.ToDouble(fitChiSquare);
-	dblStr = fFitA0Entry->GetEntry()->GetText();
+	dblStr = fFitA0Entry->GetText();
 	dblStr.ToDouble(fitA0);
-	dblStr = fFitA1Entry->GetEntry()->GetText();
+	dblStr = fFitA1Entry->GetText();
 	dblStr.ToDouble(fitA1);
-	dblStr = fFitA2Entry->GetEntry()->GetText();
+	dblStr = fFitA2Entry->GetText();
 	dblStr.ToDouble(fitA2);
 
 	cout	<< setblue
@@ -797,7 +797,7 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 
 	dgf->RestoreParams(TMrbDGF::kSaveTrace);			// restore settings
 
-	fDispTraceNoEntry->GetEntry()->SetText("0");
+	fDispTraceNoEntry->SetText("0");
 	this->Update(kDGFTauDispTraceNo);
 
 	this->SetRunning(kFALSE);
@@ -886,7 +886,7 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 						dblStr = "0.0";
 					}
 					fDispBestTauEntry->GetEntry()->SetState(kTRUE);
-					fDispBestTauEntry->GetEntry()->SetText(dblStr.Data());
+					fDispBestTauEntry->SetText(dblStr.Data());
 					fDispBestTauEntry->GetEntry()->SetState(kFALSE);
 				}
 			}
@@ -927,7 +927,7 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 				} else {
 					dblStr = "0.0";
 				}
-				fDispCurTauEntry->GetEntry()->SetText(dblStr.Data());
+				fDispCurTauEntry->SetText(dblStr.Data());
 			} else {
 				gMrbLog->Err() << "No such histogram -  " << fHistoName << endl;
 				gMrbLog->Flush(this->ClassName(), "Update");
@@ -961,18 +961,18 @@ Bool_t DGFTauDisplayPanel::ResetValues() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fTraceLengthEntry->GetEntry()->SetText("8001");
-	fXwaitEntry->GetEntry()->SetText("10");
-	fNofTracesEntry->GetEntry()->SetText("1");
-	fFitFromEntry->GetEntry()->SetText("0");
-	fFitToEntry->GetEntry()->SetText("200");
-	fFitA0Entry->GetEntry()->SetText("1000");
-	fFitA1Entry->GetEntry()->SetText("1000");
-	fFitA2Entry->GetEntry()->SetText("2000");
-	fFitErrorEntry->GetEntry()->SetText("2.0");
-	fFitChiSquareEntry->GetEntry()->SetText("5.0");
-	fDispTraceNoEntry->GetEntry()->SetText("0");
-	fDispCurTauEntry->GetEntry()->SetText("0.0");
+	fTraceLengthEntry->SetText("8001");
+	fXwaitEntry->SetText("10");
+	fNofTracesEntry->SetText("1");
+	fFitFromEntry->SetText("0");
+	fFitToEntry->SetText("200");
+	fFitA0Entry->SetText("1000");
+	fFitA1Entry->SetText("1000");
+	fFitA2Entry->SetText("2000");
+	fFitErrorEntry->SetText("2.0");
+	fFitChiSquareEntry->SetText("5.0");
+	fDispTraceNoEntry->SetText("0");
+	fDispCurTauEntry->SetText("0.0");
 	fFitTraceYesNo->SetState(kDGFTauFitTraceNo);
 	fDispStatBox->SetState(kDGFTauDispStatBoxNo);
 	return(kTRUE);

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.8 2005-05-26 16:07:39 marabou Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.9 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -315,7 +315,7 @@ void TGMrbLabelEntry::SetText(const Char_t * Text) {
 //////////////////////////////////////////////////////////////////////////////
 
 	fEntry->SetText(Text);
-	TMrbString s;
+	TMrbString s = Text;
 	TString prefix;
 	if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 		Int_t intVal;

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.18 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.19 2005-05-26 16:34:38 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -220,7 +220,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
 	fRunTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fRunTimeEntry->GetEntry()->SetText("10");
+	fRunTimeEntry->SetText("10");
 	fRunTimeEntry->SetRange(0, 1000);
 	fRunTimeEntry->SetIncrement(1);
 	fRunTimeEntry->AddToFocusList(&fFocusList);
@@ -295,7 +295,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fRefreshTimeEntry);
 	fDisplayFrame->AddFrame(fRefreshTimeEntry, frameGC->LH());
 	fRefreshTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fRefreshTimeEntry->GetEntry()->SetText("0");
+	fRefreshTimeEntry->SetText("0");
 	fRefreshTimeEntry->SetRange(0, 60);
 	fRefreshTimeEntry->SetIncrement(10);
 	fRefreshTimeEntry->AddToFocusList(&fFocusList);
@@ -452,7 +452,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	}
 
 	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
-	TMrbString intStr = fRunTimeEntry->GetEntry()->GetText();
+	TMrbString intStr = fRunTimeEntry->GetText();
 	intStr.ToInteger(accuTime);
 	Int_t waitInv = 0;
 	switch (tp->GetIndex()) {
@@ -646,7 +646,7 @@ Bool_t DGFMcaDisplayPanel::DisplayHisto(Bool_t ClearMCA) {
 	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
-	TMrbString intStr = fRefreshTimeEntry->GetEntry()->GetText();
+	TMrbString intStr = fRefreshTimeEntry->GetText();
 	Int_t refresh;
 	intStr.ToInteger(refresh);
 	if (refresh > 0) {
@@ -844,8 +844,8 @@ Bool_t DGFMcaDisplayPanel::ResetValues() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fRunTimeEntry->GetEntry()->SetText("10");
-	fRefreshTimeEntry->GetEntry()->SetText("0");
+	fRunTimeEntry->SetText("10");
+	fRefreshTimeEntry->SetText("0");
 	fRunState = kDGFMcaRunStopped;
 	fStopAccu = kFALSE;
 	fStopWatch = 0;
