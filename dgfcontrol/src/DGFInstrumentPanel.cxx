@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.15 2005-05-26 13:20:26 marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.16 2005-05-26 13:54:53 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -922,12 +922,13 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 					switch (Param1) {
 						case kDGFInstrSelectChannel:
 							gDGFControlData->SetSelectedChannelIndex(fSelectChannel->GetActive());
-							fCFDOnOffButton->GetActive();
 							this->InitializeValues(kFALSE);
 							break;
 						case kDGFInstrCFDOnOffButton:
+							this->InitializeCFD((Int_t) fCFDOnOffButton->GetActive(), -1);
+							break;
 						case kDGFInstrCFDFractionButton:
-							this->InitializeCFD();
+							this->InitializeCFD(-1, (Int_t) fCFDFractionButton->GetActive());
 							break;
 					}
 					break;
@@ -1057,7 +1058,7 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	dblStr = dgf->GetOffset(chn);
 	fDACVoltEntry->GetEntry()->SetText(dblStr.Data());
 // CFDFractionEntry:
-	this->InitializeCFD();
+	this->InitializeCFD(-1, -1);
 // MCAEnergyEntry:
 	intStr = dgf->GetParValue(chn, "ENERGYLOW");
 	fMCAEnergyEntry->GetEntry()->SetText(intStr.Data());
@@ -1405,12 +1406,13 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 	return(kTRUE);
 }
 
-Bool_t DGFInstrumentPanel::InitializeCFD() {
+Bool_t DGFInstrumentPanel::InitializeCFD(Int_t OnOffFlag, Int_t FractionFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel::InitializeCFD
 // Purpose:        Setup values for hardware cfd
-// Arguments:      --
+// Arguments:      Int_t OnOffFlag     -- on or off
+//                 Int_t FractionFlag  -- fraction
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Fills entry fields for hardware cfd
@@ -1430,8 +1432,9 @@ Bool_t DGFInstrumentPanel::InitializeCFD() {
 	cfdStr = cfdDel * 25;
 	fCFDDelayBipolarEntry->GetEntry()->SetText(cfdStr.Data());
 
-	if (fCFDOnOffButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDOn) cfdVal |= BIT(13);
-	else																	cfdVal &= ~BIT(13);
+	if (OnOffFlag == DGFInstrumentPanel::kDGFInstrCFDOn)		cfdVal |= BIT(13);
+	else if (OnOffFlag == DGFInstrumentPanel::kDGFInstrCFDOff)	cfdVal &= ~BIT(13);
+
 	if (cfdVal & BIT(13))	fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOn);
 	else					fCFDOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrCFDOff);
 
@@ -1440,9 +1443,11 @@ Bool_t DGFInstrumentPanel::InitializeCFD() {
 	cfdStr = cfd * 8;
 	fCFDWalkEntry->GetEntry()->SetText(cfdStr.Data());
 
-	cfdVal &= ~(BIT(14)|BIT(15));
-	if (fCFDFractionButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDFract01) cfdVal |= BIT(14);
-	else if (fCFDFractionButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDFract10) cfdVal |= BIT(15);
+	if (FractionFlag != -1) {
+		cfdVal &= ~(BIT(14)|BIT(15));
+		if (fCFDFractionButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDFract01) cfdVal |= BIT(14);
+		else if (fCFDFractionButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDFract10) cfdVal |= BIT(15);
+	}
 
 	if (cfdVal & BIT(14))		fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract01);
 	else if (cfdVal & BIT(15))	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract10);
@@ -1450,6 +1455,7 @@ Bool_t DGFInstrumentPanel::InitializeCFD() {
 
 	cfdStr.FromInteger(cfdVal, 0, ' ' , 16);
 	fCFDRegEntry->GetEntry()->SetText(cfdStr.Data());
+	dgf->SetCFD(chn, cfdVal);
 
 	return(kTRUE);
 }
