@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.8 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.9 2005-05-27 09:54:28 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -435,7 +435,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fDispCurTauEntry);
 	fDisplayFrame->AddFrame(fDispCurTauEntry, frameGC->LH());
-	fDispCurTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fDispCurTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
 	fDispCurTauEntry->SetText("0.0");
 	fDispTraceNoEntry->AddToFocusList(&fFocusList);
 	fDispTraceNoEntry->Associate(this);
@@ -448,7 +448,7 @@ DGFTauDisplayPanel::DGFTauDisplayPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC);
 	HEAP(fDispBestTauEntry);
 	fDisplayFrame->AddFrame(fDispBestTauEntry, frameGC->LH());
-	fDispBestTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fDispBestTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
 	fDispBestTauEntry->SetText("0.0");
 	fDispBestTauEntry->GetEntry()->SetState(kFALSE);
 
@@ -757,6 +757,7 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 		} else if (dgf->GetWaitStatus() != TMrbDGF::kWaitOk) {
 			gMrbLog->Err()	<< dgf->GetName() << " in C" << dgf->GetCrate() << ".N" << dgf->GetStation()
 							<< ": Unable to acquire traces" << endl;
+			gMrbLog->Flush(this->ClassName(), "AcquireTraces");
 			this->SetRunning(kFALSE);
 			dgf->RestoreParams(TMrbDGF::kSaveTrace);
 			return(kFALSE);

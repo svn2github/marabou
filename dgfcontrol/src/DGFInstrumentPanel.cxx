@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.17 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.18 2005-05-27 09:54:28 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -1239,6 +1239,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 				intStr.ToInteger(intVal);
 			}
 			dgf->SetParValue(chn, "LOG2BWEIGHT", intVal & 0xFFFF);
+			fEnergyAveragingEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrEnergyTauEntry:
 			entry = fEnergyTauEntry->GetEntry();
@@ -1277,6 +1278,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 				intStr.ToInteger(intVal);
 			}
 			dgf->SetThreshold(chn, intVal);
+			fTriggerThresholdEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrTracePSALengthEntry:
 			entry = fTracePSALengthEntry->GetEntry();
@@ -1319,6 +1321,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 				intStr.ToInteger(intVal);
 			}
 			dgf->SetChanCSRA(chn, (UInt_t) intVal, TMrbDGF::kBitSet, kTRUE);
+			fStatRegChanCSRAEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrStatCoincPatternEntry:
 			entry = fStatCoincPatternEntry->GetEntry();
@@ -1331,6 +1334,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 				intStr.ToInteger(intVal);
 			}
 			dgf->SetCoincPattern((UInt_t) intVal);
+			fStatCoincPatternEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrDACGainEntry:
 			entry = fDACGainEntry->GetEntry();
@@ -1345,6 +1349,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dgf->SetParValue(chn, "GAINDAC", intVal);
 			dblStr = dgf->GetGain(chn);
 			fDACVVEntry->SetText(dblStr);
+			fDACGainEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrDACVVEntry:
 			entry = fDACVVEntry->GetEntry();
@@ -1367,6 +1372,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 				intStr.ToInteger(intVal);
 			}
 			dgf->SetParValue(chn, "TRACKDAC", intVal);
+			fDACOffsetEntry->CreateToolTip(intVal);
 			dblStr = dgf->GetOffset(chn);
 			fDACVoltEntry->SetText(dblStr);
 			break;
@@ -1383,6 +1389,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			intStr = entry->GetText();
 			intStr.ToInteger(intVal);
 			dgf->SetParValue(chn, "ENERGYLOW", intVal);
+			fMCAEnergyEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrMCAEnergyBinsEntry:
 			entry = fMCAEnergyBinsEntry->GetEntry();
@@ -1395,6 +1402,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 				intStr.ToInteger(intVal);
 			}
 			dgf->SetParValue(chn, "LOG2EBIN", intVal & 0xFFFF);
+			fMCAEnergyBinsEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrMCABaselineDCEntry:
 			entry = fMCABaselineDCEntry->GetEntry();
@@ -1558,6 +1566,18 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 		case kDGFInstrTracePSAOffsetEntry:
 			entry = fTracePSAOffsetEntry->GetEntry();
 			break;
+		case kDGFInstrCFDRegEntry:
+			entry = fCFDRegEntry->GetEntry();
+			break;
+		case kDGFInstrCFDDelayBeforeLEEntry:
+			entry = fCFDDelayBeforeLEEntry->GetEntry();
+			break;
+		case kDGFInstrCFDDelayBipolarEntry:
+			entry = fCFDDelayBipolarEntry->GetEntry();
+			break;
+		case kDGFInstrCFDWalkEntry:
+			entry = fCFDWalkEntry->GetEntry();
+			break;
 		case kDGFInstrStatRegModICSREntry:
 			entry = fStatRegModICSREntry->GetEntry();
 			break;
@@ -1572,6 +1592,12 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 			break;
 		case kDGFInstrDACOffsetEntry:
 			entry = fDACOffsetEntry->GetEntry();
+			break;
+		case kDGFInstrDACVVEntry:
+			entry = fDACVVEntry->GetEntry();
+			break;
+		case kDGFInstrDACVoltEntry:
+			entry = fDACVoltEntry->GetEntry();
 			break;
 		case kDGFInstrMCAEnergyEntry:
 			entry = fMCAEnergyEntry->GetEntry();
