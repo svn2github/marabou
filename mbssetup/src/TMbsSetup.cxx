@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.25 2005-05-11 20:17:43 marabou Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.26 2005-05-31 07:26:08 marabou Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -651,7 +651,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	TMrbString hString = gEnv->GetValue("TMbsSetup.DefaultHostName", "");
 	if (hString.IsNull()) {
-		TMrbString hString = gSystem->Getenv("HOSTNAME");
+		hString = gSystem->Getenv("HOSTNAME");
 		if (hString.IsNull()) {
 			gMrbLog->Err()	<< "Can't determine hostname - $HOSTNAME is empty" << endl;
 			gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
