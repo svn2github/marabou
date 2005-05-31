@@ -15,6 +15,7 @@
 {
 	cout << "[Loading %%ANALYZE_NAME_UC%% libs]" << endl;
 	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
+	gSystem->Load("$ROOTSYS/lib/libGed.so");
 	gSystem->Load("$MARABOU/lib/libTGMrbUtils.so");
 	gSystem->Load("$MARABOU/lib/libTMrbTransport.so");
 	gSystem->Load("$MARABOU/lib/libMutex.so");
