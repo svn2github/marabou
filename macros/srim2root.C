@@ -227,6 +227,7 @@ void srim2root(const Char_t * SrimFile = NULL,
 	Int_t lineNo = 0;
 	Bool_t isHeader = kTRUE;
 	while (!srim.eof()) {
+		gSystem->ProcessEvents();
 		line.ReadLine(srim, kFALSE);
 		lineNo++;
 		line = line.Strip(TString::kBoth);
