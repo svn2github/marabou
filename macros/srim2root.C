@@ -217,6 +217,9 @@ void srim2root(const Char_t * SrimFile = NULL,
 	TH1F * hy = new TH1F(hNameY.Data(), "Lateral Y", NofBins, Ymin, Ymax);
 	TString hNameZ = histoName; hNameZ += "-z";
 	TH1F * hz = new TH1F(hNameZ.Data(), "Lateral Z", NofBins, Zmin, Zmax);
+	hx->SetDirectory(gROOT);
+	hy->SetDirectory(gROOT);
+	hz->SetDirectory(gROOT);
 
 	TCanvas * c = NULL;
 
@@ -279,9 +282,6 @@ void srim2root(const Char_t * SrimFile = NULL,
 	}
 	srim.close();
 	root->Write();
-	hx->SetDirectory(gROOT);
-	hy->SetDirectory(gROOT);
-	hz->SetDirectory(gROOT);
 	root->Close();
 	cout << endl << setblue << "[" << rootFile << ": " << nofData << " data points]" << setblack << endl;
 }
