@@ -217,9 +217,6 @@ void srim2root(const Char_t * SrimFile = NULL,
 	TH1F * hy = new TH1F(hNameY.Data(), "Lateral Y", NofBins, Ymin, Ymax);
 	TString hNameZ = histoName; hNameZ += "-z";
 	TH1F * hz = new TH1F(hNameZ.Data(), "Lateral Z", NofBins, Zmin, Zmax);
-	hx->SetDirectory(gROOT);
-	hy->SetDirectory(gROOT);
-	hz->SetDirectory(gROOT);
 
 	TCanvas * c = NULL;
 
@@ -252,18 +249,21 @@ void srim2root(const Char_t * SrimFile = NULL,
 			Int_t nCols = line.Split(column, " ", kTRUE);
 			if (nCols != 4)	{		
 				cerr	<< setred
-						<< "srim2root [" << srimFile << "]: Format error (short line) in line " << lineNo
-						<< setblack << endl;
+						<< "srim2root [" << srimFile << "]: Format error (short line) in line " << lineNo << endl
+						<< setgreen << "Line: \"" << setblue << line << setgreen << "\"" << setblack << endl;
 				srim.close();
 				root->Write();
 				root->Close();
 				return;
 			}
-			Double_t x = strtod(((TObjString *) column[1])->GetString().Data(), NULL);			
+			Double_t x = strtod(((TObjString *) column[1])->GetString().Data(), NULL);
+			x *= 1e-10;
 			hx->Fill(x);
-			Double_t y = strtod(((TObjString *) column[2])->GetString().Data(), NULL);			
+			Double_t y = strtod(((TObjString *) column[2])->GetString().Data(), NULL);
+			y *= 1e-10;
 			hy->Fill(y);
-			Double_t z = strtod(((TObjString *) column[3])->GetString().Data(), NULL);			
+			Double_t z = strtod(((TObjString *) column[3])->GetString().Data(), NULL);
+			z *= 1e-10;
 			hz->Fill(z);
 
 			if ((nofData % 10000) == 0 && DrawIt) {
