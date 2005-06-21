@@ -231,8 +231,8 @@ void srim2root(const Char_t * SrimFile = NULL,
 		if (line.BeginsWith("------")) {
 			if (!isHeader) {
 				cerr	<< setred
-						<< "srim2root [" << srimFile << "]: Format error (header mismatch) in line " << lineNo
-						<< setblack << endl;
+					<< "srim2root [" << srimFile << "]: Format error (header mismatch) in line " << lineNo << endl
+					<< setgreen << "Line: \"" << setblue << line << setgreen << "\"" << setblack << endl;
 				srim.close();
 				root->Write();
 				root->Close();
@@ -249,8 +249,8 @@ void srim2root(const Char_t * SrimFile = NULL,
 			Int_t nCols = line.Split(column, " ", kTRUE);
 			if (nCols != 4)	{		
 				cerr	<< setred
-						<< "srim2root [" << srimFile << "]: Format error (short line) in line " << lineNo << endl
-						<< setgreen << "Line: \"" << setblue << line << setgreen << "\"" << setblack << endl;
+					<< "srim2root [" << srimFile << "]: Format error (short line) in line " << lineNo << endl
+					<< setgreen << "Line: \"" << setblue << line << setgreen << "\"" << setblack << endl;
 				srim.close();
 				root->Write();
 				root->Close();
