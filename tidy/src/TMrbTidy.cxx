@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.18 2005-05-09 13:19:11 marabou Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.19 2005-06-22 13:34:32 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1443,24 +1443,91 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	} else {
 		Out << "<b>&lt;" << this->GetName() << "&gt;</b><br>" << endl;
 	}
-	Out << "<table><tr><td width=\"20%\"></td><td width=\"20%\"></td><td width=\"40%\"></td></tr>" << endl;
+	Out << "<table><tr><td></td><td></td><td></td><td></td></tr>" << endl;
+	TMrbTidyAttr * aType = (TMrbTidyAttr *) fLofAttr.FindByName("mtype");
+	TString mType = "";
+	if (aType) {
+		mType = aType->GetValue();
+		Out << "<tr><td>Type:</td><td colspan=\"3\"><pre class=\"mtag\">" << mType << "</pre></td></tr>" << endl;
+	}
 	Bool_t isMbody = (this->GetIndex() == TidyTag_MNODE_MB);
 	if (isMbody) {
-		Out << "<tr><td>Input from:</td><td colspan=\"2\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetDocFile() << "</td></tr>" << endl;
-		Out << "<tr><td>Tidy config from:</td><td colspan=\"2\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetCfgFile() << "</td></tr>" << endl;
+		Out << "<tr><td>Input from:</td><td colspan=\"3\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetDocFile() << "</td></tr>" << endl;
+		Out << "<tr><td>Tidy config from:</td><td colspan=\"3\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetCfgFile() << "</td></tr>" << endl;
 	}
-	TMrbTidyAttr * aCmt = (TMrbTidyAttr *) fLofAttr.FindByName("comment");
-	if (aCmt) {
-		TString cmt = aCmt->GetValue();
-		if (cmt.BeginsWith("//")) cmt = cmt(2, 1000);
-		cmt = cmt.Strip(TString::kBoth);
-		Out << "<tr><td>Comment:</td><td colspan=\"2\">" << cmt << "</td></tr>" << endl;
+	TString method = "";
+	Bool_t isMethod = (mType.CompareTo("C++ METHOD") == 0);
+	if (isMethod) {
+		TMrbTidyAttr * attr = (TMrbTidyAttr *) fLofAttr.FindByName("name");
+		TMrbString astr;
+		if (attr) {
+			astr = attr->GetValue();
+			Out << "<tr><td>Name:</td><td colspan=\"3\"><pre class=\"mtag\">" << astr << "</pre></td></tr>" << endl;
+			method = astr;
+			method += "(";
+		}
+		attr = (TMrbTidyAttr *) fLofAttr.FindByName("purp");
+		if (attr) {
+			astr = attr->GetValue();
+			Out << "<tr><td>Purpose:</td><td colspan=\"3\">" << astr  << "</td></tr>" << endl;
+		}
+		attr = (TMrbTidyAttr *) fLofAttr.FindByName("args");
+		if (attr) {
+			astr = attr->GetValue();
+			TObjArray sstr;
+			Int_t nargs = astr.Split(sstr, ",", kTRUE);
+			TString a = "Arguments:";
+			for (Int_t i = 0; i < nargs; i++) {
+				TMrbString arg = ((TObjString *) sstr[i])->GetString().Data();
+				TObjArray sarg;
+				arg.Split(sarg, ":", kTRUE);
+				Out << "<tr><td>" << a << "</td><td><pre class=\"mtag\">" << ((TObjString *) sarg[0])->GetString() << "</pre></td>"
+					<< "<td><pre class=\"mtag\">" << ((TObjString *) sarg[1])->GetString() << "</pre></td>"
+					<< "<td>" << ((TObjString *) sarg[2])->GetString() << "</td></tr>"
+					<< endl;
+				a = "";
+				if (i > 0) method += ", ";
+				method += ((TObjString *) sarg[0])->GetString();
+				method += " ";
+				method += ((TObjString *) sarg[1])->GetString();
+			}
+		}
+		method += ")";
+		attr = (TMrbTidyAttr *) fLofAttr.FindByName("return");
+		if (attr) {
+			astr = attr->GetValue();
+			TObjArray sstr;
+			astr.Split(sstr, ":", kTRUE);
+			Out << "<tr><td>Return:</td><td><pre class=\"mtag\">" << ((TObjString *) sstr[0])->GetString() << "</pre></td>"
+				<< "<td><pre class=\"mtag\">" << ((TObjString *) sstr[1])->GetString() << "</pre></td>"
+				<< "<td>" << ((TObjString *) sstr[2])->GetString() << "</td></tr>"
+				<< endl;
+			method.Prepend(" ");
+			method.Prepend(((TObjString *) sstr[0])->GetString());
+		}
 	}
 	TMrbTidyAttr * aDescr = (TMrbTidyAttr *) fLofAttr.FindByName("descr");
 	if (aDescr) {
 		TString dstr = aDescr->GetValue();
 		dstr = dstr.Strip(TString::kBoth);
-		Out << "<tr><td>Description:</td><td colspan=\"2\">" << dstr << "</td></tr>" << endl;
+		Out << "<tr><td>Description:</td><td colspan=\"3\">" << dstr << "</td></tr>" << endl;
+	}
+	TMrbTidyAttr * aCmt = (TMrbTidyAttr *) fLofAttr.FindByName("comment");
+	if (aCmt) {
+		TMrbString cmt = aCmt->GetValue();
+		if (cmt.BeginsWith("//")) cmt = cmt(2, 1000);
+		cmt = cmt.Strip(TString::kBoth);
+		TObjArray emph;
+		Int_t nEmph = cmt.Split(emph, "*");
+		if (nEmph % 2) {
+			cmt = "";
+			for (Int_t i = 0; i < nEmph; i++) {
+				if (i & 1) cmt += "<b>";
+				cmt += ((TObjString *) emph[i])->GetString();
+				if (i & 1) cmt += "</b>";
+			}
+		}
+		Out << "<tr><td>Comment:</td><td colspan=\"3\">" << cmt << "</td></tr>" << endl;
 	}
 	TMrbTidyAttr * stdTag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
 	if (stdTag) {
@@ -1530,8 +1597,12 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 	}
 	TMrbTidyAttr * aIter = (TMrbTidyAttr *) fLofAttr.FindByName("iter");
-	if (aIter) Out << "<tr><td>Iteration:</td><td colspan=\"2\">" << aIter->GetValue() << "</td></tr>" << endl;
+	if (aIter) Out << "<tr><td>Iteration:</td><td colspan=\"3\">" << aIter->GetValue() << "</td></tr>" << endl;
 	Out << "</table></div>" << endl;
+
+	if (isMethod) {
+		Out << "<br><pre class=\"method\">" << method << " {" << "</pre>" << endl;
+	}
 }
 
 Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
@@ -1665,7 +1736,7 @@ void TMrbTidyNode::PrintSubstitutions(Bool_t Recursive, ostream & Out) {
 			TString used;
 			if (nx->GetIndex() & kMrbTidySubstInUse) used = "yes";
 			else if (nx->GetIndex() & kMrbTidySubstInUse) used = "somewhere";
-			TString sValue = ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) ? "<n.a>" : ((TObjString *) nx->GetAssignedObject())->GetString().Data();
+			TString sValue = ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) ? "<n.a>" : ((TObjString *) nx->GetAssignedObject())->GetString();
 			if (firstSubst) {
 				Out << Form("%-10s %3d   %-30s %3d  %-15s%-12s%-6s%-15s%s",	nodeName.Data(),
 																				this->GetTreeLevel(),
