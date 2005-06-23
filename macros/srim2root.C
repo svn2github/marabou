@@ -18,7 +18,7 @@
 //                   Double_t Ymax             -- Ymax
 //                   Double_t Zmin             -- Zmin
 //                   Double_t Zmax             -- Zmax
-//                   Int_t Number of bins      -- NofBins
+//                   Double_t Bin width        -- BinSize
 //                   Bool_t DrawIt             -- Display
 // Description:      SRIM to ROOT conversion
 // @(#)Author:       rudi
@@ -87,9 +87,9 @@
 //                   Arg7.AddLofValues:   No
 //                   Arg7.Base:           dec
 //                   Arg7.Orientation:    horizontal
-//                   Arg8.Name:           NofBins
-//                   Arg8.Title:          Number of bins
-//                   Arg8.Type:           Int_t
+//                   Arg8.Name:           BinSize
+//                   Arg8.Title:          Bin width
+//                   Arg8.Type:           Double_t
 //                   Arg8.EntryType:      Entry
 //                   Arg8.Default:        0
 //                   Arg8.AddLofValues:   No
@@ -118,7 +118,7 @@ void srim2root(const Char_t * SrimFile = NULL,
                Double_t Ymax = 0.0,
                Double_t Zmin = 0.0,
                Double_t Zmax = 0.0,
-               Int_t NofBins = 0,
+               Double_t BinSize = 0.1,
                Bool_t DrawIt = kFALSE)
 //>>_________________________________________________(do not change this line)
 //
@@ -211,16 +211,30 @@ void srim2root(const Char_t * SrimFile = NULL,
 		return;
 	}
 
+	Int_t NofBins = (int)TMath::Nint((fabs(Xmin)+fabs(Xmax))*2/BinSize)+1;
+	Xmin -= (BinSize/2);
+	Xmax += (BinSize/2);
 	TString hNameX = histoName; hNameX += "-x";
 	TH1F * hx = new TH1F(hNameX.Data(), "Depth X", NofBins, Xmin, Xmax);
+
+	NofBins = (int)TMath::Nint((fabs(Ymin)+fabs(Ymax))*2/BinSize)+1;
+	Ymin -= (BinSize/2);
+	Ymax += (BinSize/2);
 	TString hNameY = histoName; hNameY += "-y";
 	TH1F * hy = new TH1F(hNameY.Data(), "Lateral Y", NofBins, Ymin, Ymax);
+
+	NofBins = (int)TMath::Nint((fabs(Zmin)+fabs(Zmax))*2/BinSize)+1;
+	Zmin -= (BinSize/2);
+	Zmax += (BinSize/2);
 	TString hNameZ = histoName; hNameZ += "-z";
 	TH1F * hz = new TH1F(hNameZ.Data(), "Lateral Z", NofBins, Zmin, Zmax);
 
 	TCanvas * c = NULL;
 
 	Int_t nofData = 0;
+	Int_t ion_no = 0;
+	Int_t old_ion_no = 0;
+	Int_t missing_ions = 0;
 	Int_t lineNo = 0;
 	Bool_t isHeader = kTRUE;
 	while (!srim.eof()) {
@@ -256,6 +270,15 @@ void srim2root(const Char_t * SrimFile = NULL,
 				root->Close();
 				return;
 			}
+			ion_no = strtol(((TObjString *) column[0])->GetString().Data(), NULL, 10);
+			if (ion_no-old_ion_no!=1) {
+				missing_ions += (ion_no-old_ion_no-1);
+				cerr << setred << "Missing ion: ion=" << ion_no << "  old_ion=" << old_ion_no
+				     << "   diff=" << ion_no-old_ion_no << "  no_miss=" << missing_ions
+				     << setblack << endl;
+			}
+			old_ion_no=ion_no;
+			//cout << "ion: " << ((TObjString *) column[0])->GetString() << endl;
 			Double_t x = strtod(((TObjString *) column[1])->GetString().Data(), NULL);
 			x *= 1e-10;
 			hx->Fill(x);
