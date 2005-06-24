@@ -343,7 +343,11 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	char *calloc();
 	MBSServerInfo * _mbs_read_server_info();
 	void _mbs_output_error();
-
+	void _mbs_init_pool(mbs);
+	unsigned int _mbs_next_buffer(mbs);
+	void _mbs_init_hit(buffer_types);
+	void _mbs_init_triggers();
+		
 	if (sevent_type_raw == NULL) {
 		tlist = sevent_types;
 		while (tlist->type != 0) {
@@ -499,6 +503,8 @@ int mbs_close_file(MBSDataIO *mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 	
+	void _mbs_output_log();
+	
 	if (!_mbs_check_active(mbs)) return(FALSE);
 
 	if (mbs->connection & MBS_CTYPE_FILE) {
@@ -532,6 +538,8 @@ int mbs_free_dbase(MBSDataIO * mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 	
+	void _mbs_free_pool(mbs);
+	
 	if (mbs != NULL) {
 		free(mbs->hdr_data);
 		free(mbs->evt_data);
@@ -563,7 +571,8 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	MBSBufferPool * _mbs_find_subseq_buffer();
 	void _mbs_output_error();
 	void (*s)();
-
+	unsigned int _mbs_read_buffer(mbs);
+	
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bpp = NULL;
@@ -643,7 +652,10 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 
 	MBSBufferPool * _mbs_get_pool_pointer();
 	void _mbs_output_error();
-
+	void _mbs_store_bufno(mbs);
+	void _mbs_dump_buffer(mbs);
+	unsigned int _mbs_convert_data(mbs);
+			
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bytes = mbs->bufsiz;
