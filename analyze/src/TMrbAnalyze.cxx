@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.52 2005-06-28 10:46:33 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.53 2005-06-28 10:58:12 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1580,11 +1580,9 @@ void TUsrEvtStart::Print() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TString timeString;
-
-	timeString.Resize(100);
-	strftime((Char_t *) timeString.Data(), timeString.Length(), "%e-%b-%Y %H:%M:%S", localtime((const long *) &fClockSecs));
-	cout	<< setblue << this->ClassName() << "::Print(): START Acquisition at " << timeString << setblack << endl;
+	Char_t str[100];
+	strftime(str, 100, "%e-%b-%Y %H:%M:%S", localtime((const long *) &fClockSecs));
+	cout	<< setblue << this->ClassName() << "::Print(): START Acquisition at " << str << setblack << endl;
 }
 
 void TUsrEvtStop::Print() {
@@ -1599,11 +1597,9 @@ void TUsrEvtStop::Print() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TString timeString;
-
-	timeString.Resize(100);
-	strftime((Char_t *) timeString.Data(), timeString.Length(), "%e-%b-%Y %H:%M:%S", localtime((const long *) &fClockSecs));
-	cout	<< setblue << this->ClassName() << "::Print(): STOP Acquisition at " << timeString << setblack << endl;
+	Char_t str[100];
+	strftime(str, 100, "%e-%b-%Y %H:%M:%S", localtime((const long *) &fClockSecs));
+	cout	<< setblue << this->ClassName() << "::Print(): STOP Acquisition at " << str << setblack << endl;
 }
 
 void TUsrDeadTime::Set(Int_t TimeStamp, Int_t TotalEvents, Int_t AccuEvents, Int_t ScalerContents) {
@@ -1708,15 +1704,14 @@ void TUsrDeadTime::Print() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TString timeString;
+	Char_t str[100];
 	Int_t secs;
 
 	secs = fTimeStamp / 10000;
-	timeString.Resize(100);
-	strftime((Char_t *) timeString.Data(), timeString.Length(), "%H:%M:%S", gmtime((const long *) &secs));
+	strftime(str, 100, "%H:%M:%S", gmtime((const long *) &secs));
 	gMrbLog->Out()	<< "Current dead time value = "
 					<< setw(5) << setprecision(2) << fDeadTime << " %"
-					<< " (evt " << fTotalEvents << ", time " << timeString << " since start)" << endl;
+					<< " (evt " << fTotalEvents << ", time " << str << " since start)" << endl;
 	gMrbLog->Flush(this->ClassName(), "Print", setblue);
 }
 
