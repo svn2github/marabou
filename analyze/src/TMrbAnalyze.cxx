@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.54 2005-06-28 11:28:49 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.55 2005-06-28 11:35:09 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1582,9 +1582,9 @@ void TUsrEvtStart::Print() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t str[100];
-	strftime(str, 100, "%e-%b-%Y %H:%M:%S", localtime((const long *) &fClockSecs));
-	cout	<< setblue << this->ClassName() << "::Print(): START Acquisition at " << str << setblack << endl;
+	TDatime d;
+	d.Set((UInt_t) fClockSecs, kFALSE);
+	cout	<< setblue << this->ClassName() << "::Print(): START Acquisition at " << d.AsString() << setblack << endl;
 }
 
 void TUsrEvtStop::Print() {
@@ -1599,9 +1599,9 @@ void TUsrEvtStop::Print() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t str[100];
-	strftime(str, 100, "%e-%b-%Y %H:%M:%S", localtime((const long *) &fClockSecs));
-	cout	<< setblue << this->ClassName() << "::Print(): STOP Acquisition at " << str << setblack << endl;
+	TDatime d;
+	d.Set((UInt_t) fClockSecs, kFALSE);
+	cout	<< setblue << this->ClassName() << "::Print(): STOP Acquisition at " << d.AsString() << setblack << endl;
 }
 
 void TUsrDeadTime::Set(Int_t TimeStamp, Int_t TotalEvents, Int_t AccuEvents, Int_t ScalerContents) {
@@ -1706,14 +1706,10 @@ void TUsrDeadTime::Print() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	Char_t str[100];
-	Int_t secs;
-
-	secs = fTimeStamp / 10000;
-	strftime(str, 100, "%H:%M:%S", gmtime((const long *) &secs));
+	Int_t secs = fTimeStamp / 10000;
 	gMrbLog->Out()	<< "Current dead time value = "
 					<< setw(5) << setprecision(2) << fDeadTime << " %"
-					<< " (evt " << fTotalEvents << ", time " << str << " since start)" << endl;
+					<< " (evt " << fTotalEvents << ", time " << secs << "s since start)" << endl;
 	gMrbLog->Flush(this->ClassName(), "Print", setblue);
 }
 
