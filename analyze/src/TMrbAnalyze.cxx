@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.53 2005-06-28 10:58:12 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.54 2005-06-28 11:28:49 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1544,7 +1544,6 @@ void TMrbAnalyze::PrintStartStop() const {
 //////////////////////////////////////////////////////////////////////////////
 
 	Int_t runTime;
-	Char_t str[100];
 
 	if (gStartEvent->GetTreeIn() == NULL || gStopEvent->GetTreeIn() == NULL) {
 		gMrbLog->Err()	<< "No start/stop tree found" << endl;
@@ -1559,9 +1558,12 @@ void TMrbAnalyze::PrintStartStop() const {
 		gStopEvent->GetTreeIn()->GetEvent(0);
 		gStopEvent->Print();
 		runTime = gStopEvent->GetTime() - gStartEvent->GetTime();
-		strftime(str, 100, "%H:%M:%S", gmtime((const long *) &runTime));
+		Int_t h = runTime / 3600;
+		runTime = runTime % 3600;
+		Int_t m = runTime / 60;
+		Int_t s = runTime % 60;
 		cout	<< setblue
-				<< "Runtime             :   " << str << endl;
+				<< "Runtime             :   " << h << ":" << m << ":" << s << endl;
 		cout	<< setblue
 				<< "--------------------------------------------------------------------------------"
 				<< setblack << endl;
