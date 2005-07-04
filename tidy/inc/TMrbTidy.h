@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.13 2005-04-28 10:27:59 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.14 2005-07-04 07:27:02 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TMrbTidyOption : public TMrbNamedX {
 		Bool_t SetValue(Bool_t Flag);
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & Out = cout, Bool_t Verbose = kTRUE);
+		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE);
 
 		void Reset();
 
@@ -186,7 +186,11 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		inline Int_t GetTreeLevel() { return(fTreeLevel); };
 		inline void SetTreeLevel(Int_t Level) { fTreeLevel = Level; };
-		inline void SetTreeLevelFromParent() { fTreeLevel = fParent->GetTreeLevel() + 1; };
+		inline void SetTreeLevelFromParent() { fTreeLevel = fParent ? fParent->GetTreeLevel() + 1 : 1; };
+
+		inline Int_t GetIndentLevel() { return(fIndentLevel); };
+		void SetIndentLevel(Int_t Level, Bool_t Recursive = kFALSE);
+		Int_t SetIndentation();
 
 		Bool_t HasTextChildsOnly();
 		const Char_t * CollectTextFromChilds(TString & Buffer);
@@ -357,8 +361,8 @@ class TMrbTidyNode : public TMrbNamedX {
 		inline Bool_t HasChilds() { return(this->GetLofChilds()->GetEntries() > 0); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & Out = cout);
-		void PrintTree(ostream & Out = cout);
+		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE);
+		void PrintTree(ostream & Out = cout, Bool_t Verbose = kFALSE);
 
 		Bool_t OutputHtml(ostream & Out = cout);
 		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
@@ -398,7 +402,8 @@ class TMrbTidyNode : public TMrbNamedX {
 	protected:
 		TidyNode fHandle; 					// tidy node handle
 		TidyNodeType fType; 				// type
-		Int_t fTreeLevel;					// tree level
+		Int_t fTreeLevel;					// tree level (mnodes)
+		Int_t fIndentLevel;					// indent level (code)
 
 		Bool_t fIsMnode; 					// is special marabou node
 		Bool_t fHasEndTag;					// kTRUE if end tag needed
@@ -484,9 +489,9 @@ class TMrbTidyDoc : public TNamed {
 		inline Bool_t ResetOptions() { return(tidyOptResetAllToDefault(fHandle)); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & Out = cout);
+		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE);
 
-		void PrintOptions(ostream & Out = cout);
+		void PrintOptions(ostream & Out = cout, Bool_t Verbose = kFALSE);
 
 		inline TMrbTidyNode * GetRoot() { return(fTidyRoot); };
 		inline TMrbTidyNode * GetHtml() { return(fTidyHtml); };

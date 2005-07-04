@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.19 2005-06-22 13:34:32 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.20 2005-07-04 07:27:02 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -67,6 +67,8 @@ ClassImp(TMrbTidyDoc)
 ClassImp(TMrbTidyOption)
 ClassImp(TMrbTidyNode)
 ClassImp(TMrbTidyAttr)
+
+TString indentString("   ");
 
 extern TMrbLogger * gMrbLog;			// global access to logging system
 
@@ -216,13 +218,14 @@ TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNo
 //////////////////////////////////////////////////////////////////////////////
 
 	fHandle = NodeHandle;
-	fTreeLevel = 0;
 	fParent = Parent;
 	fTidyDoc = Doc;
 	fLofChilds.Delete();
 	fLofChilds.SetName("Child Nodes");
 	fLofAttr.Delete();
 	fLofAttr.SetName("Node Attributes");
+	fIndentLevel = 0;
+	this->SetTreeLevelFromParent();
 	this->ReadAttr();
 	this->CheckMnode();
 }
@@ -350,12 +353,12 @@ Int_t TMrbTidyDoc::ReadOptions() {
 	return(fLofOptions.GetEntriesFast());
 }
 
-void TMrbTidyDoc::PrintOptions(ostream & Out) {
+void TMrbTidyDoc::PrintOptions(ostream & Out, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc::PrintOptions
 // Purpose:        Print tidy options
-// Arguments:      --
+// Arguments:      Bool_t Verbose  -- verbose
 // Results:        --
 // Exceptions:
 // Description:    Prints tidy options.
@@ -371,7 +374,7 @@ void TMrbTidyDoc::PrintOptions(ostream & Out) {
 				<< "-------------------------------------------------------------------------" << endl;
 		TMrbTidyOption * opt = (TMrbTidyOption *) fLofOptions.First();
 		while (opt) {
-			opt->Print(Out, kFALSE);
+			opt->Print(Out, Verbose);
 			opt = (TMrbTidyOption *) fLofOptions.After(opt);
 		}
 	}
@@ -633,7 +636,6 @@ void TMrbTidyNode::FillTree() {
 		TMrbTidyNode * node = new TMrbTidyNode(tidyNodeGetId(child), nodeName, this, child, this->GetTidyDoc());
 		node->SetType(tidyNodeGetType(child));
 		node->CheckEndTag();
-		node->SetTreeLevelFromParent();
 		node->FillTree();
 		fLofChilds.Add(node);
 	}
@@ -1046,12 +1048,13 @@ Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
 Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
 Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
 
-void TMrbTidyDoc::Print(ostream & Out) {
+void TMrbTidyDoc::Print(ostream & Out, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out    -- output stream
+//                 Bool_t Verbose   -- kTRUE: print full text strings
 // Results:        --
 // Exceptions:
 // Description:    Prints document data
@@ -1063,7 +1066,7 @@ void TMrbTidyDoc::Print(ostream & Out) {
 		if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
 		Out 	<< ": structure as analyzed by D. Raggett's TIDY" << endl
 				<< "----------------------------------------------------------------------------------------------" << endl;
-		fTidyRoot->PrintTree(Out);
+		fTidyRoot->PrintTree(Out, Verbose);
 	}
 }
 
@@ -1137,22 +1140,23 @@ Bool_t TMrbTidyDoc::OutputHtml(ostream & Out) {
 	return(ok);
 }
 
-void TMrbTidyNode::PrintTree(ostream & Out) {
+void TMrbTidyNode::PrintTree(ostream & Out, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::PrintTree
 // Purpose:        Print data recursively
 // Arguments:      ostream & Out    -- output stream
+//                 Bool_t Verbose   -- kTRUE: print full text strings
 // Results:        --
 // Exceptions:
 // Description:    Prints node data
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->Print(Out);
+	this->Print(Out, Verbose);
 	TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
 	while (node) {
-		node->PrintTree(Out);
+		node->PrintTree(Out, Verbose);
 		node = (TMrbTidyNode *) fLofChilds.After(node);
 	}
 }
@@ -1180,12 +1184,13 @@ Int_t TMrbTidyNode::StepTree(TObjArray & LofNodes) {
 	return(nofNodes);
 }
 
-void TMrbTidyNode::Print(ostream & Out) {
+void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out    -- output stream
+//                 Bool_t Verbose   -- kTRUE: print full text strings
 // Results:        --
 // Exceptions:
 // Description:    Prints node data
@@ -1213,21 +1218,35 @@ void TMrbTidyNode::Print(ostream & Out) {
 	} else {
 		tagStr = this->GetIndex();
 	}
-	Out << "node " << this->GetName()
+	Out << this->GetName()
 		<< " type=" << tyStr.Data();
-	if (this->GetIndex() != TidyTag_UNKNOWN) Out << " tagid=" << tagStr.Data();
+	if (this->GetIndex() != TidyTag_UNKNOWN) Out << " tag=" << tagStr.Data();
 	Out << " parent=" << parentName.Data();
+	if (this->IsMnode()) Out << " indent=" << fIndentLevel;
 	TString text;
 	if (this->GetText(text)) {
-		if (text.Length() == 0) text = "<empty>";
-		text.ReplaceAll("\n", "<cr>");
-		Out << " text='" << text << "'";
+		if (text.Length() == 0) {
+			Out << " text=<empty>";
+		} else if (Verbose) {
+			text.ReplaceAll("\n", "<cr>");
+			Out << " text='" << text << "'";
+		} else {
+			text = text(0, 10);
+			text.ReplaceAll("\n", "<cr>");
+			Out << " text='" << text << "...'";
+		}
 	}
 	TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
 	while (a) {
 		TString aValue = a->GetValue();
 		TString aQuote = (aValue.Index("\"", 0) >= 0) ? "'" : "\"";
-		Out << " " << a->GetName() << "=" << aQuote << a->GetValue() << aQuote;
+		TString aName = a->GetName();
+		if (Verbose || aName.CompareTo("string") != 0) {
+			Out << " " << a->GetName() << "=" << aQuote << aValue << aQuote;
+		} else {
+			aValue = aValue(0, 10);
+			Out << " " << a->GetName() << "=" << aQuote << aValue << "..." << aQuote;
+		}
 		a = (TMrbTidyAttr *) fLofAttr.After(a);
 	}
 	Out << endl;
@@ -1288,6 +1307,7 @@ Bool_t TMrbTidyNode::OutputHtml(ostream & Out) {
 			if (t.IsNull()) {
 				Out << "<br>" << endl;
 			} else {
+				for (Int_t i = 0; i < fIndentLevel; i++) Out << indentString;
 				Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(text) << "</pre><br>" << endl;
 			}
 		} else {
@@ -1385,15 +1405,15 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t level = fTreeLevel - 4;
-	this->ProcessMnodeHeader(Out, "header2", level);
+	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
+
+	this->SetIndentation();
+
 	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
 	if (aString) {
-		TMrbTidyAttr * aIndent = (TMrbTidyAttr *) fLofAttr.FindByName("indent");
-		Int_t aInd = aIndent ? atoi(aIndent->GetValue()) : 1;
 		TString buf = aString->GetValue();
 		buf = buf.Strip(TString::kBoth);
-		for (;aInd--;) buf.Prepend("   ");
+		for (Int_t i = 0; i < fIndentLevel; i++) buf.Prepend(indentString.Data());
 		Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(buf) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
@@ -1420,7 +1440,7 @@ Bool_t TMrbTidyNode::OutputHtmlForMC(ostream & Out) {
 void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbTidyNode::OutputHtmlForMC
+// Name:           TMrbTidyNode::ProcessMnodeHeader
 // Purpose:        Special html output for node <mc>
 // Arguments:      ostream & Out     -- output stream
 //                 Char_t * CssClass -- class name in css style
@@ -1432,10 +1452,12 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 //////////////////////////////////////////////////////////////////////////////
 
 	TString cssClass = CssClass;
+#if 0
 	if (Level > 0) {
 		cssClass += "-level";
 		cssClass += Level;
 	}
+#endif
 	Out << "<div class=\"" << cssClass << "\">" << endl;
 	TMrbNamedX * nx = ((TMrbTidyDoc *) this->GetTidyDoc())->GetLofMnodes()->FindByName(this->GetName());
 	if (nx) {
@@ -1532,13 +1554,14 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	TMrbTidyAttr * stdTag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
 	if (stdTag) {
 		TMrbTidyAttr * altTag = (TMrbTidyAttr *) fLofAttr.FindByName("atag");
+		TString tagStr;
+		tagStr = stdTag->GetValue();
 		if (altTag) {
-			Out << "<tr><td>Tag:</td><td><pre class=\"mtag\">" << stdTag->GetValue()
-				<< "</pre></td><td><pre class=\"mtag\">(" << altTag->GetValue() << ")</pre></td></tr>" << endl;
-		} else {
-			Out << "<tr><td>Tag:</td><td><pre class=\"mtag\">" << stdTag->GetValue()
-				<< "</pre></td></tr>" << endl;
+			tagStr += " (";
+			tagStr += altTag->GetValue();
+			tagStr += ")";
 		}
+		Out << "<tr><td>Tag:</td><td colspan=\"3\"><pre class=\"mtag\">" << tagStr << "</pre></td></tr>" << endl;
 	}
 	TMrbTidyAttr * aCase = (TMrbTidyAttr *) fLofAttr.FindByName("mcase");
 	if (aCase) {
@@ -1600,8 +1623,63 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	if (aIter) Out << "<tr><td>Iteration:</td><td colspan=\"3\">" << aIter->GetValue() << "</td></tr>" << endl;
 	Out << "</table></div>" << endl;
 
+	this->SetIndentation();
+
 	if (isMethod) {
 		Out << "<br><pre class=\"method\">" << method << " {" << "</pre>" << endl;
+	}
+}
+
+Int_t TMrbTidyNode::SetIndentation() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::SetIndentation
+// Purpose:        Set indentation level
+// Arguments:      --
+// Results:        Int_t IndLevel   -- indentation level
+// Exceptions:
+// Description:    Calculates indentation from indent attr:
+//                     indent="+n"  increment by n
+//                     indent="-n"  decrement by n
+//                     indent="n"   set indentation to n
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t indentLevel = fIndentLevel;
+	TMrbTidyAttr * aIndent = (TMrbTidyAttr *) fLofAttr.FindByName("indent");
+	if (aIndent) {
+		TString aInd = aIndent->GetValue();
+		aInd = aInd.Strip(TString::kBoth);
+		switch (aInd(0)) {
+			case '+':	aInd = aInd(1, 1000); indentLevel += atoi(aInd.Data()); break;
+			case '-':	aInd = aInd(1, 1000); indentLevel -= atoi(aInd.Data()); break;
+			default:	indentLevel = atoi(aInd.Data()); break;
+		}
+		this->SetIndentLevel(indentLevel, kTRUE);
+	}
+	return(indentLevel);
+}
+
+void TMrbTidyNode::SetIndentLevel(Int_t IndentLevel, Bool_t Recursive) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::SetIndentLevel
+// Purpose:        Set indent level down the tree
+// Arguments:      --
+// Results:        Int_t IndLevel   -- indentation level
+//                 Bool_t Recursive -- set recursively if kTRUE
+// Exceptions:
+// Description:    Sets text indentation
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fIndentLevel = IndentLevel;
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			node->SetIndentLevel(IndentLevel, kTRUE);
+			node = this->GetNext(node);
+		}
 	}
 }
 
@@ -1664,24 +1742,36 @@ Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
 		if (ok) {
 			nx = (TMrbNamedX *) fLofSubstitutions.First();
 			while (nx) {
+				Bool_t inUse = kFALSE;
 				TString param = nx->GetName();		// (1) #...&1U# -> upper case first char
 				param.Prepend("#");
 				param += "&1U#";
-				if (buf.Index(param.Data(), 0) >= 0) {
-					nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
-				} else {
-					param = nx->GetName();				// (2) #...&UC# -> upper case
+				inUse = (buf.Index(param.Data(), 0) >= 0);
+				if (!inUse) {
+					param = nx->GetName();
+					param.Prepend("#");
+					param += "&amp;1U#";
+					inUse = (buf.Index(param.Data(), 0) >= 0);
+				}
+				if (!inUse) {
+					param = nx->GetName();			// (2) #...&UC# -> upper case
 					param.Prepend("#");
 					param += "&UC#";
-					if (buf.Index(param.Data(), 0) >= 0) {
-						nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
-					} else {
-						param = nx->GetName();			// (3) #...# -> normal substitution
-						param.Prepend("#");
-						param += "#";
-						if (buf.Index(param.Data(), 0) >= 0) nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
-					}
+					inUse = (buf.Index(param.Data(), 0) >= 0);
 				}
+				if (!inUse) {
+					param = nx->GetName();
+					param.Prepend("#");
+					param += "&amp;UC#";
+					inUse = (buf.Index(param.Data(), 0) >= 0);
+				}
+				if (!inUse) {
+					param = nx->GetName();
+					param.Prepend("#");
+					param += "#";
+					inUse = (buf.Index(param.Data(), 0) >= 0);
+				}
+				if (inUse) nx->ChangeIndex(nx->GetIndex() | kMrbTidySubstInUse);
 				nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
 			}
 		}
@@ -2124,14 +2214,13 @@ const Char_t * TMrbTidyNode::PrepareForHtmlOutput(TString & Buffer) {
 // Name:           TMrbTidyNode::PrepareForHtmlOutput
 // Purpose:        Prepare buffer to be output as html
 // Arguments:      TString & Buffer          -- buffer containing text
-//                 Int_t Indent              -- indentation level
 // Results:        Char_t * BufPtr           -- points to 'Buffer'
 // Exceptions:
 // Description:    Do some finish before starting html output.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Buffer.ReplaceAll("\t", "   ");
+	Buffer.ReplaceAll("\t", indentString.Data());
 	return(this->MarkSubstitutions(Buffer));
 }
 
@@ -2151,11 +2240,14 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 	while (nx) {
 		if (nx->GetIndex() & kMrbTidySubstInUse) {
 			TString param = nx->GetName();			// (1) #...&1U# -> upper case first char
+			TString title = "<em title=\"";
+			title += nx->GetTitle();
+			title += " (1st char upper case)\">";
 			param.Prepend("#");
 			param += "&1U#";
 			TString subst = nx->GetName();
 			subst(0,1).ToUpper();
-			subst.Prepend("<em>"); 
+			subst.Prepend(title.Data()); 
 			subst += "</em>";
 			Buffer.ReplaceAll(param, subst);
 			param = nx->GetName();
@@ -2163,11 +2255,14 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 			param += "&amp;1U#";
 			Buffer.ReplaceAll(param, subst);
 			param = nx->GetName();				// (2) #...&UC# -> upper case
+			title = "<em title=\"";
+			title += nx->GetTitle();
+			title += " (upper case)\">";
 			param.Prepend("#");
 			param += "&UC#";
 			subst = nx->GetName();
 			subst.ToUpper();
-			subst.Prepend("<em>"); 
+			subst.Prepend(title.Data()); 
 			subst += "</em>";
 			Buffer.ReplaceAll(param, subst);
 			param = nx->GetName();
@@ -2175,10 +2270,13 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 			param += "&amp;UC#";
 			Buffer.ReplaceAll(param, subst);
 			param = nx->GetName();			// (3) #...# -> normal substitution
+			title = "<em title=\"";
+			title += nx->GetTitle();
+			title += "\">";
 			param.Prepend("#");
 			param += "#";
 			subst = nx->GetName();
-			subst.Prepend("<em>"); 
+			subst.Prepend(title.Data()); 
 			subst += "</em>";
 			Buffer.ReplaceAll(param, subst);
 		}
