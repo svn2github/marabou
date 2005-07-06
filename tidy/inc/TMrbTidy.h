@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.14 2005-07-04 07:27:02 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.15 2005-07-06 12:06:09 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -382,6 +382,9 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputSubstituted(const Char_t * CaseString = NULL, ostream & Out = cout);
 		Bool_t OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out = cout);
 
+		Int_t InitLinks(Bool_t Recursive = kFALSE, Bool_t ReInit = kFALSE);
+		inline TMrbLofNamedX * GetLofLinks() { return(&fLofLinks); };
+
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
 
 	protected:
@@ -398,6 +401,7 @@ class TMrbTidyNode : public TMrbNamedX {
 		const Char_t * MarkSubstitutions(TString & Buffer);
 		const Char_t * PrepareForHtmlOutput(TString & Buffer);
 		const Char_t * PrepareForCodeOutput(TString & Buffer);
+		const Char_t * MarkLinks(TString & Buffer);
 
 	protected:
 		TidyNode fHandle; 					// tidy node handle
@@ -414,7 +418,8 @@ class TMrbTidyNode : public TMrbNamedX {
 		TMrbLofNamedX fLofChilds;			// child nodes
 		TMrbLofNamedX fLofAttr; 			// list of attributes
 
-		TMrbLofNamedX fLofSubstitutions;	// buffer to hold current substitutions
+		TMrbLofNamedX fLofSubstitutions;	// current substitutions
+		TMrbLofNamedX fLofLinks;			// current links
 
 	ClassDef(TMrbTidyNode, 1) 				// [Utils] Tidy interface: node
 };
@@ -489,6 +494,7 @@ class TMrbTidyDoc : public TNamed {
 		inline Bool_t ResetOptions() { return(tidyOptResetAllToDefault(fHandle)); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(const Char_t * File, Bool_t Verbose = kFALSE);
 		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE);
 
 		void PrintOptions(ostream & Out = cout, Bool_t Verbose = kFALSE);

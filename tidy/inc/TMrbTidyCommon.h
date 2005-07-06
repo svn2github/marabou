@@ -17,7 +17,7 @@
 // Purpose:        Common defs for tidy interface
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidyCommon.h,v 1.2 2005-04-05 07:24:56 rudi Exp $       
+// Revision:       $Id: TMrbTidyCommon.h,v 1.3 2005-07-06 12:06:09 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -171,6 +171,19 @@ const SMrbNamedXShort kMrbTidyTagIds[] =
 							{TidyTag_XMP,			"XMP"		},
 							{TidyTag_MNODE, 		"MNODE"		},
 							{0, 					NULL					}
+						};
+
+enum					{	TidyLink_Marabou	=	1,
+							TidyLink_Root,
+							TidyLink_Others
+						};
+
+const SMrbNamedX kMrbTidyLinkTypes[] =
+						{
+							{TidyLink_Marabou, 		"mlinks",	"http://www.bl.physik.uni-muenchen.de/marabou/html/"	},
+							{TidyLink_Root, 		"rlinks",	"http://root.cern.ch/root/htmldoc/"	},
+							{TidyLink_Others,		"olinks"	"http://other.link.somewhere/"	},
+							{0, 					NULL,		NULL							}
 						};
 
 #endif

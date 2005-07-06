@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.20 2005-07-04 07:27:02 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.21 2005-07-06 12:06:09 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -68,7 +68,7 @@ ClassImp(TMrbTidyOption)
 ClassImp(TMrbTidyNode)
 ClassImp(TMrbTidyAttr)
 
-TString indentString("   ");
+TString tabEquiv("   ");
 
 extern TMrbLogger * gMrbLog;			// global access to logging system
 
@@ -449,6 +449,7 @@ Bool_t TMrbTidyDoc::ParseBuffer(const Char_t * Buffer, Bool_t Repair) {
 	if (fTidyBody) {
 		fTidyMbody = (TMrbTidyNode *) fTidyBody->GetLofChilds()->FindByName("mb");
 		fTidyMbody->InitSubstitutions(kTRUE, kTRUE);
+		fTidyMbody->InitLinks(kTRUE, kTRUE);
 	}
 	return(kTRUE);
 }
@@ -673,7 +674,7 @@ Int_t TMrbTidyNode::ReadAttr() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	fLofAttr.Delete();				// clear option list
+	fLofAttr.Delete();				// clear attr list
 	TidyAttr attrHandle;
 	for (attrHandle = tidyAttrFirst(fHandle); attrHandle; attrHandle = tidyAttrNext(attrHandle)) {
 		TMrbTidyAttr * attr = new TMrbTidyAttr(tidyAttrGetId(attrHandle), tidyAttrName(attrHandle), attrHandle, this);
@@ -1048,6 +1049,29 @@ Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
 Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
 Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
 
+void TMrbTidyDoc::Print(const Char_t * File, Bool_t Verbose) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::Print
+// Purpose:        Print data
+// Arguments:      Char_t * File    -- file name
+//                 Bool_t Verbose   -- kTRUE: print full text strings
+// Results:        --
+// Exceptions:
+// Description:    Prints document data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	ofstream of(File, ios::out);
+	if (!of.good()) {
+		gMrbLog->Err() << gSystem->GetError() << " - " << File << endl;
+		gMrbLog->Flush(this->ClassName(), "Print");
+	} else {
+		this->Print(of, Verbose);
+		of.close();
+	}
+}
+
 void TMrbTidyDoc::Print(ostream & Out, Bool_t Verbose) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1307,7 +1331,7 @@ Bool_t TMrbTidyNode::OutputHtml(ostream & Out) {
 			if (t.IsNull()) {
 				Out << "<br>" << endl;
 			} else {
-				for (Int_t i = 0; i < fIndentLevel; i++) Out << indentString;
+				for (Int_t i = 0; i < fIndentLevel; i++) Out << tabEquiv;
 				Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(text) << "</pre><br>" << endl;
 			}
 		} else {
@@ -1412,8 +1436,9 @@ Bool_t TMrbTidyNode::OutputHtmlForMX(ostream & Out) {
 	TMrbTidyAttr * aString = (TMrbTidyAttr *) fLofAttr.FindByName("string");
 	if (aString) {
 		TString buf = aString->GetValue();
+		buf.ReplaceAll("\t", tabEquiv.Data());
 		buf = buf.Strip(TString::kBoth);
-		for (Int_t i = 0; i < fIndentLevel; i++) buf.Prepend(indentString.Data());
+		for (Int_t i = 0; i < fIndentLevel; i++) buf.Prepend(tabEquiv.Data());
 		Out << "<pre class=\"code\">" << this->PrepareForHtmlOutput(buf) << "</pre><br>" << endl;
 	} else {
 		Out << "<br>" << endl;
@@ -1531,6 +1556,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	TMrbTidyAttr * aDescr = (TMrbTidyAttr *) fLofAttr.FindByName("descr");
 	if (aDescr) {
 		TString dstr = aDescr->GetValue();
+		dstr.ReplaceAll("\t", tabEquiv.Data());
 		dstr = dstr.Strip(TString::kBoth);
 		Out << "<tr><td>Description:</td><td colspan=\"3\">" << dstr << "</td></tr>" << endl;
 	}
@@ -1538,6 +1564,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	if (aCmt) {
 		TMrbString cmt = aCmt->GetValue();
 		if (cmt.BeginsWith("//")) cmt = cmt(2, 1000);
+		cmt.ReplaceAll("\t", tabEquiv.Data());
 		cmt = cmt.Strip(TString::kBoth);
 		TObjArray emph;
 		Int_t nEmph = cmt.Split(emph, "*");
@@ -1626,6 +1653,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	this->SetIndentation();
 
 	if (isMethod) {
+		this->MarkLinks(method);
 		Out << "<br><pre class=\"method\">" << method << " {" << "</pre>" << endl;
 	}
 }
@@ -1649,6 +1677,7 @@ Int_t TMrbTidyNode::SetIndentation() {
 	TMrbTidyAttr * aIndent = (TMrbTidyAttr *) fLofAttr.FindByName("indent");
 	if (aIndent) {
 		TString aInd = aIndent->GetValue();
+		aInd.ReplaceAll("\t", tabEquiv.Data());
 		aInd = aInd.Strip(TString::kBoth);
 		switch (aInd(0)) {
 			case '+':	aInd = aInd(1, 1000); indentLevel += atoi(aInd.Data()); break;
@@ -1709,6 +1738,7 @@ Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
 			if (nSubst) {
 				for (Int_t i = 0; i < nSubst; i++) {
 					TString sstr = ((TObjString *) sarr[i])->GetString();
+					sstr.ReplaceAll("\t", tabEquiv.Data());
 					TString sdescr = "";
 					Int_t n = sstr.Index(":", 0);
 					if (n > 0) {
@@ -1784,6 +1814,69 @@ Int_t TMrbTidyNode::InitSubstitutions(Bool_t Recursive, Bool_t ReInit) {
 		}
 	}
 	return(fLofSubstitutions.GetEntriesFast());
+}
+
+Int_t TMrbTidyNode::InitLinks(Bool_t Recursive, Bool_t ReInit) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::InitLinks
+// Purpose:        Fill link buffer
+// Arguments:      Bool_t Recursive -- step down the tree if kTRUE
+//                 Bool_t ReInit    -- re-initialize if set
+// Results:        Int_t NofLinks   -- number of links found
+// Exceptions:
+// Description:    Resets link buffer and fills it
+//                 with items from "xxx-links=..." string
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t nLinks = fLofLinks.GetEntriesFast();
+	if (ReInit || nLinks == 0) {
+		TMrbLofNamedX lofLinkTypes;
+		lofLinkTypes.AddNamedX(kMrbTidyLinkTypes);
+		TObjArray larr;
+		fLofLinks.Delete();
+		TMrbNamedX * nx = (TMrbNamedX *) lofLinkTypes.First();
+		while (nx) {
+			TMrbTidyAttr * aLinks = (TMrbTidyAttr *) fLofAttr.FindByName(nx->GetName());
+			if (aLinks) {
+				larr.Delete();
+				TMrbString links = aLinks->GetValue();
+				links.ReplaceAll("\t", tabEquiv.Data());
+				nLinks = links.Split(larr, ",");
+				for (Int_t i = 0; i < nLinks; i++) {
+					TString lstr1 = ((TObjString *) larr[i])->GetString();
+					TString lstr2 = "";
+					Int_t n = lstr1.Index(":", 0);
+					if (n > 0) {
+						lstr2 = lstr1(n + 1, 1000);
+						lstr2 = lstr2.Strip(TString::kBoth);
+						lstr1.Resize(n);
+					}
+					lstr1 = lstr1.Strip(TString::kBoth);
+					if (lstr2.IsNull()) lstr2 = lstr1;
+					fLofLinks.AddNamedX(nx->GetIndex(), lstr1.Data(), lstr2.Data());
+				}
+			}
+			nx = (TMrbNamedX *) lofLinkTypes.After(nx);
+		}
+		TMrbLofNamedX * lofParentLinks = this->Parent()->GetLofLinks();
+		nx = (TMrbNamedX *) lofParentLinks->First();
+		while (nx) {
+			if (!fLofLinks.FindByName(nx->GetName())) {
+				fLofLinks.AddNamedX(nx->GetIndex(), nx->GetName(), nx->GetTitle());
+			}
+			nx = (TMrbNamedX *) lofParentLinks->After(nx);
+		}
+	}
+	if (Recursive) {
+		TMrbTidyNode * node = this->GetFirst();
+		while (node) {
+			node->InitLinks(Recursive, ReInit);
+			node = this->GetNext(node);
+		}
+	}
+	return(fLofLinks.GetEntriesFast());
 }
 
 void TMrbTidyNode::PrintSubstitutions(Bool_t Recursive, ostream & Out) {
@@ -2220,8 +2313,10 @@ const Char_t * TMrbTidyNode::PrepareForHtmlOutput(TString & Buffer) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Buffer.ReplaceAll("\t", indentString.Data());
-	return(this->MarkSubstitutions(Buffer));
+	Buffer.ReplaceAll("\t", tabEquiv.Data());
+	this->MarkLinks(Buffer);
+	this->MarkSubstitutions(Buffer);
+	return(Buffer.Data());
 }
 
 const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
@@ -2281,6 +2376,50 @@ const Char_t * TMrbTidyNode::MarkSubstitutions(TString & Buffer) {
 			Buffer.ReplaceAll(param, subst);
 		}
 		nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
+	}
+	return(Buffer.Data());
+}
+
+const Char_t * TMrbTidyNode::MarkLinks(TString & Buffer) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::MarkLinks
+// Purpose:        Mark links for html output
+// Arguments:      TString & Buffer          -- buffer containing text
+// Results:        Char_t * BufPtr           -- points to 'Buffer'
+// Exceptions:
+// Description:    Marks (= inserts href tags) for all links in buffer
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbLofNamedX lofLinkTypes;
+	lofLinkTypes.AddNamedX(kMrbTidyLinkTypes);
+	TMrbNamedX * nx = (TMrbNamedX *) fLofLinks.First();
+	while (nx) {
+		TString link = nx->GetName();
+		TString href = nx->GetTitle();
+		Bool_t mFlag = kFALSE;
+		Int_t hl = href.Length();
+		if (href(hl - 1) == '#') {
+			mFlag = kTRUE;
+			href.Resize(hl - 1);
+		}
+		TString hrefStr = "<a href=\"";
+		TMrbNamedX * hr = lofLinkTypes.FindByIndex(nx->GetIndex());
+		if (hr) hrefStr += hr->GetTitle(); else hrefStr += "http://undef.reference.somewhere/";
+		hrefStr += href;
+		hrefStr += ".html";
+		if (mFlag) {
+			hrefStr += "#";
+			hrefStr += href;
+			hrefStr += ":";
+			hrefStr += nx->GetName();
+		}
+		hrefStr += "\">";
+		hrefStr += nx->GetName();
+		hrefStr += "</a>";
+		Buffer.ReplaceAll(nx->GetName(), hrefStr);
+		nx = (TMrbNamedX *) fLofLinks.After(nx);
 	}
 	return(Buffer.Data());
 }
@@ -2464,6 +2603,7 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 		TMrbString str = NodeAttributes;
 		for (Int_t i = 0; i < str.Split(attrArr, " "); i++) {
 			TString attr = ((TObjString *) attrArr[i])->GetString();
+			attr.ReplaceAll("\t", tabEquiv.Data());
 			attr = attr.Strip(TString::kBoth);
 			if (attr.Length() > 0) {
 				Int_t n = attr.Index("=", 0);
@@ -2473,6 +2613,7 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 					continue;
 				}
 				TString attrVal = attr(n + 1, attr.Length() - n - 1);
+				attrVal.ReplaceAll("\t", tabEquiv.Data());
 				attrVal = attrVal.Strip(TString::kBoth);
 				if (attrVal(0) == '"') attrVal = attrVal(1, attrVal.Length() - 1);
 				if (attrVal(attrVal.Length()) == '"') attrVal.Resize(attrVal.Length() - 1);
