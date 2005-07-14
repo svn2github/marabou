@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.15 2005-07-06 12:06:09 rudi Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.16 2005-07-14 11:41:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -184,6 +184,8 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		const Char_t * GetText(TString & Buffer);
 
+		inline void SetParent(TMrbTidyNode * Parent) { fParent = Parent; };
+
 		inline Int_t GetTreeLevel() { return(fTreeLevel); };
 		inline void SetTreeLevel(Int_t Level) { fTreeLevel = Level; };
 		inline void SetTreeLevelFromParent() { fTreeLevel = fParent ? fParent->GetTreeLevel() + 1 : 1; };
@@ -200,6 +202,7 @@ class TMrbTidyNode : public TMrbNamedX {
 		void FillTree();
 		void DeleteTree();
 		Int_t StepTree(TObjArray & LofNodes);
+		TMrbTidyNode * ImplantTreeFromFile(const Char_t * File = NULL, const Char_t * Mtag = NULL);
 
 		inline TMrbLofNamedX * GetLofChilds() { return(&fLofChilds); };
 		inline TMrbLofNamedX * GetLofAttr() { return(&fLofAttr); };
@@ -354,15 +357,19 @@ class TMrbTidyNode : public TMrbNamedX {
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, const Char_t * NodeAttributes = NULL, Bool_t Recursive = kFALSE);
 		Int_t Find(TObjArray & LofNodes, const Char_t * NodeName, TObjArray & LofAttr, Bool_t Recursive = kFALSE);
 
-		TMrbTidyNode * FindByAttr(const Char_t * AttrName, const Char_t * AttrVal, Bool_t Recursive = kFALSE);
-		inline TMrbTidyNode * FindByTag(const Char_t * Tag, Bool_t Recursive = kFALSE) { return(this->FindByAttr("tag", Tag, Recursive)); };
-		inline TMrbTidyNode * FindByCase(const Char_t * Case, Bool_t Recursive = kFALSE) { return(this->FindByAttr("case", Case, Recursive)); };
+		TMrbTidyNode * FindByAttr(const Char_t * AttrName, const Char_t * AttrVal, Bool_t Recursive = kFALSE, Bool_t IncludeTopLevel = kFALSE);
+		inline TMrbTidyNode * FindByMtag(const Char_t * Tag, Bool_t Recursive = kFALSE, Bool_t IncludeTopLevel = kFALSE) {
+							return(this->FindByAttr("mtag", Tag, Recursive, IncludeTopLevel));
+		};
+		inline TMrbTidyNode * FindByMcase(const Char_t * Tag, Bool_t Recursive = kFALSE, Bool_t IncludeTopLevel = kFALSE) {
+							return(this->FindByAttr("mcase", Tag, Recursive, IncludeTopLevel));
+		};
 
 		inline Bool_t HasChilds() { return(this->GetLofChilds()->GetEntries() > 0); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE);
-		void PrintTree(ostream & Out = cout, Bool_t Verbose = kFALSE);
+		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE, Bool_t HtmlFlag = kFALSE);
+		void PrintTree(ostream & Out = cout, Bool_t Verbose = kFALSE, Bool_t HtmlFlag = kFALSE);
 
 		Bool_t OutputHtml(ostream & Out = cout);
 		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
@@ -385,6 +392,8 @@ class TMrbTidyNode : public TMrbNamedX {
 		Int_t InitLinks(Bool_t Recursive = kFALSE, Bool_t ReInit = kFALSE);
 		inline TMrbLofNamedX * GetLofLinks() { return(&fLofLinks); };
 
+		inline void AddChild(TMrbTidyNode * Child) { fLofChilds.Add(Child); };
+
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
 
 	protected:
@@ -396,12 +405,15 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputHtmlForMH(ostream & Out = cout);
 		Bool_t OutputHtmlForMX(ostream & Out = cout);
 		Bool_t OutputHtmlForMC(ostream & Out = cout);
+		Bool_t OutputHtmlForMI(ostream & Out = cout);
 
 		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
 		const Char_t * MarkSubstitutions(TString & Buffer);
 		const Char_t * PrepareForHtmlOutput(TString & Buffer);
 		const Char_t * PrepareForCodeOutput(TString & Buffer);
 		const Char_t * MarkLinks(TString & Buffer);
+
+		TMrbTidyNode * ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TObject * Doc = NULL);
 
 	protected:
 		TidyNode fHandle; 					// tidy node handle
@@ -494,8 +506,8 @@ class TMrbTidyDoc : public TNamed {
 		inline Bool_t ResetOptions() { return(tidyOptResetAllToDefault(fHandle)); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
-		void Print(const Char_t * File, Bool_t Verbose = kFALSE);
-		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE);
+		void Print(const Char_t * File, Bool_t Verbose = kFALSE, Bool_t HtmlFlag = kFALSE);
+		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE, Bool_t HtmlFlag = kFALSE);
 
 		void PrintOptions(ostream & Out = cout, Bool_t Verbose = kFALSE);
 
@@ -511,9 +523,13 @@ class TMrbTidyDoc : public TNamed {
 		Bool_t OutputHtml(const Char_t * HtmlFile);
 		Bool_t OutputHtml(ostream & Out = cout);
 
+		Bool_t AddToList(); 			// add to list of documents
+
 	protected:
 		Int_t ReadOptions();
 		void InitErrorBuffer();
+		Bool_t IsFirstChild();
+		Bool_t IsLastChild();
 
 	protected:
 		TidyDoc fHandle;				// tidy doc handle

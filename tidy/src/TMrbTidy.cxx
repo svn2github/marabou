@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.21 2005-07-06 12:06:09 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.22 2005-07-14 11:41:32 rudi Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -62,6 +62,7 @@ namespace std {} using namespace std;
 #include "TMrbTidy.h"
 #include "TMrbTidyCommon.h"
 #include "TMrbLogger.h"
+#include "TMrbSystem.h"
 
 ClassImp(TMrbTidyDoc)
 ClassImp(TMrbTidyOption)
@@ -69,6 +70,8 @@ ClassImp(TMrbTidyNode)
 ClassImp(TMrbTidyAttr)
 
 TString tabEquiv("   ");
+
+TMrbLofNamedX * gMrbLofTidyDocs = NULL;
 
 extern TMrbLogger * gMrbLog;			// global access to logging system
 
@@ -87,6 +90,7 @@ TMrbTidyDoc::TMrbTidyDoc() : TNamed("TidyDoc", "Tidy document") {
 	fHandle = tidyCreate();
 	cout << this->ClassName() << ": " << setbase(16) << this << " handle=" << fHandle << setbase(10) << endl;
 	tidySetErrorBuffer(fHandle, &fErrorBuffer);
+	this->AddToList();
 }
 		
 TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName) : TNamed(DocName, "Tidy document") {
@@ -103,6 +107,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName) : TNamed(DocName, "Tidy documen
 	this->Reset();
 	fHandle = tidyCreate();
 	this->InitErrorBuffer();					// init error buffer
+	this->AddToList();
 }		
 		
 TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, const Char_t * DocFile, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
@@ -128,6 +133,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, const Char_t * DocFile, Bool_t 
 		this->SetOption(TidyXhtmlOut, kTRUE);	// convert to xhtml
 		if (!this->ParseFile(DocFile, Repair)) this->MakeZombie();	// parse file
 	}
+	if (!this->IsZombie()) this->AddToList();
 }		
 		
 TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, istream & Stream, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
@@ -154,6 +160,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, istream & Stream, Bool_t Repair
 		TString tidyBuffer;
 		tidyBuffer.ReadFile(Stream);			// read data to buffer
 		this->ParseBuffer(tidyBuffer, Repair);	// parse buffer
+		this->AddToList();
 	}
 }		
 		
@@ -179,6 +186,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, TString & Buffer, Bool_t Repair
 		this->ReadOptions();					// read options
 		this->SetOption(TidyXhtmlOut, kTRUE);	// convert to xhtml
 		this->ParseBuffer(Buffer, Repair);		// parse buffer
+		this->AddToList();
 	}
 }		
 
@@ -281,10 +289,7 @@ void TMrbTidyDoc::Reset(Bool_t Release) {
 
 	fLofMnodes.Delete();								// empty list of marabou nodes
 	fLofMnodes.SetName("Special MARaBOU Tags");
-	fLofMnodes.AddNamedX(TidyTag_MNODE_MB, "mb", "body"); 		// define special nodes
-	fLofMnodes.AddNamedX(TidyTag_MNODE_MH, "mh", "header");
-	fLofMnodes.AddNamedX(TidyTag_MNODE_MX, "mx", "expand");
-	fLofMnodes.AddNamedX(TidyTag_MNODE_MC, "mc", "code");
+	fLofMnodes.AddNamedX(kMrbTidyMnodeIds); 			// define special nodes
 }
 
 void TMrbTidyDoc::InitErrorBuffer() {
@@ -448,8 +453,10 @@ Bool_t TMrbTidyDoc::ParseBuffer(const Char_t * Buffer, Bool_t Repair) {
 	}
 	if (fTidyBody) {
 		fTidyMbody = (TMrbTidyNode *) fTidyBody->GetLofChilds()->FindByName("mb");
-		fTidyMbody->InitSubstitutions(kTRUE, kTRUE);
-		fTidyMbody->InitLinks(kTRUE, kTRUE);
+		if (fTidyMbody) {
+			fTidyMbody->InitSubstitutions(kTRUE, kTRUE);
+			fTidyMbody->InitLinks(kTRUE, kTRUE);
+		}
 	}
 	return(kTRUE);
 }
@@ -507,6 +514,35 @@ Bool_t TMrbTidyDoc::RunDiagnostics() {
 		ok = kFALSE;
 	}
 	return(ok);
+}
+
+Bool_t TMrbTidyDoc::AddToList() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::AddToList
+// Purpose:        Add to list of documents
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Adds this tidy object to list of documents
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gMrbLofTidyDocs == NULL) {
+		gMrbLofTidyDocs = new TMrbLofNamedX();
+		gMrbLofTidyDocs->Delete();
+		gMrbLofTidyDocs->SetName("List of TIDY documents");
+	}
+
+	if (gMrbLofTidyDocs->FindByName(this->GetName())) {
+		gMrbLog->Err() << "Document already in list - " << this->GetName() << " (ignored)" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddToList");
+		return(kFALSE);
+	}
+
+	Int_t n = gMrbLofTidyDocs->GetEntriesFast();
+	gMrbLofTidyDocs->AddNamedX(n, this->GetName(), fDocFile.Data(), this);
+	return(kTRUE);
 }
 
 const Char_t * TMrbTidyNode::GetText(TString & Buffer) {
@@ -635,11 +671,135 @@ void TMrbTidyNode::FillTree() {
 			nodeName = nName;
 		}
 		TMrbTidyNode * node = new TMrbTidyNode(tidyNodeGetId(child), nodeName, this, child, this->GetTidyDoc());
-		node->SetType(tidyNodeGetType(child));
+		node->SetType(ty);
 		node->CheckEndTag();
-		node->FillTree();
-		fLofChilds.Add(node);
+		if (node->GetIndex() == TidyTag_MNODE_MI) {
+			TMrbTidyNode * iNode = node->ImplantTreeFromFile();
+			if (iNode) {
+				node->AddChild(iNode);
+				iNode->FillTree();
+			}
+		} else {
+			node->FillTree();
+		}
+		this->AddChild(node);
 	}
+}
+
+TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char_t * Mtag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::IncludeExternalNode()
+// Purpose:        Insert node from external file
+// Arguments:      Char_t * File       -- name of html file
+//                 Char_t * Mtag       -- marabou tag
+// Results:        TMrbTidyNode * Node -- root node of implanted tree
+// Exceptions:
+// Description:    Opens a html file and searches for a node with given marabou tag.
+//                 Implants tree starting with this node into local tree.
+//                 If File and/or Mtag args are missing value will be taken
+//                 from mfile= and mtag= attributes, resp.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	fLofChilds.Delete();
+	if (tidyGetChild(fHandle) > 0) {
+		gMrbLog->Err() << "No childs allowed for <mi> nodes" << endl;
+		gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+		return(NULL);
+	}
+
+	TString fileStr;
+	if (File == NULL || *File == '\0') {
+		TMrbTidyAttr * mfile = (TMrbTidyAttr *) fLofAttr.FindByName("mfile");
+		if (mfile == NULL) {
+			gMrbLog->Err() << "Tag missing in <mi> node - \"mfile=...\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			return(NULL);
+		}
+		fileStr = mfile->GetValue();
+		fileStr = fileStr.Strip(TString::kBoth);
+		if (fileStr.IsNull()) {
+			gMrbLog->Err() << "Empty tag in <mi> node - \"mfile=...\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			return(NULL);
+		}
+	} else {
+		fileStr = File;
+	}
+
+	TString tagStr;
+	if (Mtag == NULL || *Mtag == '\0') {
+		TMrbTidyAttr * mtag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
+		if (mtag == NULL) {
+			gMrbLog->Err() << "Tag missing in <mi> node - \"mtag=...\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			return(NULL);
+		}
+		tagStr = mtag->GetValue();
+		tagStr = tagStr.Strip(TString::kBoth);
+		if (tagStr.IsNull()) {
+			gMrbLog->Err() << "Empty tag in <mi> node - \"mtag=...\"" << endl;
+			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			return(NULL);
+		}
+	} else {
+		tagStr = Mtag;
+	}
+
+	TMrbSystem ux;
+	TString iName;
+	ux.GetBaseName(iName, fileStr.Data());
+	TMrbNamedX * nx = (TMrbNamedX *) gMrbLofTidyDocs->FindByName(iName.Data());
+	TMrbTidyDoc * iDoc;
+	if (nx) {
+		iDoc = (TMrbTidyDoc *) nx->GetAssignedObject();
+	} else {
+		iDoc = new TMrbTidyDoc(iName.Data(), fileStr.Data(), kFALSE, ((TMrbTidyDoc *) this->GetTidyDoc())->GetCfgFile());
+	}
+	TMrbTidyNode * node = this->ScanTidyTree(iDoc->GetRoot()->GetHandle(), "mtag", tagStr.Data(), iDoc);	// low level scan method
+	if (node == NULL) {
+		gMrbLog->Err() << "[" << fileStr << "] No such attr - mtag=\"" << tagStr << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+	}
+	return(node);
+}
+
+TMrbTidyNode * TMrbTidyNode::ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TObject * Doc) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::ScanTidyTree()
+// Purpose:        Scan original tidy tree for a given attribute
+// Arguments:      TidyNode Node       -- tidy node to start with
+//                 Char_t * AttrName   -- name of attribute
+//                 Char_t * AttrString -- attr value
+//                 TMrbTidyDoc * Doc   -- document
+// Results:        TMrbTidyNode * Node -- node with given attr
+// Exceptions:
+// Description:    Low-level method to scan original tidy tree.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObject * doc = Doc ? Doc : this->GetTidyDoc();
+	TMrbTidyNode * node;
+	Char_t * sp = tidyNodeGetName(Node);
+	for (TidyNode child = tidyGetChild(Node); child; child = tidyGetNext(child)) {
+		sp = tidyNodeGetName(child);
+		TidyAttr attrHandle;
+		for (attrHandle = tidyAttrFirst(child); attrHandle; attrHandle = tidyAttrNext(attrHandle)) {
+			TString aName = tidyAttrName(attrHandle);
+			TString aValue = tidyAttrValue(attrHandle);	// get value
+			if (aName.CompareTo(AttrName) == 0 && aValue.CompareTo(AttrString) == 0) {
+				node = new TMrbTidyNode(tidyNodeGetId(child), tidyNodeGetName(child), this, child, doc);
+				node->SetType(tidyNodeGetType(child));
+				node->CheckEndTag();
+				return(node);
+			}
+		}
+		node = this->ScanTidyTree(child, AttrName, AttrString, doc);
+		if (node) return(node);
+	}
+	return(NULL);
 }
 
 void TMrbTidyNode::DeleteTree() {
@@ -1049,13 +1209,14 @@ Bool_t TMrbTidyAttr::IsABBR() { return(tidyAttrIsABBR(fHandle)); };
 Bool_t TMrbTidyAttr::IsCOLSPAN() { return(tidyAttrIsCOLSPAN(fHandle)); };
 Bool_t TMrbTidyAttr::IsROWSPAN() { return(tidyAttrIsROWSPAN(fHandle)); };
 
-void TMrbTidyDoc::Print(const Char_t * File, Bool_t Verbose) {
+void TMrbTidyDoc::Print(const Char_t * File, Bool_t Verbose, Bool_t HtmlFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc::Print
 // Purpose:        Print data
 // Arguments:      Char_t * File    -- file name
 //                 Bool_t Verbose   -- kTRUE: print full text strings
+//                 Bool_t HtmlFlag  -- kTRUE: output html format
 // Results:        --
 // Exceptions:
 // Description:    Prints document data
@@ -1067,18 +1228,19 @@ void TMrbTidyDoc::Print(const Char_t * File, Bool_t Verbose) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << File << endl;
 		gMrbLog->Flush(this->ClassName(), "Print");
 	} else {
-		this->Print(of, Verbose);
+		this->Print(of, Verbose, HtmlFlag);
 		of.close();
 	}
 }
 
-void TMrbTidyDoc::Print(ostream & Out, Bool_t Verbose) {
+void TMrbTidyDoc::Print(ostream & Out, Bool_t Verbose, Bool_t HtmlFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out    -- output stream
 //                 Bool_t Verbose   -- kTRUE: print full text strings
+//                 Bool_t HtmlFlag  -- kTRUE: output html format
 // Results:        --
 // Exceptions:
 // Description:    Prints document data
@@ -1086,11 +1248,21 @@ void TMrbTidyDoc::Print(ostream & Out, Bool_t Verbose) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->HasNodes()) {
-		Out 	<< endl << "Document " << this->GetName();
-		if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
-		Out 	<< ": structure as analyzed by D. Raggett's TIDY" << endl
-				<< "----------------------------------------------------------------------------------------------" << endl;
-		fTidyRoot->PrintTree(Out, Verbose);
+		if (HtmlFlag) {
+			Out << "<html>" << endl;
+			Out << "<link rel=\"stylesheet\" type=\"text/css\" href=\"mrb-style.css\">" << endl;
+			Out << "<body bgcolor=\"lightblue\">" << endl;
+			Out 	<< "<H2 align=\"center\">Document " << this->GetName() << "</H2>" << endl;
+			if (fDocFile.Length()) Out 	<< "<H4 align=\"center\">File: " << fDocFile << "</H4>" << endl;
+			Out 	<< "<H4 align=\"center\">(structure as analyzed by D. Raggett's TIDY)</H4><HR>" << endl;
+		} else {
+			Out 	<< endl << "Document " << this->GetName();
+			if (fDocFile.Length()) Out 	<< " (file " << fDocFile << ")";
+			Out 	<< ": structure as analyzed by D. Raggett's TIDY" << endl
+					<< "----------------------------------------------------------------------------------------------" << endl;
+		}
+		fTidyRoot->PrintTree(Out, Verbose, HtmlFlag);
+		if (HtmlFlag) Out << "</body></html>" << endl;
 	}
 }
 
@@ -1164,25 +1336,28 @@ Bool_t TMrbTidyDoc::OutputHtml(ostream & Out) {
 	return(ok);
 }
 
-void TMrbTidyNode::PrintTree(ostream & Out, Bool_t Verbose) {
+void TMrbTidyNode::PrintTree(ostream & Out, Bool_t Verbose, Bool_t HtmlFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::PrintTree
 // Purpose:        Print data recursively
 // Arguments:      ostream & Out    -- output stream
 //                 Bool_t Verbose   -- kTRUE: print full text strings
+//                 Bool_t HtmlFlag  -- kTRUE: output html format
 // Results:        --
 // Exceptions:
 // Description:    Prints node data
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	this->Print(Out, Verbose);
+	this->Print(Out, Verbose, HtmlFlag);
+	if (this->HasChilds() && HtmlFlag) Out << "<UL>" << endl;
 	TMrbTidyNode * node = (TMrbTidyNode *) fLofChilds.First();
 	while (node) {
-		node->PrintTree(Out, Verbose);
+		node->PrintTree(Out, Verbose, HtmlFlag);
 		node = (TMrbTidyNode *) fLofChilds.After(node);
 	}
+	if (this->HasChilds() && HtmlFlag) Out << "</UL>" << endl;
 }
 
 Int_t TMrbTidyNode::StepTree(TObjArray & LofNodes) {
@@ -1208,13 +1383,14 @@ Int_t TMrbTidyNode::StepTree(TObjArray & LofNodes) {
 	return(nofNodes);
 }
 
-void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose) {
+void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose, Bool_t HtmlFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::Print
 // Purpose:        Print data
 // Arguments:      ostream & Out    -- output stream
 //                 Bool_t Verbose   -- kTRUE: print full text strings
+//                 Bool_t HtmlFlag  -- kTRUE: output html format
 // Results:        --
 // Exceptions:
 // Description:    Prints node data
@@ -1226,9 +1402,15 @@ void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose) {
 	TMrbLofNamedX lofTagIds;
 	lofTagIds.AddNamedX(kMrbTidyTagIds);
 
-	Out << "[" << setw(2) << fTreeLevel << "] ";
-	for (Int_t lev = 0; lev < fTreeLevel; lev++) Out << ".";
-	if (fTreeLevel > 0) Out << " ";
+	TString liTag;
+	if (HtmlFlag) {
+		liTag = "<LI>";
+	} else {
+		liTag = "";
+		Out << "[" << setw(2) << fTreeLevel << "] ";
+		for (Int_t lev = 0; lev < fTreeLevel; lev++) Out << ".";
+		if (fTreeLevel > 0) Out << " ";
+	}
 	TString parentName = fParent ? fParent->GetName() : "root";
 	TMrbNamedX * ty = (TMrbNamedX *) lofNodeTypes.FindByIndex((Int_t) this->GetType());
 	TString tyStr;
@@ -1242,22 +1424,27 @@ void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose) {
 	} else {
 		tagStr = this->GetIndex();
 	}
-	Out << this->GetName()
-		<< " type=" << tyStr.Data();
-	if (this->GetIndex() != TidyTag_UNKNOWN) Out << " tag=" << tagStr.Data();
-	Out << " parent=" << parentName.Data();
-	if (this->IsMnode()) Out << " indent=" << fIndentLevel;
+	if (HtmlFlag) {
+		Out << "<em>" << this->GetName() << "</em>";
+		Out << "<UL>";
+	} else {
+		Out << "<" << this->GetName() << ">";
+	}
+	Out << liTag << " type=" << tyStr.Data();
+	if (this->GetIndex() != TidyTag_UNKNOWN) Out << liTag << " tag=" << tagStr.Data();
+	if (!HtmlFlag) Out << " parent=" << parentName.Data();
+	if (this->IsMnode()) Out << liTag << " indent=" << fIndentLevel;
 	TString text;
 	if (this->GetText(text)) {
 		if (text.Length() == 0) {
-			Out << " text=<empty>";
+			Out << liTag << " text=<empty>";
 		} else if (Verbose) {
 			text.ReplaceAll("\n", "<cr>");
-			Out << " text='" << text << "'";
+			Out << liTag << " text='" << text << "'";
 		} else {
 			text = text(0, 10);
 			text.ReplaceAll("\n", "<cr>");
-			Out << " text='" << text << "...'";
+			Out << liTag << " text='" << text << "...'";
 		}
 	}
 	TMrbTidyAttr * a = (TMrbTidyAttr *) fLofAttr.First();
@@ -1266,13 +1453,14 @@ void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose) {
 		TString aQuote = (aValue.Index("\"", 0) >= 0) ? "'" : "\"";
 		TString aName = a->GetName();
 		if (Verbose || aName.CompareTo("string") != 0) {
-			Out << " " << a->GetName() << "=" << aQuote << aValue << aQuote;
+			Out << liTag << " " << a->GetName() << "=" << aQuote << aValue << aQuote;
 		} else {
 			aValue = aValue(0, 10);
-			Out << " " << a->GetName() << "=" << aQuote << aValue << "..." << aQuote;
+			Out << liTag << " " << a->GetName() << "=" << aQuote << aValue << "..." << aQuote;
 		}
 		a = (TMrbTidyAttr *) fLofAttr.After(a);
 	}
+	if (HtmlFlag) Out << "</UL>";
 	Out << endl;
 }
 
@@ -1375,6 +1563,8 @@ Bool_t TMrbTidyNode::OutputHtmlForMnodes(ostream & Out) {
 		popUp = this->OutputHtmlForMX(Out);
 	} else if (this->GetIndex() == TidyTag_MNODE_MC) {
 		popUp = this->OutputHtmlForMC(Out);
+	} else if (this->GetIndex() == TidyTag_MNODE_MI) {
+		popUp = this->OutputHtmlForMI(Out);
 	}
 	return(popUp);
 }
@@ -1455,6 +1645,22 @@ Bool_t TMrbTidyNode::OutputHtmlForMC(ostream & Out) {
 // Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
 // Exceptions:
 // Description:    Outputs html data for <mc>...</mc> [code]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
+	return(kFALSE);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMI(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMI
+// Purpose:        Special html output for node <mi>
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for <mi> [include]
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1577,6 +1783,12 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 			}
 		}
 		Out << "<tr><td>Comment:</td><td colspan=\"3\">" << cmt << "</td></tr>" << endl;
+	}
+	TMrbTidyAttr * fileTag = (TMrbTidyAttr *) fLofAttr.FindByName("mfile");
+	if (fileTag) {
+		TString fileStr;
+		fileStr = fileTag->GetValue();
+		Out << "<tr><td>Included from file:</td><td colspan=\"3\"><pre class=\"mtag\">" << fileStr << "</pre></td></tr>" << endl;
 	}
 	TMrbTidyAttr * stdTag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
 	if (stdTag) {
@@ -2552,7 +2764,7 @@ Int_t TMrbTidyNode::Find(TObjArray & LofNodes, const Char_t * NodeName,  TObjArr
 	return(LofNodes.GetEntriesFast());
 }
 
-TMrbTidyNode * TMrbTidyNode::FindByAttr(const Char_t * AttrName, const Char_t * AttrValue, Bool_t Recursive) {
+TMrbTidyNode * TMrbTidyNode::FindByAttr(const Char_t * AttrName, const Char_t * AttrValue, Bool_t Recursive, Bool_t IncludeTopLevel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::FindByAttr
@@ -2560,6 +2772,7 @@ TMrbTidyNode * TMrbTidyNode::FindByAttr(const Char_t * AttrName, const Char_t * 
 // Arguments:      const Char_t * AttrName   -- attr name
 //                 const Char_t * AttrValue  -- ... value
 //                 Bool_t Recursive          -- kTRUE if to be searched recursively
+//                 Bool_t IncludeTopLevel    -- start search from caller level
 // Results:        TMrbTidyNode * Node       -- resulting node
 // Exceptions:
 // Description:    Searches for a specified node
@@ -2568,12 +2781,16 @@ TMrbTidyNode * TMrbTidyNode::FindByAttr(const Char_t * AttrName, const Char_t * 
 
 	TMrbTidyNode * node;
 	TString aValue = AttrValue;
-	node = this->GetFirst();
-	while (node) {
+	if (IncludeTopLevel) {
 		TMrbTidyAttr * attr = (TMrbTidyAttr *) fLofAttr.FindByName(AttrName);
 		if (attr && aValue.CompareTo(attr->GetValue()) == 0) return(node);
+	}
+	node = this->GetFirst();
+	while (node) {
+		TMrbTidyAttr * attr = (TMrbTidyAttr *) (node->GetLofAttr())->FindByName(AttrName);
+		if (attr && aValue.CompareTo(attr->GetValue()) == 0) return(node);
 		if (Recursive) {
-			TMrbTidyNode * child = node->FindByAttr(AttrName, AttrValue, Recursive);
+			TMrbTidyNode * child = node->FindByAttr(AttrName, AttrValue, Recursive, kFALSE);
 			if (child) return(child);
 		}
 		node = this->GetNext(node);

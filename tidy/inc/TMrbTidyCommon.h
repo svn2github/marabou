@@ -17,7 +17,7 @@
 // Purpose:        Common defs for tidy interface
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidyCommon.h,v 1.3 2005-07-06 12:06:09 rudi Exp $       
+// Revision:       $Id: TMrbTidyCommon.h,v 1.4 2005-07-14 11:41:32 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -41,12 +41,7 @@ const SMrbNamedXShort kMrbTidyNodeTypes[] =
 							{0, 					NULL					}
 						};
 
-enum					{	TidyTag_MNODE = 200,
-							TidyTag_MNODE_MH,
-							TidyTag_MNODE_MB,
-							TidyTag_MNODE_MX,
-							TidyTag_MNODE_MC
-						};
+enum					{	TidyTag_MNODE = 200 	};
 
 const SMrbNamedXShort kMrbTidyTagIds[] =
 						{
@@ -157,20 +152,37 @@ const SMrbNamedXShort kMrbTidyTagIds[] =
 							{TidyTag_TABLE, 		"TABLE" 	},
 							{TidyTag_TBODY, 		"TBODY" 	},
 							{TidyTag_TD,			"TD"		},
-							{TidyTag_TEXTAREA,		"TEXTAREA"		},
+							{TidyTag_TEXTAREA,		"TEXTAREA"	},
 							{TidyTag_TFOOT, 		"TFOOT" 	},
 							{TidyTag_TH,			"TH"		},
 							{TidyTag_THEAD, 		"THEAD" 	},
 							{TidyTag_TITLE, 		"TITLE" 	},
 							{TidyTag_TR,			"TR"		},
 							{TidyTag_TT,			"TT"		},
-							{TidyTag_U, 			"U" 	},
+							{TidyTag_U, 			"U" 		},
 							{TidyTag_UL,			"UL"		},
 							{TidyTag_VAR,			"VAR"		},
 							{TidyTag_WBR,			"WBR"		},
 							{TidyTag_XMP,			"XMP"		},
 							{TidyTag_MNODE, 		"MNODE"		},
-							{0, 					NULL					}
+							{0, 					NULL		}
+						};
+
+enum					{	TidyTag_MNODE_MH  = TidyTag_MNODE,
+							TidyTag_MNODE_MB,
+							TidyTag_MNODE_MX,
+							TidyTag_MNODE_MC,
+							TidyTag_MNODE_MI
+						};
+
+const SMrbNamedX kMrbTidyMnodeIds[] =
+						{
+							{TidyTag_MNODE_MH,		"mh",		"header"		},
+							{TidyTag_MNODE_MB,		"mb",		"body"			},
+							{TidyTag_MNODE_MX,		"mx",		"expand"		},
+							{TidyTag_MNODE_MC,		"mc",		"code"			},
+							{TidyTag_MNODE_MI,		"mi",		"include"		},
+							{0, 					NULL,		NULL			}
 						};
 
 enum					{	TidyLink_Marabou	=	1,
