@@ -182,20 +182,22 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
    Int_t hi = height;
 // left of parent window
    Int_t parents_width = ((TGFrame *) fMyWindow)->GetWidth();
-   ax = ax -  parents_width / 2 -  width / 3;
+   cout << " ax, ay " << ax << " " <<ay << endl;
+//   ax = ax -  parents_width / 2 -  width / 3;
+   ax = ax - width / 2;
 
 //  make sure its inside physical sceen
    if      (ax < 0)    ax = 10;
    else if (ax + wi > wwi)  ax = wwi - wi - 5;
    if      (ay + hi/2 < 0) ay =  hi/2 + 5;
    else if (ay + hi/2 > whi) ay = whi - hi/2 -5;
-
+   cout << " ax, ay " << ax << " " <<ay << endl;
    this->Move(ax, ay);
    this->SetWMPosition(ax, ay);
    // map all widgets and calculate size of dialog
    this->MapSubwindows();
 
-
+/*
    // make the message box non-resizable
    this->SetWMSize(width, height);
    this->SetWMSizeHints(width, height, width, height, 0, 0);
@@ -205,7 +207,7 @@ TGMrbSliders::TGMrbSliders(const char *Title,  const Int_t NValues,
                         kMWMFuncAll  | kMWMFuncResize    | kMWMFuncMaximize |
                                        kMWMFuncMinimize,
                         kMWMInputModeless);
-
+*/
    // popup dialog and wait till user replies
    this->MapWindow();
    this->ChangeBackground(brown);

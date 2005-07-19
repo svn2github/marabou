@@ -213,6 +213,7 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
    fLMMatrix->fSep = 2;
    fTableFrame->SetLayoutManager(fLMMatrix);
 
+//   cout << "fNrows " << fNrows<< endl;
    Int_t i = 0;
    TIter next(Values);
    TObjString * objs;
@@ -228,24 +229,34 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
          fEntries->Add(fFlagButton);
          fTableFrame->AddFrame(fFlagButton, lo4);
       } else {
-         fTEItem = new TGTextEntry(fTableFrame, fTBItem = new TGTextBuffer(100));
-         fWidgets->Add(fTEItem);
-         fEntries->Add(fTEItem);
-         fTBItem->AddText(0, (const char  *) s);
-         fTEItem->Resize(itemwidth, fTEItem->GetDefaultHeight());
-         fTableFrame->AddFrame(fTEItem, lo1);
+         if (*RetValue >= 0) {
+            fTEItem = new TGTextEntry(fTableFrame, fTBItem = new TGTextBuffer(100));
+            fWidgets->Add(fTEItem);
+            fEntries->Add(fTEItem);
+            fTBItem->AddText(0, (const char  *) s);
+//            cout << "s: " << (const char  *) s << endl;
+            fTEItem->Resize(itemwidth, fTEItem->GetDefaultHeight());
+            fTableFrame->AddFrame(fTEItem, lo1);
+         } else {
+            fColLabFrame = new TGCompositeFrame(fTableFrame,itemwidth,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
+		      fWidgets->Add(fColLabFrame);
+            fColLabel = new TGLabel(fColLabFrame, new TGString((const char *) s));
+            fColLabFrame->AddFrame(fColLabel, lo4);
+            fTableFrame->AddFrame(fColLabFrame, lo1);
+			   fWidgets->Add(fColLabel);
+         }
       }
       i++;
    }
 
    if (ColumnLabels) {
-      for(Int_t i=0; i <= fNcols; i++) {
+      Int_t ioff;                       // if rowlabels defined skip first field
+      if (RowLabels == NULL) ioff = 0;
+      else                   ioff = -1;
+      for(Int_t i=0; i < fNcols - ioff; i++) {
          fColLabFrame = new TGCompositeFrame(fColFrame,itemwidth,20,kVerticalFrame | kFixedWidth |kRaisedFrame);
 		   fWidgets->Add(fColLabFrame);
          if(i > 0 || (i == 0 && RowLabels == NULL)) {
-            Int_t ioff;                       // if rowlabels defined skip first field
-            if (RowLabels == NULL) ioff = 0;
-            else                    ioff = -1;
             objs = (TObjString *) ColumnLabels->At(i+ioff);
             s = objs->String();
             fColLabel    = new TGLabel(fColLabFrame, new TGString((const char *) s));
@@ -473,19 +484,21 @@ void TGMrbTableFrame::StoreValues(){
    TIter next(fValues);
    TObjString *objs;
    Int_t i=0;
-   while((objs = (TObjString*)next())){
-       fTEItem=(TGTextEntry*)nextent();
-       if (fTEItem->InheritsFrom("TGCheckButton")) {
-          fFlagButton = (TGCheckButton*)fTEItem;
-          if (fFlagButton->GetState() == kButtonDown)
-             objs->SetString("CheckButton_Down"); 
-          else
-             objs->SetString("CheckButton_Up");
-       } else { 
-          const char * te = fTEItem->GetBuffer()->GetString();
-          objs->SetString((char *)te);
-       } 
-       i++; 
+   if (*fRet >= 0) {
+   	while((objs = (TObjString*)next())){
+      	fTEItem=(TGTextEntry*)nextent();
+      	if (fTEItem->InheritsFrom("TGCheckButton")) {
+         	fFlagButton = (TGCheckButton*)fTEItem;
+         	if (fFlagButton->GetState() == kButtonDown)
+            	objs->SetString("CheckButton_Down"); 
+         	else
+            	objs->SetString("CheckButton_Up");
+      	} else { 
+         	const char * te = fTEItem->GetBuffer()->GetString();
+         	objs->SetString((char *)te);
+      	} 
+      	i++; 
+   	}
    }
 //   cout << "StoreValues(), fColorSelect " << fColorSelect << endl;
    if(fFlags){
@@ -532,13 +545,13 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
                      delete this;
                      break;
                   case kTableFrameOk:
-                     *fRet = 0;
                      StoreValues();
+                     *fRet = 0;
                      delete this;
                      break;
                   case kTableFrameAct_2:
-                     *fRet = 1;
                      StoreValues();
+                     *fRet = 1;
                      delete this;
                      break;
                   case kTableFrameHelp:
