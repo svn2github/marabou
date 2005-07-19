@@ -299,7 +299,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    TPad         *prevSelPad = 0;
 //OS start
    static Int_t pxB1down, pyB1down;
-   static Double_t xEnclosingCut = 0, yEnclosingCut = 0;
    Double_t x = 0, y = 0;
    Int_t n;
 //OS end
@@ -319,8 +318,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
    static Bool_t in_image = kFALSE;
    if (fSelected) {
       if (event == kButton1Down && !strncmp(fSelected->ClassName(), "TASI", 4)) {
-//         cout << "HTCanvas: " << fSelected->GetName()<< " gPad " <<
-//              gPad << endl;
+         cout << "HTCanvas: " << fSelected->GetName()<< " gPad " <<
+              gPad << endl;
 //         gPad->Dump();
          in_image = kTRUE;
       }
@@ -370,10 +369,11 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton1Down:
 
-//         cout  << px << " " << py << endl;
+//      cout  << px << " " << py << " " << fSelected << endl;
      // find pad in which input occured
       pad = Pick(px, py, prevSelObj);
       if (!pad) return;
+      if (!fSelected) return;
 
       gPad = pad;   // don't use cd() because we won't draw in pad
                     // we will only use its coordinate system
@@ -381,19 +381,13 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          pad_of_image = pad;
          fSelected = pad_of_image;
       }
-//      cout << fSelected  << endl;
    
       FeedbackMode(kTRUE);   // to draw in rubberband mode
 //OS start
       pxB1down = px;
       pyB1down = py;
-      
+
       if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
-      if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
-          TCutG * cut = (TCutG*)fSelected;
-          xEnclosingCut = (cut->GetX())[0];
-          yEnclosingCut = (cut->GetY())[0];
-      }
       x = gPad->AbsPixeltoX(px);
       y = gPad->AbsPixeltoY(py);
       if(fUseEditGrid && fSelectedPad == this &&
@@ -531,12 +525,6 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
          if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
          if (fAutoExec)        RunAutoExec();
-      	if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
-         	 TCutG * cut = (TCutG*)fSelected;
-         	 Double_t xshift = (cut->GetX())[0] -  xEnclosingCut;
-         	 Double_t yshift = (cut->GetY())[0] -  yEnclosingCut;
-             ShiftObjects(((GroupOfGObjects*)fSelected)->GetMemberList(), xshift, yshift);
-      	}
 //         if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
 //            Double_t xshift = gPad->AbsPixeltoX(px) - gPad->AbsPixeltoX(pxB1down);
 //            Double_t yshift = - (gPad->AbsPixeltoX(py) - gPad->AbsPixeltoX(pyB1down));
@@ -616,9 +604,10 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (!pad) return;
 
       if (fContextMenu && !fSelected->TestBit(kNoContextMenu) &&
-          !pad->TestBit(kNoContextMenu) && !TestBit(kNoContextMenu))
+          !pad->TestBit(kNoContextMenu) && !TestBit(kNoContextMenu)) {
+          fSelected->ExecuteEvent(event, px, py);
           fContextMenu->Popup(px, py, fSelected, this, pad);
-
+      }
 
       break;
    }
@@ -626,6 +615,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       break;
 
    case kButton3Up:
+      if (fSelected) fSelected->ExecuteEvent(event, px, py);
       if (fAutoExec)        RunAutoExec();
       break;
 

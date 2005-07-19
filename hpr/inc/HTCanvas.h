@@ -44,6 +44,7 @@ private:
    TRootCanvas    * fRootCanvas;    //! dont stream
    HandleMenus    * fHandleMenus;   //! dont stream
    HprEditCommands * fEditCommands; //! dont stream
+   HprEditCommands * fModifyCommands; //! dont stream
    TList          * fGObjectGroups;      // compound graphic objects
    
    Double_t       fEditGridX;
@@ -86,6 +87,19 @@ public:
    void ClearHistPresent(){fHistPresent = 0;};
    void SetLog(Int_t state);
    void     InitEditCommands();
+   void     ModifyObjects();
+   void     ModifyTexts();
+   void     ModifyCurlyLines();
+   void     ModifyCurlyArcs();
+   void     ModifyArrows();
+   void     ModifyArcs();
+   void     ModifyEllipses();
+   void     ModifyMarkers();
+   void     ModifyPaves();
+   void     ModifyPads();
+   void     ModifyGraphs();
+   void     ListAllObjects();
+
    Double_t GetEditGridX() {return fEditGridX;};
    Double_t GetEditGridY() {return fEditGridY;};
    Double_t GetVisibleGridX() {return fVisibleGridX;};
@@ -102,12 +116,20 @@ public:
    Bool_t  GetUseEditGrid() {return fUseEditGrid;};
    void    DrawEditGrid(Bool_t visible);
    void    RemoveEditGrid();
+   void    RemoveControlGraphs();
+   void    RemoveParallelGraphs();
+   void    RemoveXSplinesPolyLines();
+   void    DrawXSplinesParallelGraphs();
+   void    DrawControlGraphs();
    void    SetVisibilityOfEnclosingCuts(Bool_t visible);
    void    InsertHist();
    void    InsertGraph();
    void    InsertImage();
    void    InsertAxis();
+   void    InsertXSpline();
    void    WritePrimitives();
+   void    DefineBox();
+   void    DefinePolygone();
    Int_t   ExtractGObjectsE();
    Int_t   MarkGObjects();
    Int_t   ExtractGObjects(Bool_t markonly = kFALSE);
@@ -116,7 +138,7 @@ public:
    void    WriteGObjects();
    void    ReadGObjects();
    void    ShowGallery();
-   void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
+//   void    ShiftObjects(TList * list, Double_t xshift, Double_t yshift);
    void    InsertText(Bool_t);
    void    InsertFunction();
    void    InsertTextF(){InsertText(kTRUE);};

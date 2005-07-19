@@ -261,6 +261,8 @@ enum ERootCanvasCommands {
    kFH_DrawGrid,  
    kFH_DrawGridVis,  
    kFH_RemoveGrid,
+   kFH_RemoveCGraph,
+   kFH_DrawCGraph,
    kFH_SetVisEnclosingCut,
    kFH_PutObjectsOnGrid,
    kFH_ExtractGObjects,
@@ -665,6 +667,12 @@ again:
 
                   case kFH_RemoveGrid:
                         fHCanvas->RemoveEditGrid();
+                     break;
+                  case kFH_RemoveCGraph:
+                        fHCanvas->RemoveControlGraphs();
+                     break;
+                  case kFH_DrawCGraph:
+                        fHCanvas->DrawControlGraphs();
                      break;
                   case kFH_SetVisEnclosingCut:
                         if (fEditMenu->IsEntryChecked(kFH_SetVisEnclosingCut)) {
@@ -1874,6 +1882,8 @@ void HandleMenus::BuildMenus()
    	fEditMenu->AddEntry("Draw visible grid",        kFH_DrawGridVis);
    	fEditMenu->AddEntry("Draw real grid",           kFH_DrawGrid  );
    	fEditMenu->AddEntry("Remove Edit Grid",         kFH_RemoveGrid);
+   	fEditMenu->AddEntry("Remove Control Graphs",    kFH_RemoveCGraph);
+   	fEditMenu->AddEntry("Draw Control Graphs",      kFH_DrawCGraph);
    	fEditMenu->AddEntry("Make EnclosingCut visible", kFH_SetVisEnclosingCut);
       fEditMenu->CheckEntry(kFH_SetVisEnclosingCut);
       fEditMenu->AddSeparator();

@@ -26,6 +26,7 @@
 #include "TGMrbValuesAndText.h"
 #include "TGMrbGetTextAlignment.h"
 #include "HprImage.h"
+#include "XSpline.h"
 #include <fstream>
 
 //______________________________________________________________________________
@@ -123,9 +124,14 @@ void HTCanvas::InitEditCommands()
    labels->Add(new TObjString("Text (Latex) from keyboard"));
    labels->Add(new TObjString("Insert compound object"));
    labels->Add(new TObjString("Draw an axis"));
+   labels->Add(new TObjString("Draw a XSpline"));
+   labels->Add(new TObjString("Define a box shaped region"));
+   labels->Add(new TObjString("Define polygone region"));
+
    labels->Add(new TObjString("Mark as compound object"));
    labels->Add(new TObjString("Extract as compound obj"));
    labels->Add(new TObjString("Delete enclosed objects"));
+   labels->Add(new TObjString("Modify objects by keyboard"));
 
    labels->Add(new TObjString("Zoom In"));
    labels->Add(new TObjString("Zoom Out"));
@@ -139,9 +145,13 @@ void HTCanvas::InitEditCommands()
    methods->Add(new TObjString("InsertTextK()"));
    methods->Add(new TObjString("InsertGObjects()"));
    methods->Add(new TObjString("InsertAxis()"));
+   methods->Add(new TObjString("InsertXSpline()"));
+   methods->Add(new TObjString("DefineBox()"));
+   methods->Add(new TObjString("DefinePolygone()"));
    methods->Add(new TObjString("MarkGObjects()"));
    methods->Add(new TObjString("ExtractGObjectsE()"));
    methods->Add(new TObjString("DeleteObjects()"));
+   methods->Add(new TObjString("ModifyObjects()"));
    methods->Add(new TObjString("ZoomIn()"));
    methods->Add(new TObjString("ZoomOut()"));
    methods->Add(new TObjString("UnZoom()"));
@@ -149,6 +159,1115 @@ void HTCanvas::InitEditCommands()
    new HprEditCommands(fRootCanvas, win_width, this, this->ClassName(),
                        labels, methods);
 }
+//______________________________________________________________________________
+
+void HTCanvas::ModifyObjects()
+{
+   Int_t win_width = 160;
+   TList * labels = new TList;
+   TList * methods = new TList;
+
+   labels->Add(new TObjString("List all objects"));
+   labels->Add(new TObjString("Modify Texts"));
+   labels->Add(new TObjString("Modify Arrows"));
+   labels->Add(new TObjString("Modify CurlyLines"));
+   labels->Add(new TObjString("Modify CurlyArcs"));
+   labels->Add(new TObjString("Modify Arcs"));
+   labels->Add(new TObjString("Modify Ellipses"));
+   labels->Add(new TObjString("Modify Markers"));
+   labels->Add(new TObjString("Modify Paves"));
+   labels->Add(new TObjString("Modify Pads"));
+   labels->Add(new TObjString("Modify Graphs"));
+
+   methods->Add(new TObjString("ListAllObjects()"));
+   methods->Add(new TObjString("ModifyTexts()"));
+   methods->Add(new TObjString("ModifyArrows()"));
+   methods->Add(new TObjString("ModifyCurlyLines()"));
+   methods->Add(new TObjString("ModifyCurlyArcs()"));
+   methods->Add(new TObjString("ModifyArcs()"));
+   methods->Add(new TObjString("ModifyEllipses()"));
+   methods->Add(new TObjString("ModifyMarkers()"));
+   methods->Add(new TObjString("ModifyPaves()"));
+   methods->Add(new TObjString("ModifyPads()"));
+   methods->Add(new TObjString("ModifyGraphs()"));
+
+   fModifyCommands = 
+   new HprEditCommands(fRootCanvas, win_width, this, this->ClassName(),
+                       labels, methods);
+ }
+//______________________________________________________________________________
+
+void HTCanvas::ListAllObjects()
+{
+   TOrdCollection * row_lab = new TOrdCollection;
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 2;
+   TIter next(gPad->GetListOfPrimitives());
+//	TObjString * os;
+   TObject * obj;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == EditMarker::Class()) continue;
+      nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No objects in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(2 * nrows);
+   Double_t x = 0, y = 0;
+   const Double_t far = 1000000;
+   for (Int_t i = 0; i < nrows; i++) {
+      flags[i] = 1; 
+      flags[i + nrows] = 0; 
+   }
+   Int_t ind = 0;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == EditMarker::Class()) continue;
+      row_lab->Add(new TObjString(obj->ClassName()));
+      if (obj->IsA() == TMarker::Class()) {
+         TMarker * m = (TMarker*)obj;
+         x = m->GetX();
+         y = m->GetY();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TArc::Class()){
+         TArc * m = (TArc*)obj;
+         x = m->GetX1();
+         y = m->GetY1();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TEllipse::Class()) {
+         TEllipse * m = (TEllipse*)obj;
+         x = m->GetX1();
+         y = m->GetY1();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TArrow::Class()) {
+         TArrow * m = (TArrow*)obj;
+         x = m->GetX1();
+         y = m->GetY1();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TCurlyLine::Class()) {
+         TCurlyLine * m = (TCurlyLine*)obj;
+         x = m->GetStartX();
+         y = m->GetStartY();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TCurlyArc::Class()) {
+         TCurlyArc * m = (TCurlyArc*)obj;
+         x = m->GetStartX();
+         y = m->GetStartY();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TLatex::Class()) {
+         TLatex * m = (TLatex*)obj;
+         x = m->GetX();
+         y = m->GetY();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->InheritsFrom("TPave")) {
+         TPave * m = (TPave*)obj;
+         x = m->GetX1();
+         y = m->GetY1();
+         if (x > far) {x -= far; flags[ind] = 0;}
+
+      } else if (obj->IsA() == TPad::Class()) {
+         TPad * m = (TPad*)obj;
+         x = m->GetAbsXlowNDC();
+         y = m->GetAbsYlowNDC();
+//         convert to user 
+         x = x * (gPad->GetX2() - gPad->GetX1());
+         y = y * (gPad->GetY2() - gPad->GetY1());
+         if (x > far) {x -= far; flags[ind] = 0;}
+      }
+
+      values[ind + 0 * nrows] = x;
+      values[ind + 1 * nrows] = y;
+      ind++;
+   }
+   col_lab->Add(new TObjString("X"));
+   col_lab->Add(new TObjString("Y"));
+   col_lab->Add(new TObjString("Visible"));
+   col_lab->Add(new TObjString("Popup"));
+
+   Int_t ret = -1;
+   Int_t prec = 3;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "All objects", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, row_lab, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Double_t x1, x2, y1, y2;
+   Bool_t changed = kTRUE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == EditMarker::Class()) continue;
+      if (ind >= nrows)break;
+      if (obj->IsA() == TMarker::Class()) {
+         TMarker * m = (TMarker*)obj;
+         x1 = m->GetX();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+         }
+         m->SetX(x1);
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TArc::Class()) {
+         TArc * m = (TArc*)obj;
+         x1 = m->GetX1();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+         }
+         m->SetX1(x1);
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TEllipse::Class()) {
+         TEllipse * m = (TEllipse*)obj;
+         x1 = m->GetX1();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+         }
+         m->SetX1(x1);
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TArrow::Class()) {
+         TArrow * m = (TArrow*)obj;
+         x1 = m->GetX1();
+         x2 = m->GetX2();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+            if (x2 < far) x2 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+            if (x2 > far) x2 -= far;    // move back
+         }
+         m->SetX1(x1);
+         m->SetX2(x2);
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TCurlyLine::Class()) {
+         TCurlyLine * m = (TCurlyLine*)obj;
+         x1 = m->GetStartX();
+         x2 = m->GetEndX();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+            if (x2 < far) x2 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+            if (x2 > far) x2 -= far;    // move back
+         }
+         m->SetStartPoint(x1, m->GetStartY());
+         m->SetEndPoint  (x2, m->GetEndY());
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TCurlyArc::Class()) {
+         TCurlyArc * m = (TCurlyArc*)obj;
+         x1 = m->GetStartX();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+         }
+         m->SetStartPoint(x1, m->GetStartY());
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TLatex::Class()) {
+         TLatex * m = (TLatex*)obj;
+         x1 = m->GetX();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+         }
+         m->SetX(x1);
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+
+      } else if (obj->IsA() == TPad::Class()) {
+         TPad * m = (TPad*)obj;
+         x1 = m->GetAbsXlowNDC();
+         x2 = x1 + m->GetAbsWNDC();
+         y1 = m->GetAbsYlowNDC();
+         y2 = y1 + m->GetAbsHNDC();
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+            if (x2 < far) x2 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+            if (x2 > far) x2 -= far;    // move back
+         }
+         m->SetPad(x1, y1, x2, y2);
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+      } else if (obj->InheritsFrom("TPave")) {
+         TPave * m = (TPave*)obj;
+         x1 = m->GetX1();
+         x2 = m->GetX2();
+         x1 = (x1 - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
+         x2 = (x2 - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
+
+         if (flags[ind] == 0) { 
+            if (x1 < far) x1 += far;    // move away
+            if (x2 < far) x2 += far;    // move away
+         } else {
+            if (x1 > far) x1 -= far;    // move back
+            if (x2 > far) x2 -= far;    // move back
+         }
+         m->SetX1NDC(x1);
+         m->SetX2NDC(x2); 
+         if (flags[ind + nrows] != 0) 
+            m->Pop();
+      }
+      ind++;
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyTexts()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 4;
+   TIter next(gPad->GetListOfPrimitives());
+	TObjString * os;
+   TObject * obj;
+   TLatex * text;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TLatex")) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No text in active pad", fRootCanvas); 
+      return;
+   }
+   TObjArray vt(ncols * nrows);
+   TOrdCollection values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->InheritsFrom("TLatex")) {
+         text = (TLatex*)obj;
+
+         os = new TObjString(text->GetTitle());
+         vt[ind + 0 * nrows] = (TObject*)os;
+
+         TMrbString sx(text->GetX(), prec);
+         os = new TObjString(sx.Data());
+         vt[ind + 1 * nrows] = (TObject*)os;
+
+         TMrbString sy(text->GetY(), prec);
+         os = new TObjString(sy.Data());
+         vt[ind + 2 * nrows] = (TObject*)os;
+
+         TMrbString ss(text->GetTextSize(), prec);
+         os = new TObjString(ss.Data());
+         vt[ind + 3 * nrows] = (TObject*)os;
+         ind++;
+      }    
+   }
+   for (Int_t j = 0; j < nrows*ncols; j++) {
+      values.Add(vt[j]);
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("Text"));
+   col_lab->Add(new TObjString("X"));
+   col_lab->Add(new TObjString("Y"));
+   col_lab->Add(new TObjString("Size"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableFrame(win, &ret, "Text", itemwidth,
+                          ncols, nrows, &values, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   Double_t val;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->InheritsFrom("TLatex")) {
+         if (flags[ind] >0) {
+            text = (TLatex*)obj;
+            os = (TObjString *) values.At(ind + 0 * nrows);
+            text->SetTitle(os->GetString().Data());
+
+            os = (TObjString *) values.At(ind + 1 * nrows);
+            TMrbString sx(os->GetString().Data());
+            sx.ToDouble(val);
+            text->SetX(val);
+
+            os = (TObjString *) values.At(ind + 2 * nrows);
+            TMrbString sy(os->GetString().Data());
+            sy.ToDouble(val);
+            text->SetY(val);
+
+            os = (TObjString *) values.At(ind +3 * nrows);
+            TMrbString ss(os->GetString().Data());
+            ss.ToDouble(val);
+            text->SetTextSize(val);
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyCurlyLines()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 6;
+   TIter next(gPad->GetListOfPrimitives());
+//	TObjString * os;
+   TObject * obj;
+   TCurlyLine * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TCurlyLine::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No CurlyLine in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+//   TOrdCollection values(3 * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TCurlyLine::Class()) {
+         cl = (TCurlyLine*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetStartX();
+         values[ind + 1 * nrows] = cl->GetStartY();
+         values[ind + 2 * nrows] = cl->GetEndX();
+         values[ind + 3 * nrows] = cl->GetEndY();
+         values[ind + 4 * nrows] = cl->GetWaveLength();
+         values[ind + 5 * nrows] = cl->GetAmplitude();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("StartX"));
+   col_lab->Add(new TObjString("StartY"));
+   col_lab->Add(new TObjString("EndX"));
+   col_lab->Add(new TObjString("EndY"));
+   col_lab->Add(new TObjString("WaveLength"));
+   col_lab->Add(new TObjString("Amplitude"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "CurlyLine", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TCurlyLine::Class()) {
+         if (flags[ind] >0) {
+            cl = (TCurlyLine*)obj;
+            cl->SetStartPoint(values[ind + 0 * nrows],values[ind + 1 * nrows]); 
+            cl->SetEndPoint  (values[ind + 2 * nrows],values[ind + 3 * nrows]); 
+            cl->SetWaveLength(values[ind + 4 * nrows]); 
+            cl->SetAmplitude (values[ind + 5 * nrows]); 
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyCurlyArcs()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 7;
+   TIter next(gPad->GetListOfPrimitives());
+   TObject * obj;
+   TCurlyArc * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TCurlyArc::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No CurlyArc in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TCurlyArc::Class()) {
+         cl = (TCurlyArc*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetStartX();
+         values[ind + 1 * nrows] = cl->GetStartY();
+         values[ind + 2 * nrows] = cl->GetRadius();
+         values[ind + 3 * nrows] = cl->GetPhimin();
+         values[ind + 4 * nrows] = cl->GetPhimax();
+         values[ind + 5 * nrows] = cl->GetWaveLength();
+         values[ind + 6 * nrows] = cl->GetAmplitude();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("Center X"));
+   col_lab->Add(new TObjString("Center Y"));
+   col_lab->Add(new TObjString("Radius"));
+   col_lab->Add(new TObjString("Start Phi"));
+   col_lab->Add(new TObjString("End Phi"));
+   col_lab->Add(new TObjString("WaveLength"));
+   col_lab->Add(new TObjString("Amplitude"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "CurlyArc", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TCurlyArc::Class()) {
+         if (flags[ind] >0) {
+            cl = (TCurlyArc*)obj;
+            cl->SetCenter(values[ind + 0 * nrows],values[ind + 1 * nrows]); 
+            cl->SetRadius  (values[ind + 2 * nrows]); 
+            cl->SetPhimin  (values[ind + 3 * nrows]); 
+            cl->SetPhimax  (values[ind + 4 * nrows]); 
+            cl->SetWaveLength(values[ind + 5 * nrows]); 
+            cl->SetAmplitude (values[ind + 6 * nrows]); 
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyArrows()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 6;
+   TIter next(gPad->GetListOfPrimitives());
+   TObject * obj;
+   TArrow * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TArrow::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Arrow in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   cout << "ModifyArrows()enter, gPad: " << gPad << endl;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TArrow::Class()) {
+         cl = (TArrow*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetX1();
+         values[ind + 1 * nrows] = cl->GetY1();
+         values[ind + 2 * nrows] = cl->GetX2();
+         values[ind + 3 * nrows] = cl->GetY2();
+         values[ind + 4 * nrows] = cl->GetArrowSize();
+         values[ind + 5 * nrows] = cl->GetAngle();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("X1"));
+   col_lab->Add(new TObjString("Y1"));
+   col_lab->Add(new TObjString("X2"));
+   col_lab->Add(new TObjString("Y2"));
+   col_lab->Add(new TObjString("Size"));
+   col_lab->Add(new TObjString("Angle"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Arrow", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   cout << "ModifyArrows()exit, gPad: " << gPad << endl;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TArrow::Class()) {
+         if (flags[ind] >0) {
+            cl = (TArrow*)obj;
+            cl->SetX1(values[ind + 0 * nrows]);
+            cl->SetY1(values[ind + 1 * nrows]); 
+            cl->SetX2(values[ind + 2 * nrows]); 
+            cl->SetY2(values[ind + 3 * nrows]); 
+            cl->SetArrowSize (values[ind + 4 * nrows]); 
+            cl->SetAngle(values[ind + 5 * nrows]); 
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyArcs()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 5;
+   TIter next(gPad->GetListOfPrimitives());
+   TObject * obj;
+   TArc * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TArc::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Arc in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TArc::Class()) {
+         cl = (TArc*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetX1();
+         values[ind + 1 * nrows] = cl->GetY1();
+         values[ind + 2 * nrows] = cl->GetR1();
+         values[ind + 3 * nrows] = cl->GetPhimin();
+         values[ind + 4 * nrows] = cl->GetPhimax();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("Center X"));
+   col_lab->Add(new TObjString("Center Y"));
+   col_lab->Add(new TObjString("Radius"));
+   col_lab->Add(new TObjString("Start Phi"));
+   col_lab->Add(new TObjString("End Phi"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Arc", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TArc::Class()) {
+         if (flags[ind] >0) {
+            cl = (TArc*)obj;
+            cl->SetX1(values[ind + 0 * nrows]);
+            cl->SetY1(values[ind + 1 * nrows]); 
+            cl->SetR1  (values[ind + 2 * nrows]); 
+            cl->SetPhimin  (values[ind + 3 * nrows]); 
+            cl->SetPhimax  (values[ind + 4 * nrows]); 
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyEllipses()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 7;
+   TIter next(gPad->GetListOfPrimitives());
+   TObject * obj;
+   TEllipse * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TEllipse::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Ellipse in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TEllipse::Class()) {
+         cl = (TEllipse*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetX1();
+         values[ind + 1 * nrows] = cl->GetY1();
+         values[ind + 2 * nrows] = cl->GetR1();
+         values[ind + 3 * nrows] = cl->GetR2();
+         values[ind + 4 * nrows] = cl->GetPhimin();
+         values[ind + 5 * nrows] = cl->GetPhimax();
+         values[ind + 6 * nrows] = cl->GetTheta();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("Center X"));
+   col_lab->Add(new TObjString("Center Y"));
+   col_lab->Add(new TObjString("R1"));
+   col_lab->Add(new TObjString("R2"));
+   col_lab->Add(new TObjString("Start Phi"));
+   col_lab->Add(new TObjString("End Phi"));
+   col_lab->Add(new TObjString("Theta"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Ellipse", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TEllipse::Class()) {
+         if (flags[ind] >0) {
+            cl = (TEllipse*)obj;
+            cl->SetX1(values[ind + 0 * nrows]);
+            cl->SetY1(values[ind + 1 * nrows]); 
+            cl->SetR1  (values[ind + 2 * nrows]); 
+            cl->SetR2  (values[ind + 3 * nrows]); 
+            cl->SetPhimin  (values[ind + 4 * nrows]); 
+            cl->SetPhimax  (values[ind + 5 * nrows]); 
+            cl->SetTheta   (values[ind + 6 * nrows]); 
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyMarkers()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 3;
+   TIter next(gPad->GetListOfPrimitives());
+//	TObjString * os;
+   TObject * obj;
+   TMarker * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TMarker::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Marker in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TMarker::Class()) {
+         cl = (TMarker*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetX();
+         values[ind + 1 * nrows] = cl->GetY();
+         values[ind + 2 * nrows] = cl->GetMarkerSize();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("X"));
+   col_lab->Add(new TObjString("Y"));
+   col_lab->Add(new TObjString("Size"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Marker", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TMarker::Class()) {
+         if (flags[ind] >0) {
+            cl = (TMarker*)obj;
+            cl->SetX(values[ind + 0 * nrows]);
+            cl->SetY(values[ind + 1 * nrows]); 
+            cl->SetMarkerSize (values[ind + 2 * nrows]); 
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyPads()
+{
+//   if (gPad != this) {
+//      WarnBox("Cant modify subpads
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 4;
+   TIter next(gPad->GetListOfPrimitives());
+   TObject * obj;
+   TPad * b;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TPad")) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Pad in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Double_t x1, y1, x2, y2;
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->InheritsFrom("TPad")) {
+         b = (TPad*)obj;
+         x1 = b->GetAbsXlowNDC();
+         y1 = b->GetAbsYlowNDC();
+         x2 = x1 + b->GetAbsWNDC();
+         y2 = y1 + b->GetAbsHNDC();
+//         convert to user 
+         x1 = x1 * (gPad->GetX2() - gPad->GetX1());
+         y1 = y1 * (gPad->GetY2() - gPad->GetY1());
+         x2 = x2 * (gPad->GetX2() - gPad->GetX1());
+         y2 = y2 * (gPad->GetY2() - gPad->GetY1());
+         values[ind + 0 * nrows] = x1;
+         values[ind + 1 * nrows] = y1;
+         values[ind + 2 * nrows] = x2 - x1;
+         values[ind + 3 * nrows] = y2 - y1;
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("X"));
+   col_lab->Add(new TObjString("Y"));
+   col_lab->Add(new TObjString("Width"));
+   col_lab->Add(new TObjString("Height"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Pad", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->InheritsFrom("TPad")) {
+         if (flags[ind] >0) {
+            b = (TPad*)obj;
+            x1 = (values[ind + 0 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
+            y1 = (values[ind + 1 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
+            x2 = x1 + (values[ind + 2 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
+            y2 = y1 + (values[ind + 3 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
+//            cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
+            b->SetPad(x1, y1, x2, y2);
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyPaves()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 4;
+   TIter next(gPad->GetListOfPrimitives());
+   TObject * obj;
+   TPave * cl;
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("TPave")) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Pave in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->InheritsFrom("TPave")) {
+         cl = (TPave*)obj;
+         
+         values[ind + 0 * nrows] = cl->GetX1();
+         values[ind + 1 * nrows] = cl->GetY1();
+         values[ind + 2 * nrows] = cl->GetX2() - cl->GetX1();
+         values[ind + 3 * nrows] = cl->GetY2() - cl->GetY1();
+         ind++;
+      }    
+   }
+   for (Int_t i = 0; i < nrows; i++) flags[i] = 1; 
+   col_lab->Add(new TObjString("X"));
+   col_lab->Add(new TObjString("Y"));
+   col_lab->Add(new TObjString("Width"));
+   col_lab->Add(new TObjString("Height"));
+   col_lab->Add(new TObjString("Apply"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Pave", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags);
+   if (ret < 0) return;
+   ind = 0;
+   Double_t x1;
+   Double_t y1;
+   Double_t x2;
+   Double_t y2;
+   Bool_t changed = kFALSE;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->InheritsFrom("TPave")) {
+         if (flags[ind] >0) {
+            TPave * b = (TPave*)obj;
+            x1 = (values[ind + 0 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
+            y1 = (values[ind + 1 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
+            x2 = x1 + (values[ind + 2 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
+            y2 = y1 + (values[ind + 3 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
+            b->SetX1NDC(x1);
+            b->SetY1NDC(y1); 
+            b->SetX2NDC(x2); 
+            b->SetY2NDC(y2);
+            changed = kTRUE;
+         }
+         ind++;
+      }    
+   }
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::ModifyGraphs()
+{
+   TOrdCollection * col_lab = new TOrdCollection;
+   Int_t nrows = 0;
+   Int_t ncols = 3;
+   TIter next(gPad->GetListOfPrimitives());
+//	TObjString * os;
+   TObject * obj;
+   TGraph * cl;
+   while ( (obj = next()) ) {
+      if (obj->IsA() == TGraph::Class()) nrows++;
+   }
+   if (nrows <= 0) {
+      WarnBox("No Graph in active pad", fRootCanvas); 
+      return;
+   }
+   TArrayD values(ncols * nrows);
+   TArrayI flags(nrows);
+   Int_t ind = 0;
+   Int_t prec = 3;
+   TIter next_1(gPad->GetListOfPrimitives());
+   while ( (obj = next_1()) ) {
+      if (obj->IsA() == TGraph::Class()) {
+         cl = (TGraph*)obj;
+         Double_t * x = cl->GetX();
+         Double_t * y = cl->GetY();
+         values[ind + 0 * nrows] = x[0];
+         values[ind + 1 * nrows] = y[0];
+         values[ind + 2 * nrows] = cl->GetN();
+         ind++;
+      }    
+   }
+   flags[0] = 1; 
+   col_lab->Add(new TObjString("X of first point"));
+   col_lab->Add(new TObjString("Y of first point"));
+   col_lab->Add(new TObjString("Npoints"));
+   col_lab->Add(new TObjString("Select"));
+   Int_t ret;
+   Int_t itemwidth = 100;
+   const TGWindow * win = (TGWindow*)fRootCanvas;
+   new TGMrbTableOfDoubles(win, &ret, "Select Graph", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab, NULL, &flags, nrows);
+   if (ret < 0) return;
+   ind = 0;
+   Bool_t changed = kFALSE;
+   cl = NULL;
+   TIter next_2(gPad->GetListOfPrimitives());
+   while ( (obj = next_2()) ) {
+      if (obj->IsA() == TGraph::Class()) {
+         if (flags[ind] >0) {
+            cl = (TGraph*)obj;
+            break;
+         }
+         ind++;
+      }    
+   }
+   if (cl == NULL) {
+      cout << "No selection" << endl;
+      return;
+   }
+   changed = kTRUE;
+   col_lab->Clear();
+   col_lab->Add(new TObjString("X"));
+   col_lab->Add(new TObjString("Y"));
+   nrows = cl->GetN();
+   ncols = 2;
+   values.Set(2 * nrows);
+   Double_t * x = cl->GetX();
+   Double_t * y = cl->GetY();
+   for(Int_t i = 0; i < nrows; i++) {
+      values[i] = x[i];
+      values[i + nrows] = y[i];
+   }
+   new TGMrbTableOfDoubles(win, &ret, "Edit Graph", itemwidth,
+                          ncols, nrows, values, prec, 
+                          col_lab);
+   if (ret < 0) return;
+   for(Int_t i = 0; i < nrows; i++) {
+      x[i] = values[i];
+      y[i] = values[i + nrows];
+   }
+   
+   if (changed) {
+      gPad->Modified();
+      gPad->Update();
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::DefineBox()
+{
+   TObject * obj = gPad->WaitPrimitive("TPave");
+//   TObject * obj = gPad->GetListOfPrimitives()->Last();
+   if (obj->IsA() == TPave::Class()) {
+      TPave * p = (TPave*)obj;
+      Double_t x[5];
+      Double_t y[5];
+      x[0] =  p->GetX1();
+      x[1] =  p->GetX2();
+      x[2] =  x[1];
+      x[3] =  x[0];
+      x[4] =  x[0];
+      y[0] =  p->GetY1();
+      y[1] =  y[0];
+      y[2] =  p->GetY2();
+      y[3] =  y[2];
+      y[4] =  y[0];
+      TObject * otcut = gPad->GetListOfPrimitives()->FindObject("CUTG");
+      if (otcut) delete otcut;
+      TCutG * cut = new TCutG("CUTG", 5, &x[0], &y[0]);
+      delete obj;
+      cut->Draw();
+      cut->SetLineWidth(1);
+      cut->SetLineStyle(2);
+      cut->SetLineColor(1);
+      Update();
+   } else {
+       cout << "Error getting TPave" << endl;
+   }
+}
+//______________________________________________________________________________
+
+void HTCanvas::DefinePolygone()
+{
+   TObject * obj = gPad->GetListOfPrimitives()->FindObject("CUTG");
+   if (obj) delete obj;
+   obj = gPad->WaitPrimitive("CUTG", "CutG");
+//   obj = gPad->GetListOfPrimitives()->Last();
+   if (obj->IsA() == TCutG::Class()) {
+       ((TCutG*)obj)->SetLineWidth(1);
+       ((TCutG*)obj)->SetLineStyle(2);
+       ((TCutG*)obj)->SetLineColor(1);
+        Update();
+   } else {
+       cout << "Error getting TCutG" << endl;
+   }
+}     
 //______________________________________________________________________________
 
 void HTCanvas::ZoomIn()
@@ -238,6 +1357,68 @@ void HTCanvas::DrawEditGrid(Bool_t visible)
       }
       x += dx;
    }
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::RemoveXSplinesPolyLines()
+{
+   TIter next(GetListOfPrimitives());
+   TObject * obj;
+   while ( (obj = next()) ){
+      if (obj->IsA() == XSpline::Class()) ((XSpline*)obj)->RemovePolyLines();
+   }
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::DrawXSplinesParallelGraphs()
+{
+   TIter next(GetListOfPrimitives());
+   TObject * obj;
+   while ( (obj = next()) ){
+      if (obj->IsA() == XSpline::Class()) ((XSpline*)obj)->DrawParallelGraphs();
+   }
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::DrawControlGraphs()
+{
+   TIter next(GetListOfPrimitives());
+   TObject * obj;
+   this->cd();
+   while ( (obj = next()) ){
+      if (obj->IsA() == XSpline::Class()) ((XSpline*)obj)->DrawControlPoints();
+   }
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::RemoveControlGraphs()
+{
+   TList * lop = GetListOfPrimitives();
+   TObject * obj;
+   while ( (obj = lop->FindObject("ControlGraph")) ){
+//      delete obj;
+//      cout << "remove " << obj << endl;
+      lop->Remove(obj);
+   }
+   Modified();
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::RemoveParallelGraphs()
+{
+   TList * lop = GetListOfPrimitives();
+   TObject * obj;
+   while ( (obj = lop->FindObject("ParallelG")) ){
+//      delete obj;
+//      cout << "remove " << obj << endl;
+      lop->Remove(obj);
+   }
+   Modified();
    Update();
 }
 //______________________________________________________________________________
@@ -605,7 +1786,8 @@ void HTCanvas::InsertImage()
    img->SetConstRatio(kTRUE);
    img->SetEditable(kTRUE);
    img->SetImageQuality(TAttImage::kImgBest);
-   img->Draw("xxx");
+   hprimg->Draw("xxx");
+//   img->Draw("xxx");
 //   hprimg->Paint();
    Update();
 }
@@ -625,9 +1807,13 @@ void HTCanvas::WritePrimitives()
       return;
    if (OpenWorkFile(fRootCanvas)) {
       RemoveEditGrid();
+      RemoveControlGraphs();
+      RemoveXSplinesPolyLines();
+      RemoveParallelGraphs();
       Write(name.Data());
  //     GetListOfPrimitives()->Write(name.Data(), 1);
       CloseWorkFile();
+      DrawXSplinesParallelGraphs();
    }
 }
 //______________________________________________________________________________
@@ -695,6 +1881,7 @@ tryagain:
 //   TIter next(GetListOfPrimitives());
    while ( lnk ) {
       obj = lnk->GetObject();
+      cout << "exgo: " << obj->GetName() << " "  << obj->ClassName()<< endl;
       if (obj == cut        // the enclosing TCutG itself
           || obj->InheritsFrom("EditMarker")
           || obj->InheritsFrom("GroupOfGObjects")) {
@@ -850,6 +2037,42 @@ tryagain:
             gg->AddMember(b,  lnk->GetOption());
          }
 
+      } else if (obj->IsA() == ControlGraph::Class()) {
+         cout << "Skip ControlGraph" << endl;
+
+      } else if (obj->IsA() == TGraph::Class() && !strncmp(obj->GetName(), "ParallelG", 9)) {
+         cout << "Skip ParallelG" << endl;
+
+      } else if (obj->IsA() == XSpline::Class()) {
+         XSpline* b = ( XSpline*)obj;
+         ControlGraph* gr = b->GetControlGraph();
+         Double_t * x = gr->GetX();
+         if (!x) {
+            cout << "TGraph with 0 points" << endl;
+            continue;
+         }
+         Double_t * y = gr->GetY();
+         cout << "exgo XSpline, x, y " << x[0] << " " <<  y[0] << endl;
+//         either first or last point
+         if (cut->IsInside(x[0], y[0]) 
+            |cut->IsInside(x[b->GetN()-1], y[b->GetN()-1])) {
+            if (!markonly) {
+              cout << "Shift ControlGraph" << endl;
+               b = (XSpline*)obj->Clone();
+               gr = b->GetControlGraph();
+               gr->SetParent(b);
+               Double_t* xt = new Double_t[gr->GetN()];
+               Double_t* yt = new Double_t[gr->GetN()];
+         	   for (Int_t i = 0; i < gr->GetN(); i++) {
+            	   xt[i] = x[i] - xoff;
+               	yt[i] = y[i] - yoff;
+               }
+               b->SetControlPoints(gr->GetN(), xt, yt);
+               delete [] xt;
+               delete [] yt;
+         	}
+            gg->AddMember(b,  lnk->GetOption());
+         } 
       } else if (obj->InheritsFrom("TGraph")) {
          TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
@@ -1124,7 +2347,7 @@ void HTCanvas::ShowGallery()
    }
 }
 //______________________________________________________________________________
-
+/*
 void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
 {
 //  if (list) list->Print();
@@ -1135,8 +2358,8 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
  //     obj->Print();
       if (obj->InheritsFrom("TPave")) {
          TPave * b = (TPave*)obj;
-         Double_t yoffNDC = yoff / (GetY2() - GetY1());
-         Double_t xoffNDC = xoff / (GetX2() - GetX1());
+         Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
+         Double_t yoffNDC = yoff / (gPad->GetY2() - gPad->GetY1());
          b->SetX1NDC(b->GetX1NDC() + xoffNDC);
          b->SetY1NDC(b->GetY1NDC() + yoffNDC);
          b->SetX2NDC(b->GetX2NDC() + xoffNDC);
@@ -1152,8 +2375,8 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
       } else if (obj->InheritsFrom("TPad")){
          TPad * b = (TPad*)obj;
          Double_t x1, y1;
-         Double_t xoffNDC = xoff / (GetX2() - GetX1());
-         Double_t yoffNDC = yoff / (GetY2() - GetY1());
+         Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
+         Double_t yoffNDC = yoff / (gPad->GetY2() - gPad->GetY1());
          x1 = b->GetAbsXlowNDC() + xoffNDC;
          y1 = b->GetAbsYlowNDC() + yoffNDC;
          b->SetPad(x1, y1, x1 + b->GetWNDC(), y1 + b->GetHNDC());
@@ -1227,6 +2450,7 @@ void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
       }
    }   
 }
+*/
 //______________________________________________________________________________
 
 void HTCanvas::PutObjectsOnGrid(TList* list)
@@ -2050,7 +3274,7 @@ or select \"Use same (selected) pad\"", fRootCanvas);
       if (pad_opacity > 100) pad_opacity = 100;
       gPad->SetFillStyle(4000 + pad_opacity);
    }
-   if (new_canvas != 0) TCanvas *cc = new TCanvas("cc", "cc", 600,400);
+   if (new_canvas != 0) new TCanvas("cc", "cc", 600,400);
    if (same_pad != 0) f->Draw("same");
    else                     f->Draw();
    gPad->Update();
@@ -2149,6 +3373,127 @@ tryagain:
 
    if (usetimeformat) ax->SetTimeFormat(tformat.Data());
    ax->Draw();
+   Modified();
+   Update();
+}
+//______________________________________________________________________________
+
+void HTCanvas::InsertXSpline()
+{
+   TList row_lab; 
+   TList values;
+   row_lab.Add(new TObjString("Closed XSpline"));
+   row_lab.Add(new TObjString("Approximate"));
+   row_lab.Add(new TObjString("Fix endpoints"));
+   row_lab.Add(new TObjString("Precision"));
+   row_lab.Add(new TObjString("Show Controlpoints"));
+   row_lab.Add(new TObjString("Line color"));
+   row_lab.Add(new TObjString("Line width"));
+   row_lab.Add(new TObjString("Line style"));
+   row_lab.Add(new TObjString("Railway: sleeper length"));
+   row_lab.Add(new TObjString("Railway: sleeper distance"));
+   row_lab.Add(new TObjString("Railway: gage"));
+
+   static Int_t closed = 0;
+   static Int_t approx = 1;
+   static Int_t fixends = 1;
+   static Double_t prec = 0.2;
+   static Int_t showcp  = 1;
+   static Int_t color  = gStyle->GetLineColor();
+   static Int_t lwidth = gStyle->GetLineWidth();
+   static Int_t lstyle  = gStyle->GetLineStyle();
+   static Double_t filled  = 0;
+   static Double_t empty  = 5;
+   static Double_t gage  = 2;
+
+   AddObjString(closed, &values, kAttCheckB);
+   AddObjString(approx, &values, kAttCheckB);
+   AddObjString(fixends, &values, kAttCheckB);
+   AddObjString(prec, &values);
+   AddObjString(showcp, &values, kAttCheckB);
+   AddObjString(color, &values, kAttColor);
+   AddObjString(lwidth, &values);
+   AddObjString(lstyle, &values, kAttLineS);
+   AddObjString(filled, &values);
+   AddObjString(empty, &values);
+   AddObjString(gage, &values);
+
+   Bool_t ok; 
+   Int_t itemwidth = 320;
+tryagain:
+   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+                      NULL, NULL, &row_lab, &values);
+   if (!ok) return;
+   Int_t vp = 0;
+   closed = GetInt(&values, vp++);
+   approx = GetInt(&values, vp++);
+   fixends = GetInt(&values, vp++);
+   prec   = GetDouble(&values, vp++);
+   showcp = GetInt(&values, vp++);
+   color = GetInt(&values, vp++);
+   lwidth = GetInt(&values, vp++);
+   lstyle = GetInt(&values, vp++);
+   filled   = GetDouble(&values, vp++);
+   empty   = GetDouble(&values, vp++);
+   gage  = GetDouble(&values, vp++);
+
+  cout << "Input a  Polyline defining the controlpoints" << endl;
+  TGraph * gr = (TGraph*)this->WaitPrimitive("Graph", "PolyLine");
+  if (!gr) {
+      cout << "No PolyLine found, try again" << endl;
+      goto tryagain;
+   }
+   gr->SetName("abc");
+   Double_t* x = gr->GetX();
+   Double_t* y = gr->GetY();
+   Int_t npoints = gr->GetN();
+//  add an extra point in between
+   if (npoints == 2) {
+      Double_t x0 = x[0];
+      Double_t y0 = y[0];
+      Double_t x1 = x[1];
+      Double_t y1 = y[1];
+      npoints = 3;
+      gr->Set(npoints);
+      gr->SetPoint(0, x0, y0);
+      gr->SetPoint(2, x1, y1);
+      gr->SetPoint(1, 0.5 * (x1 + x0) , 0.5 * (y1 + y0));
+      x = gr->GetX();
+      y = gr->GetY();
+   }
+   TArrayF shape_factors(npoints);
+   if ( (fixends == 0 || closed == 1) && approx == 1) {
+      shape_factors[0] = 1;
+      shape_factors[npoints - 1] = 1;
+   } else {
+      shape_factors[0] = -1;
+      shape_factors[npoints - 1] = -1;
+   }
+   for (Int_t i = 1; i < npoints - 1; i++) {
+   	if (approx == 1) {
+      	shape_factors[i] = 1;
+   	} else {
+      	shape_factors[i] = -1;
+   	}
+   }
+   Bool_t closed_spline;
+   if (closed != 0) closed_spline = kTRUE;
+   else             closed_spline = kFALSE;
+   XSpline* xsp = new XSpline(npoints, x, y);
+   xsp->SetShapeFactors(npoints, shape_factors.GetArray());
+   xsp->ComputeSpline(prec, closed_spline);
+   xsp->SetLineColor(color);
+   xsp->SetLineWidth(lwidth);
+   xsp->SetLineStyle(lstyle);
+   xsp->SetFilledLength(filled);
+   xsp->SetEmptyLength(empty);
+   xsp->Draw("L");
+   if (filled > 0 && empty > 0 && gage > 0) {
+     xsp->AddParallelGraph( gage / 2, color, lwidth, lstyle); 
+     xsp->AddParallelGraph(-gage / 2, color, lwidth, lstyle); 
+   }
+   if (showcp > 0) xsp->DrawControlPoints(24, 0);
+   delete gr;
    Modified();
    Update();
 }

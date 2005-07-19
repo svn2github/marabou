@@ -47,12 +47,14 @@ public:
    void Transform(Double_t x, Double_t y, Double_t xoff,Double_t yoff,
                     Double_t scale, Double_t angle,Int_t  align, Double_t* xt, Double_t* yt);  
    void Print();                                                // *MENU*
+   void         ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void Paint(Option_t* opt) {if (fIsVisible) TGraph::Paint(opt);};
    void    SetVisible(Bool_t vis) {fIsVisible = vis;};          // *MENU*
    Bool_t  GetVisible() {return fIsVisible;};
    void BindObjects() {BindReleaseObjects(kTRUE);};            // *MENU*
    void ReleaseObjects() {BindReleaseObjects(kFALSE);};        // *MENU*
    void DeleteObjects();                                       // *MENU*
+   void ShiftObjects(Double_t xshift, Double_t yshift, Bool_t shiftcut = kTRUE);        // *MENU*
    void BindReleaseObjects(Bool_t bind) ; 
         
 ClassDef(GroupOfGObjects,2)

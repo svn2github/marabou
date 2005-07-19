@@ -70,6 +70,9 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
 //  screen size in pixels
    gVirtualX->GetWindowSize(gClient->GetRoot()->GetId(),
               screen_x, screen_y, ww, wh);
+//   cout << "screen_x, screen_y, ww, wh , ax, ay" << 
+//            screen_x<< " " << screen_y<< " " 
+//            << ww<< " " << wh<< " " << ax << " " << ay << endl;
    wwi = ww;
    whi = wh;
    Int_t wi = width;
@@ -82,7 +85,7 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
 
    this->Move(ax, ay);
    this->SetWMPosition(ax, ay);
-
+/*
    // make the message box non-resizable
    this->SetWMSize(width, height);
    this->SetWMSizeHints(width, height, width, height, 0, 0);
@@ -92,8 +95,8 @@ HprEditCommands::HprEditCommands(const TGWindow *Win, Int_t win_width,
                         kMWMFuncAll  | kMWMFuncResize    | kMWMFuncMaximize |
                                        kMWMFuncMinimize,
                         kMWMInputModeless);
-
-   // popup dialog and wait till user replies
+*/
+   // popup dialog dont wait
    this->MapWindow();
    this->ChangeBackground(brown);
 

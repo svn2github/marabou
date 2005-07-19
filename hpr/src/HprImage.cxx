@@ -22,7 +22,7 @@ HprImage::HprImage(const Char_t * fname, TPad * pad) :
       fBuffer = NULL;
       fImage = NULL;
    } else {
-//      cout << "ctor HprImage: size " << size << endl;
+      cout << "ctor HprImage: size " << size << endl;
       fImage = TImage::Open(fname);
       if (!fImage) {
          cout << "Could not create an image... exit" << endl;
@@ -46,7 +46,7 @@ HprImage::~HprImage()
 //   if (fPad) {  
 //      delete fPad;
 //   }
-//   cout << "HprImage:: dtor" << endl;
+   cout << "HprImage:: dtor" << endl;
    fPad = 0;
    if(fBuffer)delete fBuffer;
    fBuffer = 0; 

@@ -7,7 +7,7 @@ namespace std {} using namespace std;
 class HprImage : public TNamed {
 private:
    TArrayC * fBuffer;
-   TImage * fImage;
+   TImage * fImage; //! dont stream
    TPad * fPad;    //! dont stream
    Bool_t fIsGood; //! dont stream
 

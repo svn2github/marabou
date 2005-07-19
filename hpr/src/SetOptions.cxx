@@ -705,6 +705,9 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    gEnv->SetValue("HistPresent.CurlyColor" ,fCurlyColor);
    gEnv->SetValue("HistPresent.IsCurly"    ,fIsCurly);
 
+	gStyle->SetLineColor(fCurlyColor);
+	gStyle->SetLineStyle(fCurlyStyle);
+	gStyle->SetLineWidth(fCurlyWidth);
    SetCurlyAtt();
 
    if (win && flag.GetSum() > 0) {
@@ -745,7 +748,7 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetCurlyAtt()
 {
-#if ROOTVERSION > ENABLE_CURLYDEFAULTS
+//#if ROOTVERSION > ENABLE_CURLYDEFAULTS
    const char * ArrowOption[] = 
       {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
 	TCurlyLine::SetDefaultWaveLength(fCurlyWaveLength);
@@ -758,10 +761,7 @@ void HistPresent::SetCurlyAtt()
 	TArrow::SetDefaultAngle(fArrowAngle);
 	TArrow::SetDefaultArrowSize(fArrowSize);
 	TArrow::SetDefaultOption(ArrowOption[fArrowShape]);
-#endif
-	gStyle->SetLineColor(fCurlyColor);
-	gStyle->SetLineStyle(fCurlyStyle);
-	gStyle->SetLineWidth(fCurlyWidth);
+//#endif
 }
 //_______________________________________________________________________
 

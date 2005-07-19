@@ -11,7 +11,9 @@ namespace std {} using namespace std;
 #include "TText.h"
 #include "TEllipse.h"
 #include "TPolyLine.h"
+#include "XSpline.h"
 #include "iostream"
+
 //________________________________________________________________
 
 Double_t XtoNDC(TPad *pad, Double_t x)
@@ -39,6 +41,7 @@ Double_t YLtoNDC(TPad *pad, Double_t y)
    pad->GetRange(x1, y1, x2, y2);
    return y / (y2 - y1);
 };
+
 //________________________________________________________________
 
 ClassImp(GroupOfGObjects)
@@ -274,11 +277,32 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          b->SetX1(xt);
          b->SetY1(yt);
 
+      } else if (clone->InheritsFrom("XSpline")) {
+         XSpline* b = ( XSpline*)clone;
+         TGraph* gr = (TGraph*)b->GetControlGraph();
+         Double_t * x = gr->GetX();
+         Double_t * y = gr->GetY();
+//         either first or last point
+         cout << "Shift ControlGraph " << gr->GetN()<< endl;
+         b->GetControlGraph()->SetParent(b);
+         Double_t* xt = new Double_t[gr->GetN()];
+         Double_t* yt = new Double_t[gr->GetN()];
+         for (Int_t i = 0; i < gr->GetN(); i++) {
+            Transform(x[i], y[i], xoff,yoff, scaleG, angle, align, &xt[i], &yt[i]);  
+ //           xt[i] = x[i] + xoff;
+ //          yt[i] = y[i] + yoff;
+         }
+         b->SetControlPoints(gr->GetN(), xt, yt);
+         delete [] xt;
+         delete [] yt;
+ //        b->GetControlGraph()->Print();
+
       } else if (clone->InheritsFrom("TGraph")) {
          TGraph * b = (TGraph *)clone;
          Double_t * x = b->GetX();
          Double_t * y = b->GetY();
-         for (Int_t i = 0; i < b->GetN(); i++) {
+//          cout << "Gof: TGraph, points" << b->GetN() << endl;
+        for (Int_t i = 0; i < b->GetN(); i++) {
             Transform(x[i], y[i], xoff,yoff, scaleG, angle, align, &xt, &yt);  
             x[i] = xt;
             y[i] = yt;
@@ -372,8 +396,13 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
       }
       if (clone) {
 //         cout << "pad, gPad " << pad << " " << gPad << endl;
-         if (!clone->InheritsFrom("TPad") || pad->InheritsFrom("TCanvas"))
+         if (!clone->InheritsFrom("TPad") || pad->InheritsFrom("TCanvas")) {
             pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
+            if (clone->InheritsFrom("XSpline")) {
+               XSpline* b = ( XSpline*)clone;
+               b->ComputeSpline();
+            }
+         }
 //         cout << "addmemb: " << endl;
 //         clone->Print();
       }
@@ -399,4 +428,150 @@ void  GroupOfGObjects::Transform(Double_t x, Double_t y, Double_t xoff, Double_t
    }
    *xt += xoff;
    *yt += yoff;
+}
+//____________________________________________________________________________
+
+void  GroupOfGObjects::ExecuteEvent(Int_t event, Int_t px, Int_t py)
+{
+   static Double_t xEnclosingCut = 0, yEnclosingCut = 0;
+
+   TCutG::ExecuteEvent(event, px, py);
+   switch (event) {
+
+   case kButton1Down:
+      xEnclosingCut = GetX()[0];
+      yEnclosingCut = GetY()[0];
+      break;
+   case kButton1Up:
+      {
+      Double_t xshift = GetX()[0] -  xEnclosingCut;
+      Double_t yshift = GetY()[0] -  yEnclosingCut;
+      ShiftObjects(xshift, yshift, kFALSE);
+      }
+      break;
+   default:
+      break;
+   }
+}
+//____________________________________________________________________________
+
+void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut)
+{
+//  if (list) list->Print();
+   TObject * obj;
+   TIter next(GetMemberList());
+   while ( (obj = next()) ) {
+      if (obj->InheritsFrom("EditMarker")) continue; 
+ //     obj->Print();
+      if (obj->InheritsFrom("TPave")) {
+         TPave * b = (TPave*)obj;
+         Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
+         Double_t yoffNDC = yoff / (gPad->GetY2() - gPad->GetY1());
+         b->SetX1NDC(b->GetX1NDC() + xoffNDC);
+         b->SetY1NDC(b->GetY1NDC() + yoffNDC);
+         b->SetX2NDC(b->GetX2NDC() + xoffNDC);
+         b->SetY2NDC(b->GetY2NDC() + yoffNDC);
+         
+      } else if (obj->InheritsFrom("TBox")) {
+         TBox * b = (TBox*)obj;
+         b->SetX1(b->GetX1() + xoff);
+         b->SetX2(b->GetX2() + xoff);
+         b->SetY1(b->GetY1() + yoff);
+         b->SetY2(b->GetY2() + yoff);
+         
+      } else if (obj->InheritsFrom("TPad")){
+         TPad * b = (TPad*)obj;
+         Double_t x1, y1;
+         Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
+         Double_t yoffNDC = yoff / (gPad->GetY2() - gPad->GetY1());
+         x1 = b->GetAbsXlowNDC() + xoffNDC;
+         y1 = b->GetAbsYlowNDC() + yoffNDC;
+         b->SetPad(x1, y1, x1 + b->GetWNDC(), y1 + b->GetHNDC());
+
+      } else if (obj->InheritsFrom("TLine")){
+         TLine * b = (TLine*)obj;
+         b->SetX1(b->GetX1() + xoff);
+         b->SetX2(b->GetX2() + xoff);
+         b->SetY1(b->GetY1() + yoff);
+         b->SetY2(b->GetY2() + yoff);
+
+      } else if (obj->InheritsFrom("TArrow")) {
+         TArrow * b = (TArrow*)obj;
+         b->SetX1(b->GetX1() + xoff);
+         b->SetX2(b->GetX2() + xoff);
+         b->SetY1(b->GetY1() + yoff);
+         b->SetY2(b->GetY2() + yoff);
+
+      } else if (obj->InheritsFrom("TCurlyArc")) {
+         TCurlyArc * b = (TCurlyArc*)obj;
+         b->SetStartPoint(b->GetStartX() + xoff, b->GetStartY() + yoff);
+
+      } else if (obj->InheritsFrom("TCurlyLine")) {
+         TCurlyLine * b = (TCurlyLine*)obj;
+         b->SetStartPoint(b->GetStartX() + xoff, b->GetStartY() + yoff);
+         b->SetEndPoint(b->GetEndX() + xoff, b->GetEndY() + yoff);
+
+      } else if (obj->InheritsFrom("TMarker")) {
+      TMarker * b = (TMarker*)obj;
+         b->SetX(b->GetX() + xoff);
+         b->SetY(b->GetY() + yoff);
+
+      } else if (obj->InheritsFrom("TText")) {
+      TText * b = (TText*)obj;
+         b->SetX(b->GetX() + xoff);
+         b->SetY(b->GetY() + yoff);
+
+      } else if (obj->InheritsFrom("TEllipse")) {
+         TEllipse * b = (TEllipse*)obj;
+         b->SetX1(b->GetX1() + xoff);
+         b->SetY1(b->GetY1() + yoff);
+
+      } else if (obj->InheritsFrom("XSpline")) {
+         XSpline* b = ( XSpline*)obj;
+         ControlGraph* gr = b->GetControlGraph();
+         Double_t * x = gr->GetX();
+         Double_t * y = gr->GetY();
+//         b->GetControlGraph()->Print();
+//         cout << "Shift ControlGraph " << gr->GetN()<< endl;
+         Double_t* xt = new Double_t[gr->GetN()];
+         Double_t* yt = new Double_t[gr->GetN()];
+         for (Int_t i = 0; i < gr->GetN(); i++) {
+            xt[i] = x[i] + xoff;
+            yt[i] = y[i] + yoff;
+         }
+         b->SetControlPoints(gr->GetN(), xt, yt);
+         b->ComputeSpline();
+         delete [] xt;
+         delete [] yt;
+
+      } else if (obj->InheritsFrom("TGraph") 
+               && strncmp(obj->GetName(), "ParellelG", 9)) {
+//       Parellel graphs are handled by its XSpline
+            cout << "Goo Shift TGraph: " << obj->GetName() << endl;
+
+         TGraph * b = (TGraph *)obj;
+         Double_t * x = b->GetX();
+         if (!x) {
+            cout << "Shift TGraph with 0 points" << endl;
+            continue;
+         }
+         Double_t * y = b->GetY();
+//         either first or last point
+         for (Int_t i = 0; i < b->GetN(); i++) {
+            x[i] += xoff;
+            y[i] += yoff;
+         }
+      } else {
+//         cout << obj->ClassName() << " not yet implemented" << endl;
+      }
+      if (shiftcut) {
+      	Double_t * x = GetX();
+      	Double_t * y = GetY();
+      	for (Int_t i = 0; i < GetN(); i++) {
+         	x[i] += xoff;
+         	y[i] += yoff;
+      	} 
+      }
+   }
+   gPad->Modified();   
 }
