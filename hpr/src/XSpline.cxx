@@ -849,7 +849,7 @@ void XSpline::Paint(Option_t * option)
 //   TGraph::Paint(option);
 //   cout << "XSpline::Paint, fNP PGraphs.GetEntriesFast()" << fNP << " " <<fPGraphs.GetEntriesFast() << endl;
    if (fNP > 0 && fPGraphs.GetEntriesFast()  <= 0) ComputeSpline();
-   if (fFilledLength <= 0 ||  fPGraphs.GetEntriesFast() != 2) {
+   if (fFilledLength <= 0 ||  fPGraphs.GetEntriesFast() < 2) {
       TGraph::Paint(option);
       return;
    }
