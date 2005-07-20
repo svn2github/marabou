@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.26 2005-05-31 07:26:08 marabou Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.27 2005-07-20 10:20:24 marabou Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -321,7 +321,7 @@ Bool_t TMbsSetup::SetPath(const Char_t * Path, Bool_t Create) {
 			if (remoteHome.IsNull()) {
 				gMrbLog->Err() << "Can't set path \"" << Path << "\" -" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetPath");
-				gMrbLog->Err() << "\"TMbsSetup.HomeDir\" has to be set properly first" << endl;
+				gMrbLog->Err() << "\"TMbsSetup.DefaultHomeDir\" has to be set properly first" << endl;
 				gMrbLog->Flush(this->ClassName(), "SetPath");
 				return(kFALSE);
 			} else {
@@ -649,7 +649,7 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 
 	TString userName = gSystem->Getenv("USER");
 
-	TMrbString hString = gEnv->GetValue("TMbsSetup.DefaultHostName", "");
+	TMrbString hString = gEnv->GetValue("TMbsSetup.DefaultHost", "");
 	if (hString.IsNull()) {
 		hString = gSystem->Getenv("HOSTNAME");
 		if (hString.IsNull()) {
@@ -1713,31 +1713,33 @@ const Char_t * TMbsSetup::RemoteHomeDir() {
 		gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
 		fRemoteHome.Resize(0);
 	} else {
-		rshCmd = "rsh ";					// get home dir from remote login
-		rshCmd += hostName;
-		rshCmd += " pwd 2>&1";
-		pwd = gSystem->OpenPipe(rshCmd, "r");
-		fgets(pstr, 1024, pwd);
-		gSystem->ClosePipe(pwd);
+		defaultHomeDir = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");		
+		if (defaultHomeDir.IsNull()) {
+			rshCmd = "rsh ";					// get home dir from remote login
+			rshCmd += hostName;
+			rshCmd += " pwd 2>&1";
+			pwd = gSystem->OpenPipe(rshCmd, "r");
+			fgets(pstr, 1024, pwd);
+			gSystem->ClosePipe(pwd);
 
-		fRemoteHome = pstr;
-		fRemoteHome = fRemoteHome.Strip(TString::kTrailing, '\n');
-		fRemoteHome = fRemoteHome.Strip(TString::kBoth);
-		if (fRemoteHome(0) != '/') {
-			gMrbLog->Err() << "Error during \"" << rshCmd << " - " << fRemoteHome << endl;
-			gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
-			defaultHomeDir = gEnv->GetValue("TMbsSetup.DefaultHomeDir", "");		
-			if (defaultHomeDir.IsNull()) {
+			fRemoteHome = pstr;
+			fRemoteHome = fRemoteHome.Strip(TString::kTrailing, '\n');
+			fRemoteHome = fRemoteHome.Strip(TString::kBoth);
+			if (fRemoteHome(0) != '/') {
+				gMrbLog->Err() << "Error during \"" << rshCmd << " - " << fRemoteHome << endl;
+				gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
 				gMrbLog->Err() << "No default given (check \"TMbsSetup.DefaultHomeDir\" in .rootrc)" << endl;
 				gMrbLog->Flush(this->ClassName(), "RemoteHomeDir");
 				fRemoteHome.Resize(0);
-			} else {
-				cout	<< setblue
-						<< this->ClassName() << "::RemoteHomeDir(): Using default - " << defaultHomeDir
-						<< setblack << endl;
-				fRemoteHome = defaultHomeDir;
 			}
 		}
+	}
+	Int_t x = fRemoteHome.Index(":", 0);
+	if (x) {
+		fRemoteMbsHome = fRemoteHome(x + 1, 1000);
+		fRemoteHome.Resize(x);
+	} else {
+		fRemoteMbsHome = fRemoteHome;
 	}
 	return(fRemoteHome.Data());
 }

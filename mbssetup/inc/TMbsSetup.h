@@ -8,7 +8,7 @@
 // Class:          TMbsSetup            -- base class
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetup.h,v 1.3 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsSetup.h,v 1.4 2005-07-20 10:20:24 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -103,6 +103,7 @@ class TMbsSetup : public TMrbEnv {
 		TString fHomeDir;						// temp storage: home dir
 		TString fPath;							// ... path
 		TString fRemoteHome;					// ... remote home dir
+		TString fRemoteMbsHome;					// ... as seen from mbs
 		TString fArrayString;					// temp storage method EncodeArray()
 
 	ClassDef(TMbsSetup, 1)		// [MBS Setup] Base class to maintain setup data for GSI's MBS system
