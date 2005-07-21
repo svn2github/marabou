@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.4 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.5 2005-07-21 08:17:09 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -427,30 +427,44 @@ Int_t DGFCptmPanel::GetLofCptmModules() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TObjArray lofModules;
-	Int_t crate, station;
-
 	fLofCptmModules.Delete();
-	TMrbString cptmRes;
-
-	cptmRes = gEnv->GetValue("DGFControl.LofCptmModules", "");
-	lofModules.Delete();
-	Int_t n = cptmRes.Split(lofModules);
 	Int_t nofCptmModules = 0;
-	for (Int_t modNo = 0; modNo < n; modNo++) {
-		TString cptmName = ((TObjString *) lofModules.At(modNo))->GetString();
-		gDGFControlData->GetResource(crate, "DGFControl.Module", modNo + 1, cptmName.Data(), "Crate");
-		gDGFControlData->GetResource(station, "DGFControl.Module", modNo + 1, cptmName.Data(), "Station");
-		TMrbCPTM * cptm = new TMrbCPTM(cptmName.Data(), gDGFControlData->fCAMACHost.Data(), crate, station);
-		if (!cptm->IsZombie())	{
-			nofCptmModules++;
-			cptmName += " (C";
-			cptmName += crate;
-			cptmName += ".N";
-			cptmName += station;
-			cptmName += ")";
-			cptm->SetTitle(cptmName.Data());
-			fLofCptmModules.AddNamedX(modNo, cptmName, "", cptm);
+
+	Int_t nofSevts = gEnv->GetValue("DGFControl.NofSubevents", 0);
+	for (Int_t i = 0; i < nofSevts; i++) {
+		TString sevtName;
+		gDGFControlData->GetResource(sevtName, "DGFControl.Subevent", i, NULL, "Name");
+		if (sevtName.Length() > 0) {
+			TString sevtClass;
+			gDGFControlData->GetResource(sevtClass, "DGFControl.Subevent", i, sevtName.Data(), "ClassName");
+			if (sevtClass.Index("TMrbSubevent_CPTM", 0) == 0) {
+				Int_t nofModules;
+				gDGFControlData->GetResource(nofModules, "DGFControl.Subevent", i, sevtName.Data(), "NofModules");
+				if (nofModules > 0) {
+					TMrbString sevtLofModules;
+					gDGFControlData->GetResource(sevtLofModules, "DGFControl.Subevent", i, sevtName.Data(), "LofModules");
+					TObjArray lofModules;
+					lofModules.Delete();
+					Int_t n = sevtLofModules.Split(lofModules);
+					for (Int_t j = 0; j < n; j++) {
+						TString cptmName = ((TObjString *) lofModules.At(j))->GetString();
+						Int_t crate, station;
+						gDGFControlData->GetResource(crate, "DGFControl.Module", i, cptmName.Data(), "Crate");
+						gDGFControlData->GetResource(station, "DGFControl.Module", i, cptmName.Data(), "Station");
+						TMrbCPTM * cptm = new TMrbCPTM(cptmName.Data(), gDGFControlData->fCAMACHost.Data(), crate, station);
+						if (!cptm->IsZombie())	{
+							nofCptmModules++;
+							cptmName += " (C";
+							cptmName += crate;
+							cptmName += ".N";
+							cptmName += station;
+							cptmName += ")";
+							cptm->SetTitle(cptmName.Data());
+							fLofCptmModules.AddNamedX(nofCptmModules, cptmName, "", cptm);
+						}
+					}
+				}
+			}
 		}
 	}
 	return(nofCptmModules);
