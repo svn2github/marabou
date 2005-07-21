@@ -10,8 +10,6 @@ $resource.CratePattern: 				$cratePattern
 $resource.Author: 	 					$author
 $resource.CreationDate:					$creationDate
 $resource.ClassName:					$className
-$resource.LofSubevents:					$lofSubevents
-$resource.LofModules:					$lofModules
 %%EndOfCode%%
 %%EXP_DATA%%
 %%BeginOfCode%%
