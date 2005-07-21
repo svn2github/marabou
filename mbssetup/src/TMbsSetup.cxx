@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.27 2005-07-20 10:20:24 marabou Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.28 2005-07-21 14:35:00 rudi Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -1735,7 +1735,7 @@ const Char_t * TMbsSetup::RemoteHomeDir() {
 		}
 	}
 	Int_t x = fRemoteHome.Index(":", 0);
-	if (x) {
+	if (x >= 0) {
 		fRemoteMbsHome = fRemoteHome(x + 1, 1000);
 		fRemoteHome.Resize(x);
 	} else {
