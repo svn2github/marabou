@@ -25,6 +25,9 @@
 									/* init module $moduleName in $modulePosition */
 					f_ut_send_msg("m_read_meb", "Initializing module $moduleName in $modulePosition: $moduleTitle\n", ERR__MSG_INFO, MASK__PRTT);
 					CIO_CTRL_R2B($moduleName, F(9), A(0));	/* clear module */
+					CIO_WRITE_R2B($moduleName, F(16), A(1), 0);	/* cluster edge size */
+					CIO_WRITE_R2B($moduleName, F(16), A(2), 0);	/* threshold */
+					CIO_WRITE_R2B($moduleName, F(16), A(3), 0x7);	/* control: compression, pedestal sub, xfer */
 %%EndOfCode%%
 %%INIT_MODULE%%
 
@@ -69,7 +72,9 @@
 %%CLEAR_MODULE%%
 
 %%BeginOfCode%%
-					RDO_SETUP($moduleName, F(2), A(0));	/* setup read module $moduleName, start with param $chnName */
+					RDO_SETUP($moduleName, F(2), A(0));	/* setup read module $moduleName */
+					dsetSize = CIO_READ_R2B($moduleName, F(2), A(3));	/* read data set size */
+					for (i = 0; i < dsetSize; i++) RDO_C2M_16();	/* xfer data */
 %%EndOfCode%%
 %%SETUP_READOUT%%	
 
@@ -84,7 +89,7 @@
 %%START_ACQUISITION%%
 
 %%BeginOfCode%%
-		
+					CIO_CTRL_R2B($moduleName, F(26), A(4));	/* enable xfer */
 %%EndOfCode%%
 %%START_ACQUISITION_GROUP%%
 
@@ -124,6 +129,6 @@
 %%DEFINE_LOCAL_VARS_INIT%%
 
 %%BeginOfCode%%
-
+int dsetSize;
 %%EndOfCode%%
 %%DEFINE_LOCAL_VARS_READOUT%%

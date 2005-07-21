@@ -120,7 +120,7 @@
 %S% 			h$prefix$paramNameUC = new TH1F("h$prefix$paramNameUC", "$sevtNameLC.$paramNameLC", $hBinSize, 0.0, $hUpperLim.0);
 %S% 			gMrbAnalyze->AddHistoToList(h$prefix$paramNameUC, kMrbModule$moduleNameUC, $paramIndex);
 %S% 	}
-%X%	for (Int_t ii = 0; i < $indexRange; i++) {
+%X%	for (Int_t i = 0; i < $indexRange; i++) {
 %X% 		if (h$prefix$paramNameUC[i] == NULL) {
 %X% 			TMrbString hName = "h$prefix$paramNameUC"; hName += i;
 %X% 			TMrbString hTitle = "$sevtNameLC$paramNameLC"; hTitle += i;
