@@ -748,7 +748,7 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
 
 void HistPresent::SetCurlyAtt()
 {
-//#if ROOTVERSION > ENABLE_CURLYDEFAULTS
+#if ROOTVERSION > ENABLE_CURLYDEFAULTS
    const char * ArrowOption[] = 
       {" " , "|>", "<|", ">", "<", "->-", "-<-", "-|>-", "-<|-", "<>", "<|>"};
 	TCurlyLine::SetDefaultWaveLength(fCurlyWaveLength);
@@ -761,7 +761,7 @@ void HistPresent::SetCurlyAtt()
 	TArrow::SetDefaultAngle(fArrowAngle);
 	TArrow::SetDefaultArrowSize(fArrowSize);
 	TArrow::SetDefaultOption(ArrowOption[fArrowShape]);
-//#endif
+#endif
 }
 //_______________________________________________________________________
 
