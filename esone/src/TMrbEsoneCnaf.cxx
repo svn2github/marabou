@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsoneCnaf.cxx,v 1.7 2005-04-14 14:17:51 rudi Exp $       
+// Revision:       $Id: TMrbEsoneCnaf.cxx,v 1.8 2005-07-21 14:58:27 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -427,30 +427,30 @@ Int_t TMrbEsoneCnaf::GetData(EMrbEsoneCnafType Type) {
 		if (this->IsRead()) 			return(fDataRead & kEsoneDataMask);
 		else if (this->IsWrite())		return(fDataWrite & kEsoneDataMask);
 		else if (this->IsControl()) {
-			gMrbLog->Err()	<< "[" << this->Int2Ascii()
-							<< "] Wrong CNAF def - CONTROL cnaf doesn't have data" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetData");
-			return(-1);
+//			gMrbLog->Err()	<< "[" << this->Int2Ascii()
+//							<< "] Wrong CNAF def - CONTROL cnaf doesn't have data" << endl;
+//			gMrbLog->Flush(this->ClassName(), "GetData");
+//			return(-1);
 		} else {
 			gMrbLog->Err()	<< "[" << this->Int2Ascii()
 							<< "] Wrong CNAF def - neither READ nor WRITE" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetData");
+			gMrbLog->Flush(this->ClassName(), "GetData");
 			return(-1);
 		}
 	} else {
 		if (Type == kCnafTypeRead)			return(fDataRead & kEsoneDataMask);
 		else if (Type == kCnafTypeWrite)	return(fDataWrite & kEsoneDataMask);
 		else if (Type == kCnafTypeControl) {
-			gMrbLog->Err()	<< "[" << this->Int2Ascii()
-							<< "] Wrong CNAF def - CONTROL cnaf doesn't have data" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetData");
-			return(-1);
+//			gMrbLog->Err()	<< "[" << this->Int2Ascii()
+//							<< "] Wrong CNAF def - CONTROL cnaf doesn't have data" << endl;
+//			gMrbLog->Flush(this->ClassName(), "GetData");
+//			return(-1);
 		} else {
 			gMrbLog->Err()	<< "[" << this->Int2Ascii()
 							<< "] Wrong cnaf type (0x"
 							<< setbase(16) << Type << setbase(10)
 							<< ") - neither READ nor WRITE" << endl;
-			gMrbLog->Flush(this->ClassName(), "SetData");
+			gMrbLog->Flush(this->ClassName(), "GetData");
 			return(-1);
 		}
 	}
