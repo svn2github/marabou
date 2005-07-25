@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.6 2005-01-10 12:59:24 rudi Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.7 2005-07-25 08:19:31 rudi Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -51,9 +51,10 @@ enum EMbsTriggerModuleType	{ 	kTriggerModuleUndefined =	0,			// trigger modules
 								kTriggerModuleVME		=	2
 							};
 
-enum EMbsTriggerMode		{ 	kTriggerModeLocalInterrupt	=	0,			// trigger modes
- 					kTriggerModeVsbInterrupt	=	2,
-					kTriggerModePolling 		=	3
+enum EMbsTriggerMode		{ 	kTriggerModeLocalInterrupt		=	0,			// trigger modes
+ 								kTriggerModeLocalIntNonStdBase	=	1,
+ 								kTriggerModeVsbInterrupt		=	2,
+								kTriggerModePolling 	 		=	3
 							};
 
 enum EMbsSetupTags			{	kSetHostName				=	1,
@@ -102,6 +103,8 @@ enum						{	kRemMemoryBaseCC32RIO2	= 0xee550000	};
 enum						{	kRemMemoryBaseCC32RIO3	= 0x7d550000	};
 enum						{	kRemMemoryLengthCBV 	= 0x00200000	};
 enum						{	kRemMemoryLengthCC32	= 0x00008000	};
+enum						{	kTriggerModuleBaseRIO2	= 0xe2000000	};
+enum						{	kTriggerModuleBaseRIO3	= 0x42000000	};
 
 const SMrbNamedXShort kMbsLofSetupModes[] =		// list of legal setup modes
 							{
@@ -137,12 +140,13 @@ const SMrbNamedXShort kMbsLofTriggerModules[] = 	// list of legal trigger module
 								{0, 					NULL		}
 							};
 
-const SMrbNamedXShort kMbsLofTriggerModes[] =		// list of legal trigger modes
+const SMrbNamedX kMbsLofTriggerModes[] =		// list of legal trigger modes
 							{
-								{kTriggerModeLocalInterrupt,	"LOCAL-INT"	},
-								{kTriggerModeVsbInterrupt,	"INTERRUPT"	},
-								{kTriggerModePolling,		"POLLING"	},
-								{0, 				NULL		}
+								{kTriggerModeLocalInterrupt,		"LOCAL-INT",		"Local Interrupt"							},
+								{kTriggerModeLocalIntNonStdBase,	"LOCAL-INT-NONSTD",	"Local Interrupt, non-standard BaseAddr"	},
+								{kTriggerModeVsbInterrupt,			"VSB-INTERRUPT",	"VSB Interrupt (not implemented)"			},
+								{kTriggerModePolling,				"POLLING",			"Polling Mode (no interrupt)"				},
+								{0, 								NULL		}
 							};
 
 const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words

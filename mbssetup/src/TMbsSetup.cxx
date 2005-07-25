@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.29 2005-07-21 14:47:57 marabou Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.30 2005-07-25 08:19:31 rudi Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -120,7 +120,7 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 		fLofTriggerModes.SetName("Trigger Modes");			// ... trigger modes
 		fLofTriggerModes.AddNamedX(kMbsLofTriggerModes);
 
-		fLofTriggerModes.SetName("Setup Tags");				// ... setup tags
+		fLofSetupTags.SetName("Setup Tags");				// ... setup tags
 		fLofSetupTags.AddNamedX(kMbsSetupTags);
 
 		defaultSetupPath = gEnv->GetValue("TMbsSetup.DefaultSetupPath", ".:$HOME:$(MARABOU)/templates/mbssetup");
@@ -175,6 +175,7 @@ TMbsSetup::~TMbsSetup() {
 	fLofProcs.Delete();
 	fLofTriggerModules.Delete();
 	fLofTriggerModes.Delete();
+	fLofSetupTags.Delete();
 	fLofControllers.Delete();
 	gMbsSetup = NULL;
 }
@@ -1229,15 +1230,20 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
 								stpTmpl.Substitute("$trigBase", "0x0");
 							} else if (k->GetIndex() == kTriggerModeVsbInterrupt) {
-								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / VSB interrupt");
+								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / VSB interrupt (not implemented!!)");
 								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModeVsbInterrupt);
 								stpTmpl.Substitute("$trigType", 0);
 								stpTmpl.Substitute("$trigBase", "0x0");
+								gMrbLog->Wrn() << "Trigger mode \"VSB Interrupt\" not implemented" << endl;
+								gMrbLog->Flush(this->ClassName(), "ExpandFile");
 							} else {
 								stpTmpl.Substitute("$trigModuleComment", "TriggerModule: VME / Polling");
 								stpTmpl.Substitute("$trigMode", (Int_t) kTriggerModePolling);
 								stpTmpl.Substitute("$trigType", (Int_t) kTriggerModuleVME);
-								stpTmpl.Substitute("$trigBase", "0xe2000000");
+								UInt_t trigBase;
+								if (this->ReadoutProc(ProcID)->GetType()->GetIndex() == kProcRIO3)	trigBase = kTriggerModuleBaseRIO3;
+								else																trigBase = kTriggerModuleBaseRIO2;
+								stpTmpl.Substitute("$trigBase", trigBase, 16);
 							}
 							break;
 					}
