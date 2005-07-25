@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.8 2005-07-25 11:27:39 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.9 2005-07-25 13:24:25 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -866,12 +866,10 @@ void DGFControlData::AddToUpdateList(DGFModule * Module) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (Module == NULL || Module->GetAddr() == NULL) return;
-	cout << "@@ Add: " << Module << " " << Module->GetAddr() << endl;
 	for (Int_t i = 0; i < fLofModulesToBeUpdated.GetEntriesFast(); i++) {
 		if (Module == fLofModulesToBeUpdated[i]) return;
 	}
 	fLofModulesToBeUpdated.Add(Module);
-	cout << "@@ Added: " << Module->GetAddr()->GetName() << endl;
 }
 
 void DGFControlData::UpdateParamsAndFPGAs() {
