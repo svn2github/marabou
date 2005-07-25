@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.34 2005-05-26 13:20:26 marabou Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.35 2005-07-25 11:27:39 rudi Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1134,9 +1134,11 @@ Bool_t TMrbDGF::WriteParamMemory(Bool_t Reprogram) {
 		}
 
 		if (Reprogram) {
-			cout	<< setmagenta
-					<< this->ClassName() << "::WriteParamMemory(): Reprogramming DACs and FPGA - Wait ... "
-					<< ends << setblack << flush;
+			if (gMrbDGFData->fVerboseMode) {
+				cout	<< setmagenta
+						<< this->ClassName() << "::WriteParamMemory(): Reprogramming DACs and FPGA - Wait ... "
+						<< ends << setblack << flush;
+			}
 			this->SetParValue("RUNTASK", TMrbDGFData::kRunControl, kTRUE);		// reprogram DACs
 			this->SetParValue("CONTROLTASK", TMrbDGFData::kProgramDACs, kTRUE);
 			this->StartRun();
@@ -1159,9 +1161,11 @@ Bool_t TMrbDGF::WriteParamMemory(Bool_t Reprogram) {
 			this->StartRun();
 			this->WaitActive(1);
 
-			cout	<< setmagenta << " done." << setblack << endl;
-			gMrbLog->Out() << fName << " in C" << fCrate << ".N" << fStation << ": DACs and FPGA reprogrammed" << endl;
-			gMrbLog->Flush(this->ClassName(), "WriteParamMemory", setblue);
+			if (gMrbDGFData->fVerboseMode) {
+				cout	<< setmagenta << " done." << setblack << endl;
+				gMrbLog->Out() << fName << " in C" << fCrate << ".N" << fStation << ": DACs and FPGA reprogrammed" << endl;
+				gMrbLog->Flush(this->ClassName(), "WriteParamMemory", setblue);
+			}
 		}
 		return(kTRUE);
 	} else {

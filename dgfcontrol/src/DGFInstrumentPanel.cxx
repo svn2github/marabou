@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.18 2005-05-27 09:54:28 marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.19 2005-07-25 11:27:39 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -843,7 +843,7 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString intStr;
+	gDGFControlData->AddToUpdateList(gDGFControlData->GetSelectedModule());
 
 	switch (GET_MSG(MsgId)) {
 

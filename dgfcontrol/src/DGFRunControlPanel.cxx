@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.14 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.15 2005-07-25 11:27:39 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -379,6 +379,8 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							fMcaDisplayPanel->McaPause();
 						}
 					}
+
+					gDGFControlData->UpdateParamsAndFPGAs();
 
 					switch (Param1) {
 

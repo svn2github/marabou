@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.7 2005-05-11 16:12:34 marabou Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.8 2005-07-25 11:27:39 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -169,6 +169,9 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	}
 
 	this->SetupModuleList();
+
+//	clear list of modules to be updated
+	fLofModulesToBeUpdated.Clear();
 }
 
 Bool_t DGFControlData::CheckIfStarted() {
@@ -846,5 +849,54 @@ Bool_t DGFControlData::CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, 
 	}
 
 	return(ok);
+}
+
+void DGFControlData::AddToUpdateList(DGFModule * Module) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFControlData::AddToUpdateList
+// Purpose:        Add a module to update list
+// Arguments:      DGFModule * Module   -- module
+// Results:        --
+// Exceptions:     
+// Description:    Adds module to update list. Modules in this list will
+//                 call thbeir method WriteParamMemory() later on to update their
+//                 param settings as well as fpgas.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (Module == NULL || Module->GetAddr() == NULL) return;
+	cout << "@@ Add: " << Module << " " << Module->GetAddr() << endl;
+	for (Int_t i = 0; i < fLofModulesToBeUpdated.GetEntriesFast(); i++) {
+		if (Module == fLofModulesToBeUpdated[i]) return;
+	}
+	fLofModulesToBeUpdated.Add(Module);
+	cout << "@@ Added: " << Module->GetAddr()->GetName() << endl;
+}
+
+void DGFControlData::UpdateParamsAndFPGAs() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFControlData::UpdateParamsAndFPGAs
+// Purpose:        Update params and fpgas
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Calls method WriteParamMemory() for each module in list
+//                 thus writing params to memory and updating fpga settings
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	for (Int_t i = 0; i < fLofModulesToBeUpdated.GetEntriesFast(); i++) {
+		DGFModule * module = (DGFModule *) fLofModulesToBeUpdated[i];
+		if (module) {
+			TMrbDGF * dgf = module->GetAddr();
+			if (dgf) {
+				cout << setmagenta << "Updating module " << dgf->GetName() << endl;
+				dgf->WriteParamMemory(kTRUE);
+			}
+		}
+	}
+	fLofModulesToBeUpdated.Clear();
 }
 

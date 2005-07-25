@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.8 2005-05-04 13:36:57 rudi Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.9 2005-07-25 11:27:39 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -152,6 +152,9 @@ class DGFControlData : public TNamed {
 	
 		Bool_t CheckAccess(const Char_t * FileOrPath, Int_t AccessMode, TString & ErrMsg, Bool_t WarningOnly = kFALSE);
 
+		void UpdateParamsAndFPGAs();
+		void AddToUpdateList(DGFModule * Module);
+
 	protected:
 		TList fHeap;								//!
 
@@ -172,6 +175,8 @@ class DGFControlData : public TNamed {
 		TMrbLofNamedX fLofChannels;					//! channel numbers
 
 		TMrbLofNamedX fLofClusters; 				// clusters: name, serial, color
+
+		TObjArray fLofModulesToBeUpdated;			// modules to be updated
 
 		Int_t fSelectedModule;						// index of module currently selected
 		Int_t fSelectedChannel;						// index of channel currently selected

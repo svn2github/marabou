@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.9 2005-05-26 13:54:53 marabou Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.10 2005-07-25 11:27:39 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -116,10 +116,11 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
 		Bool_t SetGFLT(Bool_t OnFlag = kTRUE);									// set/clear gflt
 		Bool_t UpdateCFD(TMrbDGF * Module, Int_t Channel);						// update cfd
-		Bool_t InitializeCFD(Int_t OnOff, Int_t Fraction);													// init cfd
+		Bool_t InitializeCFD(Int_t OnOff, Int_t Fraction);						// init cfd
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
+
 		TGGroupFrame * fSelectFrame; 				// select
 		TGMrbLabelCombo * fSelectModule; 			//		module
 		TGMrbRadioButtonList * fSelectChannel;		//		channel
