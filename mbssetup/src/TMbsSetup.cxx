@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.30 2005-07-25 08:19:31 rudi Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.31 2005-07-25 08:23:06 rudi Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -1636,7 +1636,7 @@ Bool_t TMbsSetup::CheckSetup() {
 
 		if (smode == kModeSingleProc) {
 			if (this->ReadoutProc(0)->TriggerModule()->GetTriggerMode()->GetIndex() == kTriggerModePolling) {
-				gMrbLog->Err() << "You are using POLLING on triggers in a single-ppc environment - INTERRUPT mode is highly recommended" << endl;
+				gMrbLog->Wrn() << "You are using POLLING on triggers in a single-ppc environment - INTERRUPT mode is normally used" << endl;
 				gMrbLog->Flush(this->ClassName(), "CheckSetup");
 			}
 			templatePath += "/singleproc";
