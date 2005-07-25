@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.9 2005-07-25 13:24:25 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.10 2005-07-25 13:26:41 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -890,7 +890,7 @@ void DGFControlData::UpdateParamsAndFPGAs() {
 		if (module) {
 			TMrbDGF * dgf = module->GetAddr();
 			if (dgf) {
-				cout << setmagenta << "Updating module " << dgf->GetName() << endl;
+				cout << setmagenta << "Updating params & FPGAs for module " << dgf->GetName() << setblack << endl;
 				dgf->WriteParamMemory(kTRUE);
 			}
 		}

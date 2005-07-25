@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.15 2005-05-26 16:44:49 marabou Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.16 2005-07-25 13:24:25 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -303,8 +303,6 @@ Bool_t DGFParamsPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2
 //                 E.g. all menu button messages.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
-
-	TMrbString intStr;
 
 	switch (GET_MSG(MsgId)) {
 
