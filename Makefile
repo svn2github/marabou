@@ -20,37 +20,56 @@ include config/Makefile.$(ARCH)
 
 ##### Modules to build #####
 
+# only selected modules need to checked out from CVS if
+# not the complete marabou suite is required.
+
+# for HistPresent only the following modules are needed
+
 MODULES       = build utils gutils \
                 helpbrowser hpr \
-                tidy tidylib \
-                expconf analyze c_analyze  macrobrowser \
-                camcli esone mbssetup mbsio transport \
-	        	xiadgf dgfcontrol cptmcontrol
+
+# if offline data analysis in the marabou framework is needed
+
+ifeq ($(shell if [ -d tidy ] ; then echo yes; fi), yes)
+MODULES      += tidy tidylib
+endif
+
+ifeq ($(shell if [ -d macrobrowser ] ; then echo yes; fi), yes)
+MODULES      += macrobrowser
+endif
+
+ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
+MODULES      += expconf c_analyze analyze mbssetup mbsio transport
+endif
+
+# if online data acquisition is needed in addition
+
+ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)
+MODULES      += camcli esone 
+endif
+
+# the following modules are for special hardware
+
+ifeq ($(shell if [ -d xiadgf ] ; then echo yes; fi), yes)
+MODULES      += xiadgf dgfcontrol
+endif
+
+ifeq ($(shell if [ -d polar ] ; then echo yes; fi), yes)
+MODULES      += polar
+endif
+
+ifeq ($(shell if [ -d snake ] ; then echo yes; fi), yes)
+MODULES      += snake
+endif
 
 ##### ROOT libraries #####
 
 LPATH         = lib
 
-ifneq ($(ARCH),win32)
+# no windows support (for the time beeing)
+# ifneq ($(ARCH),win32)
+
 RPATH        := -L$(LPATH)
-# CINTLIBS     := -lCint
-# ROOTLIBS     := -lNew -lCore -lCint -lHist -lGraf -lGraf3d -lTree -lMatrix
-# RINTLIBS     := -lRint
-# PROOFLIBS    := -lGpad -lProof -lTreePlayer
-# CERNPATH     := -L$(CERNLIBDIR)
-# CERNLIBS     := -lpacklib -lkernlib
-else
-# CINTLIBS     := $(LPATH)/libCint.lib
-# ROOTLIBS     := $(LPATH)/libNew.lib $(LPATH)/libCore.lib $(LPATH)/libCint.lib \
-#                 $(LPATH)/libHist.lib $(LPATH)/libGraf.lib \
-#                 $(LPATH)/libGraf3d.lib $(LPATH)/libTree.lib \
-#                 $(LPATH)/libMatrix.lib
-# RINTLIBS     := $(LPATH)/libRint.lib
-# PROOFLIBS    := $(LPATH)/libGpad.lib $(LPATH)/libProof.lib \
-#                 $(LPATH)/libTreePlayer.lib
-# CERNLIBS     := '$(shell cygpath -w -- $(CERNLIBDIR)/packlib.lib)' \
-#                 '$(shell cygpath -w -- $(CERNLIBDIR)/kernlib.lib)'
-endif
 
 ROOTCFLAGS    := $(shell root-config --cflags)
 #ROOTLIBS      := $(shell root-config --libs)
@@ -62,9 +81,19 @@ ROOTGLIBS      += -lGed
 
 ROOTCINT      :=rootcint
 
+#ROOTVERS contains / . and sometimes letters, remove them
+
 RV1 	      := $(shell root-config --version)
-RV2           := $(subst /,,$(RV1))
-ROOTVERS      := $(subst .,,$(RV2))
+RV1           := $(subst /,,$(RV1))
+RV1           := $(subst .,,$(RV1))
+RV1           := $(subst a,,$(RV1))
+RV1           := $(subst b,,$(RV1))
+RV1           := $(subst c,,$(RV1))
+RV1           := $(subst d,,$(RV1))
+RV1           := $(subst e,,$(RV1))
+RV1           := $(subst f,,$(RV1))
+RV1           := $(subst g,,$(RV1))
+ROOTVERS      := $(subst h,,$(RV1))
 
 ##### utilities #####
 
@@ -89,10 +118,8 @@ endif
 
 ##### compiler directives #####
 
-
 COMPILEDATA   = include/compiledata.h
 MAKEINFO      = cint/MAKEINFO
-
 
 ##### all #####
 
@@ -202,10 +229,7 @@ distclean:: clean
 	@rm -f include/*.h $(MAKEINFO)
 	@mv -f include/config.hh include/config.h
 	@rm -f build/dummy.d bin/*.dll lib/*.def lib/*.exp lib/*.lib .def
-#	@rm -f tutorials/*.root tutorials/*.ps tutorials/*.gif so_locations
-#	@rm -f tutorials/pca.C tutorials/*.so
 	@rm -rf htmldoc
-#	@cd test && $(MAKE) distclean
 
 version: $(CINTTMP)
 	@$(MAKEVERSION)
@@ -310,6 +334,8 @@ install-expconf:
 		$(INSTALL) lib/libTMrbConfig.so $(LIBDIR)
 
 showbuild:
+	@echo "MODULES            = $(MODULES)"
+
 	@echo "MARABOU            = $(MARABOU)"
 	@echo "ROOTSYS            = $(ROOTSYS)"
 	@echo "ROOTGLIBS          = $(ROOTGLIBS)"
