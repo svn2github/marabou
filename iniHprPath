@@ -25,8 +25,7 @@ SYSMODE=y
 # MARABOU        where your MARaBOU installation resides
 
 # export ROOTSYS=/usr/cern/Linux/root_v4.04.02
-# export ROOTSYS=/scratch/bizet/cernlib/root_v4.04.02
-# MARABOU=`pwd`
+MARABOU=`pwd`
 
 # export LD_LIBRARY_PATH=$MARABOU/lib:$ROOTSYS/lib:$LD_LIBRARY_PATH
 # export PATH=$MARABOU/bin:$ROOTSYS/bin:$PATH
