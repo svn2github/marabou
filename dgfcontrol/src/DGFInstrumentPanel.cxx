@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.19 2005-07-25 11:27:39 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.20 2005-07-26 07:12:13 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -34,8 +34,9 @@
 
 const SMrbNamedX kDGFInstrumentModuleButtons[] =
 			{
-				{DGFInstrumentPanel::kDGFInstrButtonShow,		"Show params", 	"Show actual param settings"	},
-				{0, 											NULL,		NULL									}
+				{DGFInstrumentPanel::kDGFInstrButtonShow,			"Show params", 	"Show actual param settings"		},
+				{DGFInstrumentPanel::kDGFInstrButtonUpdateFPGAs,	"Update FPGAs", "Write params and update FPGAs"	},
+				{0, 												NULL,		NULL									}
 			};
 
 const SMrbNamedX kDGFInstrCFDOnOff[] =
@@ -866,6 +867,9 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 											gDGFControlData->GetSelectedChannelIndex());
 							break;
 						case kDGFInstrButtonShow:
+                    		gDGFControlData->UpdateParamsAndFPGAs();
+							break;
+						case kDGFInstrButtonUpdateFPGAs:
                     		this->ShowModuleSettings();
 							break;
 						case kDGFInstrDACGainEntry:

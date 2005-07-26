@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.17 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.18 2005-07-26 07:12:13 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -378,20 +378,20 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 							param = dgf->Data()->NextParam(param);
 						}
 						dgf->SetParamValuesRead();
-						dgf->WriteParamMemory(kFALSE);
 						gDGFControlData->fDeltaT = dgf->GetDeltaT();
 						nofRestored++;
+						if (LoadPSA) {
+							psaFile = loadDir;
+							psaFile += "/";
+							psaFile += dgfName;
+							psaFile += ".psa";
+							altParamFile = loadDir;
+							altParamFile += "/dgfCommon.psa";
+							if (!dgf->LoadPsaParams(psaFile.Data(), altParamFile.Data())) nerr++;
+						}
+						dgf->WriteParamMemory(kTRUE);
 					}
 				} else nerr++;
-				if (LoadPSA) {
-					psaFile = loadDir;
-					psaFile += "/";
-					psaFile += dgfName;
-					psaFile += ".psa";
-					altParamFile = loadDir;
-					altParamFile += "/dgfCommon.psa";
-					if (!dgf->LoadPsaParams(psaFile.Data(), altParamFile.Data())) nerr++;
-				}
 			}
 			pgb->Increment(1, module->GetName());
 			gSystem->ProcessEvents();

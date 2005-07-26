@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.10 2005-07-25 13:26:41 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.11 2005-07-26 07:12:13 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -885,15 +885,20 @@ void DGFControlData::UpdateParamsAndFPGAs() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	for (Int_t i = 0; i < fLofModulesToBeUpdated.GetEntriesFast(); i++) {
-		DGFModule * module = (DGFModule *) fLofModulesToBeUpdated[i];
-		if (module) {
-			TMrbDGF * dgf = module->GetAddr();
-			if (dgf) {
-				cout << setmagenta << "Updating params & FPGAs for module " << dgf->GetName() << setblack << endl;
-				dgf->WriteParamMemory(kTRUE);
+	Int_t nofUpdates = fLofModulesToBeUpdated.GetEntriesFast();
+	if (nofUpdates > 0) {
+		cout << setmagenta << "Updating params & FPGAs: ";
+		for (Int_t i = 0; i < nofUpdates; i++) {
+			DGFModule * module = (DGFModule *) fLofModulesToBeUpdated[i];
+			if (module) {
+				TMrbDGF * dgf = module->GetAddr();
+				if (dgf) {
+					cout << dgf->GetName() << " " << endl;
+					dgf->WriteParamMemory(kTRUE);
+				}
 			}
 		}
+		cout << setblack << endl;
 	}
 	fLofModulesToBeUpdated.Clear();
 }

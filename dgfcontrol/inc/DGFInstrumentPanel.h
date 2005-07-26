@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.10 2005-07-25 11:27:39 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.11 2005-07-26 07:12:13 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -83,7 +83,7 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrMCAEnergyBinsEntry,		//		combine bins
 									kDGFInstrMCABaselineDCEntry,		//		DC
 									kDGFInstrMCABaselineBinsEntry,		//		combine bins
-									kDGFInstrButtonApplyChanges,		//		apply changes & calc corrections
+									kDGFInstrButtonUpdateFPGAs,			//		update fpgas
 									kDGFInstrButtonShow,				//		show params
 								};
 

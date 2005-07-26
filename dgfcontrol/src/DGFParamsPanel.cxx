@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.16 2005-07-25 13:24:25 rudi Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.17 2005-07-26 07:12:13 rudi Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -502,6 +502,7 @@ Bool_t DGFParamsPanel::ApplyParams(Bool_t Marked) {
 					UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
 					if ((fCluster[cl]->GetActive() & bits) == bits) {
 						selectOk = kTRUE;
+						gDGFControlData->AddToUpdateList(dgfModule);
 						TMrbDGF * dgf = dgfModule->GetAddr();
 						if (Marked && foundMarked) {
 							dgf->SetParValue(px->GetName(), markedVal, kTRUE);
@@ -529,6 +530,7 @@ Bool_t DGFParamsPanel::ApplyParams(Bool_t Marked) {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
 	}
+	gDGFControlData->UpdateParamsAndFPGAs();
 	this->ReadParams();
 	return(kTRUE);
 }	
