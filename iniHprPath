@@ -77,7 +77,7 @@ then
 	test -d include || mkdir include
 	test -d cint || mkdir cint
 
-	DIR1="bin buildcint config gutils helpbrowser hpr icons include lib macros obj utils"
+	DIR1="bin config gutils helpbrowser hpr icons include lib macros obj utils"
 	ERR=n
 	OK=n
 	for d in $DIR1
