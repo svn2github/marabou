@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.94 2005-05-25 12:48:35 marabou Exp $       $Id: TMrbConfig.cxx,v 1.94 2005-05-25 12:48:35 marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.95 2005-07-29 08:47:20 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.95 2005-07-29 08:47:20 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1426,7 +1426,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (posixFlags.Length() == 0) {
 								TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
 								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
-								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v2.2-deve");
+								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v22");
 								if (mbsVersion.Index("v2", 0) == 0) posixFlags = "-mposix4d9 -mthreads";
 								else								posixFlags = "-D_THREADS_POSIX4ad4 -mthreads";
 							}
@@ -1439,7 +1439,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							if (posixLib.Length() == 0) {
 								TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
 								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
-								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v2.2-deve");
+								if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v22");
 								if (mbsVersion.Index("v2", 0) == 0)	posixLib = "";
 								else					posixLib = "-lposix-pre1c";
 							}
@@ -1450,7 +1450,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							TString mbsVersion = gEnv->GetValue("TMrbConfig.MbsVersion", "");
 							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "");
-							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v2.2-deve");
+							if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "v22");
 							if (mbsVersion.Index("v2", 0) == 0) {
 								rdoStrm << rdoTmpl.Encode(line, "GSI_LYNX_PROC_FAM") << endl;
 							} else {

@@ -2932,10 +2932,7 @@ Bool_t FhMainFrame::GetDefaults(){
    *fSaveMap = *fSaveMap + gSystem->Getenv("USER") + "_RUN.root";
    fMaster       = new TString("ppc-1");
    fReadout      = new TString("ppc-0");
-   TMrbString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "v2.2-deve");
-   TObjArray v;
-   if (mbsVersion.Split(v, "-") > 1) mbsVersion = ((TObjString *) v[1])->GetString();
-   fMbsVersion   = new TString(mbsVersion.Data());
+   fMbsVersion   = new TString(gEnv->GetValue("TMbsSetup.MbsVersion", "v22"));
    fDir          = new TString("dualppc");
    fTrigger      = new TString("VME");
    fCodeName        = new TString("");

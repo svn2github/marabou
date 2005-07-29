@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.10 2005-04-18 14:21:29 rudi Exp $       
+// Revision:       $Id: TMrbEsone.cxx,v 1.11 2005-07-29 08:47:20 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -283,19 +283,14 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	TString pLine;
 	Bool_t found;
 	TString remoteHome;
-	TString setupPath;
-	TMrbString mbsVersion;
-	Bool_t startPrompter;
 	TString prmOrDsp;
 
 	this->SetOffline(kFALSE);
 	
-	setupPath = gEnv->GetValue("TMrbEsone.SetupPath", "/nfs/mbssys/esone");
-	mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "");
-	if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "deve");
-	TObjArray v;
-	if (mbsVersion.Split(v, "-") > 1) mbsVersion = ((TObjString *) v[1])->GetString();
-	startPrompter = gEnv->GetValue("TMrbEsone.StartPrompter", kFALSE);
+	TString setupPath = gEnv->GetValue("TMrbEsone.SetupPath", "/nfs/mbssys/esone");
+	TString mbsVersion = gEnv->GetValue("TMrbEsone.MbsVersion", "");
+	if (mbsVersion.Length() == 0) mbsVersion = gEnv->GetValue("TMrbSetup.MbsVersion", "v22");
+	Bool_t startPrompter = gEnv->GetValue("TMrbEsone.StartPrompter", kFALSE);
 
 	// reset mbs
 	gMrbLog->Out()	<< "Resetting ESONE server on host \""

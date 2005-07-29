@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.22 2005-07-14 11:41:32 rudi Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.23 2005-07-29 08:47:22 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1251,7 +1251,7 @@ void TMrbTidyDoc::Print(ostream & Out, Bool_t Verbose, Bool_t HtmlFlag) {
 		if (HtmlFlag) {
 			Out << "<html>" << endl;
 			Out << "<link rel=\"stylesheet\" type=\"text/css\" href=\"mrb-style.css\">" << endl;
-			Out << "<body bgcolor=\"lightblue\">" << endl;
+			Out << "<body bgcolor=\"beige\">" << endl;
 			Out 	<< "<H2 align=\"center\">Document " << this->GetName() << "</H2>" << endl;
 			if (fDocFile.Length()) Out 	<< "<H4 align=\"center\">File: " << fDocFile << "</H4>" << endl;
 			Out 	<< "<H4 align=\"center\">(structure as analyzed by D. Raggett's TIDY)</H4><HR>" << endl;

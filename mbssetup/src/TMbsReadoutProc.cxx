@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.15 2005-01-10 12:59:24 rudi Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.16 2005-07-29 08:47:22 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -858,7 +858,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMbsReadoutProc::CompileReadout
 // Purpose:        Compile source code on remote host
-// Arguments:      Char_t * Version   -- MBS version (prod, deve ...)
+// Arguments:      Char_t * Version   -- MBS version (prod, deve, vNN)
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Compiles readout source.
@@ -967,7 +967,7 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	sh << "cd " << srcPath << endl;
 	sh << "source /sys/hosttype" << endl;
 	sh << "set path = ( /bin /bin/ces /usr/bin /usr/local/bin /etc /usr/etc . ~/tools)" << endl;
-	sh << "source /mbs/" << Version << "login.com" << endl;
+	sh << "source /mbs/login " << Version << endl;
 	sh << "make -f " << mkFile << " clean all" << endl;
 	sh.close();
 
