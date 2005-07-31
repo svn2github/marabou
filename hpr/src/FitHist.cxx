@@ -1787,8 +1787,8 @@ void FitHist::SetAxisRange()
       xyvals[4] = ya->GetBinUpEdge(ya->GetLast());
    }      
 
-// show values to caller and let edit
-   Int_t ret, itemwidth = 120, precission = 5;
+   // show values to caller and let edit
+   Int_t ret = 0, itemwidth = 120, precission = 5;
    TGMrbTableOfDoubles(mycanvas, &ret, "Axis range", itemwidth,
                        ncols, nrows, xyvals, precission, NULL, row_lab);
    if (ret >= 0) {
