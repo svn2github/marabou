@@ -508,7 +508,19 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
       }
    }
    if (fCmdLine->GetSize() <= 0) {
-      WarnBox("No files found, check File Selection Mask");
+      Int_t buttons= kMBYes | kMBNo, retval=0;
+      EMsgBoxIcon icontype = kMBIconQuestion;
+      new TGMsgBox(gClient->GetRoot(), NULL,
+       "No files found?", 
+       "No ROOT files in CWD found \n\
+Should we create a sample",
+       icontype, buttons, &retval);
+      if(retval == kMBYes){
+         Int_t ierr;
+         gROOT->ProcessLine(".x $MARABOU/macros/hsimple_1.C", &ierr);
+         gDirectory = gROOT;
+      }
+//      WarnBox("No files found, check File Selection Mask");
    } else {
       fCmdLine->Sort();
       filelist = CommandPanel("Filelist",fCmdLine, 5, 430);

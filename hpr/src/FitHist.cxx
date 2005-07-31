@@ -560,6 +560,7 @@ void FitHist::handle_mouse()
          return;
       }
    }
+   if (select->InheritsFrom("TPave")) return;
    px = gPad->GetEventX();
    py = gPad->GetEventY();
 //  check if lin / log scale changed
@@ -745,11 +746,12 @@ void FitHist::handle_mouse()
    }  else if (event == kButton1Motion || event == kButton1Up) {
 //      if(!hist || !fTofLabels) return;
       if(!hist) return;
-      TString sopt = hist->GetOption();
-//         cout << " sopt " << sopt << endl;
-      if (sopt.Contains("SURF", TString::kIgnoreCase) ||
-           sopt.Contains("LEGO", TString::kIgnoreCase)) {
-          return;
+      if (select->InheritsFrom("TH1")) {
+         TString sopt = hist->GetOption();
+         if (sopt.Contains("SURF", TString::kIgnoreCase) ||
+             sopt.Contains("LEGO", TString::kIgnoreCase)) {
+             return;
+         }
       }
 
       if(select->IsA() == TFrame::Class() || select->InheritsFrom("TH1")
@@ -1736,6 +1738,77 @@ void FitHist::WriteOutHist()
          CloseWorkFile();
       }
    }
+};
+//_______________________________________________________________________________________
+
+void FitHist::SetAxisRange()
+{
+   Int_t n = fSelHist->GetDimension();
+   TAxis * xa = fSelHist->GetXaxis();
+   TAxis * ya = fSelHist->GetYaxis();
+   TAxis * za = NULL;
+   Int_t ncols = 2; 
+   Int_t nrows = 2;
+   Int_t nval = 4;
+   TOrdCollection *row_lab = new TOrdCollection();
+   TOrdCollection *col_lab = new TOrdCollection();
+   col_lab->Add(new TObjString("Min"));
+   col_lab->Add(new TObjString("Max"));
+
+   row_lab->Add(new TObjString("X axis"));
+   row_lab->Add(new TObjString("Y axis"));
+   if (n > 1) {
+      nval = 6;
+      nrows = 3;
+      row_lab->Add(new TObjString("Z axis"));
+      za = fSelHist->GetZaxis();
+   }
+
+   TArrayD xyvals(nval);
+
+   if (n == 1) {
+      xyvals[0] = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
+      xyvals[1] = fSelHist->GetMinimum();
+      xyvals[2] = xa->GetBinUpEdge(xa->GetLast());
+      xyvals[3] = fSelHist->GetMaximum();
+   } else if (n == 2) { 
+      xyvals[0] = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
+      xyvals[1] = ya->GetBinLowEdge(TMath::Max(ya->GetFirst(),1));
+      xyvals[2] = fSelHist->GetMinimum();
+      xyvals[3] = xa->GetBinUpEdge(xa->GetLast());
+      xyvals[4] = ya->GetBinUpEdge(ya->GetLast());
+      xyvals[5] = fSelHist->GetMaximum();
+   } else { 
+      za = fSelHist->GetZaxis();
+      xyvals[0] = xa->GetBinLowEdge(TMath::Max(xa->GetFirst(),1));
+      xyvals[1] = ya->GetBinLowEdge(TMath::Max(ya->GetFirst(),1));
+      xyvals[2] = za->GetBinLowEdge(TMath::Max(za->GetFirst(),1));
+      xyvals[3] = xa->GetBinUpEdge(xa->GetLast());
+      xyvals[4] = ya->GetBinUpEdge(ya->GetLast());
+   }      
+
+// show values to caller and let edit
+   Int_t ret, itemwidth = 120, precission = 5;
+   TGMrbTableOfDoubles(mycanvas, &ret, "Axis range", itemwidth,
+                       ncols, nrows, xyvals, precission, NULL, row_lab);
+   if (ret >= 0) {
+      Axis_t bwxl2 = 0.5 * xa->GetBinWidth(xa->GetFirst());
+      Axis_t bwxu2 = 0.5 * xa->GetBinWidth(xa->GetLast());
+      if (n == 1) {
+         xa->SetRangeUser(xyvals[0] + bwxl2, xyvals[2]- bwxu2);
+         ya->SetRangeUser(xyvals[1], xyvals[3]);
+      } else {
+         Axis_t bwyl2 = 0.5 * ya->GetBinWidth(xa->GetFirst());
+         Axis_t bwyu2 = 0.5 * ya->GetBinWidth(xa->GetLast());
+         xa->SetRangeUser(xyvals[0] + bwxl2, xyvals[3] - bwxu2);
+         ya->SetRangeUser(xyvals[1] + bwyl2, xyvals[4] - bwyu2);
+         za->SetRangeUser(xyvals[2], xyvals[5]);
+      }
+   }
+   delete row_lab;
+   delete col_lab;
+   cHist->Modified();
+   cHist->Update();
 };
 //_______________________________________________________________________________________
 

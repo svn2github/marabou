@@ -1308,7 +1308,17 @@ void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
    TList *values = new TList();
    TList *row_lab = new TList();
    Int_t vp = 0;
-   row_lab->Add(new TObjString("NdivisionsZ")); 
+   Int_t div = TMath::Abs(fNdivisionsZ);
+   Int_t pdiv = div%100;
+   Int_t sdiv = (div/100)%100;
+   Int_t tdiv = (div/10000)%100;
+   Int_t optimize = 1;
+   if (fNdivisionsZ < 0) optimize = 0;
+ 
+   row_lab->Add(new TObjString("Primary Div")); 
+   row_lab->Add(new TObjString("Secondary Div")); 
+   row_lab->Add(new TObjString("Tertiary Div")); 
+   row_lab->Add(new TObjString("Optimize Div")); 
    row_lab->Add(new TObjString("AxisColorZ"));  
    row_lab->Add(new TObjString("LabelColorZ")); 
    row_lab->Add(new TObjString("LabelFontZ"));  
@@ -1320,7 +1330,10 @@ void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TitleColorZ")); 
    row_lab->Add(new TObjString("TitleFontZ"));  
 
-   AddObjString(fNdivisionsZ, values);
+   AddObjString(pdiv, values);
+   AddObjString(sdiv, values);
+   AddObjString(tdiv, values);
+   AddObjString(optimize, values, kAttCheckB);
    AddObjString(fAxisColorZ,  values, kAttColor) ;
    AddObjString(fLabelColorZ, values, kAttColor);
    AddObjString(fLabelFontZ,  values, kAttFont);
@@ -1335,12 +1348,18 @@ void HistPresent::SetZaxisAttributes(TGWindow * win, FitHist * fh)
 
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Z Axis Att", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
 
    vp = 0;
-   fNdivisionsZ  = GetInt(values, vp); vp++;
+   
+   pdiv = GetInt(values, vp++);
+   sdiv = GetInt(values, vp++);
+   tdiv = GetInt(values, vp++);
+   optimize = GetInt(values, vp++);
+   fNdivisionsZ  = tdiv*10000 + sdiv*100 + pdiv;
+   if (optimize == 0) fNdivisionsZ *= -1;
    fAxisColorZ   = GetInt(values, vp); vp++;
    fLabelColorZ  = GetInt(values, vp); vp++;
    fLabelFontZ   = GetInt(values, vp); vp++;
@@ -1364,7 +1383,17 @@ void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
    TList *values = new TList();
    TList *row_lab = new TList();
    Int_t vp = 0;
-   row_lab->Add(new TObjString("NdivisionsX")); 
+   Int_t div = TMath::Abs(fNdivisionsX);
+   Int_t pdiv = div%100;
+   Int_t sdiv = (div/100)%100;
+   Int_t tdiv = (div/10000)%100;
+   Int_t optimize = 1;
+   if (fNdivisionsX < 0) optimize = 0;
+ 
+   row_lab->Add(new TObjString("Primary Div")); 
+   row_lab->Add(new TObjString("Secondary Div")); 
+   row_lab->Add(new TObjString("Tertiary Div")); 
+   row_lab->Add(new TObjString("Optimize Div")); 
    row_lab->Add(new TObjString("AxisColorX"));  
    row_lab->Add(new TObjString("LabelColorX")); 
    row_lab->Add(new TObjString("LabelFontX"));  
@@ -1376,7 +1405,10 @@ void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TitleColorX")); 
    row_lab->Add(new TObjString("TitleFontX"));  
 
-   AddObjString(fNdivisionsX, values);
+   AddObjString(pdiv, values);
+   AddObjString(sdiv, values);
+   AddObjString(tdiv, values);
+   AddObjString(optimize, values, kAttCheckB);
    AddObjString(fAxisColorX,  values, kAttColor) ;
    AddObjString(fLabelColorX, values, kAttColor);
    AddObjString(fLabelFontX,  values, kAttFont);
@@ -1391,12 +1423,18 @@ void HistPresent::SetXaxisAttributes(TGWindow * win, FitHist * fh)
 
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("X Axis Att", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
 
    vp = 0;
-   fNdivisionsX  = GetInt(values, vp++);
+   
+   pdiv = GetInt(values, vp++);
+   sdiv = GetInt(values, vp++);
+   tdiv = GetInt(values, vp++);
+   optimize = GetInt(values, vp++);
+   fNdivisionsX  = tdiv*10000 + sdiv*100 + pdiv;
+   if (optimize == 0) fNdivisionsX *= -1;
    fAxisColorX   = GetInt(values, vp++);
    fLabelColorX  = GetInt(values, vp++);
    fLabelFontX   = GetInt(values, vp++);
@@ -1420,7 +1458,17 @@ void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
    TList *values = new TList();
    TList *row_lab = new TList();
    Int_t vp = 0;
-   row_lab->Add(new TObjString("NdivisionsY")); 
+   Int_t div = TMath::Abs(fNdivisionsY);
+   Int_t pdiv = div%100;
+   Int_t sdiv = (div/100)%100;
+   Int_t tdiv = (div/10000)%100;
+   Int_t optimize = 1;
+   if (fNdivisionsY < 0) optimize = 0;
+ 
+   row_lab->Add(new TObjString("Primary Div")); 
+   row_lab->Add(new TObjString("Secondary Div")); 
+   row_lab->Add(new TObjString("Tertiary Div")); 
+   row_lab->Add(new TObjString("Optimize Div")); 
    row_lab->Add(new TObjString("AxisColorY"));  
    row_lab->Add(new TObjString("LabelColorY")); 
    row_lab->Add(new TObjString("LabelFontY"));  
@@ -1432,7 +1480,10 @@ void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
    row_lab->Add(new TObjString("TitleColorY")); 
    row_lab->Add(new TObjString("TitleFontY"));  
 
-   AddObjString(fNdivisionsY, values);
+   AddObjString(pdiv, values);
+   AddObjString(sdiv, values);
+   AddObjString(tdiv, values);
+   AddObjString(optimize, values, kAttCheckB);
    AddObjString(fAxisColorY,  values, kAttColor) ;
    AddObjString(fLabelColorY, values, kAttColor);
    AddObjString(fLabelFontY,  values, kAttFont);
@@ -1447,12 +1498,17 @@ void HistPresent::SetYaxisAttributes(TGWindow * win, FitHist * fh)
 
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Y axis Att", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
 
    vp = 0;
-   fNdivisionsY  = GetInt(values, vp++);
+   pdiv = GetInt(values, vp++);
+   sdiv = GetInt(values, vp++);
+   tdiv = GetInt(values, vp++);
+   optimize = GetInt(values, vp++);
+   fNdivisionsY  = tdiv*10000 + sdiv*100 + pdiv;
+   if (optimize == 0) fNdivisionsY *= -1;
    fAxisColorY   = GetInt(values, vp++);
    fLabelColorY  = GetInt(values, vp++);
    fLabelFontY   = GetInt(values, vp++);

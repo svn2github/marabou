@@ -118,6 +118,7 @@ enum ERootCanvasCommands {
    kFHDisplay,
    kFHExpand,
    kFHEntire,
+   kFHAxisRange,
    kFHMagnify,
    kFHSuperimpose,
    kFHKolmogorov,
@@ -1017,6 +1018,9 @@ again:
                   case kFHEntire:
                      fFitHist->Entire(); 
                      break;
+                  case kFHAxisRange:
+                     fFitHist->SetAxisRange(); 
+                     break;
                   case kFHRebinOne:
                      fFitHist->RebinOne(); 
                      break;
@@ -1648,7 +1652,8 @@ void HandleMenus::BuildMenus()
 
       	fDisplayMenu->AddEntry("Expand / Apply cuts",      kFHExpand     );
       	fDisplayMenu->AddEntry("Entire / Ignore cuts",      kFHEntire     );
-      	if(!is2dim)fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
+       	fDisplayMenu->AddEntry("Set Axis Range",      kFHAxisRange     );
+     	if(!is2dim)fDisplayMenu->AddEntry("Rebin",       kFHRebinOne);
       	if (is2dim) {
       	   fDisplayMenu->AddSeparator();
             fDisplayMenu->AddEntry("Set User Contours",   kFHUserCont);

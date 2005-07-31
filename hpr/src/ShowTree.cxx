@@ -761,13 +761,13 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
    } else if (fApplyGraphCut && nent == 2) {
       tree->Draw((const char*)cmd, fGraphCut->Data(),option.Data(),
                   nof_events, first_event); 
-      cout << "Execute: " << cmd << "1.Ev, NofEv: " 
+      cout << "Execute: " << cmd << " 1.Ev, NofEv: " 
                           << first_event << " " <<nof_events << endl;
       cout << "Apply graphical cut: " <<  fGraphCut->Data() << 
       " with X :" << fCutVarX->Data() <<   
       " and Y :" << fCutVarX->Data() <<  endl;  
    } else {
-      cout << "Execute: " << cmd << "1.Ev, NofEv: " 
+      cout << "Execute: " << cmd << " 1.Ev, NofEv: " 
                           << first_event << " " <<nof_events << endl;
       tree->Draw((const char*)cmd,"",option.Data(), nof_events, first_event);
    }
