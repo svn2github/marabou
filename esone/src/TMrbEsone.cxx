@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.11 2005-07-29 08:47:20 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.cxx,v 1.12 2005-08-01 09:00:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -389,7 +389,8 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	rCmd += setupPath;
 	rCmd += "/";
 	rCmd += fController.GetName();
-	rCmd += "/startup";
+	rCmd += "/startup_";
+	rCmd += mbsVersion;
 	if (!this->IsVerbose()) rCmd += " >>/dev/null";
 	rCmd += "\"";
 	if (this->IsVerbose()) {
