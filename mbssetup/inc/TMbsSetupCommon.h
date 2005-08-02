@@ -7,7 +7,7 @@
 // Purpose:        Define a MBS setup: Common defs
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetupCommon.h,v 1.7 2005-07-25 08:19:31 rudi Exp $       
+// Revision:       $Id: TMbsSetupCommon.h,v 1.8 2005-08-02 08:54:04 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -58,8 +58,8 @@ enum EMbsTriggerMode		{ 	kTriggerModeLocalInterrupt		=	0,			// trigger modes
 							};
 
 enum EMbsSetupTags			{	kSetHostName				=	1,
-						kSetDate,
-						kSetAuthor,
+								kSetDate,
+								kSetAuthor,
 								kSetRdoNames,
 								kSetHostFlag,
 								kSetSetupPath,
@@ -95,14 +95,17 @@ enum EMbsSetupTags			{	kSetHostName				=	1,
 								kStartRdoTask,
 								kTestHostName,
 								kPrintBanner,
-								kSetVsbAddr
+								kSetVsbAddr,
+								kMbsLogin
 							};
 
+enum						{	kMbsV43 				= 43			};
 enum						{	kRemMemoryBaseCBV		= 0xd0380000	};
 enum						{	kRemMemoryBaseCC32RIO2	= 0xee550000	};
 enum						{	kRemMemoryBaseCC32RIO3	= 0x7d550000	};
 enum						{	kRemMemoryLengthCBV 	= 0x00200000	};
 enum						{	kRemMemoryLengthCC32	= 0x00008000	};
+enum						{	kRemMemoryLengthCC32v4x	= 0x00010000	};
 enum						{	kTriggerModuleBaseRIO2	= 0xe2000000	};
 enum						{	kTriggerModuleBaseRIO3	= 0x42000000	};
 
@@ -190,6 +193,7 @@ const SMrbNamedXShort kMbsSetupTags[] =			// list of setup tag words
 								{kTestHostName, 		"TEST_HOSTNAME" 			},
 								{kPrintBanner,			"PRINT_BANNER"				},
 								{kSetVsbAddr,			"SET_VSB_ADDR"				},
+								{kMbsLogin, 			"MBS_LOGIN" 				},
 								{0, 					NULL						}
 							};
 

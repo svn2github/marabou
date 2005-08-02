@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.31 2005-07-25 08:23:06 rudi Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.32 2005-08-02 08:54:04 Rudolf.Lutter Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -592,10 +592,12 @@ Bool_t TMbsSetup::MakeSetupFiles() {
 	templatePath += this->EvtBuilder()->GetType()->GetName();
 
 	installPath = this->GetHomeDir();
-	cout	<< this->ClassName() << "::MakeSetupFiles(): Creating startup file " << installPath << "/.tcshrc ..."
+	cout	<< this->ClassName() << "::MakeSetupFiles(): Creating startup files on \"" << installPath << "\": .tcshrc + .login ..."
 			<< endl;
 	TString tcshrc = ".tcshrc";
 	this->ExpandFile(0, templatePath, tcshrc, installPath);
+	TString login = ".login";
+	this->ExpandFile(0, templatePath, login, installPath);
 
 	nodelistFile = this->GetPath();
 	if (!nodelistFile.BeginsWith("/")) {
@@ -828,6 +830,16 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 
 	nofReadouts = this->GetNofReadouts();
 	
+	TString mbsVersion = gEnv->GetValue("TMbsSetup.MbsVersion", "v22");
+	Int_t mbsVersNo = 0;
+	if (mbsVersion(0) == 'v') {
+		TString v = mbsVersion(1, 2);
+		mbsVersNo = atoi(v.Data());
+	} else {
+		gMrbLog->Wrn() << "MBS version unexpected - " << mbsVersion << " (should be \"vNN\")" << endl;
+		gMrbLog->Flush(this->ClassName(), "ExpandFile");
+	}
+		
 	mbsPath = this->GetPath();
 	if (!mbsPath.BeginsWith("/")) {
 		mbsPath = this->GetHomeDir();
@@ -1013,7 +1025,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+							else if (ctrl == kControllerCC32) {
+								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
+								else						memLength = kRemMemoryLengthCC32;
+							}
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
@@ -1048,7 +1063,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteMemoryLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+							else if (ctrl == kControllerCC32) {
+								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
+								else						memLength = kRemMemoryLengthCC32;
+							}
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
@@ -1081,7 +1099,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+							else if (ctrl == kControllerCC32) {
+								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
+								else						memLength = kRemMemoryLengthCC32;
+							}
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
@@ -1116,7 +1137,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+							else if (ctrl == kControllerCC32) {
+								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
+								else						memLength = kRemMemoryLengthCC32;
+							}
 						} 
 						n = this->ReadoutProc(ProcID)->GetCratesToBeRead(lofCrates);
 						for (i = 0; i < n; i++) {
@@ -1148,7 +1172,10 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 						Int_t memLength = this->Get(this->Resource(res, "Readout", ProcID + 1, "RemoteCamacLength"), 0);
 						if (memLength == 0) {
 							if (ctrl == kControllerCBV) memLength = kRemMemoryLengthCBV;
-							else if (ctrl == kControllerCC32) memLength = kRemMemoryLengthCC32;
+							else if (ctrl == kControllerCC32) {
+								if (mbsVersNo >= kMbsV43)	memLength = kRemMemoryLengthCC32v4x;
+								else						memLength = kRemMemoryLengthCC32;
+							}
 						} 
 						memBase -= memLength;
 						stpTmpl.InitializeCode();
@@ -1350,6 +1377,14 @@ Bool_t TMbsSetup::ExpandFile(Int_t ProcID, TString & TemplatePath, TString & Set
 								delete str;
 								stpTmpl.WriteCode(stp);
 						}
+					}
+					break;
+
+				case kMbsLogin:
+					{
+						stpTmpl.InitializeCode();
+						stpTmpl.Substitute("$mbsVersion", mbsVersion.Data());
+						stpTmpl.WriteCode(stp);
 					}
 					break;
 			}
