@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.29 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.30 2005-08-03 13:41:03 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -449,6 +449,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 	gDGFControlData->fCAMACHost = camacHost;
 
 	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
+	esoneCold->SetSingleStep(gDGFControlData->IsSingleStep());
 		
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	while (dgfModule) {
@@ -512,6 +513,8 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 						dgf->SetSynchWait(synchWait, kTRUE);
 						Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
 						dgf->SetInSynch(inSynch, kTRUE);
+						dgf->Camac()->SetVerboseMode(gDGFControlData->IsDebug());
+						dgf->Camac()->SetSingleStep(gDGFControlData->IsSingleStep());
 						gROOT->Append(dgf);
 					} else nerr++;
 				}
@@ -595,6 +598,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 	}
 
 	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
+	esoneCold->SetSingleStep(gDGFControlData->IsSingleStep());
 
 	DGFModule * dgfModule = gDGFControlData->FirstModule();
 	while (dgfModule) {
@@ -649,6 +653,8 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 						dgf->Camac()->UseBroadCast(kTRUE);
 						lofDGFs[dgf->GetCrate() - 1].AddModule(dgf);
 						dgf->SetVerboseMode(gDGFControlData->IsVerbose());
+						dgf->Camac()->SetVerboseMode(gDGFControlData->IsDebug());
+						dgf->Camac()->SetSingleStep(gDGFControlData->IsSingleStep());
 						dgfModule->SetTitle(dgf->GetTitle());
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
