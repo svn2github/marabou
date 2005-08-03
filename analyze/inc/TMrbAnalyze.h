@@ -7,7 +7,7 @@
 // Purpose:        Define base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.41 2005-05-09 16:01:27 marabou Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.42 2005-08-03 12:51:25 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -406,8 +406,9 @@ class TUsrHit : public TObject {
 		enum	{	kHitGSLTHi		=	4	};
 		enum	{	kHitGSLTMi		=	5	};
 		enum	{	kHitGSLTLo		=	6	};
-		enum	{	kHitRaw 		=	7	};
-		enum	{	kHitLast		=	kHitRaw	};
+		enum	{	kHitRealTimeHi 	=	7	};
+		enum	{	kHitLast		=	kHitRealTimeHi	};
+		enum	{	kHitWaveForm	=	kHitLast + 1	};
 		enum	{	kMaxHitData 	=	kHitLast + 1	};
 
 // alternate layout used by martin lauer's PSA code
