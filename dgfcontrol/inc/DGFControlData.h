@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.9 2005-07-25 11:27:39 rudi Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.10 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -68,7 +68,8 @@ class DGFControlData : public TNamed {
 									kDGFSimulStartStop		= BIT(4),
 									kDGFSyncClocks		 	= BIT(5),
 									kDGFIndivSwitchBusTerm	= BIT(6),
-									kDGFUserPSA 			= BIT(7)
+									kDGFUserPSA 			= BIT(7),
+									kDGFEsoneSingleStepMode = BIT(8)
 								};
 		
 		enum EDGFAccessBit		{	kDGFAccessDirectory 	= BIT(0),
@@ -136,6 +137,7 @@ class DGFControlData : public TNamed {
 		inline Bool_t IsOffline() { return((fStatus & kDGFOfflineMode) != 0); };
 		inline Bool_t IsVerbose() { return((fStatus & DGFControlData::kDGFVerboseMode) != 0); };
 		inline Bool_t IsDebug() { return((fStatus & DGFControlData::kDGFDebugMode) != 0); };
+		inline Bool_t IsSingleStep() { return((fStatus & DGFControlData::kDGFEsoneSingleStepMode) != 0); };
 		
 		inline const Char_t * NormalFont() { return(fNormalFont.Data()); };
 		inline const Char_t * BoldFont() { return(fBoldFont.Data()); };

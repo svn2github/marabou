@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRunControlPanel.cxx,v 1.15 2005-07-25 11:27:39 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.cxx,v 1.16 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -126,6 +126,14 @@ DGFRunControlPanel::DGFRunControlPanel(const TGWindow * Window, UInt_t Width, UI
 		fMenuGeneral->RCheckEntry(kDGFGeneralOffline, kDGFGeneralOffline, kDGFGeneralOnline);
 	} else {
 		fMenuGeneral->RCheckEntry(kDGFGeneralOnline, kDGFGeneralOffline, kDGFGeneralOnline);
+	}
+	fMenuGeneral->AddSeparator();
+	fMenuGeneral->AddEntry("&Esone Normal", kDGFGeneralEsoneNormal);
+	fMenuGeneral->AddEntry("&Esone SingleStep", kDGFGeneralEsoneSingleStep);
+	if (gDGFControlData->fStatus & DGFControlData::kDGFEsoneSingleStepMode) {
+		fMenuGeneral->RCheckEntry(kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal, kDGFGeneralEsoneNormal);
+	} else {
+		fMenuGeneral->RCheckEntry(kDGFGeneralEsoneNormal, kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal);
 	}
 
 //	Macros menu
@@ -359,6 +367,20 @@ Bool_t DGFRunControlPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
 							gDGFControlData->fStatus &= ~DGFControlData::kDGFOfflineMode;
 							fMenuGeneral->RCheckEntry(kDGFGeneralOnline, kDGFGeneralOffline, kDGFGeneralOnline);
+							break;
+
+						case kDGFGeneralEsoneNormal:
+							gMrbLog->Out()	<< "ESONE running in NORMAL mode" << endl;
+							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+							gDGFControlData->fStatus &= ~DGFControlData::kDGFEsoneSingleStepMode;
+							fMenuGeneral->RCheckEntry(kDGFGeneralEsoneNormal, kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal);
+							break;
+
+						case kDGFGeneralEsoneSingleStep:
+							gMrbLog->Out()	<< "ESONE running in SINGLE STEP mode" << endl;
+							gMrbLog->Flush(this->ClassName(), "ProcessMessage", setblue);
+							gDGFControlData->fStatus |= DGFControlData::kDGFEsoneSingleStepMode;
+							fMenuGeneral->RCheckEntry(kDGFGeneralEsoneSingleStep, kDGFGeneralEsoneNormal, kDGFGeneralEsoneNormal);
 							break;
 
 						default:

@@ -8,7 +8,7 @@
 // Class:          DGFRunControlPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRunControlPanel.h,v 1.9 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFRunControlPanel.h,v 1.10 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -71,6 +71,8 @@ class DGFRunControlPanel : public TGMainFrame {
 									kDGFGeneralModNumGlobal,
 									kDGFGeneralOffline,
 									kDGFGeneralOnline,
+									kDGFGeneralEsoneSingleStep,
+									kDGFGeneralEsoneNormal,
 
 									kDGFHelpContents,				// pulldown menu "Help"
 									kDGFHelpAbout,

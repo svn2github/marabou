@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.28 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.29 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -887,6 +887,7 @@ Bool_t DGFSetupPanel::RestartEsone() {
 	}
 
 	esoneCold->SetVerboseMode(gDGFControlData->IsDebug());
+	esoneCold->SetSingleStep(gDGFControlData->IsSingleStep());
 		
 	return(kTRUE);
 }

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.11 2005-07-26 07:12:13 rudi Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.12 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -84,6 +84,8 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 	else													fStatus &= ~DGFControlData::kDGFModNumGlobal;
 	if (gEnv->GetValue("DGFControl.OfflineMode", kFALSE))	fStatus |= DGFControlData::kDGFOfflineMode;
 	else													fStatus &= ~DGFControlData::kDGFOfflineMode;
+	if (gEnv->GetValue("DGFControl.SingleStepMode", kFALSE)) fStatus |= DGFControlData::kDGFEsoneSingleStepMode;
+	else													fStatus &= ~DGFControlData::kDGFEsoneSingleStepMode;
 
 // paths and filenames
 	TString errMsg;
