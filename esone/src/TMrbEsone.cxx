@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEsone.cxx,v 1.12 2005-08-01 09:00:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.cxx,v 1.13 2005-08-03 11:45:27 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -191,6 +191,12 @@ Bool_t TMrbEsone::Reset(Bool_t Offline) {
 		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
 	}
 		
+	fSingleStep = gEnv->GetValue("TMrbEsone.SingleStepMode", kFALSE);
+	if (this->IsSingleStep()) {
+		gMrbLog->Out() << "Running in SINGLE STEP mode" << endl;
+		gMrbLog->Flush(this->ClassName(), "Reset", setblue);
+	}
+		
 	fHost.Resize(0);								// host name
 	fHostInet.Resize(0);
 	fHostAddr = 0xFFFFFFFF;							// host address
@@ -368,7 +374,22 @@ Bool_t TMrbEsone::StartMbsServer(const Char_t * HostName) {
 	if (!this->IsVerbose()) rCmd += " >>/dev/null";
 	rCmd += "\"";
 	if (this->IsVerbose()) {
-		gMrbLog->Out()	<< endl << "Exec >> " << rCmd.Data() << " <<" << endl;
+		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
+		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
+	}
+	gSystem->Exec(rCmd.Data());
+
+	rCmd = "rsh ";
+	rCmd += HostName;
+	rCmd += " -l ";
+	rCmd += gSystem->Getenv("USER");
+	rCmd += " \"cp ";
+	rCmd += setupPath;
+	rCmd += "/.login .";
+	if (!this->IsVerbose()) rCmd += " >>/dev/null";
+	rCmd += "\"";
+	if (this->IsVerbose()) {
+		gMrbLog->Out()	<< "Exec >> " << rCmd.Data() << " <<" << endl;
 		gMrbLog->Flush(this->ClassName(), "StartServer", setmagenta);
 	}
 	gSystem->Exec(rCmd.Data());
@@ -1764,7 +1785,13 @@ Bool_t TMrbEsone::EsoneCCOPEN(const Char_t * HostName, UInt_t & HostAddress) {
 	if (this->IsOffline()) return(kTRUE);		// nothing to do if in offline mode
 
 	if (this->IsMbsServer()) {
-		sts = ccopen((Char_t *) HostName, &HostAddress);
+		if (this->IsSingleStep()) {
+			cout << "[TMrbEsone::EsoneCCOPEN | Connect to CAMAC] Host=" << HostName << " ... "; getchar();
+			sts = ccopen((Char_t *) HostName, &HostAddress);
+			cout << "[TMrbEsone::EsoneCCOPEN] Status=" << sts << endl;
+		} else {
+			sts = ccopen((Char_t *) HostName, &HostAddress);
+		}
 		return(sts == 0);
 	} else {						// not yet implemented
 		return(kFALSE);
@@ -1796,7 +1823,13 @@ Bool_t TMrbEsone::EsoneCCCI(Int_t Crate, Bool_t Inhibit) {
 	if (!this->EsoneCDCTRL()) return(kFALSE);
 
 	if (this->IsMbsServer()) {
-		sts = ccci(creg, Inhibit ? kCF_ENB : kCF_DIS);
+		if (this->IsSingleStep()) {
+			cout << "[TMrbEsone::EsoneCCCI | Inhibit dataway] Crate=" << Crate << " Inhibit=" << (Inhibit ? "TRUE" : "FALSE") << " ... "; getchar();
+			sts = ccci(creg, Inhibit ? kCF_ENB : kCF_DIS);
+			cout << "[TMrbEsone::EsoneCCCI] Status=" << sts << endl;
+		} else {
+			sts = ccci(creg, Inhibit ? kCF_ENB : kCF_DIS);
+		}
 		return(sts == 0);
 	} else {						// not yet implemented
 		return(kFALSE);
@@ -1827,7 +1860,13 @@ Bool_t TMrbEsone::EsoneCTCI(Int_t Crate) {
 	if (!this->EsoneCDCTRL()) return(kFALSE);
 
 	if (this->IsMbsServer()) {
-		ctci(creg, &dwinhFlag);
+		if (this->IsSingleStep()) {
+			cout << "[TMrbEsone::EsoneCTCI | Test dataway inhibit] Crate=" << Crate << " ... "; getchar();
+			ctci(creg, &dwinhFlag);
+			cout << "[TMrbEsone::EsoneCTCI] Inhibit=" << ((dwinhFlag == 1) ? "TRUE" : "FALSE") << endl;
+		} else {
+			ctci(creg, &dwinhFlag);
+		}
 		return(dwinhFlag == 1);
 	} else {						// not yet implemented
 		return(kFALSE);
@@ -1858,7 +1897,13 @@ Bool_t TMrbEsone::EsoneCCCZ(Int_t Crate) {
 	if (!this->EsoneCDCTRL()) return(kFALSE);
 
 	if (this->IsMbsServer()) {
-		sts = cccz(creg);
+		if (this->IsSingleStep()) {
+			cout << "[TMrbEsone::EsoneCCCZ | Initialize dataway] Crate=" << Crate << " ... "; getchar();
+			sts = cccz(creg);
+			cout << "[TMrbEsone::EsoneCCCZ] Status=" << sts << endl;
+		} else {
+			sts = cccz(creg);
+		}
 		return(sts == 0);
 	} else {						// not yet implemented
 		return(kFALSE);
@@ -1885,10 +1930,16 @@ UInt_t TMrbEsone::EsoneCTSTAT() {
 	if (this->IsOffline()) return(0);
 
 	if (this->IsMbsServer()) {
-		ctstat(&sts);
+		if (this->IsSingleStep()) {
+			cout << "[TMrbEsone::EsoneCTSTAT | Controller status] ... "; getchar();
+			ctstat(&sts);
+			cout << "[TMrbEsone::EsoneCTSTAT] Status=" << sts << endl;
+		} else {
+			ctstat(&sts);
+		}
 		return(sts);
 	} else {						// not yet implemented
-		return(kFALSE);
+		return(0);
 	}
 }
 
@@ -1919,12 +1970,26 @@ Bool_t TMrbEsone::EsoneCXSA(TMrbEsoneCnaf & Cnaf, Bool_t D16Flag) {
 			Cnaf.SetAction(kCA_cssa);
 			this->SetAction(kCA_cssa);
 			if (this->IsOffline()) return(kTRUE);
-			sts = cssa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
+			if (this->IsSingleStep()) {
+				cout << "[TMrbEsone::EsoneCXSA | Exec cnaf D16] " << Cnaf.Int2Ascii() << " ... "; getchar();
+				sts = cssa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
+				cout	<< "[TMrbEsone::EsoneCXSA] Status=" << sts
+						<< " Data=" << camacData << " 0x" << setbase(16) << camacData<< setbase(10) << endl;
+			} else {
+				sts = cssa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 16 bit
+			}
 		} else {
 			Cnaf.SetAction(kCA_cfsa);
 			this->SetAction(kCA_cfsa);
 			if (this->IsOffline()) return(kTRUE);
-			sts = cfsa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
+			if (this->IsSingleStep()) {
+				cout << "[TMrbEsone::EsoneCXSA | Exec cnaf D24] " << Cnaf.Int2Ascii() << " ... "; getchar();
+				sts = cfsa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
+				cout	<< "[TMrbEsone::EsoneCXSA] Status=" << sts
+						<< " Data=" << camacData << " 0x" << setbase(16) << camacData<< setbase(10) << endl;
+			} else {
+				sts = cfsa(Cnaf.GetF(), camacCNA, &camacData, NULL); // exec single cnaf, 24 bit
+			}
 		}
 		Cnaf.ClearStatus(); 		// clear error, X, Q
 		Cnaf.ClearData();			// clear data
@@ -1975,8 +2040,10 @@ Int_t TMrbEsone::EsoneCXGA(TObjArray & CnafList, Bool_t D16Flag) {
 		camacData.Set(nofCnafs);
 		camacXQ.Set(nofCnafs);
 		this->SetAction(D16Flag ? kCA_csga : kCA_cfga);
+		if (this->IsSingleStep()) cout << "[TMrbEsone::EsoneCXGA] List of CNAFs:" << endl;
 		for (Int_t i = 0; i < nofCnafs; i++) {
 			cnaf = (TMrbEsoneCnaf *) CnafList[i];
+			if (this->IsSingleStep()) cout << "   " << i << ": " << cnaf->Int2Ascii() << endl;
 			camacF[i] = cnaf->GetF();
 			this->EsoneCDREG(cna, cnaf->GetC(), cnaf->GetN(), cnaf->GetA());
 			camacCNA[i] = (Int_t) cna;
@@ -1986,11 +2053,25 @@ Int_t TMrbEsone::EsoneCXGA(TObjArray & CnafList, Bool_t D16Flag) {
 		}
 		if (this->IsOffline()) return(nofCnafs);
 		if (D16Flag) {
-			sts = csga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
-						camacXQ.GetArray(), ctrlBlock.GetArray());
+			if (this->IsSingleStep()) {
+				cout << "[TMrbEsone::EsoneCXGA | Exec cnaf list D16] ... "; getchar();
+				sts = csga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
+							camacXQ.GetArray(), ctrlBlock.GetArray());
+				cout	<< "[TMrbEsone::EsoneCXGA] Status=" << sts << endl;
+			} else {
+				sts = csga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
+							camacXQ.GetArray(), ctrlBlock.GetArray());
+			}
 		} else {
-			sts = cfga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
-						camacXQ.GetArray(), ctrlBlock.GetArray());
+			if (this->IsSingleStep()) {
+				cout << "[TMrbEsone::EsoneCXGA | Exec cnaf list D24] ... "; getchar();
+				sts = cfga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
+							camacXQ.GetArray(), ctrlBlock.GetArray());
+				cout	<< "[TMrbEsone::EsoneCXGA] Status=" << sts << endl;
+			} else {
+				sts = cfga( camacF.GetArray(), camacCNA.GetArray(), camacData.GetArray(),
+							camacXQ.GetArray(), ctrlBlock.GetArray());
+			}
 		}
 		this->ClearStatus();		// clear status
 		if (sts == 0) {
@@ -2049,16 +2130,28 @@ Int_t TMrbEsone::EsoneCXMAD(TMrbEsoneCnaf & Start, TMrbEsoneCnaf & Stop, TArrayI
 
 		if (!Start.IsWrite()) Data.Reset();		// reset data buffer in case of read/control cnafs
 
+		if (this->IsOffline()) return(0);
+
 		if (D16Flag) {
 			Start.SetAction(kCA_csmad);
 			Stop.SetAction(kCA_csmad);
-			if (this->IsOffline()) return(0);
-			sts = csmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+			if (this->IsSingleStep()) {
+				cout << "[TMrbEsone::EsoneCXMAD | Address scan D16] Start=" << Start.Int2Ascii() << " Stop=" << Stop.Int2Ascii() << " ... "; getchar();
+				sts = csmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+				cout	<< "[TMrbEsone::EsoneCXMAD] Status=" << sts << endl;
+			} else {
+				sts = csmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+			}
 		} else {
 			Start.SetAction(kCA_cfmad);
 			Stop.SetAction(kCA_cfmad);
-			if (this->IsOffline()) return(0);
-			sts = cfmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+			if (this->IsSingleStep()) {
+				cout << "[TMrbEsone::EsoneCXMAD | Address scan D24] Start=" << Start.Int2Ascii() << " Stop=" << Stop.Int2Ascii() << " ... "; getchar();
+				sts = cfmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+				cout	<< "[TMrbEsone::EsoneCXMAD] Status=" << sts << endl;
+			} else {
+				sts = cfmad(Start.GetF(), camacCNA.GetArray(), Data.GetArray(), ctrlBlock.GetArray());
+			}
 		}
 		return((sts == 0) ? ctrlBlock[1] : kEsoneError);
 	} else {						// not yet implemented
@@ -2094,25 +2187,46 @@ Int_t TMrbEsone::EsoneCXUBX(TMrbEsoneCnaf & Cnaf, TArrayI & Data, Int_t Start, I
 		if (!this->EsoneCDCTRL()) return(kEsoneError);
 		if (!this->EsoneCDREG(camacCNA, Cnaf)) return(kEsoneError);
 		this->SetCB(ctrlBlock, NofWords);
+		if (this->IsOffline()) return(0);
 		if (QXfer) {
 			if (D16Flag) {
 				Cnaf.SetAction(kCA_csubr);
-				if (this->IsOffline()) return(0);
-				sts = csubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				if (this->IsSingleStep()) {
+					cout << "[TMrbEsone::EsoneCXUBX | Block xfer D16/Q] Cnaf=" << Cnaf.Int2Ascii() << " ... "; getchar();
+					sts = csubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+					cout	<< "[TMrbEsone::EsoneCXUBX] Status=" << sts << endl;
+				} else {
+					sts = csubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				}
 			} else {
 				Cnaf.SetAction(kCA_cfubr);
-				if (this->IsOffline()) return(0);
-				sts = cfubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				if (this->IsSingleStep()) {
+					cout << "[TMrbEsone::EsoneCXUBX | Block xfer D24/Q] Cnaf=" << Cnaf.Int2Ascii() << " ... "; getchar();
+					sts = cfubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+					cout	<< "[TMrbEsone::EsoneCXUBX] Status=" << sts << endl;
+				} else {
+					sts = cfubr(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				}
 			}
 		} else {
 			if (D16Flag) {
 				Cnaf.SetAction(kCA_csubc);
-				if (this->IsOffline()) return(0);
-				sts = csubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				if (this->IsSingleStep()) {
+					cout << "[TMrbEsone::EsoneCXUBX | Block xfer D16] Cnaf=" << Cnaf.Int2Ascii() << " ... "; getchar();
+					sts = csubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+					cout	<< "[TMrbEsone::EsoneCXUBX] Status=" << sts << endl;
+				} else {
+					sts = csubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				}
 			} else {
 				Cnaf.SetAction(kCA_cfubc);
-				if (this->IsOffline()) return(0);
-				sts = cfubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				if (this->IsSingleStep()) {
+					cout << "[TMrbEsone::EsoneCXUBX | Block xfer D24] Cnaf=" << Cnaf.Int2Ascii() << " ... "; getchar();
+					sts = cfubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+					cout	<< "[TMrbEsone::EsoneCXUBX] Status=" << sts << endl;
+				} else {
+					sts = cfubc(Cnaf.GetF(), camacCNA, Data.GetArray() + Start, ctrlBlock.GetArray());
+				}
 			}
 		}
 		return((sts == 0) ? ctrlBlock[1] : kEsoneError);

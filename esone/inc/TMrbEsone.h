@@ -9,7 +9,7 @@
 // Description:    Class definitions to establish an
 //                 ESONE client/server connection.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEsone.h,v 1.6 2005-04-14 14:17:51 rudi Exp $       
+// Revision:       $Id: TMrbEsone.h,v 1.7 2005-08-03 11:45:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -165,6 +165,9 @@ class TMrbEsone : public TObject {
 
 		inline Bool_t IsConnected() { return(fHostAddr > 0); };
 
+		inline void SetSingleStep(Bool_t Flag = kTRUE) { fSingleStep = Flag; };
+		inline Bool_t IsSingleStep() { return(fSingleStep); };
+
 	public:
 		TMrbLofNamedX fLofCamacActions;								// list of camac actions
 		TMrbLofNamedX fLofCnafNames;								// list of camac registers
@@ -214,6 +217,7 @@ class TMrbEsone : public TObject {
 		Bool_t fUseBroadCast;						// kTRUE if broadcast mode is to be used
 		Bool_t fOffline;							// access camac hardware?
 		Bool_t fAborted;							// kTRUE if operation aborted
+		Bool_t fSingleStep; 						// kTRUE if in single step mode
 
 		TMrbNamedX * fAction;						// last camac action
 		UInt_t fStatus;								// status of last camac action
