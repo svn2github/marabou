@@ -44,6 +44,7 @@
 #include "TPolyLine.h"
 #include "TGMrbTableFrame.h"
 #include "TGMrbSliders.h"
+#include "HprEditBits.h"
 
 namespace std {} using namespace std;
 
@@ -624,6 +625,7 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
          AddParallelGraphExt(gr, fPDists[i]);
       }
    }
+   fNeedReCompute = kTRUE;
    gPad->Modified();
    gPad->Update();
    return fNpoints;
@@ -848,6 +850,8 @@ void XSpline::Paint(Option_t * option)
 {
 //   TGraph::Paint(option);
 //   cout << "XSpline::Paint, fNP PGraphs.GetEntriesFast()" << fNP << " " <<fPGraphs.GetEntriesFast() << endl;
+   if (!fNeedReCompute) return;
+
    if (fNP > 0 && fPGraphs.GetEntriesFast()  <= 0) ComputeSpline();
    if (fFilledLength <= 0 ||  fPGraphs.GetEntriesFast() < 2) {
       TGraph::Paint(option);
@@ -893,10 +897,12 @@ void XSpline::Paint(Option_t * option)
    available = Length(xc[0], yc[0], xc[1], yc[1]);
    xcprev = xc[0];
    ycprev = yc[0];
+   Bool_t within_gap = kFALSE;
 
 //      draw a filled box with length fFilledLength
-   while (ip < GetN()- 1) {
+   while (ip < GetN()- 2) {
       if (needed <= available) {
+         within_gap = kFALSE;
          phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
 //             extrapolate previous
          Nextpoint(phi, xcprev, ycprev, needed, &xccur, &yccur);
@@ -909,6 +915,7 @@ void XSpline::Paint(Option_t * option)
          xp[4] = xp[0];
          yp[4] = yp[0];
          pl = new TPolyLine(5, xp, yp);
+         pl->SetBit(kCantEdit);
          fDPolyLines.Add(pl);
          pl->SetFillStyle(1003);
          pl->SetFillColor(this->GetLineColor());
@@ -917,9 +924,10 @@ void XSpline::Paint(Option_t * option)
          box_done = kTRUE;
          xcprev = xccur;
          ycprev = yccur;
-//         fiiled box complete, enter gap 
+//       filled box complete, enter gap 
          needed = fEmptyLength;
          while (1) {
+            within_gap = kTRUE;
             if (needed <= available) {
                phi = PhiOfLine( xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
 //                extrapolate previous
@@ -937,6 +945,7 @@ void XSpline::Paint(Option_t * option)
                break;
             } else {
                ip += 1;
+               if (ip >= GetN()- 2) break; 
                needed -=   Length(xcprev, ycprev, xc[ip], yc[ip]);
                available = Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
                xcprev = xc[ip];
@@ -944,6 +953,7 @@ void XSpline::Paint(Option_t * option)
             }
          }
       } else {
+         within_gap = kFALSE;
          xp[2] = xl[ip+1];
          yp[2] = yl[ip+1];
          xp[3] = xr[ip+1];
@@ -951,6 +961,7 @@ void XSpline::Paint(Option_t * option)
          xp[4] = xp[0];
          yp[4] = yp[0];
          pl = new TPolyLine(5, xp, yp);
+         pl->SetBit(kCantEdit);
          fDPolyLines.Add(pl);
          pl->SetFillStyle(1003);
          pl->SetFillColor(this->GetLineColor());
@@ -966,6 +977,27 @@ void XSpline::Paint(Option_t * option)
          yp[1] = yl[ip];
       }
    }
+  
+   ip = GetN()- 2;
+   if ( !within_gap ) {
+      xp[0] = xr[ip];
+      yp[0] = yr[ip];
+      xp[1] = xl[ip];
+      yp[1] = yl[ip];
+      xp[2] = xl[ip+1];
+      yp[2] = yl[ip+1];
+      xp[3] = xr[ip+1];
+      yp[3] = yr[ip+1];
+      xp[4] = xp[0];
+      yp[4] = yp[0];
+      pl = new TPolyLine(5, xp, yp);
+      pl->SetBit(kCantEdit);
+      fDPolyLines.Add(pl);
+      pl->SetFillStyle(1003);
+      pl->SetFillColor(this->GetLineColor());
+      pl->Draw("F");
+   }
+   fNeedReCompute = kFALSE;
    gPad->Modified();
    gPad->Update();
 }

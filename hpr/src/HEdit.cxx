@@ -26,6 +26,7 @@
 #include "TGMrbValuesAndText.h"
 #include "TGMrbGetTextAlignment.h"
 #include "HprImage.h"
+#include "HprEditBits.h"
 #include "XSpline.h"
 #include <fstream>
 
@@ -208,6 +209,7 @@ void HTCanvas::ListAllObjects()
    TObject * obj;
    while ( (obj = next()) ) {
       if (obj->IsA() == EditMarker::Class()) continue;
+      if (obj->TestBit(kCantEdit)) continue;
       nrows++;
    }
    if (nrows <= 0) {
@@ -226,6 +228,7 @@ void HTCanvas::ListAllObjects()
    TIter next_1(gPad->GetListOfPrimitives());
    while ( (obj = next_1()) ) {
       if (obj->IsA() == EditMarker::Class()) continue;
+      if (obj->TestBit(kCantEdit)) continue;
       row_lab->Add(new TObjString(obj->ClassName()));
       if (obj->IsA() == TMarker::Class()) {
          TMarker * m = (TMarker*)obj;
@@ -308,6 +311,7 @@ void HTCanvas::ListAllObjects()
    TIter next_2(gPad->GetListOfPrimitives());
    while ( (obj = next_2()) ) {
       if (obj->IsA() == EditMarker::Class()) continue;
+      if (obj->TestBit(kCantEdit)) continue;
       if (ind >= nrows)break;
       if (obj->IsA() == TMarker::Class()) {
          TMarker * m = (TMarker*)obj;
@@ -584,7 +588,7 @@ void HTCanvas::ModifyCurlyLines()
    col_lab->Add(new TObjString("WaveLength"));
    col_lab->Add(new TObjString("Amplitude"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "CurlyLine", itemwidth,
@@ -657,7 +661,7 @@ void HTCanvas::ModifyCurlyArcs()
    col_lab->Add(new TObjString("WaveLength"));
    col_lab->Add(new TObjString("Amplitude"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "CurlyArc", itemwidth,
@@ -731,7 +735,7 @@ void HTCanvas::ModifyArrows()
    col_lab->Add(new TObjString("Size"));
    col_lab->Add(new TObjString("Angle"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Arrow", itemwidth,
@@ -803,7 +807,7 @@ void HTCanvas::ModifyArcs()
    col_lab->Add(new TObjString("Start Phi"));
    col_lab->Add(new TObjString("End Phi"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Arc", itemwidth,
@@ -877,7 +881,7 @@ void HTCanvas::ModifyEllipses()
    col_lab->Add(new TObjString("End Phi"));
    col_lab->Add(new TObjString("Theta"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Ellipse", itemwidth,
@@ -946,7 +950,7 @@ void HTCanvas::ModifyMarkers()
    col_lab->Add(new TObjString("Y"));
    col_lab->Add(new TObjString("Size"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Marker", itemwidth,
@@ -1023,7 +1027,7 @@ void HTCanvas::ModifyPads()
    col_lab->Add(new TObjString("Width"));
    col_lab->Add(new TObjString("Height"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Pad", itemwidth,
@@ -1092,7 +1096,7 @@ void HTCanvas::ModifyPaves()
    col_lab->Add(new TObjString("Width"));
    col_lab->Add(new TObjString("Height"));
    col_lab->Add(new TObjString("Apply"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Pave", itemwidth,
@@ -1167,7 +1171,7 @@ void HTCanvas::ModifyGraphs()
    col_lab->Add(new TObjString("Y of first point"));
    col_lab->Add(new TObjString("Npoints"));
    col_lab->Add(new TObjString("Select"));
-   Int_t ret;
+   Int_t ret = 0;
    Int_t itemwidth = 100;
    const TGWindow * win = (TGWindow*)fRootCanvas;
    new TGMrbTableOfDoubles(win, &ret, "Select Graph", itemwidth,
@@ -1203,7 +1207,8 @@ void HTCanvas::ModifyGraphs()
    for(Int_t i = 0; i < nrows; i++) {
       values[i] = x[i];
       values[i + nrows] = y[i];
-   }
+   } 
+   ret = 0;
    new TGMrbTableOfDoubles(win, &ret, "Edit Graph", itemwidth,
                           ncols, nrows, values, prec, 
                           col_lab);
@@ -1439,7 +1444,7 @@ void HTCanvas::SetVisibilityOfEnclosingCuts(Bool_t visible)
    TIter next(GetListOfPrimitives());
    TObject * obj;
    while ( (obj = next()) ) {
-      if (obj->TestBit(GroupOfGObjects::kIsEnclosingCut))
+      if (obj->TestBit(kIsEnclosingCut))
         ((GroupOfGObjects*)obj)->SetVisible(visible);  
    }
    Update();
@@ -3438,6 +3443,17 @@ tryagain:
    gage  = GetDouble(&values, vp++);
 
   cout << "Input a  Polyline defining the controlpoints" << endl;
+  TIter next(this->GetListOfPrimitives());
+  TObject * obj;
+  while ( (obj = next()) ) {
+     if (obj->IsA() == TGraph::Class()) {
+        TGraph * g = (TGraph*)obj;
+        if(!(strncmp(g->GetName(), "Graph", 5))) { 
+           cout << "Rename existing Graph" << endl;
+           g->SetName("Hprgraph");
+        }
+     }
+  }
   TGraph * gr = (TGraph*)this->WaitPrimitive("Graph", "PolyLine");
   if (!gr) {
       cout << "No PolyLine found, try again" << endl;

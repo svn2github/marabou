@@ -12,6 +12,7 @@ namespace std {} using namespace std;
 #include "TEllipse.h"
 #include "TPolyLine.h"
 #include "XSpline.h"
+#include "HprEditBits.h"
 #include "iostream"
 
 //________________________________________________________________
@@ -116,8 +117,8 @@ void GroupOfGObjects::BindReleaseObjects(Bool_t bind)
    TObject * obj;
    while ( lnk ) {
       obj = lnk->GetObject();
-      if (bind) obj->SetBit(GroupOfGObjects::kIsBound);
-      else      obj->ResetBit(GroupOfGObjects::kIsBound);
+      if (bind) obj->SetBit(kIsBound);
+      else      obj->ResetBit(kIsBound);
       lnk = (TObjOptLink*)lnk->Next();
    }
 };

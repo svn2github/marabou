@@ -443,6 +443,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
    // Handle button and text enter events
+   cout << "ProcessMessage " << parm1 << " " << parm2 << endl;
 
    switch (GET_MSG(msg)) {
       case kC_COMMAND:
@@ -455,12 +456,14 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                       if (fFileName && fFileName.Length() > 0) this->SaveList();
                       StoreValues();
                       *fReturn = 0;
-                      delete this;
+                      CloseWindow();
+//                      delete this;
                       break;
 
                     case kIdCancel:
                       *fReturn = -1;
-                      delete this;
+                       CloseWindow();
+//                      delete this;
                       break;
                   case kIdHelp:
                       new TGMrbHelpWindow(this, "HistPresent Help", fHelpText, 550, 500);
@@ -529,11 +532,11 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
        case kC_TEXTENTRY:
          switch (GET_SUBMSG(msg)) {
              case kTE_TAB:
- //              cout << "Tab " << parm1 << " " << fCompList<< endl;
+               cout << "Tab " << parm1 << " " << fCompList<< endl;
 //                if (parm1 != kIdText) break;
                 if (fCompList) {
                    TString temp = fTE->GetBuffer()->GetString();
-//                   cout << "temp: " << temp << endl;
+                   cout << "temp: " << temp << endl;
 //                   char colon = ':';
                    Int_t indcol = IndexOfLastSpecial(temp);
                    TString var = temp(indcol+1, temp.Length() - indcol - 1);
@@ -555,7 +558,8 @@ Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2
                 *fText = fTE->GetBuffer()->GetString();
                 if (fFileName.Length() > 0) this->SaveList();
                 *fReturn = 0;
-                delete this;
+                CloseWindow();
+//                delete this;
                 break;
              default:
                 break;
@@ -707,6 +711,23 @@ void TGMrbValuesAndText::SaveList()
    outfile.close();
 }
 
+//_______________________________________________________________________________________
+
+TGMrbValuesAndText::~TGMrbValuesAndText()
+{
+// Cleanup dialog.
+//      cout << "enter dtor: TGMrbValuesAndText fFlagButtons " << fFlagButtons<< endl;
+      if (fFlagButtons) delete fFlagButtons;
+      fWidgets->Delete();
+      delete fWidgets;
+//      cout << "exit dtor: TGMrbValuesAndText " << endl;
+   }
+//_______________________________________________________________________________________
+
+void TGMrbValuesAndText::CloseWindow()
+{
+   DeleteWindow();
+}
 //_______________________________________________________________________________________
 
 Bool_t GetStringExt(const char *Prompt, TString  *text , 

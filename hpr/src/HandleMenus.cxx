@@ -635,7 +635,7 @@ again:
                     values[1] = fHCanvas->GetEditGridY();
                     values[2] = fHCanvas->GetVisibleGridX();
                     values[3] = fHCanvas->GetVisibleGridY();
-   					  Int_t ret, itemwidth = 240, precission = 5;
+   					  Int_t ret = 0, itemwidth = 240, precission = 5;
    					  TGMrbTableOfDoubles(fRootCanvas, &ret,  "Edit Grid", itemwidth, 
                                        1, 4, values, precission, 0, row_lab);
    					  if (ret >= 0) {

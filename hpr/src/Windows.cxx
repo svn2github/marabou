@@ -213,7 +213,7 @@ void FitHist::EditWindow(const char * name, const char * bp){
 // show values to caller and let edit
       TString title="Window: ";
       title += wdw->GetName();
-      Int_t ret,  itemwidth=120, precission = 5; 
+      Int_t ret = 0,  itemwidth=120, precission = 5; 
       TGMrbTableOfDoubles(mycanvas, &ret,title.Data(),itemwidth, 2, 2, xyvals,
       precission, NULL,row_lab);
       if(ret >= 0){
@@ -471,7 +471,7 @@ void FitHist::EditCut(const char * name, const char * bp){
 // show values to caller and let edit
       TString title("Cut: ");
       title += cut->GetName();
-      Int_t ret, itemwidth=240, precission = 5; 
+      Int_t ret = 0, itemwidth=240, precission = 5; 
       TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth, 2, n+1,
                          xyvals, precission,NULL,row_lab);
       cout << ret << endl;

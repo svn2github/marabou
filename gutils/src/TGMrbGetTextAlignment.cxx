@@ -178,8 +178,8 @@ Bool_t TGMrbGetTextAlignment::ProcessMessage(Long_t msg, Long_t parm1, Long_t pa
                          rb = (TGRadioButton *)fButtons->At(i);
                          if (rb->GetState() == kButtonDown) *fAlign = rb->WidgetId();
                       }
-                      // here copy the string from text buffer to return variable
-                      delete this;
+                      CloseWindow();
+//                      delete this;
                       break;
                    case 3:
                       new TGMrbHelpWindow(this, "Alignment Help", fHelpText, 550, 500);
@@ -203,8 +203,20 @@ Bool_t TGMrbGetTextAlignment::ProcessMessage(Long_t msg, Long_t parm1, Long_t pa
    }
    return kTRUE;
 }
+//_______________________________________________________________________________________
 
+TGMrbGetTextAlignment::~TGMrbGetTextAlignment()
+{
+// Cleanup dialog.
+      fWidgets->Delete();
+      delete fWidgets;
+}
+//_______________________________________________________________________________________
 
+void TGMrbGetTextAlignment::CloseWindow()
+{
+   DeleteWindow();
+}
 //_______________________________________________________________________________________
 Int_t  GetTextAlign(Int_t defalign, TGWindow *win, const char *helptext)
 { 

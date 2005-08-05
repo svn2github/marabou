@@ -23,11 +23,8 @@ private:
 
 public:
    TGMrbGetTextAlignment(Int_t * align, const TGWindow *win=0, const char *helptext=0);
-   virtual ~TGMrbGetTextAlignment(){
-// Cleanup dialog.
-      fWidgets->Delete();
-      delete fWidgets;
-   }
+   virtual ~TGMrbGetTextAlignment();
+   void CloseWindow();
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
 
 ClassDef(TGMrbGetTextAlignment,0)		// [GraphUtils] A dialog box

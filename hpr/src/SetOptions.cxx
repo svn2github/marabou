@@ -1604,7 +1604,7 @@ void HistPresent::Set1DimOptions(TGWindow * win, FitHist * fh)
       else if (i == e_livebg && fLiveBG)
          flags[i] = 1;
    }
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
                       "1 dim options", itemwidth,
@@ -1666,7 +1666,7 @@ void HistPresent::SetGraphOptions(TGWindow * win, TCanvas * ca)
          flags[i] = 0;
       svalues->Add(new TObjString(gDrawOptText[i]));
    }
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 300;
    new TGMrbTableFrame(win, &retval,
    						  "How to draw a Graph",
@@ -1742,7 +1742,7 @@ void HistPresent::Set2DimOptions(TGWindow * win, FitHist * fh)
       svalues->Add(new TObjString(gDrawOpt2Text[i]));
    }
    flags[nopt - 1] = fLiveStat2dim;
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
    						  "How to show a 2dim hist",
@@ -1806,7 +1806,7 @@ void HistPresent::Set2DimColorOpt(TGWindow * win, FitHist * fh)
          flags[i] = 0;
       svalues->Add(new TObjString(gDrawOpt2Text[i]));
    }
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
    						  "Color mode for 2dim hist",
@@ -1885,7 +1885,7 @@ void HistPresent::SetDisplayOptions(TGWindow * win, FitHist * fh)
       else if (i == e_fit && fShowFitBox)
          flags[i] = 1;
    }
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
    						  "What elements to show",
@@ -2008,7 +2008,7 @@ void HistPresent::SetFittingOptions(TGWindow * win, FitHist * fh)
       else if (i == e_fitted && fShowFittedCurves)
          flags[i] = 1;
    }
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
                        "Fitting Options",
@@ -2175,7 +2175,7 @@ ______________________________________________________________ \n\
       else if (i == e_realstack && fRealStack)          flags[i] = 1;
       else if (i == e_useregexp && fUseRegexp)          flags[i] = 1;
    }
-   Int_t retval;
+   Int_t retval = 0;
    Int_t itemwidth = 240;
    new TGMrbTableFrame(win, &retval,
    						  "Various Options",
@@ -2265,7 +2265,7 @@ void HistPresent::SetWindowSizes(TGWindow * win, FitHist * fh)
    values[vp++] = fProjectBothRatio;
    values[vp++] = fDivMarginX;
    values[vp++] = fDivMarginY;
-   Int_t ret, itemwidth = 240, precission = 5;
+   Int_t ret = 0, itemwidth = 240, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "Default window sizes and positions",
                        itemwidth, 1, nopt, values, precission, 0, row_lab);
    if (ret >= 0) {
@@ -2312,10 +2312,7 @@ void HistPresent::SetNumericalOptions(TGWindow * win, FitHist * fh)
    values[vp++] = fPeakMwidth;
    values[vp++] = fPeakThreshold;
 
-;
-//   Int_t ret=TGMrbTableOfDoubles(win, title, 1, nopt, values,
-//                            0,row_lab);
-   Int_t ret, itemwidth = 240, precission = 5;
+   Int_t ret = 0, itemwidth = 240, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "Various numerical options", itemwidth,
                        1, nopt, values, precission, 0, row_lab);
    if (ret >= 0) {
@@ -2370,7 +2367,7 @@ void HistPresent::SetFontsAndColors(TGWindow * win, FitHist * fh)
    values[vp++] = f2DimBackgroundColor;
    values[vp++] = fStatFont;
    values[vp++] = fTitleFont;
-   Int_t ret, itemwidth = 240, precission = 5;
+   Int_t ret = 0, itemwidth = 240, precission = 5;
    TGMrbTableOfDoubles(win, &ret, "Fonts and Colors", itemwidth, 1, nopt,
                        values, precission, 0, row_lab);
    if (ret >= 0) {

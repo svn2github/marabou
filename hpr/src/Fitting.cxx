@@ -1081,7 +1081,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
    TArrayD xyvals(len_upar);
    for (Int_t i = 0; i < len_upar; i++)
       xyvals[i] = upar[i];
-   Int_t ret, itemwidth = 120, precission = 5;
+   Int_t ret = 0, itemwidth = 120, precission = 5;
    TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth,
                        ncols, npar, xyvals, precission,
                        col_lab, row_lab, &fixflag, 0,

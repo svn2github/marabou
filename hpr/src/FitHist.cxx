@@ -210,8 +210,10 @@ FitHist::FitHist(const Text_t * name, const Text_t * title, TH1 * hist,
    func_numb = 0;
    fCutNumber = 0;
    wdw_numb = 0;
-//   fCallMinos = kFALSE;
-//   fKeepParameters = kFALSE;
+   if (env.GetValue("HistPresent.FitOptMinos", 0) != 0) fCallMinos = kTRUE;
+   else                                                 fCallMinos = kFALSE;
+   if (env.GetValue("HistPresent.FitOptKeepPar", 0) != 0)fKeepParameters  = kTRUE;
+   else                                                  fKeepParameters = kFALSE;
    fOldMode = -1;
    fColSuperimpose = 2;
    fMax = hist->GetMaximum();
@@ -1147,7 +1149,7 @@ for expanded Histogram");
       row_lab->Add(new TObjString("new ylow, yup"));
    }
 // show values to caller and let edit
-   Int_t ret, ncols = 2, itemwidth = 120, precission = 5;
+   Int_t ret = 0, ncols = 2, itemwidth = 120, precission = 5;
    TGMrbTableOfDoubles(mycanvas, &ret, "Set new axis limits", itemwidth,
                        ncols, n, xyvals, precission, NULL, row_lab);
 //   cout << ret << endl;
@@ -1206,9 +1208,7 @@ void FitHist::AddAxis(Int_t where)
       }
    }
 // show values to caller and let edit
-//   Int_t ret=TGMrbTableOfDoubles(mycanvas, title, 2, 1, xyvals,
-//                            NULL,row_lab);
-   Int_t ret, ncols = 2, nrows = 1, itemwidth = 120, precission = 5;
+   Int_t ret = 0, ncols = 2, nrows = 1, itemwidth = 120, precission = 5;
    TGMrbTableOfDoubles(mycanvas, &ret, "Define axis limits", itemwidth,
                        ncols, nrows, xyvals, precission, NULL, row_lab);
    if (ret >= 0) {
@@ -1827,10 +1827,7 @@ void FitHist::Set2Marks()
    row_lab->Add(new TObjString("x,y value"));
    row_lab->Add(new TObjString("x,y value"));
 // show values to caller and let edit
-//   TString title("Marks");
-//   Int_t ret=TGMrbTableOfDoubles(mycanvas,title,2, n, xyvals,NULL,row_lab);
-//      cout << ret << endl;
-   Int_t ret, ncols = 2, nrows = n, itemwidth = 120, precission = 5;
+   Int_t ret = 0, ncols = 2, nrows = n, itemwidth = 120, precission = 5;
    TGMrbTableOfDoubles(mycanvas, &ret, "Marks", itemwidth,
                        ncols, nrows, xyvals, precission, NULL, row_lab);
    if (ret >= 0) {
@@ -2352,8 +2349,7 @@ void FitHist::OutputStat()
       title += Form("%f",xlow);
       title += " to ";
       title += Form("%f",xup);
-//      Int_t ret = TGMrbTableOfDoubles(mycanvas,title, 1, 4, par,col_lab,row_lab);
-      Int_t ret, ncols = 1, nrows = 4, itemwidth = 240, precission = 5;
+      Int_t ret = 0, ncols = 1, nrows = 4, itemwidth = 240, precission = 5;
       TGMrbTableOfDoubles(mycanvas, &ret, title.Data(), itemwidth,
                           ncols, nrows, par, precission, col_lab, row_lab);
       if (col_lab)

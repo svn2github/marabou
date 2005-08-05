@@ -21,10 +21,6 @@ protected:
    
    TList    fMembers;       // Members 
 public:
-   enum {
-      kIsBound = BIT(21),
-      kIsEnclosingCut = BIT(22)
-   };
    GroupOfGObjects(){};
 
    GroupOfGObjects(const char * name, 

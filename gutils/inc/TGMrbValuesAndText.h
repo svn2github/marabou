@@ -59,15 +59,11 @@ public:
                              TList * rowlabs = 0, TList * values = 0,
                              TArrayI * Flags = 0, const char * Flagslabel = 0,
                              const char *helptext=0);
-   virtual ~TGMrbValuesAndText(){
-// Cleanup dialog.
-      if (fFlagButtons) delete fFlagButtons;
-      fWidgets->Delete();
-      delete fWidgets;
-   }
+   virtual ~TGMrbValuesAndText();
 
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void StoreValues();
+   void CloseWindow();
 //   void DoMarkerStyle(Style_t marker) {fMarker = marker;};
    void SaveList();
 

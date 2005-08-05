@@ -178,6 +178,7 @@ void TableOfLabels::CloseWindow()
 
 TableOfLabels::~TableOfLabels(){
 //   cout << "dtor ~TableOfLabels" << endl;
+   fEntries->Clear();
    fWidgets->Delete();
    delete fWidgets;
    delete fEntries;
@@ -191,7 +192,8 @@ Bool_t TableOfLabels::ProcessMessage (Long_t msg, Long_t parm1, Long_t){
            case kCM_BUTTON:
                switch(parm1) {
                   case M_CANCEL:
-                     delete this;
+                     CloseWindow();
+//                     delete this;
                    break;
                }
                break;

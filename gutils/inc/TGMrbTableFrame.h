@@ -10,7 +10,7 @@
 //                 TGMrbTableOfDoubles   -- ... pure double elements
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbTableFrame.h,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbTableFrame.h,v 1.6 2005-08-05 12:44:44 schaileo Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -67,14 +67,11 @@ class TGMrbTableFrame : public TGTransientFrame {
                         		const Char_t * ActionText_1 = NULL,
                         		const Char_t * ActionText_2 = NULL);
 
-		virtual ~TGMrbTableFrame()		{
-											fWidgets->Delete();
-											delete fWidgets;
-											delete fEntries;
-										};
+		virtual ~TGMrbTableFrame();
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		void StoreValues();
+		void CloseWindow();
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableFrame.html&"); };
 
 	private:

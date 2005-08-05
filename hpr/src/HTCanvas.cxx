@@ -30,6 +30,7 @@
 #include "TMrbString.h"
 #include "TGMrbValuesAndText.h"
 #include "EditMarker.h"
+#include "HprEditBits.h"
 #include "GroupOfGObjects.h"
 
 const Size_t kDefaultCanvasSize   = 20;
@@ -47,6 +48,7 @@ HTCanvas::HTCanvas():TCanvas()
    fRootCanvas = NULL;  
    fHandleMenus = NULL;  
    fGObjectGroups = NULL; 
+   fGetMouse = kFALSE;
 };
 
 HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t wtopy,
@@ -117,6 +119,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fGObjectGroups = NULL; 
    fUseEditGrid = kFALSE;
    fCommonRotate= kFALSE;
+   fGetMouse = kFALSE;
    fRootCanvas = (TRootCanvas*)fCanvasImp;
    if(fHistPresent && !fFitHist)fHistPresent->SetMyCanvas(fRootCanvas);
    Build();
@@ -387,7 +390,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       pxB1down = px;
       pyB1down = py;
 
-      if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
+      if (fSelected->TestBit(kIsBound)) break;
       x = gPad->AbsPixeltoX(px);
       y = gPad->AbsPixeltoY(py);
       if(fUseEditGrid && fSelectedPad == this &&
@@ -435,7 +438,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       if (fSelected) {
          gPad = fSelectedPad;
 //OS start
-      if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
+      if (fSelected->TestBit(kIsBound)) break;
          if (in_image) {
             fSelected = pad_of_image;
 //            fSelected = gPad;
@@ -489,7 +492,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
          gPad = fSelectedPad;
 //         cout << "kButton1Up: this " << this 
 //              << " fSelected " << fSelected << " gPad " << gPad << endl;
-         if (fSelected->TestBit(GroupOfGObjects::kIsBound)) break;
+         if (fSelected->TestBit(kIsBound)) break;
          if (in_image) {
 //            cout << "setting: " << fSelected << endl;
             fSelected = pad_of_image;
@@ -525,18 +528,9 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
          if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
          if (fAutoExec)        RunAutoExec();
-//         if (fSelected->TestBit(GroupOfGObjects::kIsEnclosingCut)) {
-//            Double_t xshift = gPad->AbsPixeltoX(px) - gPad->AbsPixeltoX(pxB1down);
-//            Double_t yshift = - (gPad->AbsPixeltoX(py) - gPad->AbsPixeltoX(pyB1down));
- //           ShiftObjects(((EnclosingCut*)fSelected)->GetLofGObjects(), xshift, yshift);
-//         }
-//         if (fPadSave->TestBit(kNotDeleted))
-//            gPad = fPadSave;
-//         else {
-            gPad     = this;
-            fPadSave = this;
-            padsave  = fPadSave;
-//        }
+         gPad     = this;
+         fPadSave = this;
+         padsave  = fPadSave;
 
          Update();    // before calling update make sure gPad is reset
       }

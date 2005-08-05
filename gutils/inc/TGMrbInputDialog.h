@@ -49,12 +49,8 @@ public:
                     const char *HelpText = 0,
                     const char *YNPrompt1 = 0, Bool_t * YesNo1 = 0,
                     const char * FileName = 0, TList * complist=0);
-   virtual ~TGMrbInputDialog(){
-// Cleanup dialog.
-      fWidgets->Delete();
-      delete fWidgets;
-   }
-
+   virtual ~TGMrbInputDialog();
+   void CloseWindow();
    virtual Bool_t  ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2);
    void SaveList();
 

@@ -652,7 +652,7 @@ void HistPresent::ShowLeaf( const char* fname, const char* dir, const char* tnam
       }
 //      cout << "pwin " << pwin << endl;
 
-      Int_t ret,  itemwidth=120, precission = 5; 
+      Int_t ret = 0,  itemwidth=120, precission = 5; 
       TGMrbTableOfDoubles(pwin, &ret, "Set axis ranges", 
                         itemwidth,3, nent + 1, xyvals, precission,
                        col_lab, row_lab);

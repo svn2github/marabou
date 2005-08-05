@@ -1,6 +1,6 @@
 /*__________________________________________________[C++ CLASS IMPLEMENTATION]
 //////////////////////////////////////////////////////////////////////////////
-// ame:            gutils/src/TGMrbTableFrame.cxx
+// Name:            gutils/src/TGMrbTableFrame.cxx
 // Purpose:        A matrix of N * M text entries + check buttons
 // Description:    
 // Author:         O. Schaile
@@ -48,7 +48,8 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 // Name:           TGMrbTableFrame
 // Purpose:        Provide a matrix of text entries
 // Arguments:      TGWindow * Window               -- parent window
-//                 Int_t * RetValue                -- return value (button id)
+//                 Int_t * RetValue                -- return value
+//                                                 -- on entry: < 0 no edit allowed
 //                 Char_t * Title                  -- title
 //                 Int_t ItemWidth                 -- item width (in pixels 120-240)
 //                 Int_t Ncols                     -- number of columns
@@ -467,6 +468,19 @@ TGMrbTableFrame::TGMrbTableFrame(const TGWindow * Window, Int_t * RetValue, cons
 };
 
 //_____________________________________________________________________________
+TGMrbTableFrame::~TGMrbTableFrame()		
+{
+   fEntries->Clear();
+	fWidgets->Delete();
+	delete fWidgets;
+	delete fEntries;
+};
+//_____________________________________________________________________________
+void TGMrbTableFrame::CloseWindow()
+{
+   DeleteWindow();
+}
+//_____________________________________________________________________________
 
 void TGMrbTableFrame::StoreValues(){
 //________________________________________________________________[C++ METHOD]
@@ -542,17 +556,20 @@ Bool_t TGMrbTableFrame::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
                switch(Param1) {
                   case kTableFrameCancel:
                      *fRet = -1;
-                     delete this;
+                     CloseWindow();
+//                     delete this;
                      break;
                   case kTableFrameOk:
                      StoreValues();
                      *fRet = 0;
-                     delete this;
+                     CloseWindow();
+//                     delete this;
                      break;
                   case kTableFrameAct_2:
                      StoreValues();
                      *fRet = 1;
-                     delete this;
+                     CloseWindow();
+//                     delete this;
                      break;
                   case kTableFrameHelp:
                      {

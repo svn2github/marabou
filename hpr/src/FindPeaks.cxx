@@ -218,7 +218,7 @@ use Clear calibration and redisplay");
    }
    TArrayI useflag(npeaks);
    for(Int_t i=0; i<npeaks; i++)useflag[i] = 1;
-   Int_t ret, ncols = 4, itemwidth=120, precission = 5; 
+   Int_t ret = 0, ncols = 4, itemwidth=120, precission = 5; 
    TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, "Calibration values", 
                          itemwidth, ncols, npeaks, xyvals, precission,
                         col_lab, row_lab, &useflag);
@@ -366,6 +366,7 @@ tryagain:
             xyvals[2] = TMath::Abs((a + b * oldup) / 1000);
             ncols = 1; 
             Int_t nrows = 3;
+            ret = 0;
             TGMrbTableOfDoubles((TGWindow*)mycanvas, &ret, 
                                 "Parameters for calibrated histogram", 
                                 itemwidth, ncols, nrows, xyvals, precission,

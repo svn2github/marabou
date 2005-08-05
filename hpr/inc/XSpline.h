@@ -64,6 +64,7 @@ protected:
    Int_t         fNofControlPoints;
    Int_t         fNpoints;           // number of used points
    Bool_t        fReady; 
+   Bool_t        fNeedReCompute;     //
    TArrayD       fX;                 // result X
    TArrayD       fY;                 // result Y
    ControlGraph  fCPGraph;           // Controlpoints
@@ -140,7 +141,7 @@ public:
    Double_t SetFilledLength() {return fFilledLength;};
    Double_t SetEmptyLength() {return fEmptyLength;};
    void Paint(Option_t * option = " ");
-
+   void SetNeedReCompute() {fNeedReCompute = kTRUE;};
    ClassDef(XSpline, 1)
 };
 #endif

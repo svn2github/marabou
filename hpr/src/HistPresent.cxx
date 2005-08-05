@@ -613,7 +613,7 @@ void HistPresent::ShowContents(const char *fname, const char * dir, const char* 
    TList lofUc;
    TList lofG;
    Int_t nstat=0;
-   Bool_t ok;
+   Bool_t ok = kFALSE;
    TString cmd;
    TString title;
    TString hint;
@@ -728,8 +728,10 @@ Should we create a new file with corrected names?", maincanvas)) {
          if (!fConnectedOnce) {
             *fHostToConnect = GetString("Host to connect", fHostToConnect->Data()
                         ,&ok,maincanvas);
+            if (!ok) return;
             fSocketToConnect = GetInteger("Socket to connect",fSocketToConnect
                         ,&ok,maincanvas);
+            if (!ok) return;
             fConnectedOnce = kTRUE;
          }
          fComSocket = new TSocket(*fHostToConnect, fSocketToConnect);

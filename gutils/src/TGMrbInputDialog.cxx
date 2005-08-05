@@ -370,6 +370,22 @@ TGMrbInputDialog::TGMrbInputDialog(const char *Prompt, const char *DefVal,
    fHelpText = HelpText;
    gClient->WaitFor(this);
 };
+//____________________________________________________________________________
+
+TGMrbInputDialog::~TGMrbInputDialog()
+{
+// Cleanup dialog.
+      fWidgets->Delete();
+      fWidgets->Clear();
+      delete fWidgets;
+}
+//____________________________________________________________________________
+
+void TGMrbInputDialog::CloseWindow()
+{
+   DeleteWindow();
+}
+//____________________________________________________________________________
 
 Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
@@ -393,7 +409,8 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                          else                                      *fRetYesNo1 = kTRUE;
                       }
                       *fReturn = 0;
-                      delete this;
+                      CloseWindow();
+//                      delete this;
                       break;
 
                     case 2:
@@ -401,7 +418,8 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                       strcpy(fRetStr, fTE->GetBuffer()->GetString());
                       if (fFileName.Length() > 0) this->SaveList();
                       *fReturn = -1;
-                      delete this;
+                      CloseWindow();
+//                      delete this;
                       break;
                   case 3:
                       new TGMrbHelpWindow(this, "HistPresent Help", fHelpText, 550, 500);
@@ -459,7 +477,8 @@ Bool_t TGMrbInputDialog::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
                    else                                      *fRetYesNo1 = kTRUE;
                 }
                 *fReturn = 0;
-                delete this;
+                CloseWindow();
+//                delete this;
                 break;
              default:
                 break;

@@ -51,7 +51,7 @@ Int_t FhContour::Edit( TGWindow * canvas)
       rowl += i;
       row_lab->Add(new TObjString(rowl.Data()));
    }
-   Int_t ret, ncols = 1, itemwidth=120, precission = 5; 
+   Int_t ret = 0, ncols = 1, itemwidth=120, precission = 5; 
    TGMrbTableOfDoubles(canvas, &ret, "Contour values", 
                          itemwidth, ncols, ncont, fLevels, precission,
                           col_lab, row_lab, &fColors, -ncont);
