@@ -36,6 +36,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
  					$(HPRDIRI)/EditMarker.h \
  					$(HPRDIRI)/ControlGraph.h \
  					$(HPRDIRI)/XSpline.h \
+ 					$(HPRDIRI)/RailwaySleeper.h \
  					$(HPRDIRI)/HprEditCommands.h 
 
 HPRDEP      := $(HPRO:.o=.d) $(HPRDO:.o=.d)

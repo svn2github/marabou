@@ -142,6 +142,8 @@ public:
    Double_t SetEmptyLength() {return fEmptyLength;};
    void Paint(Option_t * option = " ");
    void SetNeedReCompute() {fNeedReCompute = kTRUE;};
+   void SetColor(Color_t color);
+
    ClassDef(XSpline, 1)
 };
 #endif

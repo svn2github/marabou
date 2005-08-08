@@ -107,15 +107,18 @@ void HprImage::Paint(Option_t * opt)
 //   Dump();
 //   if (fImage) fImage->Dump();
    TObjOptLink *lnk = (TObjOptLink*)lop->FirstLink();
+   cout << "HprImage::Paint(): bef Remove TASImage" << endl;
    while (lnk) {
       obj = lnk->GetObject();
-      if (obj->InheritsFrom("TASImage")) lop->Remove(obj);
+      if (obj->InheritsFrom("TASImage")) lop->Remove(lnk);
       lnk = (TObjOptLink*)lnk->Next();
    }
+   cout << "HprImage::Paint(): after Remove TASImage" << endl;
+   
    lnk = (TObjOptLink*)lop->FirstLink();
    while (lnk) {
       obj = lnk->GetObject();
-      if (obj->InheritsFrom("TFrame")) lop->Remove(obj);
+      if (obj->InheritsFrom("TFrame")) lop->Remove(lnk);
       lnk = (TObjOptLink*)lnk->Next();
    }
 

@@ -32,7 +32,7 @@ public:
    Int_t InsertPoint();                                          // *MENU*
    Int_t RemovePoint();                                          // *MENU*
    virtual void EditControlGraph();    //  *MENU*
-   virtual void ControlGraphPlayer();    //  *MENU*
+   virtual void ControlGraphMixer();    //  *MENU*
    virtual void Delete(Option_t *opt = " "); // *MENU*
    void SetShapeFactors(Int_t id, Int_t ip, Int_t val);
    TGraph* AddPGraph(Double_t dist = 2, Color_t color=0, 

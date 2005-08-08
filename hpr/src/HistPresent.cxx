@@ -3345,7 +3345,7 @@ void HistPresent::DinA4Page(Int_t form)
    values->Add(new TObjString(Form("%d", Xwidth )));
    values->Add(new TObjString(Form("%d", Ywidth )));
    values->Add(new TObjString(Form("%lf", XRange )));
-   Int_t ret,  itemwidth=120, nrows = values->GetSize(); 
+   Int_t ret = 0,  itemwidth=120, nrows = values->GetSize(); 
 tryagain:
    new TGMrbTableFrame(GetMyCanvas(), &ret, "", 
                         itemwidth, 1, nrows, values,

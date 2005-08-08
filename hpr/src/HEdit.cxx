@@ -1886,13 +1886,13 @@ tryagain:
 //   TIter next(GetListOfPrimitives());
    while ( lnk ) {
       obj = lnk->GetObject();
-      cout << "exgo: " << obj->GetName() << " "  << obj->ClassName()<< endl;
       if (obj == cut        // the enclosing TCutG itself
           || obj->InheritsFrom("EditMarker")
           || obj->InheritsFrom("GroupOfGObjects")) {
          lnk = (TObjOptLink*)lnk->Next();
          continue;
       }
+      cout << "exgo: " << obj->GetName() << " "  << obj->ClassName()<< endl;
       if (obj->InheritsFrom("TPave")) {
          TPave * b = (TPave*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
@@ -2060,7 +2060,7 @@ tryagain:
          cout << "exgo XSpline, x, y " << x[0] << " " <<  y[0] << endl;
 //         either first or last point
          if (cut->IsInside(x[0], y[0]) 
-            |cut->IsInside(x[b->GetN()-1], y[b->GetN()-1])) {
+            |cut->IsInside(x[gr->GetN()-1], y[gr->GetN()-1])) {
             if (!markonly) {
               cout << "Shift ControlGraph" << endl;
                b = (XSpline*)obj->Clone();

@@ -45,6 +45,7 @@
 #include "TGMrbTableFrame.h"
 #include "TGMrbSliders.h"
 #include "HprEditBits.h"
+#include "RailwaySleeper.h"
 
 namespace std {} using namespace std;
 
@@ -63,6 +64,7 @@ namespace std {} using namespace std;
 
 ClassImp(XSpline)
 ClassImp(ControlGraph)
+ClassImp(RailwaySleeper)
 
 //_______________________________________________________________________
 //
@@ -527,6 +529,7 @@ XSpline::~XSpline()
 {
    cout << "~XSpline() " << endl << flush;
    gROOT->GetListOfCleanups()->Remove(this);
+   RemovePolyLines();
    fPGraphs.Delete();
    Delete_ControlPoints();
    Delete_ShapeFactors();
@@ -616,7 +619,7 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
    else
       op_spline(fControlPointList, fShapeFactorList, fPrec);
    SetGraph();
-//   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
+   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    if (fNP > 0) {
       for (Int_t i = 0; i < fNP; i++) {
          TGraph * gr = NULL;
@@ -873,7 +876,8 @@ void XSpline::Paint(Option_t * option)
       while ( (obj=next()) ) lop->Remove(obj); 
       fDPolyLines.Delete();
    }
-   TPolyLine * pl;
+//   TPolyLine * pl;
+   RailwaySleeper * pl;
    Double_t xp[5], yp[5];
    Int_t ip = 0;
    Double_t * xc = this->GetX();
@@ -914,12 +918,16 @@ void XSpline::Paint(Option_t * option)
          yp[3] = ay;
          xp[4] = xp[0];
          yp[4] = yp[0];
-         pl = new TPolyLine(5, xp, yp);
-         pl->SetBit(kCantEdit);
+//         pl = new TPolyLine(5, xp, yp);
+//         pl->SetBit(kCantEdit);
+//         fDPolyLines.Add(pl);
+//         pl->SetFillStyle(1003);
+//         pl->SetFillColor(this->GetLineColor());
+//         pl->Draw("F");
+         pl = new RailwaySleeper(xp, yp, this, this->GetLineColor());
          fDPolyLines.Add(pl);
-         pl->SetFillStyle(1003);
-         pl->SetFillColor(this->GetLineColor());
-         pl->Draw("F");
+         pl->Draw();
+
          available -= needed;
          box_done = kTRUE;
          xcprev = xccur;
@@ -960,12 +968,15 @@ void XSpline::Paint(Option_t * option)
          yp[3] = yr[ip+1];
          xp[4] = xp[0];
          yp[4] = yp[0];
-         pl = new TPolyLine(5, xp, yp);
-         pl->SetBit(kCantEdit);
+//         pl = new TPolyLine(5, xp, yp);
+//         pl->SetBit(kCantEdit);
+//         fDPolyLines.Add(pl);
+//         pl->SetFillStyle(1003);
+//         pl->SetFillColor(this->GetLineColor());
+//         pl->Draw("F");
+         pl = new RailwaySleeper(xp, yp, this, this->GetLineColor());
          fDPolyLines.Add(pl);
-         pl->SetFillStyle(1003);
-         pl->SetFillColor(this->GetLineColor());
-         pl->Draw("F");
+         pl->Draw();
          ip += 1;
          needed -=   Length(xcprev, ycprev, xc[ip], yc[ip]);
          available = Length(xc[ip], yc[ip], xc[ip+1], yc[ip+1]);
@@ -990,16 +1001,36 @@ void XSpline::Paint(Option_t * option)
       yp[3] = yr[ip+1];
       xp[4] = xp[0];
       yp[4] = yp[0];
-      pl = new TPolyLine(5, xp, yp);
-      pl->SetBit(kCantEdit);
+   
+//      pl = new TPolyLine(5, xp, yp);
+//      pl->SetBit(kCantEdit);
+//      fDPolyLines.Add(pl);
+//      pl->SetFillStyle(1003);
+//      pl->SetFillColor(this->GetLineColor());
+//      pl->Draw("F");
+      pl = new RailwaySleeper(xp, yp, this, this->GetLineColor());
       fDPolyLines.Add(pl);
-      pl->SetFillStyle(1003);
-      pl->SetFillColor(this->GetLineColor());
-      pl->Draw("F");
+      pl->Draw();
+//      cout << "pl->GetFillColor() " << pl->GetFillColor() << endl;
    }
    fNeedReCompute = kFALSE;
    gPad->Modified();
    gPad->Update();
+}
+//_____________________________________________________________________________________
+
+void XSpline::SetColor(Color_t color)
+{
+   SetLineColor(color);
+//   std::cout << "XSpline::SetColor " << color << std::endl;
+   if (fDPolyLines.GetEntries() > 0) {
+      TIter next(&fDPolyLines);
+      RailwaySleeper * rs;
+      while (rs = (RailwaySleeper*)next()) {
+         rs->SetColor(color);
+      }
+      gPad->Update();
+   }
 }
 //___________________________________________________________________________
 //___________________________________________________________________________
@@ -1176,7 +1207,7 @@ void ControlGraph::EditControlGraph()
 }
 //_____________________________________________________________________________________
 
-void ControlGraph::ControlGraphPlayer() 
+void ControlGraph::ControlGraphMixer() 
 {
 // This method is invoked from the ContextMenu
    if (!fParent) return;
@@ -1220,3 +1251,40 @@ TGraph* ControlGraph::AddPGraph(Double_t dist, Color_t color,
    if (fParent) return fParent->AddParallelGraph(dist, color, width, style);
    else         return NULL;
 }
+//_____________________________________________________________________________________
+
+RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y, 
+                XSpline * parent, Color_t color)
+                : TPolyLine(5, x, y), fParent(parent)
+{
+   SetLineColor(color);
+   SetFillColor(color);
+   SetFillStyle(1003);
+//   cout << "color: " << color << endl;
+}
+//_____________________________________________________________________________________
+void RailwaySleeper::ExecuteEvent(Int_t event, Int_t px, Int_t py)
+{
+    fParent->ExecuteEvent(event, px,py);
+}
+//_____________________________________________________________________________________
+
+void RailwaySleeper::Draw(Option_t * opt)
+{
+   TPolyLine::Draw("F");
+}
+//_____________________________________________________________________________________
+
+void RailwaySleeper::SetColor(Color_t color)
+{
+   fColor = color;
+   TPolyLine::SetFillColor(color);
+}
+//_____________________________________________________________________________________
+
+void RailwaySleeper::SetFillColor(Color_t color)
+{
+   fColor = color;
+   fParent->SetColor(color);
+}
+   
