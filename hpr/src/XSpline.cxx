@@ -619,7 +619,7 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
    else
       op_spline(fControlPointList, fShapeFactorList, fPrec);
    SetGraph();
-   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
+//   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    if (fNP > 0) {
       for (Int_t i = 0; i < fNP; i++) {
          TGraph * gr = NULL;
@@ -631,6 +631,7 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
    fNeedReCompute = kTRUE;
    gPad->Modified();
    gPad->Update();
+//   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    return fNpoints;
 }
 //_____________________________________________________________________________________
@@ -1014,8 +1015,8 @@ void XSpline::Paint(Option_t * option)
 //      cout << "pl->GetFillColor() " << pl->GetFillColor() << endl;
    }
    fNeedReCompute = kFALSE;
-   gPad->Modified();
-   gPad->Update();
+//   gPad->Modified();
+//   gPad->Update();
 }
 //_____________________________________________________________________________________
 
@@ -1278,11 +1279,11 @@ void RailwaySleeper::Draw(Option_t * opt)
 void RailwaySleeper::SetColor(Color_t color)
 {
    fColor = color;
-   TPolyLine::SetFillColor(color);
+   SetFillColor(color);
 }
 //_____________________________________________________________________________________
 
-void RailwaySleeper::SetFillColor(Color_t color)
+void RailwaySleeper::SetSleeperColor(Color_t color)
 {
    fColor = color;
    fParent->SetColor(color);

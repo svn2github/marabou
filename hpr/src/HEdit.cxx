@@ -72,7 +72,6 @@ void SetAllArrowSizes(TList *list, Double_t size,  Bool_t abs)
          Double_t s = size;
          if (!abs) s *=  b->GetArrowSize(); 
          b->SetArrowSize(s);
-         cout << "SetArrowSize(s) " << s << endl;
       }
    }
 }
@@ -712,7 +711,6 @@ void HTCanvas::ModifyArrows()
    TArrayI flags(nrows);
    Int_t ind = 0;
    Int_t prec = 3;
-   cout << "ModifyArrows()enter, gPad: " << gPad << endl;
    TIter next_1(gPad->GetListOfPrimitives());
    while ( (obj = next_1()) ) {
       if (obj->IsA() == TArrow::Class()) {
@@ -744,7 +742,6 @@ void HTCanvas::ModifyArrows()
    if (ret < 0) return;
    ind = 0;
    Bool_t changed = kFALSE;
-   cout << "ModifyArrows()exit, gPad: " << gPad << endl;
    TIter next_2(gPad->GetListOfPrimitives());
    while ( (obj = next_2()) ) {
       if (obj->IsA() == TArrow::Class()) {
@@ -1045,7 +1042,6 @@ void HTCanvas::ModifyPads()
             y1 = (values[ind + 1 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
             x2 = x1 + (values[ind + 2 * nrows] - gPad->GetX1()) / (gPad->GetX2() - gPad->GetX1());
             y2 = y1 + (values[ind + 3 * nrows] - gPad->GetY1()) / (gPad->GetY2() - gPad->GetY1());
-//            cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
             b->SetPad(x1, y1, x2, y2);
             changed = kTRUE;
          }
@@ -1346,7 +1342,6 @@ void HTCanvas::DrawEditGrid(Bool_t visible)
        dy = fEditGridY;
 	}
 	if (dx <= 0 || dy <= 0) return;
-//    cout << ":DrawEditGrid " << dx << " " << dy << endl;
    Double_t xl, yl, xh, yh;
    GetRange(xl, yl, xh, yh);
 
@@ -1405,8 +1400,6 @@ void HTCanvas::RemoveControlGraphs()
    TList * lop = GetListOfPrimitives();
    TObject * obj;
    while ( (obj = lop->FindObject("ControlGraph")) ){
-//      delete obj;
-//      cout << "remove " << obj << endl;
       lop->Remove(obj);
    }
    Modified();
@@ -1419,8 +1412,6 @@ void HTCanvas::RemoveParallelGraphs()
    TList * lop = GetListOfPrimitives();
    TObject * obj;
    while ( (obj = lop->FindObject("ParallelG")) ){
-//      delete obj;
-//      cout << "remove " << obj << endl;
       lop->Remove(obj);
    }
    Modified();
@@ -1459,7 +1450,6 @@ void HTCanvas::InsertHist()
      gROOT->SetSelectedPad(pad);
    } else {
       WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
-//      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
 //      if (GetListOfPrimitives()->Contains(selected)) {
@@ -1506,7 +1496,6 @@ void HTCanvas::InsertHist()
       }
       if (fHistPresent->fSelectHist->GetSize() != 1) {
          WarnBox("Please select exactly 1 histogram", fRootCanvas); 
-//         cout << "Please select exactly 1 histogram" << endl;
          return;
       } else {
          hist = fHistPresent->GetSelHistAt(0, NULL, kTRUE);
@@ -1584,7 +1573,6 @@ TPad*  HTCanvas::GetEmptyPad()
       if (obj->InheritsFrom("TPad")) {
          pad = (TPad*)obj;
          if (pad->GetListOfPrimitives()->GetSize() == 0) {
-//            cout << "Pad: " << obj->GetName() << endl;
             pad->cd(0);
             gROOT->SetSelectedPad(pad);
             return pad;
@@ -1602,7 +1590,6 @@ void HTCanvas::InsertGraph()
      gROOT->SetSelectedPad(pad);
    } else {
       WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
-//      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
 //      if (GetListOfPrimitives()->Contains(selected)) {
@@ -1651,7 +1638,6 @@ void HTCanvas::InsertGraph()
       }
       if (fHistPresent->fSelectGraph->GetSize() != 1) {
          WarnBox("Please select exactly 1 graph", fRootCanvas); 
-//         cout << "Please select exactly 1 graph" << endl;
          return;
       } else {
          graph = fHistPresent->GetSelGraphAt(0);
@@ -1700,7 +1686,6 @@ void HTCanvas::InsertImage()
      gROOT->SetSelectedPad(pad);
    } else {
       WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
-//      cout << "Please create a new Pad in this Canvas" << endl;
       return;
    }   
    const char hist_file[] = {"images_hist.txt"};
@@ -1766,22 +1751,15 @@ void HTCanvas::InsertImage()
                         << " " << img_height << endl;
    Double_t aspect_ratio = img_height * this->GetXsizeReal() 
                         / (img_width* this->GetYsizeReal());
-//   Double_t aspect_ratio = img_height  / img_width;
-//   cout << "Image size, X,Y, ar: " << img_width
-//                        << " " << img_height << " " << aspect_ratio<< endl;
 
    if (fix_w) {  
       pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
                   pad->GetXlowNDC() + pad->GetWNDC(),
                   pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
-//   cout << "InsertImage()fix_w: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
-//        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
    } else if (fix_h) {  
       pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
                   pad->GetXlowNDC() + pad->GetHNDC() / aspect_ratio,
                   pad->GetYlowNDC() + pad->GetHNDC());
-//   cout << "InsertImage()fix_h: " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
-//        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
    }
 
    pad->SetTopMargin(.0);
@@ -1840,7 +1818,6 @@ Int_t HTCanvas::ExtractGObjects(Bool_t markonly)
    TCutG * cut = (TCutG *)FindObject("CUTG");
    if (!cut) {
       WarnBox("Define a graphical cut first", fRootCanvas); 
-//      cout << "Define a graphical cut first" << endl;
       return -1;
    }
    static Int_t serNr = 1;
@@ -1892,7 +1869,6 @@ tryagain:
          lnk = (TObjOptLink*)lnk->Next();
          continue;
       }
-      cout << "exgo: " << obj->GetName() << " "  << obj->ClassName()<< endl;
       if (obj->InheritsFrom("TPave")) {
          TPave * b = (TPave*)obj;
          if (cut->IsInside(b->GetX1(), b->GetY1())
@@ -2057,12 +2033,10 @@ tryagain:
             continue;
          }
          Double_t * y = gr->GetY();
-         cout << "exgo XSpline, x, y " << x[0] << " " <<  y[0] << endl;
 //         either first or last point
          if (cut->IsInside(x[0], y[0]) 
             |cut->IsInside(x[gr->GetN()-1], y[gr->GetN()-1])) {
             if (!markonly) {
-              cout << "Shift ControlGraph" << endl;
                b = (XSpline*)obj->Clone();
                gr = b->GetControlGraph();
                gr->SetParent(b);
@@ -2195,7 +2169,6 @@ void HTCanvas::InsertGObjects(const char * objname)
    	   gSystem->ProcessEvents();
    	   gSystem->Sleep(10);
 	   }
-	   cout << fMouseX << " " << fMouseY << endl;
       x0 = fMouseX;
       y0 = fMouseY;
    }
@@ -2318,7 +2291,6 @@ void HTCanvas::ShowGallery()
       cmd += "\")))->InsertGObjects(\"";
       cmd += oname;
       cmd += "\");";
-//      cout << cmd << endl;
       b = new TButton("", cmd.Data(),x, y, x + dx, y + dy);
       Double_t xr = go->fXUpEdge - go->fXLowEdge;
       Double_t yr = go->fYUpEdge - go->fYLowEdge;
@@ -2328,12 +2300,8 @@ void HTCanvas::ShowGallery()
          xoff = (go->fXorigin - go->fXLowEdge) / xr;
          yoff = (go->fYorigin - go->fYLowEdge) / yr;
       }
-//      cout << "xr,yr, xoff, yoff " <<xr << " "  <<yr << " "  
-//                                   <<xoff << " "  << yoff<< " " << endl; 
       b->Range(-(xoff+0.1)*xr, -(yoff+0.1)*yr, (xoff+0.1)*xr, (yoff +0.1)*yr);
       b->Draw();
-//      b->cd();
-//      tt = new TText(0,0, "");
       TList * lop = b->GetListOfPrimitives();
 //      lop->Add(tt);
       go->AddMembersToList(b, 0, 0, 1, 1, 0, 22);
@@ -2351,111 +2319,6 @@ void HTCanvas::ShowGallery()
       }
    }
 }
-//______________________________________________________________________________
-/*
-void HTCanvas::ShiftObjects(TList* list, Double_t xoff, Double_t yoff)
-{
-//  if (list) list->Print();
-   TObject * obj;
-   TIter next(list);
-   while ( (obj = next()) ) {
-      if (obj->InheritsFrom("EditMarker")) continue; 
- //     obj->Print();
-      if (obj->InheritsFrom("TPave")) {
-         TPave * b = (TPave*)obj;
-         Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
-         Double_t yoffNDC = yoff / (gPad->GetY2() - gPad->GetY1());
-         b->SetX1NDC(b->GetX1NDC() + xoffNDC);
-         b->SetY1NDC(b->GetY1NDC() + yoffNDC);
-         b->SetX2NDC(b->GetX2NDC() + xoffNDC);
-         b->SetY2NDC(b->GetY2NDC() + yoffNDC);
-         
-      } else if (obj->InheritsFrom("TBox")) {
-         TBox * b = (TBox*)obj;
-         b->SetX1(b->GetX1() + xoff);
-         b->SetX2(b->GetX2() + xoff);
-         b->SetY1(b->GetY1() + yoff);
-         b->SetY2(b->GetY2() + yoff);
-         
-      } else if (obj->InheritsFrom("TPad")){
-         TPad * b = (TPad*)obj;
-         Double_t x1, y1;
-         Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
-         Double_t yoffNDC = yoff / (gPad->GetY2() - gPad->GetY1());
-         x1 = b->GetAbsXlowNDC() + xoffNDC;
-         y1 = b->GetAbsYlowNDC() + yoffNDC;
-         b->SetPad(x1, y1, x1 + b->GetWNDC(), y1 + b->GetHNDC());
-
-      } else if (obj->InheritsFrom("TLine")){
-         TLine * b = (TLine*)obj;
-         b->SetX1(b->GetX1() + xoff);
-         b->SetX2(b->GetX2() + xoff);
-         b->SetY1(b->GetY1() + yoff);
-         b->SetY2(b->GetY2() + yoff);
-
-      } else if (obj->InheritsFrom("TArrow")) {
-         TArrow * b = (TArrow*)obj;
-         b->SetX1(b->GetX1() + xoff);
-         b->SetX2(b->GetX2() + xoff);
-         b->SetY1(b->GetY1() + yoff);
-         b->SetY2(b->GetY2() + yoff);
-
-      } else if (obj->InheritsFrom("TCurlyArc")) {
-         TCurlyArc * b = (TCurlyArc*)obj;
-         b->SetStartPoint(b->GetStartX() + xoff, b->GetStartY() + yoff);
-
-      } else if (obj->InheritsFrom("TCurlyLine")) {
-         TCurlyLine * b = (TCurlyLine*)obj;
-         b->SetStartPoint(b->GetStartX() + xoff, b->GetStartY() + yoff);
-         b->SetEndPoint(b->GetEndX() + xoff, b->GetEndY() + yoff);
-
-      } else if (obj->InheritsFrom("TMarker")) {
-      TMarker * b = (TMarker*)obj;
-         b->SetX(b->GetX() + xoff);
-         b->SetY(b->GetY() + yoff);
-
-      } else if (obj->InheritsFrom("TText")) {
-      TText * b = (TText*)obj;
-         b->SetX(b->GetX() + xoff);
-         b->SetY(b->GetY() + yoff);
-
-      } else if (obj->InheritsFrom("TEllipse")) {
-         TEllipse * b = (TEllipse*)obj;
-         b->SetX1(b->GetX1() + xoff);
-         b->SetY1(b->GetY1() + yoff);
-
-      } else if (obj->InheritsFrom("TGraph")) {
-         TGraph * b = (TGraph *)obj;
-         Double_t * x = b->GetX();
-         if (!x) {
-            cout << "TGraph with 0 points" << endl;
-            continue;
-         }
-         Double_t * y = b->GetY();
-//         either first or last point
-         for (Int_t i = 0; i < b->GetN(); i++) {
-            x[i] += xoff;
-            y[i] += yoff;
-         }
-      } else if (obj->InheritsFrom("TGraph")) {
-         TGraph* b = (TGraph*)obj;
-         Double_t * x = b->GetX();
-         if (!x) {
-            cout << "TGraph with 0 points" << endl;
-            continue;
-         }
-         Double_t * y = b->GetY();
-//         either first or last point
-         for (Int_t i = 0; i < b->GetN(); i++) {
-            x[i] += xoff;
-            y[i] += yoff;
-         }
-      } else {
-//         cout << obj->ClassName() << " not yet implemented" << endl;
-      }
-   }   
-}
-*/
 //______________________________________________________________________________
 
 void HTCanvas::PutObjectsOnGrid(TList* list)
@@ -2546,7 +2409,6 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          y1 = (y1 - this->GetY1()) / (this->GetY2() - this->GetY1());
          x2 = (x2 - this->GetX1()) / (this->GetX2() - this->GetX1());
          y2 = (y2 - this->GetY1()) / (this->GetY2() - this->GetY1());
-//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
          if (dox) b->SetX1NDC(x1);
          if (doy) b->SetY1NDC(y1); 
          if (dox) b->SetX2NDC(x2); 
@@ -2565,8 +2427,6 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
          y1 = b->GetAbsYlowNDC();
          x2 = x1 + b->GetAbsWNDC();
          y2 = y1 + b->GetAbsHNDC();
-//         cout <<  "xyoff: " << xoff << " " << yoff << endl;
-//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
 //         convert to user 
          x1 = (x1 - GetX1()) * (GetX2() - GetX1());
          y1 = (y1 - GetY1()) * (GetY2() - GetY1());
@@ -2662,7 +2522,6 @@ void HTCanvas::DeleteObjects()
    TCutG * cut = (TCutG *)FindObject("CUTG");
    if (!cut) {
       WarnBox("Define a graphical cut first", fRootCanvas); 
- //     cout << "Define a graphical cut first" << endl;
       return;
    }
    if (QuestionBox("Really delete objects?", fRootCanvas) != kMBYes) return;
@@ -2687,8 +2546,6 @@ void HTCanvas::DeleteObjects()
          Double_t y1 = b->GetAbsYlowNDC();
          Double_t x2 = x1 + b->GetAbsWNDC();
          Double_t y2 = y1 + b->GetAbsHNDC();
-//         cout <<  "xyoff: " << xoff << " " << yoff << endl;
-//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
 //         convert to user 
          x1 = x1 * (GetX2() - GetX1());
          y1 = y1 * (GetY2() - GetY1());
@@ -2782,9 +2639,7 @@ Int_t getm(TString& cmd, Int_t sind)
 {
    Int_t ind = sind;
    Int_t nbopen = 0;
-//   cout << "getm: |" <<  cmd << "| len: " << cmd.Length()<< endl;
    while (ind < cmd.Length()) {
-//     cout << cmd[ind] << endl;
      if (cmd[ind] == '}') {
         nbopen -= 1;
         if (nbopen == 0) return ind;
@@ -2798,9 +2653,7 @@ Int_t getmb(TString& cmd, Int_t sind)
 {
    Int_t ind = sind;
    Int_t nclose = 0;
-//   cout << "getm: |" <<  cmd << "| len: " << cmd.Length()<< endl;
    while (ind >= 0) {
-//     cout << cmd[ind] << endl;
      if (cmd[ind] == '{') {
         nclose -= 1;
         if (nclose == 0) return ind;
@@ -2817,7 +2670,6 @@ TString lat2root(TString& cmd)
 // this tries to translate standard Latex into ROOTs
 // latex like formular processor TLatex format
 
-//     cout << "Orig: " << cmd << endl;
 //    remove latex's $ (mathstyle), replace \ by #, ~ by space
    Int_t ind;
    Int_t sind = 0;
@@ -2838,7 +2690,6 @@ TString lat2root(TString& cmd)
       cmd.Remove(cb,1);
       cmd.Remove(ob,5);
    }
-//      cout << "BeSup: " << cmd << endl;
 //    make sure super / sub scripts are enclosed in {}
    TRegexp supsub("[_^]");
    TString rep; 
@@ -2854,20 +2705,16 @@ TString lat2root(TString& cmd)
          cmd.Replace(ind, 1, rep);
          sind += 2;
       }
-//         cout << cmd << endl;
    }
 
 //   add space around operators 
-//      cout << "BeSpc: " << cmd << endl;
 
    TRegexp oper("[-+*/=]");
    sind = 0;
    while (cmd.Index(oper, sind) >=0) {
 
       ind = 1 + cmd.Index(oper, sind);
-//         cout << "cmd(cmd.Index(oper, sind)): " << ind-1 << " |" <<  cmd[ind -1]<< "|" << endl;
       char c = cmd[ind];
-//         cout << "chkop sind: " << sind << " ind: " << ind << " " << cmd[ind -1] << endl;
       sind = ind + 1;
 //   are we within sub / superscript?
 
@@ -2875,7 +2722,6 @@ TString lat2root(TString& cmd)
       Int_t ob = le.Last('{');
       if (ob > 0 && (cmd(ob-1) == '^' 
                  || (cmd(ob-1) == '_'))) {
-//            cout << "chksp: " << le << " ob: " << ob << endl;
          if (getm(le, ob) == - 1)  continue; // no match before
       }
       if (c != ' ' && c!= '{' && c!= '}') {
@@ -2891,10 +2737,8 @@ TString lat2root(TString& cmd)
             sind += 1;
          }
       }
-//         cout << cmd << endl;
    }
 //   replace \over by \frac{}{}
-//      cout << "BefOver: " << cmd << endl;
 
  ind = cmd.Index("#over");
  Int_t ind1 = cmd.Index("#overline");
@@ -2905,20 +2749,17 @@ TString lat2root(TString& cmd)
         cout << "no closing } found" << endl;
         return ill;
      }
-//        cout << "over: " << le << " cb: " << cb << endl;
      Int_t ob = getmb(cmd, cb);
      if (ob < 0) {
         cout << "no matching { found" << endl;
         return ill;
      }
-//        cout << "over: ob: " << ob << endl;
      cmd.Remove(ind, 5);
      cmd.Insert(ob, " #frac");
   }
 
 //   remove not used \cos etc,
 //   replace overline by bar
-//      cout << "BefRa: "<< cmd << endl;
 
    TRegexp re_Ra("#Ra");
    while (cmd.Index(re_Ra) >= 0) cmd(re_Ra) = " #Rightarrow ";
@@ -2938,7 +2779,6 @@ TString lat2root(TString& cmd)
    while (cmd.Index(re_tan) >= 0)cmd(re_tan) = "tan";
    TRegexp re_ovl("#overline");
    while (cmd.Index(re_ovl) >= 0)cmd(re_ovl) = "#bar";
- //     cout << "Final:     " << cmd << endl;
    return cmd;
 }
 //______________________________________________________________________________
@@ -3027,7 +2867,6 @@ void HTCanvas::InsertText(Bool_t from_file)
    markc    = GetInt(values,    vp++);
    lfilter  = GetInt(values,    vp++);
 
-//   cout << "size " << size << " dy " << dy << endl;
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
    	fGetMouse = kTRUE;
@@ -3038,7 +2877,6 @@ void HTCanvas::InsertText(Bool_t from_file)
       x0 = fMouseX;
       y0 = fMouseY;
       fMousePad->cd();
-//	   cout << "HEdit: gPad " << gPad << endl;
    }
 
    ifstream infile;
@@ -3089,7 +2927,6 @@ void HTCanvas::InsertText(Bool_t from_file)
       latex->SetTextSize(size);
       latex->SetTextAngle(angle);
       latex->SetTextColor(color);
-//	   cout << "latex->Draw(): gPad " << gPad << endl;
       latex->Draw();
       llist.Add(latex);
       yt -= dy;
@@ -3098,7 +2935,6 @@ void HTCanvas::InsertText(Bool_t from_file)
       if (latex->GetXsize() > longestline) longestline = latex->GetXsize();
       if (th_first <= 0) th_first = latex->GetYsize();
       th_last = latex->GetYsize();
-//      cout << "tw, th " << latex->GetXsize() << " " << latex->GetYsize() << endl;
    }
 
    Int_t nlines = llist.GetSize();
@@ -3111,7 +2947,6 @@ void HTCanvas::InsertText(Bool_t from_file)
          cname += text_seqnr;
       }
       Double_t yshift = 0;
-      cout << th_first << " " << th_last << endl;
       if (align%10 == 1)yshift =  (nlines -1) * dy;
       if (align%10 == 2)yshift =  (nlines  -1)* (0.5 * dy);
       TIter next(&llist);
@@ -3264,7 +3099,6 @@ tryagain:
    	} else {
       	WarnBox("Please create a new Pad in this Canvas\n\
 or select \"Use same (selected) pad\"", fRootCanvas); 
-	//      cout << "Please create a new Pad in this Canvas" << endl;
          goto tryagain;
    	} 
    }

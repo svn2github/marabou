@@ -69,7 +69,6 @@ GroupOfGObjects::~GroupOfGObjects()
 //________________________________________________________________
 void GroupOfGObjects::RecursiveRemove(TObject * obj)
 {
-//   cout << "GroupOfGObjects::RecursiveRemove " << obj <<  endl;
    fMembers.Remove(obj);
 };
 //________________________________________________________________
@@ -171,10 +170,6 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
 //  applying a scale factor (scaleG), a tranlation and rotation
 //
 ////////////////////////////////////////////////////////////////////
-//   pad->cd();
-   
-//   cout << "pad, gPad " << pad << " " << gPad << endl;
-//   pad->Dump();
 
    TObject * obj;
    TObject * clone;
@@ -190,7 +185,6 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
    else if (align%10 == 3) yoff -= scaleG * dy2;
 
    TList * list_in_cut = 0;
- //  cout << "AddMembersToList: " << xoff << " " << yoff << " " << angle  << " "<< align << endl;
    if (draw_cut != 0 && this->GetN()){
       clone = this->Clone();
       GroupOfGObjects * cut = (GroupOfGObjects*)clone;
@@ -284,7 +278,6 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          Double_t * x = gr->GetX();
          Double_t * y = gr->GetY();
 //         either first or last point
-         cout << "Shift ControlGraph " << gr->GetN()<< endl;
          b->GetControlGraph()->SetParent(b);
          Double_t* xt = new Double_t[gr->GetN()];
          Double_t* yt = new Double_t[gr->GetN()];
@@ -296,18 +289,17 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          b->SetControlPoints(gr->GetN(), xt, yt);
          delete [] xt;
          delete [] yt;
- //        b->GetControlGraph()->Print();
 
       } else if (clone->InheritsFrom("TGraph")) {
          TGraph * b = (TGraph *)clone;
          Double_t * x = b->GetX();
          Double_t * y = b->GetY();
-//          cout << "Gof: TGraph, points" << b->GetN() << endl;
-        for (Int_t i = 0; i < b->GetN(); i++) {
+         for (Int_t i = 0; i < b->GetN(); i++) {
             Transform(x[i], y[i], xoff,yoff, scaleG, angle, align, &xt, &yt);  
             x[i] = xt;
             y[i] = yt;
          }
+
       } else if (clone->InheritsFrom("TPad")) {
          TPad * b = (TPad*)clone;
          Double_t x1 = b->GetAbsXlowNDC();
@@ -315,7 +307,6 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          Double_t x2 = x1 + b->GetAbsWNDC();
          Double_t y2 = y1 + b->GetAbsHNDC();
          b->GetListOfPrimitives()->ls();
-//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
          Double_t xt2, yt2;
 //         convert to user 
          x1 = x1 * (fXUpEdge - fXLowEdge);
@@ -323,24 +314,18 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          x2 = x2 * (fXUpEdge - fXLowEdge);
          y2 = y2 * (fYUpEdge - fYLowEdge); 
 
-//         cout <<  "usr: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
-
          Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt, &yt);  
          Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt2, &yt2);  
- //        cout <<  "ust: " << xt << " " << yt << " " << xt2 << " " << yt2 << endl;
- //        cout <<  "pad: " << pad->GetX1() << " " << pad->GetY1() << " " << pad->GetX2() << " " <<pad->GetY2()  << endl;
 
          x1 = (xt - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
          y1 = (yt - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
          x2 = (xt2 - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
          y2 = (yt2 - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
-//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
          b->SetPad(x1, y1, x2, y2);
          if (!pad->InheritsFrom("TCanvas")) {
             pad->cd();
             b->Draw();
          }
- //        cout << "b, pad, gPad " << b << " " << pad << " " << gPad << endl;
 
       } else if (clone->InheritsFrom("TPave")) {
          TPave * b = (TPave*)clone;
@@ -355,24 +340,18 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          x2 = x2 * (fXUpEdge - fXLowEdge);
          y2 = y2 * (fYUpEdge - fYLowEdge); 
 
-//         cout <<  "usr: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
-
          Transform(x1, y1, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt, &yt);  
          Transform(x2, y2, xoff - scaleG * dx2,yoff - scaleG * dy2, scaleG, angle, align, &xt2, &yt2);  
- //        cout <<  "ust: " << xt << " " << yt << " " << xt2 << " " << yt2 << endl;
- //        cout <<  "pad: " << pad->GetX1() << " " << pad->GetY1() << " " << pad->GetX2() << " " <<pad->GetY2()  << endl;
 
          x1 = (xt - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
          y1 = (yt - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
          x2 = (xt2 - pad->GetX1()) / (pad->GetX2() - pad->GetX1());
          y2 = (yt2 - pad->GetY1()) / (pad->GetY2() - pad->GetY1());
-//         cout <<  "ndc: " << x1 << " " << y1 << " " << x2 << " " << y2 << endl;
          b->SetX1NDC(x1);
          b->SetY1NDC(y1); 
          b->SetX2NDC(x2); 
          b->SetY2NDC(y2);
 
- //        cout << "b, pad, gPad " << b << " " << pad << " " << gPad << endl;
       } else if (clone->InheritsFrom("TBox")) {
          TBox * b = (TBox*)clone;
          Transform(b->GetX1(), b->GetY1(), xoff,yoff, scaleG, angle, align, &xt, &yt);  
@@ -396,7 +375,6 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
          clone = 0;
       }
       if (clone) {
-//         cout << "pad, gPad " << pad << " " << gPad << endl;
          if (!clone->InheritsFrom("TPad") || pad->InheritsFrom("TCanvas")) {
             pad->GetListOfPrimitives()->Add(clone, lnk->GetOption());
             if (clone->InheritsFrom("XSpline")) {
@@ -404,13 +382,9 @@ Int_t GroupOfGObjects::AddMembersToList(TPad * pad, Double_t xoff_c, Double_t yo
                b->ComputeSpline();
             }
          }
-//         cout << "addmemb: " << endl;
-//         clone->Print();
       }
       lnk = (TObjOptLink*)lnk->Next();
    }   
- //  pad->Inspect(); 
- //  pad->Modified(); 
    return 1;
 };
 //____________________________________________________________________________
@@ -458,12 +432,10 @@ void  GroupOfGObjects::ExecuteEvent(Int_t event, Int_t px, Int_t py)
 
 void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut)
 {
-//  if (list) list->Print();
    TObject * obj;
    TIter next(GetMemberList());
    while ( (obj = next()) ) {
       if (obj->InheritsFrom("EditMarker")) continue; 
- //     obj->Print();
       if (obj->InheritsFrom("TPave")) {
          TPave * b = (TPave*)obj;
          Double_t xoffNDC = xoff / (gPad->GetX2() - gPad->GetX1());
@@ -532,8 +504,6 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
          ControlGraph* gr = b->GetControlGraph();
          Double_t * x = gr->GetX();
          Double_t * y = gr->GetY();
-//         b->GetControlGraph()->Print();
-//         cout << "Shift ControlGraph " << gr->GetN()<< endl;
          Double_t* xt = new Double_t[gr->GetN()];
          Double_t* yt = new Double_t[gr->GetN()];
          for (Int_t i = 0; i < gr->GetN(); i++) {
@@ -547,8 +517,8 @@ void GroupOfGObjects::ShiftObjects(Double_t xoff, Double_t yoff, Bool_t shiftcut
 
       } else if (obj->InheritsFrom("TGraph") 
                && strncmp(obj->GetName(), "ParellelG", 9)) {
-//       Parellel graphs are handled by its XSpline
-            cout << "Goo Shift TGraph: " << obj->GetName() << endl;
+//       Parallel graphs are handled by its XSpline
+            cout << "Shift TGraph: " << obj->GetName() << endl;
 
          TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();

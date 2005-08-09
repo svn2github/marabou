@@ -19,9 +19,9 @@ public:
    ~RailwaySleeper(){ };
 //   Int_t DistancetoPrimitive(Int_t px, Int_t py){return 9999;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   Color_t GetFillColor() {return fColor;};
+   Color_t GetSleeperColor() {return fColor;};
    void SetColor(Color_t color); 
-   void SetFillColor(Color_t color);     // *MENU*
+   void SetSleeperColor(Color_t color);     // *MENU*
    void Draw(Option_t * opt = "");
 ClassDef(RailwaySleeper,1)
 };

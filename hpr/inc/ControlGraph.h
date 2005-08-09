@@ -18,7 +18,7 @@ private:
 
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
-   virtual ~ControlGraph() {std::cout << "~ControlGraph() " << std::endl <<std:: flush;};
+   virtual ~ControlGraph() {};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(XSpline* parent); 
    void SetAllShapeFactors(Int_t npoints, Float_t* sf);
