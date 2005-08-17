@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.22 2005-08-17 12:29:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.23 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -27,6 +27,7 @@
 #include "DGFInstrumentPanel.h"
 #include "DGFEditModICSRPanel.h"
 #include "DGFEditChanCSRAPanel.h"
+#include "DGFEditUserPsaCSRPanel.h"
 #include "DGFEditCoincPatternPanel.h"
 #include "DGFCopyModuleSettingsPanel.h"
 
@@ -702,6 +703,26 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatCoincPatternEntry->AddToFocusList(&fFocusList);
 	fStatCoincPatternEntry->Associate(this);
 
+	TGLayoutHints * psacsrLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
+	entryGC->SetLH(psacsrLayout);
+	HEAP(psacsrLayout);
+	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
+	fUserPsaCSREditButton->AssignObject(this);
+	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fStatRegEntryFrame, "UserPSA CSR",
+																200, kDGFInstrStatRegUserPsaCSREntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, NULL, kFALSE,
+																fUserPsaCSREditButton, buttonGC);
+	HEAP(fStatRegUserPsaCSREntry);
+	fStatRegEntryFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
+	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
+	fStatRegUserPsaCSREntry->SetText("0x0000");
+	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
+	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
+	fStatRegUserPsaCSREntry->Associate(this);
+
 // right: mca
 	TGLayoutHints * mcaLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, mcaLayout);
@@ -857,6 +878,13 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
                     		new DGFEditChanCSRAPanel(fClient->GetRoot(), fStatRegChanCSRAEntry->GetEntry(),
 											DGFEditChanCSRAPanel::kFrameWidth, DGFEditChanCSRAPanel::kFrameHeight);
 							this->UpdateValue(kDGFInstrStatRegChanCSRAEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+							break;
+						case kDGFInstrStatRegUserPsaCSREditButton:
+                    		new DGFEditUserPsaCSRPanel(fClient->GetRoot(), fStatRegUserPsaCSREntry->GetEntry(),
+											DGFEditUserPsaCSRPanel::kFrameWidth, DGFEditUserPsaCSRPanel::kFrameHeight);
+							this->UpdateValue(kDGFInstrStatRegUserPsaCSREntry,
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
 							break;
@@ -1050,6 +1078,9 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // StatRegChanCSRAEntry:
 	intStr.FromInteger((Int_t) dgf->GetChanCSRA(chn), 4, '0', 16);
 	fStatRegChanCSRAEntry->SetText(intStr.Data());
+// StatRegUserPsaCSREntry:
+	intStr.FromInteger((Int_t) dgf->GetUserPsaCSR(chn), 4, '0', 16);
+	fStatRegUserPsaCSREntry->SetText(intStr.Data());
 // StatCoincPatternEntry:
 	intStr.FromInteger((Int_t) dgf->GetCoincPattern(), 4, '0', 16);
 	fStatCoincPatternEntry->SetText(intStr.Data());
@@ -1337,6 +1368,19 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dgf->SetChanCSRA(chn, (UInt_t) intVal, TMrbDGF::kBitSet, kTRUE);
 			fStatRegChanCSRAEntry->CreateToolTip(intVal);
 			break;
+		case kDGFInstrStatRegUserPsaCSREntry:
+			entry = fStatRegUserPsaCSREntry->GetEntry();
+			intStr = entry->GetText();
+			idx = intStr.Index("0x", 0);
+			if (idx >= 0) {
+				intStr = intStr(idx + 2, intStr.Length());
+				intStr.ToInteger(intVal, 16);
+			} else {
+				intStr.ToInteger(intVal);
+			}
+			dgf->SetUserPsaCSR(chn, (UInt_t) intVal, TMrbDGF::kBitSet, kTRUE);
+			fStatRegUserPsaCSREntry->CreateToolTip(intVal);
+			break;
 		case kDGFInstrStatCoincPatternEntry:
 			entry = fStatCoincPatternEntry->GetEntry();
 			intStr = entry->GetText();
@@ -1597,6 +1641,9 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 			break;
 		case kDGFInstrStatRegChanCSRAEntry:
 			entry = fStatRegChanCSRAEntry->GetEntry();
+			break;
+		case kDGFInstrStatRegUserPsaCSREntry:
+			entry = fStatRegUserPsaCSREntry->GetEntry();
 			break;
 		case kDGFInstrStatCoincPatternEntry:
 			entry = fStatCoincPatternEntry->GetEntry();

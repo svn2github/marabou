@@ -8,7 +8,7 @@
 // Class:          TMrbDGFData        -- data base to store DSP and FPGA data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFData.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbDGFData.h,v 1.5 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -146,6 +146,26 @@ class TMrbDGFData : public TObject {
 										kComputeCFT 		=	BIT(10),
 										kEnaMultiplicity	=	BIT(11),
 										kBipolarSignals 	=	BIT(15)
+									};
+
+		// bit definitions for user psa: control reg
+		enum EMrbUserPsaCSR		{
+										kT0 				=	BIT(0),
+										kT90				=	BIT(1),
+										kTslope 			=	BIT(2),
+										kQmax		 		=	BIT(3),
+										kUseEnergyCutTFA 	=	BIT(4),
+										kUseTFA 			=	BIT(5),
+										kInitTFA			=	BIT(6),
+										kForceAveTiming		=	BIT(7),
+										kAvePulseShape		=	BIT(8),
+										kAveRefT0			=	BIT(9),
+										kAveRefT90 			=	BIT(10),
+										kRefPsaOffsLength	=	BIT(11),
+										kQuadInterpolT0 	=	BIT(12),
+										kInterpolT0Tslope	=	BIT(13),
+										kOverwriteGSLT		=	BIT(14),
+										kInterpolT50T90 	=	BIT(15)
 									};
 
 		enum					{	kChanCSRAMask		=	0xffff			};

@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.10 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.11 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -51,6 +51,7 @@ class DGFControlData : public TNamed {
 	friend class DGFTauFitPanel;
 	friend class DGFEditModICSRPanel;
 	friend class DGFEditChanCSRAPanel;
+	friend class DGFEditUserPsaCSRPanel;
 	friend class DGFEditCoincPatternPanel;
 	friend class DGFCopyModuleSettingsPanel;
 	friend class DGFRestoreModuleSettingsPanel;

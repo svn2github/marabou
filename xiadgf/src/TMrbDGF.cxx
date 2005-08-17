@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.37 2005-08-17 11:32:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.38 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1768,6 +1768,8 @@ Bool_t TMrbDGF::WriteParamsToFile(const Char_t * FileName, const Char_t * ParamN
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (this->IsOffline()) return(kTRUE);
+
 	TString fileName = FileName;
 	fileName = fileName.Strip(TString::kBoth);
 	if (fileName.Length() == 0) fileName = this->GetName();
@@ -1805,6 +1807,8 @@ Bool_t TMrbDGF::WriteParamsToFile(const Char_t * FileName, Int_t Channel) {
 	TString fileName;
 	ofstream paramOut;
 	
+	if (this->IsOffline()) return(kTRUE);
+
 	fileName = FileName;
 	fileName = fileName.Strip(TString::kBoth);
 	if (fileName.Length() == 0) fileName = this->GetName();
@@ -3593,6 +3597,92 @@ UInt_t  TMrbDGF::GetChanCSRA(Int_t Channel, Bool_t ReadFromDSP) {
 
 	csra = this->GetParValue(Channel, "CHANCSRA", ReadFromDSP);
 	return(csra);
+}
+
+Bool_t TMrbDGF::SetUserPsaCSR(Int_t Channel, UInt_t Bits, EMrbBitOp BitOp, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetUserPsaCSR
+// Purpose:        Set bits in psa control reg
+// Arguments:      Int_t Channel       -- channel number
+//                 UInt_t Bits          -- bit mask
+//                 EMrbBitOp BitOp      -- set / or / clear / mask
+//                 Bool_t UpdateDSP     -- kTRUE if DSP is to be updated
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Manipulates bits in psa control reg
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	UInt_t reg;
+
+	if (UpdateDSP && !this->CheckConnect("SetUserPsaCSR")) return(kFALSE);
+	if (!this->CheckChannel("SetUserPsaCSR", Channel)) return(kFALSE);
+
+	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	if (param == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetUserPsaCSR");
+		return(kFALSE);
+	}
+
+	Int_t pOffset = param->GetIndex() + kPsaCSROffset + Channel;
+
+	switch (BitOp) {
+		case TMrbDGF::kBitSet:
+			this->SetParValue(pOffset, Bits, UpdateDSP);
+			break;
+		case TMrbDGF::kBitOr:
+			reg = this->GetParValue(pOffset, UpdateDSP);
+			reg |= Bits;
+			this->SetParValue(pOffset, reg, UpdateDSP);
+			reg = this->GetParValue(pOffset, UpdateDSP);
+			break;
+		case TMrbDGF::kBitClear:  
+			reg = this->GetParValue(pOffset, UpdateDSP);
+			reg &= ~Bits;
+			this->SetParValue(pOffset, reg, UpdateDSP);
+			break;
+		case TMrbDGF::kBitMask:
+			reg = this->GetParValue(pOffset, UpdateDSP);
+			reg &= Bits;
+			this->SetParValue(pOffset, reg, UpdateDSP);
+			break;
+		default:
+			gMrbLog->Err() << "Illegal bit operator - " << BitOp << endl;
+			gMrbLog->Flush(this->ClassName(), "SetUserPsaCSR");
+			return(kFALSE);
+	}
+	return(kTRUE);
+}
+
+UInt_t  TMrbDGF::GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetUserPsaCSR
+// Purpose:        Read psa control reg
+// Arguments:      Int_t Channel       -- channel number
+//                 Bool_t ReadFromDSP  -- kTRUE if data should be read from DSP
+// Results:        UInt_t Bits         -- CSRA bits
+// Exceptions:
+// Description:    Returns current value of the psa control reg
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ReadFromDSP && !this->CheckConnect("GetUserPsaCSR")) return(0xffffffff);
+	if (!this->CheckChannel("GetUserPsaCSR", Channel)) return(0xffffffff);
+
+	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	if (param == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetUserPsaCSR");
+		return(kFALSE);
+	}
+
+	Int_t pOffset = param->GetIndex() + kPsaCSROffset + Channel;
+
+	UInt_t csr = this->GetParValue(pOffset, ReadFromDSP);
+	return(csr);
 }
 
 Bool_t TMrbDGF::SetCoincPattern(UInt_t Pattern, Bool_t UpdateDSP) {

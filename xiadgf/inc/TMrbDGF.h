@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.14 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.15 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -63,6 +63,9 @@ class TMrbDGF : public TNamed {
 									kBitClear
 								};
 
+		// offset of psacsr0 from userin
+		enum					{	kPsaCSROffset		=	6	};
+
 		// wait status
 		enum EMrbWaitStatus 	{	kWaitError 			=	-3,
 									kWaitTimedOut		=	-2,
@@ -80,11 +83,11 @@ class TMrbDGF : public TNamed {
 
 		// temp param save/restore
 		enum EMrbDGFSaveIdx 	{	kSaveTrace,
-										kSaveUntrigTrace,
-										kSaveDacRamp,
-										kSaveTaufit,
-										kSaveAccuHist
-									};
+									kSaveUntrigTrace,
+									kSaveDacRamp,
+									kSaveTaufit,
+									kSaveAccuHist
+								};
 
 	public:
 		TMrbDGF(	const Char_t * DgfName = "DGF-4C") : TNamed(DgfName, "Xia DGF-4C") {	// default ctor
@@ -204,6 +207,10 @@ class TMrbDGF : public TNamed {
 		// channel CSR
 		Bool_t SetChanCSRA(Int_t Channel, UInt_t Bits, TMrbDGF::EMrbBitOp BitOp, Bool_t UpdateDSP = kTRUE);	// set
 		UInt_t GetChanCSRA(Int_t Channel, Bool_t ReadFromDSP = kTRUE); 										// read
+
+		// userPSA CSR
+		Bool_t SetUserPsaCSR(Int_t Channel, UInt_t Bits, TMrbDGF::EMrbBitOp BitOp, Bool_t UpdateDSP = kTRUE);	// set
+		UInt_t GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP = kTRUE); 										// read
 
 		// "good channel" bit
 		Bool_t SetChannelMask(const Char_t * ChannelMask, Bool_t UpdateDSP = kTRUE);	// set mask of good channels

@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.12 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.13 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -67,6 +67,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrStatRegModICSREditButton,	//		edit
 									kDGFInstrStatRegChanCSRAEntry, 		//		channel csra
 									kDGFInstrStatRegChanCSRAEditButton,	//		edit
+									kDGFInstrStatRegUserPsaCSREntry, 		//		user psa
+									kDGFInstrStatRegUserPsaCSREditButton,	//		edit
 									kDGFInstrStatCoincPatternEntry, 	//		pattern
 									kDGFInstrStatCoincPatternEditButton,	//	edit
 									kDGFInstrDACGainEntry, 				//		DAC
@@ -153,6 +155,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		TMrbNamedX * fChanCSRAEditButton;			//
 		TGMrbLabelEntry * fStatCoincPatternEntry; 	//				coinc pattern
 		TMrbNamedX * fCoincPatternEditButton;		//
+		TGMrbLabelEntry * fStatRegUserPsaCSREntry; 	//				user psa
+		TMrbNamedX * fUserPsaCSREditButton;			//
 
 		TGVerticalFrame * fRightFrame; 				//		right row
 		TGGroupFrame * fDACFrame;					//			DAC
