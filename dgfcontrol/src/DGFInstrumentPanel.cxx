@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.21 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.22 2005-08-17 12:29:21 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -1175,12 +1175,15 @@ Bool_t DGFInstrumentPanel::ShowModuleSettings(Bool_t PsaFlag) {
 	DGFModule * dgfModule = gDGFControlData->GetSelectedModule();
 	TString tmpFile = "/tmp/DGFControl.";
 	tmpFile += dgfModule->GetName();
+	TMrbDGF * dgf = dgfModule->GetAddr();
+	if (dgf == NULL) return(kTRUE);
+
 	if (PsaFlag) {
 		tmpFile += ".psa";
-		dgfModule->GetAddr()->WritePsaParamsToFile(tmpFile.Data());
+		dgf->WritePsaParamsToFile(tmpFile.Data());
 	} else {
 		tmpFile += ".par";
-		dgfModule->GetAddr()->WriteParamsToFile(tmpFile.Data());
+		dgf->WriteParamsToFile(tmpFile.Data());
 	}
 	TString cmd;
 	if (editor.CompareTo("nedit") == 0) cmd = "nedit -read ";
