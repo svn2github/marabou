@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.36 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.37 2005-08-17 11:32:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2718,6 +2718,8 @@ Bool_t TMrbDGF::WritePsaParamsToFile(const Char_t * FileName) {
 // Description:    Outputs PSA params to file.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
+
+	if (this->IsOffline()) return(kTRUE);
 
 	if (!fDGFData->ParamNamesRead()) {
 		gMrbLog->Err() << "No param names read" << endl;
