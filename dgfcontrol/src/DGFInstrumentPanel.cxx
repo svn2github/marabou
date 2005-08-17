@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.20 2005-07-26 07:12:13 rudi Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.21 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -34,7 +34,8 @@
 
 const SMrbNamedX kDGFInstrumentModuleButtons[] =
 			{
-				{DGFInstrumentPanel::kDGFInstrButtonShow,			"Show params", 	"Show actual param settings"		},
+				{DGFInstrumentPanel::kDGFInstrButtonShowParams,		"Show params", 	"Show actual param settings"		},
+				{DGFInstrumentPanel::kDGFInstrButtonShowPsa,		"Show PSA params", 	"Show actual PSA settings"		},
 				{DGFInstrumentPanel::kDGFInstrButtonUpdateFPGAs,	"Update FPGAs", "Write params and update FPGAs"	},
 				{0, 												NULL,		NULL									}
 			};
@@ -866,11 +867,14 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
 							break;
-						case kDGFInstrButtonShow:
+						case kDGFInstrButtonUpdateFPGAs:
                     		gDGFControlData->UpdateParamsAndFPGAs();
 							break;
-						case kDGFInstrButtonUpdateFPGAs:
-                    		this->ShowModuleSettings();
+						case kDGFInstrButtonShowParams:
+                    		this->ShowModuleSettings(kFALSE);
+							break;
+						case kDGFInstrButtonShowPsa:
+                    		this->ShowModuleSettings(kTRUE);
 							break;
 						case kDGFInstrDACGainEntry:
 							this->UpdateValue(kDGFInstrDACGainEntry,
@@ -1155,26 +1159,29 @@ Bool_t DGFInstrumentPanel::WriteDSP(DGFModule * Module, Int_t ChannelId) {
 	return(sts);
 }
 
-Bool_t DGFInstrumentPanel::ShowModuleSettings() {
+Bool_t DGFInstrumentPanel::ShowModuleSettings(Bool_t PsaFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel::ShowModuleSettings
 // Purpose:        Show module settings
-// Arguments:      
+// Arguments:      Bool_t PsaFlag   -- show psa values if kTRUE
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Calls $EDITOR to show current module settings
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	if (gDGFControlData->IsOffline()) return(kTRUE);
-
 	TString editor = gSystem->Getenv("EDITOR");
 	DGFModule * dgfModule = gDGFControlData->GetSelectedModule();
 	TString tmpFile = "/tmp/DGFControl.";
 	tmpFile += dgfModule->GetName();
-	tmpFile += ".par";
-	dgfModule->GetAddr()->PrintParamsToFile(tmpFile.Data());
+	if (PsaFlag) {
+		tmpFile += ".psa";
+		dgfModule->GetAddr()->WritePsaParamsToFile(tmpFile.Data());
+	} else {
+		tmpFile += ".par";
+		dgfModule->GetAddr()->WriteParamsToFile(tmpFile.Data());
+	}
 	TString cmd;
 	if (editor.CompareTo("nedit") == 0) cmd = "nedit -read ";
 	else								cmd = "xterm -geom 100x35 +sb -e view ";

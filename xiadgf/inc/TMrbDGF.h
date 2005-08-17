@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.13 2005-05-26 13:20:26 marabou Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.14 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -159,8 +159,8 @@ class TMrbDGF : public TNamed {
 		Bool_t SetParValue(Int_t Offset, Int_t Value, Bool_t UpdateDSP = kTRUE);
 		Int_t GetParValue(Int_t Offset, Bool_t ReadFromDSP = kTRUE);
 
-		Bool_t PrintParamsToFile(const Char_t * FileName = "", const Char_t * ParamName = "*");
-		Bool_t PrintParamsToFile(const Char_t * FileName, Int_t Channel);
+		Bool_t WriteParamsToFile(const Char_t * FileName = "", const Char_t * ParamName = "*"); // output params to file
+		Bool_t WriteParamsToFile(const Char_t * FileName, Int_t Channel);
 		Bool_t PrintParams(ostream & OutStrm, const Char_t * ParamName = "*");	// print param(s) chosen by name
 		Bool_t PrintParams(ostream & OutStrm, Int_t Channel); 					// print params for a given channel
 		inline Bool_t PrintParams(const Char_t * ParamName = "*") { return(PrintParams(cout, ParamName)); };
@@ -177,6 +177,9 @@ class TMrbDGF : public TNamed {
 		Int_t LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFile = "", Bool_t UpdateDSP = kTRUE);	// read psa params from file
 		Int_t SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP = kTRUE);	// save psa params to file
 
+		Bool_t WritePsaParamsToFile(const Char_t * FileName);			// output psa values to file
+		Bool_t PrintPsaParams(ostream & OutStrm);					 	// print psa values
+		
 		Bool_t SaveParams(TArrayS & TempStorage);									// save params temporarily
 		Bool_t RestoreParams(TArrayS & TempStorage);								// restore params temp storage
 		Bool_t SaveParams(EMrbDGFSaveIdx SaveIdx);

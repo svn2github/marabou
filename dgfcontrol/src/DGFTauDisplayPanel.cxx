@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.9 2005-05-27 09:54:28 marabou Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.10 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -723,7 +723,7 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 			fn += ".evtbuf";
 			fn += i;
 			fn += ".dat";
-			buffer.PrintToFile(fn.Data(), dgf->GetTitle());
+			buffer.WriteToFile(fn.Data(), dgf->GetTitle());
 		}
 
 		if (nofWords > TMrbDGFEventBuffer::kTotalHeaderLength) {

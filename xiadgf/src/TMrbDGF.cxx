@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.35 2005-07-25 11:27:39 rudi Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.36 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1755,10 +1755,10 @@ void TMrbDGF::Print(ostream & OutStrm) {
 	if (HasLocalDataBase()) fDGFData->Print();
 }
 
-Bool_t TMrbDGF::PrintParamsToFile(const Char_t * FileName, const Char_t * ParamName) {
+Bool_t TMrbDGF::WriteParamsToFile(const Char_t * FileName, const Char_t * ParamName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::PrintParamsToFile
+// Name:           TMrbDGF::WriteParamsToFile
 // Purpose:        Print param(s)
 // Arguments:      Char_t * FileName      -- file name
 //                 Char_t * ParamName     -- param name (may be wildcarded)
@@ -1768,33 +1768,30 @@ Bool_t TMrbDGF::PrintParamsToFile(const Char_t * FileName, const Char_t * ParamN
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t sts;
-	TString fileName;
-	ofstream paramOut;
-	
-	fileName = FileName;
+	TString fileName = FileName;
 	fileName = fileName.Strip(TString::kBoth);
 	if (fileName.Length() == 0) fileName = this->GetName();
 	if (fileName.Index(".", 0) == -1) fileName += ".par";
 	
+	ofstream paramOut;
 	paramOut.open(fileName.Data(), ios::out);
 	if (!paramOut.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << fileName << endl;
-		gMrbLog->Flush(this->ClassName(), "PrintParamsToFile");
+		gMrbLog->Flush(this->ClassName(), "WriteParamsToFile");
 		return(kFALSE);
 	}
 	
-	sts = PrintParams(paramOut, ParamName);
+	Bool_t sts = PrintParams(paramOut, ParamName);
 	paramOut.close();
 	gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation << ": Params written to file " << fileName << endl;
-	gMrbLog->Flush(this->ClassName(), "PrintParamsToFile", setblue);
+	gMrbLog->Flush(this->ClassName(), "WriteParamsToFile", setblue);
 	return(sts);
 }
 
-Bool_t TMrbDGF::PrintParamsToFile(const Char_t * FileName, Int_t Channel) {
+Bool_t TMrbDGF::WriteParamsToFile(const Char_t * FileName, Int_t Channel) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::PrintParamsToFile
+// Name:           TMrbDGF::WriteParamsToFile
 // Purpose:        Print param(s)
 // Arguments:      Char_t * FileName      -- file name
 //                 Int_t Channel          -- channel no (-1 -> all channels)
@@ -1816,14 +1813,14 @@ Bool_t TMrbDGF::PrintParamsToFile(const Char_t * FileName, Int_t Channel) {
 	paramOut.open(fileName.Data(), ios::out);
 	if (!paramOut.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << fileName << endl;
-		gMrbLog->Flush(this->ClassName(), "PrintParamsToFile");
+		gMrbLog->Flush(this->ClassName(), "WriteParamsToFile");
 		return(kFALSE);
 	}
 	
 	sts = PrintParams(paramOut, Channel);
 	paramOut.close();
 	gMrbLog->Out()	<< fName << " in C" << fCrate << ".N" << fStation << ": Params written to file " << fileName << endl;
-	gMrbLog->Flush(this->ClassName(), "PrintParamsToFile", setblue);
+	gMrbLog->Flush(this->ClassName(), "WriteParamsToFile", setblue);
 	return(sts);
 }
 
@@ -2708,6 +2705,117 @@ Int_t TMrbDGF::SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 	}
 
 	return(nofParams);
+}
+
+Bool_t TMrbDGF::WritePsaParamsToFile(const Char_t * FileName) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::WritePsaParamsToFile
+// Purpose:        Output PSA params to file
+// Arguments:      Char_t * FileName    -- file name
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Outputs PSA params to file.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!fDGFData->ParamNamesRead()) {
+		gMrbLog->Err() << "No param names read" << endl;
+		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
+		return(kFALSE);
+	}
+
+	if (!this->ParamValuesRead()) {
+		gMrbLog->Err() << "No param values read" << endl;
+		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
+		return(kFALSE);
+	}
+
+	TString fileName = FileName;
+	fileName = fileName.Strip(TString::kBoth);
+	if (fileName.Length() == 0) fileName = this->GetName();
+	if (fileName.Index(".", 0) == -1) fileName += ".psa";
+	
+	ofstream paramOut;
+	paramOut.open(fileName.Data(), ios::out);
+	if (!paramOut.good()) {
+		gMrbLog->Err() << gSystem->GetError() << " - " << fileName << endl;
+		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
+		return(kFALSE);
+	}
+	
+	Bool_t sts = this->PrintPsaParams(paramOut);
+	paramOut.close();
+
+	if (sts && gMrbDGFData->fVerboseMode) {
+		gMrbLog->Out() << "PSA params written to " << fileName << endl;
+		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile", setblue);
+	}
+	return(kTRUE);
+}
+
+Bool_t TMrbDGF::PrintPsaParams(ostream & OutStrm) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::PrintPsaParams
+// Purpose:        Print PSA params
+// Arguments:      ostream & OutStrm   -- output stream
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Prints PSA params. Param start at USERIN
+//                 Format is "unix style":
+//                       <name>:<offset>:<value>:<hexval>
+//                 Additional entries may be used to identify the module:
+//                       FileType:par
+//                       Module:<name>
+//                       Revision:<rev>
+//                       Crate:<crate>
+//                       Station:<station>
+//                       Cluster:<id>
+//                       XiaRelease:<release>
+//                       XiaDate:<date>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString info;
+	TDatime dt;
+
+	TMrbLofNamedX psaNames;
+	psaNames.AddNamedX(kMrbPSANames);
+
+	TMrbNamedX * pKey = fDGFData->FindParam("USERIN");
+	if (pKey == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
+		return(kFALSE);
+	}
+
+	OutStrm << "#----------------------------------------------------------------------------------------" << endl;
+	OutStrm << "# Contents      : PSA settings for DGF-4C "		<< this->GetName()
+																<< " in C" << this->GetCrate()
+																<< ".N" << this->GetStation() << endl;
+	OutStrm << "# Creation date : " 							<< dt.AsString() << endl;
+	OutStrm << "# Created by    : " 							<< gSystem->Getenv("USER") << endl;
+	OutStrm << "#" << endl;
+	OutStrm << "# Data format   : <name>:<offset>:<value>:<hexval>" << endl;
+	OutStrm << "#----------------------------------------------------------------------------------------" << endl;
+	OutStrm << "#+FileType:psa" << endl;
+	OutStrm << "#+Module:"									<< this->GetName() << endl;
+	OutStrm << "#+Revision:" 								<< this->GetRevision()->GetName() << endl;
+	OutStrm << "#+Crate:"									<< this->GetCrate() << endl;
+	OutStrm << "#+Station:" 								<< this->GetStation() << endl;
+	OutStrm << "#+Cluster:"									<< this->GetClusterInfo(info) << endl;
+	OutStrm << "#+XiaRelease:"								<< gEnv->GetValue("TMrbDGF.XiaRelease", "") << endl;
+	OutStrm << "#+XiaDate:" 								<< gEnv->GetValue("TMrbDGF.XiaDate", "") << endl;
+	OutStrm << "#........................................................................................" << endl;
+	OutStrm << endl;
+
+	Int_t pOffset = pKey->GetIndex();
+	for (Int_t i = 0; i < 16; i++, pOffset++) {
+		UShort_t pValue = fParams[pOffset];
+		OutStrm << psaNames[i]->GetName() << ":" << pOffset << ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10) << endl;
+	}
+	return(kTRUE);
 }
 
 Int_t TMrbDGF::SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP) {

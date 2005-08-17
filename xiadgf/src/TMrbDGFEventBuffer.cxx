@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFEventBuffer.cxx,v 1.5 2004-09-28 13:47:34 rudi Exp $       
+// Revision:       $Id: TMrbDGFEventBuffer.cxx,v 1.6 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -619,10 +619,10 @@ void TMrbDGFEventBuffer::Print(ostream & OutStrm, Int_t EventNumber, const Char_
 	}
 }
 
-Bool_t TMrbDGFEventBuffer::PrintToFile(const Char_t * FileName, const Char_t * ModuleInfo) {
+Bool_t TMrbDGFEventBuffer::WriteToFile(const Char_t * FileName, const Char_t * ModuleInfo) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::PrintToFile
+// Name:           TMrbDGF::WriteToFile
 // Purpose:        Print event buffer to file
 // Arguments:      Char_t * FileName             -- file name
 //                 char _t * ModuleInfo          -- module info
@@ -640,7 +640,7 @@ Bool_t TMrbDGFEventBuffer::PrintToFile(const Char_t * FileName, const Char_t * M
 	nofWords = this->GetNofWords();
 	if (nofWords == 0) {
 		gMrbLog->Err()	<< ModuleInfo << ": Event buffer is empty" << endl;
-		gMrbLog->Flush(this->ClassName(), "PrintToFile");
+		gMrbLog->Flush(this->ClassName(), "WriteToFile");
 		return(kFALSE);
 	}
 
@@ -650,7 +650,7 @@ Bool_t TMrbDGFEventBuffer::PrintToFile(const Char_t * FileName, const Char_t * M
 	bufOut.open(fileName.Data(), ios::out);
 	if (!bufOut.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << fileName << endl;
-		gMrbLog->Flush(this->ClassName(), "PrintToFile");
+		gMrbLog->Flush(this->ClassName(), "WriteToFile");
 		return(kFALSE);
 	}
 
@@ -658,7 +658,7 @@ Bool_t TMrbDGFEventBuffer::PrintToFile(const Char_t * FileName, const Char_t * M
 	bufOut.close();
 	gMrbLog->Out()	<< ModuleInfo << ": Event buffer written to file " << fileName
 						<< " (" << nofWords << " word(s))" << endl;
-	gMrbLog->Flush(this->ClassName(), "PrintToFile", setblue);
+	gMrbLog->Flush(this->ClassName(), "WriteToFile", setblue);
 	return(kTRUE);
 }
 	

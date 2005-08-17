@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.23 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFTraceDisplayPanel.cxx,v 1.24 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -463,10 +463,10 @@ Bool_t DGFTraceDisplayPanel::StartTrace(Bool_t AutoTrigFlag) {
 				if (gDGFControlData->IsDebug()) {
 					TMrbString fn = dgf->GetName();
 					fn += ".param.dat";
-					dgf->PrintParamsToFile(fn.Data());
+					dgf->WriteParamsToFile(fn.Data());
 					fn = dgf->GetName();
 					fn += ".evtbuf.dat";
-					traceBuffer.PrintToFile(fn.Data(), dgf->GetTitle());
+					traceBuffer.WriteToFile(fn.Data(), dgf->GetTitle());
 				}
 				if (nofWords > 0) {
 					if (!dataOkFlag) {

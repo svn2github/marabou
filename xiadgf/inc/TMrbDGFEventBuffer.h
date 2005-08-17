@@ -8,7 +8,7 @@
 // Class:          TMrbDGFEventBuffer   -- DGF's event buffer
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFEventBuffer.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbDGFEventBuffer.h,v 1.5 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -71,7 +71,7 @@ class TMrbDGFEventBuffer : public TNamed, public TArrayI {
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, Int_t EventNumber = -1, const Char_t * ModuleInfo = NULL);
 		inline void Print(Int_t EventNumber = -1) { this->Print(cout, EventNumber); };
-		Bool_t PrintToFile(const Char_t * FileName, const Char_t * ModuleInfo);
+		Bool_t WriteToFile(const Char_t * FileName, const Char_t * ModuleInfo);
 
 		void Reset();													// reset buffer
 		inline Int_t GetNofWords() { return(fNofWords); };				// get number of data words

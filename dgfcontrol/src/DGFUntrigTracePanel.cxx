@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.22 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFUntrigTracePanel.cxx,v 1.23 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -351,7 +351,7 @@ Bool_t DGFUntrigTracePanel::StartTrace() {
 				if (gDGFControlData->IsDebug()) {
 					TMrbString fn = dgf->GetName();
 					fn += ".param.dat";
-					dgf->PrintParamsToFile(fn.Data());
+					dgf->WriteParamsToFile(fn.Data());
 				}
 				traceBuffer = lofTraceBuffers[nentries];
 				if (traceBuffer == NULL) {
