@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.38 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.39 2005-08-17 13:47:21 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -64,12 +64,12 @@ const SMrbNamedXShort kMrbSwitchBusModes[] =
 
 const SMrbNamedXShort kMrbPSANames[] =
 							{
-								{0, 	"Baseline"		},
+								{0, 	"Baseline03"	},
 								{1, 	"CutOff01"		},
 								{2, 	"CutOff23"		},
 								{3, 	"T0Thresh01"	},
 								{4, 	"T0Thresh23"	},
-								{5, 	"T90Thresh" 	},
+								{5, 	"T90Thresh03" 	},
 								{6, 	"PSACh0"		},
 								{7, 	"PSACh1"		},
 								{8, 	"PSACh2"		},
@@ -78,8 +78,8 @@ const SMrbNamedXShort kMrbPSANames[] =
 								{11,	"PSALength23"	},
 								{12,	"PSAOffset01"	},
 								{13,	"PSAOffset23"	},
-								{14,	"TFACutOff0"	},
-								{15,	"TFACutOff1"	},
+								{14,	"TFACutOff01"	},
+								{15,	"TFACutOff23"	},
 								{0, 	NULL			}
 							};
 
