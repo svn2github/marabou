@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.23 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.24 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -28,6 +28,7 @@
 #include "DGFEditModICSRPanel.h"
 #include "DGFEditChanCSRAPanel.h"
 #include "DGFEditUserPsaCSRPanel.h"
+#include "DGFEditRunTaskPanel.h"
 #include "DGFEditCoincPatternPanel.h"
 #include "DGFCopyModuleSettingsPanel.h"
 
@@ -452,9 +453,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceFrame);
 	fLeftFrame->AddFrame(fTraceFrame, groupGC->LH());
 
-	fTraceLengthDelayFrame = new TGGroupFrame(fTraceFrame, "Trace", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fTraceLeftFrame = new TGVerticalFrame(fTraceFrame, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
+	HEAP(fTraceLeftFrame);
+	fTraceFrame->AddFrame(fTraceLeftFrame, groupGC->LH());
+
+	fTraceLengthDelayFrame = new TGGroupFrame(fTraceLeftFrame, "Trace", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fTraceLengthDelayFrame);
-	fTraceFrame->AddFrame(fTraceLengthDelayFrame, groupGC->LH());
+	fTraceLeftFrame->AddFrame(fTraceLengthDelayFrame, groupGC->LH());
 	TGLayoutHints * tlLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(tlLayout);
 	HEAP(tlLayout);
@@ -491,57 +496,87 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceDelayEntry->AddToFocusList(&fFocusList);
 	fTraceDelayEntry->Associate(this);
 
-	TGGroupFrame * fTracePSAFrame = new TGGroupFrame(fTraceFrame, "PSA", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
-	HEAP(fTracePSAFrame);
-	fTraceFrame->AddFrame(fTracePSAFrame, groupGC->LH());
+	fTraceXPSAFrame = new TGGroupFrame(fTraceLeftFrame, "XIA PSA", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fTraceXPSAFrame);
+	fTraceLeftFrame->AddFrame(fTraceXPSAFrame, groupGC->LH());
+
 	TGLayoutHints * plLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(plLayout);
 	HEAP(plLayout);
-	fTracePSALengthEntry = new TGMrbLabelEntry(fTracePSAFrame, "Length [us]",
-																200, kDGFInstrTracePSALengthEntry,
+	fTraceXPSALengthEntry = new TGMrbLabelEntry(fTraceXPSAFrame, "Length [us]",
+																200, kDGFInstrTraceXPSALengthEntry,
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
-	HEAP(fTracePSALengthEntry);
-	fTracePSAFrame->AddFrame(fTracePSALengthEntry, frameGC->LH());
-	fTracePSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTracePSALengthEntry->SetText("0");
-	fTracePSALengthEntry->SetRange(0, 25);
-	fTracePSALengthEntry->SetIncrement(.5);
-	fTracePSALengthEntry->AddToFocusList(&fFocusList);
-	fTracePSALengthEntry->Associate(this);
+	HEAP(fTraceXPSALengthEntry);
+	fTraceXPSAFrame->AddFrame(fTraceXPSALengthEntry, frameGC->LH());
+	fTraceXPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceXPSALengthEntry->SetText("0");
+	fTraceXPSALengthEntry->SetRange(0, 25);
+	fTraceXPSALengthEntry->SetIncrement(.5);
+	fTraceXPSALengthEntry->AddToFocusList(&fFocusList);
+	fTraceXPSALengthEntry->Associate(this);
 
 	TGLayoutHints * poLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(poLayout);
 	HEAP(poLayout);
-	fTracePSAOffsetEntry = new TGMrbLabelEntry(fTracePSAFrame, "Offset [us]",
-																200, kDGFInstrTracePSAOffsetEntry,
+	fTraceXPSAOffsetEntry = new TGMrbLabelEntry(fTraceXPSAFrame, "Offset [us]",
+																200, kDGFInstrTraceXPSAOffsetEntry,
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
-	HEAP(fTracePSAOffsetEntry);
-	fTracePSAFrame->AddFrame(fTracePSAOffsetEntry, frameGC->LH());
-	fTracePSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTracePSAOffsetEntry->SetText("0");
-	fTracePSAOffsetEntry->SetRange(0, 25);
-	fTracePSAOffsetEntry->SetIncrement(.1);
-	fTracePSAOffsetEntry->AddToFocusList(&fFocusList);
-	fTracePSAOffsetEntry->Associate(this);
+	HEAP(fTraceXPSAOffsetEntry);
+	fTraceXPSAFrame->AddFrame(fTraceXPSAOffsetEntry, frameGC->LH());
+	fTraceXPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceXPSAOffsetEntry->SetText("0");
+	fTraceXPSAOffsetEntry->SetRange(0, 25);
+	fTraceXPSAOffsetEntry->SetIncrement(.1);
+	fTraceXPSAOffsetEntry->AddToFocusList(&fFocusList);
+	fTraceXPSAOffsetEntry->Associate(this);
 
-// place an unvisible label to pad group frame vertically
-	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 80, 0);
-	frameGC->SetLH(dmyLayout);
-	fDummyLabel = new TGLabel(fTracePSAFrame, "", frameGC->GC(), frameGC->Font(), kChildFrame, frameGC->BG());
-	HEAP(fDummyLabel);
-	fTracePSAFrame->AddFrame(fDummyLabel, frameGC->LH());
-	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 80, 0);
-	frameGC->SetLH(dmyLayout);
-	fDummyLabel = new TGLabel(fTraceLengthDelayFrame, "", frameGC->GC(), frameGC->Font(), kChildFrame, frameGC->BG());
-	HEAP(fDummyLabel);
-	fTraceLengthDelayFrame->AddFrame(fDummyLabel, frameGC->LH());
-	
+	fTraceRightFrame = new TGVerticalFrame(fTraceFrame, kTabWidth, kTabHeight, kChildFrame, frameGC->BG());
+	HEAP(fTraceRightFrame);
+	fTraceFrame->AddFrame(fTraceRightFrame, groupGC->LH());
+
+	fTraceUPSAFrame = new TGGroupFrame(fTraceRightFrame, "User PSA", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	HEAP(fTraceUPSAFrame);
+	fTraceRightFrame->AddFrame(fTraceUPSAFrame, groupGC->LH());
+
+	entryGC->SetLH(plLayout);
+	fTraceUPSALengthEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Length [us]",
+																200, kDGFInstrTraceUPSALengthEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSALengthEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSALengthEntry, frameGC->LH());
+	fTraceUPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceUPSALengthEntry->SetText("0");
+	fTraceUPSALengthEntry->SetRange(0, 25);
+	fTraceUPSALengthEntry->SetIncrement(.5);
+	fTraceUPSALengthEntry->AddToFocusList(&fFocusList);
+	fTraceUPSALengthEntry->Associate(this);
+
+	entryGC->SetLH(poLayout);
+	HEAP(poLayout);
+	fTraceUPSAOffsetEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Offset [us]",
+																200, kDGFInstrTraceUPSAOffsetEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSAOffsetEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSAOffsetEntry, frameGC->LH());
+	fTraceUPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
+	fTraceUPSAOffsetEntry->SetText("0");
+	fTraceUPSAOffsetEntry->SetRange(0, 25);
+	fTraceUPSAOffsetEntry->SetIncrement(.1);
+	fTraceUPSAOffsetEntry->AddToFocusList(&fFocusList);
+	fTraceUPSAOffsetEntry->Associate(this);
+
 // right: cfd
 	TGLayoutHints * cfdLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, cfdLayout);
@@ -702,6 +737,26 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatCoincPatternEntry->SetRange(0, 0xf);
 	fStatCoincPatternEntry->AddToFocusList(&fFocusList);
 	fStatCoincPatternEntry->Associate(this);
+
+	TGLayoutHints * runtaskLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
+	entryGC->SetLH(runtaskLayout);
+	HEAP(runtaskLayout);
+	fRunTaskEditButton = new TMrbNamedX(kDGFInstrStatRunTaskEditButton, "Edit");
+	fRunTaskEditButton->AssignObject(this);
+	fStatRunTaskEntry = new TGMrbLabelEntry(fStatRegEntryFrame, "RUNTASK",
+																200, kDGFInstrStatRunTaskEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, NULL, kFALSE,
+																fRunTaskEditButton, buttonGC);
+	HEAP(fStatRunTaskEntry);
+	fStatRegEntryFrame->AddFrame(fStatRunTaskEntry, frameGC->LH());
+	fStatRunTaskEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
+	fStatRunTaskEntry->SetText("0x100");
+	fStatRunTaskEntry->SetRange(0x100, 0x301);
+	fStatRunTaskEntry->AddToFocusList(&fFocusList);
+	fStatRunTaskEntry->Associate(this);
 
 	TGLayoutHints * psacsrLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
 	entryGC->SetLH(psacsrLayout);
@@ -895,6 +950,13 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 											gDGFControlData->GetSelectedModuleIndex(),
 											gDGFControlData->GetSelectedChannelIndex());
 							break;
+						case kDGFInstrStatRunTaskEditButton:
+                    		new DGFEditRunTaskPanel(fClient->GetRoot(), fStatRunTaskEntry->GetEntry(),
+											DGFEditRunTaskPanel::kFrameWidth, DGFEditRunTaskPanel::kFrameHeight);
+							this->UpdateValue(kDGFInstrStatRunTaskEntry,
+											gDGFControlData->GetSelectedModuleIndex(),
+											gDGFControlData->GetSelectedChannelIndex());
+							break;
 						case kDGFInstrButtonUpdateFPGAs:
                     		gDGFControlData->UpdateParamsAndFPGAs();
 							break;
@@ -1065,12 +1127,12 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // TraceDelayEntry:
 	dblStr = dgf->GetDelay(chn);
 	fTraceDelayEntry->SetText(dblStr.Data());
-// TracePSALengthEntry:
+// TraceXPSALengthEntry:
 	dblStr = dgf->GetPSALength(chn);
-	fTracePSALengthEntry->SetText(dblStr.Data());
-// TracePsaOffsetEntry:
+	fTraceXPSALengthEntry->SetText(dblStr.Data());
+// TraceXPsaOffsetEntry:
 	dblStr = dgf->GetPSAOffset(chn);
-	fTracePSAOffsetEntry->SetText(dblStr.Data());
+	fTraceXPSAOffsetEntry->SetText(dblStr.Data());
 // StatRegModICSREntry:
 	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl");
 	intStr.FromInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
@@ -1081,6 +1143,9 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 // StatRegUserPsaCSREntry:
 	intStr.FromInteger((Int_t) dgf->GetUserPsaCSR(chn), 4, '0', 16);
 	fStatRegUserPsaCSREntry->SetText(intStr.Data());
+// StatRegRunTaskEntry:
+	intStr = dgf->GetParValue("RUNTASK");
+	fStatRunTaskEntry->SetText(intStr.Data());
 // StatCoincPatternEntry:
 	intStr.FromInteger((Int_t) dgf->GetCoincPattern(), 4, '0', 16);
 	fStatCoincPatternEntry->SetText(intStr.Data());
@@ -1252,6 +1317,8 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 	dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
 	chn = gDGFControlData->GetChannel(ChannelId);
 
+	Bool_t updateLocalEnv = kFALSE;
+
 	switch (EntryId) {
 		case kDGFInstrEnergyPeakTimeEntry:
 			entry = fEnergyPeakTimeEntry->GetEntry();
@@ -1325,14 +1392,14 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dgf->SetThreshold(chn, intVal);
 			fTriggerThresholdEntry->CreateToolTip(intVal);
 			break;
-		case kDGFInstrTracePSALengthEntry:
-			entry = fTracePSALengthEntry->GetEntry();
+		case kDGFInstrTraceXPSALengthEntry:
+			entry = fTraceXPSALengthEntry->GetEntry();
 			dblStr = entry->GetText();
 			dblStr.ToDouble(dblVal);
 			dgf->SetPSALength(chn, dblVal);
 			break;
-		case kDGFInstrTracePSAOffsetEntry:
-			entry = fTracePSAOffsetEntry->GetEntry();
+		case kDGFInstrTraceXPSAOffsetEntry:
+			entry = fTraceXPSAOffsetEntry->GetEntry();
 			dblStr = entry->GetText();
 			dblStr.ToDouble(dblVal);
 			dgf->SetPSAOffset(chn, dblVal);
@@ -1342,6 +1409,9 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dblStr = entry->GetText();
 			dblStr.ToDouble(dblVal);
 			dgf->SetTraceLength(chn, dblVal);
+			intVal = dgf->GetParValue(chn, "TRACELENGTH");
+			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "TraceLength", intVal);
+			updateLocalEnv = kTRUE;
 			break;
 		case kDGFInstrTraceDelayEntry:
 			entry = fTraceDelayEntry->GetEntry();
@@ -1380,6 +1450,21 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			}
 			dgf->SetUserPsaCSR(chn, (UInt_t) intVal, TMrbDGF::kBitSet, kTRUE);
 			fStatRegUserPsaCSREntry->CreateToolTip(intVal);
+			break;
+		case kDGFInstrStatRunTaskEntry:
+			entry = fStatRunTaskEntry->GetEntry();
+			intStr = entry->GetText();
+			idx = intStr.Index("0x", 0);
+			if (idx >= 0) {
+				intStr = intStr(idx + 2, intStr.Length());
+				intStr.ToInteger(intVal, 16);
+			} else {
+				intStr.ToInteger(intVal);
+			}
+			dgf->SetParValue("RUNTASK", intVal);
+			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "RunTask", intVal);
+			updateLocalEnv = kTRUE;
+			fStatRunTaskEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrStatCoincPatternEntry:
 			entry = fStatCoincPatternEntry->GetEntry();
@@ -1469,6 +1554,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			entry = fMCABaselineBinsEntry->GetEntry();
 			break;
 	}
+	if (updateLocalEnv) gDGFControlData->WriteLocalEnv();
 	return(kTRUE);
 }
 
@@ -1618,11 +1704,11 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 		case kDGFInstrTraceDelayEntry:
 			entry = fTraceDelayEntry->GetEntry();
 			break;
-		case kDGFInstrTracePSALengthEntry:
-			entry = fTracePSALengthEntry->GetEntry();
+		case kDGFInstrTraceXPSALengthEntry:
+			entry = fTraceXPSALengthEntry->GetEntry();
 			break;
-		case kDGFInstrTracePSAOffsetEntry:
-			entry = fTracePSAOffsetEntry->GetEntry();
+		case kDGFInstrTraceXPSAOffsetEntry:
+			entry = fTraceXPSAOffsetEntry->GetEntry();
 			break;
 		case kDGFInstrCFDRegEntry:
 			entry = fCFDRegEntry->GetEntry();

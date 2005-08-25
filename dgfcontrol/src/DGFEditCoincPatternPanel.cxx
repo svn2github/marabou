@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.5 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFEditCoincPatternPanel.cxx,v 1.6 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -82,7 +82,6 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 //////////////////////////////////////////////////////////////////////////////
 
 	DGFModule * module;
-	TMrbDGF * dgf;
 
 	TMrbString title;
 	TMrbString intStr;
@@ -116,7 +115,6 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 	fEntry = Entry; 			// entry to be editied
 
 	module = gDGFControlData->GetSelectedModule();
-	dgf = module->GetAddr();
 
 	title = "Coinc patterns for  ";
 	title += module->GetName();
@@ -151,8 +149,10 @@ DGFEditCoincPatternPanel::DGFEditCoincPatternPanel(const TGWindow * Window, TGTe
 	HEAP(fRightFrame);
 	fPatternFrame->AddFrame(fRightFrame, groupGC->LH());
 
-	fLeftFrame->SetState(dgf->GetCoincPattern());	// initial state
-	fRightFrame->SetState(dgf->GetCoincPattern());
+	TMrbDGF * dgf = module->GetAddr();
+	UInt_t coincPatt = gDGFControlData->IsOffline() ? 0 : dgf->GetCoincPattern();
+	fLeftFrame->SetState(coincPatt);	// initial state
+	fRightFrame->SetState(coincPatt);
 
 	// buttons
 	TGLayoutHints * btnLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 5, 5, 5, 1);
@@ -195,10 +195,6 @@ Bool_t DGFEditCoincPatternPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Lon
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbDGF * dgf;
-	UInt_t patMask, pattern;
-	TMrbString intStr;
-
 	switch (GET_MSG(MsgId)) {
 
 		case kC_COMMAND:
@@ -206,13 +202,18 @@ Bool_t DGFEditCoincPatternPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Lon
 				case kCM_BUTTON:
 					switch (Param1) {
 						case kDGFEditCoincPatternButtonApply:
-							dgf = gDGFControlData->GetSelectedModule()->GetAddr();
-							patMask = fLeftFrame->GetActive();
-							patMask |= fRightFrame->GetActive();
-							dgf->SetCoincPattern(patMask);
-							pattern = dgf->GetCoincPattern();
-							intStr.FromInteger((Int_t) pattern, 0, '0', 16);
-							fEntry->SetText(intStr.Data());
+							if (!gDGFControlData->IsOffline()) {
+								TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+								UInt_t patMask = fLeftFrame->GetActive();
+								patMask |= fRightFrame->GetActive();
+								dgf->SetCoincPattern(patMask);
+								UInt_t pattern = dgf->GetCoincPattern();
+								TMrbString intStr;
+								intStr.FromInteger((Int_t) pattern, 0, '0', 16);
+								fEntry->SetText(intStr.Data());
+							} else {
+								fEntry->SetText("0x0000");
+							}
 							this->CloseWindow();
 							break;
 						case kDGFEditCoincPatternButtonSetAll:

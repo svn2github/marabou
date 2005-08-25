@@ -11,7 +11,7 @@
 // Purpose:        Common defs for XIA DGF-4C
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCommon.h,v 1.2 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbDGFCommon.h,v 1.3 2005-08-25 14:32:16 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -59,20 +59,30 @@ const SMrbNamedXShort kMrbCamacCSRBits[] =
 // bit definitions in parameter MODCSRA: module control/status reg A
 const SMrbNamedXShort kMrbModCSRABits[] =
 			{
-				{	TMrbDGFData::kWriteLevel1,				"Write Level1 Buffer"					},
+				{	0,										NULL									}
+			};
+
+// bit definitions in parameter MODCSRB: module control reg B
+const SMrbNamedXShort kMrbModCSRBBits[] =
+			{
+				{	TMrbDGFData::kCallUserCode,				"Call user's DSP code"					},
 				{	0,										NULL									}
 			};
 
 // value definitions for parameter RUNTASK: defines kind of run task to be started
 const SMrbNamedXShort kMrbRunTasks[] =
 			{
-				{	TMrbDGFData::kRunControl,				"Slow Control Run"						},
-				{	TMrbDGFData::kRunLinear,				"DAQ linear"							},
-				{	TMrbDGFData::kRunCircular,				"DAQ circular"							},
-				{	TMrbDGFData::kRunPSA	,				"DAQ PSA"								},
-				{	TMrbDGFData::kRunShort,					"DAQ short" 							},
-				{	TMrbDGFData::kRunMCA,					"MCA Mode"								},
-				{	0,										NULL									}
+				{	TMrbDGFData::kRunSlowControl,			"Slow Control Run"								},
+				{	TMrbDGFData::kRunStdListMode,			"Std list mode, 9 words"						},
+				{	TMrbDGFData::kRunStdListModeNoTrace,	"Std list mode, no traces, 9 words"				},
+				{	TMrbDGFData::kRunStdListModeShort4	,	"Std list mode, 4 words: T, E, X-Psa, U-Psa"	},
+				{	TMrbDGFData::kRunStdListModeShort2	,	"Std list mode, 2 words: T, E"					},
+				{	TMrbDGFData::kRunFastListMode,			"Fast list mode, 9 words"						},
+				{	TMrbDGFData::kRunFastListModeNoTrace,	"Fast list mode, no traces, 9 words"			},
+				{	TMrbDGFData::kRunFastListModeShort4	,	"Fast list mode, 4 words: T, E, X-Psa, U-Psa"	},
+				{	TMrbDGFData::kRunFastListModeShort2	,	"Fast list mode, 2 words: T, E"					},
+				{	TMrbDGFData::kRunMCA,					"MCA Mode"										},
+				{	0,										NULL											}
 			};
 
 // value definitions for parameter CONTROLTASK: defines control tasks
@@ -105,6 +115,28 @@ const SMrbNamedXShort kMrbChanCSRABits[] =
 				{	TMrbDGFData::kBipolarSignals ,			"Bipolar signals"						},
 				{	0,										NULL									}
 			};
+
+// bit definitions for user psa
+const SMrbNamedXShort kMrbUserPsaCSRBits[] =
+				{
+					{TMrbDGFData::kT0,					"T0, xpolated baseline crossing"			},
+					{TMrbDGFData::kT90,					"T90"										},
+					{TMrbDGFData::kTslope, 				"Tslope"									},
+					{TMrbDGFData::kQmax,				"Qmax"										},
+					{TMrbDGFData::kUseEnergyCutTFA,		"Use energy cutoff for TFA"					},
+					{TMrbDGFData::kUseTFA, 				"Use TFA"									},
+					{TMrbDGFData::kInitTFA,				"Initialize TFA (cleared after 1st run)"	},
+					{TMrbDGFData::kForceAveTiming,		"Force average timing"						},
+					{TMrbDGFData::kAvePulseShape,		"Average pulse shape (cleared)"				},
+					{TMrbDGFData::kAveRefT0, 			"Average is reference for T0" 				},
+					{TMrbDGFData::kAveRefT90,			"Average is reference for T90"				},
+					{TMrbDGFData::kRefPsaOffsLength, 	"Reference is PSA offset and length"		},
+					{TMrbDGFData::kQuadInterpolT0,		"Quadratic interpolation for T0"			},
+					{TMrbDGFData::kInterpolT0Tslope,	"Interpolation for T0 and Tslope"			},
+					{TMrbDGFData::kOverwriteGSLT,		"Overwrite GSLT values"						},
+					{TMrbDGFData::kInterpolT50T90,		"Interpolation for T50 and T90"				},
+					{0, 								NULL										}
+				};
 
 // bit definitions in soft status word (data)
 const SMrbNamedXShort kMrbDGFStatusDBits[] =

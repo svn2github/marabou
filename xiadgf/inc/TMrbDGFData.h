@@ -8,7 +8,7 @@
 // Class:          TMrbDGFData        -- data base to store DSP and FPGA data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFData.h,v 1.5 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.h,v 1.6 2005-08-25 14:32:16 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -104,69 +104,74 @@ class TMrbDGFData : public TObject {
 		enum					{	kCamacICSRMask			=	kFPGAReset | kSwitchBus };
 
 		// bit definitions in parameter MODCSRA: module control/status reg A
-		enum EMrbModCSRA		{	kWriteLevel1	=	BIT(0)	};
+		enum EMrbModCSRA		{};
 
 		// bit definitions in parameter MODCSRB: module control/status reg B (reserved)
-		enum EMrbModCSRB		{};
+		enum EMrbModCSRB		{	kCallUserCode				=	1	};
 
 		// value definitions for parameter RUNTASK: defines kind of run task to be started
 		enum EMrbRunTask		{
-										kRunControl		=	0,
-										kRunLinear		=	0x100,
-										kRunCircular	=	0x101,
-										kRunPSA 		=	0x102,
-										kRunShort 		=	0x103,
-										kRunMCA 		=	0x301,
-									};
+									kRunSlowControl 	 		=	0,
+									kRunStdListMode				=	0x100,
+									kRunStdListModeNoTrace		=	0x101,
+									kRunStdListModeShort4 		=	0x102,
+									kRunStdListModeShort2 		=	0x103,
+									kRunFastListMode			=	0x200,
+									kRunFastListModeNoTrace		=	0x201,
+									kRunFastListModeShort4 		=	0x202,
+									kRunFastListModeShort2 		=	0x203,
+									kRunMCA 					=	0x301
+								};
 
 		// value definitions for parameter CONTROLTASK: defines control tasks
 		enum EMrbControlTask	{
-										kProgramDACs 		=	0,
-										kConnectInputs		=	1,
-										kDisconnectInputs	=	2,
-										kCalibrate			=	3,
-										kSampleADCs 	 	=	4,
-										kUpdateFPGA 		=	5,
-										kReadHistoFirstPage =	9,
-										kReadHistoNextPage	=	10
-									};
+									kProgramDACs 		=	0,
+									kConnectInputs		=	1,
+									kDisconnectInputs	=	2,
+									kCalibrate			=	3,
+									kSampleADCs 	 	=	4,
+									kUpdateFPGA 		=	5,
+									kReadHistoFirstPage =	9,
+									kReadHistoNextPage	=	10
+								};
 
 		// bit definitions in parameter CHANCSRA: control/status reg A for channel X
 		enum EMrbChanCSRA		{
-										kGroupTriggerOnly	=	BIT(0),
-										kIndivLiveTime		=	BIT(1),
-										kGoodChannel		=	BIT(2),
-										kReadAlways 		=	BIT(3),
-										kEnableTrigger		=	BIT(4),
-										kTriggerPositive	=	BIT(5),
-										kGFLTValidate		=	BIT(6),
-										kHistoEnergies		=	BIT(7),
-										kHistoBaselines 	=	BIT(8),
-										kCorrBallDeficit	=	BIT(9),
-										kComputeCFT 		=	BIT(10),
-										kEnaMultiplicity	=	BIT(11),
-										kBipolarSignals 	=	BIT(15)
-									};
+									kGroupTriggerOnly	=	BIT(0),
+									kIndivLiveTime		=	BIT(1),
+									kGoodChannel		=	BIT(2),
+									kReadAlways 		=	BIT(3),
+									kEnableTrigger		=	BIT(4),
+									kTriggerPositive	=	BIT(5),
+									kGFLTValidate		=	BIT(6),
+									kHistoEnergies		=	BIT(7),
+									kHistoBaselines 	=	BIT(8),
+									kCorrBallDeficit	=	BIT(9),
+									kComputeCFT 		=	BIT(10),
+									kEnaMultiplicity	=	BIT(11),
+									kBipolarSignals 	=	BIT(15)
+								};
 
 		// bit definitions for user psa: control reg
 		enum EMrbUserPsaCSR		{
-										kT0 				=	BIT(0),
-										kT90				=	BIT(1),
-										kTslope 			=	BIT(2),
-										kQmax		 		=	BIT(3),
-										kUseEnergyCutTFA 	=	BIT(4),
-										kUseTFA 			=	BIT(5),
-										kInitTFA			=	BIT(6),
-										kForceAveTiming		=	BIT(7),
-										kAvePulseShape		=	BIT(8),
-										kAveRefT0			=	BIT(9),
-										kAveRefT90 			=	BIT(10),
-										kRefPsaOffsLength	=	BIT(11),
-										kQuadInterpolT0 	=	BIT(12),
-										kInterpolT0Tslope	=	BIT(13),
-										kOverwriteGSLT		=	BIT(14),
-										kInterpolT50T90 	=	BIT(15)
-									};
+									kT0 				=	BIT(0),
+									kT90				=	BIT(1),
+									kTslope 			=	BIT(2),
+									kQmax		 		=	BIT(3),
+									kUseEnergyCutTFA 	=	BIT(4),
+									kUseTFA 			=	BIT(5),
+									kInitTFA			=	BIT(6),
+									kForceAveTiming		=	BIT(7),
+									kAvePulseShape		=	BIT(8),
+									kAveRefT0			=	BIT(9),
+									kAveRefT90 			=	BIT(10),
+									kRefPsaOffsLength	=	BIT(11),
+									kQuadInterpolT0 	=	BIT(12),
+									kInterpolT0Tslope	=	BIT(13),
+									kOverwriteGSLT		=	BIT(14),
+									kInterpolT50T90 	=	BIT(15)
+								};
+
 
 		enum					{	kChanCSRAMask		=	0xffff			};
 
@@ -175,12 +180,12 @@ class TMrbDGFData : public TObject {
 
 		// bit definitions: software status (data)
 		enum EMrbDGFStatusDBits	{
-											kSystemFPGACodeRead		=	BIT(2),
-											kFippiFPGARevDCodeRead	=	BIT(3),
-											kFippiFPGARevECodeRead	=	BIT(4),
-											kDSPCodeRead 				=	BIT(5),
-											kParamNamesRead			=	BIT(6)
-										};
+									kSystemFPGACodeRead		=	BIT(2),
+									kFippiFPGARevDCodeRead	=	BIT(3),
+									kFippiFPGARevECodeRead	=	BIT(4),
+									kDSPCodeRead 				=	BIT(5),
+									kParamNamesRead			=	BIT(6)
+								};
 
 		// number of channels per module
 		enum					{	kNofChannels		=	4			};
@@ -260,7 +265,9 @@ class TMrbDGFData : public TObject {
 		TMrbLofNamedX fLofCamacCSRBits;								// camac control & status
 		TMrbLofNamedX fLofCamacICSRBits;							// ... (system)
 		TMrbLofNamedX fLofModCSRABits; 								// module control & status A
+		TMrbLofNamedX fLofModCSRBBits; 								// module control B
 		TMrbLofNamedX fLofChanCSRABits;								// channel control & status A
+		TMrbLofNamedX fLofUserPsaCSRBits;							// user psa control reg
 		TMrbLofNamedX fLofRunTasks;									// list of run tasks	
 		TMrbLofNamedX fLofControlTasks;								// list of control tasks
 

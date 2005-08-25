@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.13 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.14 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -61,16 +61,20 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrTriggerThresholdEntry,		//		threshold
 									kDGFInstrTraceLengthEntry,	  		//		length
 									kDGFInstrTraceDelayEntry, 			//		delay
-									kDGFInstrTracePSAOffsetEntry, 		//		psa offset
-									kDGFInstrTracePSALengthEntry,		//		psa length
+									kDGFInstrTraceXPSAOffsetEntry, 		//		psa offset
+									kDGFInstrTraceXPSALengthEntry,		//		psa length
+									kDGFInstrTraceUPSAOffsetEntry, 		//		psa offset
+									kDGFInstrTraceUPSALengthEntry,		//		psa length
 									kDGFInstrStatRegModICSREntry, 		//		module switchbus
 									kDGFInstrStatRegModICSREditButton,	//		edit
 									kDGFInstrStatRegChanCSRAEntry, 		//		channel csra
 									kDGFInstrStatRegChanCSRAEditButton,	//		edit
 									kDGFInstrStatRegUserPsaCSREntry, 		//		user psa
 									kDGFInstrStatRegUserPsaCSREditButton,	//		edit
-									kDGFInstrStatCoincPatternEntry, 	//		pattern
-									kDGFInstrStatCoincPatternEditButton,	//	edit
+									kDGFInstrStatCoincPatternEntry, 		//		coinc pattern
+									kDGFInstrStatCoincPatternEditButton,	//		edit
+									kDGFInstrStatRunTaskEntry,  			//		runtask
+									kDGFInstrStatRunTaskEditButton, 		//		edit
 									kDGFInstrDACGainEntry, 				//		DAC
 									kDGFInstrDACVVEntry,			  	//		V/V
 									kDGFInstrDACOffsetEntry,		 	//		DAC
@@ -141,12 +145,17 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		TGMrbLabelEntry * fTriggerGapTimeEntry;  	//					gap time
 		TGMrbLabelEntry * fTriggerThresholdEntry;	//					threshold
 		TGGroupFrame * fTraceFrame;					//			trace
+		TGVerticalFrame * fTraceLeftFrame;
+		TGVerticalFrame * fTraceRightFrame;
 		TGGroupFrame * fTraceLengthDelayFrame;		//				length & delay
 		TGMrbLabelEntry * fTraceLengthEntry;	  	//					length
 		TGMrbLabelEntry * fTraceDelayEntry; 		//					delay
-		TGGroupFrame * fTracePSAFrame;				//				psa
-		TGMrbLabelEntry * fTracePSAOffsetEntry;	  	//					offset
-		TGMrbLabelEntry * fTracePSALengthEntry; 	//					length
+		TGGroupFrame * fTraceXPSAFrame;				//				xia-psa
+		TGMrbLabelEntry * fTraceXPSAOffsetEntry;	//					offset
+		TGMrbLabelEntry * fTraceXPSALengthEntry; 	//					length
+		TGGroupFrame * fTraceUPSAFrame;				//				user-psa
+		TGMrbLabelEntry * fTraceUPSAOffsetEntry;	//					offset
+		TGMrbLabelEntry * fTraceUPSALengthEntry; 	//					length
 		TGGroupFrame * fStatRegFrame;				//			status regs
 		TGGroupFrame * fStatRegEntryFrame;			//
 		TGMrbLabelEntry * fStatRegModICSREntry; 	//				switchbus
@@ -157,6 +166,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		TMrbNamedX * fCoincPatternEditButton;		//
 		TGMrbLabelEntry * fStatRegUserPsaCSREntry; 	//				user psa
 		TMrbNamedX * fUserPsaCSREditButton;			//
+		TGMrbLabelEntry * fStatRunTaskEntry; 		//				runtask
+		TMrbNamedX * fRunTaskEditButton;			//
 
 		TGVerticalFrame * fRightFrame; 				//		right row
 		TGGroupFrame * fDACFrame;					//			DAC

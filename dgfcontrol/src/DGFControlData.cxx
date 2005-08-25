@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.12 2005-08-03 12:40:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.13 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -30,7 +30,7 @@ ClassImp(DGFControlData)
 
 extern TMrbLogger * gMrbLog;
 
-DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
+DGFControlData::DGFControlData(const Char_t * RcFile) : TNamed("DGFControlData", "DGFControlData") {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFControlData
@@ -89,91 +89,96 @@ DGFControlData::DGFControlData() : TNamed("DGFControlData", "DGFControlData") {
 
 // paths and filenames
 	TString errMsg;
-	Bool_t panic = kFALSE;
 
-	env.Find(fDataPath, "DGFControl:TMrbDGF", "DataPath", gSystem->WorkingDirectory());
-	gSystem->ExpandPathName(fDataPath);
-	this->CheckAccess(fDataPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
+// open local resource data base
+	fRcFile = RcFile;
+	gSystem->ExpandPathName(fRcFile);
+	Bool_t ok = this->CheckAccess(fRcFile.Data(), kDGFAccessRead, errMsg, kFALSE);
+	if (ok) {
+		fEnv = new TEnv(RcFile);
 
-	fRunDataFile = fDataPath;
-	fRunDataFile += "/";
-	fRunDataFile += gEnv->GetValue("DGFControl.RunDataFile", "DGFRunData.%T-%R.root");
-	gSystem->ExpandPathName(fRunDataFile);
+		env.Find(fDataPath, "DGFControl:TMrbDGF", "DataPath", gSystem->WorkingDirectory());
+		gSystem->ExpandPathName(fDataPath);
+		this->CheckAccess(fDataPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
-	env.Find(fLoadPath, "DGFControl:TMrbDGF", "LoadPath", "$MARABOU/data/xiadgf/v2.80");
-	gSystem->ExpandPathName(fLoadPath);
-	this->CheckAccess(fLoadPath.Data(), kDGFAccessDirectory, errMsg, kTRUE);
+		fRunDataFile = fDataPath;
+		fRunDataFile += "/";
+		fRunDataFile += gEnv->GetValue("DGFControl.RunDataFile", "DGFRunData.%T-%R.root");
+		gSystem->ExpandPathName(fRunDataFile);
 
-	fDSPCodeFile = fLoadPath;
-	fDSPCodeFile += "/";
-	TString path;
-	env.Find(path, "DGFControl:TMrbDGF", "DSPCode", "dsp/DGFcodeE.bin");
-	fDSPCodeFile += path;
-	gSystem->ExpandPathName(fDSPCodeFile);
-	this->CheckAccess(fDSPCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
+		env.Find(fLoadPath, "DGFControl:TMrbDGF", "LoadPath", "$MARABOU/data/xiadgf/v2.80");
+		gSystem->ExpandPathName(fLoadPath);
+		this->CheckAccess(fLoadPath.Data(), kDGFAccessDirectory, errMsg, kTRUE);
 
-	fDSPParamsFile = fLoadPath;
-	fDSPParamsFile += "/";
-	env.Find(path, "DGFControl:TMrbDGF", "ParamNames", "dsp/dfgcodeE.var");
-	fDSPParamsFile += path;
-	gSystem->ExpandPathName(fDSPParamsFile);
-	this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
+		fDSPCodeFile = fLoadPath;
+		fDSPCodeFile += "/";
+		TString path;
+		env.Find(path, "DGFControl:TMrbDGF", "DSPCode", "dsp/DGFcodeE.bin");
+		fDSPCodeFile += path;
+		gSystem->ExpandPathName(fDSPCodeFile);
+		this->CheckAccess(fDSPCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	fSystemFPGAConfigFile = fLoadPath;
-	fSystemFPGAConfigFile += "/";
-	env.Find(path, "DGFControl:TMrbDGF", "SystemFPGACode", "Firmware/dgf4c.bin");
-	fSystemFPGAConfigFile += path;
-	gSystem->ExpandPathName(fSystemFPGAConfigFile);
-	this->CheckAccess(fSystemFPGAConfigFile.Data(), kDGFAccessRead, errMsg, kTRUE);
+		fDSPParamsFile = fLoadPath;
+		fDSPParamsFile += "/";
+		env.Find(path, "DGFControl:TMrbDGF", "ParamNames", "dsp/dfgcodeE.var");
+		fDSPParamsFile += path;
+		gSystem->ExpandPathName(fDSPParamsFile);
+		this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fLoadPath;
-	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += "/";
-	env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode.RevD", "");
-	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4D.bin");
-	fFippiFPGAConfigFile[TMrbDGFData::kRevD] += path;
-	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevD]);
-	this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data(), kDGFAccessRead, errMsg, kTRUE);
+		fSystemFPGAConfigFile = fLoadPath;
+		fSystemFPGAConfigFile += "/";
+		env.Find(path, "DGFControl:TMrbDGF", "SystemFPGACode", "Firmware/dgf4c.bin");
+		fSystemFPGAConfigFile += path;
+		gSystem->ExpandPathName(fSystemFPGAConfigFile);
+		this->CheckAccess(fSystemFPGAConfigFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fLoadPath;
-	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += "/";
-	env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode.RevE", "");
-	if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4E.bin");
-	fFippiFPGAConfigFile[TMrbDGFData::kRevE] += path;
-	gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevE]);
-	this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data(), kDGFAccessRead, errMsg, kTRUE);
+		fFippiFPGAConfigFile[TMrbDGFData::kRevD] = fLoadPath;
+		fFippiFPGAConfigFile[TMrbDGFData::kRevD] += "/";
+		env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode.RevD", "");
+		if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4D.bin");
+		fFippiFPGAConfigFile[TMrbDGFData::kRevD] += path;
+		gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevD]);
+		this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevD].Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	env.Find(fDgfSettingsPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
-	gSystem->ExpandPathName(fDgfSettingsPath);
-	this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
+		fFippiFPGAConfigFile[TMrbDGFData::kRevE] = fLoadPath;
+		fFippiFPGAConfigFile[TMrbDGFData::kRevE] += "/";
+		env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode.RevE", "");
+		if (path.Length() == 0) env.Find(path, "DGFControl:TMrbDGF", "FippiFPGACode", "Firmware/fdgf4c4E.bin");
+		fFippiFPGAConfigFile[TMrbDGFData::kRevE] += path;
+		gSystem->ExpandPathName(fFippiFPGAConfigFile[TMrbDGFData::kRevE]);
+		this->CheckAccess(fFippiFPGAConfigFile[TMrbDGFData::kRevE].Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	env.Find(path, "DGFControl", "CptmCodeFile", "");
-	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "CodeFile", "cptm.rbf");
-	fCptmCodeFile = path;
-	gSystem->ExpandPathName(fCptmCodeFile);
-	this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
+		env.Find(fDgfSettingsPath, "DGFControl:TMrbDGF", "SettingsPath", "../dgfSettings");
+		gSystem->ExpandPathName(fDgfSettingsPath);
+		this->CheckAccess(fDgfSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
-	env.Find(path, "DGFControl", "CptmSettingsPath", "");
-	if (path.Length() == 0) env.Find(path, "TMrbCPTM", "SettingsPath", "../cptmSettings");
-	fCptmSettingsPath = path;
-	gSystem->ExpandPathName(fCptmSettingsPath);
-	this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
+		env.Find(path, "DGFControl", "CptmCodeFile", "");
+		if (path.Length() == 0) env.Find(path, "TMrbCPTM", "CodeFile", "cptm.rbf");
+		fCptmCodeFile = path;
+		gSystem->ExpandPathName(fCptmCodeFile);
+		this->CheckAccess(fCptmCodeFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
-	fLofChannels.SetName("DGF channels");
-	fLofChannels.AddNamedX(kDGFChannelNumbers);
-	fLofChannels.SetPatternMode();
+		env.Find(path, "DGFControl", "CptmSettingsPath", "");
+		if (path.Length() == 0) env.Find(path, "TMrbCPTM", "SettingsPath", "../cptmSettings");
+		fCptmSettingsPath = path;
+		gSystem->ExpandPathName(fCptmSettingsPath);
+		this->CheckAccess(fCptmSettingsPath.Data(), kDGFAccessDirectory | kDGFAccessWrite, errMsg, kTRUE);
 
-	fHistPresent = new HistPresent();
+		fLofChannels.SetName("DGF channels");
+		fLofChannels.AddNamedX(kDGFChannelNumbers);
+		fLofChannels.SetPatternMode();
 
-	if (panic) {
-		gMrbLog->Err() << "Can't continue. Correct errors, then start over. Sorry" << endl;
-		gMrbLog->Flush(this->ClassName());
-		gSystem->Exit(1);
-	}
+		fHistPresent = new HistPresent();
 
-	this->SetupModuleList();
+		this->SetupModuleList();
 
 //	clear list of modules to be updated
-	fLofModulesToBeUpdated.Clear();
+		fLofModulesToBeUpdated.Clear();
+
+// come here after errors
+	} else {
+		this->MakeZombie();
+	}
 }
 
 Bool_t DGFControlData::CheckIfStarted() {
@@ -247,7 +252,7 @@ Int_t DGFControlData::SetupModuleList() {
 	fNofClusters = 0;
 	cl = 0;
 
-	nofSevts = gEnv->GetValue("DGFControl.NofSubevents", 0);
+	nofSevts = fEnv->GetValue("DGFControl.NofSubevents", 0);
 	for (Int_t i = 0; i < nofSevts; i++) {
 		this->GetResource(sevtName, "DGFControl.Subevent", i, NULL, "Name");
 		if (sevtName.Length() > 0) {
@@ -353,7 +358,7 @@ const Char_t * DGFControlData::GetResource(TString & Result, const Char_t * Pref
 		resStr += Serial;
 		resStr += ".";
 		resStr += Resource;
-		Result = gEnv->GetValue(resStr.Data(), "");
+		Result = fEnv->GetValue(resStr.Data(), "");
 	}
 	if (Result.Length() == 0 && Name != NULL) {
 		resStr = Name;
@@ -362,7 +367,7 @@ const Char_t * DGFControlData::GetResource(TString & Result, const Char_t * Pref
 		resStr.Prepend(Prefix);
 		resStr += ".";
 		resStr += Resource;
-		Result = gEnv->GetValue(resStr.Data(), "");
+		Result = fEnv->GetValue(resStr.Data(), "");
 	}
 	return(Result.Data());
 }
@@ -399,7 +404,7 @@ Int_t DGFControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t S
 		resStr += Serial;
 		resStr += ".";
 		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
+		resVal = fEnv->GetValue(resStr.Data(), "");
 	}
 	if (resVal.Length() == 0 && Name != NULL) {
 		resStr = Name;
@@ -408,7 +413,7 @@ Int_t DGFControlData::GetResource(Int_t & Result, const Char_t * Prefix, Int_t S
 		resStr.Prepend(Prefix);
 		resStr += ".";
 		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
+		resVal = fEnv->GetValue(resStr.Data(), "");
 	}
 	resVal.ToInteger(Result, Base);
 	return(Result);
@@ -444,7 +449,7 @@ Bool_t DGFControlData::GetResource(Bool_t & Result, const Char_t * Prefix, Int_t
 		resStr += Serial;
 		resStr += ".";
 		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
+		resVal = fEnv->GetValue(resStr.Data(), "");
 	}
 	if (resVal.Length() == 0 && Name != NULL) {
 		resStr = Name;
@@ -453,7 +458,7 @@ Bool_t DGFControlData::GetResource(Bool_t & Result, const Char_t * Prefix, Int_t
 		resStr.Prepend(Prefix);
 		resStr += ".";
 		resStr += Resource;
-		resVal = gEnv->GetValue(resStr.Data(), "");
+		resVal = fEnv->GetValue(resStr.Data(), "");
 	}
 	if (resVal.CompareTo("TRUE") == 0 || resVal.CompareTo("true") == 0) Result = kTRUE; else Result = kFALSE;
 	return(Result);
@@ -905,3 +910,77 @@ void DGFControlData::UpdateParamsAndFPGAs() {
 	fLofModulesToBeUpdated.Clear();
 }
 
+void DGFControlData::UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, const Char_t * TrueFalse) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFControlData::UpdateLocalEnv
+// Purpose:        Update local environment
+// Arguments:      Char_t * Prefix    -- prefix
+//                 Char_t * Name      -- name
+//                 Char_t * Suffix    -- suffix
+//                 Char_t * TrueFalse -- TRUE or FALSE
+// Results:        --
+// Exceptions:     
+// Description:    Updates the local environment: <Prefix>.<Name>.<Suffix>: <TrueFalse>
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString resName = Name;
+	resName(0,1).ToUpper();
+	TString res = Prefix;
+	res += ".";
+	res+= resName;
+	res += ".";
+	res += Suffix;
+	fEnv->SetValue(res, TrueFalse);
+}
+
+void DGFControlData::UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Int_t Value) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFControlData::UpdateLocalEnv
+// Purpose:        Update local environment
+// Arguments:      Char_t * Prefix    -- prefix
+//                 Char_t * Name      -- name
+//                 Char_t * Suffix    -- suffix
+//                 Int_t Value        -- value to be set
+// Results:        --
+// Exceptions:     
+// Description:    Updates the local environment: <Prefix>.<Name>.<Suffix>: <Value>
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString resName = Name;
+	resName(0,1).ToUpper();
+	TString res = Prefix;
+	res += ".";
+	res+= resName;
+	res += ".";
+	res += Suffix;
+	fEnv->SetValue(res, Value);
+}
+
+void DGFControlData::UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Double_t Value) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFControlData::UpdateLocalEnv
+// Purpose:        Update local environment
+// Arguments:      Char_t * Prefix    -- prefix
+//                 Char_t * Name      -- name
+//                 Char_t * Suffix    -- suffix
+//                 Double_t Value     -- value to be set
+// Results:        --
+// Exceptions:     
+// Description:    Updates the local environment: <Prefix>.<Name>.<Suffix>: <Value>
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TString resName = Name;
+	resName(0,1).ToUpper();
+	TString res = Prefix;
+	res += ".";
+	res+= resName;
+	res += ".";
+	res += Suffix;
+	fEnv->SetValue(res, Value);
+}

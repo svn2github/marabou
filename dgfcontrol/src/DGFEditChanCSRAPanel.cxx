@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.5 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.cxx,v 1.6 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -20,6 +20,7 @@
 
 #include "TEnv.h"
 
+#include "TMrbDGFData.h"
 #include "DGFControlData.h"
 #include "DGFEditChanCSRAPanel.h"
 
@@ -31,26 +32,8 @@ const SMrbNamedX kDGFEditChanCSRAButtons[] =
 			{0, 													NULL,		NULL							}
 		};
 
-// bit definitions in parameter CHANCSRA: control/status reg A for channel X
-const SMrbNamedXShort kDGFChanCSRABits[] =
-							{
-								{TMrbDGFData::kGroupTriggerOnly,	"Respond to group triggers only"		},
-								{TMrbDGFData::kIndivLiveTime,		"Measure individual live time"			},
-								{TMrbDGFData::kGoodChannel, 		"Good channel"							},
-								{TMrbDGFData::kReadAlways,			"Read always"							},
-								{TMrbDGFData::kEnableTrigger,		"Enable trigger"						},
-								{TMrbDGFData::kTriggerPositive, 	"Trigger positive"						},
-								{TMrbDGFData::kGFLTValidate,		"Validate events using GFLT"			},
-								{TMrbDGFData::kHistoEnergies,		"Histogram energies"					},
-								{TMrbDGFData::kHistoBaselines,		"Histogram baselines"					},
-								{TMrbDGFData::kCorrBallDeficit, 	"Correct for ballistic deficit" 		},
-								{TMrbDGFData::kComputeCFT,			"Compute CFT"							},
-								{TMrbDGFData::kEnaMultiplicity, 	"Enable contribution to multiplicity"	},
-								{TMrbDGFData::kBipolarSignals,		"Bipolar signals"						},
-								{0, 								NULL									}
-							};
-
 extern DGFControlData * gDGFControlData;
+extern TMrbDGFData * gMrbDGFData;
 
 ClassImp(DGFEditChanCSRAPanel)
 
@@ -98,9 +81,9 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry 
 	
 	this->ChangeBackground(gDGFControlData->fColorGreen);
 
+	if (gMrbDGFData == NULL) gMrbDGFData = new TMrbDGFData();
+
 //	Initialize button list
-	fLofCSRABits.SetName("Channel CSRA Bits");
-	fLofCSRABits.AddNamedX(kDGFChanCSRABits);
 	fLofButtons.SetName("Buttons");
 	fLofButtons.AddNamedX(kDGFEditChanCSRAButtons);
 
@@ -126,7 +109,7 @@ DGFEditChanCSRAPanel::DGFEditChanCSRAPanel(const TGWindow * Window, TGTextEntry 
 	buttonGC->SetLH(csraButtonLayout);
 	HEAP(csraButtonLayout);
 
-	fCSRAFrame = new TGMrbCheckButtonGroup(this, title.Data(), &fLofCSRABits, -1, 1, groupGC, buttonGC, NULL, kVerticalFrame);
+	fCSRAFrame = new TGMrbCheckButtonGroup(this, title.Data(), &gMrbDGFData->fLofChanCSRABits, -1, 1, groupGC, buttonGC, NULL, kVerticalFrame);
 	HEAP(fCSRAFrame);
 	this->AddFrame(fCSRAFrame, groupGC->LH());
 

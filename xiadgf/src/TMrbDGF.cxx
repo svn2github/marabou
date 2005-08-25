@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.39 2005-08-17 13:47:21 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.40 2005-08-25 14:32:16 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1139,7 +1139,7 @@ Bool_t TMrbDGF::WriteParamMemory(Bool_t Reprogram) {
 						<< this->ClassName() << "::WriteParamMemory(): Reprogramming DACs and FPGA - Wait ... "
 						<< ends << setblack << flush;
 			}
-			this->SetParValue("RUNTASK", TMrbDGFData::kRunControl, kTRUE);		// reprogram DACs
+			this->SetParValue("RUNTASK", TMrbDGFData::kRunSlowControl, kTRUE);		// reprogram DACs
 			this->SetParValue("CONTROLTASK", TMrbDGFData::kProgramDACs, kTRUE);
 			this->StartRun();
 			this->WaitActive(1);
@@ -4717,7 +4717,7 @@ Int_t TMrbDGF::ReadHistograms(TMrbDGFHistogramBuffer & Buffer, UInt_t ChannelPat
 		if (Buffer.IsActive(chn)) {
 			this->SetParValue("HOSTIO", chn, kTRUE);
 			for (j = 0; j < 8; j++) {
-				this->SetParValue("RUNTASK", TMrbDGFData::kRunControl, kTRUE);		// reprogram DACs
+				this->SetParValue("RUNTASK", TMrbDGFData::kRunSlowControl, kTRUE);		// reprogram DACs
 				cTask = (j == 0) ? TMrbDGFData::kReadHistoFirstPage : TMrbDGFData::kReadHistoNextPage;
 				this->SetParValue("CONTROLTASK", cTask, kTRUE); 	// xfer histo page to i/o buffer
 				this->StartRun();
@@ -5100,7 +5100,7 @@ Bool_t TMrbDGF::GetTrace_Start() {
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
-	this->SetParValue("RUNTASK", TMrbDGFData::kRunLinear, kTRUE);
+	this->SetParValue("RUNTASK", TMrbDGFData::kRunStdListMode, kTRUE);
 	this->StartRun();
 	return(kTRUE);
 }
@@ -5210,7 +5210,7 @@ Bool_t TMrbDGF::GetUntrigTrace_Start(Int_t Channel) {
 //////////////////////////////////////////////////////////////////////////////
 
 	this->SetParValue("HOSTIO", Channel, kTRUE);
-	this->SetParValue("RUNTASK", TMrbDGFData::kRunControl, kTRUE);
+	this->SetParValue("RUNTASK", TMrbDGFData::kRunSlowControl, kTRUE);
 	this->SetParValue("CONTROLTASK", TMrbDGFData::kSampleADCs, kTRUE);
 	this->StartRun();
 	return(kTRUE);
@@ -5329,7 +5329,7 @@ Bool_t TMrbDGF::GetDacRamp_Start() {
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
-	this->SetParValue("RUNTASK", TMrbDGFData::kRunControl, kTRUE);
+	this->SetParValue("RUNTASK", TMrbDGFData::kRunSlowControl, kTRUE);
 	this->SetParValue("CONTROLTASK", TMrbDGFData::kCalibrate, kTRUE);
 	this->StartRun();
 	return(kTRUE);
@@ -5442,7 +5442,7 @@ Double_t TMrbDGF::TauFit(Int_t Channel, Int_t NofTraces, Int_t TraceLength,
 
 	this->WriteParamMemory();
 
-	this->SetParValue("RUNTASK", TMrbDGFData::kRunLinear, kTRUE);
+	this->SetParValue("RUNTASK", TMrbDGFData::kRunStdListMode, kTRUE);
 
 	if (fTauDistr) {
 		gROOT->GetList()->Remove(fTauDistr);

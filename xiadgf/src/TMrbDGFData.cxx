@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.8 2005-02-23 12:55:57 marabou Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.9 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -86,9 +86,16 @@ void TMrbDGFData::Setup() {
 	fLofModCSRABits.AddNamedX(kMrbModCSRABits);
 	fLofModCSRABits.SetPatternMode();
 
+	fLofModCSRBBits.SetName("Module Control Reg B");
+	fLofModCSRBBits.AddNamedX(kMrbModCSRBBits);
+	fLofModCSRBBits.SetPatternMode();
+
 	fLofChanCSRABits.SetName("Channel Control & Status Reg A");
 	fLofChanCSRABits.AddNamedX(kMrbChanCSRABits);
 	fLofChanCSRABits.SetPatternMode();
+
+	fLofUserPsaCSRBits.SetName("UserPSA CSR Bits");
+	fLofUserPsaCSRBits.AddNamedX(kMrbUserPsaCSRBits);
 
 	fLofRunTasks.SetName("Run Tasks");
 	fLofRunTasks.AddNamedX(kMrbRunTasks);

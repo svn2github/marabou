@@ -17,6 +17,7 @@
 #pragma link C++ class DGFEditModICSRPanel;
 #pragma link C++ class DGFEditChanCSRAPanel;
 #pragma link C++ class DGFEditUserPsaCSRPanel;
+#pragma link C++ class DGFEditRunTaskPanel;
 #pragma link C++ class DGFEditCoincPatternPanel;
 #pragma link C++ class DGFRestoreModuleSettingsPanel;
 #pragma link C++ class DGFSaveModuleSettingsPanel;

@@ -8,7 +8,7 @@
 // Class:          DGFEditChanCSRAPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFEditChanCSRAPanel.h,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFEditChanCSRAPanel.h,v 1.4 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -59,7 +59,7 @@ class DGFEditChanCSRAPanel : public TGMainFrame {
 		enum					{	kButtonWidth			= kAutoWidth			};
 		enum					{	kButtonHeight			= 20					};
 
-	public:
+	public:	
 		DGFEditChanCSRAPanel(const TGWindow * Parent, TGTextEntry * Entry,
 											UInt_t Width, UInt_t Height, UInt_t Options = kMainFrame | kVerticalFrame);
 		virtual ~DGFEditChanCSRAPanel() { fHeap.Delete(); };
@@ -77,7 +77,6 @@ class DGFEditChanCSRAPanel : public TGMainFrame {
 
 		TGTextEntry * fEntry;						// entry to be editied
 
-		TMrbLofNamedX fLofCSRABits;					// list of CSRA bits
 		TMrbLofNamedX fLofButtons;					// list of buttons
 
 		TGMrbLofKeyBindings fKeyBindings; 		// key bindings

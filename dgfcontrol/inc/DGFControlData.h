@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.11 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.12 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -52,6 +52,7 @@ class DGFControlData : public TNamed {
 	friend class DGFEditModICSRPanel;
 	friend class DGFEditChanCSRAPanel;
 	friend class DGFEditUserPsaCSRPanel;
+	friend class DGFEditRunTaskPanel;
 	friend class DGFEditCoincPatternPanel;
 	friend class DGFCopyModuleSettingsPanel;
 	friend class DGFRestoreModuleSettingsPanel;
@@ -80,7 +81,7 @@ class DGFControlData : public TNamed {
 								};
 
 	public:
-		DGFControlData();				// default ctor
+		DGFControlData(const Char_t * RcFile = ".DGFControl.rc");				// default ctor
 
 		virtual ~DGFControlData() { 	// dtor
 			fHeap.Delete();
@@ -158,6 +159,12 @@ class DGFControlData : public TNamed {
 		void UpdateParamsAndFPGAs();
 		void AddToUpdateList(DGFModule * Module);
 
+		inline TEnv * GetEnv() { return(fEnv); };
+		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, const Char_t * TrueFalse);
+		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Int_t Value);
+		void UpdateLocalEnv(const Char_t * Prefix, const Char_t * Name, const Char_t * Suffix, Double_t Value);
+		inline void WriteLocalEnv() { fEnv->Save(); };
+
 	protected:
 		TList fHeap;								//!
 
@@ -217,6 +224,9 @@ class DGFControlData : public TNamed {
 		ULong_t fColorGreen;
 		ULong_t fColorYellow;
 		ULong_t fColorRed;
+
+		TString fRcFile;							// rc file
+		TEnv * fEnv;								// local resource data base
 
 	ClassDef(DGFControlData, 1) 		// [DGFControl] Common data base
 };

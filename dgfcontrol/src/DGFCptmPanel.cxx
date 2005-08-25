@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.5 2005-07-21 08:17:09 rudi Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.6 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -430,7 +430,7 @@ Int_t DGFCptmPanel::GetLofCptmModules() {
 	fLofCptmModules.Delete();
 	Int_t nofCptmModules = 0;
 
-	Int_t nofSevts = gEnv->GetValue("DGFControl.NofSubevents", 0);
+	Int_t nofSevts = gDGFControlData->GetEnv()->GetValue("DGFControl.NofSubevents", 0);
 	for (Int_t i = 0; i < nofSevts; i++) {
 		TString sevtName;
 		gDGFControlData->GetResource(sevtName, "DGFControl.Subevent", i, NULL, "Name");

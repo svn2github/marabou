@@ -8,7 +8,7 @@
 // Class:          DGFSetupPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFSetupPanel.h,v 1.9 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFSetupPanel.h,v 1.10 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -37,6 +37,7 @@ namespace std {} using namespace std;
 #include "TGMrbLofKeyBindings.h"
 
 #include "DGFControlCommon.h"
+#include "DGFModule.h"
 
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
@@ -61,7 +62,6 @@ class DGFSetupPanel : public TGCompositeFrame {
 									kDGFSetupReloadDGFs,						// reload code
 									kDGFSetupAbortBusySync,						// abort busy-sync loop
 									kDGFSetupRestartEsone,						// restart esone server
-									kDGFSetupUserPSAOnOff, 						// turn user PSA on/off
 									kDGFSetupAbortEsone, 						// abort restart procedure
 
 									kDGFSetupModuleSelectAll,					// select all modules
@@ -89,6 +89,12 @@ class DGFSetupPanel : public TGCompositeFrame {
 		Bool_t AbortDGFs(); 						// abort busy-sync loop
 		Bool_t RestartEsone();						// restart esone server
 		Bool_t TurnUserPSAOnOff(Bool_t ActivateFlag);	// turn user psa on/off
+		Bool_t TurnUserPSAOnOff(DGFModule * Module, Bool_t ActivateFlag);
+		Bool_t SetSwitchBus(Bool_t IndivFlag);		// set switchbus register
+		Bool_t SetInSynch(Bool_t SyncFlag);	// synchronize clock with run
+		Bool_t SetInSynch(DGFModule * Module, Bool_t ActivateFlag);
+		Bool_t SetSynchWait(Bool_t SimulFlag);	// start/stop simultaneously
+		Bool_t SetSynchWait(DGFModule * Module, Bool_t ActivateFlag);
 		
 	protected:
 		Bool_t DaqIsRunning();						// check if a daq is running

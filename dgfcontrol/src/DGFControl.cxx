@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControl.cxx,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFControl.cxx,v 1.4 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -49,9 +49,8 @@ int main(Int_t argc, Char_t **argv)
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger("", "dgfControl.log");
 
 	nofModules = 0;
-	gEnv->ReadFile(".DGFControl.rc", kEnvLocal);
-	gDGFControlData = new DGFControlData();
-	if (gDGFControlData == NULL || gDGFControlData->GetNofModules() == 0) {
+	gDGFControlData = new DGFControlData(".DGFControl.rc");
+	if (gDGFControlData->IsZombie() || gDGFControlData->GetNofModules() == 0) {
 		gMrbLog->Err()	<< "No DGF modules found. Sorry - can't proceed." << endl;
 		gMrbLog->Flush("DGFControl");
 		gSystem->Exit(1);

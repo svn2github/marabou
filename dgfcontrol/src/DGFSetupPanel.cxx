@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.30 2005-08-03 13:41:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.31 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -61,7 +61,6 @@ const SMrbNamedX kDGFSetupConnect[] =
 				{DGFSetupPanel::kDGFSetupAbortBusySync,			"Abort Busy-Sync","Force return from busy-sync-loop"			},
 				{DGFSetupPanel::kDGFSetupRestartEsone,			"Restart ESONE","Restart ESONE server"			},
 				{DGFSetupPanel::kDGFSetupAbortEsone, 			"Abort ESONE Restart","Abort ESONE restart procedure"			},
-				{DGFSetupPanel::kDGFSetupUserPSAOnOff, 			"User PSA on/off",	"Turn user PSA on/off"			},
 				{0, 											NULL,			NULL							}
 			};
 
@@ -347,9 +346,6 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 							case kDGFSetupAbortEsone:
 								if (esoneCold) esoneCold->Abort();
 								break;
-							case kDGFSetupUserPSAOnOff:
-								this->TurnUserPSAOnOff(gDGFControlData->fUserPSA);
-								break;
 							case kDGFSetupModuleSelectAll:
 								for (Int_t cl = 0; cl < gDGFControlData->GetNofClusters(); cl++) {
 									fCluster[cl]->SetState(gDGFControlData->GetPatEnabled(cl), kButtonDown);
@@ -379,15 +375,19 @@ Bool_t DGFSetupPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2)
 					switch (Param1) {
 						case DGFControlData::kDGFSimulStartStop:
 							gDGFControlData->fSimulStartStop = (fDGFFrame->GetActive() & Param1) != 0;
+							this->SetSynchWait(gDGFControlData->fSimulStartStop);
 							break;
 						case DGFControlData::kDGFSyncClocks:
 							gDGFControlData->fSyncClocks = (fDGFFrame->GetActive() & Param1) != 0;
+							this->SetInSynch(gDGFControlData->fSyncClocks);
 							break;
 						case DGFControlData::kDGFIndivSwitchBusTerm:
 							gDGFControlData->fIndivSwitchBusTerm = (fDGFFrame->GetActive() & Param1) != 0;
+							this->SetSwitchBus(gDGFControlData->fIndivSwitchBusTerm);
 							break;
 						case DGFControlData::kDGFUserPSA:
 							gDGFControlData->fUserPSA = (fDGFFrame->GetActive() & Param1) != 0;
+							this->TurnUserPSAOnOff(gDGFControlData->fUserPSA);
 							break;
 						default:	break;
 					}
@@ -508,11 +508,13 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
 						if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
+						if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+						if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
 						gDGFControlData->fDeltaT = dgf->GetDeltaT();
 						Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
-						dgf->SetSynchWait(synchWait, kTRUE);
+						if (!this->SetSynchWait(dgfModule, synchWait)) nerr++;
 						Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
-						dgf->SetInSynch(inSynch, kTRUE);
+						if (!this->SetInSynch(dgfModule, inSynch)) nerr++;
 						dgf->Camac()->SetVerboseMode(gDGFControlData->IsDebug());
 						dgf->Camac()->SetSingleStep(gDGFControlData->IsSingleStep());
 						gROOT->Append(dgf);
@@ -523,6 +525,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 				dgfModule = gDGFControlData->NextModule(dgfModule);
 			}
 			delete pgb;
+			gDGFControlData->WriteLocalEnv();
 		}
 	}
 
@@ -724,34 +727,26 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 				}
 
 				if (nerr == 0) {
-					dgfModule = gDGFControlData->FirstModule();
-					while (dgfModule) {
-						if (gDGFControlData->ModuleInUse(dgfModule)) {
-							TMrbDGF * dgf = dgfModule->GetAddr();
-							if (dgf->IsConnected()) {
-								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
-								if (!dgf->ActivateUserPSACode(gDGFControlData->fUserPSA)) nerr++;
-							}
-						}
-						dgfModule = gDGFControlData->NextModule(dgfModule);
-					}
 
 					dgfModule = gDGFControlData->FirstModule();
 					while (dgfModule) {
 						if (gDGFControlData->ModuleInUse(dgfModule)) {
 							TMrbDGF * dgf = dgfModule->GetAddr();
 							if (dgf->IsConnected()) {
-								if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
+								if (!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
+								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+								if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
 								gDGFControlData->fDeltaT = dgf->GetDeltaT();
 								Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
-								dgf->SetSynchWait(synchWait, kTRUE);
+								if (!this->SetSynchWait(dgfModule, synchWait)) nerr++;
 								Bool_t inSynch = ((fDGFFrame->GetActive() & DGFControlData::kDGFSyncClocks) != 0);
-								dgf->SetInSynch(inSynch, kTRUE);
+								if (!this->SetInSynch(dgfModule, inSynch)) nerr++;
 								gROOT->Append(dgf);
 							} else nerr++;
 						}
 						dgfModule = gDGFControlData->NextModule(dgfModule);
 					}
+					gDGFControlData->WriteLocalEnv();
 				}
 			}
 		}
@@ -938,11 +933,8 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
 		UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
 		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
-			if (!offlineMode) {
-				TMrbDGF * dgf = dgfModule->GetAddr();
-				found = kTRUE;
-				dgf->ActivateUserPSACode(ActivateFlag);
-			}
+			this->TurnUserPSAOnOff(dgfModule, ActivateFlag);
+			found = kTRUE;
 			pgb->Increment(1, dgfModule->GetName());
 			gSystem->ProcessEvents();
 		}
@@ -950,7 +942,6 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		nofModules++;
 	}
 	delete pgb;
-
 	if (nerr > 0) {
 		gMrbLog->Err()	<< "Turning PSA code on/off failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff");
@@ -960,11 +951,280 @@ Bool_t DGFSetupPanel::TurnUserPSAOnOff(Bool_t ActivateFlag) {
 		onoff = ActivateFlag ? "ON" : "OFF";
 		gMrbLog->Out()	<< "User PSA code turned " << onoff << endl;
 		gMrbLog->Flush(this->ClassName(), "TurnUserPSAOnOff", setblue);
+		gDGFControlData->WriteLocalEnv();
 		return(kTRUE);
 	} else {
 		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
 		return(kFALSE);
 	}
+}
+
+Bool_t DGFSetupPanel::TurnUserPSAOnOff(DGFModule * Module, Bool_t ActivateFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::TurnUserPSAOnOff
+// Purpose:        Turn user PSA on/off
+// Arguments:      DGFModule * Module    -- module
+//                 Bool_t ActivateFlag   -- kTRUE if user PSA code is to be activated
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Turns PSA mode on/off for specified module.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	TString trueFalse = ActivateFlag ? "TRUE" : "FALSE";
+	TMrbDGF * dgf = Module->GetAddr();
+	if (!offlineMode) dgf->ActivateUserPSACode(ActivateFlag);
+	gDGFControlData->UpdateLocalEnv("DGFControl.Module", Module->GetName(), "ActivateUserPSACode", trueFalse);
+	return(kTRUE);
+}
+
+Bool_t DGFSetupPanel::SetSwitchBus(Bool_t IndivFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::SetSwitchBus
+// Purpose:        Set switchbus register
+// Arguments:      Bool_t IndivFlag   -- kTRUE if user PSA code is to be activated
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Sets switchbus register.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+// Arguments:      DGFModule * Module    -- module
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSwitchBus");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
+	if (gDGFControlData->GetNofModules() == 0) {
+		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSwitchBus");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
+		return(kFALSE);
+	}
+
+	Int_t nerr = 0;
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	Int_t nofModules = 0;
+	Bool_t found = kFALSE;
+	TString indiv = IndivFlag ? "Terminating switchbus individually ..." : "Terminating switchbus for cores only ...";
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, indiv, 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
+	while (dgfModule) {
+		Int_t cl = nofModules / kNofModulesPerCluster;
+		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+		UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
+			if (!offlineMode) {
+				TMrbDGF * dgf = dgfModule->GetAddr();
+				if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+			}
+			found = kTRUE;
+			pgb->Increment(1, dgfModule->GetName());
+			gSystem->ProcessEvents();
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
+	}
+	delete pgb;
+	if (nerr > 0) {
+		gMrbLog->Err()	<< "Setting switchbus register failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSwitchBus");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Setting switchbus register failed", kMBIconStop);
+		return(kFALSE);
+	} else if (offlineMode || found) {
+		indiv = IndivFlag ? "individually" : "for cores only";
+		gMrbLog->Out()	<< "Switchbus terminated " << indiv << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSwitchBus", setblue);
+		gDGFControlData->WriteLocalEnv();
+		return(kTRUE);
+	} else {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	}
+}
+
+Bool_t DGFSetupPanel::SetSynchWait(Bool_t SyncFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::SetSynchWait
+// Purpose:        Turn busy/sync loop on/off
+// Arguments:      Bool_t SyncFlag   -- kTRUE busy/sync loop
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    (De)activates the busy/sync loop
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSynchWait");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
+	if (gDGFControlData->GetNofModules() == 0) {
+		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSynchWait");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
+		return(kFALSE);
+	}
+
+	Int_t nerr = 0;
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	Int_t nofModules = 0;
+	Bool_t found = kFALSE;
+	TString onoff = SyncFlag ? "Turning busy/sync loop ON ..." : "Turning busy/sync loop OFF ...";
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, onoff, 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
+	while (dgfModule) {
+		Int_t cl = nofModules / kNofModulesPerCluster;
+		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+		UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
+			this->SetSynchWait(dgfModule, SyncFlag);
+			found = kTRUE;
+			pgb->Increment(1, dgfModule->GetName());
+			gSystem->ProcessEvents();
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
+	}
+	delete pgb;
+	if (nerr > 0) {
+		gMrbLog->Err()	<< "Turning busy/sync loop on/off failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSynchWait");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Turning busy/sync loop on/off failed", kMBIconStop);
+		return(kFALSE);
+	} else if (offlineMode || found) {
+		onoff = SyncFlag ? "ON" : "OFF";
+		gMrbLog->Out()	<< "Busy/sync loop turned " << onoff << endl;
+		gMrbLog->Flush(this->ClassName(), "SetSynchWait", setblue);
+		gDGFControlData->WriteLocalEnv();
+		return(kTRUE);
+	} else {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	}
+}
+
+Bool_t DGFSetupPanel::SetSynchWait(DGFModule * Module, Bool_t SyncFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::SetSynchWait
+// Purpose:        Turn busy/sync loop on/off
+// Arguments:      DGFModule * Module    -- module
+//                 Bool_t SyncFlag   -- kTRUE busy/sync loop
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    (De)activates the busy/sync loop
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	Int_t onoff = SyncFlag ? 1 : 0;
+	TMrbDGF * dgf = Module->GetAddr();
+	if (!offlineMode) dgf->SetSynchWait(SyncFlag, kTRUE);
+	gDGFControlData->UpdateLocalEnv("DGFControl.Module", Module->GetName(), "SynchWait", onoff);
+	return(kTRUE);
+}
+
+Bool_t DGFSetupPanel::SetInSynch(Bool_t SyncFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::SetInSynch
+// Purpose:        Synchronize clock with run
+// Arguments:      Bool_t SyncFlag   -- kTRUE if to be synchronized
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Synchronizes clock with run
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	if (this->DaqIsRunning()) {
+		gMrbLog->Err()	<< "DAQ seems to be running - can't access DGF modules" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetInSynch");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "DAQ seems to be running", kMBIconStop);
+		return(kFALSE);
+	}
+
+	if (gDGFControlData->GetNofModules() == 0) {
+		gMrbLog->Err()	<< "Number of DGF modules = 0" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetInSynch");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Number of DGF modules = 0", kMBIconStop);
+		return(kFALSE);
+	}
+
+	Int_t nerr = 0;
+	DGFModule * dgfModule = gDGFControlData->FirstModule();
+	Int_t nofModules = 0;
+	Bool_t found = kFALSE;
+	TString onoff = SyncFlag ? "Synchronizing clock with run ..." : "Clock is running free ...";
+	TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, onoff, 400, "blue", NULL, kTRUE);
+	pgb->SetRange(0, gDGFControlData->GetNofModules());
+	while (dgfModule) {
+		Int_t cl = nofModules / kNofModulesPerCluster;
+		Int_t modNo = nofModules - cl * kNofModulesPerCluster;
+		UInt_t bits = (UInt_t) gDGFControlData->ModuleIndex(cl, modNo);
+		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
+			this->SetInSynch(dgfModule, SyncFlag);
+			found = kTRUE;
+			pgb->Increment(1, dgfModule->GetName());
+			gSystem->ProcessEvents();
+		}
+		dgfModule = gDGFControlData->NextModule(dgfModule);
+		nofModules++;
+	}
+	delete pgb;
+	if (nerr > 0) {
+		gMrbLog->Err()	<< "Synchronizing clock failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetInSynch");
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "Synchronizing clock failed", kMBIconStop);
+		return(kFALSE);
+	} else if (offlineMode || found) {
+		onoff = SyncFlag ? "ON" : "OFF";
+		gMrbLog->Out()	<< "Synchronizing clock with run turned " << onoff << endl;
+		gMrbLog->Flush(this->ClassName(), "SetInSynch", setblue);
+		gDGFControlData->WriteLocalEnv();
+		return(kTRUE);
+	} else {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one DGF module", kMBIconStop);
+		return(kFALSE);
+	}
+}
+
+Bool_t DGFSetupPanel::SetInSynch(DGFModule * Module, Bool_t SyncFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFSetupPanel::SetInSynch
+// Purpose:        Synchronize clock with run
+// Arguments:      DGFModule * Module    -- module
+//                 Bool_t SyncFlag       -- kTRUE if to be synchronized
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Synchronizes clock with run
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t offlineMode = gDGFControlData->IsOffline();
+	
+	Int_t onoff = SyncFlag ? 0 : 1;
+	TMrbDGF * dgf = Module->GetAddr();
+	if (!offlineMode) dgf->SetSynchWait(onoff, kTRUE);
+	gDGFControlData->UpdateLocalEnv("DGFControl.Module", Module->GetName(), "InSynch", onoff);
+	return(kTRUE);
 }
 
 Bool_t DGFSetupPanel::DaqIsRunning() {
