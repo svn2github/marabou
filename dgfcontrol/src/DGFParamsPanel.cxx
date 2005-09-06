@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.17 2005-07-26 07:12:13 rudi Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.18 2005-09-06 11:48:14 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -414,7 +414,6 @@ Bool_t DGFParamsPanel::ReadParams() {
 							intStr = parVal;
 						}
 						fParVal[n]->SetText(intStr.Data());
-						fParVal[n]->CreateToolTip(parVal);
 					} else {
 						fParVal[n]->SetText(" ");
 					}

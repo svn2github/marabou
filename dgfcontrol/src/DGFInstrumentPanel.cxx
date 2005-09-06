@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.24 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.25 2005-09-06 11:48:14 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -234,9 +234,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyPeakTimeEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyPeakTimeEntry, frameGC->LH());
 	fEnergyPeakTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fEnergyPeakTimeEntry->SetText("0");
+	fEnergyPeakTimeEntry->SetText(0);
 	fEnergyPeakTimeEntry->SetRange(0, 100000);
 	fEnergyPeakTimeEntry->SetIncrement(gDGFControlData->fDeltaT);
+	fEnergyPeakTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyPeakTimeEntry->AddToFocusList(&fFocusList);
 	fEnergyPeakTimeEntry->Associate(this);
 
@@ -249,9 +250,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyGapTimeEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyGapTimeEntry, frameGC->LH());
 	fEnergyGapTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fEnergyGapTimeEntry->SetText("0");
+	fEnergyGapTimeEntry->SetText(0);
 	fEnergyGapTimeEntry->SetRange(0, 100000);
 	fEnergyGapTimeEntry->SetIncrement(gDGFControlData->fDeltaT);
+	fEnergyGapTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyGapTimeEntry->AddToFocusList(&fFocusList);
 	fEnergyGapTimeEntry->Associate(this);
 
@@ -264,8 +266,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyAveragingEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyAveragingEntry, frameGC->LH());
 	fEnergyAveragingEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fEnergyAveragingEntry->SetText("2");
+	fEnergyAveragingEntry->SetText(2);
 	fEnergyAveragingEntry->SetRange(-10, -1);
+	fEnergyAveragingEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyAveragingEntry->AddToFocusList(&fFocusList);
 	fEnergyAveragingEntry->Associate(this);
 
@@ -278,9 +281,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fEnergyTauEntry);
 	fEnergyFilterFrame->AddFrame(fEnergyTauEntry, frameGC->LH());
 	fEnergyTauEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fEnergyTauEntry->SetText("0.0");
+	fEnergyTauEntry->SetText(0.0);
 	fEnergyTauEntry->SetRange(0, 99);
 	fEnergyTauEntry->SetIncrement(0.2);
+	fEnergyTauEntry->ShowToolTip(kTRUE, kTRUE);
 	fEnergyTauEntry->AddToFocusList(&fFocusList);
 	fEnergyTauEntry->Associate(this);
 
@@ -304,9 +308,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTriggerPeakTimeEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerPeakTimeEntry, frameGC->LH());
 	fTriggerPeakTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTriggerPeakTimeEntry->SetText("0.025");
+	fTriggerPeakTimeEntry->SetText(0.025);
 	fTriggerPeakTimeEntry->SetRange(.025, .1);
 	fTriggerPeakTimeEntry->SetIncrement(.025);
+	fTriggerPeakTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fTriggerPeakTimeEntry->AddToFocusList(&fFocusList);
 	fTriggerPeakTimeEntry->Associate(this);
 
@@ -319,9 +324,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTriggerGapTimeEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerGapTimeEntry, frameGC->LH());
 	fTriggerGapTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTriggerGapTimeEntry->SetText("0");
+	fTriggerGapTimeEntry->SetText(0);
 	fTriggerGapTimeEntry->SetRange(0, .75);
 	fTriggerGapTimeEntry->SetIncrement(.025);
+	fTriggerGapTimeEntry->ShowToolTip(kTRUE, kTRUE);
 	fTriggerGapTimeEntry->AddToFocusList(&fFocusList);
 	fTriggerGapTimeEntry->Associate(this);
 
@@ -334,8 +340,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTriggerThresholdEntry);
 	fTriggerFilterFrame->AddFrame(fTriggerThresholdEntry, frameGC->LH());
 	fTriggerThresholdEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fTriggerThresholdEntry->SetText("0");
+	fTriggerThresholdEntry->SetText(0);
 	fTriggerThresholdEntry->SetRange(0, 1000);
+	fTriggerThresholdEntry->ShowToolTip(kTRUE, kTRUE);
 	fTriggerThresholdEntry->AddToFocusList(&fFocusList);
 	fTriggerThresholdEntry->Associate(this);
 
@@ -372,9 +379,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDACGainEntry);
 	fDACGainFrame->AddFrame(fDACGainEntry, frameGC->LH());
 	fDACGainEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fDACGainEntry->SetText("0");
+	fDACGainEntry->SetText(0);
 	fDACGainEntry->SetRange(0, 65535);
 	fDACGainEntry->SetIncrement(1);
+	fDACGainEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACGainEntry->AddToFocusList(&fFocusList);
 	fDACGainEntry->Associate(this);
 
@@ -387,9 +395,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDACVVEntry);
 	fDACGainFrame->AddFrame(fDACVVEntry, frameGC->LH());
 	fDACVVEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fDACVVEntry->SetText("0");
+	fDACVVEntry->SetText(0);
 	fDACVVEntry->SetRange(0, 20);
 	fDACVVEntry->SetIncrement(.1);
+	fDACVVEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACVVEntry->AddToFocusList(&fFocusList);
 	fDACVVEntry->Associate(this);
 
@@ -418,9 +427,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDACOffsetEntry);
 	fDACOffsetFrame->AddFrame(fDACOffsetEntry, frameGC->LH());
 	fDACOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fDACOffsetEntry->SetText("0");
+	fDACOffsetEntry->SetText(0);
 	fDACOffsetEntry->SetRange(0, 65535);
 	fDACOffsetEntry->SetIncrement(1);
+	fDACOffsetEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACOffsetEntry->AddToFocusList(&fFocusList);
 	fDACOffsetEntry->Associate(this);
 
@@ -433,9 +443,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fDACVoltEntry);
 	fDACOffsetFrame->AddFrame(fDACVoltEntry, frameGC->LH());
 	fDACVoltEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fDACVoltEntry->SetText("0");
+	fDACVoltEntry->SetText(0);
 	fDACVoltEntry->SetRange(-3, 3);
 	fDACVoltEntry->SetIncrement(.1);
+	fDACVoltEntry->ShowToolTip(kTRUE, kTRUE);
 	fDACVoltEntry->AddToFocusList(&fFocusList);
 	fDACVoltEntry->Associate(this);
 
@@ -472,9 +483,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceLengthEntry);
 	fTraceLengthDelayFrame->AddFrame(fTraceLengthEntry, frameGC->LH());
 	fTraceLengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTraceLengthEntry->SetText("0");
+	fTraceLengthEntry->SetText(0);
 	fTraceLengthEntry->SetRange(0, 25.6);
 	fTraceLengthEntry->SetIncrement(.5);
+	fTraceLengthEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceLengthEntry->AddToFocusList(&fFocusList);
 	fTraceLengthEntry->Associate(this);
 
@@ -490,9 +502,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceDelayEntry);
 	fTraceLengthDelayFrame->AddFrame(fTraceDelayEntry, frameGC->LH());
 	fTraceDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTraceDelayEntry->SetText("0");
+	fTraceDelayEntry->SetText(0);
 	fTraceDelayEntry->SetRange(0, 100000);
 	fTraceDelayEntry->SetIncrement(.1);
+	fTraceDelayEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceDelayEntry->AddToFocusList(&fFocusList);
 	fTraceDelayEntry->Associate(this);
 
@@ -500,9 +513,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceXPSAFrame);
 	fTraceLeftFrame->AddFrame(fTraceXPSAFrame, groupGC->LH());
 
-	TGLayoutHints * plLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
-	entryGC->SetLH(plLayout);
-	HEAP(plLayout);
+	TGLayoutHints * psaLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
+	entryGC->SetLH(psaLayout);
+	HEAP(psaLayout);
 	fTraceXPSALengthEntry = new TGMrbLabelEntry(fTraceXPSAFrame, "Length [us]",
 																200, kDGFInstrTraceXPSALengthEntry,
 																kLEWidth,
@@ -512,15 +525,14 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceXPSALengthEntry);
 	fTraceXPSAFrame->AddFrame(fTraceXPSALengthEntry, frameGC->LH());
 	fTraceXPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTraceXPSALengthEntry->SetText("0");
+	fTraceXPSALengthEntry->SetText(0);
 	fTraceXPSALengthEntry->SetRange(0, 25);
 	fTraceXPSALengthEntry->SetIncrement(.5);
+	fTraceXPSALengthEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceXPSALengthEntry->AddToFocusList(&fFocusList);
 	fTraceXPSALengthEntry->Associate(this);
 
-	TGLayoutHints * poLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
-	entryGC->SetLH(poLayout);
-	HEAP(poLayout);
+	entryGC->SetLH(psaLayout);
 	fTraceXPSAOffsetEntry = new TGMrbLabelEntry(fTraceXPSAFrame, "Offset [us]",
 																200, kDGFInstrTraceXPSAOffsetEntry,
 																kLEWidth,
@@ -530,9 +542,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceXPSAOffsetEntry);
 	fTraceXPSAFrame->AddFrame(fTraceXPSAOffsetEntry, frameGC->LH());
 	fTraceXPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTraceXPSAOffsetEntry->SetText("0");
+	fTraceXPSAOffsetEntry->SetText(0);
 	fTraceXPSAOffsetEntry->SetRange(0, 25);
 	fTraceXPSAOffsetEntry->SetIncrement(.1);
+	fTraceXPSAOffsetEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceXPSAOffsetEntry->AddToFocusList(&fFocusList);
 	fTraceXPSAOffsetEntry->Associate(this);
 
@@ -544,25 +557,76 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceUPSAFrame);
 	fTraceRightFrame->AddFrame(fTraceUPSAFrame, groupGC->LH());
 
-	entryGC->SetLH(plLayout);
-	fTraceUPSALengthEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Length [us]",
-																200, kDGFInstrTraceUPSALengthEntry,
+	entryGC->SetLH(psaLayout);
+	fTraceUPSABaselineEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Baseline",
+																200, kDGFInstrTraceUPSABaselineEntry,
 																kLEWidth,
 																kLEHeight,
 																kEntryWidth,
 																frameGC, labelGC, entryGC, buttonGC);
-	HEAP(fTraceUPSALengthEntry);
-	fTraceUPSAFrame->AddFrame(fTraceUPSALengthEntry, frameGC->LH());
-	fTraceUPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTraceUPSALengthEntry->SetText("0");
-	fTraceUPSALengthEntry->SetRange(0, 25);
-	fTraceUPSALengthEntry->SetIncrement(.5);
-	fTraceUPSALengthEntry->AddToFocusList(&fFocusList);
-	fTraceUPSALengthEntry->Associate(this);
+	HEAP(fTraceUPSABaselineEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSABaselineEntry, frameGC->LH());
+	fTraceUPSABaselineEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSABaselineEntry->SetText(0);
+	fTraceUPSABaselineEntry->SetRange(0, 0xF);
+	fTraceUPSABaselineEntry->SetIncrement(1);
+	fTraceUPSABaselineEntry->ShowToolTip(kTRUE, kTRUE);
+	fTraceUPSABaselineEntry->AddToFocusList(&fFocusList);
+	fTraceUPSABaselineEntry->Associate(this);
 
-	entryGC->SetLH(poLayout);
-	HEAP(poLayout);
-	fTraceUPSAOffsetEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Offset [us]",
+	entryGC->SetLH(psaLayout);
+	fTraceUPSAEnergyCutoffEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Energy cutoff",
+																200, kDGFInstrTraceUPSAEnergyCutoffEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSAEnergyCutoffEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSAEnergyCutoffEntry, frameGC->LH());
+	fTraceUPSAEnergyCutoffEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSAEnergyCutoffEntry->SetText(0);
+	fTraceUPSAEnergyCutoffEntry->SetRange(0, 0xFF);
+	fTraceUPSAEnergyCutoffEntry->SetIncrement(1);
+	fTraceUPSAEnergyCutoffEntry->ShowToolTip(kTRUE, kTRUE);
+	fTraceUPSAEnergyCutoffEntry->AddToFocusList(&fFocusList);
+	fTraceUPSAEnergyCutoffEntry->Associate(this);
+
+	entryGC->SetLH(psaLayout);
+	fTraceUPSATriggerThreshEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Trigger threshold",
+																200, kDGFInstrTraceUPSATriggerThreshEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSATriggerThreshEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSATriggerThreshEntry, frameGC->LH());
+	fTraceUPSATriggerThreshEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSATriggerThreshEntry->SetText(0);
+	fTraceUPSATriggerThreshEntry->SetRange(0, 0xFF);
+	fTraceUPSATriggerThreshEntry->SetIncrement(1);
+	fTraceUPSATriggerThreshEntry->ShowToolTip(kTRUE, kTRUE);
+	fTraceUPSATriggerThreshEntry->AddToFocusList(&fFocusList);
+	fTraceUPSATriggerThreshEntry->Associate(this);
+
+	entryGC->SetLH(psaLayout);
+	fTraceUPSAT90ThreshEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "T90 threshold",
+																200, kDGFInstrTraceUPSAT90ThreshEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSAT90ThreshEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSAT90ThreshEntry, frameGC->LH());
+	fTraceUPSAT90ThreshEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSAT90ThreshEntry->SetText(0);
+	fTraceUPSAT90ThreshEntry->SetRange(0, 0xF);
+	fTraceUPSAT90ThreshEntry->SetIncrement(1);
+	fTraceUPSAT90ThreshEntry->ShowToolTip(kTRUE, kTRUE);
+	fTraceUPSAT90ThreshEntry->AddToFocusList(&fFocusList);
+	fTraceUPSAT90ThreshEntry->Associate(this);
+
+	entryGC->SetLH(psaLayout);
+	fTraceUPSAOffsetEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Offset",
 																200, kDGFInstrTraceUPSAOffsetEntry,
 																kLEWidth,
 																kLEHeight,
@@ -570,12 +634,47 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, buttonGC);
 	HEAP(fTraceUPSAOffsetEntry);
 	fTraceUPSAFrame->AddFrame(fTraceUPSAOffsetEntry, frameGC->LH());
-	fTraceUPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTraceUPSAOffsetEntry->SetText("0");
-	fTraceUPSAOffsetEntry->SetRange(0, 25);
-	fTraceUPSAOffsetEntry->SetIncrement(.1);
+	fTraceUPSAOffsetEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSAOffsetEntry->SetText(0);
+	fTraceUPSAOffsetEntry->SetRange(0, 0xFF);
+	fTraceUPSAOffsetEntry->SetIncrement(1);
+	fTraceUPSAOffsetEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSAOffsetEntry->AddToFocusList(&fFocusList);
 	fTraceUPSAOffsetEntry->Associate(this);
+
+	entryGC->SetLH(psaLayout);
+	fTraceUPSALengthEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Length",
+																200, kDGFInstrTraceUPSALengthEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSALengthEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSALengthEntry, frameGC->LH());
+	fTraceUPSALengthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSALengthEntry->SetText(0);
+	fTraceUPSALengthEntry->SetRange(0, 0xFF);
+	fTraceUPSALengthEntry->SetIncrement(1);
+	fTraceUPSALengthEntry->ShowToolTip(kTRUE, kTRUE);
+	fTraceUPSALengthEntry->AddToFocusList(&fFocusList);
+	fTraceUPSALengthEntry->Associate(this);
+
+	entryGC->SetLH(psaLayout);
+	fTraceUPSATFAEnergyCutoffEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "TFA cutoff",
+																200, kDGFInstrTraceUPSATFAEnergyCutoffEntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, buttonGC);
+	HEAP(fTraceUPSATFAEnergyCutoffEntry);
+	fTraceUPSAFrame->AddFrame(fTraceUPSATFAEnergyCutoffEntry, frameGC->LH());
+	fTraceUPSATFAEnergyCutoffEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
+	fTraceUPSATFAEnergyCutoffEntry->SetText(0);
+	fTraceUPSATFAEnergyCutoffEntry->SetRange(0, 0xFF);
+	fTraceUPSATFAEnergyCutoffEntry->SetIncrement(1);
+	fTraceUPSATFAEnergyCutoffEntry->ShowToolTip(kTRUE, kTRUE);
+	fTraceUPSATFAEnergyCutoffEntry->AddToFocusList(&fFocusList);
+	fTraceUPSATFAEnergyCutoffEntry->Associate(this);
 
 // right: cfd
 	TGLayoutHints * cfdLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -600,9 +699,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC);
 	HEAP(fCFDRegEntry);
 	fCFDDataFrame->AddFrame(fCFDRegEntry, frameGC->LH());
-	fCFDRegEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 0, 16);
-	fCFDRegEntry->SetText("0");
+	fCFDRegEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 0, ' ', 16);
+	fCFDRegEntry->SetText(0);
 	fCFDRegEntry->SetRange(0, 0x1 << 16);
+	fCFDRegEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDRegEntry->AddToFocusList(&fFocusList);
 	fCFDRegEntry->Associate(this);
 
@@ -623,9 +723,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fCFDDelayBeforeLEEntry);
 	fCFDDataFrame->AddFrame(fCFDDelayBeforeLEEntry, frameGC->LH());
 	fCFDDelayBeforeLEEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fCFDDelayBeforeLEEntry->SetText("0");
+	fCFDDelayBeforeLEEntry->SetText(0);
 	fCFDDelayBeforeLEEntry->SetRange(2 * 25, 17 * 25);
 	fCFDDelayBeforeLEEntry->SetIncrement(25);
+	fCFDDelayBeforeLEEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDDelayBeforeLEEntry->AddToFocusList(&fFocusList);
 	fCFDDelayBeforeLEEntry->Associate(this);
 
@@ -638,9 +739,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fCFDDelayBipolarEntry);
 	fCFDDataFrame->AddFrame(fCFDDelayBipolarEntry, frameGC->LH());
 	fCFDDelayBipolarEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fCFDDelayBipolarEntry->SetText("0");
+	fCFDDelayBipolarEntry->SetText(0);
 	fCFDDelayBipolarEntry->SetRange(2 * 25, 17 * 25);
 	fCFDDelayBipolarEntry->SetIncrement(25);
+	fCFDDelayBipolarEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDDelayBipolarEntry->AddToFocusList(&fFocusList);
 	fCFDDelayBipolarEntry->Associate(this);
 
@@ -653,9 +755,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fCFDWalkEntry);
 	fCFDDataFrame->AddFrame(fCFDWalkEntry, frameGC->LH());
 	fCFDWalkEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fCFDWalkEntry->SetText("0");
+	fCFDWalkEntry->SetText(0);
 	fCFDWalkEntry->SetRange(0, 31 * 8);
 	fCFDWalkEntry->SetIncrement(8);
+	fCFDWalkEntry->ShowToolTip(kTRUE, kTRUE);
 	fCFDWalkEntry->AddToFocusList(&fFocusList);
 	fCFDWalkEntry->Associate(this);
 
@@ -692,9 +795,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																frameGC, labelGC, entryGC, NULL, kFALSE);
 	HEAP(fStatRegModICSREntry);
 	fStatRegEntryFrame->AddFrame(fStatRegModICSREntry, frameGC->LH());
-	fStatRegModICSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
-	fStatRegModICSREntry->SetText("0x0000");
+	fStatRegModICSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegModICSREntry->SetText(0);
 	fStatRegModICSREntry->SetRange(0, 0x1);
+	fStatRegModICSREntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegModICSREntry->AddToFocusList(&fFocusList);
 	fStatRegModICSREntry->Associate(this);
 
@@ -712,9 +816,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fChanCSRAEditButton, buttonGC);
 	HEAP(fStatRegChanCSRAEntry);
 	fStatRegEntryFrame->AddFrame(fStatRegChanCSRAEntry, frameGC->LH());
-	fStatRegChanCSRAEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
-	fStatRegChanCSRAEntry->SetText("0x0000");
+	fStatRegChanCSRAEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegChanCSRAEntry->SetText(0);
 	fStatRegChanCSRAEntry->SetRange(0, 0xffff);
+	fStatRegChanCSRAEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegChanCSRAEntry->AddToFocusList(&fFocusList);
 	fStatRegChanCSRAEntry->Associate(this);
 
@@ -732,9 +837,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fCoincPatternEditButton, buttonGC);
 	HEAP(fStatCoincPatternEntry);
 	fStatRegEntryFrame->AddFrame(fStatCoincPatternEntry, frameGC->LH());
-	fStatCoincPatternEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
-	fStatCoincPatternEntry->SetText("0x0000");
+	fStatCoincPatternEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatCoincPatternEntry->SetText(0);
 	fStatCoincPatternEntry->SetRange(0, 0xf);
+	fStatCoincPatternEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatCoincPatternEntry->AddToFocusList(&fFocusList);
 	fStatCoincPatternEntry->Associate(this);
 
@@ -752,9 +858,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fRunTaskEditButton, buttonGC);
 	HEAP(fStatRunTaskEntry);
 	fStatRegEntryFrame->AddFrame(fStatRunTaskEntry, frameGC->LH());
-	fStatRunTaskEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
-	fStatRunTaskEntry->SetText("0x100");
+	fStatRunTaskEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 3, ' ', 16);
+	fStatRunTaskEntry->SetText(0x100);
 	fStatRunTaskEntry->SetRange(0x100, 0x301);
+	fStatRunTaskEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRunTaskEntry->AddToFocusList(&fFocusList);
 	fStatRunTaskEntry->Associate(this);
 
@@ -772,9 +879,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 																fUserPsaCSREditButton, buttonGC);
 	HEAP(fStatRegUserPsaCSREntry);
 	fStatRegEntryFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
-	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, 16);
-	fStatRegUserPsaCSREntry->SetText("0x0000");
+	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegUserPsaCSREntry->SetText(0);
 	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
+	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
 	fStatRegUserPsaCSREntry->Associate(this);
 
@@ -813,9 +921,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fMCAEnergyEntry);
 	fMCAEnergyFrame->AddFrame(fMCAEnergyEntry, frameGC->LH());
 	fMCAEnergyEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMCAEnergyEntry->SetText("0");
+	fMCAEnergyEntry->SetText(0);
 	fMCAEnergyEntry->SetRange(0, 8192);
 	fMCAEnergyEntry->SetIncrement(100);
+	fMCAEnergyEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCAEnergyEntry->AddToFocusList(&fFocusList);
 	fMCAEnergyEntry->Associate(this);
 
@@ -831,8 +940,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fMCAEnergyBinsEntry);
 	fMCAEnergyFrame->AddFrame(fMCAEnergyBinsEntry, frameGC->LH());
 	fMCAEnergyBinsEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMCAEnergyBinsEntry->SetText("0");
+	fMCAEnergyBinsEntry->SetText(0);
 	fMCAEnergyBinsEntry->SetRange(-10, -1);
+	fMCAEnergyBinsEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCAEnergyBinsEntry->AddToFocusList(&fFocusList);
 	fMCAEnergyBinsEntry->Associate(this);
 
@@ -860,8 +970,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fMCABaselineDCEntry);
 	fMCABaselineFrame->AddFrame(fMCABaselineDCEntry, frameGC->LH());
 	fMCABaselineDCEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMCABaselineDCEntry->SetText("0");
+	fMCABaselineDCEntry->SetText(0);
 	fMCABaselineDCEntry->SetRange(0, 1024);
+	fMCABaselineDCEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCABaselineDCEntry->AddToFocusList(&fFocusList);
 	fMCABaselineDCEntry->Associate(this);
 
@@ -877,8 +988,9 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fMCABaselineBinsEntry);
 	fMCABaselineFrame->AddFrame(fMCABaselineBinsEntry, frameGC->LH());
 	fMCABaselineBinsEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMCABaselineBinsEntry->SetText("0");
+	fMCABaselineBinsEntry->SetText(0);
 	fMCABaselineBinsEntry->SetRange(0, 16);
+	fMCABaselineBinsEntry->ShowToolTip(kTRUE, kTRUE);
 	fMCABaselineBinsEntry->AddToFocusList(&fFocusList);
 	fMCABaselineBinsEntry->Associate(this);
 
@@ -1072,7 +1184,6 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	DGFModule * dgfModule;
 	TMrbDGF * dgf;
 	Int_t chn;
-	TMrbString intStr, dblStr;
 	Int_t intVal;
 	Bool_t ok;
 
@@ -1099,78 +1210,57 @@ Bool_t DGFInstrumentPanel::InitializeValues(Bool_t ReadFromDSP) {
 	chn = gDGFControlData->GetSelectedChannel();
 
 // EnergyPeakTimeEntry:
-	dblStr = dgf->GetPeakTime(chn);
-	fEnergyPeakTimeEntry->SetText(dblStr.Data());
+	fEnergyPeakTimeEntry->SetText(dgf->GetPeakTime(chn));
 // EnergyGapTimeEntry:
-	dblStr = dgf->GetGapTime(chn);
-	fEnergyGapTimeEntry->SetText(dblStr.Data());
+	fEnergyGapTimeEntry->SetText(dgf->GetGapTime(chn));
 // EnergyAveragingEntry:;
 	Short_t log2bw = (Short_t) dgf->GetParValue(chn, "LOG2BWEIGHT");
 	intVal = (Int_t) log2bw;
-	intStr = intVal;
-	fEnergyAveragingEntry->SetText(intStr.Data());
+	fEnergyAveragingEntry->SetText(intVal);
 // EnergyTauEntry:
-	dblStr = dgf->GetTau(chn);
-	fEnergyTauEntry->SetText(dblStr.Data());
+	fEnergyTauEntry->SetText(dgf->GetTau(chn));
 // TriggerPeakTimeEntry:
-	dblStr = dgf->GetFastPeakTime(chn);
-	fTriggerPeakTimeEntry->SetText(dblStr.Data());
+	fTriggerPeakTimeEntry->SetText(dgf->GetFastPeakTime(chn));
 // TriggerGapTimeEntry:
-	dblStr = dgf->GetFastGapTime(chn);
-	fTriggerGapTimeEntry->SetText(dblStr.Data());
+	fTriggerGapTimeEntry->SetText(dgf->GetFastGapTime(chn));
 // TriggerThresholdEntry:
-	intStr = dgf->GetThreshold(chn);
-	fTriggerThresholdEntry->SetText(intStr.Data());
+	fTriggerThresholdEntry->SetText(dgf->GetThreshold(chn));
 // TraceLengthEntry:
-	dblStr = dgf->GetTraceLength(chn);
-	fTraceLengthEntry->SetText(dblStr.Data());
+	fTraceLengthEntry->SetText(dgf->GetTraceLength(chn));
 // TraceDelayEntry:
-	dblStr = dgf->GetDelay(chn);
-	fTraceDelayEntry->SetText(dblStr.Data());
+	fTraceDelayEntry->SetText(dgf->GetDelay(chn));
 // TraceXPSALengthEntry:
-	dblStr = dgf->GetPSALength(chn);
-	fTraceXPSALengthEntry->SetText(dblStr.Data());
+	fTraceXPSALengthEntry->SetText(dgf->GetPSALength(chn));
 // TraceXPsaOffsetEntry:
-	dblStr = dgf->GetPSAOffset(chn);
-	fTraceXPSAOffsetEntry->SetText(dblStr.Data());
+	fTraceXPSAOffsetEntry->SetText(dgf->GetPSAOffset(chn));
 // StatRegModICSREntry:
-	dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl");
-	intStr.FromInteger((Int_t) dgf->GetSwitchBus(), 4, '0', 16);
-	fStatRegModICSREntry->SetText(intStr.Data());
+	fStatRegModICSREntry->SetText(dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl"));
 // StatRegChanCSRAEntry:
-	intStr.FromInteger((Int_t) dgf->GetChanCSRA(chn), 4, '0', 16);
-	fStatRegChanCSRAEntry->SetText(intStr.Data());
+	fStatRegChanCSRAEntry->SetText((Int_t) dgf->GetChanCSRA(chn));
 // StatRegUserPsaCSREntry:
-	intStr.FromInteger((Int_t) dgf->GetUserPsaCSR(chn), 4, '0', 16);
-	fStatRegUserPsaCSREntry->SetText(intStr.Data());
+	fStatRegUserPsaCSREntry->SetText((Int_t) dgf->GetUserPsaCSR(chn));
 // StatRegRunTaskEntry:
-	intStr = dgf->GetParValue("RUNTASK");
-	fStatRunTaskEntry->SetText(intStr.Data());
+	fStatRunTaskEntry->SetText(dgf->GetParValue("RUNTASK"));
 // StatCoincPatternEntry:
-	intStr.FromInteger((Int_t) dgf->GetCoincPattern(), 4, '0', 16);
-	fStatCoincPatternEntry->SetText(intStr.Data());
+	fStatCoincPatternEntry->SetText((Int_t) dgf->GetCoincPattern());
 // DACGainEntry:
-	intStr = dgf->GetParValue(chn, "GAINDAC");
-	fDACGainEntry->SetText(intStr.Data());
+	fDACGainEntry->SetText(dgf->GetParValue(chn, "GAINDAC"));
 // DACVVEntry:
-	dblStr = dgf->GetGain(chn);
-	fDACVVEntry->SetText(dblStr.Data());
+	fDACVVEntry->SetText(dgf->GetGain(chn));
 // DACOffsetEntry:
-	intStr = dgf->GetParValue(chn, "TRACKDAC");
-	fDACOffsetEntry->SetText(intStr.Data());
+	fDACOffsetEntry->SetText(dgf->GetParValue(chn, "TRACKDAC"));
 // DACVoltEntry:
-	dblStr = dgf->GetOffset(chn);
-	fDACVoltEntry->SetText(dblStr.Data());
+	fDACVoltEntry->SetText(dgf->GetOffset(chn));
 // CFDFractionEntry:
 	this->InitializeCFD(-1, -1);
+// TraceUPSA<XXX>Entry:
+	this->InitializeUPSA();
 // MCAEnergyEntry:
-	intStr = dgf->GetParValue(chn, "ENERGYLOW");
-	fMCAEnergyEntry->SetText(intStr.Data());
+	fMCAEnergyEntry->SetText(dgf->GetParValue(chn, "ENERGYLOW"));
 // MCAEnergyBinsEntry:
 	Short_t log2e = (Short_t) dgf->GetParValue(chn, "LOG2EBIN");
 	intVal = (Int_t) log2e;
-	intStr = intVal;
-	fMCAEnergyBinsEntry->SetText(intStr.Data());
+	fMCAEnergyBinsEntry->SetText(intVal);
 // MCABaselineDCEntry:
 
 // MCABaselineBinsEntry:
@@ -1303,14 +1393,10 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TGTextEntry * entry;
-
 	TMrbDGF * dgf;
 	Int_t chn;
-	TMrbString intStr, dblStr;
 	Int_t intVal;
 	Double_t dblVal;
-	Int_t idx;
 	
 	if (gDGFControlData->IsOffline()) return(kTRUE);
 
@@ -1321,103 +1407,68 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 
 	switch (EntryId) {
 		case kDGFInstrEnergyPeakTimeEntry:
-			entry = fEnergyPeakTimeEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
-			dgf->SetPeakTime(chn, dblVal);
-			dblStr = dgf->GetPeakTime(chn);
-			fEnergyPeakTimeEntry->SetText(dblStr.Data());
-			dblStr = dgf->GetGapTime(chn);
-			fEnergyGapTimeEntry->SetText(dblStr.Data());
+			dblVal = fEnergyPeakTimeEntry->GetText2Double();
+			if (fEnergyPeakTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetPeakTime(chn, dblVal);
+			fEnergyPeakTimeEntry->SetText(dgf->GetPeakTime(chn));
+			fEnergyGapTimeEntry->SetText(dgf->GetGapTime(chn));
 			break;
 		case kDGFInstrEnergyGapTimeEntry:
-			entry = fEnergyGapTimeEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
-			dgf->SetGapTime(chn, dblVal);
-			dblStr = dgf->GetGapTime(chn);
-			fEnergyGapTimeEntry->SetText(dblStr.Data());
-			dblStr = dgf->GetPeakTime(chn);
-			fEnergyPeakTimeEntry->SetText(dblStr.Data());
+			dblVal = fEnergyGapTimeEntry->GetText2Double();
+			if (fEnergyGapTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetGapTime(chn, dblVal);
+			fEnergyGapTimeEntry->SetText(dgf->GetGapTime(chn));
+			fEnergyPeakTimeEntry->SetText(dgf->GetPeakTime(chn));
 			break;
 		case kDGFInstrEnergyAveragingEntry:
-			entry = fEnergyAveragingEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fEnergyAveragingEntry->GetText2Int();
 			dgf->SetParValue(chn, "LOG2BWEIGHT", intVal & 0xFFFF);
-			fEnergyAveragingEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrEnergyTauEntry:
-			entry = fEnergyTauEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
-			dgf->SetTau(chn, dblVal);
+			dblVal = fEnergyTauEntry->GetText2Double();
+			if (fEnergyTauEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetTau(chn, dblVal);
 			break;
 		case kDGFInstrTriggerPeakTimeEntry:
-			entry = fTriggerPeakTimeEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
-			dgf->SetFastPeakTime(chn, dblVal);
-			dblStr = dgf->GetFastPeakTime(chn);
-			fTriggerPeakTimeEntry->SetText(dblStr.Data());
-			dblStr = dgf->GetFastGapTime(chn);
-			fTriggerGapTimeEntry->SetText(dblStr.Data());
+			dblVal = fTriggerPeakTimeEntry->GetText2Double();
+			if (fTriggerPeakTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetFastPeakTime(chn, dblVal);
+			fTriggerPeakTimeEntry->SetText(dgf->GetFastPeakTime(chn));
+			fTriggerGapTimeEntry->SetText(dgf->GetFastGapTime(chn));
 			break;
 		case kDGFInstrTriggerGapTimeEntry:
-			entry = fTriggerGapTimeEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
-			dgf->SetFastGapTime(chn, dblVal);
-			dblStr = dgf->GetFastGapTime(chn);
-			fTriggerGapTimeEntry->SetText(dblStr.Data());
-			dblStr = dgf->GetFastPeakTime(chn);
-			fTriggerPeakTimeEntry->SetText(dblStr.Data());
+			dblVal = fTriggerGapTimeEntry->GetText2Double();
+			if (fTriggerGapTimeEntry->CheckRange(dblVal, kTRUE, kTRUE)) dgf->SetFastGapTime(chn, dblVal);
+			fTriggerGapTimeEntry->SetText(dgf->GetFastGapTime(chn));
+			fTriggerPeakTimeEntry->SetText(dgf->GetFastPeakTime(chn));
 			break;
 		case kDGFInstrTriggerThresholdEntry:
-			entry = fTriggerThresholdEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fTriggerThresholdEntry->GetText2Int();
 			dgf->SetThreshold(chn, intVal);
-			fTriggerThresholdEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrTraceXPSALengthEntry:
-			entry = fTraceXPSALengthEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fTraceXPSALengthEntry->GetText2Double();
 			dgf->SetPSALength(chn, dblVal);
 			break;
 		case kDGFInstrTraceXPSAOffsetEntry:
-			entry = fTraceXPSAOffsetEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fTraceXPSAOffsetEntry->GetText2Double();
 			dgf->SetPSAOffset(chn, dblVal);
 			break;
 		case kDGFInstrTraceLengthEntry:
-			entry = fTraceLengthEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fTraceLengthEntry->GetText2Double();
 			dgf->SetTraceLength(chn, dblVal);
 			intVal = dgf->GetParValue(chn, "TRACELENGTH");
 			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "TraceLength", intVal);
 			updateLocalEnv = kTRUE;
 			break;
 		case kDGFInstrTraceDelayEntry:
-			entry = fTraceDelayEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fTraceDelayEntry->GetText2Double();
 			dgf->SetDelay(chn, dblVal);
+			break;
+		case kDGFInstrTraceUPSABaselineEntry:
+		case kDGFInstrTraceUPSAEnergyCutoffEntry:
+		case kDGFInstrTraceUPSATriggerThreshEntry:
+		case kDGFInstrTraceUPSAT90ThreshEntry:
+		case kDGFInstrTraceUPSALengthEntry:
+		case kDGFInstrTraceUPSAOffsetEntry:
+		case kDGFInstrTraceUPSATFAEnergyCutoffEntry:
+			this->UpdateUPSA(dgf, chn);
 			break;
 		case kDGFInstrCFDRegEntry:
 		case kDGFInstrCFDDelayBeforeLEEntry:
@@ -1426,132 +1477,55 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			this->UpdateCFD(dgf, chn);
 			break;
 		case kDGFInstrStatRegChanCSRAEntry:
-			entry = fStatRegChanCSRAEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fStatRegChanCSRAEntry->GetText2Int();
 			dgf->SetChanCSRA(chn, (UInt_t) intVal, TMrbDGF::kBitSet, kTRUE);
-			fStatRegChanCSRAEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrStatRegUserPsaCSREntry:
-			entry = fStatRegUserPsaCSREntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fStatRegUserPsaCSREntry->GetText2Int();
 			dgf->SetUserPsaCSR(chn, (UInt_t) intVal, TMrbDGF::kBitSet, kTRUE);
-			fStatRegUserPsaCSREntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrStatRunTaskEntry:
-			entry = fStatRunTaskEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fStatRunTaskEntry->GetText2Int();
 			dgf->SetParValue("RUNTASK", intVal);
 			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "RunTask", intVal);
 			updateLocalEnv = kTRUE;
-			fStatRunTaskEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrStatCoincPatternEntry:
-			entry = fStatCoincPatternEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fStatCoincPatternEntry->GetText2Int();
 			dgf->SetCoincPattern((UInt_t) intVal);
-			fStatCoincPatternEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrDACGainEntry:
-			entry = fDACGainEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fDACGainEntry->GetText2Int();
 			dgf->SetParValue(chn, "GAINDAC", intVal);
-			dblStr = dgf->GetGain(chn);
-			fDACVVEntry->SetText(dblStr);
-			fDACGainEntry->CreateToolTip(intVal);
+			fDACVVEntry->SetText(dgf->GetGain(chn));
 			break;
 		case kDGFInstrDACVVEntry:
-			entry = fDACVVEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fDACVVEntry->GetText2Double();
 			dgf->SetGain(chn, dblVal);
-			dblStr = dgf->GetGain(chn);
-			fDACVVEntry->SetText(dblStr);
-			intStr = dgf->GetParValue(chn, "GAINDAC");
-			fDACGainEntry->SetText(intStr);
+			fDACVVEntry->SetText(dgf->GetGain(chn));
+			fDACGainEntry->SetText(dgf->GetParValue(chn, "GAINDAC"));
 			break;
 		case kDGFInstrDACOffsetEntry:
-			entry = fDACOffsetEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fDACOffsetEntry->GetText2Int();
 			dgf->SetParValue(chn, "TRACKDAC", intVal);
-			fDACOffsetEntry->CreateToolTip(intVal);
-			dblStr = dgf->GetOffset(chn);
-			fDACVoltEntry->SetText(dblStr);
+			fDACVoltEntry->SetText(dgf->GetOffset(chn));
 			break;
 		case kDGFInstrDACVoltEntry:
-			entry = fDACVoltEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fDACVoltEntry->GetText2Double();
 			dgf->SetOffset(chn, dblVal);
-			intStr = dgf->GetParValue(chn, "TRACKDAC");
-			fDACOffsetEntry->SetText(intStr);
+			fDACOffsetEntry->SetText(dgf->GetParValue(chn, "TRACKDAC"));
 			break;
 		case kDGFInstrMCAEnergyEntry:
-			entry = fMCAEnergyEntry->GetEntry();
-			intStr = entry->GetText();
-			intStr.ToInteger(intVal);
+			intVal = fMCAEnergyEntry->GetText2Int();
 			dgf->SetParValue(chn, "ENERGYLOW", intVal);
-			fMCAEnergyEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrMCAEnergyBinsEntry:
-			entry = fMCAEnergyBinsEntry->GetEntry();
-			intStr = entry->GetText();
-			idx = intStr.Index("0x", 0);
-			if (idx >= 0) {
-				intStr = intStr(idx + 2, intStr.Length());
-				intStr.ToInteger(intVal, 16);
-			} else {
-				intStr.ToInteger(intVal);
-			}
+			intVal = fMCAEnergyBinsEntry->GetText2Int();
 			dgf->SetParValue(chn, "LOG2EBIN", intVal & 0xFFFF);
-			fMCAEnergyBinsEntry->CreateToolTip(intVal);
 			break;
 		case kDGFInstrMCABaselineDCEntry:
-			entry = fMCABaselineDCEntry->GetEntry();
 			break;
 		case kDGFInstrMCABaselineBinsEntry:
-			entry = fMCABaselineBinsEntry->GetEntry();
 			break;
 	}
 	if (updateLocalEnv) gDGFControlData->WriteLocalEnv();
@@ -1579,12 +1553,10 @@ Bool_t DGFInstrumentPanel::InitializeCFD(Int_t OnOffFlag, Int_t FractionFlag) {
 	Int_t cfdVal = dgf->GetCFD(chn);
 	Int_t cfdDel = cfdVal & 0xF;
 	cfdDel = 16 - (cfdDel - 1);
-	TMrbString cfdStr = cfdDel * 25;
-	fCFDDelayBeforeLEEntry->SetText(cfdStr.Data());
+	fCFDDelayBeforeLEEntry->SetText(cfdDel * 25);
 	cfdDel = (cfdVal >> 4) & 0xF;
 	cfdDel = 16 - (cfdDel - 1);
-	cfdStr = cfdDel * 25;
-	fCFDDelayBipolarEntry->SetText(cfdStr.Data());
+	fCFDDelayBipolarEntry->SetText(cfdDel * 25);
 
 	if (OnOffFlag == DGFInstrumentPanel::kDGFInstrCFDOn)		cfdVal |= BIT(13);
 	else if (OnOffFlag == DGFInstrumentPanel::kDGFInstrCFDOff)	cfdVal &= ~BIT(13);
@@ -1594,8 +1566,7 @@ Bool_t DGFInstrumentPanel::InitializeCFD(Int_t OnOffFlag, Int_t FractionFlag) {
 
 	Int_t cfd = (cfdVal >> 8) & 0x1F;
 	cfd = ~cfd & 0x1F;
-	cfdStr = cfd * 8;
-	fCFDWalkEntry->SetText(cfdStr.Data());
+	fCFDWalkEntry->SetText(cfd * 8);
 
 	if (FractionFlag != -1) {
 		cfdVal &= ~(BIT(14)|BIT(15));
@@ -1607,8 +1578,7 @@ Bool_t DGFInstrumentPanel::InitializeCFD(Int_t OnOffFlag, Int_t FractionFlag) {
 	else if (cfdVal & BIT(15))	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract10);
 	else						fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
 
-	cfdStr.FromInteger(cfdVal, 0, ' ' , 16);
-	fCFDRegEntry->SetText(cfdStr.Data());
+	fCFDRegEntry->SetText(cfdVal);
 	dgf->SetCFD(chn, cfdVal);
 
 	return(kTRUE);
@@ -1631,15 +1601,12 @@ Bool_t DGFInstrumentPanel::UpdateCFD(TMrbDGF * Module, Int_t Channel) {
 
 	Int_t cfdVal = 0;
 
-	TMrbString cfdStr = fCFDDelayBeforeLEEntry->GetText();
-	Int_t cfd;
-	cfdStr.ToInteger(cfd);
+	Int_t cfd = fCFDDelayBeforeLEEntry->GetText2Int();
 	cfd = (cfd + 24) / 25;
 	cfd = 16 - (cfd - 1);
 	cfdVal += (cfd & 0xF);
 
-	cfdStr = fCFDDelayBipolarEntry->GetText();
-	cfdStr.ToInteger(cfd);
+	cfd = fCFDDelayBipolarEntry->GetText2Int();
 	cfd = (cfd + 24) / 25;
 	cfd = 16 - (cfd - 1);
 	cfdVal += ((cfd << 4) & 0xF0);
@@ -1647,8 +1614,7 @@ Bool_t DGFInstrumentPanel::UpdateCFD(TMrbDGF * Module, Int_t Channel) {
 	if (fCFDOnOffButton->GetActive() == DGFInstrumentPanel::kDGFInstrCFDOn) cfdVal |= BIT(13);
 	else																	cfdVal &= ~BIT(13);
 
-	cfdStr = fCFDWalkEntry->GetText();
-	cfdStr.ToInteger(cfd);
+	cfd = fCFDWalkEntry->GetText2Int();
 	cfd = (cfd + 7) / 8;
 	cfd = ~cfd;
 	cfd &= 0x1F;
@@ -1656,8 +1622,90 @@ Bool_t DGFInstrumentPanel::UpdateCFD(TMrbDGF * Module, Int_t Channel) {
 	cfdVal |= cfd;
 
 	Module->SetCFD(Channel, cfdVal);
-	cfdStr.FromInteger(Module->GetCFD(Channel), 0, ' ', 16);
-	fCFDRegEntry->SetText(cfdStr.Data());
+	fCFDRegEntry->SetText(Module->GetCFD(Channel));
+
+	return(kTRUE);
+}
+
+Bool_t DGFInstrumentPanel::InitializeUPSA() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::InitializeUPSA
+// Purpose:        Setup values for user psa
+// Arguments:      --
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Fills entry fields for user psa
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
+	TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+	Int_t chn = gDGFControlData->GetSelectedChannel();
+
+ 	// baseline 0-3: 4/4/4
+	fTraceUPSABaselineEntry->SetText(dgf->GetUserPsaData4(TMrbDGFData::kPsaBaseline03, chn));
+
+	// cutoff 0/1 2/3: 8/8 8/8
+	fTraceUPSAEnergyCutoffEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaCutOff01, chn)); 
+
+	// trigger thresh 0/1 2/3: 8/8 8/8
+	fTraceUPSATriggerThreshEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaT0Thresh01, chn));
+
+	// t90 thresh 0-3: 4/4/4/4
+	fTraceUPSAT90ThreshEntry->SetText(dgf->GetUserPsaData4(TMrbDGFData::kPsaT90Thresh03, chn));
+
+	// psa length 0/1 2/3: 8/8 8/8
+	fTraceUPSALengthEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaPSALength01, chn));
+
+	// psa offset 0/1 2/3: 8/8 8/8
+	fTraceUPSAOffsetEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaPSAOffset01, chn));
+
+	// tfa cutoff 0/1 2/3: 8/8 8/8
+	fTraceUPSATFAEnergyCutoffEntry->SetText(dgf->GetUserPsaData8(TMrbDGFData::kPsaTFACutOff01, chn));
+
+	return(kTRUE);
+}
+
+Bool_t DGFInstrumentPanel::UpdateUPSA(TMrbDGF * Module, Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFInstrumentPanel::UpdateUPSA
+// Purpose:        Update user psa
+// Arguments:      TMrbDGF * Module     -- module
+//                 Int_t Channel        -- channel
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Updates user psa
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (gDGFControlData->IsOffline()) return(kTRUE);
+
+	TMrbDGF * dgf = gDGFControlData->GetSelectedModule()->GetAddr();
+	Int_t chn = gDGFControlData->GetSelectedChannel();
+
+	Int_t intVal = fTraceUPSABaselineEntry->GetText2Int();
+	dgf->SetUserPsaData4(TMrbDGFData::kPsaBaseline03, chn, intVal);			// baseline 0-3: 4/4/4/4 
+
+	intVal = fTraceUPSAEnergyCutoffEntry->GetText2Int();
+	dgf->SetUserPsaData8(TMrbDGFData::kPsaCutOff01, chn, intVal);			// cutoff 0/1 2/3: 8/8 8/8
+
+	intVal = fTraceUPSATriggerThreshEntry->GetText2Int();
+	dgf->SetUserPsaData8(TMrbDGFData::kPsaT0Thresh01, chn, intVal);			// trigger thresh 0/1 2/3: 8/8 8/8
+
+	intVal = fTraceUPSAT90ThreshEntry->GetText2Int();
+	dgf->SetUserPsaData4(TMrbDGFData::kPsaT90Thresh03, chn, intVal);		// t90 thresh 0-3: 4/4/4/4
+
+	intVal = fTraceUPSALengthEntry->GetText2Int();
+	dgf->SetUserPsaData8(TMrbDGFData::kPsaPSALength01, chn, intVal);		// psa length 0/1 2/3: 8/8 8/8
+
+	intVal = fTraceUPSAOffsetEntry->GetText2Int();
+	dgf->SetUserPsaData8(TMrbDGFData::kPsaPSAOffset01, chn, intVal);		// psa offset 0/1 2/3: 8/8 8/8
+
+	intVal = fTraceUPSATFAEnergyCutoffEntry->GetText2Int();
+	dgf->SetUserPsaData8(TMrbDGFData::kPsaTFACutOff01, chn, intVal);		// tfa cutoff 0/1 2/3: 8/8 8/8
 
 	return(kTRUE);
 }
@@ -1757,6 +1805,30 @@ void DGFInstrumentPanel::MoveFocus(Int_t EntryId) {
 			break;
 		case kDGFInstrMCABaselineBinsEntry:
 			entry = fMCABaselineBinsEntry->GetEntry();
+			break;
+		case kDGFInstrStatRunTaskEntry:
+			entry = fStatRunTaskEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSABaselineEntry:
+			entry = fTraceUPSABaselineEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSAEnergyCutoffEntry:
+			entry = fTraceUPSAEnergyCutoffEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSATriggerThreshEntry:
+			entry = fTraceUPSATriggerThreshEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSAT90ThreshEntry:
+			entry = fTraceUPSAT90ThreshEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSALengthEntry:
+			entry = fTraceUPSALengthEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSAOffsetEntry:
+			entry = fTraceUPSAOffsetEntry->GetEntry();
+			break;
+		case kDGFInstrTraceUPSATFAEnergyCutoffEntry:
+			entry = fTraceUPSATFAEnergyCutoffEntry->GetEntry();
 			break;
 	}
 	if (entry) fFocusList.FocusForward(entry);

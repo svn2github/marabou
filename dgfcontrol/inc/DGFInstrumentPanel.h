@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.14 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.15 2005-09-06 11:48:14 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -61,10 +61,15 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrTriggerThresholdEntry,		//		threshold
 									kDGFInstrTraceLengthEntry,	  		//		length
 									kDGFInstrTraceDelayEntry, 			//		delay
-									kDGFInstrTraceXPSAOffsetEntry, 		//		psa offset
-									kDGFInstrTraceXPSALengthEntry,		//		psa length
-									kDGFInstrTraceUPSAOffsetEntry, 		//		psa offset
-									kDGFInstrTraceUPSALengthEntry,		//		psa length
+									kDGFInstrTraceXPSAOffsetEntry, 		//		xia-psa:	offset
+									kDGFInstrTraceXPSALengthEntry,		//					length
+									kDGFInstrTraceUPSABaselineEntry, 	//		user-psa:	baseline
+									kDGFInstrTraceUPSAEnergyCutoffEntry,	//				energy cutoff
+									kDGFInstrTraceUPSATriggerThreshEntry,	//				trigger threshold
+									kDGFInstrTraceUPSAT90ThreshEntry,	//					T90 threshold
+									kDGFInstrTraceUPSALengthEntry,		//					length
+									kDGFInstrTraceUPSAOffsetEntry,		//					offset
+									kDGFInstrTraceUPSATFAEnergyCutoffEntry, 	//			TFA energy cutoff
 									kDGFInstrStatRegModICSREntry, 		//		module switchbus
 									kDGFInstrStatRegModICSREditButton,	//		edit
 									kDGFInstrStatRegChanCSRAEntry, 		//		channel csra
@@ -124,6 +129,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		Bool_t SetGFLT(Bool_t OnFlag = kTRUE);									// set/clear gflt
 		Bool_t UpdateCFD(TMrbDGF * Module, Int_t Channel);						// update cfd
 		Bool_t InitializeCFD(Int_t OnOff, Int_t Fraction);						// init cfd
+		Bool_t UpdateUPSA(TMrbDGF * Module, Int_t Channel);						// update user psa
+		Bool_t InitializeUPSA();												// init upsa
 
 	protected:
 		TList fHeap;								//! list of objects created on heap
@@ -154,8 +161,13 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		TGMrbLabelEntry * fTraceXPSAOffsetEntry;	//					offset
 		TGMrbLabelEntry * fTraceXPSALengthEntry; 	//					length
 		TGGroupFrame * fTraceUPSAFrame;				//				user-psa
-		TGMrbLabelEntry * fTraceUPSAOffsetEntry;	//					offset
+		TGMrbLabelEntry * fTraceUPSABaselineEntry; 	//					baseline
+		TGMrbLabelEntry * fTraceUPSAEnergyCutoffEntry; 	//				energy cutoff
+		TGMrbLabelEntry * fTraceUPSATriggerThreshEntry; 	//			trigger threshold
+		TGMrbLabelEntry * fTraceUPSAT90ThreshEntry; 	//					t90 threshold
 		TGMrbLabelEntry * fTraceUPSALengthEntry; 	//					length
+		TGMrbLabelEntry * fTraceUPSAOffsetEntry;	//					offset
+		TGMrbLabelEntry * fTraceUPSATFAEnergyCutoffEntry;	//			TFA energy cutoff
 		TGGroupFrame * fStatRegFrame;				//			status regs
 		TGGroupFrame * fStatRegEntryFrame;			//
 		TGMrbLabelEntry * fStatRegModICSREntry; 	//				switchbus
