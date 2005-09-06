@@ -11,7 +11,7 @@
 // Purpose:        Common defs for XIA DGF-4C
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCommon.h,v 1.3 2005-08-25 14:32:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFCommon.h,v 1.4 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -114,6 +114,28 @@ const SMrbNamedXShort kMrbChanCSRABits[] =
 				{	TMrbDGFData::kEnaMultiplicity,			"Enable contribution to multiplicity"	},
 				{	TMrbDGFData::kBipolarSignals ,			"Bipolar signals"						},
 				{	0,										NULL									}
+			};
+
+// psa names
+const SMrbNamedXShort kMrbPSANames[] =
+			{
+				{TMrbDGFData::kPsaBaseline03, 	"Baseline03"	},
+				{TMrbDGFData::kPsaCutOff01, 	"CutOff01"		},
+				{TMrbDGFData::kPsaCutOff23, 	"CutOff23"		},
+				{TMrbDGFData::kPsaT0Thresh01, 	"T0Thresh01"	},
+				{TMrbDGFData::kPsaT0Thresh23, 	"T0Thresh23"	},
+				{TMrbDGFData::kPsaT90Thresh03, 	"T90Thresh03" 	},
+				{TMrbDGFData::kPsaPSACh0,	 	"PSACh0"		},
+				{TMrbDGFData::kPsaPSACh1, 		"PSACh1"		},
+				{TMrbDGFData::kPsaPSACh2, 		"PSACh2"		},
+				{TMrbDGFData::kPsaPSACh3, 		"PSACh3"		},
+				{TMrbDGFData::kPsaPSALength01,	"PSALength01"	},
+				{TMrbDGFData::kPsaPSALength23,	"PSALength23"	},
+				{TMrbDGFData::kPsaPSAOffset01,	"PSAOffset01"	},
+				{TMrbDGFData::kPsaPSAOffset23,	"PSAOffset23"	},
+				{TMrbDGFData::kPsaTFACutOff01,	"TFACutOff01"	},
+				{TMrbDGFData::kPsaTFACutOff23,	"TFACutOff23"	},
+				{0, 							NULL			}
 			};
 
 // bit definitions for user psa

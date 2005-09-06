@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.15 2005-08-17 13:38:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.16 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,9 +62,6 @@ class TMrbDGF : public TNamed {
 									kBitMask,
 									kBitClear
 								};
-
-		// offset of psacsr0 from userin
-		enum					{	kPsaCSROffset		=	6	};
 
 		// wait status
 		enum EMrbWaitStatus 	{	kWaitError 			=	-3,
@@ -211,6 +208,12 @@ class TMrbDGF : public TNamed {
 		// userPSA CSR
 		Bool_t SetUserPsaCSR(Int_t Channel, UInt_t Bits, TMrbDGF::EMrbBitOp BitOp, Bool_t UpdateDSP = kTRUE);	// set
 		UInt_t GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP = kTRUE); 										// read
+
+		// usePsa data
+		Int_t GetUserPsaData4(Int_t Channel, Int_t Offset, Bool_t ReadFromDSP = kTRUE); 			// 4 bits out of 16
+		Bool_t SetUserPsaData4(Int_t Channel, Int_t Offset, Int_t Value, Bool_t UpdateDSP = kTRUE);
+		Int_t GetUserPsaData8(Int_t Channel, Int_t Offset, Bool_t ReadFromDSP = kTRUE); 			// 8 bits out of 32
+		Bool_t SetUserPsaData8(Int_t Channel, Int_t Offset, Int_t Value, Bool_t UpdateDSP = kTRUE);
 
 		// "good channel" bit
 		Bool_t SetChannelMask(const Char_t * ChannelMask, Bool_t UpdateDSP = kTRUE);	// set mask of good channels
@@ -394,8 +397,6 @@ class TMrbDGF : public TNamed {
 		UInt_t ReadCSR();												//		read CSR
 		UInt_t ReadTSAR();												//		read TSAR
 		Int_t ReadWCR();												//		read WCR
-
-		UShort_t ReadDspAddr(Int_t Addr);
 
 		virtual Bool_t HandleTimer(TTimer * Timer);
 

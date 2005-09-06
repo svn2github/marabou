@@ -8,7 +8,7 @@
 // Class:          TMrbDGFData        -- data base to store DSP and FPGA data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFData.h,v 1.6 2005-08-25 14:32:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.h,v 1.7 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -63,33 +63,33 @@ class TMrbDGFData : public TObject {
 		
 		// bit definitions in the control/status reg of the CAMAC Fippi FPGA
 		enum EMrbCamacCSR		{
-										kRunEna 				=	BIT(0),
-										kNewRun 					=	BIT(1),
-										kEnaLAM 					=	BIT(3),
-										kDSPReset				=	BIT(4),
-										kDSPError				=	BIT(12),
-										kActive 					=	BIT(13),
-										kLAMActive				=	BIT(14)
-									};
+									kRunEna 				=	BIT(0),
+									kNewRun 					=	BIT(1),
+									kEnaLAM 					=	BIT(3),
+									kDSPReset				=	BIT(4),
+									kDSPError				=	BIT(12),
+									kActive 					=	BIT(13),
+									kLAMActive				=	BIT(14)
+								};
 		enum					{	kCamacCSRMask			=	kRunEna | kNewRun | kEnaLAM |
 																	kDSPError | kActive | kLAMActive
 								};
 
 		// bit definitions in the control/status reg of the CAMAC System FPGA
 		enum EMrbCamacICSR		{
-											kSystemFPGAReset		 	=	BIT(0),
-											kFippiFPGA0Reset 			=	BIT(4),
-											kFippiFPGA1Reset 			=	BIT(5),
-											kFippiFPGA2Reset 			=	BIT(6),
-											kFippiFPGA3Reset 			=	BIT(7),
-											kConnectDSPFromRight 	 	=	BIT(8),
-											kConnectDSPFromLeft			=	BIT(9),
-											kTerminateDSP	 			=	BIT(10),
-											kConnectFastFromRight		=	BIT(11),
-											kConnectFastFromLeft		=	BIT(12),
-											kTerminateFast				=	BIT(13),
-											kSwitchBusNormal			=	0
-										};
+									kSystemFPGAReset		 	=	BIT(0),
+									kFippiFPGA0Reset 			=	BIT(4),
+									kFippiFPGA1Reset 			=	BIT(5),
+									kFippiFPGA2Reset 			=	BIT(6),
+									kFippiFPGA3Reset 			=	BIT(7),
+									kConnectDSPFromRight 	 	=	BIT(8),
+									kConnectDSPFromLeft			=	BIT(9),
+									kTerminateDSP	 			=	BIT(10),
+									kConnectFastFromRight		=	BIT(11),
+									kConnectFastFromLeft		=	BIT(12),
+									kTerminateFast				=	BIT(13),
+									kSwitchBusNormal			=	0
+								};
 		enum					{	kFippiFPGAReset 		=	kFippiFPGA0Reset | kFippiFPGA1Reset |
 																	kFippiFPGA2Reset | kFippiFPGA3Reset
 								};
@@ -150,6 +150,25 @@ class TMrbDGFData : public TObject {
 									kComputeCFT 		=	BIT(10),
 									kEnaMultiplicity	=	BIT(11),
 									kBipolarSignals 	=	BIT(15)
+								};
+
+		// psa offsets from param userin
+		enum EMrbUserPsaData	{	kPsaBaseline03		=	0,
+									kPsaCutOff01,
+									kPsaCutOff23,
+									kPsaT0Thresh01,
+									kPsaT0Thresh23,
+									kPsaT90Thresh03,
+									kPsaPSACh0,
+									kPsaPSACh1,
+									kPsaPSACh2,
+									kPsaPSACh3,
+									kPsaPSALength01,
+									kPsaPSALength23,
+									kPsaPSAOffset01,
+									kPsaPSAOffset23,
+									kPsaTFACutOff01,
+									kPsaTFACutOff23
 								};
 
 		// bit definitions for user psa: control reg

@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.40 2005-08-25 14:32:16 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.41 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -60,27 +60,6 @@ const SMrbNamedXShort kMrbSwitchBusModes[] =
 								{TMrbDGFData::kTerminateDSP,				"DSP-Terminate" 	},
 								{TMrbDGFData::kTerminateFast,				"Fast-Terminate"	},
 								{0, 										NULL				}
-							};
-
-const SMrbNamedXShort kMrbPSANames[] =
-							{
-								{0, 	"Baseline03"	},
-								{1, 	"CutOff01"		},
-								{2, 	"CutOff23"		},
-								{3, 	"T0Thresh01"	},
-								{4, 	"T0Thresh23"	},
-								{5, 	"T90Thresh03" 	},
-								{6, 	"PSACh0"		},
-								{7, 	"PSACh1"		},
-								{8, 	"PSACh2"		},
-								{9, 	"PSACh3"		},
-								{10,	"PSALength01"	},
-								{11,	"PSALength23"	},
-								{12,	"PSAOffset01"	},
-								{13,	"PSAOffset23"	},
-								{14,	"TFACutOff01"	},
-								{15,	"TFACutOff23"	},
-								{0, 	NULL			}
 							};
 
 TMrbDGFData * gMrbDGFData = NULL;				// common data base for all DGF modules
@@ -3626,7 +3605,7 @@ Bool_t TMrbDGF::SetUserPsaCSR(Int_t Channel, UInt_t Bits, EMrbBitOp BitOp, Bool_
 		return(kFALSE);
 	}
 
-	Int_t pOffset = param->GetIndex() + kPsaCSROffset + Channel;
+	Int_t pOffset = param->GetIndex() + TMrbDGFData::kPsaPSACh0 + Channel;
 
 	switch (BitOp) {
 		case TMrbDGF::kBitSet:
@@ -3679,10 +3658,146 @@ UInt_t  TMrbDGF::GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP) {
 		return(kFALSE);
 	}
 
-	Int_t pOffset = param->GetIndex() + kPsaCSROffset + Channel;
+	Int_t pOffset = param->GetIndex() + TMrbDGFData::kPsaPSACh0 + Channel;
 
 	UInt_t csr = this->GetParValue(pOffset, ReadFromDSP);
 	return(csr);
+}
+
+Int_t  TMrbDGF::GetUserPsaData4(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetUserPsaData4
+// Purpose:        Read psa data
+// Arguments:      Int_t Offset        -- offset from param USERIN
+//                 Int_t Channel       -- channel number
+//                 Bool_t ReadFromDSP  -- kTRUE if data should be read from DSP
+// Results:        Int_t PsaData       -- data (4 bits)
+// Exceptions:
+// Description:    Returns 4 bits out of 16 from psa data given by offset
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ReadFromDSP && !this->CheckConnect("GetUserPsaData4")) return(0xffffffff);
+	if (!this->CheckChannel("GetUserPsaData4", Channel)) return(0xffffffff);
+
+	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	if (param == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetUserPsaData4");
+		return(kFALSE);
+	}
+
+	Int_t pOffset = param->GetIndex() + Offset;
+	Int_t pVal = this->GetParValue(pOffset, ReadFromDSP);
+	return ((pVal >> (4 * (3 - Channel))) & 0xF);
+}
+
+Int_t  TMrbDGF::GetUserPsaData8(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::GetUserPsaData8
+// Purpose:        Read psa data
+// Arguments:      Int_t Offset        -- offset from param USERIN
+//                 Int_t Channel       -- channel number
+//                 Bool_t ReadFromDSP  -- kTRUE if data should be read from DSP
+// Results:        Int_t PsaData       -- data (8 bits)
+// Exceptions:
+// Description:    Returns 8 bits out of 2*16 from psa data given by offset
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (ReadFromDSP && !this->CheckConnect("GetUserPsaData8")) return(0xffffffff);
+	if (!this->CheckChannel("GetUserPsaData8", Channel)) return(0xffffffff);
+
+	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	if (param == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetUserPsaData8");
+		return(kFALSE);
+	}
+
+	Int_t pOffset = param->GetIndex() + Offset;
+	if (Channel > 1) {
+		pOffset++;
+		Channel -= 2;
+	}
+	Int_t pVal = this->GetParValue(pOffset, ReadFromDSP);
+	return ((pVal >> (8 * (1 - Channel))) & 0xFF);
+}
+
+Bool_t TMrbDGF::SetUserPsaData4(Int_t Offset, Int_t Channel, Int_t Value, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetUserPsaData4
+// Purpose:        Write psa data
+// Arguments:      Int_t Offset        -- offset from param USERIN
+//                 Int_t Channel       -- channel number
+//                 Int_t Value         -- data (4 bits)
+//                 Bool_t UpdateDSP    -- kTRUE if DSP has to be updated afterwards
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Merges 4 Bits into a 16-bit psa word.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (UpdateDSP && !this->CheckConnect("SetUserPsaData4")) return(kFALSE);
+	if (!this->CheckChannel("SetUserPsaData4", Channel)) return(kFALSE);
+
+	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	if (param == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetUserPsaData4");
+		return(kFALSE);
+	}
+
+	Int_t pOffset = param->GetIndex() + Offset;
+	Int_t pVal = this->GetParValue(pOffset, UpdateDSP);
+
+	Int_t b4[4];
+	for (Int_t i = 3; i >= 0; i--, pVal >>= 4) b4[i] = pVal & 0xF;
+	b4[Channel] = Value & 0xF;
+	for (Int_t i = 0; i <= 3; i++, pVal <<= 4) pVal |= b4[i];
+	this->SetParValue(pOffset, pVal, UpdateDSP);
+}
+
+Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t UpdateDSP) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetUserPsaData8
+// Purpose:        Write psa data
+// Arguments:      Int_t Offset        -- offset from param USERIN
+//                 Int_t Channel       -- channel number
+//                 Int_t Value         -- data (8 bits)
+//                 Bool_t UpdateDSP    -- kTRUE if DSP has to be updated afterwards
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Merges 8 Bits into one of 2 16-bit psa words.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (UpdateDSP && !this->CheckConnect("SetUserPsaData8")) return(kFALSE);
+	if (!this->CheckChannel("SetUserPsaData4", Channel)) return(kFALSE);
+
+	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	if (param == NULL) {
+		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Flush(this->ClassName(), "SetUserPsaData8");
+		return(kFALSE);
+	}
+
+	Int_t pOffset = param->GetIndex() + Offset;
+	if (Channel > 1) {
+		pOffset++;
+		Channel -= 2;
+	}
+	Int_t pVal = this->GetParValue(pOffset, UpdateDSP);
+
+	Int_t b8[2];
+	for (Int_t i = 1; i >= 0; i--, pVal >>= 8) b8[i] = pVal & 0xFF;
+	b8[Channel] = Value & 0xFF;
+	for (Int_t i = 0; i <= 1; i++, pVal <<= 8) pVal |= b8[i];
+	this->SetParValue(pOffset, pVal, UpdateDSP);
 }
 
 Bool_t TMrbDGF::SetCoincPattern(UInt_t Pattern, Bool_t UpdateDSP) {
@@ -6525,21 +6640,3 @@ void TMrbDGF::SetVerboseMode(Bool_t VerboseFlag) {
 	if (gMrbDGFData) gMrbDGFData->SetVerboseMode(VerboseFlag);
 }
 
-UShort_t TMrbDGF::ReadDspAddr(Int_t Addr) {
-	Int_t startAddr;
-	Int_t nofParams;
-	TArrayI cData;
-
-	startAddr = Addr;
-	if (!this->WriteTSAR(startAddr)) return(kFALSE); 							// where to read from
-	nofParams = 1;
-	cData.Set(nofParams);
-	if (fCamac.BlockXfer(fCrate, fStation, A(0), F(0), cData, 0, nofParams, kTRUE) == -1) {	// start block xfer, 16 bit
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ".A0.F0 failed - DSPAddr=0x" << setbase(16) << startAddr
-						<< setbase(10) << ", wc=" << nofParams << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadDspAddr");
-		return(kFALSE);
-	}
-	return(cData[0]);
-}
