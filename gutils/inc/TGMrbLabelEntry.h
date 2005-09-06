@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.5 2005-05-26 16:07:39 marabou Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.6 2005-09-06 11:47:22 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -19,6 +19,7 @@
 #include "TGWindow.h"
 #include "TGFrame.h"
 #include "TGButton.h"
+#include "TGLabel.h"
 #include "TGTextEntry.h"
 
 #include "TMrbNamedX.h"
@@ -104,12 +105,11 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		~TGMrbLabelEntry() {};				// default dtor
 
-		inline void SetType(EGMrbEntryType EntryType, Int_t Width = 0, Int_t Base = 10) {
-												fType = EntryType; fWidth = Width, fBase = Base; };
+		void SetType(EGMrbEntryType EntryType, Int_t Width = 0, Char_t PadChar = ' ', Int_t BaseOrPrec = 0);
 		inline void SetIncrement(Double_t Increment) { fIncrement = Increment; };
 		Bool_t SetRange(Double_t LowerLimit, Double_t UpperLimit);
 		Bool_t WithinRange() const;
-		Bool_t CheckRange(Double_t Value) const;
+		Bool_t CheckRange(Double_t Value, Bool_t Verbose = kFALSE, Bool_t Popup = kFALSE) const;
 		Bool_t RangeToBeChecked() const;
 
 		inline void AddToFocusList(TGMrbFocusList * FocusList) { fFocusList = FocusList; fFocusList->Add(fEntry); };
@@ -125,10 +125,16 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		void UpDownButtonEnable(Bool_t Flag = kTRUE);			// enable/disable up/down buttons
 		void ActionButtonEnable(Bool_t Flag = kTRUE);			// enable/disable action button
 
-		inline const Char_t * GetText() { return(fEntry->GetText()); };	// get text
-		void SetText(const Char_t * Text);								// set text
+		const Char_t * GetText();								// get text, update tooltip if necessary
+		Int_t GetText2Int();									// get text, convert to integer
+		Double_t GetText2Double();								// ... convert to integer
+		void SetText(const Char_t * Text);						// set text, update tooltip if necessary
+		void SetText(Int_t Value);								// ... convert from integer
+		void SetText(Double_t Value);							// ... from double
 
-		void CreateToolTip(Int_t Value);			// create tooltip: bin, oct, dec, hex values
+		inline TGLabel * GetLabel() { return(fLabel); };
+
+		void ShowToolTip(Bool_t Flag = kTRUE, Bool_t ShowRange = kFALSE);
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
@@ -137,6 +143,10 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelEntry.html&"); };
 
 	protected:
+		void CreateToolTip();
+
+	protected:
+		TGLabel * fLabel;				//! label
 		TGMrbTextEntry * fEntry;		//! entry widget
 		TGPictureButton * fUp; 			//! button ">", increment
 		TGPictureButton * fDown;		//! button "<", decrement
@@ -147,11 +157,16 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 		EGMrbEntryType fType;			// entry type: char, char + int, ...
 		Int_t fWidth;					// number of digits to be displayed
 		Int_t fBase;					// numerical base if of type int or charint (2, 8, 10, 16)
+		Int_t fPrecision;				// precision if type double
+		Char_t fPadChar;				// character ot pad empty fields
 		Double_t fLowerLimit;			// lower limit
 		Double_t fUpperLimit;			// upper limit
 		Double_t fIncrement;			// increment
 
-		TGMrbFocusList * fFocusList;	//! list of focusable entries
+		Bool_t fShowToolTip;			// kTRUE if tooltip has to be shown
+		Bool_t fShowRange;				// kTRUE if range has to be shown in tooltip
+
+	TGMrbFocusList * fFocusList;	//! list of focusable entries
 
 	ClassDef(TGMrbLabelEntry, 1)		// [GraphUtils] An entry field with a label
 };

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.9 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: TGMrbLabelEntry.cxx,v 1.10 2005-09-06 11:47:22 Rudolf.Lutter Exp $       
 // Date:           
 // Layout: A plain entry
 //Begin_Html
@@ -19,6 +19,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TGLabel.h"
+#include "TGMsgBox.h"
 #include "TGButton.h"
 #include "TGToolTip.h"
 #include "TMrbString.h"
@@ -73,7 +74,6 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TGLabel * label;
 	Int_t bSize;
 
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
@@ -90,13 +90,18 @@ TGMrbLabelEntry::TGMrbLabelEntry(const TGWindow * Parent,
 	fUpperLimit = 0;
 	fIncrement = 1;
 	fBase = 10;
+	fPrecision = TMrbString::kDefaultPrecision;
 	fType = TGMrbLabelEntry::kGMrbEntryTypeChar;
+	fLabel = NULL;
+
+	fShowToolTip = kFALSE;
+	fShowRange = kFALSE;
 
 	if (Label != NULL) {
-		label = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
-		fHeap.AddFirst((TObject *) label);
-		this->AddFrame(label, LabelGC->LH());
-		label->SetTextJustify(kTextLeft);
+		fLabel = new TGLabel(this, new TGString(Label), LabelGC->GC(), LabelGC->Font(), kChildFrame, LabelGC->BG());
+		fHeap.AddFirst((TObject *) fLabel);
+		this->AddFrame(fLabel, LabelGC->LH());
+		fLabel->SetTextJustify(kTextLeft);
 	}
 
 	bSize = 0;
@@ -181,95 +186,95 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 				case kCM_BUTTON:
 					switch (Param1) {
 						case TGMrbLabelEntry::kGMrbEntryButtonUp:
-							s = fEntry->GetText();
+							s = this->GetText();
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								s.ToInteger(intVal, fBase);
 								intVal += (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s.FromInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
 								intVal += (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								s.ToDouble(dblVal);
 								dblVal += fIncrement;
 								if (!this->CheckRange(dblVal)) break;
 								s.FromDouble(dblVal, fWidth, '0', 8);
+								this->SetText(s.Data());
 							}
-							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonDown:
-							s = fEntry->GetText();
+							s = this->GetText();
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								s.ToInteger(intVal, fBase);
 								intVal -= (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s.FromInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								s.SplitOffInteger(prefix, intVal, fBase);
 								intVal -= (Int_t) fIncrement;
 								if (!this->CheckRange((Double_t) intVal)) break;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								s.ToDouble(dblVal);
 								dblVal -= fIncrement;
 								if (!this->CheckRange(dblVal)) break;
 								s.FromDouble(dblVal, fWidth, '0', 8);
+								this->SetText(s.Data());
 							}
-							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonBegin:
-							s = fEntry->GetText();
+							s = this->GetText();
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								Int_t dmy;
 								s.ToInteger(dmy, fBase);
 								intVal = (Int_t) fLowerLimit;
 								s.FromInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
 								intVal = (Int_t) fLowerLimit;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
 								s.ToDouble(dmy);
 								dblVal = fLowerLimit;
 								s.FromDouble(dblVal, fWidth, '0', 8);
+								this->SetText(s.Data());
 							}
-							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 						case TGMrbLabelEntry::kGMrbEntryButtonEnd:
-							s = fEntry->GetText();
+							s = this->GetText();
 							if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
 								Int_t dmy;
 								s.ToInteger(dmy, fBase);
 								intVal = (Int_t) fUpperLimit;
 								s.FromInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
 								Int_t dmy;
 								s.SplitOffInteger(prefix, dmy, fBase);
 								intVal = (Int_t) fUpperLimit;
 								s = prefix; s.AppendInteger(intVal, fWidth, '0', fBase);
-								this->CreateToolTip(intVal);
+								this->SetText(s.Data());
 							} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeDouble) {
 								Double_t dmy;
 								s.ToDouble(dmy);
 								dblVal = fUpperLimit;
 								s.FromDouble(dblVal, fWidth, '0', 8);
+								this->SetText(s.Data());
 							}
-							fEntry->SetText(s.Data());
 							fEntry->SendSignal();
 							break;
 					}
@@ -281,16 +286,7 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 			switch (GET_SUBMSG(MsgId)) {
 
 				case kTE_ENTER:
-					s = fEntry->GetText();
-					if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
-						Int_t intVal;
-						s.ToInteger(intVal, fBase);
-						this->CreateToolTip(intVal);
-					} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-						Int_t intVal;
-						s.SplitOffInteger(prefix, intVal, fBase);
-						this->CreateToolTip(intVal);
-					}
+					s = this->GetText();
 					break;
 
 				case kTE_TAB:
@@ -302,58 +298,236 @@ Bool_t TGMrbLabelEntry::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param
 	return(kTRUE);
 }
 
+void TGMrbLabelEntry::SetType(EGMrbEntryType EntryType, Int_t Width, Char_t PadChar, Int_t BaseOrPrec) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::SetType
+// Purpose:        Define entry type
+// Arguments:      EGMrbEntryType EntryType   -- type
+//                 Int_t Width                -- number width
+//                 Char_t PadChar             -- pad character
+//                 Int_t BaseOrPrec           -- numerical base (int) or precision (double)
+// Results:        --
+// Exceptions:     
+// Description:    Defines entry type.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	fType = EntryType;
+	fWidth = Width;
+	fPadChar = PadChar;
+	if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeInt)			fBase = BaseOrPrec;
+	else if (EntryType == TGMrbLabelEntry::kGMrbEntryTypeDouble)	fPrecision = BaseOrPrec;
+}
+
 void TGMrbLabelEntry::SetText(const Char_t * Text) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbLabelEntry::GetText
+// Name:           TGMrbLabelEntry::SetText
 // Purpose:        Write text entry and create tooltip
 // Arguments:      Char_t * Text    -- text to be written
 // Results:        --
 // Exceptions:     
-// Description:    Writes entry text and defines tooltip if integer.
+// Description:    Writes entry text and updates tooltip.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
 	fEntry->SetText(Text);
-	TMrbString s = Text;
-	TString prefix;
-	if (fType == TGMrbLabelEntry::kGMrbEntryTypeInt) {
-		Int_t intVal;
-		s.ToInteger(intVal, fBase);
-		this->CreateToolTip(intVal);
-	} else if (fType == TGMrbLabelEntry::kGMrbEntryTypeCharInt) {
-		Int_t intVal;
-		s.SplitOffInteger(prefix, intVal, fBase);
-		this->CreateToolTip(intVal);
-	}
+	this->CreateToolTip();
 }
 
-void TGMrbLabelEntry::CreateToolTip(Int_t Value) {
+void TGMrbLabelEntry::SetText(Int_t Value) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TGMrbLabelEntry::CreateToolTip
-// Purpose:        Create tooltip showing integer value in different formats
-// Arguments:      Int_t Value    -- int value to be shown
+// Name:           TGMrbLabelEntry::SetText
+// Purpose:        Write text entry and create tooltip
+// Arguments:      Int_t Value    -- integer to be converted to text
+// Results:        --
+// Exceptions:     
+// Description:    Writes entry text and updates tooltip.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString v;
+	v.FromInteger(Value, fWidth, fPadChar, fBase);
+	fEntry->SetText(v.Data());
+	this->CreateToolTip();
+}
+
+void TGMrbLabelEntry::SetText(Double_t Value) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::SetText
+// Purpose:        Write text entry and create tooltip
+// Arguments:      Double_t Value    -- double to be converted to text
+// Results:        --
+// Exceptions:     
+// Description:    Writes entry text and updates tooltip.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbString v;
+	v.FromDouble(Value, fWidth, fPadChar, fPrecision);
+	fEntry->SetText(v.Data());
+	this->CreateToolTip();
+}
+
+const Char_t * TGMrbLabelEntry::GetText() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::GetText
+// Purpose:        Read text entry and update tooltip
+// Arguments:      --
+// Results:        Char_t * Text    -- text
+// Exceptions:     
+// Description:    Reads entry contents and updates tooltip
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	this->CreateToolTip();
+	return(fEntry->GetText());
+}
+
+Int_t TGMrbLabelEntry::GetText2Int() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::GetText2Int
+// Purpose:        Read text entry, convert to integer, update tooltip
+// Arguments:      --
+// Results:        Int_t Value   -- integer value
+// Exceptions:     
+// Description:    Reads entry contents and converts to integer
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Int_t intVal = 0;
+	if (fType == kGMrbEntryTypeInt) {
+		TMrbString intStr = fEntry->GetText();
+		Int_t idx = intStr.Index("0x", 0);
+		if (idx >= 0) {
+			intStr = intStr(idx + 2, intStr.Length());
+			intStr.ToInteger(intVal, 16);
+		} else {
+			intStr.ToInteger(intVal);
+		}
+		this->CreateToolTip();
+	} else {
+		if (fLabel) gMrbLog->Err() << fLabel << ": ";
+		gMrbLog->Err() << "Not a INTEGER entry" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetText2Int");
+		new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);
+	}
+	return(intVal);
+}
+
+Double_t TGMrbLabelEntry::GetText2Double() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::GetText2Double
+// Purpose:        Read text entry, convert to double, update tooltip
+// Arguments:      --
+// Results:        Double_t Value   -- double value
+// Exceptions:     
+// Description:    Reads entry contents and converts to double
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	Double_t dblVal = 0.0;
+	if (fType == kGMrbEntryTypeDouble) {
+		TMrbString dblStr = fEntry->GetText();
+		dblStr.ToDouble(dblVal);
+		this->CreateToolTip();
+	} else {
+		if (fLabel) gMrbLog->Err() << fLabel << ": ";
+		gMrbLog->Err() << "Not a DOUBLE entry" << endl;
+		gMrbLog->Flush(this->ClassName(), "GetText2Double");
+		new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);
+	}
+	return(dblVal);
+}
+
+void TGMrbLabelEntry::ShowToolTip(Bool_t ShowFlag, Bool_t ShowRange) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::ShowToolTip
+// Purpose:        Turn tooltips on/off
+// Arguments:      Bool_t ShowFlag    -- kTRUE if tooltips have to be shown
+//                 Bool_t ShowRange   -- kTRUE if range has to be shown
 // Results:        --
 // Exceptions:     
 // Description:    Shows number as binary, octal, dec, and hex in tooltip.
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString m = "";
-	if (Value < 0) {
-		Value = -Value;
-		m = "-";
+	fShowToolTip = ShowFlag;
+	fShowRange = ShowRange;
+	this->CreateToolTip();
+}
+
+void TGMrbLabelEntry::CreateToolTip() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TGMrbLabelEntry::CreateToolTip
+// Purpose:        Create tooltip showing integer value in different formats
+// Arguments:      --
+// Results:        --
+// Exceptions:     
+// Description:    Shows number as binary, octal, dec, and hex in tooltip.
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fShowToolTip) {
+		Bool_t showRange = fShowRange;
+		if (fLowerLimit >= fUpperLimit || fIncrement == 0) showRange = kFALSE;
+
+		if (fType == kGMrbEntryTypeInt) {
+			TMrbString v = fEntry->GetText();
+			Int_t value;
+			v.ToInteger(value);
+			TMrbString ttStr = "";
+			if (showRange) {
+				ttStr += "[";
+				ttStr.AppendInteger((Int_t) fLowerLimit, 0, ' ', 10);
+				ttStr += "...";
+				ttStr.AppendInteger((Int_t) fIncrement, 0, ' ', 10);
+				ttStr += "...";
+				ttStr.AppendInteger((Int_t) fUpperLimit, 0, ' ', 10);
+				ttStr += "] ";
+			}
+			TMrbString m;
+			if (value < 0) {
+				value = -value;
+				m = "-";
+			} else {
+				m = "";
+			}
+			ttStr += m;
+			ttStr.AppendInteger(value, 0, ' ', 2);
+			ttStr += " | " + m;
+			ttStr.AppendInteger(value, 0, ' ', 8);
+			ttStr += " | " + m;
+			ttStr.AppendInteger(value, 0, ' ', 10);
+			ttStr += " | " + m;
+			ttStr.AppendInteger(value, 0, ' ', 16);
+			fEntry->SetToolTipText(ttStr.Data());
+		} else if (fType == kGMrbEntryTypeDouble) {
+			TMrbString v = fEntry->GetText();
+			Double_t value;
+			v.ToDouble(value);
+			TMrbString ttStr = "";
+			if (showRange) {
+				ttStr += "[";
+				ttStr.AppendDouble(fLowerLimit);
+				ttStr += "...";
+				ttStr.AppendDouble(fIncrement);
+				ttStr += "...";
+				ttStr.AppendDouble(fUpperLimit);
+				ttStr += "] ";
+			}
+			ttStr.AppendDouble(value);
+			fEntry->SetToolTipText(ttStr.Data());
+		}
 	}
-	TMrbString ttStr = m;
-	ttStr.AppendInteger(Value, 0, ' ', 2);
-	ttStr += " | " + m;
-	ttStr.AppendInteger(Value, 0, ' ', 8);
-	ttStr += " | " + m;
-	ttStr.AppendInteger(Value, 0, ' ', 10);
-	ttStr += " | " + m;
-	ttStr.AppendInteger(Value, 0, ' ', 16);
-	fEntry->SetToolTipText(ttStr.Data());
 }
 
 Bool_t TGMrbLabelEntry::SetRange(Double_t LowerLimit, Double_t UpperLimit) {
@@ -420,12 +594,14 @@ Bool_t TGMrbLabelEntry::WithinRange() const {
 	return(kTRUE);
 }
 
-Bool_t TGMrbLabelEntry::CheckRange(Double_t Value) const {
+Bool_t TGMrbLabelEntry::CheckRange(Double_t Value, Bool_t Verbose, Bool_t Popup) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TGMrbLabelEntry::CheckRange
 // Purpose:        Check range
 // Arguments:      Double_t Value    -- value to be tested
+//                 Bool_t Verbose    -- ouput message to stderr
+//                 Bool_t Popup      -- pop up TGMsgBox
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Checks if value is within range.
@@ -433,7 +609,15 @@ Bool_t TGMrbLabelEntry::CheckRange(Double_t Value) const {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->RangeToBeChecked()) return(kTRUE);
-	return(Value >= fLowerLimit && Value <= fUpperLimit);
+	Bool_t withinRange = (Value >= fLowerLimit && Value <= fUpperLimit);
+	if (withinRange) return(kTRUE);
+	if (Verbose || Popup) {
+		if (fLabel) gMrbLog->Err() << fLabel << ": ";
+		gMrbLog->Err() << "Value out of range - " << Value << " should be in [" << fLowerLimit << "," << fUpperLimit << "]" << endl;
+		gMrbLog->Flush(this->ClassName(), "CheckRange");
+		if (Popup) new TGMsgBox(fClient->GetRoot(), this, "TGMrbLabelEntry: Error", gMrbLog->GetLast()->GetText(), kMBIconStop);
+	}
+	return(kFALSE);
 }
 
 Bool_t TGMrbLabelEntry::RangeToBeChecked() const {
