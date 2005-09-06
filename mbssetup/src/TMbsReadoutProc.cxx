@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.16 2005-07-29 08:47:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.17 2005-09-06 11:52:02 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -308,7 +308,6 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 //////////////////////////////////////////////////////////////////////////////
 
 	Long_t dmy;
-	Long64_t dmy64;
 	Long_t flags;
 	TString pathName;
 	TString remoteHome;
@@ -348,6 +347,7 @@ Bool_t TMbsReadoutProc::SetPath(const Char_t * Path, Bool_t Create) {
 	pathName += "/";
 	pathName += Path; 			// append subdir
 	
+	Long64_t dmy64;
 	if (gSystem->GetPathInfo(pathName.Data(), &dmy, &dmy64, &flags, &dmy) != 0 || (flags & 0x2) == 0) {
 		if (Create) {
 			if (gSystem->MakeDirectory(pathName.Data()) == 0) {
