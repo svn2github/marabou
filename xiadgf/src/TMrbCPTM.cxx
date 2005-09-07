@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.9 2005-05-09 13:19:11 marabou Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.10 2005-09-07 14:06:56 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -37,7 +37,8 @@ const SMrbNamedX kMrbCptmMaskBits[] = {
 			{	BIT(4), "Q3"	},
 			{	BIT(5), "Q2"	},
 			{	BIT(6), "Q1",	},
-			{	BIT(7), "Ge"	}
+			{	BIT(7), "Ge"	},
+			{	0,		 NULL	}
 		};
 
 ClassImp(TMrbCPTM)
