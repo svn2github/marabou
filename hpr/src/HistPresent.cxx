@@ -513,11 +513,18 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
       new TGMsgBox(gClient->GetRoot(), NULL,
        "No files found?", 
        "No ROOT files in CWD found \n\
-Should we create a sample",
+Should we create a sample file",
        icontype, buttons, &retval);
       if(retval == kMBYes){
          Int_t ierr;
-         gROOT->ProcessLine(".x $MARABOU/macros/hsimple_1.C", &ierr);
+         gSystem->Exec("cp $MARABOU/macros/hsimple_hpr.C .");
+         if (gSystem->AccessPathName("hsimple_hpr.C")) {
+            cout << setred << "Cant copy file: $MARABOU/macros/hsimple_hpr.C" 
+                 << setblack << endl;
+         } else {
+            cout <<  "Copy and execute file: $MARABOU/macros/hsimple_hpr.C as example" << endl;
+            gROOT->ProcessLine(".x $MARABOU/macros/hsimple_hpr.C", &ierr);
+         }
          gDirectory = gROOT;
       }
 //      WarnBox("No files found, check File Selection Mask");
