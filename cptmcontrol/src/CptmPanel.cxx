@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmPanel.cxx,v 1.4 2005-09-06 11:52:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: CptmPanel.cxx,v 1.5 2005-09-07 06:55:24 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -202,7 +202,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fGeDelayEntry);
 	fGeFrame->AddFrame(fGeDelayEntry, frameGC->LH());
 	fGeDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fGeDelayEntry->SetText("0");
+	fGeDelayEntry->SetText(0);
 	fGeDelayEntry->SetRange(0., 255 * 0.025);
 	fGeDelayEntry->SetIncrement(0.1);
 	fGeDelayEntry->AddToFocusList(&fFocusList);
@@ -218,7 +218,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fGeWidthEntry);
 	fGeFrame->AddFrame(fGeWidthEntry, frameGC->LH());
 	fGeWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fGeWidthEntry->SetText("0");
+	fGeWidthEntry->SetText(0);
 	fGeWidthEntry->SetRange(0., 255 * 0.025);
 	fGeWidthEntry->SetIncrement(0.1);
 	fGeWidthEntry->AddToFocusList(&fFocusList);
@@ -238,7 +238,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fAuxDelayEntry);
 	fAuxFrame->AddFrame(fAuxDelayEntry, frameGC->LH());
 	fAuxDelayEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fAuxDelayEntry->SetText("0");
+	fAuxDelayEntry->SetText(0);
 	fAuxDelayEntry->SetRange(0., 255 * 0.025);
 	fAuxDelayEntry->SetIncrement(0.1);
 	fAuxDelayEntry->AddToFocusList(&fFocusList);
@@ -254,7 +254,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fAuxWidthEntry);
 	fAuxFrame->AddFrame(fAuxWidthEntry, frameGC->LH());
 	fAuxWidthEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fAuxWidthEntry->SetText("0");
+	fAuxWidthEntry->SetText(0);
 	fAuxWidthEntry->SetRange(0., 255 * 0.025);
 	fAuxWidthEntry->SetIncrement(0.1);
 	fAuxWidthEntry->AddToFocusList(&fFocusList);
@@ -270,7 +270,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fTimeWdwEntry);
 	fAuxFrame->AddFrame(fTimeWdwEntry, frameGC->LH());
 	fTimeWdwEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTimeWdwEntry->SetText("0");
+	fTimeWdwEntry->SetText(0);
 	fTimeWdwEntry->SetRange(0., 255 * 0.025);
 	fTimeWdwEntry->SetIncrement(0.1);
 	fTimeWdwEntry->AddToFocusList(&fFocusList);
@@ -290,7 +290,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fMultValueEntry);
 	fMultFrame->AddFrame(fMultValueEntry, frameGC->LH());
 	fMultValueEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMultValueEntry->SetText("0");
+	fMultValueEntry->SetText(0);
 	fMultValueEntry->SetRange(0, (4095 + 34) / 35);
 	fMultValueEntry->SetIncrement(1);
 	fMultValueEntry->AddToFocusList(&fFocusList);
@@ -306,7 +306,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fMultValueEntry);
 	fMultFrame->AddFrame(fMultDacEntry, frameGC->LH());
 	fMultDacEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fMultDacEntry->SetText("0");
+	fMultDacEntry->SetText(0);
 	fMultDacEntry->SetRange(0, 4095);
 	fMultDacEntry->SetIncrement(35);
 	fMultDacEntry->AddToFocusList(&fFocusList);
@@ -534,50 +534,36 @@ void CptmPanel::InitializeValues(Int_t ModuleIndex) {
 
 	Int_t intVal = cptm->GetGeDelay();
 	Double_t dblVal = (Double_t) intVal * .025;
-	dblStr.FromDouble(dblVal);
-	fGeDelayEntry->SetText(dblStr.Data());
+	fGeDelayEntry->SetText(dblVal);
 
 	intVal = cptm->GetGeWidth();
 	dblVal = (Double_t) intVal * .025;
-	dblStr.FromDouble(dblVal);
-	fGeWidthEntry->SetText(dblStr.Data());
+	fGeWidthEntry->SetText(dblVal);
 
 	intVal = cptm->GetAuxDelay();
 	dblVal = (Double_t) intVal * .025;
-	dblStr.FromDouble(dblVal);
-	fAuxDelayEntry->SetText(dblStr.Data());
+	fAuxDelayEntry->SetText(dblVal);
 
 	intVal = cptm->GetAuxWidth();
 	dblVal = (Double_t) intVal * .025;
-	dblStr.FromDouble(dblVal);
-	fAuxWidthEntry->SetText(dblStr.Data());
+	fAuxWidthEntry->SetText(dblVal);
 
 	intVal = cptm->GetTimeWindowAux();
 	dblVal = (Double_t) intVal * .025;
-	dblStr.FromDouble(dblVal);
-	fTimeWdwEntry->SetText(dblStr.Data());
+	fTimeWdwEntry->SetText(dblVal);
 
-	intVal = cptm->GetMultiplicity();
-	intStr.FromInteger(intVal);
-	fMultValueEntry->SetText(intStr.Data());
-	intVal = cptm->GetDac(1);
-	intStr.FromInteger(intVal);
-	fMultDacEntry->SetText(intStr.Data());
+	fMultValueEntry->SetText(cptm->GetMultiplicity());
+	fMultDacEntry->SetText(cptm->GetDac(1));
 
-	intVal = cptm->GetMask();
 	fCptmMaskReg->SetState(0xFF, kButtonUp);
-	fCptmMaskReg->SetState(intVal, kButtonDown);
+	fCptmMaskReg->SetState(cptm->GetMask(), kButtonDown);
 
-	intVal = cptm->GetReadAddr();
-	intStr.FromInteger(intVal);
 	fAddrReadEntry->GetEntry()->SetState(kTRUE);
-	fAddrReadEntry->SetText(intStr.Data());
+	fAddrReadEntry->SetText(cptm->GetReadAddr());
 	fAddrReadEntry->GetEntry()->SetState(kFALSE);
 
-	intVal = cptm->GetWriteAddr();
-	intStr.FromInteger(intVal);
 	fAddrWriteEntry->GetEntry()->SetState(kTRUE);
-	fAddrWriteEntry->SetText(intStr.Data());
+	fAddrWriteEntry->SetText(cptm->GetWriteAddr());
 	fAddrWriteEntry->GetEntry()->SetState(kFALSE);
 }
 
@@ -603,66 +589,50 @@ void CptmPanel::UpdateValue(Int_t EntryId, Int_t ModuleIndex) {
 
 	switch (EntryId) {
 		case kCptmGeDelayEntry:
-			dblStr = fGeDelayEntry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fGeDelayEntry->GetText2Double();
 			cptm->SetGeDelay((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetGeDelay();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			fGeDelayEntry->SetText(dblStr.Data());
+			dblVal = (Double_t) (cptm->GetGeDelay() * .025);
+			fGeDelayEntry->SetText(dblVal);
 			break;
 
 		case kCptmGeWidthEntry:
-			dblStr = fGeWidthEntry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fGeWidthEntry->GetText2Double();
 			cptm->SetGeWidth((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetGeWidth();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			fGeWidthEntry->SetText(dblStr.Data());
+			dblVal = (Double_t) (cptm->GetGeWidth() * .025);
+			fGeWidthEntry->SetText(dblVal);
 			break;
 
 		case kCptmAuxDelayEntry:
-			dblStr = fAuxDelayEntry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fAuxDelayEntry->GetText2Double();
 			cptm->SetAuxDelay((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetAuxDelay();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			fAuxDelayEntry->SetText(dblStr.Data());
+			dblVal = (Double_t) (cptm->GetAuxDelay() * .025);
+			fAuxDelayEntry->SetText(dblVal);
 			break;
 
 		case kCptmAuxWidthEntry:
-			dblStr = fAuxWidthEntry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fAuxWidthEntry->GetText2Double();
 			cptm->SetAuxWidth((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetAuxWidth();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			fAuxWidthEntry->SetText(dblStr.Data());
+			dblVal = (Double_t) (cptm->GetAuxWidth() * .025);
+			fAuxWidthEntry->SetText(dblVal);
 			break;
 
 		case kCptmTimeWdwEntry:
-			dblStr = fTimeWdwEntry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fTimeWdwEntry->GetText();
 			cptm->SetTimeWindowAux((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetTimeWindowAux();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			fTimeWdwEntry->SetText(dblStr.Data());
+			dblVal = (Double_t) (cptm->GetTimeWindowAux() * .025);
+			fTimeWdwEntry->SetText(dblVal);
 			break;
 
 		case kCptmMultValueEntry:
-			intStr = fMultValueEntry->GetText();
-			intStr.ToInteger(intVal);
+			intVal = fMultValueEntry->GetText2Int();
 			cptm->SetMultiplicity(intVal);
-			intVal = cptm->GetDac(1);
-			intStr.FromInteger(intVal);
-			fMultDacEntry->SetText(intStr.Data());
+			fMultDacEntry->SetText(cptm->GetDac(1));
 			break;
 
 		case kCptmMultDacEntry:
-			intStr = fMultDacEntry->GetText();
-			intStr.ToInteger(intVal);
+			intVal = fMultDacEntry->GetText2Int();
 			cptm->SetDac(1, intVal);
-			intVal = cptm->GetMultiplicity();
-			intStr.FromInteger(intVal);
-			fMultValueEntry->SetText(intStr.Data());
+			fMultValueEntry->SetText(cptm->GetMultiplicity());
 			break;
 
 		case kCptmMaskRegisterBtns:
