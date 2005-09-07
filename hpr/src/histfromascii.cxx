@@ -37,7 +37,7 @@ Values in variable list must ne separated by colons (:)";
    values->Add(new TObjString("My Ntuples"));
    values->Add(new TObjString("x:y:z"));
 
-   Int_t ret,  itemwidth=180; 
+   Int_t ret = 0,  itemwidth=180; 
 
    new TGMrbTableFrame(win, &ret, "Define parameters", 
                      itemwidth, 1, nrows, values,
@@ -226,7 +226,7 @@ void HistPresent::HistFromASCII(TGWindow * win, HistPresent::EHfromASCIImode mod
          }
       }
 
-      Int_t ret,  itemwidth=120; 
+      Int_t ret = 0,  itemwidth=120; 
 tryagain:
       new TGMrbTableFrame(win, &ret, "Define histogram parameters", 
                         itemwidth, 1, nrows, values,
@@ -538,7 +538,7 @@ void EditFitMacroG(TGWindow * win)
 
       TArrayI flags(nFitTemplatesG);
       TString title("Template Fit Macros");
-      Int_t retval;
+      Int_t retval = 0;
       Int_t itemwidth = 240;
       new TGMrbTableFrame(win, &retval,
       						  title.Data(),

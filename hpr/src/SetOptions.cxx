@@ -294,13 +294,13 @@ void HistPresent::RestoreOptions()
    fEditLsYlow   = env.GetValue("HistPresent.EditLsYlow",   5   );
    fEditLsXwidth = env.GetValue("HistPresent.EditLsXwidth", (Int_t)(fac * 1004.));
    fEditLsYwidth = env.GetValue("HistPresent.EditLsYwidth", (Int_t)(fac * 745.) + 24);
-   fEditLsXRange = env.GetValue("HistPresent.EditLsXRange", 260 );
+   fEditLsXRange = env.GetValue("HistPresent.EditLsXRange", 262 );
 
    fEditPoXlow   = env.GetValue("HistPresent.EditPoXlow",   (Int_t)(fac * 550.));
    fEditPoYlow   = env.GetValue("HistPresent.EditPoYlow",   5   );
    fEditPoXwidth = env.GetValue("HistPresent.EditPoXwidth", (Int_t)(fac * 690.));
    fEditPoYwidth = env.GetValue("HistPresent.EditPoYwidth", (Int_t)(fac * 1028.) + 24);
-   fEditPoXRange = env.GetValue("HistPresent.EditPoXRange", 180 );
+   fEditPoXRange = env.GetValue("HistPresent.EditPoXRange", 175 );
 
    fForceStyle     = env.GetValue("HistPresent.ForceStyle",    0);
 

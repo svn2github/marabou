@@ -31,6 +31,7 @@
 #include "support.h"
 #include "TGMrbInputDialog.h"
 #include "TMrbString.h"
+#include "TGMrbValuesAndText.h"
 
 #include <iostream>
 #include <sstream>
@@ -461,7 +462,7 @@ HTCanvas *CommandPanel(const char *fname, TList * fcmdline,
    if (Nentries < 25)
       yw = 24 * (Nentries + 1);
    TString pname(fname);
-   pname.Prepend("CP_");
+//   pname.Prepend("CWD:");
    HTCanvas *cHCont = new HTCanvas(pname.Data(), pname.Data(),
                                    -xpos, ypos, xw, yw, hpr, 0);
    Int_t item_height = TMath::Min(24, 10000/Nentries);
@@ -985,34 +986,96 @@ void RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode)
 //_______________________________________________________________________________________
 
 
-void Canvas2LP(TCanvas * ca, const Char_t * opt, TGWindow * win,
-               Bool_t autops)
+void Canvas2LP(TCanvas * ca, Bool_t to_printer, TGWindow * win)
 {
+// if opt contains plain: force white background
+//                    ps: write to PostScript file  
    const char helpText_PS[] =
-"Write picture to PostScript file, With \"white bg\"\n\
-the background is forced to be white. This is\n\
-recommended to save toner of printers. Use\n\
-command with \"as it is\" to preserve background\n\
-colors. If option \"Reduce size\" is activated\n\
-the picture size is halfed";
-
-   const char helpText_LP[] =
-"Send picture directly to Printer, With \"white bg\"\n\
-the background is forced to be white. This is\n\
-recommended to save toner of printers. Use\n\
-command with \"as it is\" to preserve background\n\
-colors. If option \"Reduce size\" is activated\n\
-the picture size is halfed";
+"Write picture to PostScript file or send\n\
+directly to a printer. With Option\"Force white background\"\n\
+background of pads will be white. This is\n\
+recommended to save toner of printers.\n\
+\n\
+Papersize for A4 is X: 20, Y 26, for Letter 20, 24\n\
+\n\
+Fine tuning of picture size and position on paper\n\
+may be done by setting Scale and shift values.\n\
+Shift is done prior to scale, so if scale is 0.5\n\
+a shift value of 10 will only shift by 5 cm";
 
    if (!ca) return;
    Int_t *padfs = 0;
    Int_t *padframefs = 0;
    Int_t cafs = 0, caframefs = 0;
    Int_t npads = 0;
-   const Int_t maxpads = 64;
-   TString option = opt;
+   const Int_t maxpads = 1000;
 
-   if (option.Contains("plain")) {
+   const char hist_file[] = {"printer_hist.txt"};
+   Bool_t ok;
+   Int_t itemwidth = 320;
+//   ofstream hfile(hist_file);
+   static Int_t plain = 1;
+   static Double_t xpaper = 20;  // A4 and letter
+   static Double_t ypaper = 26;  // A4 24, letter 26
+   static Double_t scale  = 1;
+   static Double_t xshift = 0;
+   static Double_t yshift = 0;
+   static Int_t view_ps = 1;
+
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+   row_lab->Add(new TObjString("Force white background"));
+   row_lab->Add(new TObjString("Page size X [cm]"));
+   row_lab->Add(new TObjString("Page size Y [cm]"));   
+   row_lab->Add(new TObjString("Apply scale factor"));
+   row_lab->Add(new TObjString("Apply X shift[cm]"));
+   row_lab->Add(new TObjString("Apply Y shift[cm]"));
+   row_lab->Add(new TObjString("View ps file automatically"));
+
+   AddObjString(plain, values, kAttCheckB);
+   AddObjString(xpaper, values);
+   AddObjString(ypaper, values);
+   AddObjString(scale, values);
+   AddObjString(xshift, values);
+   AddObjString(yshift, values);
+   AddObjString(view_ps, values, kAttCheckB);
+  
+   TString cmd_name;
+   TString prompt;
+   TEnv env(".rootrc");
+   if (to_printer) {
+      prompt = "Printer command";
+      cmd_name = "lpr ";
+      const char *pc = gSystem->Getenv("PRINTER");
+      if (pc) {
+         cmd_name += "-P";
+         cmd_name += pc;
+      }
+      const char *ccmd =
+          env.GetValue("HistPresent.PrintCommand", cmd_name.Data());
+      cmd_name = ccmd;
+   } else { 
+      cmd_name = ca->GetName();
+      cmd_name += ".ps";
+      prompt = "PS file name";
+   } 
+   ok = GetStringExt(prompt.Data(), &cmd_name, itemwidth, win,
+                   hist_file, NULL, row_lab, values,
+                   NULL, NULL, helpText_PS);
+   if (!ok) {
+      cout << "Printing canceled" << endl;
+      return;
+   }
+   Int_t vp = 0;
+   plain  = GetInt(values,    vp++);
+   xpaper = GetDouble(values, vp++);
+   ypaper = GetDouble(values, vp++);
+   scale  = GetDouble(values, vp++);
+   xshift = GetDouble(values, vp++);
+   yshift = GetDouble(values, vp++);
+   view_ps  = GetInt(values,  vp++);
+
+   if (plain) {
       TList *l = ca->GetListOfPrimitives();
       TIter next(l);
       TObject *obj;
@@ -1037,70 +1100,45 @@ the picture size is halfed";
       ca->SetBorderMode(0);
    }
 
-   TEnv env(".rootrc");         // inspect ROOT's environment
-   Int_t xpaper = env.GetValue("HistPresent.PaperSizeX", 20);
-   Int_t ypaper = env.GetValue("HistPresent.PaperSizeX", 26);
-//   gStyle->SetPaperSize(19.,28.);
    gStyle->SetPaperSize((Float_t) xpaper, (Float_t) ypaper);
-   static Bool_t reduce = kFALSE;
-   if (option.Contains("ps")) {
-      TString hname = ca->GetName();
-      TString title = "Write PS-file with Name";
-      if (option.Contains("plain"))
-         title += " (white backgound)";
-      else
-         title += " (as it is)";
-      hname += ".ps";
-      Bool_t ok;
-      hname = GetString(title.Data(), hname.Data(), &ok, win,
-                        "Reduced Size", &reduce, helpText_PS);
-      if (!ok) {
-         cout << "Printing cancelled " << endl;
-         return;
+   if (scale != 1 || xshift != 0 || yshift != 0) {
+      TString extra_ps ;
+      if (xshift != 0 || yshift != 0) {
+//    convert to points (* 4 to compensate for ROOTs .25)
+         Int_t xp = (Int_t) (xshift * 4 * 72. / 2.54);         
+         Int_t yp = (Int_t) (yshift * 4 * 72. / 2.54); 
+         extra_ps += Form("%d %d  translate ", xp, yp);
       }
-      if (reduce)
-         gStyle->SetPaperSize((Float_t) xpaper * 0.5,
-                              (Float_t) ypaper * 0.5);
-      ca->SaveAs(hname.Data());
-
-      if (autops) {
-         TString cmd("gv ");
-         cmd += hname.Data();
-         cmd += "&";
-         gSystem->Exec(cmd.Data());
-      }
-   } else {
-      TString cmd = "lpr ";
-      const char *pc = gSystem->Getenv("PRINTER");
-      if (pc) {
-         cmd += "-P";
-         cmd += pc;
-      }
-//                                                                                                                                                                                                                                                                TEnv env(".rootrc");                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                       // inspect ROOT's environment
-      const char *ccmd =
-          env.GetValue("HistPresent.PrintCommand", cmd.Data());
-      cmd = ccmd;
-      Bool_t ok;
-      cmd = GetString("Printer command: ", cmd.Data(), &ok, win,
-                      "Reduced Size", &reduce, helpText_LP);
-      if (!ok) {
-         cout << "Printing cancelled " << endl;
-         return;
-      }
-      if (reduce)
-         gStyle->SetPaperSize((Float_t) xpaper * 0.5,
-                              (Float_t) ypaper * 0.5);
-      ca->SaveAs("temp_pict.ps");
-      TString prcmd = cmd;
-      prcmd += " ";
-      prcmd += "temp_pict.ps";
-      gSystem->Exec(prcmd.Data());
-      if (cmd.Contains("lpr ")) {
-         cmd(2, 1) = "q";
-         gSystem->Exec(cmd.Data());
-      }
+      if (scale != 1)extra_ps += Form("%f %f scale ", scale, scale); 
+      gStyle->SetHeaderPS(extra_ps.Data());
    }
-   if (option.Contains("plain")) {
+   TString fname;
+   if (to_printer) {
+      fname = "temp_pict.ps";
+   } else {
+      fname = cmd_name;
+   }
+   ca->SaveAs(fname.Data());
+   if (to_printer) {
+      TString prtcmd(cmd_name.Data());
+      prtcmd += " ";
+      prtcmd += fname.Data();
+      gSystem->Exec(prtcmd.Data());
+   }
+	if (view_ps) {
+      char * gvcmd = gSystem->Which("/usr/bin:/usr/local/bin", "gv");
+      if (gvcmd == NULL)gvcmd = gSystem->Which("/usr/bin:/usr/local/bin", "ggv"); 
+      if (gvcmd != NULL) {
+         TString cmd(gvcmd);
+		   cmd += " ";
+		   cmd += fname.Data();
+		   cmd += "&";
+		   gSystem->Exec(cmd.Data());
+         delete gvcmd;
+      }
+	}
+// restore backgrounds 
+   if (plain) {
       TList *l = ca->GetListOfPrimitives();
       TIter next(l);
       TObject *obj;

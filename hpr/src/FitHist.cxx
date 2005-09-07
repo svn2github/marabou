@@ -2007,7 +2007,7 @@ TH1 *FitHist::GetOneHist()
 
    TArrayI flags(nhists);
    flags.Reset();
-   Int_t retval;
+   Int_t retval = 0;
 
    Int_t itemwidth = 240;
    new TGMrbTableFrame(mycanvas,

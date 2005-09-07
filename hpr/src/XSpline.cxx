@@ -1024,10 +1024,10 @@ void XSpline::SetColor(Color_t color)
 {
    SetLineColor(color);
 //   std::cout << "XSpline::SetColor " << color << std::endl;
-   if (fDPolyLines.GetEntries() > 0) {
+   if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
       RailwaySleeper * rs;
-      while (rs = (RailwaySleeper*)next()) {
+      while ( (rs = (RailwaySleeper*)next()) ) {
          rs->SetColor(color);
       }
       gPad->Update();

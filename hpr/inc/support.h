@@ -89,8 +89,7 @@ void     ShowAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode,
                        TGWindow* win = 0);
 void     CalibrateAllAsSelected(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
 void     RebinAll(TVirtualPad * pad, TCanvas * canvas, Int_t mode);
-void     Canvas2LP(TCanvas * canvas, const Char_t * opt = 0, TGWindow * = 0,
-               Bool_t autops = kFALSE);
+void     Canvas2LP(TCanvas * canvas, Bool_t to_printer = kTRUE, TGWindow * = 0);
 void     Canvas2RootFile(TCanvas * canvas, TGWindow * win = 0);
 TEnv *   GetDefaults(const char *, Bool_t mustexist = kTRUE);
 TEnv *   GetDefaults(TString &, Bool_t mustexist = kTRUE);

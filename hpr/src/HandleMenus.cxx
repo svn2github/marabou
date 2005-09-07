@@ -144,7 +144,6 @@ enum ERootCanvasCommands {
    kFHStackMin,
    kFHStack,
    kFHCanvas2LP,
-   kFHCanvas2LPplain,
    kFHAllAsSelRangeOnly,
    kFHActivateTimer,
    kFHRebinAll,
@@ -160,7 +159,6 @@ enum ERootCanvasCommands {
    kFHGraphToASCII,
    kFHCanvasToFile,
    kFHHistToASCII,
-   kFHPictToPSplain,
    kFHPictToPS,
    kFHPictToLP,
 
@@ -330,10 +328,8 @@ Bool_t HandleMenus::ProcessMessage(Long_t msg, Long_t parm1, Long_t)
 
 //  find the corresponding FitHist Object 
 //   cout << " enter HandleMenus::ProcessMessage" << endl;
-   Bool_t autops = kFALSE;
    TMrbHelpBrowser * hbrowser = NULL;
    if(fHistPresent){
-      autops = fHistPresent->GetShowPSFile();
       hbrowser=fHistPresent->GetHelpBrowser();
    }
    Int_t np;
@@ -586,16 +582,10 @@ again:
                      break;
 
                   case kFHCanvas2LP:
-                     Canvas2LP((TCanvas*)fHCanvas, "lp", fRootCanvas, autops);
-                     break;
-                  case kFHCanvas2LPplain:
-                     Canvas2LP((TCanvas*)fHCanvas, "plainlp", fRootCanvas, autops);
-                     break;
-                  case kFHPictToPSplain:
-                     Canvas2LP((TCanvas*)fHCanvas, "plainps", fRootCanvas, autops);
+                     Canvas2LP((TCanvas*)fHCanvas, kTRUE, fRootCanvas);
                      break;
                   case kFHPictToPS:
-                     Canvas2LP((TCanvas*)fHCanvas, "ps", fRootCanvas, autops);
+                     Canvas2LP((TCanvas*)fHCanvas, kFALSE, fRootCanvas);
                      break;
 
                   // Handle Edit menu items...
@@ -1553,10 +1543,8 @@ void HandleMenus::BuildMenus()
       }
       fFileMenu->AddSeparator();
    }
-   fFileMenu->AddEntry("Picture_to_Printer (white bg)",  kFHCanvas2LPplain);
-   fFileMenu->AddEntry("Picture_to_Printer (as it is)",  kFHCanvas2LP);
-   fFileMenu->AddEntry("Picture_to_PS-File (white bg)",  kFHPictToPSplain);
-   fFileMenu->AddEntry("Picture_to_PS-File (as it is)",  kFHPictToPS);
+   fFileMenu->AddEntry("Picture to Printer",  kFHCanvas2LP);
+   fFileMenu->AddEntry("Picture to PS-File",  kFHPictToPS);
    fFileMenu->AddEntry("Save As....",   kFileSaveAs);
    fFileMenu->AddEntry("Save As .eps",  kFileSaveAsEPS);
    fFileMenu->AddEntry("Save As .pdf",  kFileSaveAsPDF);

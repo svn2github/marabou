@@ -523,7 +523,7 @@ Should we create a sample",
 //      WarnBox("No files found, check File Selection Mask");
    } else {
       fCmdLine->Sort();
-      filelist = CommandPanel("Filelist",fCmdLine, 5, 430);
+      filelist = CommandPanel(gSystem->BaseName(gSystem->WorkingDirectory()),fCmdLine, 5, 430);
    }
 //   fCmdLine->Print();
    fCmdLine->Delete();

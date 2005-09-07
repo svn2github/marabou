@@ -1348,14 +1348,24 @@ void HTCanvas::DrawEditGrid(Bool_t visible)
    Double_t x = xl;
    Double_t y;
    EditMarker * em;
+   Int_t ix = 0, iy = 0;
    while (x <= xh) {
       y = yl;   
       while (y <= yh) {
-         em = new EditMarker(x, y, 0.5);
+         Int_t mstyle = 2;
+         Double_t msize =0.4;
+         if ( !(ix%5) && !(iy%5) )msize = 0.7;
+         if ( !(ix%10) && !(iy%10) ){ 
+            msize = 0.9;
+            mstyle = 28;
+         }
+         em = new EditMarker(x, y, msize, mstyle);
          em->Draw();
          y += dy;
+         iy += 1;
       }
       x += dx;
+      ix += 1;
    }
    Update();
 }
@@ -1681,13 +1691,7 @@ void HTCanvas::InsertGraph()
 
 void HTCanvas::InsertImage()
 {
-   TPad* pad = GetEmptyPad();
-   if (pad) {
-     gROOT->SetSelectedPad(pad);
-   } else {
-      WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
-      return;
-   }   
+   TPad* pad = 0;
    const char hist_file[] = {"images_hist.txt"};
    Bool_t ok;
    static TString name;
@@ -1697,11 +1701,13 @@ void HTCanvas::InsertImage()
    void* dirp=gSystem->OpenDirectory(".");
    TRegexp dotGif = "\\.gif$";   
    TRegexp dotJpg = "\\.jpg$"; 
+   TRegexp dotPng = "\\.png$"; 
    Long_t id, size, flags, modtime;
    while ( (fname=gSystem->GetDirEntry(dirp)) ) {
       TString sname(fname);
       if (!sname.BeginsWith("temp_") && 
-          (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0)) {
+          (sname.Index(dotGif)>0 || sname.Index(dotJpg)>0 
+         || sname.Index(dotPng)>0)) {
          size = 0;
          gSystem->GetPathInfo(fname, &id, &size, &flags, &modtime);
          if (size <= 0)
@@ -1714,17 +1720,26 @@ void HTCanvas::InsertImage()
    TList *row_lab = new TList(); 
    TList *values  = new TList();
 
+   row_lab->Add(new TObjString("Use a new pad"));
    row_lab->Add(new TObjString("Preserve defined height"));
    row_lab->Add(new TObjString("Preserve defined width"));
    row_lab->Add(new TObjString("Preserve width and height"));
+   row_lab->Add(new TObjString("Offset X"));
+   row_lab->Add(new TObjString("Offset Y"));
    
+   static Int_t new_pad = 1;
    static Int_t fix_h = 0;
    static Int_t fix_w = 1;
    static Int_t fix_wh = 0;
+   static Int_t offset_x = 0;
+   static Int_t offset_y = 0;
  
+   AddObjString(new_pad, values, kAttCheckB);
    AddObjString(fix_h, values, kAttRadioB);
    AddObjString(fix_w, values, kAttRadioB);
    AddObjString(fix_wh, values,kAttRadioB);
+   AddObjString(offset_x, values);
+   AddObjString(offset_y, values);
 
     ok = GetStringExt("Picture name", &name, itemwidth, fRootCanvas,
                    hist_file, NULL, row_lab, values);
@@ -1737,39 +1752,62 @@ void HTCanvas::InsertImage()
       cout << "Could not create an image... exit" << endl;
       return;
    }
+   Double_t img_width = (Double_t )img->GetWidth();
+   Double_t img_height = (Double_t )img->GetHeight();
    Int_t vp = 0;
    
+   new_pad = GetInt(values,   vp++);
    fix_h = GetInt(values,   vp++);
    fix_w = GetInt(values,   vp++);
    fix_wh = GetInt(values,  vp++);
+   offset_x = GetInt(values,  vp++);
+   offset_y = GetInt(values,  vp++);
+   
+   if (new_pad) {
+      pad = GetEmptyPad();
+      if (pad) {
+         gROOT->SetSelectedPad(pad);
+   		Double_t aspect_ratio = img_height * this->GetXsizeReal() 
+                        		/ (img_width* this->GetYsizeReal());
 
-   cout << "InsertImage(): " <<  pad->GetXlowNDC() << " " << pad->GetYlowNDC() << " "
-        <<  pad->GetWNDC()    << " " << pad->GetHNDC()    << endl;
-   Double_t img_width = (Double_t )img->GetWidth();
-   Double_t img_height = (Double_t )img->GetHeight();
+   		if (fix_w) {  
+      		pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
+                  		pad->GetXlowNDC() + pad->GetWNDC(),
+                  		pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
+   		} else if (fix_h) {  
+      		pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
+                  		pad->GetXlowNDC() + pad->GetHNDC() / aspect_ratio,
+                  		pad->GetYlowNDC() + pad->GetHNDC());
+   		}
+
+   		pad->SetTopMargin(.0);
+   		pad->SetBottomMargin(0.0);
+   		pad->SetLeftMargin(0.0);
+   		pad->SetRightMargin(0.0);
+      } else {
+         WarnBox("Please create a new Pad in this Canvas", fRootCanvas); 
+         return;
+      }   
+   }
+   cout << "InsertImage(): " <<  gPad->GetXlowNDC() << " " << gPad->GetYlowNDC() << " "
+        <<  gPad->GetWNDC()    << " " << gPad->GetHNDC()    << endl;
    cout << "Image size, X,Y: " << img_width
                         << " " << img_height << endl;
-   Double_t aspect_ratio = img_height * this->GetXsizeReal() 
-                        / (img_width* this->GetYsizeReal());
-
-   if (fix_w) {  
-      pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
-                  pad->GetXlowNDC() + pad->GetWNDC(),
-                  pad->GetYlowNDC() + pad->GetWNDC() * aspect_ratio);
-   } else if (fix_h) {  
-      pad->SetPad(pad->GetXlowNDC(), pad->GetYlowNDC(),
-                  pad->GetXlowNDC() + pad->GetHNDC() / aspect_ratio,
-                  pad->GetYlowNDC() + pad->GetHNDC());
-   }
-
-   pad->SetTopMargin(.0);
-   pad->SetBottomMargin(0.0);
-   pad->SetLeftMargin(0.0);
-   pad->SetRightMargin(0.0);
    img->SetConstRatio(kTRUE);
    img->SetEditable(kTRUE);
    img->SetImageQuality(TAttImage::kImgBest);
-   hprimg->Draw("xxx");
+   TString drawopt;
+   if (offset_x == 0 && offset_y == 0) {
+      drawopt= "xxx";
+   } else {
+      drawopt = "T";
+      drawopt += offset_x;
+      drawopt += ",";
+      drawopt += offset_x;
+      drawopt += ",#ffffff";
+   }
+   cout << drawopt << endl;
+   hprimg->Draw(drawopt);
 //   img->Draw("xxx");
 //   hprimg->Paint();
    Update();
@@ -2998,8 +3036,8 @@ void HTCanvas::InsertText(Bool_t from_file)
 
 void HTCanvas::InsertFunction()
 {
-   static Int_t Npar = 2;
-   static Double_t par[10] = {1, 1, 0, 0, 0, 0, 0, 0, 0, 0};
+   static Int_t Npar = 3;
+   static Double_t par[10] = {1, -.2, 4, 0, 0, 0, 0, 0, 0, 0};
    static TString func_name("fun1");
    static TString new_func_name("ff");
    static TString xtitle("x");
@@ -3040,6 +3078,12 @@ tryagain:
    tpointer = &text;
    const char hist_file[] = {"text_formulas.txt"};
    history = hist_file;
+   if (gSystem->AccessPathName(history)) {
+      ofstream hfile(history);
+      hfile << "[0]*exp([1]*x)*cos([2]*x)" << endl;
+      hfile.close();
+   } 
+
    if (gROOT->GetVersionInt() < 40000) history = NULL;
 
    AddObjString(func_name.Data(), values);

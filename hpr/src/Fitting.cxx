@@ -1585,8 +1585,8 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       double *sum = new double[nxbins];
       double *sumx = new double[nxbins];
       double *sumx2 = new double[nxbins];
-      double *mean = new double[nxbins];
-      double *sigma = new double[nxbins];
+      double *mean = new double[nxbins + 2];
+      double *sigma = new double[nxbins + 2];
       //     is there a cut active?
       for (Int_t i = binlx; i <= binux; i++) {
          Int_t indx = i - binlx;
@@ -1609,38 +1609,40 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
       int nonzero = 0, nx1 = 0, nx2 = 0;
       double mean1 = 0., mean2 = 0., sigma_max = 0.;
       int nxhalf = nxbins / 2;
+//    under/overflow cells
+      mean[0] = mean[nxbins + 1] = sigma[0] = sigma[nxbins + 1] = 0;
       for (Int_t i = 0; i < nxbins; i++) {
          if (sum[i] > 0) {
-            mean[i] = sumx[i] / sum[i];
+            mean[i + 1] = sumx[i] / sum[i];
             if (sum[i] > 1.1) {
-               double s2 = sumx2[i] / sum[i] - mean[i] * mean[i];
+               double s2 = sumx2[i] / sum[i] - mean[i + 1] * mean[i + 1];
                if (s2 > 0)
-                  sigma[i] = sqrt(s2) / sqrt(sum[i]);
+                  sigma[i + 1] = sqrt(s2) / sqrt(sum[i]);
                else
-                  sigma[i] = 1;
+                  sigma[i + 1] = 1;
 //               sigma[i]= sqrt(sumx2[i]/sum[i]-mean[i]*mean[i])/sqrt(sum[i]);
             } else
-               sigma[i] = 1;
-            if (sigma[i] > sigma_max)
-               sigma_max = sigma[i];
+               sigma[i + 1] = 1;
+            if (sigma[i + 1] > sigma_max)
+               sigma_max = sigma[i + 1];
             if (i < nxhalf) {
-               mean1 += mean[i];
+               mean1 += mean[i + 1];
                nx1++;
             } else {
-               mean2 += mean[i];
+               mean2 += mean[i + 1];
                nx2++;
             }
             nonzero++;
          } else {
-            mean[i] = 0.;
-            sigma[i] = 0.;
+            mean[i + 1] = 0.;
+            sigma[i + 1] = 0.;
          }
 //         cout << i << " " << sum[i]<< " "<< sumx[i] <<" " << sumx2[i] << " " << mean[i] << " " << sigma[i] << endl;
       }
 //     if nentries =1 replace error by max 
       for (Int_t i = 0; i < nxbins; i++) {
          if (sum[i] > 0 && sum[i] < 1.1)
-            sigma[i] = sigma_max;
+            sigma[i + 1] = sigma_max;
       }
 
       fithist->SetContent((Stat_t *) mean);
@@ -1665,11 +1667,11 @@ Int_t FitHist::Fit2dim(Int_t what, Int_t ndim)
          par[1] = (mean2 - mean1) / (x34 - x14);
          par[0] = mean1 - x14 * par[1];
       }
-      delete sum;
-      delete sumx;
-      delete sumx2;
-      delete mean;
-      delete sigma;
+      delete [] sum;
+      delete [] sumx;
+      delete [] sumx2;
+      delete [] mean;
+      delete [] sigma;
    } else {
       FhMarker *p;
       TIter next(markers);
@@ -1951,7 +1953,7 @@ void FitHist::EditFitMacro()
 
       	TArrayI flags(nFitTemplates);
       	TString title("Template Fit Macros");
-      	Int_t retval;
+      	Int_t retval = 0;
       	Int_t itemwidth = 240;
       	new TGMrbTableFrame(mycanvas, &retval,
       							  title.Data(),
