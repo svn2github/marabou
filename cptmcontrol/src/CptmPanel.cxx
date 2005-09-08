@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmPanel.cxx,v 1.5 2005-09-07 06:55:24 marabou Exp $       
+// Revision:       $Id: CptmPanel.cxx,v 1.6 2005-09-08 08:00:35 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -178,7 +178,7 @@ CptmPanel::CptmPanel(const TGWindow * Window, UInt_t Width, UInt_t Height) : TGM
 	HEAP(fSelectModule);
 	fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 	fCptmIndex = 0;
-	fSelectModule->GetComboBox()->Select(fCptmIndex);
+	fSelectModule->GetComboBox()->Select(((TMrbNamedX *) fLofCptmModules[fCptmIndex])->GetIndex());
 	fSelectModule->Associate(this);
 
 	TGLayoutHints * layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
@@ -617,7 +617,7 @@ void CptmPanel::UpdateValue(Int_t EntryId, Int_t ModuleIndex) {
 			break;
 
 		case kCptmTimeWdwEntry:
-			dblVal = fTimeWdwEntry->GetText();
+			dblVal = fTimeWdwEntry->GetText2Double();
 			cptm->SetTimeWindowAux((Int_t) ((dblVal + .024) / .025));
 			dblVal = (Double_t) (cptm->GetTimeWindowAux() * .025);
 			fTimeWdwEntry->SetText(dblVal);

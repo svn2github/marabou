@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.6 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.7 2005-09-08 08:00:35 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -157,7 +157,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		HEAP(fSelectModule);
 		fSelectFrame->AddFrame(fSelectModule, frameGC->LH());
 		fCptmIndex = 0;
-		fSelectModule->GetComboBox()->Select(fCptmIndex);
+		fSelectModule->GetComboBox()->Select(((TMrbNamedX *) fLofCptmModules[fCptmIndex])->GetIndex());
 		fSelectModule->Associate(this);
 
 		TGLayoutHints * layout = new TGLayoutHints(kLHintsTop | kLHintsExpandX, 1, 1, 1, 1);
@@ -393,7 +393,7 @@ Bool_t DGFCptmPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) 
 					this->UpdateValue(Param1, fCptmIndex);
 					break;
 				case kCM_COMBOBOX:
-					fCptmIndex = Param2;
+					fCptmIndex = Param2 - 1;
 					this->InitializeValues(fCptmIndex);
 					break;
 			}
