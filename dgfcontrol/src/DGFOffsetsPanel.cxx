@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFOffsetsPanel.cxx,v 1.12 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFOffsetsPanel.cxx,v 1.13 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -210,7 +210,7 @@ DGFOffsetsPanel::DGFOffsetsPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fOffsetValue);
 	fOffsetFrame->AddFrame(fOffsetValue, frameGC->LH());
 	fOffsetValue->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fOffsetValue->SetText("400");
+	fOffsetValue->SetText(400);
 	fOffsetValue->SetRange(0,65504);
 
 	this->ChangeBackground(gDGFControlData->fColorGreen);
@@ -317,9 +317,7 @@ Bool_t DGFOffsetsPanel::StartRamp() {
 	
 	Int_t offset, dacValue;
 		
-	TGTextEntry * entry = fOffsetValue->GetEntry();
-	intStr = entry->GetText();
-	intStr.ToInteger(offset);
+	offset = fOffsetValue->GetText2Int();
 	
 	dgfModule = gDGFControlData->FirstModule();
 	nofModules = 0;

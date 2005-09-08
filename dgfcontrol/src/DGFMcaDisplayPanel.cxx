@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.19 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFMcaDisplayPanel.cxx,v 1.20 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -220,7 +220,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
 	fRunTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fRunTimeEntry->SetText("10");
+	fRunTimeEntry->SetText(10);
 	fRunTimeEntry->SetRange(0, 1000);
 	fRunTimeEntry->SetIncrement(1);
 	fRunTimeEntry->AddToFocusList(&fFocusList);
@@ -295,7 +295,7 @@ DGFMcaDisplayPanel::DGFMcaDisplayPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fRefreshTimeEntry);
 	fDisplayFrame->AddFrame(fRefreshTimeEntry, frameGC->LH());
 	fRefreshTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fRefreshTimeEntry->SetText("0");
+	fRefreshTimeEntry->SetText(0);
 	fRefreshTimeEntry->SetRange(0, 60);
 	fRefreshTimeEntry->SetIncrement(10);
 	fRefreshTimeEntry->AddToFocusList(&fFocusList);
@@ -439,7 +439,6 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	TMrbDGF * dgf;
 	Int_t modNo, cl;
 	Int_t nofModules;
-	Int_t accuTime;
 	TString timeScale;
 										
 	Bool_t offlineMode = gDGFControlData->IsOffline();
@@ -452,8 +451,7 @@ Bool_t DGFMcaDisplayPanel::AcquireHistos() {
 	}
 
 	TMrbNamedX * tp = fMcaTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
-	TMrbString intStr = fRunTimeEntry->GetText();
-	intStr.ToInteger(accuTime);
+	Int_t accuTime = fRunTimeEntry->GetText2Int();
 	Int_t waitInv = 0;
 	switch (tp->GetIndex()) {
 		case kDGFMcaTimeScaleSecs:	waitInv = 1; break;
@@ -646,9 +644,7 @@ Bool_t DGFMcaDisplayPanel::DisplayHisto(Bool_t ClearMCA) {
 	Bool_t verbose = gDGFControlData->IsVerbose();
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
-	TMrbString intStr = fRefreshTimeEntry->GetText();
-	Int_t refresh;
-	intStr.ToInteger(refresh);
+	Int_t refresh = fRefreshTimeEntry->GetText2Int();
 	if (refresh > 0) {
 		if (fRefreshTimer == NULL) {
 			fRefreshTimer = new TTimer(this, 1000 * refresh, kFALSE);
@@ -844,8 +840,8 @@ Bool_t DGFMcaDisplayPanel::ResetValues() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fRunTimeEntry->SetText("10");
-	fRefreshTimeEntry->SetText("0");
+	fRunTimeEntry->SetText(10);
+	fRefreshTimeEntry->SetText(0);
 	fRunState = kDGFMcaRunStopped;
 	fStopAccu = kFALSE;
 	fStopWatch = 0;

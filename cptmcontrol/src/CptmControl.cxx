@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: CptmControl.cxx,v 1.1 2005-04-29 11:35:22 rudi Exp $       
+// Revision:       $Id: CptmControl.cxx,v 1.2 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -17,6 +17,7 @@
 #include "TRint.h"
 #include "TGClient.h"
 
+#include "TGMrbGeometry.h"
 #include "TMrbLogger.h"
 #include "CptmControlData.h"
 #include "CptmPanel.h"
@@ -24,6 +25,7 @@
 CptmControlData * gCptmControlData = NULL;
 
 extern TMrbLogger * gMrbLog;
+extern TGMrbGeometry * gMrbGeometry;
 
 extern void InitGui();
 
@@ -54,7 +56,10 @@ int main(Int_t argc, Char_t **argv)
 	gEnv->ReadFile(".CptmControl.rc", kEnvLocal);
 	gCptmControlData = new CptmControlData();
 
-	CptmPanel mainWindow(gClient->GetRoot(), kTabWidth, kTabHeight);
+	new TGMrbGeometry("CptmControl");
 
+	CptmPanel mainWindow(gClient->GetRoot(), gMrbGeometry->GetWidth(), gMrbGeometry->GetHeight());
+
+	theApp.SetPrompt("CptmControl [%d] ");
 	theApp.Run();
 }

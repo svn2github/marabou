@@ -8,7 +8,7 @@
 // Class:          DGFCptmPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFCptmPanel.h,v 1.2 2005-04-29 11:37:06 rudi Exp $       
+// Revision:       $Id: DGFCptmPanel.h,v 1.3 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -68,6 +68,7 @@ class DGFCptmPanel : public TGCompositeFrame {
 									kDGFCptmButtonSynchEnable, 			//				synch enable
 									kDGFCptmButtonSynchEnableReset, 	//				+ reset clock
 									kDGFCptmButtonShowBuffer,		 	//				show buffer data
+									kDGFCptmButtonUpdateAddr,			//				update addr ptr
 								};
 
 
@@ -99,7 +100,7 @@ class DGFCptmPanel : public TGCompositeFrame {
 		Bool_t SaveSettings(Int_t ModuleIndex = -1);
 		Bool_t RestoreSettings(Int_t ModuleIndex = -1);
 		void EnableSynch(Int_t ModuleIndex = -1, Bool_t ResetClock = kFALSE);
-		void ShowBuffer(Int_t ModuleIndex) {};
+		void ShowBuffer(Int_t ModuleIndex);
 
 	protected:
 		void UpdateValue(Int_t EntryId, Int_t ModuleIndex);

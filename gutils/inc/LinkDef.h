@@ -4,6 +4,7 @@
 #pragma link off all functions;
 
 #pragma link C++ class TGMrbLayout;
+#pragma link C++ class TGMrbGeometry;
 #pragma link C++ class TGMrbFocusList;
 #pragma link C++ class TGMrbLofKeyBindings;
 #pragma link C++ class TGMrbObject;

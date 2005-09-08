@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.7 2005-09-08 08:00:35 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.8 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -40,6 +40,7 @@ const SMrbNamedX kDGFCptmButtons[] =
 				{DGFCptmPanel::kDGFCptmButtonSynchEnable,		"Synch", 		"Enable synch"					},
 				{DGFCptmPanel::kDGFCptmButtonSynchEnableReset,	"Synch+Reset", 	"Enable synch and reset clock"	},
 				{DGFCptmPanel::kDGFCptmButtonShowBuffer,		"Show", 		"Show buffer contents"			},
+				{DGFCptmPanel::kDGFCptmButtonUpdateAddr,		"Update", 		"Update addr pointers"			},
 				{0, 											NULL,		NULL								}
 			};
 
@@ -384,6 +385,10 @@ Bool_t DGFCptmPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) 
 						case kDGFCptmButtonShowBuffer:
 							this->ShowBuffer(fCptmIndex);
 							break;
+						case kDGFCptmButtonUpdateAddr:
+							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrWriteEntry, fCptmIndex);
+							break;
 					}
 					break;
 				case kCM_CHECKBUTTON:
@@ -482,9 +487,6 @@ void DGFCptmPanel::InitializeValues(Int_t ModuleIndex) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbString dblStr, intStr;
-	Int_t intVal;
-
 	if (ModuleIndex < 0) {
 		for (Int_t i = 0; i < fLofCptmModules.GetEntriesFast(); i++) this->InitializeValues(i);
 		return;
@@ -493,47 +495,28 @@ void DGFCptmPanel::InitializeValues(Int_t ModuleIndex) {
 	TMrbNamedX * nx = (TMrbNamedX *) fLofCptmModules[ModuleIndex];
 	TMrbCPTM * cptm = (TMrbCPTM *) nx->GetAssignedObject();
 
-	intVal = cptm->GetGeDelay();
-	dblStr.FromDouble((Double_t) intVal * .025);
-	fGeDelayEntry->SetText(dblStr.Data());
+	fGeDelayEntry->SetText((Double_t) cptm->GetGeDelay() * .025);
 
-	intVal = cptm->GetGeWidth();
-	dblStr.FromDouble((Double_t) intVal * .025);
-	fGeWidthEntry->SetText(dblStr.Data());
+	fGeWidthEntry->SetText((Double_t) cptm->GetGeWidth() * .025);
 
-	intVal = cptm->GetAuxDelay();
-	dblStr.FromDouble((Double_t) intVal * .025);
-	fAuxDelayEntry->SetText(dblStr.Data());
+	fAuxDelayEntry->SetText((Double_t) cptm->GetAuxDelay() * .025);
 
-	intVal = cptm->GetAuxWidth();
-	dblStr.FromDouble((Double_t) intVal * .025);
-	fAuxWidthEntry->SetText(dblStr.Data());
+	fAuxWidthEntry->SetText((Double_t) cptm->GetAuxWidth() * .025);
 
-	intVal = cptm->GetTimeWindowAux();
-	dblStr.FromDouble((Double_t) intVal * .025);
-	fTimeWdwEntry->SetText(dblStr.Data());
+	fTimeWdwEntry->SetText((Double_t) cptm->GetTimeWindowAux() * .025);
 
-	intVal = cptm->GetMultiplicity();
-	intStr.FromInteger(intVal);
-	fMultValueEntry->SetText(intStr.Data());
-	intVal = cptm->GetDac(1);
-	intStr.FromInteger(intVal);
-	fMultDacEntry->SetText(intStr.Data());
+	fMultValueEntry->SetText(cptm->GetMultiplicity());
+	fMultDacEntry->SetText(cptm->GetDac(1));
 
-	intVal = cptm->GetMask();
 	fCptmMaskReg->SetState(0xFF, kButtonUp);
-	fCptmMaskReg->SetState(intVal, kButtonDown);
+	fCptmMaskReg->SetState(cptm->GetMask(), kButtonDown);
 
-	intVal = cptm->GetReadAddr();
-	intStr.FromInteger(intVal);
 	fAddrReadEntry->GetEntry()->SetState(kTRUE);
-	fAddrReadEntry->SetText(intStr.Data());
+	fAddrReadEntry->SetText(cptm->GetReadAddr());
 	fAddrReadEntry->GetEntry()->SetState(kFALSE);
 
-	intVal = cptm->GetWriteAddr();
-	intStr.FromInteger(intVal);
 	fAddrWriteEntry->GetEntry()->SetState(kTRUE);
-	fAddrWriteEntry->SetText(intStr.Data());
+	fAddrWriteEntry->SetText(cptm->GetWriteAddr());
 	fAddrWriteEntry->GetEntry()->SetState(kFALSE);
 }
 
@@ -550,8 +533,6 @@ void DGFCptmPanel::UpdateValue(Int_t EntryId, Int_t ModuleIndex) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TGTextEntry * entry;
-	TMrbString dblStr, intStr;
 	Int_t intVal;
 	Double_t dblVal;
 
@@ -560,79 +541,64 @@ void DGFCptmPanel::UpdateValue(Int_t EntryId, Int_t ModuleIndex) {
 
 	switch (EntryId) {
 		case kDGFCptmGeDelayEntry:
-			entry = fGeDelayEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fGeDelayEntry->GetText2Double();
 			cptm->SetGeDelay((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetGeDelay();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			entry->SetText(dblStr.Data());
+			fGeDelayEntry->SetText((Double_t) cptm->GetGeDelay() * .025);
 			break;
 
 		case kDGFCptmGeWidthEntry:
-			entry = fGeWidthEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fGeWidthEntry->GetText2Double();
 			cptm->SetGeWidth((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetGeWidth();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			entry->SetText(dblStr.Data());
+			fGeWidthEntry->SetText((Double_t) cptm->GetGeWidth() * .025);
 			break;
 
 		case kDGFCptmAuxDelayEntry:
-			entry = fAuxDelayEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fAuxDelayEntry->GetText2Double();
 			cptm->SetAuxDelay((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetAuxDelay();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			entry->SetText(dblStr.Data());
+			fAuxDelayEntry->SetText((Double_t) cptm->GetAuxDelay() * .025);
 			break;
 
 		case kDGFCptmAuxWidthEntry:
-			entry = fAuxWidthEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fAuxWidthEntry->GetText2Double();
 			cptm->SetAuxWidth((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetAuxWidth();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			entry->SetText(dblStr.Data());
+			fAuxWidthEntry->SetText((Double_t) cptm->GetAuxWidth() * .025);
 			break;
 
 		case kDGFCptmTimeWdwEntry:
-			entry = fTimeWdwEntry->GetEntry();
-			dblStr = entry->GetText();
-			dblStr.ToDouble(dblVal);
+			dblVal = fTimeWdwEntry->GetText2Double();
 			cptm->SetTimeWindowAux((Int_t) ((dblVal + .024) / .025));
-			intVal = cptm->GetTimeWindowAux();
-			dblStr.FromDouble((Double_t) (intVal * .025));
-			entry->SetText(dblStr.Data());
+			fTimeWdwEntry->SetText((Double_t) cptm->GetTimeWindowAux() * .025);
 			break;
 
 		case kDGFCptmMultValueEntry:
-			entry = fMultValueEntry->GetEntry();
-			intStr = entry->GetText();
-			intStr.ToInteger(intVal);
+			intVal = fMultValueEntry->GetText2Int();
 			cptm->SetMultiplicity(intVal);
-			intVal = cptm->GetDac(1);
-			intStr.FromInteger(intVal);
-			fMultDacEntry->GetEntry()->SetText(intStr.Data());
+			fMultDacEntry->SetText(cptm->GetDac(1));
 			break;
 
 		case kDGFCptmMultDacEntry:
-			entry = fMultDacEntry->GetEntry();
-			intStr = entry->GetText();
-			intStr.ToInteger(intVal);
+			intVal = fMultDacEntry->GetText2Int();
 			cptm->SetDac(1, intVal);
-			intVal = cptm->GetMultiplicity();
-			intStr.FromInteger(intVal);
-			fMultValueEntry->GetEntry()->SetText(intStr.Data());
+			fMultValueEntry->SetText(cptm->GetMultiplicity());
 			break;
 
 		case kDGFCptmMaskRegisterBtns:
 			intVal = fCptmMaskReg->GetActive();
 			cptm->SetMask(intVal & 0xFF);
 			break;
+
+		case kDGFCptmAddrReadEntry:
+			fAddrReadEntry->GetEntry()->SetState(kTRUE);
+			fAddrReadEntry->SetText(cptm->GetReadAddr());
+			fAddrReadEntry->GetEntry()->SetState(kFALSE);
+			break;
+
+		case kDGFCptmAddrWriteEntry:
+			fAddrWriteEntry->GetEntry()->SetState(kTRUE);
+			fAddrWriteEntry->SetText(cptm->GetWriteAddr());
+			fAddrWriteEntry->GetEntry()->SetState(kFALSE);
+			break;
+
 	}
 }
 
@@ -882,6 +848,34 @@ Bool_t DGFCptmPanel::DownloadCode(Int_t ModuleIndex) {
 	gSystem->Sleep(200);
 	this->InitializeValues(ModuleIndex);
 	return(kTRUE);
+}
+
+void DGFCptmPanel::ShowBuffer(Int_t ModuleIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCptmPanel::ShowBuffer
+// Purpose:        Show buffer data
+// Arguments:      Int_t ModuleIndex -- module index
+// Results:        --
+// Exceptions:     
+// Description:    Reads ram subsequently
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = (TMrbNamedX *) fLofCptmModules[ModuleIndex];
+	TMrbCPTM * cptm = (TMrbCPTM *) nx->GetAssignedObject();
+
+	Int_t rAddr = cptm->GetReadAddr();
+	Int_t wAddr = cptm->GetWriteAddr();
+
+	cout << "CPTM module " << cptm->GetTitle() << endl;
+	cout << "Read addr         : " << rAddr << endl;
+	cout << "Write addr        : " << wAddr << endl;
+	Int_t wc = cptm->CheckWordCount();
+	for (Int_t i = 0; i < wc; i++) {
+		Int_t data = cptm->ReadNext();
+		cout << Form("%6d: %8d %0x\n", i, data, data);
+	}
 }
 
 void DGFCptmPanel::MoveFocus(Int_t EntryId) {

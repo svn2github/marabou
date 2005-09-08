@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControl.cxx,v 1.4 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControl.cxx,v 1.5 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -17,12 +17,14 @@
 #include "TRint.h"
 #include "TGClient.h"
 
+#include "TGMrbGeometry.h"
 #include "TMrbLogger.h"
 #include "DGFControlData.h"
 #include "DGFRunControlPanel.h"
 
 extern DGFControlData * gDGFControlData;
 extern TMrbLogger * gMrbLog;
+extern TGMrbGeometry * gMrbGeometry;
 
 extern void InitGui();
 
@@ -56,7 +58,10 @@ int main(Int_t argc, Char_t **argv)
 		gSystem->Exit(1);
 	}
 
-	DGFRunControlPanel mainWindow(gClient->GetRoot(), kTabWidth, kTabHeight);
+	new TGMrbGeometry("DGFControl");
 
+	DGFRunControlPanel mainWindow(gClient->GetRoot(), gMrbGeometry->GetWidth(), gMrbGeometry->GetHeight());
+
+	theApp.SetPrompt("DGFControl [%d] ");
 	theApp.Run();
 }

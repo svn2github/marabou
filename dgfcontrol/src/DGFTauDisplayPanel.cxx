@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.10 2005-08-17 11:25:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFTauDisplayPanel.cxx,v 1.11 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -524,13 +524,11 @@ Bool_t DGFTauDisplayPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
 							}
 							break;
 						case kDGFTauButtonTauOK:
-							dblStr = fDispCurTauEntry->GetText();
-							dblStr.ToDouble(tau);
+							tau = fDispCurTauEntry->GetText2Double();
 							dgf->SetTau(chn, tau);
 							break;
 						case kDGFTauButtonBestTau:
-							dblStr = fDispBestTauEntry->GetText();
-							dblStr.ToDouble(tau);
+							tau = fDispBestTauEntry->GetText2Double();
 							dgf->SetTau(chn, tau);
 							break;
 						case kDGFTauButtonRemoveTraces:
@@ -622,12 +620,9 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 
 	fileName = this->TraceFileName();
 
-	intStr = fTraceLengthEntry->GetText();
-	intStr.ToInteger(traceLength);
-	intStr = fXwaitEntry->GetText();
-	intStr.ToInteger(xwait);
-	intStr = fNofTracesEntry->GetText();
-	intStr.ToInteger(nofTraces);
+	traceLength = fTraceLengthEntry->GetText2Int();
+	xwait = fXwaitEntry->GetText2Int();
+	nofTraces = fNofTracesEntry->GetText2Int();
 
 	nw = traceLength + TMrbDGFEventBuffer::kTotalHeaderLength;
 	bs = dgf->GetParValue("LOUTBUFFER", kTRUE);
@@ -646,14 +641,11 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	fFitFromEntry->SetRange(0, traceLength);
 	fFitToEntry->SetRange(0, traceLength);
 
-	intStr = fFitFromEntry->GetText();
-	intStr.ToInteger(fitFrom);
-	intStr = fFitToEntry->GetText();
-	intStr.ToInteger(fitTo);
+	fitFrom = fFitFromEntry->GetText2Int();
+	fitTo = fFitToEntry->GetText2Int();
 	if (fitTo > traceLength) {
 		fitTo = traceLength;
-		intStr = fitTo;
-		fFitToEntry->SetText(intStr.Data());
+		fFitToEntry->SetText(fitTo);
 	}
 	if (fitFrom < 0 || fitTo < 0 || fitFrom >= fitTo) {
 		gMrbLog->Err() << "Illegal fit region - [" << fitFrom << "," << fitTo << "]" << endl;
@@ -662,16 +654,11 @@ Bool_t DGFTauDisplayPanel::AcquireTraces() {
 	}
 	fFitFromEntry->SetRange(0, traceLength);
 
-	dblStr = fFitErrorEntry->GetText();
-	dblStr.ToDouble(fitError);
-	dblStr = fFitChiSquareEntry->GetText();
-	dblStr.ToDouble(fitChiSquare);
-	dblStr = fFitA0Entry->GetText();
-	dblStr.ToDouble(fitA0);
-	dblStr = fFitA1Entry->GetText();
-	dblStr.ToDouble(fitA1);
-	dblStr = fFitA2Entry->GetText();
-	dblStr.ToDouble(fitA2);
+	fitError = fFitErrorEntry->GetText2Double();
+	fitChiSquare = fFitChiSquareEntry->GetText2Double();
+	fitA0 = fFitA0Entry->GetText2Double();
+	fitA1 = fFitA1Entry->GetText2Double();
+	fitA2 = fFitA2Entry->GetText2Double();
 
 	cout	<< setblue
 			<< this->ClassName() << "::AcquireTraces(): Acquiring " << nofTraces
@@ -817,8 +804,6 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TGTextEntry * entry;
-
 	TMrbDGF * dgf;
 	Int_t chn;
 	TMrbString intStr, dblStr;
@@ -833,11 +818,9 @@ Bool_t DGFTauDisplayPanel::Update(Int_t EntryId) {
 
 	switch (EntryId) {
 		case kDGFTauDispTraceNo:
-			entry = fDispTraceNoEntry->GetEntry();
-			intStr = entry->GetText();
-			intStr.ToInteger(traceNo);
+			traceNo = fDispTraceNoEntry->GetText2Int();
 			if (fTraceFile == NULL) {
-				fileName = fDispFileEntry->GetEntry()->GetText();
+				fileName = fDispFileEntry->GetText();
 				fTraceFile = new TFile(fileName.Data());
 				if (!fTraceFile->IsOpen()) {
 					gMrbLog->Err() << "Can't open file - " << fileName << endl;

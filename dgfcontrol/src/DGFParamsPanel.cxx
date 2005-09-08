@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFParamsPanel.cxx,v 1.18 2005-09-06 11:48:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFParamsPanel.cxx,v 1.19 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -256,7 +256,7 @@ DGFParamsPanel::DGFParamsPanel(TGCompositeFrame * TabFrame) :
 				fParVal[n]->GetEntry()->SetEnabled(kFALSE);
 			} else {
 				fParVal[n]->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-				fParVal[n]->SetText("0");
+				fParVal[n]->SetText(0);
 				fParVal[n]->SetRange(0, 100000);
 				fParVal[n]->SetIncrement(1);
 				fParVal[n]->Associate(this);

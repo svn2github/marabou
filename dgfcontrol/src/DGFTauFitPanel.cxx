@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.9 2005-05-26 16:34:38 marabou Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.10 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -221,7 +221,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTauStartEntry);
 	fTauFrame->AddFrame(fTauStartEntry, frameGC->LH());
 	fTauStartEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTauStartEntry->SetText("50.");
+	fTauStartEntry->SetText(50.);
 	fTauStartEntry->SetRange(1, 100);
 	fTauStartEntry->SetIncrement(.5);
 	fTauStartEntry->AddToFocusList(&fFocusList);
@@ -236,7 +236,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTauStepEntry);
 	fTauFrame->AddFrame(fTauStepEntry, frameGC->LH());
 	fTauStepEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTauStepEntry->SetText(".1");
+	fTauStepEntry->SetText(.1);
 	fTauStepEntry->SetRange(.1, 5);
 	fTauStepEntry->SetIncrement(.1);
 	fTauStepEntry->AddToFocusList(&fFocusList);
@@ -251,7 +251,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTauStopEntry);
 	fTauFrame->AddFrame(fTauStopEntry, frameGC->LH());
 	fTauStopEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeDouble);
-	fTauStopEntry->SetText("50.");
+	fTauStopEntry->SetText(50.);
 	fTauStopEntry->SetRange(1, 100);
 	fTauStopEntry->SetIncrement(.5);
 	fTauStopEntry->AddToFocusList(&fFocusList);
@@ -274,7 +274,7 @@ DGFTauFitPanel::DGFTauFitPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fRunTimeEntry);
 	fAccuFrame->AddFrame(fRunTimeEntry, frameGC->LH());
 	fRunTimeEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
-	fRunTimeEntry->SetText("10");
+	fRunTimeEntry->SetText(10);
 	fRunTimeEntry->SetRange(1, 1000);
 	fRunTimeEntry->SetIncrement(1);
 	fRunTimeEntry->AddToFocusList(&fFocusList);
@@ -416,8 +416,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 	Bool_t offlineMode = gDGFControlData->IsOffline();
 
 	TMrbNamedX * tp = fTauFitTimeScaleButtons.FindByIndex(fTimeScale->GetActive());
-	intStr = fRunTimeEntry->GetText();
-	intStr.ToInteger(accuTime);
+	accuTime = fRunTimeEntry->GetText2Int();
 	Int_t waitInv = 0;
 	switch (tp->GetIndex()) {
 		case kDGFTauFitTimeScaleSecs:	waitInv = 1; break;
@@ -434,15 +433,9 @@ Bool_t DGFTauFitPanel::TauFit() {
 		return(kFALSE);
 	}
 
-	TMrbString dblStr = fTauStartEntry->GetText();
-	Double_t tauStart;
-	dblStr.ToDouble(tauStart);
-	dblStr = fTauStepEntry->GetText();
-	Double_t tauStep;
-	dblStr.ToDouble(tauStep);
-	dblStr = fTauStopEntry->GetText();
-	Double_t tauStop;
-	dblStr.ToDouble(tauStop);
+	Double_t tauStart = fTauStartEntry->GetText2Double();
+	Double_t tauStep = fTauStepEntry->GetText2Double();
+	Double_t tauStop = fTauStopEntry->GetText2Double();
 	if (tauStart >= tauStop) {
 		gMrbLog->Err()	<< "Illegal tau range - " << tauStart << " ... " << tauStop << endl;
 		gMrbLog->Flush(this->ClassName(), "TauFit");
@@ -600,7 +593,7 @@ Bool_t DGFTauFitPanel::ResetValues() {
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	fRunTimeEntry->SetText("10");
+	fRunTimeEntry->SetText(10);
 	return(kTRUE);
 }
 
