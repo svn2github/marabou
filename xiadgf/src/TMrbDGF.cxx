@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.41 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.42 2005-09-09 07:18:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3655,7 +3655,7 @@ UInt_t  TMrbDGF::GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP) {
 	if (param == NULL) {
 		gMrbLog->Err() << "No such param - USERIN" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaCSR");
-		return(kFALSE);
+		return(0xffffffff);
 	}
 
 	Int_t pOffset = param->GetIndex() + TMrbDGFData::kPsaPSACh0 + Channel;
@@ -3685,7 +3685,7 @@ Int_t  TMrbDGF::GetUserPsaData4(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 	if (param == NULL) {
 		gMrbLog->Err() << "No such param - USERIN" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaData4");
-		return(kFALSE);
+		return(0xffffffff);
 	}
 
 	Int_t pOffset = param->GetIndex() + Offset;
@@ -3714,7 +3714,7 @@ Int_t  TMrbDGF::GetUserPsaData8(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 	if (param == NULL) {
 		gMrbLog->Err() << "No such param - USERIN" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaData8");
-		return(kFALSE);
+		return(0xffffffff);
 	}
 
 	Int_t pOffset = param->GetIndex() + Offset;
@@ -3759,6 +3759,7 @@ Bool_t TMrbDGF::SetUserPsaData4(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 	b4[Channel] = Value & 0xF;
 	for (Int_t i = 0; i <= 3; i++, pVal <<= 4) pVal |= b4[i];
 	this->SetParValue(pOffset, pVal, UpdateDSP);
+	return(kTRUE);
 }
 
 Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t UpdateDSP) {
@@ -3798,6 +3799,7 @@ Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 	b8[Channel] = Value & 0xFF;
 	for (Int_t i = 0; i <= 1; i++, pVal <<= 8) pVal |= b8[i];
 	this->SetParValue(pOffset, pVal, UpdateDSP);
+	return(kTRUE);
 }
 
 Bool_t TMrbDGF::SetCoincPattern(UInt_t Pattern, Bool_t UpdateDSP) {
