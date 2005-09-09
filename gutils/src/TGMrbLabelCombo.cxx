@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.6 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLabelCombo.cxx,v 1.7 2005-09-09 07:48:23 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -41,7 +41,7 @@ TGMrbLabelCombo::TGMrbLabelCombo(const TGWindow * Parent,
 // Purpose:        Define a label together with a combo box
 // Arguments:      TGWindow * Parent           -- parent window
 //                 Char_t * Label              -- label text
-//                 TMrbLofKeys * Entries       -- combo box entries
+//                 TMrbLofNamedX * Entries     -- combo box entries
 //                 Int_t ComboId               -- id to be used in ProcessMessage
 //                 Int_t Selected              -- id of item to be displayed at startup
 //                 Int_t Width                 -- frame width
