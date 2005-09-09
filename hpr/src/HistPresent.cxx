@@ -302,7 +302,7 @@ void HistPresent::RecursiveRemove(TObject * obj)
 void HistPresent::ShowMain()
 {
    nHists=0;
-   cHPr = new HTCanvas("cHPr", "Histogram Presenter",5,5, 250, 400, this, 0);
+   cHPr = new HTCanvas("cHPr", "HistPresent",5,5, 250, 400, this, 0);
    cHPr->cd();
    maincanvas = GetMyCanvas();
 

@@ -368,7 +368,7 @@ TButton *CommandButton(TString & cmd, TString & tit,
    button->SetTextAlign(12);
 //   button->SetTextFont(101);
    button->SetTextFont(100);
-   button->SetTextSize(0.8);
+   button->SetTextSize(0.72);
 //   if(selected)button->SetFillColor(3);
 //   if(gROOT->GetVersionInt() <= 22308){
 //      TText *text = GetPadText(button);

@@ -160,7 +160,9 @@ void HistPresent::ShowTree(const char* fname, const char* dir, const char* tname
    fCmdLine->AddFirst(new CmdListEntry(cmd, nam, empty, sel));
 
    fRootFile->Close();
-   HTCanvas *ccont = CommandPanel("TreeList", fCmdLine, 245, ycanvas, this);
+   TString title("Tree: ");
+   title += tname;
+   HTCanvas *ccont = CommandPanel(title.Data(), fCmdLine, 245, ycanvas, this);
    if (fHistLists)fHistLists->Add(ccont);
    ycanvas += 50;
    if (ycanvas >= 500) ycanvas=5;

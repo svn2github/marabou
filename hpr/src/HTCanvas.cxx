@@ -47,6 +47,7 @@ HTCanvas::HTCanvas():TCanvas()
    fTimer = NULL;       
    fRootCanvas = NULL;  
    fHandleMenus = NULL;  
+   fEditCommands = NULL;
    fGObjectGroups = NULL; 
    fGetMouse = kFALSE;
 };
