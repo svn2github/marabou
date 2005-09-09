@@ -9,7 +9,7 @@
 //                                           browse files
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFileEntry.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbFileEntry.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,12 +52,14 @@ class TGMrbFileEntry: public TGCompositeFrame, public TGMrbObject {
 		~TGMrbFileEntry() {};				// default dtor
 
 		inline TGTextEntry * GetEntry() const { return(fEntry); };
+		inline const Char_t * GetText() { return(fEntry->GetText()); };
+		inline void SetText(const Char_t * Text) { fEntry->SetText(Text); };
 
 		void FileButtonEnable(Bool_t Flag = kTRUE);			// enable/disable file button
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFileEntry.html&"); };
+		inline void Help() const { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); }
 
 	protected:
 		TGTextEntry * fEntry;				//!

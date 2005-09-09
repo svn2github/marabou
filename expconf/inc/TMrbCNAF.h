@@ -8,7 +8,7 @@
 // Class:          TMrbCNAF             -- base class to handle cnafs
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCNAF.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCNAF.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ class TMrbCNAF : public TNamed {
 
 		inline UInt_t IsSet() const { return(fIsSet); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCNAF.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TString fAscii; 			// ascii representation

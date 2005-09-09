@@ -8,7 +8,7 @@
 // Class:          TMrbSilena_7420      -- silena adc (NIM) + input register (tum/w.liebl)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSilena_7420.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSilena_7420.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ class TMrbSilena_7420 : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("smdw"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSilena_7420.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 						// define camac regs

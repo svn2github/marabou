@@ -8,7 +8,7 @@
 // Class:          TMrbMpiHD_IOReg        -- 16 bit i/o reg (MPI HD)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbMpiHD_IOReg.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbMpiHD_IOReg.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ class TMrbMpiHD_IOReg : public TMrbVMEModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("mpiorl"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbMpiHD_IOReg.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbMpiHD_IOReg, 1)		// [Config] 16 bit I/O register (8in, 8out, MPI HD)
 };

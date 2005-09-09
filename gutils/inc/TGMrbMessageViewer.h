@@ -9,7 +9,7 @@
 //                                             displaying messages
 // Description:        Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMessageViewer.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbMessageViewer.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ class TGMrbMessageViewer: public TGTransientFrame {
 		
 		inline void SetWithDate(Bool_t WithDate) { fWithDate = WithDate; };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMessageViewer.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;

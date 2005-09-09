@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3820        -- 32 chn 32 bit VME scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3820.h,v 1.2 2004-11-26 09:16:18 marabou Exp $       
+// Revision:       $Id: TMrbSis_3820.h,v 1.3 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ class TMrbSis_3820 : public TMrbVMEScaler {
 		inline void SetFifoDepth(Int_t FifoDepth) { fFifoDepth = FifoDepth; };
 		inline Int_t GetFifoDepth() const { return(fFifoDepth); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSis_3820.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

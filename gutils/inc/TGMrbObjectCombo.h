@@ -9,7 +9,7 @@
 //                                           a combo box containing file objects
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbObjectCombo.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbObjectCombo.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -67,7 +67,7 @@ class TGMrbObjectCombo: public TGCompositeFrame, public TGMrbObject {
 		
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbObjectCombo.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TGVerticalFrame * fEC;				//!

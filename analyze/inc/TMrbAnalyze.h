@@ -7,7 +7,7 @@
 // Purpose:        Define base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.42 2005-08-03 12:51:25 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.43 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -145,7 +145,7 @@ class TMrbIOSpec : public TObject {
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & out = cout) const;				// output current settings
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbIOSpec.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t fTimeStampFlag;		// kTRUE if start/stop refers to time stamp rather than event count
@@ -850,7 +850,7 @@ class TMrbAnalyze : public TObject {
 
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAnalyze.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t fVerboseMode;		// kTRUE if verbose mode
@@ -962,7 +962,7 @@ class TUsrEvent : public TObject {
 		};
 		inline TUsrHBX * GetHBX(Int_t SevtSerial) { return((TUsrHBX *) fLofHBXs.At(SevtSerial)); }; // get it from list
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvent.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t CalcTimeRS(); 				// convert time to ROOT style
@@ -1017,7 +1017,7 @@ class TUsrEvtStart : public TUsrEvent {
 		Bool_t InitializeTree(TFile * RootFile);
 		inline Int_t GetTime() const { return(fClockSecs); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStart.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TUsrEvtStart, 1)		// [Analyze] Event type "START ACQUISITION"
 };
@@ -1043,7 +1043,7 @@ class TUsrEvtStop : public TUsrEvent {
 		Bool_t InitializeTree(TFile * RootFile);
 		inline Int_t GetTime() const { return(fClockSecs); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrEvtStop.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TUsrEvtStop, 1)		// [Analyze] Event type "STOP ACQUISITION"
 };
@@ -1088,7 +1088,7 @@ class TUsrDeadTime : public TObject {
 		inline TTree * GetTreeIn() const { return(fTreeIn); };
 		inline TTree * GetTreeOut() const { return(fTreeOut); };
 	
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TUsrDeadTime.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fTimeStamp;					// time stamp (since start)

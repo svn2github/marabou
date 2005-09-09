@@ -8,7 +8,7 @@
 // Class:          TMrbVMEScaler      -- base class for VME scalers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEScaler.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbVMEScaler.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ class TMrbVMEScaler : public TMrbVMEModule, public TMrbScaler {
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
 		inline virtual void Print() const { Print(cout, ""); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEScaler.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbVMEScaler, 1)		// [Config] A base class for VME scalers
 };	

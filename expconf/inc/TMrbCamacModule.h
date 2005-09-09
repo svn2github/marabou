@@ -8,7 +8,7 @@
 // Class:          TMrbCamacModule      -- base class for camac modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacModule.h,v 1.7 2005-05-13 13:01:34 marabou Exp $       
+// Revision:       $Id: TMrbCamacModule.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ class TMrbCamacModule : public TMrbModule {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex) { return(kFALSE); };  	// generate code for given channel
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Subevent, Int_t Value = 0) { return(kFALSE); }; 
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacModule.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;		// show data

@@ -10,7 +10,7 @@
 //                 TMrbWindow2D             -- 2-dim windows and cuts, double only
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbWdw.h,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbWdw.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -78,7 +78,7 @@ class TMrbWindow: public TLine, public TAttText {
 		virtual void Draw(Option_t * Option = "");
 		virtual void Paint(Option_t * Option = "");
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindow.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void SetInitialType(UInt_t WdwType);
@@ -144,7 +144,7 @@ class TMrbWindowI: public TMrbWindow {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindowI.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fXlower;							// current limits
@@ -211,7 +211,7 @@ class TMrbWindowF: public TMrbWindow {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindowF.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		Double_t fXlower;							// current limits
@@ -254,7 +254,7 @@ class TMrbWindow2D : public TCutG, public TAttText {
 
 		Bool_t AddToHist(TObject * Histogram);			// add window to histogram
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWindow2D.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void SetInitialType(UInt_t WdwType);

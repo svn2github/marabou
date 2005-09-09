@@ -8,7 +8,7 @@
 // Class:          TMbsSetup            -- base class
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetup.h,v 1.4 2005-07-20 10:20:24 marabou Exp $       
+// Revision:       $Id: TMbsSetup.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -77,7 +77,7 @@ class TMbsSetup : public TMrbEnv {
 		const Char_t * EncodeArray(TArrayI & Data, Int_t NofEntries, Int_t Base = 10);	// convert array data to string
 		const Char_t * EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries, Int_t Base = 10);
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMbsSetup.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t ExpandFile(Int_t ProcID, TString & TemplatePath, TString & SetupFile, TString & DestPath);	// expand setup file

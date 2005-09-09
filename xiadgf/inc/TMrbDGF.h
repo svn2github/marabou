@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.16 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.17 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -384,7 +384,7 @@ class TMrbDGF : public TNamed {
 		inline TMrbEsone * Camac() { return(&fCamac); }; 							// camac handle
 		inline UShort_t * GetPAddr() { return((UShort_t *) fParams.GetArray()); };	// addr of param data
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbDGF.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void SetVerboseMode(Bool_t VerboseFlag = kTRUE);				// verbose mode on/off
 

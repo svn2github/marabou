@@ -8,7 +8,7 @@
 // Class:          TMrbEnv       -- provide an extended TEnv
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEnv.h,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbEnv.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -95,7 +95,7 @@ class TMrbEnv : public TObject {
 		inline Bool_t HasDefaults() const { return(fDefaultsEnv != NULL); };			// default file open?
 		inline Bool_t IsModified() const { return(fIsModified); };					// modified?
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEnv.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TString fCurFile;				// path to current resource file

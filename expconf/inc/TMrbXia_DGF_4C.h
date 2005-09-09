@@ -8,7 +8,7 @@
 // Class:          TMrbXia_DGF_4C     -- xia's digital gamma finder
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.11 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.h,v 1.12 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -98,7 +98,7 @@ class TMrbXia_DGF_4C : public TMrbCamacModule {
 		
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbXia_DGF_4C.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 			// define camac registers

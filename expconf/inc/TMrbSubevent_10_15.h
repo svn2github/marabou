@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent_10_15   -- MBS subevent type [10,15]
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_10_15.h,v 1.1 2005-04-14 08:57:47 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_10_15.h,v 1.2 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ class TMrbSubevent_10_15 : public TMrbSubevent {
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };		// several modules per buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_15.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_10_15, 1) 	// [Config] Subevent type [10,15]: raw data, buffered
 };

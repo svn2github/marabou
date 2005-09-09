@@ -11,7 +11,7 @@
 //                                           group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbCheckButton.h,v 1.4 2005-04-28 10:25:49 rudi Exp $       
+// Revision:       $Id: TGMrbCheckButton.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ class TGMrbCheckButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbCheckButtonList.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbCheckButtonList, 1)		// [GraphUtils] A list of check buttons
 };
@@ -84,7 +84,7 @@ class TGMrbCheckButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbCheckButtonGroup, 1)		// [GraphUtils] A group of check buttons
 };

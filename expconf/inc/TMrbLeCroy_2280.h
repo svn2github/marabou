@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_2280     -- lecroy qdc 2280
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLeCroy_2280.h,v 1.2 2005-04-11 13:40:19 marabou Exp $       
+// Revision:       $Id: TMrbLeCroy_2280.h,v 1.3 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbLeCroy_2280 : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("lecroy_2280"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_2280.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbLeCroy_2280, 1)		// [Config] LeCroy 2280, 48 x 4K CAMAC QDC
 };

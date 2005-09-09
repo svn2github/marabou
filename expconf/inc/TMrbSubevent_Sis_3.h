@@ -9,7 +9,7 @@
 //                                         dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_3.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_3.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ class TMrbSubevent_Sis_3 : public TMrbSubevent {
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Sis_Common"); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Sis_3.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Sis_3, 1) 	// [Config] Subevent type [10,53]: a format dedicated to SIS modules
 };

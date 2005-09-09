@@ -8,7 +8,7 @@
 // Class:          TMrbLofUserVars -- a list of user-defined variables and windows
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofUserVars.h,v 1.5 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLofUserVars.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class TMrbLofUserVars: public TNamed {
 
 		void SetGlobalAddress();						// set global address gMrbLofUserVars
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofUserVars.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fNofVars;					// total number of vars/windows

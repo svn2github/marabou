@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3600        -- VME pattern unit
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3600.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSis_3600.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ class TMrbSis_3600 : public TMrbVMEModule {
 		inline void SetFifoDepth(Int_t FifoDepth) { fFifoDepth = FifoDepth; };
 		inline Int_t GetFifoDepth() const { return(fFifoDepth); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSis_3600.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

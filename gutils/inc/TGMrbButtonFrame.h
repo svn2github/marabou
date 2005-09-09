@@ -8,7 +8,7 @@
 // Class:          TGMrbButtonFrame    -- a composite frame containing buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbButtonFrame.h,v 1.5 2005-05-04 13:37:35 rudi Exp $       
+// Revision:       $Id: TGMrbButtonFrame.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -109,7 +109,7 @@ class TGMrbButtonFrame: public TGMrbObject {
 
 		void Associate(const TGWindow * Window);		// redirect button events
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbButtonFrame.html&"); };
+		inline void Help() { gSystem->Exec("mrbHelp TGMrbButtonFrame"); };
 
 	protected:
 		void PlaceButtons();						// place buttons in a subframe CxL

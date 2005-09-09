@@ -10,7 +10,7 @@
 //                 TGMrbTableOfDoubles   -- ... pure double elements
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbTableFrame.h,v 1.6 2005-08-05 12:44:44 schaileo Exp $       
+// Revision:       $Id: TGMrbTableFrame.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ class TGMrbTableFrame : public TGTransientFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		void StoreValues();
 		void CloseWindow();
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableFrame.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	private:
 		TList *fWidgets;					// list of widgets on heap
@@ -139,7 +139,7 @@ class TGMrbTableOfInts {
 
 		TGMrbTableOfInts(const TGMrbTableOfInts &) {};				// default copy ctor
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableOfInts.html&"); };
+		inline void Help() { gSystem->Exec("mrbHelp TGMrbTableOfInts"); };
 
 	ClassDef(TGMrbTableOfInts,0)
 };
@@ -170,7 +170,7 @@ class TGMrbTableOfDoubles {
 
 		TGMrbTableOfDoubles(const TGMrbTableOfDoubles &) {};				// default copy ctor
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTableOfDoubles.html&"); };
+		inline void Help() { gSystem->Exec("mrbHelp TGMrbTableOfDoubles"); };
 
 	ClassDef(TGMrbTableOfDoubles,0)
 };

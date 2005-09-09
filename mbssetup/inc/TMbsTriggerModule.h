@@ -8,7 +8,7 @@
 // Class:          TMbsTriggerModule    -- trigger module
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsTriggerModule.h,v 1.3 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsTriggerModule.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ class TMbsTriggerModule : public TObject {
 		Bool_t SetFastClearTime(Int_t FastClearTime);		// fct
 		Int_t GetFastClearTime();
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMbsTriggerModule.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fId; 						// id (same as readout proc's id)

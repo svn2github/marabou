@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_4448      -- lecroy coinc unit 4448 (list mode)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLeCroy_4448.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbLeCroy_4448.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbLeCroy_4448 : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("lecroy_4448"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_4448.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbLeCroy_4448, 1)		// [Config] LeCroy 4448, 32 chn CAMAC coinc unit
 };

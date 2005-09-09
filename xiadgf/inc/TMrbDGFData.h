@@ -8,7 +8,7 @@
 // Class:          TMrbDGFData        -- data base to store DSP and FPGA data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFData.h,v 1.7 2005-09-06 11:51:34 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.h,v 1.8 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -275,7 +275,7 @@ class TMrbDGFData : public TObject {
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag;};	// verbose mode on/off
 		inline Bool_t IsVerbose() const { return(fVerboseMode); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbDGFData.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	public:																// public lists of bits & bytes
 		TMrbLofNamedX fLofDGFStatusDBits;								// soft status (data)

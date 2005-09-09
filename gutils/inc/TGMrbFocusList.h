@@ -8,7 +8,7 @@
 // Class:          TGMrbFocusList               -- focus handling for text entries
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbFocusList.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbFocusList.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ class TGMrbFocusList : public TList {
 		void FocusForward(TGTextEntry * Entry = NULL);
 		void FocusBackward(TGTextEntry * Entry = NULL);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbFocusList.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbFocusList, 0) 	// [GraphUtils] Keep track of the input focus
 };

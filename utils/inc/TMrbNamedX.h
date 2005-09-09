@@ -8,7 +8,7 @@
 // Class:          TMrbNamedX    -- a TNamed with an index assigned
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbNamedX.h,v 1.6 2005-04-05 07:25:44 rudi Exp $       
+// Revision:       $Id: TMrbNamedX.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -113,7 +113,7 @@ class TMrbNamedX: public TNamed {
 		inline Bool_t IsSortedByName() const { return(fSortedByName); };
 		Int_t Compare(const TObject * Nx) const; 							// how to compare TMrbNamedX objects
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNamedX.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t fHasTitle;

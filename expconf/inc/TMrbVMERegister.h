@@ -8,7 +8,7 @@
 // Class:          TMrbVMERegister   -- base class to describe a set of VME registers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMERegister.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbVMERegister.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -57,7 +57,7 @@ class TMrbVMERegister : public TMrbModuleRegister {
 		inline UInt_t AddrClear() const { return(fAddrClear); };
 		inline UInt_t AddrGet() const { return(fAddrGet); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMERegister.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		UInt_t fAddrSet;					// register offset (set bits)

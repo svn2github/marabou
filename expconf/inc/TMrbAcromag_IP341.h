@@ -8,7 +8,7 @@
 // Class:          TMrbAcromag_IP341          -- a 16 channel sampling adc
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAcromag_IP341.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbAcromag_IP341.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -55,7 +55,7 @@ class TMrbAcromag_IP341 : public TMrbVMEModule {
 		virtual inline Int_t GetNofSubDevices() const { return(4); };				// houses up to 4 ip modules
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };				// has to be read out as a whole
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAcromag_IP341.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

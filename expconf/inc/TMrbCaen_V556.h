@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V556        -- 8 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V556.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCaen_V556.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -75,7 +75,7 @@ class TMrbCaen_V556 : public TMrbVMEModule {
 
 		inline Bool_t HasRandomReadout() const { return(kFALSE); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V556.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

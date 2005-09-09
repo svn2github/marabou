@@ -11,7 +11,7 @@
 //                                              normal push buttons
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbTextButton.h,v 1.4 2005-04-28 10:25:49 rudi Exp $       
+// Revision:       $Id: TGMrbTextButton.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ class TGMrbTextButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, MsgParm1));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTextButtonList.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbTextButtonList, 1)		// [GraphUtils] A list of text buttons
 };
@@ -82,7 +82,7 @@ class TGMrbTextButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbTextButtonGroup.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbTextButtonGroup, 1)		// [GraphUtils] A group of text buttons
 };

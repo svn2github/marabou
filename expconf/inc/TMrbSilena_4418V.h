@@ -8,7 +8,7 @@
 // Class:          TMrbSilena_4418V     -- silena adc 4418/V
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSilena_4418V.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSilena_4418V.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ class TMrbSilena_4418V : public TMrbCamacModule {
 
 		virtual Bool_t CheckSubeventType(TObject * Subevent) const;		// check if subevent type is [10,3x]
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSilena_4418V.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define camac registers

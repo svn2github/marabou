@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent_10_11   -- MBS subevent type [10,11]
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_10_11.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_10_11.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -46,7 +46,7 @@ class TMrbSubevent_10_11 : public TMrbSubevent {
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex,  	// generate part of code for this subevent
 														TMrbTemplate & Template, const Char_t * Prefix = NULL);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_11.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_10_11, 1) 	// [Config] Subevent type [10,11]: data without channel id, zero-padded
 };

@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ class TMrbEvent : public TNamed {
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
 		inline virtual void Print() const { Print(cout, ""); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEvent.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		UInt_t fEventType;

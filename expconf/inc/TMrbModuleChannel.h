@@ -8,7 +8,7 @@
 // Class:          TMrbModuleChannel    -- base class to describe a single channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleChannel.h,v 1.6 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbModuleChannel.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -100,7 +100,7 @@ class TMrbModuleChannel : public TNamed {
 		virtual void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "") {};	 // show registers
 		inline void Print() { Print(cout, kFALSE, kFALSE, ""); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleChannel.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TMrbModule * fParent;					// parent module

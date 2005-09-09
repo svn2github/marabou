@@ -8,7 +8,7 @@
 // Class:          TGMrbObject  - some basic methods common to all MARaBOU widgets
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbObject.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbObject.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -37,7 +37,7 @@ class TGMrbObject {
 
 		TGMrbLayout * SetupGC(TGMrbLayout * GC, UInt_t FrameOptions);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbObject.html&"); };
+		inline void Help() { gSystem->Exec("mrbHelp TGMrbObject"); };
 
 	protected:
 		TList fHeap;							// store heap objects here

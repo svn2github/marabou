@@ -8,7 +8,7 @@
 // Class:          TMrbCamacScaler      -- base class for camac scalers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacScaler.h,v 1.6 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbCamacScaler.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ class TMrbCamacScaler : public TMrbCamacModule, public TMrbScaler {
 								TMrbScaler() {	fHistosToBeAllocated = kFALSE; };
 		~TMrbCamacScaler() {};											// default dtor
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacScaler.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbCamacScaler, 1)		// [Config] Base class describing a CAMAC scaler
 };	

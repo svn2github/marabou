@@ -8,7 +8,7 @@
 // Class:          TMrbGanelec_Q1612F	-- ganelec qdc 16 fold
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbGanelec_Q1612F.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbGanelec_Q1612F.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class TMrbGanelec_Q1612F : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("gan_q1612f"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbGanelec_Q1612F.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define camac registers

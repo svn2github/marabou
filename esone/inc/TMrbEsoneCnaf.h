@@ -9,7 +9,7 @@
 // Description:    Class definitions to establish an
 //                 ESONE client/server connection.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEsoneCnaf.h,v 1.4 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEsoneCnaf.h,v 1.5 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,7 @@ class TMrbEsoneCnaf : public TObject {
 		inline EMrbEsoneCamacAction GetAction() { return(fAction); };	// return action
 		inline void SetAction(EMrbEsoneCamacAction Action) { fAction = Action; };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEsoneCnaf.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Reset();										// reset data
 		Bool_t CheckCnaf(UInt_t CnafBits = kEsoneCnafBits);	// check for missing cnaf components

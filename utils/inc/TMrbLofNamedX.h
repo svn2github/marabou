@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofNamedX.h,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLofNamedX.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -104,7 +104,7 @@ class TMrbLofNamedX: public TObjArray {
 						UInt_t Mask = 0xffffffff,
 						Bool_t CrFlag = kTRUE) const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofNamedX.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t fPatternMode;

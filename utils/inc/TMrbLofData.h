@@ -8,7 +8,7 @@
 // Class:          TMrbLofData    -- a list of (structured) data
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofData.h,v 1.4 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLofData.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -60,7 +60,7 @@ class TMrbLofData: public TNamed {
 		inline Int_t GetNofEntries() const { return(fNofEntries); };	// get number of entries
 		inline Int_t GetEntrySize() const { return(fEntrySize); };	// get entry size
 				
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofData.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 			

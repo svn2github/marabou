@@ -8,7 +8,7 @@
 // Class:          TMrbVMEChannel    -- base class to describe a VME channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVMEChannel.h,v 1.6 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbVMEChannel.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbVMEChannel : public TMrbModuleChannel {
 
 		inline const Char_t * GetPosition() const { return(fPosition.Data()); };	// crate & addr
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVMEChannel.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "");	 	// show registers

@@ -9,7 +9,7 @@
 //                                        a combo box
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelCombo.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLabelCombo.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -74,7 +74,7 @@ class TGMrbLabelCombo: public TGCompositeFrame, public TGMrbObject {
 		inline const Char_t * GetText() const { return(fText.Data()); };					// return text field data
 		inline void SetText(const Char_t * Text) { fText = Text; }; 				// set text field
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelCombo.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TGComboBox * fCombo;			//!

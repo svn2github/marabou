@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_4432      -- lecroy scaler 4432 (list mode)
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLeCroy_4432.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbLeCroy_4432.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbLeCroy_4432 : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("lecroy_4432"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_4432.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbLeCroy_4432, 1)		// [Config] LeCroy 4432, 32 chn CAMAC scaler
 };

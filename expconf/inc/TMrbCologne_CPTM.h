@@ -8,7 +8,7 @@
 // Class:          TMrbCologne_CPTM     -- clock and programmable trigger module
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCologne_CPTM.h,v 1.1 2005-04-21 07:18:04 rudi Exp $       
+// Revision:       $Id: TMrbCologne_CPTM.h,v 1.2 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TMrbCologne_CPTM : public TMrbCamacModule {
 
 		virtual inline Bool_t HasRandomReadout() const { return(kFALSE); };	// block mode only
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCologne_CPTM.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters();

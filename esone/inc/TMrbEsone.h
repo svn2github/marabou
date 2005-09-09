@@ -9,7 +9,7 @@
 // Description:    Class definitions to establish an
 //                 ESONE client/server connection.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEsone.h,v 1.7 2005-08-03 11:45:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -155,7 +155,7 @@ class TMrbEsone : public TObject {
 		inline const Char_t * GetControllerName() { return(fController.GetName()); };	// name/index of camac controller used
 		inline Int_t GetControllerIndex() { return(fController.GetIndex()); };
 		
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEsone.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		inline void SetVerboseMode(Bool_t VerboseFlag = kTRUE) { fVerboseMode = VerboseFlag; };	// verbose mode on/off
 		inline Bool_t IsVerbose() { return(fVerboseMode); };

@@ -7,7 +7,7 @@
 // Purpose:        Class defs to control the polarized ion source
 // Description:    Class definitions to control Ralf Hertenberger's polarized ion source
 // Author:         R. Lutter
-// Revision:       $Id: TPolControl.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TPolControl.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -125,7 +125,7 @@ class TPolControl : public TObject {
 
 		Bool_t HandleTimer(TTimer * Timer); 						// used by Monitor() method
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TPolControl.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t CheckAdcChannel(Int_t Subdev, Int_t Channel, const Char_t * Method = NULL);

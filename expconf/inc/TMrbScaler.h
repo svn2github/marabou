@@ -8,7 +8,7 @@
 // Class:          TMrbScaler      -- base class for camac and vme scalers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbScaler.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbScaler.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TMrbScaler {
 		void SetFunctionName(const Char_t * FctName, TMrbConfig::EMrbScalerFunction Fct);	// define function name
 		const Char_t * GetFunctionName(TMrbConfig::EMrbScalerFunction Fct) const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbScaler.html&"); };
+		inline void Help() { gSystem->Exec("mrbHelp TMrbScaler"); };
 
 	protected:
 		UInt_t fScalerMode; 			// scaler mode

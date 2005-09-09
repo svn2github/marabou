@@ -9,7 +9,7 @@
 //                                        dedicated format for C_PTM modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_CPTM.h,v 1.1 2005-04-21 07:24:11 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_CPTM.h,v 1.2 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ class TMrbSubevent_CPTM : public TMrbSubevent {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_CPTM.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_CPTM, 1) 	// [Config] Subevent type [10,61]: a format used by C_PTM modules
 };

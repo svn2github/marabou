@@ -8,7 +8,7 @@
 // Class:          TMrbTemplate     -- decode templates
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTemplate.h,v 1.9 2005-04-19 08:27:37 rudi Exp $       
+// Revision:       $Id: TMrbTemplate.h,v 1.10 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -97,7 +97,7 @@ class TMrbTemplate : public TObject {
 
 		inline Bool_t HasOtherTags() const { return(fHasOtherTags); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTemplate.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t TestIfBeginOrEndOfCode();		// test if %%BeginOfCode%%/%%EndOfCode%%

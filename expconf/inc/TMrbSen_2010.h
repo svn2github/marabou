@@ -8,7 +8,7 @@
 // Class:          TMrbSen_2010         -- dual input register
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSen_2010.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSen_2010.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbSen_2010 : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("sen_2010"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSen_2010.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSen_2010, 1)		// [Config] SEN 2010, dual CAMAC input register
 };

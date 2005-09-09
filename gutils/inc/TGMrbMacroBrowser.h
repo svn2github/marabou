@@ -11,7 +11,7 @@
 //                 TGMrbMacroBrowserTransient   -- ... (transient window)
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbMacroBrowser.h,v 1.5 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -117,7 +117,7 @@ class TGMrbMacroArg : public TObject {
 		inline Int_t GetNumber() const { return(fNumber); };
 		inline void SetNumber(Int_t Number) { fNumber = Number; };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroArg.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fNumber;					// arg number
@@ -193,7 +193,7 @@ class TGMrbMacroFrame : public TGTransientFrame {
 		Bool_t ModifyMacroHeader(); 					// modify header
 		Bool_t ModifyMacroSource(); 					// modify source
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroFrame.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;
@@ -273,7 +273,7 @@ class TGMrbMacroEdit : public TGTransientFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroEdit.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t UpdateArg(Int_t ArgNo = -1);					// update GUI for a given argument
@@ -365,7 +365,7 @@ class TGMrbMacroList : public TGVerticalFrame {
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 		virtual void CloseWindow() { delete this; };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroList.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;
@@ -411,7 +411,7 @@ class TGMrbMacroBrowserMain : public TGMainFrame {
 		
 		virtual inline void CloseWindow();
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserVertical.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void PopupMessageViewer();
@@ -457,7 +457,7 @@ class TGMrbMacroBrowserVertical : public TGVerticalFrame {
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserVertical.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;
@@ -488,7 +488,7 @@ class TGMrbMacroBrowserGroup : public TGGroupFrame {
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserGroup.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;
@@ -524,7 +524,7 @@ class TGMrbMacroBrowserPopup : public TGPopupMenu {
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserPopup.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;
@@ -555,7 +555,7 @@ class TGMrbMacroBrowserTransient : public TGTransientFrame {
 
 		virtual Bool_t ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) { return(kTRUE); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbMacroBrowserTransient.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;

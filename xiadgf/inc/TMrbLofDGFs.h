@@ -8,7 +8,7 @@
 // Class:          TMrbLofDGFs         -- a list of DGF modules
 // Description:    Class definitions to operate XIA DGF-4C modules
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofDGFs.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbLofDGFs.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -64,7 +64,7 @@ class TMrbLofDGFs : public TObjArray {
 		inline void Abort() { fAbortFlag = kTRUE; };
 		inline Bool_t IsAborted() { return(fAbortFlag); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofDGFs.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t CheckConnect(const Char_t * Method);						// check if connected to CAMAC

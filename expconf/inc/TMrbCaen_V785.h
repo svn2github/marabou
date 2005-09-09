@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V785        -- 32 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V785.h,v 1.8 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCaen_V785.h,v 1.9 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -127,7 +127,7 @@ class TMrbCaen_V785 : public TMrbVMEModule {
 		virtual inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		virtual inline const Char_t * GetPrivateCodeFile() const { return("Module_Caen_V7X5"); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V785.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

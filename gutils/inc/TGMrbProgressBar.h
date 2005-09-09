@@ -9,7 +9,7 @@
 //                                             showing a progress bar
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbProgressBar.h,v 1.4 2005-09-06 11:47:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbProgressBar.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ class TGMrbProgressBar: public TGTransientFrame {
 		inline void SetPosition(Int_t Position) { fBar->SetPosition(Position); }; 
 		inline void Reset() { fBar->Reset(); }; 
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbProgressBar.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TList fHeap;

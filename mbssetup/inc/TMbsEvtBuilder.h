@@ -8,7 +8,7 @@
 // Class:          TMbsEvtBuilder       -- event builder
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsEvtBuilder.h,v 1.4 2004-11-25 12:00:17 rudi Exp $       
+// Revision:       $Id: TMbsEvtBuilder.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -68,7 +68,7 @@ class TMbsEvtBuilder : public TObject {
 		void RemoveSetup(); 			// remove entries from setup data base
 		void Reset();	 				// reset to default
 
-		inline void Help() const{ gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMbsEvtBuilder.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TString fName;					// temp storage: name

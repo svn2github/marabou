@@ -8,7 +8,7 @@
 // Class:          TMrbModuleChannel    -- base class to describe a camac channel
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacChannel.h,v 1.7 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbCamacChannel.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -50,7 +50,7 @@ class TMrbCamacChannel : public TMrbModuleChannel {
 			return(fCNAF.Int2Ascii(Position, kTRUE));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacChannel.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, Bool_t ArrayFlag, Bool_t SevtFlag, const Char_t * Prefix = "");	 	// show registers

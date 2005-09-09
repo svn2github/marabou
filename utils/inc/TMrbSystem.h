@@ -8,7 +8,7 @@
 // Class:          TMrbSystem    -- extension to TSystem class
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSystem.h,v 1.5 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbSystem.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ class TMrbSystem: public TObject {
 		inline Bool_t HasWritePermission(const Char_t * Path) const { return(this->CheckAccess(Path, kWritePermission)); };
 		inline Bool_t HasExecutePermission(const Char_t * Path) const { return(this->CheckAccess(Path, kExecutePermission)); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSystem.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t CheckType(const Char_t * Path, EMrbFileType Type) const;

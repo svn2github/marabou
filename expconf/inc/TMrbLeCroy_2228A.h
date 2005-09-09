@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_2228A     -- lecroy tdc 2228A
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLeCroy_2228A.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbLeCroy_2228A.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbLeCroy_2228A : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("lecroy_2228a"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_2228A.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbLeCroy_2228A, 1)		// [Config] LeCroy 2228A, 12 x 2K CAMAC TDC
 };

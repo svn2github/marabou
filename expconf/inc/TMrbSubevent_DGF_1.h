@@ -9,7 +9,7 @@
 //                                         dedicated format for XIA DGF-4C modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_DGF_1.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_DGF_1.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -69,7 +69,7 @@ class TMrbSubevent_DGF_1 : public TMrbSubevent {
 
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_DGF_1.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Int_t fClusterNumber;			// cluster number

@@ -9,7 +9,7 @@
 //                                          dedicated format CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,7 +36,7 @@ namespace std {} using namespace std;
 //                                         dedicated format for Sis modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Sis_1.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -61,7 +61,7 @@ class TMrbSubevent_Sis_1 : public TMrbSubevent {
 				
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Sis_1.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Sis_1, 1) 	// [Config] Subevent type [10,51]: a format dedicated to CAEN modules
 };

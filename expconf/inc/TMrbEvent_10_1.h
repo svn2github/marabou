@@ -8,7 +8,7 @@
 // Class:          TMrbEvent_10_1       -- MBS event type [10,1]
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent_10_1.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEvent_10_1.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -43,7 +43,7 @@ class TMrbEvent_10_1 : public TMrbEvent {
 		TMrbEvent_10_1(Int_t TrigNumber, const Char_t * EvtName = "", const Char_t * EvtTitle = "");	// explicit ctor
 		~TMrbEvent_10_1() {};	 			// remove current subevent from list
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbEvent_10_1.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbEvent_10_1, 1) 	// [Config] Event type [10,1]: standard MBS event
 };

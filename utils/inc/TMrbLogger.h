@@ -8,7 +8,7 @@
 // Class:          TMrbLogger    -- message/error logging
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLogger.h,v 1.8 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLogger.h,v 1.9 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -63,7 +63,7 @@ class TMrbLogMessage: public TObject {
 									Bool_t WithDate = kFALSE,
 									Bool_t WithColors = kTRUE) const;
 				
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogMessage.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TDatime fDatime;
@@ -150,7 +150,7 @@ class TMrbLogger: public TNamed {
 		inline ostringstream & Wrn() { return(*fWrn); };
 		inline ofstream & Log() { return(*fLog); };
 				
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLogger.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 

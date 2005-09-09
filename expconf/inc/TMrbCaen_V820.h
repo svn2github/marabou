@@ -8,7 +8,7 @@
 // Class:          TMrbCaen_V820        -- 32 chn latching scaler
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCaen_V820.h,v 1.7 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCaen_V820.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -82,7 +82,7 @@ class TMrbCaen_V820 : public TMrbVMEScaler {
 
 		virtual inline const Char_t * GetMnemonic() const { return("caen_V820"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCaen_V820.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.57 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.58 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -778,7 +778,7 @@ class TMrbConfig : public TNamed {
 		Bool_t IsDefined(const Char_t * Name, Int_t & Value) const;
 		Bool_t IsDefined(const Char_t * Name) const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbConfig.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	public: 									// public lists of key words:
 		TMrbLofNamedX fLofDataTypes;			//! ... data types

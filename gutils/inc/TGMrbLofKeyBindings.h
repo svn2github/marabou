@@ -8,7 +8,7 @@
 // Class:          TGMrbLofKeyBindings          -- key bindings
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLofKeyBindings.h,v 1.4 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLofKeyBindings.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ class TGMrbLofKeyBindings : public TMrbLofNamedX {
 		Bool_t BindKey(const Char_t * Key, EGMrbKeyAction Action = TGMrbLofKeyBindings::kGMrbKeyActionAllDone);
 		Bool_t HandleKey(Event_t * Event);
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLofKeyBindings.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		const TGWindow * fParent;

@@ -8,7 +8,7 @@
 // Class:          TMrbModuleRaw     -- a user-defined module
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleRaw.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModuleRaw.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ class TMrbModuleRaw : public TMrbModule {
 		inline Bool_t ConvertToInt() const { return(kFALSE); };						// data type remains unchanged
 		virtual inline Bool_t IsRaw() const { return(kTRUE); };						// indicates raw (user-defined) mode
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleRaw.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		virtual void DefineRegisters() {}; 				// define registers

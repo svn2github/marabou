@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent_10_13    -- MBS subevent type [10,13]
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_10_13.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_10_13.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -53,7 +53,7 @@ class TMrbSubevent_10_13 : public TMrbSubevent {
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() const { return("Subevent_HB_Common"); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_13.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_10_13, 1)		// [Config] Subevent type [10,13]: data with channel id & time stamp
 };

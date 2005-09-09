@@ -8,7 +8,7 @@
 // Class:          TMrbModule           -- base class for camac & vme modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModule.h,v 1.12 2005-05-24 17:52:32 marabou Exp $       
+// Revision:       $Id: TMrbModule.h,v 1.13 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -158,7 +158,7 @@ class TMrbModule : public TNamed {
 		virtual inline const Char_t * GetPrivateCodeFile() const { return(NULL); };
 		virtual inline const Char_t * GetCommonCodeFile() const { return(NULL); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModule.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		virtual void DefineRegisters() {};

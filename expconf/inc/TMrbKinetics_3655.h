@@ -8,7 +8,7 @@
 // Class:          TMrbKinetics_3655     -- timing generator Kinetics-3655
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbKinetics_3655.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbKinetics_3655.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -88,7 +88,7 @@ class TMrbKinetics_3655 : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("Kinetics_3655"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbKinetics_3655.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 			// define camac registers

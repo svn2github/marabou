@@ -11,7 +11,7 @@
 // ROOT classes:   TNamed
 // Keywords:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTransport.h,v 1.7 2004-09-28 13:47:33 rudi Exp $                  
+// Revision:       $Id: TMrbTransport.h,v 1.8 2005-09-09 06:59:14 Rudolf.Lutter Exp $                  
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -133,7 +133,7 @@ class TMrbTransport : public TNamed {
 		inline void SetStopFlag(Bool_t Flag = kTRUE) { fStopFlag = Flag; };
 		inline Bool_t IsToBeStopped() { return(fStopFlag); };
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTransport.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 															// public lists of key words:
 	public:

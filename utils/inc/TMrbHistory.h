@@ -8,7 +8,7 @@
 // Class:          TMrbHistory    -- (inverse) history buffer
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbHistory.h,v 1.5 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbHistory.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ class TMrbHistory: public TObjArray {
 		void Print(ostream & Out) const;
 		inline void Print() const { Print(cout); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbHistory.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 

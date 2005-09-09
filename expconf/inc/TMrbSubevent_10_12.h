@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent_10_12   -- MBS subevent type [10,12]
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_10_12.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_10_12.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ class TMrbSubevent_10_12 : public TMrbSubevent {
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 			// use private code files
 		inline Bool_t AllowsMultipleModules() const { return(kTRUE); };		// can store multiple modules
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_10_12.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_10_12, 1) 	// [Config] Subevent type [10,12]: data with channel id, module headers
 };

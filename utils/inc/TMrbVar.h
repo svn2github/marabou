@@ -14,7 +14,7 @@
 //                 TMrbVarArrayF            -- ... floats/double
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbVar.h,v 1.4 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbVar.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -59,7 +59,7 @@ class TMrbVariable: public TNamed {
 			SetUniqueID(varType);
 		};
 
-		inline void Help() { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVariable.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void SetInitialType(UInt_t VarType);
@@ -117,7 +117,7 @@ class TMrbVarI: public TMrbVariable {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarI.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		Int_t fValue;						// current value
@@ -175,7 +175,7 @@ class TMrbVarF: public TMrbVariable {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarF.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		Double_t fValue;							// current value
@@ -217,7 +217,7 @@ class TMrbVarS: public TMrbVariable {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarS.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		TString fValue;						// current value
@@ -252,7 +252,7 @@ class TMrbVarB: public TMrbVariable {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarB.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		Bool_t fValue;						// current value
@@ -309,7 +309,7 @@ class TMrbVarArrayI: public TMrbVariable {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarArrayI.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		TArrayI fValue;						// current values
@@ -368,7 +368,7 @@ class TMrbVarArrayF: public TMrbVariable {
 
 		virtual void Print(Option_t * Option = "") const;
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbVarArrayF.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
  	protected:
 		TArrayD fValue;							// current values

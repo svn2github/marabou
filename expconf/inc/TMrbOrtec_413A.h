@@ -8,7 +8,7 @@
 // Class:          TMrbOrtec_413A     -- ortec ad413a
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbOrtec_413A.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbOrtec_413A.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class TMrbOrtec_413A : public TMrbCamacModule {
 
 		virtual inline const Char_t * GetMnemonic() const { return("ortec_413a"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbOrtec_413A.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define camac registers

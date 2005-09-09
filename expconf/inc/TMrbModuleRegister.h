@@ -8,7 +8,7 @@
 // Class:          TMrbModuleRegister   -- base class to describe a set of module registers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbModuleRegister.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbModuleRegister.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -85,7 +85,7 @@ class TMrbModuleRegister : public TObject {
 		inline Bool_t HasBitNames() const { return(fLofBitNames != NULL); };		// test if bit names given
 		inline TMrbLofNamedX * BitNames() { return(fLofBitNames); };		// list of bit names
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbModuleRegister.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;

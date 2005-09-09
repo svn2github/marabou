@@ -8,7 +8,7 @@
 // Class:          TMrbModuleRegister   -- base class to describe a set of camac registers
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCamacRegister.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbCamacRegister.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -66,7 +66,7 @@ class TMrbCamacRegister : public TMrbModuleRegister {
 		inline TMrbCNAF * CnafClear() { return(&fCnafClear); };
 		inline TMrbCNAF * CnafGet() { return(&fCnafGet); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbCamacRegister.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		UInt_t fHasCnafs;							// any cnafs given?

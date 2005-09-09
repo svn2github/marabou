@@ -8,7 +8,7 @@
 // Class:          TMrbLeCroy_1176        -- 32 chn peak sensing ADC
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLeCroy_1176.h,v 1.3 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbLeCroy_1176.h,v 1.4 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ class TMrbLeCroy_1176 : public TMrbVMEModule {
 
 		virtual inline Bool_t HasPrivateCode() const { return(kFALSE); }; 			// use private code files
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLeCroy_1176.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 							// define vme registers

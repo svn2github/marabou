@@ -11,7 +11,7 @@
 //                                             group frame
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbPictureButton.h,v 1.4 2005-04-28 10:25:49 rudi Exp $       
+// Revision:       $Id: TGMrbPictureButton.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ class TGMrbPictureButtonList: public TGCompositeFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbPictureButtonList.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbPictureButtonList, 1) 	// [GraphUtils] A list of picture buttons
 };
@@ -82,7 +82,7 @@ class TGMrbPictureButtonGroup: public TGGroupFrame, public TGMrbButtonFrame {
 			return(ButtonFrameMessage(MsgId, Param1));
 		};
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbRadioButtonGroup.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TGMrbPictureButtonGroup, 1) 	// [GraphUtils] A group of picture buttons
 };

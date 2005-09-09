@@ -8,7 +8,7 @@
 // Class:          TMrbUct_8904         -- scaler uct tum/n.franz
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbUct_8904.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbUct_8904.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,7 +48,7 @@ class TMrbUct_8904 : public TMrbCamacScaler {
 
 		virtual inline const Char_t * GetMnemonic() const { return("uct"); }; 	// module mnemonic
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbUct_8904.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbUct_8904, 1)		// [Config] Universal Counter/Timer 10 MHz (CAMAC)
 };

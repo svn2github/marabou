@@ -9,7 +9,7 @@
 //                                         dedicated format for CAEN modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_Caen_2.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbSubevent_Caen_2.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -62,7 +62,7 @@ class TMrbSubevent_Caen_2 : public TMrbSubevent {
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
 		inline const Char_t * GetCommonCodeFile() const { return("Subevent_Caen_Common"); };
 		
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSubevent_Caen_2.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	ClassDef(TMrbSubevent_Caen_2, 1) 	// [Config] Subevent type [10,42]: a format dedicated to CAEN modules
 };

@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.6 2005-09-06 11:47:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -140,7 +140,7 @@ class TGMrbLabelEntry: public TGCompositeFrame, public TGMrbObject {
 
 		inline void Associate(const TGWindow * Window) { fEntry->Associate(Window); };	// where to go if text field data change
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLabelEntry.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void CreateToolTip();

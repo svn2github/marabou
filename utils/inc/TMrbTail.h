@@ -8,7 +8,7 @@
 // Class:          TMrbTail    -- tail utility
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTail.h,v 1.7 2004-12-14 11:46:51 rudi Exp $       
+// Revision:       $Id: TMrbTail.h,v 1.8 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -47,7 +47,7 @@ class TMrbTail: public TMrbLogger {
 
 		virtual Bool_t HandleTimer(TTimer * Timer);
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbTail.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TString fTailFile;

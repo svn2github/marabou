@@ -8,7 +8,7 @@
 // Class:          TMrbAdcd_9701        -- dual flash adc tum/w.liebl
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAdcd_9701.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbAdcd_9701.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ class TMrbAdcd_9701 : public TMrbCamacModule {
 		virtual inline Int_t GetNofSubDevices() const { return(2); };				// houses 2 identical adcs
 		virtual inline Bool_t HasRandomReadout() const { return(kFALSE); };		// must be read as a whole
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbAdcd_9701.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		void DefineRegisters(); 				// define camac regs

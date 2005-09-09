@@ -8,7 +8,7 @@
 // Description:    Class definitions to control I/O from/to a serial port.
 //                 Inspired by a class c_SerialComm written by Mario Schubert
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSerialComm.h,v 1.4 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbSerialComm.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -72,7 +72,7 @@ class TMrbSerialComm : public TNamed {
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		virtual void Print() const;			// print settings
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbSerialComm.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		const Char_t * MakePrintable(TString & PrintString, const Char_t * String) const;

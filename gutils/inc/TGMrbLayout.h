@@ -8,7 +8,7 @@
 // Class:          TGMrbLayout                  -- layout & graphic context
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLayout.h,v 1.3 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TGMrbLayout.h,v 1.4 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TGMrbLayout : public TObject {
 		inline void SetLH(TGLayoutHints * Hints) { fLayoutHints = Hints; };
 		inline TGLayoutHints * LH() const { return(fLayoutHints); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TGMrbLayout.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		GContext_t CreateGC(FontStruct_t Font, ULong_t Foreground, ULong_t Background);

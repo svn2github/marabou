@@ -8,7 +8,7 @@
 // Class:          TMrbNE_9041          -- dual input register
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbNE_9041.h,v 1.6 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbNE_9041.h,v 1.7 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -51,7 +51,7 @@ class TMrbNE_9041 : public TMrbCamacModule {
 		inline void SetWaitForQ(Bool_t Flag = kTRUE) { fWaitForQ = Flag; }; 	// q-wait or loop?
 		inline Bool_t WaitForQ() const { return(fWaitForQ); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbNE_9041.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t fWaitForQ;

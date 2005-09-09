@@ -8,7 +8,7 @@
 // Classes:        TMrbLofMacros     -- a list of root macros
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofMacros.h,v 1.4 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLofMacros.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -73,7 +73,7 @@ class TMrbLofMacros: public TMrbLofNamedX {
 
 		void PrintMacro(const Char_t * MacroName = "") const ;					// print macro
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbLofMacros.html&"); };
+		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		TMrbNamedX * ProcessMacro(const Char_t * MacroPath, const Char_t * MdefPath = NULL, Bool_t TestFormat = kTRUE);

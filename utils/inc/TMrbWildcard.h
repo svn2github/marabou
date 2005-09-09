@@ -8,7 +8,7 @@
 // Class:          TMrbWildcard    -- wildcard utility
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbWildcard.h,v 1.2 2004-12-15 08:09:45 rudi Exp $       
+// Revision:       $Id: TMrbWildcard.h,v 1.3 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -44,7 +44,7 @@ class TMrbWildcard {
 		inline Bool_t Match(TString & String) const { return(this->Match(String.Data())); };
 		inline Bool_t IsWildcarded() const { return(fIsWildcarded); };
 
-		inline void Help() const { gSystem->Exec("kdehelp /usr/local/Marabou/doc/html/TMrbWildcard.html&"); };
+		inline void Help() { gSystem->Exec("mrbHelp TMrbWildcard"); };
 
 	protected:
 
