@@ -443,7 +443,6 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 Bool_t TGMrbValuesAndText::ProcessMessage(Long_t msg, Long_t parm1, Long_t parm2)
 {
    // Handle button and text enter events
-   cout << "ProcessMessage " << parm1 << " " << parm2 << endl;
 
    switch (GET_MSG(msg)) {
       case kC_COMMAND:
@@ -737,10 +736,7 @@ Bool_t GetStringExt(const char *Prompt, TString  *text ,
                         TArrayI * Flags, const char * Flagslabel,
                         const char *helptext)
 { 
-   // Prompt for string. The typed in string is returned.
-
-//   static char answer[128];
-   Int_t ret;
+   Int_t ret = 0;
    new TGMrbValuesAndText(Prompt, text, &ret, win_width,  Win,  
        FileName, Complist, rowlabs, values,Flags, Flagslabel, helptext);
    if(ret == 0) return kTRUE;

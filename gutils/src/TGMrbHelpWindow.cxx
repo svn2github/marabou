@@ -82,5 +82,5 @@ void TGMrbHelpWindow::CloseWindow()
 {
    // Called when closed via window manager action.
    cout << "TGMrbHelpWindow::CloseWindow() " << endl;
-   delete this;
+   DeleteWindow();
 }
