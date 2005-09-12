@@ -656,7 +656,7 @@ void HistPresent::SetCurlyAttributes(TGWindow * win, FitHist * fh)
    } 
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Feynman diagrams", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values, 
                       &flag, "Set all");
    if (!ok) return;
@@ -835,7 +835,7 @@ void HistPresent::SetGeneralAttributes(TGWindow * win, FitHist * fh)
          
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Graphics defaults", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values, 
                       &flag, "Set all");
    if (!ok) return;
@@ -978,7 +978,7 @@ void HistPresent::SetTitleAttributes(TGWindow * win, FitHist * fh)
    AddObjString(fTitleH, values);  
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Title Attr", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    vp = 0;
@@ -1071,7 +1071,7 @@ void HistPresent::SetPadAttributes(TGWindow * win, FitHist * fh)
 
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Canvas, Pad, Frame", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    vp = 0;
@@ -1163,7 +1163,7 @@ void HistPresent::SetHistAttributes(TGWindow * win, FitHist * fh)
    AddObjString(fFuncWidth, values);   
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Histograms, Functions", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    vp = 0;
@@ -1269,7 +1269,7 @@ void HistPresent::SetStatAttributes(TGWindow * win, FitHist * fh)
    AddObjString(gStyle->GetStatH(), values);
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, win,
+   ok = GetStringExt("Statbox", NULL, itemwidth, win,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    vp = 0;

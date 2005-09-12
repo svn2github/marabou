@@ -1014,13 +1014,22 @@ a shift value of 10 will only shift by 5 cm";
    Bool_t ok;
    Int_t itemwidth = 320;
 //   ofstream hfile(hist_file);
-   static Int_t plain = 1;
-   static Double_t xpaper = 20;  // A4 and letter
-   static Double_t ypaper = 26;  // A4 24, letter 26
-   static Double_t scale  = 1;
-   static Double_t xshift = 0;
-   static Double_t yshift = 0;
-   static Int_t view_ps = 1;
+   Int_t plain;
+   Double_t xpaper;  // A4 and letter
+   Double_t ypaper;  // A4 24, letter 26
+   Double_t scale;
+   Double_t xshift;
+   Double_t yshift;
+   Int_t    view_ps;
+
+   TEnv env(".rootrc");
+   xpaper = env.GetValue("HistPresent.PaperSizeX", 20.);
+   ypaper = env.GetValue("HistPresent.PaperSizeY", 26.);
+   xshift = env.GetValue("HistPresent.PrintShiftX", 0.);
+   yshift = env.GetValue("HistPresent.PrintShiftY", 0.);
+   scale  = env.GetValue("HistPresent.PrintScale",  1.);
+   view_ps= env.GetValue("HistPresent.AutoShowPSFile", 0);
+   plain  = env.GetValue("HistPresent.PlainStyle", 1);
 
    TList *row_lab = new TList(); 
    TList *values  = new TList();
@@ -1040,9 +1049,8 @@ a shift value of 10 will only shift by 5 cm";
    AddObjString(yshift, values);
    AddObjString(view_ps, values, kAttCheckB);
   
-   TString cmd_name;
+   static TString cmd_name;
    TString prompt;
-   TEnv env(".rootrc");
    if (to_printer) {
       prompt = "Printer command";
       cmd_name = "lpr ";
@@ -1056,6 +1064,8 @@ a shift value of 10 will only shift by 5 cm";
       cmd_name = ccmd;
    } else { 
       cmd_name = ca->GetName();
+      Int_t last_sem = cmd_name.Last(';');    // chop off version
+      if (last_sem >0) cmd_name.Remove(last_sem);
       cmd_name += ".ps";
       prompt = "PS file name";
    } 
@@ -1160,6 +1170,14 @@ a shift value of 10 will only shift by 5 cm";
       delete[]padfs;
       delete[]padframefs;
    }
+   env.SetValue("HistPresent.PaperSizeX", xpaper);
+   env.SetValue("HistPresent.PaperSizeY", ypaper);
+   env.SetValue("HistPresent.PrintShiftX", xshift);
+   env.SetValue("HistPresent.PrintShiftY", yshift);
+   env.SetValue("HistPresent.PrintScale", scale);
+   env.SetValue("HistPresent.AutoShowPSFile", view_ps);
+   env.SetValue("HistPresent.PlainStyle", plain);
+   env.SaveLevel(kEnvUser);
 }
 
 //_______________________________________________________________________________________

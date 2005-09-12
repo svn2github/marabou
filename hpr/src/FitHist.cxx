@@ -686,7 +686,10 @@ void FitHist::handle_mouse()
                	rowlabels.Add(new TObjString("Up right Bin: Number, Up edge"));
             	}
             	rowlabels.Add(new TObjString("Current Bin: Content "));
-            	rowlabels.Add(new TObjString("Integral, Mean"));
+               if (is2dim)
+            	   rowlabels.Add(new TObjString("Integral, Mean Z"));
+               else
+            	   rowlabels.Add(new TObjString("Integral, Mean"));
             	TOrdCollection values;
             	if (is2dim) {
                	values.Add(new TObjString(Form("%d,  %d,  %lg,  %lg", 
@@ -791,10 +794,13 @@ void FitHist::handle_mouse()
             }
          } else {
             if (fLiveStat1dim && fTofLabels) { 
+               Double_t sumx = 0;
             	cont = hist->GetBinContent(binX);
             	sum = hist->Integral(binXlow, binXup);
             	Int_t totbins = (binXup - binXlow +1);
-            	if (totbins > 0) mean = sum / (Double_t)totbins;
+               for (Int_t ibin = binXlow; ibin <= binXup; ibin++)
+                  sumx = sumx + hist->GetBinContent(ibin) * hist->GetBinCenter(ibin);
+            	if (sum > 0) mean = sumx / sum;
             	else             mean = 0;
             	fTofLabels->SetLabelText(0,0,Form("%d,  %lg", binXlow, XlowEdge));   
             	fTofLabels->SetLabelText(0,1,Form("%d,  %lg", binXup, XupEdge ));

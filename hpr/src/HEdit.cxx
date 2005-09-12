@@ -1487,7 +1487,7 @@ void HTCanvas::InsertHist()
    Bool_t ok; 
    Int_t itemwidth = 320;
 
-   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("Insert Hist Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
@@ -1629,7 +1629,7 @@ void HTCanvas::InsertGraph()
    Bool_t ok; 
    Int_t itemwidth = 320;
 
-   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("Insert Graph Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
@@ -2181,7 +2181,7 @@ void HTCanvas::InsertGObjects(const char * objname)
    AddObjString(draw_cut , values, kAttCheckB);
    Bool_t ok; 
    Int_t itemwidth = 240;
-   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("Insert Compound Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
@@ -2406,7 +2406,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    Bool_t ok; 
    Int_t itemwidth = 320;
 
-   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("Align Objects at Grid", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
@@ -2839,6 +2839,8 @@ void HTCanvas::InsertText(Bool_t from_file)
    row_lab->Add(new TObjString("Text angle"));
    row_lab->Add(new TObjString("Mark as compound"));
    row_lab->Add(new TObjString("Apply latex filter"));
+   row_lab->Add(new TObjString("Loop until cancel"));
+  
 
    Double_t x0 =        0;
    Double_t y0 =        0;
@@ -2853,6 +2855,7 @@ void HTCanvas::InsertText(Bool_t from_file)
    if (from_file)  markc = 1;
    static Int_t    lfilter = 1;
    static Int_t    text_seqnr = 0;
+   static Int_t    input_loop = 0;
 //   if (fHistPresent) {
 //      size = fHistPresent->fTextSize;
 //      font     = fHistPresent->fTextFont;
@@ -2882,10 +2885,11 @@ void HTCanvas::InsertText(Bool_t from_file)
    AddObjString(angle, values);
    AddObjString(markc, values, kAttCheckB);
    AddObjString(lfilter, values, kAttCheckB);
+   AddObjString(input_loop, values, kAttCheckB);
 
    Bool_t ok; 
    Int_t itemwidth = 320;
-
+loop:
    ok = GetStringExt("Text (latex) string", tpointer, itemwidth, fRootCanvas,
                       history, NULL, row_lab, values);
    if (!ok) return;
@@ -2904,6 +2908,7 @@ void HTCanvas::InsertText(Bool_t from_file)
    angle    = GetDouble(values, vp++);
    markc    = GetInt(values,    vp++);
    lfilter  = GetInt(values,    vp++);
+   input_loop = GetInt(values,    vp++);
 
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
@@ -3031,6 +3036,7 @@ void HTCanvas::InsertText(Bool_t from_file)
    }
    Modified();
    Update();
+   if (!from_file && input_loop == 1) goto loop;
 }
 //______________________________________________________________________________
 
@@ -3107,7 +3113,7 @@ tryagain:
    AddObjString(new_canvas, values, kAttRadioB);
 
    Int_t itemwidth = 440;
-   ok = GetStringExt("Define formula", tpointer, itemwidth, fRootCanvas,
+   ok = GetStringExt("Function formula", tpointer, itemwidth, fRootCanvas,
                       history, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
@@ -3210,7 +3216,7 @@ void HTCanvas::InsertAxis()
    Bool_t ok; 
    Int_t itemwidth = 320;
 tryagain:
-   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("Axis Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, row_lab, values);
    if (!ok) return;
    Int_t vp = 0;
@@ -3304,7 +3310,7 @@ void HTCanvas::InsertXSpline()
    Bool_t ok; 
    Int_t itemwidth = 320;
 tryagain:
-   ok = GetStringExt("Get Params", NULL, itemwidth, fRootCanvas,
+   ok = GetStringExt("XSpline Params", NULL, itemwidth, fRootCanvas,
                       NULL, NULL, &row_lab, &values);
    if (!ok) return;
    Int_t vp = 0;

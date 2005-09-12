@@ -510,7 +510,7 @@ void HistPresent::ShowFiles(const char *how, const char *bp)
    if (fCmdLine->GetSize() <= 0) {
       Int_t buttons= kMBYes | kMBNo, retval=0;
       EMsgBoxIcon icontype = kMBIconQuestion;
-      new TGMsgBox(gClient->GetRoot(), NULL,
+      new TGMsgBox(gClient->GetRoot(), GetMyCanvas(),
        "No files found?", 
        "No ROOT files in CWD found \n\
 Should we create a sample file",
