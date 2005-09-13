@@ -343,7 +343,11 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	char *calloc();
 	MBSServerInfo * _mbs_read_server_info();
 	void _mbs_output_error();
-
+	void _mbs_init_pool(mbs);
+	unsigned int _mbs_next_buffer(mbs);
+	void _mbs_init_hit(buffer_types);
+	void _mbs_init_triggers();
+		
 	if (sevent_type_raw == NULL) {
 		tlist = sevent_types;
 		while (tlist->type != 0) {
@@ -425,7 +429,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 		input = fdopen(fno, "r");
 	}
 
-	bufsiz = (bufsiz <= 0) ? MBS_SIZEOF_DATA : bufsiz;
+	bufsiz = (bufsiz <= 0) ? MBS_SIZEOF_DATA_B : bufsiz;
 
 	mbs = (MBSDataIO *) calloc(1, sizeof(MBSDataIO));
 	if (mbs == NULL)
@@ -478,7 +482,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 
 	mbs->buf_valid = FALSE;
 
-	if (ctype == MBS_CTYPE_FILE) {
+	if (ctype & MBS_CTYPE_FILE) {
 		buffer_type = _mbs_next_buffer(mbs);
 		if (buffer_type == MBS_BTYPE_ERROR || buffer_type == MBS_BTYPE_ABORT) return(NULL);
 		if (buffer_type == MBS_BTYPE_HEADER) mbs->buf_valid = FALSE;
@@ -498,6 +502,8 @@ int mbs_close_file(MBSDataIO *mbs) {
 // Description:    Close i/o stream and free memory
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
+	
+	void _mbs_output_log();
 	
 	if (!_mbs_check_active(mbs)) return(FALSE);
 
@@ -532,6 +538,8 @@ int mbs_free_dbase(MBSDataIO * mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 	
+	void _mbs_free_pool(mbs);
+	
 	if (mbs != NULL) {
 		free(mbs->hdr_data);
 		free(mbs->evt_data);
@@ -563,7 +571,8 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	MBSBufferPool * _mbs_find_subseq_buffer();
 	void _mbs_output_error();
 	void (*s)();
-
+	unsigned int _mbs_read_buffer(mbs);
+	
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bpp = NULL;
@@ -643,7 +652,11 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 
 	MBSBufferPool * _mbs_get_pool_pointer();
 	void _mbs_output_error();
-
+	void _mbs_store_bufno(mbs);
+	void _mbs_store_time_stamp(mbs);
+	void _mbs_dump_buffer(mbs);
+	unsigned int _mbs_convert_data(mbs);
+			
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bytes = mbs->bufsiz;
@@ -710,6 +723,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	if (buffer_type == MBS_BTYPE_ERROR || buffer_type == MBS_BTYPE_ABORT) return(buffer_type);
 
 	_mbs_store_bufno(mbs);
+	_mbs_store_time_stamp(mbs);
 
 	return(buffer_type);
 }
@@ -731,8 +745,8 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 
 	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
 
-	if (mbs->connection & MBS_CTYPE_FILE_MED)	return(_mbs_next_med_event(mbs));
-	else										return(_mbs_next_lmd_event(mbs));
+	if ((mbs->connection & MBS_CTYPE_FILE_MED) == MBS_CTYPE_FILE_MED)	return(_mbs_next_med_event(mbs));
+	else																return(_mbs_next_lmd_event(mbs));
 }
 
 int mbs_get_event_trigger(MBSDataIO *mbs) {
@@ -836,7 +850,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		memset(mbs->evt_data, 0, evl);
 	}
 	mbs->evtsiz = evl;
-	memcpy(mbs->evt_data, mbs->evtpt, frag1);
+ 	memcpy(mbs->evt_data, mbs->evtpt, frag1);
 
 	eh = (s_evhe *) mbs->evt_data;
 	bto_get_int32(&etype, &eh->i_subtype, 1, bo);
@@ -931,7 +945,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           mbs_next_event
+// Name:           _mbs_next_med_event
 // Purpose:        Setup next event
 // Arguments:      MBSDataIO * mbs     -- ptr as returned by mbs_open_file
 // Results:        unsigned int etype  -- event type [subtype,type]
@@ -948,11 +962,13 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	int evl;
 	int sc;
 	unsigned int (*s)();
-	int bytes_read;
+	int bytes_read, bytes_requested;
 
 	MBSBufferElem *_mbs_check_type();
 	char *calloc();
 	void _mbs_output_error();
+
+	off_t filepos;
 
 	unsigned char eHdr[sizeof(s_evhe)];
 
@@ -963,15 +979,22 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	bo = mbs->byte_order;
 
+	filepos = lseek(mbs->fileno, (off_t) 0, SEEK_CUR);
+
 	bytes_read = read(mbs->fileno, eHdr, sizeof(s_evhe));
-	if (bytes_read == 0) return(MBS_ETYPE_EOF);
-	if (bytes_read == -1)
-	{
+
+	if (bytes_read != sizeof(s_evhe)) {
+		lseek(mbs->fileno, filepos, SEEK_SET);
+		return(MBS_ETYPE_WAIT);
+	} else if (bytes_read == 0) {
+		return(MBS_ETYPE_EOF);
+	} else if (bytes_read == -1) {
 		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): %s (%d)",
 													mbs->device, mbs->evtno, strerror(errno), errno);
 		_mbs_output_error();
 		return(MBS_ETYPE_ABORT);
 	}
+
 	total += bytes_read;
 
 	eh = eHdr;
@@ -991,13 +1014,14 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	memcpy(mbs->evt_data, eHdr, sizeof(s_evhe));
 
-	bytes_read = read(mbs->fileno, mbs->evt_data + sizeof(s_evhe), evl - sizeof(s_evhe));
-	if (bytes_read != evl - sizeof(s_evhe)) {
-		sprintf(loc_errbuf, "?INPERR-[_mbs_next_med_event]- %s (evt %d): short event data (this=%d, expected=%d)",
-														mbs->device, mbs->evtno, bytes_read + sizeof(s_evhe), evl);
-		_mbs_output_error();
-		return(MBS_ETYPE_ABORT);
+	bytes_requested = evl - sizeof(s_evhe);
+
+	bytes_read = read(mbs->fileno, mbs->evt_data + sizeof(s_evhe), bytes_requested);
+	if (bytes_read != bytes_requested) {
+		lseek(mbs->fileno, filepos, SEEK_SET);
+		return(MBS_ETYPE_WAIT);
 	}
+
 	total += bytes_read;
 
 	eh = (s_evhe *) mbs->evt_data;
@@ -1729,6 +1753,7 @@ void _mbs_show_bheader(MBSDataIO *mbs, FILE *out) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
+	long long ts;
 	s_bufhe *bh;
 
 	char *mbs_xfht();
@@ -1758,6 +1783,7 @@ void _mbs_show_bheader(MBSDataIO *mbs, FILE *out) {
 	fprintf(out, "  Used length of data  : %d words\n", bh->i_used);
 	fprintf(out, "  Buffer number        : %d\n", bh->l_buf);
 	fprintf(out, "  # of buffer elements : %d\n", bh->l_evt);
+	fprintf(out, "  Time stamp           : %lld +%lld\n", mbs->buf_ts, mbs->buf_ts - mbs->buf_ts_start);
 	fprintf(out, "  Length of last event : %d\n", bh->l_free[1]);
 	fprintf(out, "------------------------------------------------------------------------------\n");
 }
@@ -2628,7 +2654,7 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 // Results:        int fildes               -- file descriptor or -1 if error
 // Exceptions:     -1 if error
 // Description:    Connects to a MBS port.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2686,7 +2712,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 // Results:        MBSServerInfo * info  -- addr of info block or NULL if error.
 // Exceptions:     NULL on error
 // Description:    Reads the info block.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2755,7 +2781,7 @@ int _mbs_read_stream(int fildes, char * buf, MBSServerInfo *info) {
 // Results:        int bytes_read       -- number of bytes read by this request
 // Exceptions:     
 // Description:    Reads a buffer from remote stream.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2783,7 +2809,7 @@ int _mbs_request_stream(int fildes) {
 // Results:        0/-1
 // Exceptions:     
 // Description:    Sends a request to server.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2800,7 +2826,7 @@ int _mbs_disconnect_from_server(int fildes, unsigned int server_type) {
 // Results:        0/1
 // Exceptions:     
 // Description:    Disconnects from current MBS port.
-// Author:         M. Münch Hades/E12
+// Author:         M. Mnch Hades/E12
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
@@ -2919,6 +2945,24 @@ void _mbs_store_bufno(MBSDataIO * mbs) {
 
 	bpp = mbs->poolpt;
 	bpp->bufno_mbs = ((s_bufhe *) bpp->data)->l_buf;
+}
+
+void _mbs_store_time_stamp(MBSDataIO * mbs) {
+/*________________________________________________________[C PRIVATE FUNCTION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           _mbs_store_time_stampbuffer time stamp
+// Arguments:      MBSDataIO * mbs       -- mbs data base
+// Results:        
+// Exceptions:     
+// Description:    Extracts buffer time stamp and stores is in MBSIO struct
+// Keywords:       
+/////////////////////////////////////////////////////////////////////////// */
+
+	s_bufhe *bh;
+	bh = (mbs->poolpt)->data;
+
+	mbs->buf_ts = bh->l_time[0] << 32 | bh->l_time[1];
+	if (mbs->buf_ts_start == 0) mbs->buf_ts_start = mbs->buf_ts;
 }
 
 MBSBufferPool * _mbs_find_subseq_buffer(MBSDataIO * mbs) {

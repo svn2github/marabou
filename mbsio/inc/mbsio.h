@@ -37,7 +37,8 @@ PURPOSE
 	Definitions, constants
 DEFINITION
 .	MBS_ID_WORD			-- internal struct id
-.	MBS_SIZEOF_DATA		-- length of data (bytes)
+.	MBS_SIZEOF_DATA_W	-- length of data (words)
+.	MBS_SIZEOF_DATA_B	-- ... (bytes)
 
 							Connect type:
 .	MBS_CTYPE_FILE		--		file
@@ -83,7 +84,8 @@ SEE ALSO
 *****************************************************************************/
 
 #define MBS_ID_WORD				"%MBS_RAW_DATA%"
-#define MBS_SIZEOF_DATA			0x4000
+#define MBS_SIZEOF_DATA_W		0x4000
+#define MBS_SIZEOF_DATA_B		0x8000
 
 #define MBS_RTYPE_ERROR			0xffffffff
 
@@ -291,6 +293,8 @@ ELEMENTS
 .	cur_bufno_stream	-- ... within current stream
 .	bufno_mbs           -- buffer number as given by MBS
 .   buf_to_be_dumped    -- if N>0 every Nth buffer will be dumped
+.   buf_ts              -- buffer time stamp (vms format)
+.   buf_ts_start        -- ... of first buffer
 .	hdr_data			-- file header data
 .	buf_pool			-- buffer pool
 .	poolpt              -- ... pointer to current buffer in pool
@@ -341,6 +345,8 @@ typedef struct {
 	int cur_bufno_stream;
 	int bufno_mbs;
 	int buf_to_be_dumped;
+	long long buf_ts;
+	long long buf_ts_start;
 	char *hdr_data;
 	MBSBufferPool buf_pool[MBS_N_BUFFERS];
 	MBSBufferPool * poolpt;

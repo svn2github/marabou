@@ -37,7 +37,8 @@ PURPOSE
 	Definitions, constants
 DEFINITION
 .	MBS_ID_WORD			-- internal struct id
-.	MBS_SIZEOF_DATA		-- length of data (bytes)
+.	MBS_SIZEOF_DATA_W	-- length of data (words)
+.	MBS_SIZEOF_DATA_B	-- ... (bytes)
 
 							Connect type:
 .	MBS_CTYPE_FILE		--		file
@@ -55,6 +56,7 @@ DEFINITION
 .	MBS_TY_EVENT			Event type:
 .	MBS_ETYPE_VME		--		VME formatted data
 .	MBS_ETYPE_EOF		--		End of file
+.	MBS_ETYPE_WAIT		--		Wait for write complete
 .	MBS_ETYPE_ERROR		--		Error
 .	MBS_ETYPE_RAW		--		Raw mode
 
@@ -82,7 +84,8 @@ SEE ALSO
 *****************************************************************************/
 
 #define MBS_ID_WORD				"%MBS_RAW_DATA%"
-#define MBS_SIZEOF_DATA			0x4000
+#define MBS_SIZEOF_DATA_W		0x4000
+#define MBS_SIZEOF_DATA_B		0x8000
 
 #define MBS_RTYPE_ERROR			0xffffffff
 
@@ -112,6 +115,7 @@ SEE ALSO
 #define MBS_ETYPE_ERROR			MBS_BTYPE_ERROR
 #define MBS_ETYPE_ABORT			MBS_BTYPE_ABORT
 #define MBS_ETYPE_RAW			MBS_BTYPE_RAW
+#define MBS_ETYPE_WAIT			0xfffffffc
 
 #define MBS_TY_SUBEVENT				0x8
 #define MBS_X_SUBEVENT				3
@@ -131,6 +135,7 @@ SEE ALSO
 #define MBS_STYPE_VME_SIS_1			0x0033000a		// [51,10]
 #define MBS_STYPE_VME_SIS_2			0x0034000a		// [52,10]
 #define MBS_STYPE_VME_SIS_3			0x0035000a		// [53,10]
+#define MBS_STYPE_CAMAC_CPTM		0x003d000a		// [61,10]
 #define MBS_STYPE_DATA_SHORT		0x0040000a		// [64,10]
 #define MBS_STYPE_DATA_INT			0x0041000a		// [65,10]
 #define MBS_STYPE_DATA_FLOAT		0x0042000a		// [66,10]
@@ -288,6 +293,8 @@ ELEMENTS
 .	cur_bufno_stream	-- ... within current stream
 .	bufno_mbs           -- buffer number as given by MBS
 .   buf_to_be_dumped    -- if N>0 every Nth buffer will be dumped
+.   buf_ts              -- buffer time stamp (vms format)
+.   buf_ts_start        -- ... of first buffer
 .	hdr_data			-- file header data
 .	buf_pool			-- buffer pool
 .	poolpt              -- ... pointer to current buffer in pool
@@ -338,6 +345,8 @@ typedef struct {
 	int cur_bufno_stream;
 	int bufno_mbs;
 	int buf_to_be_dumped;
+	long long buf_ts;
+	long long buf_ts_start;
 	char *hdr_data;
 	MBSBufferPool buf_pool[MBS_N_BUFFERS];
 	MBSBufferPool * poolpt;
