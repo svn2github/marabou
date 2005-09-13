@@ -147,6 +147,7 @@ fit_slice_function(const char *hname, Double_t from, Double_t to,\n\
 
 const char Gauss2d[]=
 "Double_t gauss2d( Double_t *x, Double_t *par)\n\
+// a 2d gauss function\n\
 {\n\
    Double_t sqrt2pi = sqrt(2*TMath::Pi()), sqrt2 = sqrt(2.);\n\
    Double_t cx = par[0];    // const x\n\
@@ -165,10 +166,19 @@ const char Gauss2d[]=
    Double_t yval = cy * exp(-argy * argy)/(sqrt2pi*sy);\n\
    return xval * yval;\n\
 };\n\
+//__________________________________________________________\n\
+\n\
+Double_t double_gauss2d( Double_t *x, Double_t *par)\n\
+{\n\
+// Sum of two 2d gauss functions\n\
+   Double_t* par2 = &par[6];\n\
+   return gauss2d(x, par) + gauss2d(x, par2);\n\
+}\n\
+//__________________________________________________________\n\
 \n\
 fit_user_function(const char *hname)\n\
-// This is a template macro to fit a user defined 2d function\n\
-// As an example a 2d gauss is provided\n\
+// This is a macro to fit a user defined 2d function\n\
+// it uses a sum of two 2d gauss functions (12 parameters) \n\
 {\n\
 //   gROOT->Reset();\n\
    TH2* hist = (TH1*)gROOT->FindObject(hname);\n\
@@ -190,23 +200,43 @@ fit_user_function(const char *hname)\n\
       wtopy = TMath::Max((Int_t)wh, wtopy + 100);\n\
       theta = gPad->GetTheta();\n\
       phi = gPad->GetPhi();\n\
- //      cout << wtopx<< " " << wtopy << " " <<  ww<< " " <<  wh << endl;\n\
+ //      cout << wtopx<<  << wtopy <<  <<  ww<<  <<  wh << endl;\n\
    }\n\
 \n\
 //  nb: fit range may be different from histo range\n\
-   Float_t x_from = -2; \n\
-   Float_t x_to   =  2; \n\
+   Float_t x_from = -4; \n\
+   Float_t x_to   =  4; \n\
    Float_t y_from = -4; \n\
    Float_t y_to   =  4; \n\
-   TF2 * f2 = new TF2(\"gauss2d\", gauss2d, x_from, x_to, y_from, y_to , 6);\n\
-   f2->SetParName(0, \"const_x\");\n\
-   f2->SetParName(1, \"mean_x\");\n\
-   f2->SetParName(2, \"sigma_x\");\n\
-   f2->SetParName(3, \"const_y\");\n\
-   f2->SetParName(4, \"mean_y\");\n\
-   f2->SetParName(5, \"sigma_y\");\n\
+   TF2 * f2 = new TF2(\"gauss2d\", double_gauss2d, x_from, x_to, y_from, y_to , 12);\n\
+   f2->SetParName(0, \"const_x1\");\n\
+   f2->SetParName(1, \"mean_x1\");\n\
+   f2->SetParName(2, \"sigma_x1\");\n\
+   f2->SetParName(3, \"const_y1\");\n\
+   f2->SetParName(4, \"mean_y1\");\n\
+   f2->SetParName(5, \"sigma_y1\");\n\
 \n\
-   f2->SetParameters(100, 0, 1, 100, 0, 1);\n\
+   f2->SetParName(6, \"const_x2\");\n\
+   f2->SetParName(7, \"mean_x2\");\n\
+   f2->SetParName(8, \"sigma_x2\");\n\
+   f2->SetParName(9, \"const_y2\");\n\
+   f2->SetParName(10, \"mean_y2\");\n\
+   f2->SetParName(11, \"sigma_y2\");\n\
+\n\
+   f2->SetParameter(0, 10);\n\
+   f2->SetParameter(1, -1);\n\
+   f2->SetParameter(2, 0.5);\n\
+   f2->SetParameter(3, 10);\n\
+   f2->SetParameter(4, 0);\n\
+   f2->SetParameter(5, 0.5);\n\
+\n\
+   f2->SetParameter(6, 10);\n\
+   f2->SetParameter(7, 1);\n\
+   f2->SetParameter(8, 0.5);\n\
+   f2->SetParameter(9, 10);\n\
+   f2->SetParameter(10,0.5);\n\
+   f2->SetParameter(11,0.5);\n\
+\n\
  //  f2->Draw();\n\
    hist->Fit(\"gauss2d\",\"R0\",\"same\");  // dont in same picture \n\
    TCanvas *cc = new TCanvas(cname , cname, wtopx, wtopy, ww, wh);\n\
