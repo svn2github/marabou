@@ -124,6 +124,7 @@ SEE ALSO
 #define MBS_STYPE_CAMAC_MULT_MOD	0x000c000a		// [12,10]
 #define MBS_STYPE_CAMAC_2			0x000d000a		// [13,10]
 #define MBS_STYPE_CAMAC_WO_ID_2		0x000e000a		// [14,10]
+#define MBS_STYPE_CAMAC_RAW 		0x000F000a		// [15,10]
 #define MBS_STYPE_CAMAC_DGF_1		0x0015000a		// [21,10]
 #define MBS_STYPE_CAMAC_DGF_2		0x0016000a		// [22,10]
 #define MBS_STYPE_CAMAC_DGF_3		0x0017000a		// [23,10]
@@ -345,8 +346,8 @@ typedef struct {
 	int cur_bufno_stream;
 	int bufno_mbs;
 	int buf_to_be_dumped;
-	long long buf_ts;
-	long long buf_ts_start;
+	unsigned long long buf_ts;
+	unsigned long long buf_ts_start;
 	char *hdr_data;
 	MBSBufferPool buf_pool[MBS_N_BUFFERS];
 	MBSBufferPool * poolpt;

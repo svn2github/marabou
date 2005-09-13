@@ -136,6 +136,14 @@ static MBSBufferElem sevent_types[] = {
 					_mbs_show_sev_10_11,
 					_mbs_convert_sheader
 				},
+				{	MBS_STYPE_CAMAC_RAW,
+					"Raw data",
+					sizeof(s_veshe),
+					0,
+					_mbs_unpack_sev_10_11,
+					_mbs_show_sev_10_11,
+					_mbs_convert_sheader
+				},
 				{	MBS_STYPE_TIME_STAMP,
 					"Time stamp",
 					sizeof(s_veshe),
@@ -450,6 +458,8 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	mbs->bufsiz = bufsiz;
 	mbs->bufno_mbs = -1;
 	mbs->evtno_mbs = -1;
+	mbs->buf_ts = 0LL;
+	mbs->buf_ts_start = 0LL;
 	mbs->buf_to_be_dumped = 0;
 	
 	if (ctype & MBS_CTYPE_FILE) {
@@ -2961,8 +2971,10 @@ void _mbs_store_time_stamp(MBSDataIO * mbs) {
 	s_bufhe *bh;
 	bh = (mbs->poolpt)->data;
 
-	mbs->buf_ts = bh->l_time[0] << 32 | bh->l_time[1];
-	if (mbs->buf_ts_start == 0) mbs->buf_ts_start = mbs->buf_ts;
+	mbs->buf_ts = (long long) bh->l_time[0];
+	mbs->buf_ts <<= 32;
+	mbs->buf_ts |= (long long) bh->l_time[1];
+	if (mbs->buf_ts_start == 0LL) mbs->buf_ts_start = mbs->buf_ts;
 }
 
 MBSBufferPool * _mbs_find_subseq_buffer(MBSDataIO * mbs) {
