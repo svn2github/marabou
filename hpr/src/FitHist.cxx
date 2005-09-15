@@ -797,7 +797,7 @@ void FitHist::handle_mouse()
                Double_t sumx = 0;
             	cont = hist->GetBinContent(binX);
             	sum = hist->Integral(binXlow, binXup);
-            	Int_t totbins = (binXup - binXlow +1);
+//           	Int_t totbins = (binXup - binXlow +1);
                for (Int_t ibin = binXlow; ibin <= binXup; ibin++)
                   sumx = sumx + hist->GetBinContent(ibin) * hist->GetBinCenter(ibin);
             	if (sum > 0) mean = sumx / sum;
