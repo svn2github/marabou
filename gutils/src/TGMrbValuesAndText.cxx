@@ -386,7 +386,9 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    hf->Resize((width + 20) * nb, height);
 
    // set dialog title
-   this->SetWindowName("Get Input");
+   TString wn("Get Input:");
+   wn += Prompt;
+   this->SetWindowName(wn.Data());
 
    // map all widgets and calculate size of dialog
    this->MapSubwindows();
