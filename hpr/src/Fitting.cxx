@@ -315,16 +315,16 @@ fit_user_function(const char *hname)\n\
      return 0;\n\
    }\n\
    Double_t par[7];\n\
-   Double_t from =  0; \n\
-   Double_t to   = 50;\n\
+   Double_t from = -4; \n\
+   Double_t to   =  4;\n\
 \n\
    Double_t lin_const  = 0;\n\
    Double_t lin_slope  = 0;\n\
-   Double_t gaus_mean  = 20;\n\
+   Double_t gaus_mean  = 0;\n\
    Double_t gaus0_const= 10000;\n\
-   Double_t gaus0_sigma= 4;\n\
+   Double_t gaus0_sigma= 2;\n\
    Double_t gaus1_const= 10000;\n\
-   Double_t gaus1_sigma= 12;\n\
+   Double_t gaus1_sigma= 4;\n\
    TF1* f = new TF1(\"two_gaus\",TwoGaussCM,from,to, 7);\n\
    f->SetParameters(lin_const  ,\n\
                     lin_slope  ,\n\
@@ -525,10 +525,10 @@ fit_user_function(const char *hname) \n\
      cout << \"histogram not found\" << endl; \n\
      return 0; \n\
    } \n\
-   Float_t from = 0; \n\
-   Float_t to   = 100;\n\
+   Float_t from = -3; \n\
+   Float_t to   =  3;\n\
    TF1* f = new TF1(\"gaus2\",\"gaus + gaus(3)\",from,to); \n\
-   f->SetParameters(10, 30, 5, 20, 60, 8); \n\
+   f->SetParameters(100, -1, 1, 100, 1, 1); \n\
    f->SetLineColor(4); \n\
    f->SetLineWidth(3); \n\
 //   f->Draw(\"same\");                // dont fit, draw only \n\

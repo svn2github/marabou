@@ -11,6 +11,7 @@
 #include "TH2.h"
 #include "THStack.h"
 #include "TGMsgBox.h"
+#include "TGFileDialog.h"
 #include "TObject.h"
 #include "TTree.h"
 #include "TBranch.h"
@@ -2664,9 +2665,9 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
    TString shname = hname;
 //    shname = shname.Strip(TString::kBoth);
    if (strstr(fname,".root")) {
-      TString newhname = shname;  
+      TString newhname;  
       if (fRootFile) fRootFile->Close();
-      newhname = fname;   
+      newhname = gSystem->BaseName(fname);   
       Int_t pp = newhname.Index(".");
       if (pp) newhname.Resize(pp);
       newhname = newhname + "_" + shname.Data();
@@ -2707,6 +2708,7 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
       	if (key)hist = (TH1*)key->ReadObj();
       	if (hist) {
             hist->SetDirectory(gROOT);
+/*
             TString hn = hist->GetName();
             if (hn.Index(notascii)>= 0) {
                cout << "WARNING: Replace non letter/numbers by US(_) in: " 
@@ -2716,9 +2718,9 @@ TH1* HistPresent::GetHist(const char* fname, const char* dir, const char* hname)
                }
                hist->SetName(hn);
             }
+*/
             TDatime dt = gDirectory->GetModificationDate();
             hist->SetUniqueID(dt.Convert());
-
       	   hist->SetName(newhname);
          } else {
             cout << "Histogram: " << hname << 
@@ -3669,4 +3671,15 @@ void HistPresent::auto_exec_2()
          }
       }
    }
+}
+//________________________________________________________________
+
+void HistPresent::SelectFromOtherDir()
+{
+   TGFileInfo* fi = new TGFileInfo();
+   const char * filter[] = {"Root files", "*.root", 0, 0};
+   fi->fFileTypes = filter;
+   new  TGFileDialog(gClient->GetRoot(), GetMyCanvas(), kFDOpen, fi);
+   if (fi->fFilename) ShowContents(fi->fFilename , "", NULL); 
+   delete fi;
 }

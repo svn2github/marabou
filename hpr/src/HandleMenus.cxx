@@ -157,6 +157,7 @@ enum ERootCanvasCommands {
    kFHHistToFile,
    kFHGraphToFile,
    kFHGraphToASCII,
+   kFHSelAnyDir,
    kFHCanvasToFile,
    kFHHistToASCII,
    kFHPictToPS,
@@ -1100,6 +1101,9 @@ again:
                   case kFHGraphToFile:
                      WriteOutGraph(fGraph, fRootCanvas); 
                      break;
+                  case kFHSelAnyDir:
+                     fHistPresent->SelectFromOtherDir();
+                     break;
                   case kFHGraphToASCII:
                      WriteGraphasASCII(fGraph, fRootCanvas); 
                      break;
@@ -1513,13 +1517,15 @@ void HandleMenus::BuildMenus()
          fFileMenu->AddEntry("Hist_to_ROOT-File",             kFHHistToFile);
          fFileMenu->AddEntry("Hist_to_ASCII-File", kFHHistToASCII);
       }
-//      fFileMenu->AddSeparator();
 //      fGraph = FindGraph(fHCanvas);
       if (fGraph) {
          fFileMenu->AddEntry("Graph_to_ROOT-File",      kFHGraphToFile);
          fFileMenu->AddEntry("Graph_to_ASCII-File",     kFHGraphToASCII);
       }
       if (!edit_menus) {
+         fFileMenu->AddEntry("Select ROOT file from any dir",  kFHSelAnyDir);
+         fFileMenu->AddSeparator();
+         
          TGPopupMenu * HfromAMenu = new TGPopupMenu(fRootCanvas->GetParent());
          HfromAMenu->AddEntry("Channel contents, (Spectrum)",   kFHSpectrum); 
          HfromAMenu->AddEntry("Channel contents, error",   kFHSpectrumError); 
