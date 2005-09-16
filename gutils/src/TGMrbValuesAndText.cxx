@@ -102,7 +102,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
    TGLayoutHints * lo1 = new TGLayoutHints(kLHintsExpandX , 2, 2, 2, 2);
    TGLayoutHints * l1 = new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 0);
-   TGLayoutHints * l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft, 5, 5, 5, 5);
+   TGLayoutHints * l2 = new TGLayoutHints(kLHintsTop | kLHintsLeft | kLHintsExpandX, 5, 5, 5, 5);
    TGLayoutHints * l3 = new TGLayoutHints(kLHintsCenterX | kLHintsCenterY | kLHintsExpandX, 5, 5, 0, 0);
    fWidgets->AddFirst(l3);
    fWidgets->AddFirst(l1);
@@ -401,10 +401,17 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
    Window_t wdum;
    int      ax, ay;
 
+//   gVirtualX->TranslateCoordinates(fMyWindow->GetId(), this->GetParent()->GetId(),
+//         ((TGFrame *) fMyWindow)->GetWidth() - width >> 1,
+//         ((TGFrame *) fMyWindow)->GetHeight() - height >> 1,
+//                          ax, ay, wdum);
    gVirtualX->TranslateCoordinates(fMyWindow->GetId(), this->GetParent()->GetId(),
-         ((TGFrame *) fMyWindow)->GetWidth() - width >> 1,
+         0,
          ((TGFrame *) fMyWindow)->GetHeight() - height >> 1,
                           ax, ay, wdum);
+
+   ax = ax - (int)( width >> 1);
+ 
    UInt_t ww, wh;
    Int_t  wwi,whi;
    Int_t screen_x, screen_y;
@@ -423,7 +430,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
 
    this->Move(ax, ay);
    this->SetWMPosition(ax, ay);
-
+/*
    // make the message box non-resizable
    this->SetWMSize(width, height);
    this->SetWMSizeHints(width, height, width, height, 0, 0);
@@ -433,7 +440,7 @@ TGMrbValuesAndText::TGMrbValuesAndText(const char *Prompt, TString * text,
                         kMWMFuncAll  | kMWMFuncResize    | kMWMFuncMaximize |
                                        kMWMFuncMinimize,
                         kMWMInputModeless);
-
+*/
    // popup dialog and wait till user replies
    this->MapWindow();
    this->ChangeBackground(brown);
