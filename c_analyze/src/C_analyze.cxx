@@ -483,10 +483,15 @@ trying to attach?",
 
    fMenuParameters = new TGPopupMenu(fClient->GetRoot());
    fMenuParameters->AddEntry("No Event Warning Time", M_NOEVENT);
-   fMenuParameters->AddEntry("Maximum ouput file size", M_MAXFILESIZE);
+   fMenuParameters->AddEntry("Maximum output file size", M_MAXFILESIZE);
    fMenuParameters->AddEntry("Enable automatic restart after max file size", M_AUTORESTART);
 	if (fAutoRestart) fMenuParameters->CheckEntry( M_AUTORESTART);
 	else              fMenuParameters->UnCheckEntry( M_AUTORESTART);
+
+   fMenuParameters->AddEntry("Maximum run time (seconds)", M_MAXRUNTIME);
+   fMenuParameters->AddEntry("Enable automatic restart after Maximum run time", M_AUTORESTART_RUNTIME);
+	if (fAutoRestart) fMenuParameters->CheckEntry( M_AUTORESTART_RUNTIME);
+	else              fMenuParameters->UnCheckEntry( M_AUTORESTART_RUNTIME);
    fMenuParameters->AddEntry("Time constant (seconds) in Avg Rate", M_AVERAGE);
    fMenuParameters->AddEntry("Disk space warn limit (Mbyte)", M_WARNHWM);
    fMenuParameters->AddEntry("Disk space hard limit (Mbyte)", M_HARDHWM);
@@ -2409,6 +2414,15 @@ Note: Unit is 100 ns for historical reasons";
                       else       fMaxFileSize = bs;
                       }  
                       break;
+                  case M_MAXRUNTIME:
+                      {
+                      Int_t bs = GetInteger("Maximum Runtime (Seconds)", 
+                                  fMaxRunTime, &ok, this);
+                      if(!ok) break;
+                      if(bs < 0) WarnBox("Illegal number", this);
+                      else       fMaxRunTime = bs;
+                      }  
+                      break;
 					   case M_AUTORESTART:
 						    if (fAutoRestart) {
 							    fMenuParameters->UnCheckEntry(M_AUTORESTART);
@@ -2416,6 +2430,15 @@ Note: Unit is 100 ns for historical reasons";
 							 } else {
 							    fMenuParameters->CheckEntry(M_AUTORESTART);
 								 fAutoRestart = kTRUE;
+							 }
+							 break;
+					   case M_AUTORESTART_RUNTIME:
+						    if (fAutoRestartRT) {
+							    fMenuParameters->UnCheckEntry(M_AUTORESTART_RUNTIME);
+								 fAutoRestartRT = kFALSE;
+							 } else {
+							    fMenuParameters->CheckEntry(M_AUTORESTART_RUNTIME);
+								 fAutoRestartRT = kTRUE;
 							 }
 							 break;
                   case M_WARNHWM:
@@ -2857,6 +2880,8 @@ Bool_t FhMainFrame::PutDefaults(){
    wstream << "MAXNOEVENT: "  <<  fMax_time_no_event   << endl;
    wstream << "MAXFILESIZE: " <<  fMaxFileSize         << endl;
    wstream << "AUTORESTART: " <<  fAutoRestart         << endl;
+   wstream << "MAXRUNTIME: "  <<  fMaxRunTime          << endl;
+   wstream << "AUTORESTART_RT: " <<  fAutoRestartRT    << endl;
    wstream << "WARNHWM: "     <<  fWarnHWM             << endl;
    wstream << "HARDHWM: "     <<  fHardHWM             << endl;
    wstream << "VERBLEV: "     <<  fVerbLevel           << endl;
@@ -2973,10 +2998,13 @@ Bool_t FhMainFrame::GetDefaults(){
    fDownscale         = 1;
    fStartEvent        = 0;
    fStopEvent         = 0;
+   fMaxRunTime        = 0;
    fMaxFileSize       = 1800;     // 1.8 Gbyte
 	fHsaveIntervall    = 300;      // 5 Min
    fWriteOutput       = kFALSE;
    fAutoSave          = kFALSE;
+   fAutoRestart       = 0;
+   fAutoRestartRT     = 0;
    fShowRate          = kTRUE;
 	fWarnHWM 	       = 200;
 	fHardHWM 	       = 100;
@@ -3035,7 +3063,9 @@ Bool_t FhMainFrame::GetDefaults(){
          	if(parName == "MAXNOEVENT") fMax_time_no_event = atoi(parValue.Data());
          	if(parName == "STARTEVENT" ) fStartEvent      = atoi(parValue.Data());
             if(parName == "AUTORESTART") fAutoRestart  = atoi(parValue.Data());
+            if(parName == "AUTORESTART_RT") fAutoRestartRT  = atoi(parValue.Data());
          	if(parName == "MAXFILESIZE")fMaxFileSize   = atoi(parValue.Data());
+         	if(parName == "MAXRUNTIME") fMaxRunTime    = atoi(parValue.Data());
          	if(parName == "STOPEVENT" ) fStopEvent     = atoi(parValue.Data());
          	if(parName == "WARNHWM" )   fWarnHWM       = atoi(parValue.Data());
          	if(parName == "HARDHWM")    fHardHWM       = atoi(parValue.Data());
@@ -3253,10 +3283,22 @@ void FhMainFrame::Runloop(){
          fForcedStop = kTRUE;
          this->StopDAQ();
          return;
-      }  
+      } 
+   }
+   if(fM_Status == M_RUNNING && (!fForcedStop && fMaxRunTime > 0)){
+      if (fTotal_livetime >= fMaxRunTime) { 
+         cout << endl << setblue << "*******************************************************" << endl;
+         cout << "Runtime (sec) " << fMaxRunTime 
+              << " reached MaxRunTime: " << fMaxRunTime << endl;
+         cout << "force StopDAQ" << endl;
+         cout << "*******************************************************" << setblack<< endl;
+         fForcedStop = kTRUE;
+         this->StopDAQ();
+         return;
+      } 
    }
 //   fM_Status = IsAnalyzeRunning(0);
-   if(fForcedStop && fAutoRestart){
+   if(fForcedStop && (fAutoRestart || fAutoRestartRT)){
 	   if( (*fInputSource == "TcpIp" &&  fM_Status == M_CONFIGURED) || fM_Status == M_ABSENT) {
 			fForcedStop = kFALSE;
 	      this->StartDAQ();
