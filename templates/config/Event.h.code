@@ -27,6 +27,7 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		Bool_t BookParams();									// book params for this event
 		Bool_t BookHistograms();								// book histograms for this event
 		Bool_t FillHistograms();								// fill histograms
+		Bool_t FillRateHistograms();							// fill rate histograms
 		Bool_t AllocHitBuffers();								// allocate hit buffers for subevents if needed
 		Bool_t CreateTree();									// create a tree if needed
 %%BeginOfCode%%

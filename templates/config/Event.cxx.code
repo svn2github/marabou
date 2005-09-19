@@ -487,11 +487,39 @@ Bool_t TUsrEvt$evtNameUC::Analyze() {
 %B%
 %N%	$sevtNameLC.FillHistograms();	// fill histograms for subevent $sevtNameLC
 %P%	$sevtNameLC.Fill$evtNameUCHistograms(); // fill private histograms for event $evtNameLC / subevent $sevtNameLC
+%E%	this->FillRateHistograms(); // fill rate histos for event $evtNameLC
 %E%
 %E%	return(kTRUE);
 %E%}
 %%EndOfCode%%
 %%EVT_FILL_HISTOGRAMS%%
+
+%%BeginOfCode%%
+%B%Bool_t TUsrEvt$evtNameUC::FillRateHistograms() {
+%B%//________________________________________________________________[C++ METHOD]
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%// Name:		   TUsrEvt$evtNameUC::FillRateHistograms
+%B%// Purpose: 	   Fill rate histograms for event $evtNameLC
+%B%//  			   (Trigger $evtTrigger)
+%B%// Arguments:	   --
+%B%// Results: 	   kTRUE/kFALSE
+%B%// Exceptions:     
+%B%// Description:    Fills rate histograms for event $evtNameLC
+%B%// Keywords:	   
+%B%//////////////////////////////////////////////////////////////////////////////
+%B%
+%RN%	Int_t ts = this->GetTimeStamp() / $hScale;		// time stamp in $xScale
+%RN%	if (ts > $hRange) ts = $hRange;
+%RN%	$hName->Fill((Axis_t) ts);
+%RL%	Int_t ts = this->GetTimeStamp() / $hScale;		// time stamp in $xScale
+%RL%	ts %= $hRange;
+%RL%	$hName->Fill((Axis_t) ts);
+%E%
+%E%	gMrbAnalyze->SetUpdateFlag();
+%E%	return(kTRUE);
+%E%}
+%%EndOfCode%%
+%%EVT_FILL_RATE_HISTOGRAMS%%
 
 void TUsrEvt%%EVT_NAME_UC%%::Reset(Int_t InitValue, Bool_t DataOnly) {
 //________________________________________________________________[C++ METHOD]
