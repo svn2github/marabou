@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.96 2005-08-02 06:14:26 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.96 2005-08-02 06:14:26 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.97 2005-09-19 09:06:29 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.97 2005-09-19 09:06:29 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -101,6 +101,7 @@ const SMrbNamedX kMrbLofHistoTypes[] =
 								{TMrbConfig::kHistoTH2D,		"TH2D", "2-dim histogram with one double per channel"	},
 								{TMrbConfig::kHistoTH2F,		"TH2F", "2-dim histogram with one float per channel"	},
 								{TMrbConfig::kHistoTH2S,		"TH2S", "2-dim histogram with one short per channel"	},
+								{TMrbConfig::kHistoRate,		"Rate", "rate histogram"								},
 								{0, 							NULL			}
 							};
 
@@ -239,6 +240,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventBookParams,			"EVT_BOOK_PARAMS"				},
 								{TMrbConfig::kAnaEventBookHistograms,		"EVT_BOOK_HISTOGRAMS"			},
 								{TMrbConfig::kAnaEventFillHistograms,		"EVT_FILL_HISTOGRAMS"			},
+								{TMrbConfig::kAnaEventFillRateHistograms,	"EVT_FILL_RATE_HISTOGRAMS"		},
 								{TMrbConfig::kAnaEventSetupSevtList,		"EVT_SETUP_SEVT_LIST"			},
 								{TMrbConfig::kAnaEventAllocHitBuffer,		"EVT_ALLOC_HITBUFFER"			},
 								{TMrbConfig::kAnaEventSetScaleDown, 		"EVT_SET_SCALEDOWN" 			},
@@ -2873,7 +2875,9 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.InitializeCode("%UDBH%");
 								anaTmpl.Substitute("$hName", h->GetName());
 								anaTmpl.Substitute("$hTitle", h->GetTitle());
-								anaTmpl.Substitute("$hType", (fLofHistoTypes.FindByIndex(h->GetIndex()))->GetName());
+								Int_t hType = h->GetIndex();
+								if (hType == TMrbConfig::kHistoRate) hType = TMrbConfig::kHistoTH1F;
+								anaTmpl.Substitute("$hType", (fLofHistoTypes.FindByIndex(hType))->GetName());
 								anaTmpl.WriteCode(anaStrm);
 								h = (TMrbNamedX *) fLofUserHistograms.After(h);
 							}
@@ -6048,6 +6052,90 @@ Bool_t TMrbConfig::BookHistogram(const Char_t * ArrayName, const Char_t * HistoT
 
 	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
 	return(this->BookHistogram(HistoType, HistoName, HistoTitle, Args, Condition));
+}
+
+Bool_t TMrbConfig::BookRateHistogram(const Char_t * HistoName, const Char_t * HistoTitle,
+													Int_t Scale, Int_t Range, Bool_t Loop,
+																const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookRateHistogram
+// Purpose:        Define a rate histogram to be booked
+// Arguments:      Char_t * HistoName      -- name
+//                 Char_t * HistoTitle     -- title
+//                 Int_t Scale             -- time scale in micros
+//                 Int_t Range             -- range
+//                 Bool_t Loop             -- restart at end of range if kTRUE
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books rate histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TArrayD argList(5);
+
+	if (fLofUserHistograms.FindObject(HistoName)) {
+		gMrbLog->Err() << "Histogram already booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "BookRateHistogram");
+		return(kFALSE);
+	}
+
+	TMrbNamedX * histoType = fLofHistoTypes.FindByIndex(TMrbConfig::kHistoRate);
+
+	switch (Scale) {
+		case 1:
+		case 1000:
+		case 1000000:	break;
+		default:
+			gMrbLog->Err() << "Illegal scale - " << Scale << " (should be 1=musec, 1000=msec, or 1000000=sec)" << endl;
+			gMrbLog->Flush(this->ClassName(), "BookRateHistogram");
+			return(kFALSE);
+	}
+
+	this->WriteTimeStamp();
+
+	argList[0] = 1.;
+	argList[1] = 0.;
+	argList[2] = (Double_t) Range;
+	argList[3] = (Double_t) Scale;
+	argList[4] = Loop ? 1. : 0.;
+
+	TMrbNamedArrayD * a = new TMrbNamedArrayD("TH1F", histoType->GetTitle(), 5, argList.GetArray());
+	fLofUserHistograms.Add(new TMrbNamedX(kHistoRate, HistoName, HistoTitle, a));
+	if (Condition != NULL && *Condition != '\0') fLofHistoConditions.Add(new TMrbNamedX(kHistoRate, HistoName, Condition));
+	return(kTRUE);
+}
+
+Bool_t TMrbConfig::BookRateHistogram(const Char_t * ArrayName, const Char_t * HistoName, const Char_t * HistoTitle,
+													Int_t Scale, Int_t Range, Bool_t Loop,
+																const Char_t * Condition) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::BookRateHistogram
+// Purpose:        Define a rate histogram to be booked
+// Arguments:      Char_t *  ArrayName     -- name of histo array
+//                 Char_t * HistoName      -- name
+//                 Char_t * HistoTitle     -- title
+//                 Int_t Scale             -- time scale in micros
+//                 Int_t Range             -- range
+//                 Bool_t Loop             -- restart at end of range if kTRUE
+//                 Char_t * Condition      -- booking condition
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Books user-defined histograms.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+
+	if (fLofUserHistograms.FindObject(HistoName)) {
+		gMrbLog->Err() << "Histogram already booked - " << HistoName << endl;
+		gMrbLog->Flush(this->ClassName(), "BookRateHistogram");
+		return(kFALSE);
+	}
+
+	if (this->AddHistoToArray(ArrayName, HistoName) == NULL) return(kFALSE);
+	return(this->BookRateHistogram(HistoName, HistoTitle, Scale, Range, Loop, Condition));
 }
 
 TMrbNamedX * TMrbConfig::AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName) {

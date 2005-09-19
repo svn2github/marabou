@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.58 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.59 2005-09-19 09:06:29 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -143,6 +143,7 @@ class TMrbConfig : public TNamed {
 									kAnaEventBookParams,
 									kAnaEventBookHistograms,
 									kAnaEventFillHistograms,
+									kAnaEventFillRateHistograms,
 									kAnaEventSetupSevtList,
 									kAnaEventAllocHitBuffer,
 									kAnaEventSetFakeMode,
@@ -403,6 +404,7 @@ class TMrbConfig : public TNamed {
 									kHistoTHS			=	BIT(2),
 									kHistoTHF			=	BIT(3),
 									kHistoTHD			=	BIT(4),
+									kHistoTHR			=	BIT(5),
 									kHistoTH1C			=	kHistoTH1 | kHistoTHC,
 									kHistoTH1S			=	kHistoTH1 | kHistoTHS,
 									kHistoTH1F			=	kHistoTH1 | kHistoTHF,
@@ -410,7 +412,8 @@ class TMrbConfig : public TNamed {
 									kHistoTH2C			=	kHistoTH2 | kHistoTHC,
 									kHistoTH2S			=	kHistoTH2 | kHistoTHS,
 									kHistoTH2F			=	kHistoTH2 | kHistoTHF,
-									kHistoTH2D			=	kHistoTH2 | kHistoTHD
+									kHistoTH2D			=	kHistoTH2 | kHistoTHD,
+									kHistoRate			=	kHistoTH1 | kHistoTHF | kHistoTHR
 								};
 
 		enum EMrbModuleType  	{	kModuleRaw			=	TMrbConfig::kCrateUnused,		// module types
@@ -679,6 +682,8 @@ class TMrbConfig : public TNamed {
 		};
 		inline void AddUserClass(const Char_t * Name) { this->AddUserClass((EMrbIncludeOptions) 0, Name); };
 			
+		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };
+
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
 		void Version() const;																// output welcome tex
@@ -731,6 +736,11 @@ class TMrbConfig : public TNamed {
 									const Char_t * Args, const Char_t * Condition);
 
 		Bool_t BookHistograms(const Char_t * Event, const Char_t * Subevent, const Char_t * Condition = NULL);
+
+		Bool_t BookRateHistogram(const Char_t * HistoName, const Char_t * HistoTitle,
+									Int_t Scale, Int_t Range, Bool_t Loop = kFALSE, const Char_t * Condition = NULL);
+		Bool_t BookRateHistogram(const Char_t * ArrayName, const Char_t * HistoName, const Char_t * HistoTitle,
+									Int_t Scale, Int_t Range, Bool_t Loop = kFALSE, const Char_t * Condition = NULL);
 
 		TMrbNamedX * AddHistoToArray(const Char_t * ArrayName, const Char_t * HistoName);
 		TMrbNamedX * FindHistoArray(const Char_t * HistoName, TMrbNamedX * After = NULL) const;	// find array histo is to be assigned to

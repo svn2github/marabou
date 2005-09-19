@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.11 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.12 2005-09-19 09:06:29 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -32,6 +32,7 @@ namespace std {} using namespace std;
 #include "TMrbModule.h"
 #include "TMrbCamacScaler.h"
 #include "TMrbVMEScaler.h"
+#include "TMrbNamedArray.h"
 
 #include "SetColor.h"
 
@@ -668,6 +669,41 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 								anaTmpl.WriteCode(ana);
 							}
 							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+						}
+					}
+					anaTmpl.InitializeCode("%E%");
+					anaTmpl.Substitute("$evtNameLC", evtNameLC);
+					anaTmpl.Substitute("$evtNameUC", evtNameUC);
+					anaTmpl.WriteCode(ana);
+					break;
+				case TMrbConfig::kAnaEventFillRateHistograms:
+					anaTmpl.InitializeCode("%B%");
+					anaTmpl.Substitute("$evtNameLC", evtNameLC);
+					anaTmpl.Substitute("$evtNameUC", evtNameUC);
+					anaTmpl.Substitute("$evtTrigger", this->GetTrigger());
+					anaTmpl.WriteCode(ana);
+					if ((this->GetAnalyzeOptions() & TMrbConfig::kAnaOptHistograms) != 0) {
+						TObjArray * uHistos = gMrbConfig->GetLofUserHistograms();
+						TMrbNamedX * h = (TMrbNamedX *) uHistos->First();
+						while (h) {
+							if (h->GetIndex() == TMrbConfig::kHistoRate) {
+								TMrbNamedArrayD * a = (TMrbNamedArrayD *) h->GetAssignedObject();
+								Int_t hRange = (Int_t) a->At(2);
+								Int_t hScale = (Int_t) a->At(3);
+								TString xScale;
+								if (hScale == 1) xScale = "micro secs";
+								else if (hScale == 1000) xScale = "milli secs";
+								else if (hScale == 1000000) xScale = "secs";
+								hScale *= 10;
+								Bool_t hLoop = (a->At(4) > 0);
+								anaTmpl.InitializeCode(hLoop ? "%RL%" : "%RN%");
+								anaTmpl.Substitute("$hName", h->GetName());
+								anaTmpl.Substitute("$hScale", hScale);
+								anaTmpl.Substitute("$xScale", xScale.Data());
+								anaTmpl.Substitute("$hRange", hRange);
+								anaTmpl.WriteCode(ana);
+							}
+							h = (TMrbNamedX *) uHistos->After(h);
 						}
 					}
 					anaTmpl.InitializeCode("%E%");
