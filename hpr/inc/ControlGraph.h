@@ -21,6 +21,7 @@ public:
    virtual ~ControlGraph() {};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(XSpline* parent); 
+   XSpline* GetParent(){return fParent;}; 
    void SetAllShapeFactors(Int_t npoints, Float_t* sf);
    Float_t   GetShapeFactorByPointNumber(Int_t ipoint) {return fShapeFactors[ipoint];};
    Int_t     GetSelectedPoint() { return fSelectedPoint; };

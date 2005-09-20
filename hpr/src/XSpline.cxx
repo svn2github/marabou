@@ -454,7 +454,7 @@ void XSpline::Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y,
 }
 //_______________________________________________________________________________________
 
-Bool_t XSpline::Parallel_Graph(TGraph* ograph, TGraph* pgraph, Double_t dist, Bool_t closed)
+Bool_t XSpline::ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, Double_t dist, Bool_t closed)
 {
    Int_t n = ograph->GetN();
 
@@ -510,6 +510,12 @@ XSpline::XSpline(Int_t npoints, Double_t* x, Double_t* y)
    fReady = kFALSE;
    fPrec = 0;
    fClosed = kFALSE;
+   fNeedReCompute = kFALSE;
+   fArrowAtStart = kFALSE;
+   fArrowAtEnd   = kFALSE;
+   fPaintArrowAtStart = kFALSE;
+   fPaintArrowAtEnd   = kFALSE;
+   fArrowFill    = kFALSE;
    fNP = 0;
    fFilledLength = 0;
    fEmptyLength = 0;
@@ -622,16 +628,16 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
 //   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    if (fNP > 0) {
       for (Int_t i = 0; i < fNP; i++) {
-         TGraph * gr = NULL;
+         ParallelGraph * gr = NULL;
 //          cout << "fPGraphs.GetLast() " << fPGraphs.GetLast()<< endl;
-         if (fPGraphs.GetLast() >= i) gr = (TGraph*)fPGraphs[i];
+         if (fPGraphs.GetLast() >= i) gr = (ParallelGraph*)fPGraphs[i];
          AddParallelGraphExt(gr, fPDists[i]);
       }
    }
    fNeedReCompute = kTRUE;
+//   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    gPad->Modified();
    gPad->Update();
-//   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    return fNpoints;
 }
 //_____________________________________________________________________________________
@@ -791,29 +797,30 @@ void XSpline::EditControlGraph()
 }
 //_____________________________________________________________________________________
 
-TGraph* XSpline::AddParallelGraph(Double_t dist, Color_t color, Width_t width, Style_t style)
+ParallelGraph* XSpline::AddParallelGraph(Double_t dist, Color_t color, Width_t width, Style_t style)
 {
    return AddParallelGraphExt(NULL, dist, color, width, style);
 }
    
 //_____________________________________________________________________________________
 
-TGraph* XSpline::AddParallelGraphExt(TGraph* ngraph, Double_t dist, Color_t color, Width_t width, Style_t style)
+ParallelGraph* XSpline::AddParallelGraphExt(ParallelGraph* ngraph, Double_t dist, Color_t color, Width_t width, Style_t style)
 {
 // Add a line parallel to this graph, color, width, style may be given,
 // otherwise taken from this
-   TGraph* pgraph = ngraph; 
+   ParallelGraph* pgraph = ngraph; 
    if (pgraph == NULL) {
-      pgraph = new TGraph(GetN());
+      pgraph = new ParallelGraph(GetN());
       pgraph->SetName("ParallelG");
    } else {
       if (pgraph->GetN() != this->GetN()) ngraph->Set(this->GetN());
    }
+   pgraph->SetParent(this);
 //   cout << " XSpline, this, N, dist " << this << " " << GetN() << " " << dist << endl;
 //   this->Print(" ");
 //   cout << " AddParallelGraphExt, ngraph, N: " << ngraph << " " << GetN() << endl;
 //   pgraph->Print();
-   Bool_t ok = Parallel_Graph(this, pgraph, dist, fClosed);
+   Bool_t ok = ComputeParallelGraph(this, pgraph, dist, fClosed);
    if (!ok) {
       cout << " AddParallelGraph failed" << endl;
       return NULL;
@@ -854,13 +861,47 @@ void XSpline::Paint(Option_t * option)
 {
 //   TGraph::Paint(option);
 //   cout << "XSpline::Paint, fNP PGraphs.GetEntriesFast()" << fNP << " " <<fPGraphs.GetEntriesFast() << endl;
-   if (!fNeedReCompute) return;
-
-   if (fNP > 0 && fPGraphs.GetEntriesFast()  <= 0) ComputeSpline();
-   if (fFilledLength <= 0 ||  fPGraphs.GetEntriesFast() < 2) {
+//   if (fNP > 0 && fPGraphs.GetEntriesFast()  <= 0) ComputeSpline();
+   if (fRailwaylike <= 0)  {
       TGraph::Paint(option);
-      return;
+      if (fArrowAtStart) { 
+         fArrowAtStart->SetLineColor(GetLineColor());
+         if (fArrowAtStart->GetFillStyle() != 0) 
+            fArrowAtStart->SetFillColor(GetLineColor());
+      } 
+      if (fArrowAtEnd) { 
+         fArrowAtEnd->SetLineColor(GetLineColor());
+         if (fArrowAtEnd->GetFillStyle() != 0) 
+            fArrowAtEnd->SetFillColor(GetLineColor());
+      } 
    }
+   if (!fNeedReCompute) return;
+//   cout << " XSpline::Paint " << endl;
+   fNeedReCompute = kFALSE;
+   if (fArrowAtStart) {
+      fArrowSize  = fArrowAtStart->GetArrowSize();
+      fArrowAngle = fArrowAtStart->GetAngle();
+      if (fArrowAtStart->GetFillStyle() != 0) fArrowFill = kTRUE;
+      else                                    fArrowFill = kFALSE;
+      gPad->GetListOfPrimitives()->Remove(fArrowAtStart);
+      delete fArrowAtStart; 
+      fArrowAtStart = NULL;
+   }
+   if (fArrowAtEnd) {
+      fArrowSize  = fArrowAtEnd->GetArrowSize();
+      fArrowAngle = fArrowAtEnd->GetAngle();
+      if (fArrowAtEnd->GetFillStyle() != 0) fArrowFill = kTRUE;
+      else                                  fArrowFill = kFALSE;
+      gPad->GetListOfPrimitives()->Remove(fArrowAtEnd);
+      delete fArrowAtEnd; 
+      fArrowAtEnd = NULL;
+   }
+   if (fPaintArrowAtStart) PaintArrow(0);
+   if (fPaintArrowAtEnd)   PaintArrow(1);
+
+//  draw railway sleepers
+   if (fFilledLength <= 0 || fEmptyLength <= 0) return;
+
    TGraph* lg = (TGraph*)fPGraphs[0];
    TGraph* rg = (TGraph*)fPGraphs[1];
 //   cout << "XSpline::Paint " << lg << " " << rg  << endl;
@@ -1014,9 +1055,8 @@ void XSpline::Paint(Option_t * option)
       pl->Draw();
 //      cout << "pl->GetFillColor() " << pl->GetFillColor() << endl;
    }
-   fNeedReCompute = kFALSE;
-//   gPad->Modified();
-//   gPad->Update();
+   gPad->Modified();
+   gPad->Update();
 }
 //_____________________________________________________________________________________
 
@@ -1033,7 +1073,69 @@ void XSpline::SetColor(Color_t color)
       gPad->Update();
    }
 }
-//___________________________________________________________________________
+//_____________________________________________________________________________________
+
+void XSpline::AddArrow(Int_t where, Double_t size, Double_t angle, Bool_t filled)
+{
+   if (where == 0) fPaintArrowAtStart = kTRUE;
+   if (where == 1) fPaintArrowAtEnd = kTRUE;
+   fArrowSize = size;
+   fArrowAngle = angle;
+   fArrowFill = filled;
+}
+//_____________________________________________________________________________________
+
+void XSpline::PaintArrow(Int_t where)
+{
+   Double_t* xp;
+   Double_t* yp;
+   Int_t np = this->GetResult(xp, yp);
+   Double_t px1;
+   Double_t py1;
+   Double_t px2;
+   Double_t py2;
+   if (where == 1) {
+   	px1 = xp[np-2];
+   	py1 = yp[np-2];
+   	px2 = xp[np-1];
+   	py2 = yp[np-1];
+   } else {
+      px1 = xp[1];
+   	py1 = yp[1];
+		px2 = xp[0];
+		py2 = yp[0];
+   }
+//  make it long enough, TArrow uses pixels;
+   Double_t xp1, yp1, xp2, yp2;
+   gPad->GetRange(xp1, yp1, xp2, yp2);
+
+   Double_t arrowlength = fArrowSize * (xp2 - xp1); 
+   Double_t l = TMath::Sqrt((px2-px1)*(px2-px1)+(py2-py1)*(py2-py1));
+   if (l < 0.5 * arrowlength) {
+      px1 = - arrowlength * (px2 - px1) / l + px2;
+      py1 = - arrowlength * (py2 - py1) / l + py2;
+   }
+//   cout <<where << " " <<arrowlength << " " << l 
+//         << " " << px1 << " " << py1 << " " << px2 << " " << py2 << endl;
+   
+   TArrow* arrow = new TArrow(px1, py1, px2, py2, fArrowSize, ">");
+   arrow->SetLineColor(GetLineColor());
+   arrow->SetLineWidth(GetLineWidth());
+   arrow->SetLineStyle(GetLineStyle());
+   arrow->SetAngle(fArrowAngle);
+   if (fArrowFill) {
+      arrow->SetFillStyle(1001);
+      arrow->SetFillColor(GetLineColor());
+      arrow->SetOption("|>");
+   } else {
+      arrow->SetFillStyle(0);
+      arrow->SetOption(">");
+   }
+   arrow->Draw();
+   if (where == 1) fArrowAtEnd = arrow;
+   else            fArrowAtStart = arrow;
+}
+//____py2 = yp[0];_______________________________________________________________________
 //___________________________________________________________________________
 //
 // ControlGraph, a helper class for XSplines,
@@ -1288,4 +1390,33 @@ void RailwaySleeper::SetSleeperColor(Color_t color)
    fColor = color;
    fParent->SetColor(color);
 }
+//_____________________________________________________________________________________
+//_____________________________________________________________________________________
+//
+// ControlGraph, a helper class for XSplines,
+// To profit from TGraphs methods the Controlpoints are stored
+// as a TGraph
+//
+ParallelGraph::ParallelGraph (Int_t npoints, Double_t*  x, Double_t* y) :
+              TGraph(npoints, x, y) {
+   fParent = NULL;
+};
+//_____________________________________________________________________________________
    
+void ParallelGraph::Delete(Option_t *opt)
+{
+   cout << "Cant delete ParallelGraph, delete its XSpline" << endl; 
+}
+//_____________________________________________________________________________________
+   
+void ParallelGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
+//  execute 
+   if (fParent) fParent->ExecuteEvent(event, px, py);
+}
+//_____________________________________________________________________________________
+   
+void ParallelGraph::SetParent(XSpline* parent) 
+{
+  fParent = parent;
+} 
+  

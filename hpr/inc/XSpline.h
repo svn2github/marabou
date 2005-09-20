@@ -3,11 +3,13 @@
 #include "TObject.h"
 #include "TGraph.h"
 #include "TArrayD.h"
+#include "TArrow.h"
 #include "TMarker.h"
 #include "TStyle.h"
 #include "TVirtualPad.h"
 #include "Buttons.h"
 #include "ControlGraph.h"
+#include "ParallelGraph.h"
 
 class ShapeFactor
 {
@@ -73,8 +75,16 @@ protected:
    Size_t        fMSize;             // markersize
    TObjArray     fPGraphs;           //! pointer list to parallel lines
    TArrayD       fPDists;
+   Int_t         fRailwaylike;
    Double_t      fFilledLength;      // draw like railway in maps
    Double_t      fEmptyLength;       // space in between
+   TArrow*       fArrowAtStart;
+   TArrow*       fArrowAtEnd;
+   Bool_t        fPaintArrowAtStart;
+   Bool_t        fPaintArrowAtEnd;
+   Double_t      fArrowSize;
+   Double_t      fArrowAngle;
+   Bool_t        fArrowFill;
    TList         fDPolyLines;        // !
 private:
    void point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
@@ -116,9 +126,9 @@ public:
    Int_t GetResult(Double_t*& x, Double_t*& y);
    Int_t ComputeSpline(Float_t prec = -1, Bool_t open = kTRUE);
 
-   TGraph* AddParallelGraphExt(TGraph* ng = NULL, Double_t dist = 2, Color_t color=0, 
+   ParallelGraph* AddParallelGraphExt(ParallelGraph* ng = NULL, Double_t dist = 2, Color_t color=0, 
                             Width_t width=0, Style_t style=0);
-   TGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0, 
+   ParallelGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0, 
                             Width_t width=0, Style_t style=0);   // *MENU*
    TObjArray* GetParallelGraphs() {return &fPGraphs;};
    void  DrawParallelGraphs();
@@ -126,7 +136,7 @@ public:
    ControlGraph* GetControlGraph() {return &fCPGraph;};
 
    void RemovePolyLines();
-   static Bool_t Parallel_Graph(TGraph* ograph, TGraph* pgraph, 
+   static Bool_t ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, 
                                 Double_t dist, Bool_t closed);
    static Double_t Length(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    static Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
@@ -136,6 +146,8 @@ public:
                         Double_t dist, Double_t* a,  Double_t* b);
    static void Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y, 
                         Double_t dist ,Double_t* a, Double_t* b);
+   void  SetRailwaylike(Int_t railway) {fRailwaylike = railway;};
+   Int_t GetRailwaylike() {return fRailwaylike;};
    void  SetFilledLength(Double_t flen) {fFilledLength = flen;};
    void  SetEmptyLength(Double_t elen) {fEmptyLength = elen;};
    Double_t SetFilledLength() {return fFilledLength;};
@@ -143,7 +155,8 @@ public:
    void Paint(Option_t * option = " ");
    void SetNeedReCompute() {fNeedReCompute = kTRUE;};
    void SetColor(Color_t color);
-
+   void AddArrow(Int_t where, Double_t size, Double_t angle, Bool_t filled);
+   void PaintArrow(Int_t where);
    ClassDef(XSpline, 1)
 };
 #endif

@@ -35,6 +35,7 @@ HPRDH			:= $(HPRDIRI)/HTCanvas.h \
                $(HPRDIRI)/GroupOfGObjects.h \
  					$(HPRDIRI)/EditMarker.h \
  					$(HPRDIRI)/ControlGraph.h \
+ 					$(HPRDIRI)/ParallelGraph.h \
  					$(HPRDIRI)/XSpline.h \
  					$(HPRDIRI)/RailwaySleeper.h \
  					$(HPRDIRI)/HprEditCommands.h 

@@ -2376,6 +2376,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    row_lab->Add(new TObjString("Markers"));
    row_lab->Add(new TObjString("CurlyLines"));
    row_lab->Add(new TObjString("CurlyArcs"));
+   row_lab->Add(new TObjString("XSplines"));
    
    static Int_t dox      = 1,
                 doy      = 1,
@@ -2388,7 +2389,8 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
                 doarc    = 1, 
                 domark    = 1, 
                 docurlyl = 1, 
-                docurlya = 1;
+                docurlya = 1, 
+                doxspline = 1;
  
    AddObjString(dox     , values, kAttCheckB);
    AddObjString(doy     , values, kAttCheckB);
@@ -2402,6 +2404,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    AddObjString(domark  , values, kAttCheckB);
    AddObjString(docurlyl, values, kAttCheckB);
    AddObjString(docurlya, values, kAttCheckB);
+   AddObjString(doxspline, values, kAttCheckB);
    
    Bool_t ok; 
    Int_t itemwidth = 320;
@@ -2423,6 +2426,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
    domark   = GetInt(values,   vp++);
    docurlyl= GetInt(values,   vp++);
    docurlya= GetInt(values,   vp++);
+   doxspline = GetInt(values,   vp++);
 
    Double_t x1;
    Double_t y1;
@@ -2533,7 +2537,24 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
 //         b->SetX2(PutOnGridX(b->GetX2()));
 //         b->SetY2(PutOnGridY(b->GetY2()));
 
-      } else if (obj->InheritsFrom("TGraph") && dograph) {
+      } else if (obj->InheritsFrom("ControlGraph") && doxspline) {
+         ControlGraph * b = (ControlGraph *)obj;
+         Double_t * x = b->GetX();
+         if (!x) {
+            cout << "TGraph with 0 points" << endl;
+            continue;
+         }
+         Double_t * y = b->GetY();
+//         either first or last point
+         for (Int_t i = 0; i < b->GetN(); i++) {
+            if (dox) x[i] = PutOnGridX(x[i]);
+            if (doy) y[i] = PutOnGridY(y[i]);
+         }
+         b->GetParent()->SetNeedReCompute();
+      } else if (obj->InheritsFrom("TGraph") 
+                 && !(obj->InheritsFrom("XSpline"))
+                 && !(obj->InheritsFrom("ControlGraph"))
+                 && dograph) {
          TGraph * b = (TGraph *)obj;
          Double_t * x = b->GetX();
          if (!x) {
@@ -2839,7 +2860,7 @@ void HTCanvas::InsertText(Bool_t from_file)
    row_lab->Add(new TObjString("Text angle"));
    row_lab->Add(new TObjString("Mark as compound"));
    row_lab->Add(new TObjString("Apply latex filter"));
-   row_lab->Add(new TObjString("Loop until cancel"));
+   if (!from_file) row_lab->Add(new TObjString("Loop until cancel"));
   
 
    Double_t x0 =        0;
@@ -2885,7 +2906,7 @@ void HTCanvas::InsertText(Bool_t from_file)
    AddObjString(angle, values);
    AddObjString(markc, values, kAttCheckB);
    AddObjString(lfilter, values, kAttCheckB);
-   AddObjString(input_loop, values, kAttCheckB);
+   if (!from_file) AddObjString(input_loop, values, kAttCheckB);
 
    Bool_t ok; 
    Int_t itemwidth = 320;
@@ -2908,8 +2929,7 @@ loop:
    angle    = GetDouble(values, vp++);
    markc    = GetInt(values,    vp++);
    lfilter  = GetInt(values,    vp++);
-   input_loop = GetInt(values,    vp++);
-
+   if (!from_file) input_loop = GetInt(values,    vp++);
    if (x0 == 0 && y0 == 0) {
    	cout << "Mark position with left mouse" << endl;
    	fGetMouse = kTRUE;
@@ -3279,6 +3299,12 @@ void HTCanvas::InsertXSpline()
    row_lab.Add(new TObjString("Line color"));
    row_lab.Add(new TObjString("Line width"));
    row_lab.Add(new TObjString("Line style"));
+   row_lab.Add(new TObjString("Arrow at start"));
+   row_lab.Add(new TObjString("Arrow at end"));
+   row_lab.Add(new TObjString("Arrow size"));
+   row_lab.Add(new TObjString("Arrow angle"));
+   row_lab.Add(new TObjString("Fill Arrow"));
+   row_lab.Add(new TObjString("Railway like (double line)"));
    row_lab.Add(new TObjString("Railway: sleeper length"));
    row_lab.Add(new TObjString("Railway: sleeper distance"));
    row_lab.Add(new TObjString("Railway: gage"));
@@ -3291,9 +3317,15 @@ void HTCanvas::InsertXSpline()
    static Int_t color  = gStyle->GetLineColor();
    static Int_t lwidth = gStyle->GetLineWidth();
    static Int_t lstyle  = gStyle->GetLineStyle();
+   static Int_t    railway = 0;
    static Double_t filled  = 0;
    static Double_t empty  = 5;
    static Double_t gage  = 2;
+   static Int_t   arrow_at_start = 0;
+   static Int_t   arrow_at_end = 0;
+   static Int_t   arrow_filled = 1;
+   static Double_t arrow_size  = 0.02;
+   static Double_t arrow_angle  = 30;
 
    AddObjString(closed, &values, kAttCheckB);
    AddObjString(approx, &values, kAttCheckB);
@@ -3303,6 +3335,12 @@ void HTCanvas::InsertXSpline()
    AddObjString(color, &values, kAttColor);
    AddObjString(lwidth, &values);
    AddObjString(lstyle, &values, kAttLineS);
+   AddObjString(arrow_at_start, &values, kAttCheckB);
+   AddObjString(arrow_at_end, &values, kAttCheckB);
+   AddObjString(arrow_size, &values);
+   AddObjString(arrow_angle, &values);
+   AddObjString(arrow_filled, &values, kAttCheckB);
+   AddObjString(railway, &values, kAttCheckB);
    AddObjString(filled, &values);
    AddObjString(empty, &values);
    AddObjString(gage, &values);
@@ -3322,6 +3360,12 @@ tryagain:
    color = GetInt(&values, vp++);
    lwidth = GetInt(&values, vp++);
    lstyle = GetInt(&values, vp++);
+   arrow_at_start = GetInt(&values, vp++);
+   arrow_at_end = GetInt(&values, vp++); 
+   arrow_size   = GetDouble(&values, vp++);
+   arrow_angle  = GetDouble(&values, vp++);
+   arrow_filled   = GetInt(&values, vp++);
+   railway   = GetInt(&values, vp++);
    filled   = GetDouble(&values, vp++);
    empty   = GetDouble(&values, vp++);
    gage  = GetDouble(&values, vp++);
@@ -3385,13 +3429,19 @@ tryagain:
    xsp->SetLineColor(color);
    xsp->SetLineWidth(lwidth);
    xsp->SetLineStyle(lstyle);
+   xsp->SetRailwaylike(railway);
    xsp->SetFilledLength(filled);
    xsp->SetEmptyLength(empty);
    xsp->Draw("L");
-   if (filled > 0 && empty > 0 && gage > 0) {
+   if (railway > 0 && gage > 0) {
      xsp->AddParallelGraph( gage / 2, color, lwidth, lstyle); 
      xsp->AddParallelGraph(-gage / 2, color, lwidth, lstyle); 
    }
+   Bool_t afilled;
+   if (arrow_filled == 0) afilled = kFALSE;
+   else                  afilled = kTRUE;
+   if (arrow_at_start) xsp->AddArrow(0, arrow_size, arrow_angle, afilled);
+   if (arrow_at_end)   xsp->AddArrow(1, arrow_size, arrow_angle, afilled);
    if (showcp > 0) xsp->DrawControlPoints(24, 0);
    delete gr;
    Modified();
