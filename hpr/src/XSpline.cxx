@@ -511,8 +511,8 @@ XSpline::XSpline(Int_t npoints, Double_t* x, Double_t* y)
    fPrec = 0;
    fClosed = kFALSE;
    fNeedReCompute = kFALSE;
-   fArrowAtStart = kFALSE;
-   fArrowAtEnd   = kFALSE;
+   fArrowAtStart = NULL;
+   fArrowAtEnd   = NULL;
    fPaintArrowAtStart = kFALSE;
    fPaintArrowAtEnd   = kFALSE;
    fArrowFill    = kFALSE;
