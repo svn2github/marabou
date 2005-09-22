@@ -497,7 +497,7 @@ Bool_t XSpline::ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, Doub
 
 //  no arrows with railway sleepers
 
-   if (fFilledLength > 0 && fEmptyLength > 0) return kFALSE;
+   if (fFilledLength > 0 && fEmptyLength > 0) return kTRUE;
 
    Double_t chop, seglen, xm, ym;
    Int_t ip = 0;
