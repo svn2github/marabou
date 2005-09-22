@@ -3301,8 +3301,9 @@ void HTCanvas::InsertXSpline()
    row_lab.Add(new TObjString("Line style"));
    row_lab.Add(new TObjString("Arrow at start"));
    row_lab.Add(new TObjString("Arrow at end"));
-   row_lab.Add(new TObjString("Arrow size"));
+   row_lab.Add(new TObjString("Arrow length"));
    row_lab.Add(new TObjString("Arrow angle"));
+   row_lab.Add(new TObjString("Arrow indent angle"));
    row_lab.Add(new TObjString("Fill Arrow"));
    row_lab.Add(new TObjString("Railway like (double line)"));
    row_lab.Add(new TObjString("Railway: sleeper length"));
@@ -3324,8 +3325,9 @@ void HTCanvas::InsertXSpline()
    static Int_t   arrow_at_start = 0;
    static Int_t   arrow_at_end = 0;
    static Int_t   arrow_filled = 1;
-   static Double_t arrow_size  = 0.02;
+   static Double_t arrow_size  = 10;
    static Double_t arrow_angle  = 30;
+   static Double_t arrow_indent_angle  = 0;
 
    AddObjString(closed, &values, kAttCheckB);
    AddObjString(approx, &values, kAttCheckB);
@@ -3339,6 +3341,7 @@ void HTCanvas::InsertXSpline()
    AddObjString(arrow_at_end, &values, kAttCheckB);
    AddObjString(arrow_size, &values);
    AddObjString(arrow_angle, &values);
+   AddObjString(arrow_indent_angle, &values);
    AddObjString(arrow_filled, &values, kAttCheckB);
    AddObjString(railway, &values, kAttCheckB);
    AddObjString(filled, &values);
@@ -3364,6 +3367,7 @@ tryagain:
    arrow_at_end = GetInt(&values, vp++); 
    arrow_size   = GetDouble(&values, vp++);
    arrow_angle  = GetDouble(&values, vp++);
+   arrow_indent_angle  = GetDouble(&values, vp++);
    arrow_filled   = GetInt(&values, vp++);
    railway   = GetInt(&values, vp++);
    filled   = GetDouble(&values, vp++);
@@ -3440,8 +3444,9 @@ tryagain:
    Bool_t afilled;
    if (arrow_filled == 0) afilled = kFALSE;
    else                  afilled = kTRUE;
-   if (arrow_at_start) xsp->AddArrow(0, arrow_size, arrow_angle, afilled);
-   if (arrow_at_end)   xsp->AddArrow(1, arrow_size, arrow_angle, afilled);
+   if (arrow_at_start) xsp->AddArrow(0, arrow_size, arrow_angle, arrow_indent_angle, afilled);
+   if (arrow_at_end)   xsp->AddArrow(1, arrow_size, arrow_angle, arrow_indent_angle, afilled);
+   xsp->ComputeSpline(prec, closed_spline);
    if (showcp > 0) xsp->DrawControlPoints(24, 0);
    delete gr;
    Modified();

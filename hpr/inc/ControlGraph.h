@@ -18,7 +18,7 @@ private:
 
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
-   virtual ~ControlGraph() {};
+   virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(XSpline* parent); 
    XSpline* GetParent(){return fParent;}; 

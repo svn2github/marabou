@@ -78,13 +78,14 @@ protected:
    Int_t         fRailwaylike;
    Double_t      fFilledLength;      // draw like railway in maps
    Double_t      fEmptyLength;       // space in between
-   TArrow*       fArrowAtStart;
-   TArrow*       fArrowAtEnd;
+   TGraph*       fArrowAtStart;
+   TGraph*       fArrowAtEnd;
    Bool_t        fPaintArrowAtStart;
    Bool_t        fPaintArrowAtEnd;
-   Double_t      fArrowSize;
+   Double_t      fArrowLength;
    Double_t      fArrowAngle;
-   Bool_t        fArrowFill;
+   Double_t      fArrowIndentAngle;
+   Int_t         fArrowFill;
    TList         fDPolyLines;        // !
 private:
    void point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
@@ -109,8 +110,9 @@ private:
 public:
    XSpline(Int_t npoints = 0, Double_t* x = 0, Double_t* y = 0);
    virtual ~XSpline();
+   void Remove() { delete this; } // *MENU*
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-   void RecursiveRemove(TObject * obj);
+//   void RecursiveRemove(TObject * obj);
    virtual void EditControlGraph();    //  *MENU*
    void Print(Option_t * opt = " ") const{TGraph::Print();};    //  *MENU*
    void DrawControlPoints(Int_t marker = 20, Size_t size = 2); // *MENU* *ARGS={marker=>fMType, size=>fMSize}
@@ -136,7 +138,7 @@ public:
    ControlGraph* GetControlGraph() {return &fCPGraph;};
 
    void RemovePolyLines();
-   static Bool_t ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, 
+   Bool_t ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, 
                                 Double_t dist, Bool_t closed);
    static Double_t Length(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    static Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
@@ -155,8 +157,26 @@ public:
    void Paint(Option_t * option = " ");
    void SetNeedReCompute() {fNeedReCompute = kTRUE;};
    void SetColor(Color_t color);
-   void AddArrow(Int_t where, Double_t size, Double_t angle, Bool_t filled);
+   void AddArrow(Int_t where, Double_t size, Double_t angle, Double_t indent_angle, Int_t filled);
    void PaintArrow(Int_t where);
+   Int_t    GetArrowFill()   {return fArrowFill;};
+   Double_t GetArrowLength() {return fArrowLength;};
+   Double_t GetArrowAngle()  {return fArrowAngle;}; 
+   Double_t GetArrowIndentAngle() {return fArrowIndentAngle;}; 
+
+   void SetArrowFill(Int_t filled) {
+      if (filled > 0) {
+         if (fArrowAtStart)fArrowAtStart->SetFillStyle(1001);
+         if (fArrowAtEnd)fArrowAtEnd->SetFillStyle(1001);
+      } else {
+         if (fArrowAtStart)fArrowAtStart->SetFillStyle(0);
+         if (fArrowAtEnd)fArrowAtEnd->SetFillStyle(0);
+      }
+      fArrowFill = filled;
+   }; //  *MENU*
+   void SetArrowLength(Double_t length) {fArrowLength = length;}; //  *MENU*
+   void SetArrowAngle(Double_t angle) {fArrowAngle = angle;}; //  *MENU*
+   void SetArrowIndentAngle(Double_t angle) {fArrowIndentAngle = angle;}; //  *MENU*
    ClassDef(XSpline, 1)
 };
 #endif

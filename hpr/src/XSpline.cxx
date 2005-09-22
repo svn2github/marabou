@@ -494,6 +494,72 @@ Bool_t XSpline::ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, Doub
       phi2 = PhiOfLine(xo[i], yo[i], xo[i+1], yo[i+1]);
       Midpoint(phi1, phi2, xo[i], yo[i], dist, &xp[i], &yp[i]);
    }
+   Double_t chop, seglen, xm, ym;
+   Int_t ip = 0;
+   Double_t deg2rad = TMath::Pi() / 180;
+   Double_t p2 = 0.5 * fArrowAngle * deg2rad;
+   Double_t a2 = fArrowIndentAngle *deg2rad;
+   Double_t ay = fArrowLength * TMath::Tan(p2);
+   Double_t dabs = TMath::Abs(dist);  
+//   cout << ay << " " << dabs << endl;
+   Double_t reallength = fArrowLength  - ay * TMath::Tan(a2) 
+           * (1 - dabs / ay);
+
+   if (fPaintArrowAtEnd) {
+      chop = reallength ;
+      ip = n - 1;
+      while (1) {
+         seglen = Length(xp[ip], yp[ip], xp[ip-1], yp[ip-1] );
+//         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
+         if (chop <= seglen) {
+            xm = xp[ip-1] + (xp[ip] - xp[ip-1]) * (1 - chop/seglen);
+            ym = yp[ip-1] + (yp[ip] - yp[ip-1]) * (1 - chop/seglen);
+//            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
+            xp[ip] = xm;
+            yp[ip] = ym;
+            pgraph->Set(ip+1);
+            break;
+         } else {
+            chop -= seglen;
+            ip -= 1;
+            if (ip < 1) break;
+         }
+      }
+   }
+   xp = pgraph->GetX();
+   yp = pgraph->GetY();
+   n = pgraph->GetN();
+//   cout << "n " << n << endl;
+   if (fPaintArrowAtStart) {
+      chop = reallength;
+      ip = 0;
+      while (1) {
+         seglen = Length(xp[ip], yp[ip], xp[ip+1], yp[ip+1] );
+//         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
+         if (chop <= seglen) {
+            xm = xp[ip] + (xp[ip+1] - xp[ip]) * (chop/seglen);
+            ym = yp[ip] + (yp[ip+1] - yp[ip]) * (chop/seglen);
+//            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
+            xp[ip] = xm;
+            yp[ip] = ym;
+            break;
+         } else {
+            chop -= seglen;
+            ip += 1;
+            if (ip >= n-1) break;
+         }
+      }
+      if (ip > 0) {
+         Int_t nn = n - ip;
+         for (Int_t i = 0; i < nn ; i++) {
+            xp[i] = xp[ip]; 
+            yp[i] = yp[ip]; 
+            ip++;
+         }
+//         cout << "nn " << nn << endl;
+         pgraph->Set(nn);
+      }
+   }
    return kTRUE;
 }
 
@@ -510,44 +576,68 @@ XSpline::XSpline(Int_t npoints, Double_t* x, Double_t* y)
    fReady = kFALSE;
    fPrec = 0;
    fClosed = kFALSE;
+   fNofControlPoints = 0;
+   fNpoints = 0;
+   fReady = kFALSE;
    fNeedReCompute = kFALSE;
-   fArrowAtStart = NULL;
-   fArrowAtEnd   = NULL;
-   fPaintArrowAtStart = kFALSE;
-   fPaintArrowAtEnd   = kFALSE;
-   fArrowFill    = kFALSE;
    fNP = 0;
+   fRailwaylike = 0;
    fFilledLength = 0;
    fEmptyLength = 0;
    fMType = 20;
    fMSize = 2;
+   fArrowAtStart = NULL;
+   fArrowAtEnd   = NULL;
+   fPaintArrowAtStart = kFALSE;
+   fPaintArrowAtEnd   = kFALSE;
+   fArrowFill    = 0;
+   fArrowLength = 10;
+   fArrowAngle  = 30;
+   fArrowIndentAngle = 15;
    SetName("XSpline");
    fCPGraph.SetName("ControlGraph");
    fCPGraph.SetParent(this);
    if (npoints > 0 && x != 0 && y != 0)SetControlPoints(npoints, x, y);
-   gROOT->GetListOfCleanups()->Add(this);
+   gROOT->GetListOfCleanups()->Add(&fPGraphs);
    fPGraphs.Clear();
+   fDPolyLines.Clear();
 //   cout << "XSpline: ctor npoints, fNP" << npoints << " " << fNP<< endl;
 }
 //____________________________________________________________________________________
 
 XSpline::~XSpline()
 {
-   cout << "~XSpline() " << endl << flush;
-   gROOT->GetListOfCleanups()->Remove(this);
+   cout << "~XSpline(): "<< this  << endl << flush;
+   gROOT->GetListOfCleanups()->Remove(&fPGraphs);
+//   gROOT->GetListOfCleanups()->Print();
+//   TIter next(gROOT->GetListOfCleanups());
+//   while (TObject* obj = next()) cout << "loc: " << obj << endl;
+//   gROOT->GetListOfCleanups()->Remove(this);
+//   TIter next1(gROOT->GetListOfCleanups());
+ //  while (TObject* obj = next1()) cout << "loc: " << obj << endl;
+   if (fArrowAtStart) {
+      gPad->GetListOfPrimitives()->Remove(fArrowAtStart);
+      delete fArrowAtStart;
+   }
+   if (fArrowAtEnd) {
+      gPad->GetListOfPrimitives()->Remove(fArrowAtEnd);
+      delete fArrowAtEnd;
+   }
    RemovePolyLines();
    fPGraphs.Delete();
    Delete_ControlPoints();
    Delete_ShapeFactors();
+   cout << "exit ~XSpline(): "<< this  << endl << flush;
+
 }
 //________________________________________________________________
 
-void XSpline::RecursiveRemove(TObject * obj)
-{
-//   cout << "XSpline::RecursiveRemove " << obj << " "
-//        << obj->GetName() <<  endl << flush;
-   if (fPGraphs.FindObject(obj)) fPGraphs.Remove(obj);
-};
+//void XSpline::RecursiveRemove(TObject * obj)
+//{
+//   cout << "XSpline::RecursiveRemove, this, obj " << this << " "  << obj << " "
+ //       << obj->GetName() <<  endl << flush;
+//   if (fPGraphs.FindObject(obj)) fPGraphs.Remove(obj);
+//};
 //_____________________________________________________________________________________
 
 void XSpline::SetShapeFactors(Int_t npoints, Float_t* s)
@@ -678,6 +768,7 @@ void XSpline::Delete_ControlPoints()
          fControlPointList = next;
       }
    }
+   fControlPointList = NULL;
 }
 //_____________________________________________________________________________________
 
@@ -690,6 +781,7 @@ void XSpline::Delete_ShapeFactors()
          fShapeFactorList = next;
       }
    }
+   fShapeFactorList = NULL;
 }
 //_____________________________________________________________________________________
 
@@ -878,9 +970,10 @@ void XSpline::Paint(Option_t * option)
    if (!fNeedReCompute) return;
 //   cout << " XSpline::Paint " << endl;
    fNeedReCompute = kFALSE;
+
    if (fArrowAtStart) {
-      fArrowSize  = fArrowAtStart->GetArrowSize();
-      fArrowAngle = fArrowAtStart->GetAngle();
+//      fArrowSize  = fArrowAtStart->GetArrowSize();
+//      fArrowAngle = fArrowAtStart->GetAngle();
       if (fArrowAtStart->GetFillStyle() != 0) fArrowFill = kTRUE;
       else                                    fArrowFill = kFALSE;
       gPad->GetListOfPrimitives()->Remove(fArrowAtStart);
@@ -888,14 +981,15 @@ void XSpline::Paint(Option_t * option)
       fArrowAtStart = NULL;
    }
    if (fArrowAtEnd) {
-      fArrowSize  = fArrowAtEnd->GetArrowSize();
-      fArrowAngle = fArrowAtEnd->GetAngle();
+//      fArrowSize  = fArrowAtEnd->GetArrowSize();
+//      fArrowAngle = fArrowAtEnd->GetAngle();
       if (fArrowAtEnd->GetFillStyle() != 0) fArrowFill = kTRUE;
       else                                  fArrowFill = kFALSE;
       gPad->GetListOfPrimitives()->Remove(fArrowAtEnd);
       delete fArrowAtEnd; 
       fArrowAtEnd = NULL;
    }
+
    if (fPaintArrowAtStart) PaintArrow(0);
    if (fPaintArrowAtEnd)   PaintArrow(1);
 
@@ -1075,12 +1169,14 @@ void XSpline::SetColor(Color_t color)
 }
 //_____________________________________________________________________________________
 
-void XSpline::AddArrow(Int_t where, Double_t size, Double_t angle, Bool_t filled)
+void XSpline::AddArrow(Int_t where, Double_t length, 
+                       Double_t angle, Double_t indent_angle,Int_t filled)
 {
    if (where == 0) fPaintArrowAtStart = kTRUE;
    if (where == 1) fPaintArrowAtEnd = kTRUE;
-   fArrowSize = size;
+   fArrowLength = length;
    fArrowAngle = angle;
+   fArrowIndentAngle = indent_angle;
    fArrowFill = filled;
 }
 //_____________________________________________________________________________________
@@ -1105,33 +1201,45 @@ void XSpline::PaintArrow(Int_t where)
 		px2 = xp[0];
 		py2 = yp[0];
    }
-//  make it long enough, TArrow uses pixels;
-   Double_t xp1, yp1, xp2, yp2;
-   gPad->GetRange(xp1, yp1, xp2, yp2);
+   Double_t deg2rad = TMath::Pi() / 180;
+   Double_t p2 = 0.5 * fArrowAngle * deg2rad;
+   Double_t a2 = fArrowIndentAngle *deg2rad;
 
-   Double_t arrowlength = fArrowSize * (xp2 - xp1); 
-   Double_t l = TMath::Sqrt((px2-px1)*(px2-px1)+(py2-py1)*(py2-py1));
-   if (l < 0.5 * arrowlength) {
-      px1 = - arrowlength * (px2 - px1) / l + px2;
-      py1 = - arrowlength * (py2 - py1) / l + py2;
+   TGraph * arrow = new TGraph(5);
+   Double_t *x = arrow->GetX();
+   Double_t *y = arrow->GetY();
+   x[0] = x[4] = 0;
+   y[0] = y[4] = 0;
+   x[1] = - fArrowLength;
+   y[1] = fArrowLength * TMath::Tan(p2);
+   x[2] = - fArrowLength + y[1] * TMath::Tan(a2);
+   y[2] = 0;
+   x[3] = - fArrowLength;
+   y[3] = -y[1];
+
+   Double_t angle = PhiOfLine(px1, py1, px2, py2);
+   Double_t cosang = TMath::Cos(angle);
+   Double_t sinang = TMath::Sin(angle);
+   Double_t xx, yy;
+   for (Int_t i = 0; i < 5; i++) {
+      xx = x[i] * cosang - y[i] * sinang;
+      yy = x[i] * sinang + y[i] * cosang;
+      x[i] = xx + px2;
+      y[i] = yy + py2;
    }
-//   cout <<where << " " <<arrowlength << " " << l 
-//         << " " << px1 << " " << py1 << " " << px2 << " " << py2 << endl;
-   
-   TArrow* arrow = new TArrow(px1, py1, px2, py2, fArrowSize, ">");
+
    arrow->SetLineColor(GetLineColor());
-   arrow->SetLineWidth(GetLineWidth());
-   arrow->SetLineStyle(GetLineStyle());
-   arrow->SetAngle(fArrowAngle);
-   if (fArrowFill) {
+   if (fArrowFill != 0) {
+      arrow->SetName("FilledArrow");
       arrow->SetFillStyle(1001);
       arrow->SetFillColor(GetLineColor());
-      arrow->SetOption("|>");
+      arrow->Draw("F");
    } else {
+      arrow->SetName("OpenArrow");
       arrow->SetFillStyle(0);
-      arrow->SetOption(">");
+      arrow->SetLineWidth(GetLineWidth());
+      arrow->Draw();
    }
-   arrow->Draw();
    if (where == 1) fArrowAtEnd = arrow;
    else            fArrowAtStart = arrow;
 }
