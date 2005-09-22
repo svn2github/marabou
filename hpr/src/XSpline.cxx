@@ -990,12 +990,14 @@ void XSpline::Paint(Option_t * option)
       fArrowAtEnd = NULL;
    }
 
-   if (fPaintArrowAtStart) PaintArrow(0);
-   if (fPaintArrowAtEnd)   PaintArrow(1);
-
+   if (fFilledLength <= 0 || fEmptyLength <= 0 || fRailwaylike <= 0) {
+//  currently no arrays with railway sleepers allowed
+      if (fPaintArrowAtStart) PaintArrow(0);
+      if (fPaintArrowAtEnd)   PaintArrow(1);
+      return;
+   }
+   
 //  draw railway sleepers
-   if (fFilledLength <= 0 || fEmptyLength <= 0) return;
-
    TGraph* lg = (TGraph*)fPGraphs[0];
    TGraph* rg = (TGraph*)fPGraphs[1];
 //   cout << "XSpline::Paint " << lg << " " << rg  << endl;
