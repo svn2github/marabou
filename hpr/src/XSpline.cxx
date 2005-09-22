@@ -494,6 +494,11 @@ Bool_t XSpline::ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, Doub
       phi2 = PhiOfLine(xo[i], yo[i], xo[i+1], yo[i+1]);
       Midpoint(phi1, phi2, xo[i], yo[i], dist, &xp[i], &yp[i]);
    }
+
+//  no arrows with railway sleepers
+
+   if (fFilledLength > 0 && fEmptyLength > 0) return kFALSE;
+
    Double_t chop, seglen, xm, ym;
    Int_t ip = 0;
    Double_t deg2rad = TMath::Pi() / 180;
