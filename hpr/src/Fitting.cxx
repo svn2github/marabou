@@ -227,15 +227,15 @@ fit_user_function(const char *hname)\n\
    f2->SetParameter(1, -1);\n\
    f2->SetParameter(2, 0.5);\n\
    f2->SetParameter(3, 10);\n\
-   f2->SetParameter(4, 0);\n\
+   f2->SetParameter(4, -.5);\n\
    f2->SetParameter(5, 0.5);\n\
 \n\
    f2->SetParameter(6, 10);\n\
    f2->SetParameter(7, 1);\n\
-   f2->SetParameter(8, 0.5);\n\
+   f2->SetParameter(8, 0.3);\n\
    f2->SetParameter(9, 10);\n\
    f2->SetParameter(10,0.5);\n\
-   f2->SetParameter(11,0.5);\n\
+   f2->SetParameter(11,0.7);\n\
 \n\
  //  f2->Draw();\n\
    hist->Fit(\"gauss2d\",\"R0\",\"same\");  // dont in same picture \n\
