@@ -14,7 +14,7 @@
   gROOT->Reset();
 
 // Create a new canvas.
-  c1 = new TCanvas("c1","Dynamic Filling Example",200,10,700,500);
+  c1 = new TCanvas("c1","Dynamic Filling Example",250,10,700,500);
   c1->SetFillColor(42);
   c1->GetFrame()->SetFillColor(21);
   c1->GetFrame()->SetBorderSize(6);
@@ -25,13 +25,14 @@
 // pictures, graphics objects, detector geometries, tracks, events, etc..
 // This file is now becoming the current directory.
 
-  TFile *hfile = (TFile*)gROOT->FindObject("hsimple_kpr.root"); if (hfile) hfile->Close();
+  TFile *hfile = (TFile*)gROOT->FindObject("hsimple_hpr.root"); if (hfile) hfile->Close();
   hfile = new TFile("hsimple_hpr.root","RECREATE","Demo ROOT file with histograms");
 
 // Create some histograms, a profile histogram and an ntuple
   hpx    = new TH1F("hpx","This is the px distribution",100,-4,4);
   hpy2   = new TH1F("hpy2","This is the py distribution * 2",100,-4,4);
   hpxpy  = new TH2F("hpxpy","py vs px",100,-4,4,100,-4,4);
+  hpxpy2  = new TH2F("hpxpy2","py vs px",100,-4,4,100,-4,4);
   hprof  = new TProfile("hprof","Profile of pz versus px",100,-4,4,0,20);
   ntuple = new TNtuple("ntuple","Demo ntuple","xvalue:yvalue:zvalue:random:event_number");
 
@@ -54,6 +55,8 @@
      hpy2->Fill(2 * py);
      hpxpy->Fill(0.3 * px + 1, 0.7 * py+0.5);
      hpxpy->Fill(0.5 * px - 1, 0.5 * py-0.5);
+
+     hpxpy2->Fill(px, px * 0.5 + 0.5 * py);
      hprof->Fill(px,pz);
      ntuple->Fill(px,py,pz,random,(Float_t)i);
      if (i && (i%kUPDATE) == 0) {
