@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.24 2005-10-10 07:08:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.25 2005-10-10 07:35:54 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1877,10 +1877,6 @@ const Char_t * TMrbTidyNode::Emphasize(TMrbString & String) {
 
 	TObjArray emph;
 	Int_t nEmph = String.Split(emph, "**");
-	if (nEmph) {
-		cout << "@@ n=" << nEmph << ", String=" << String << endl;
-		for (Int_t i = 0 ; i < nEmph; i++) cout << "@@ " << i << ": " << ((TObjString *) emph[i])->GetString() << endl;
-	}
 	if (nEmph % 2) {
 		String = "";
 		for (Int_t i = 0; i < nEmph; i++) {
@@ -1909,7 +1905,6 @@ const Char_t * TMrbTidyNode::Emphasize(TMrbString & String) {
 			if (i & 1) String += "</u>";
 		}
 	}
-	if (nEmph % 2) cout << "@@ String=" << String << endl;
 	return(String.Data());
 }
 
