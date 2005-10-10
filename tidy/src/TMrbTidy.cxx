@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.23 2005-07-29 08:47:22 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.24 2005-10-10 07:08:24 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1761,10 +1761,10 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 	TMrbTidyAttr * aDescr = (TMrbTidyAttr *) fLofAttr.FindByName("descr");
 	if (aDescr) {
-		TString dstr = aDescr->GetValue();
+		TMrbString dstr = aDescr->GetValue();
 		dstr.ReplaceAll("\t", tabEquiv.Data());
 		dstr = dstr.Strip(TString::kBoth);
-		Out << "<tr><td>Description:</td><td colspan=\"3\">" << dstr << "</td></tr>" << endl;
+		Out << "<tr><td>Description:</td><td colspan=\"3\">" << this->Emphasize(dstr) << "</td></tr>" << endl;
 	}
 	TMrbTidyAttr * aCmt = (TMrbTidyAttr *) fLofAttr.FindByName("comment");
 	if (aCmt) {
@@ -1772,17 +1772,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		if (cmt.BeginsWith("//")) cmt = cmt(2, 1000);
 		cmt.ReplaceAll("\t", tabEquiv.Data());
 		cmt = cmt.Strip(TString::kBoth);
-		TObjArray emph;
-		Int_t nEmph = cmt.Split(emph, "*");
-		if (nEmph % 2) {
-			cmt = "";
-			for (Int_t i = 0; i < nEmph; i++) {
-				if (i & 1) cmt += "<b>";
-				cmt += ((TObjString *) emph[i])->GetString();
-				if (i & 1) cmt += "</b>";
-			}
-		}
-		Out << "<tr><td>Comment:</td><td colspan=\"3\">" << cmt << "</td></tr>" << endl;
+		Out << "<tr><td>Comment:</td><td colspan=\"3\">" << this->Emphasize(cmt) << "</td></tr>" << endl;
 	}
 	TMrbTidyAttr * fileTag = (TMrbTidyAttr *) fLofAttr.FindByName("mfile");
 	if (fileTag) {
@@ -1868,6 +1858,59 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 		this->MarkLinks(method);
 		Out << "<br><pre class=\"method\">" << method << " {" << "</pre>" << endl;
 	}
+}
+
+const Char_t * TMrbTidyNode::Emphasize(TMrbString & String) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::Emphasize
+// Purpose:        Replace special chars by <b>, <i>, <u> etc.
+// Arguments:      TMrbString String    -- string containing meta-chars
+// Results:        Chasr_t * String     -- string after replacement
+// Exceptions:
+// Description:    Searches for pairs of           replaces by
+//                          **                     <b></b>
+//                          ##                     <i></i>
+//                          __                     <u></u>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TObjArray emph;
+	Int_t nEmph = String.Split(emph, "**");
+	if (nEmph) {
+		cout << "@@ n=" << nEmph << ", String=" << String << endl;
+		for (Int_t i = 0 ; i < nEmph; i++) cout << "@@ " << i << ": " << ((TObjString *) emph[i])->GetString() << endl;
+	}
+	if (nEmph % 2) {
+		String = "";
+		for (Int_t i = 0; i < nEmph; i++) {
+			if (i & 1) String += "<b>";
+			String += ((TObjString *) emph[i])->GetString();
+			if (i & 1) String += "</b>";
+		}
+	}
+	emph.Delete();
+	nEmph = String.Split(emph, "##");
+	if (nEmph % 2) {
+		String = "";
+		for (Int_t i = 0; i < nEmph; i++) {
+			if (i & 1) String += "<i>";
+			String += ((TObjString *) emph[i])->GetString();
+			if (i & 1) String += "</i>";
+		}
+	}
+	emph.Delete();
+	nEmph = String.Split(emph, "__");
+	if (nEmph % 2) {
+		String = "";
+		for (Int_t i = 0; i < nEmph; i++) {
+			if (i & 1) String += "<u>";
+			String += ((TObjString *) emph[i])->GetString();
+			if (i & 1) String += "</u>";
+		}
+	}
+	if (nEmph % 2) cout << "@@ String=" << String << endl;
+	return(String.Data());
 }
 
 Int_t TMrbTidyNode::SetIndentation() {
