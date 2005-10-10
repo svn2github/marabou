@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.25 2005-10-10 07:35:54 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.26 2005-10-10 12:06:58 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -1860,49 +1860,76 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 }
 
-const Char_t * TMrbTidyNode::Emphasize(TMrbString & String) {
+const Char_t * TMrbTidyNode::Emphasize(TMrbString & String, Bool_t Remove) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::Emphasize
 // Purpose:        Replace special chars by <b>, <i>, <u> etc.
-// Arguments:      TMrbString String    -- string containing meta-chars
+// Arguments:      TMrbString String    -- string containing meta chars
+//                 Bool_t Remove        -- kTRUE -> remove meta chars
 // Results:        Chasr_t * String     -- string after replacement
 // Exceptions:
 // Description:    Searches for pairs of           replaces by
 //                          **                     <b></b>
-//                          ##                     <i></i>
+//                          !!                     <i></i>
 //                          __                     <u></u>
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
 	TObjArray emph;
-	Int_t nEmph = String.Split(emph, "**");
+	Int_t nEmph = String.Split(emph, "**"); 		// bold
 	if (nEmph % 2) {
 		String = "";
-		for (Int_t i = 0; i < nEmph; i++) {
-			if (i & 1) String += "<b>";
-			String += ((TObjString *) emph[i])->GetString();
-			if (i & 1) String += "</b>";
+		if (Remove) {
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+		} else {
+			for (Int_t i = 0; i < nEmph; i++) {
+				if (i & 1) String += "<b>";
+				String += ((TObjString *) emph[i])->GetString();
+				if (i & 1) String += "</b>";
+			}
 		}
 	}
 	emph.Delete();
-	nEmph = String.Split(emph, "##");
+	nEmph = String.Split(emph, "!!");				// italic
 	if (nEmph % 2) {
 		String = "";
-		for (Int_t i = 0; i < nEmph; i++) {
-			if (i & 1) String += "<i>";
-			String += ((TObjString *) emph[i])->GetString();
-			if (i & 1) String += "</i>";
+		if (Remove) {
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+		} else {
+			for (Int_t i = 0; i < nEmph; i++) {
+				if (i & 1) String += "<i>";
+				String += ((TObjString *) emph[i])->GetString();
+				if (i & 1) String += "</i>";
+			}
 		}
 	}
 	emph.Delete();
-	nEmph = String.Split(emph, "__");
+	nEmph = String.Split(emph, "__");				// underline
 	if (nEmph % 2) {
 		String = "";
-		for (Int_t i = 0; i < nEmph; i++) {
-			if (i & 1) String += "<u>";
-			String += ((TObjString *) emph[i])->GetString();
-			if (i & 1) String += "</u>";
+		if (Remove) {
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+		} else {
+			for (Int_t i = 0; i < nEmph; i++) {
+				if (i & 1) String += "<u>";
+				String += ((TObjString *) emph[i])->GetString();
+				if (i & 1) String += "</u>";
+			}
+		}
+	}
+	emph.Delete();
+	nEmph = String.Split(emph, "||");				// box
+	if (nEmph % 2) {
+		String = "";
+		if (Remove) {
+			for (Int_t i = 0; i < nEmph; i++) String += ((TObjString *) emph[i])->GetString();
+		} else {
+			for (Int_t i = 0; i < nEmph; i++) {
+				if (i & 1) String += "<bx>";
+				String += ((TObjString *) emph[i])->GetString();
+				if (i & 1) String += "</bx>";
+			}
 		}
 	}
 	return(String.Data());
