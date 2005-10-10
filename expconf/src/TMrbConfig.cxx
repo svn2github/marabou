@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.97 2005-09-19 09:06:29 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.97 2005-09-19 09:06:29 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.98 2005-10-10 06:30:06 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.98 2005-10-10 06:30:06 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -316,6 +316,8 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
 								{TMrbConfig::kAnaLoadUserLibs,				"LOAD_USER_LIBS"			 	},
+								{TMrbConfig::kAnaSpecialHitDef,				"SPECIAL_HIT_DEFINITION"	 	},
+								{TMrbConfig::kAnaSpecialHitMethods,			"SPECIAL_HIT_METHODS"		 	},
 								{0, 										NULL							}
 							};
 
@@ -640,6 +642,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
+		fLofSpecialHits.Delete();								// init list of special hits		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
 		fLofUserIncludes.SetName("User code to be included");
@@ -3257,6 +3260,16 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.WriteCode(anaStrm);
 						}
 						break;
+					case TMrbConfig::kAnaSpecialHitDef:
+					case TMrbConfig::kAnaSpecialHitMethods:
+						{
+							TMrbNamedX * spHit = (TMrbNamedX *) fLofSpecialHits.First();
+							while (spHit) {
+								this->MakeAnalyzeCode(anaStrm, spHit->GetName(), "SpecialHit", tagIdx, pp->GetX());
+								spHit = (TMrbNamedX *) fLofSpecialHits.After(spHit);
+							}
+						}
+						break;
 				}
 			}
 		}
@@ -3406,6 +3419,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 //
 //                 This method is optional and doesn't generate an error
 //                 if no template file has been found.
+//                 It is also used to generate special hit objects.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -3477,8 +3491,24 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 		if (anaTmpl.Status() & TMrbTemplate::kNoTag) continue;
 		if (TagIndex == analyzeTag->GetIndex()) {
 			if (!this->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
-				anaTmpl.InitializeCode();
-				anaTmpl.WriteCode(AnaStrm);
+				switch (TagIndex) {
+					case kAnaSpecialHitDef:
+					case kAnaSpecialHitMethods:
+						{
+							TMrbNamedX * spHit = (TMrbNamedX *) fLofSpecialHits.FindObject(ClassName);
+							if (spHit) {
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$hitClass", spHit->GetName());
+								anaTmpl.Substitute("$dataLength", spHit->GetIndex());
+								anaTmpl.WriteCode(AnaStrm);
+							}
+						}
+						break;
+					default:
+						anaTmpl.InitializeCode();
+						anaTmpl.WriteCode(AnaStrm);
+						break;
+				}
 				return(kTRUE);
 			}
 		}

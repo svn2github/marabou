@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.59 2005-09-19 09:06:29 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.60 2005-10-10 06:30:06 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -221,7 +221,9 @@ class TMrbConfig : public TNamed {
 									kAnaMakeLibNew,
 									kAnaIncludeEvtSevtModGlobals,
 									kAnaInitializeEvtSevtMods,
-									kAnaLoadUserLibs
+									kAnaLoadUserLibs,
+									kAnaSpecialHitDef,
+									kAnaSpecialHitMethods
 								};
 
 		enum EMrbConfigTag  	{	kCfgFile				=	1,		// config tags
@@ -660,14 +662,12 @@ class TMrbConfig : public TNamed {
 			return(this->IncludeUserCode("", UserFile, AutoGenFlag));
 		};
 		inline Bool_t UserCodeToBeIncluded() const { return(fLofUserIncludes.Last() >= 0); };
-		inline TMrbLofNamedX * GetLofUserIncludes() { return(&fLofUserIncludes); };
 
 		Bool_t IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib);
 		inline Bool_t IncludeUserLib(const Char_t * UserLib) {
 			return(this->IncludeUserLib("", UserLib));
 		}
 		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() >= 0); };
-		inline TMrbLofNamedX * GetLofUserLibs() { return(&fLofUserLibs); };
 
 		Bool_t IncludeUserClass(const Char_t * IclPath, const Char_t * UserClass,
 								Bool_t UserDefinedEvent = kFALSE);
@@ -675,15 +675,12 @@ class TMrbConfig : public TNamed {
 			return(this->IncludeUserClass("", UserClass, UserDefinedEvent));
 		}
 		inline Bool_t UserClassesToBeIncluded() const { return(fLofUserClasses.Last() >= 0); };
-		inline TMrbLofNamedX * GetLofUserClasses() { return(&fLofUserClasses); };
 
 		inline void AddUserClass(EMrbIncludeOptions Opt, const Char_t * Name, const Char_t * Path = NULL) { 							// add a user class
 			if (fLofUserClasses.FindByName(Name) == NULL) fLofUserClasses.AddNamedX((Int_t) Opt, Name, Path);
 		};
 		inline void AddUserClass(const Char_t * Name) { this->AddUserClass((EMrbIncludeOptions) 0, Name); };
 			
-		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };
-
 		inline TMrbLogger * GetMessageLogger() const { return(fMessageLogger); };
 		
 		void Version() const;																// output welcome tex
@@ -752,11 +749,16 @@ class TMrbConfig : public TNamed {
 		inline TObjArray * GetLofSubevents() { return(&fLofSubevents); };
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
 		inline TObjArray * GetLofScalers(){ return(&fLofScalers); };
+		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };
+		inline TObjArray * GetLofSpecialHits(){ return(&fLofSpecialHits); };
 		inline TMrbLofNamedX * GetLofModuleIDs() { return(&fLofModuleIDs); };
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
 		inline TMrbLofNamedX * GetLofHistoTypes() { return(&fLofHistoTypes); };
 		inline TMrbLofNamedX * GetLofGlobals() { return(&fLofGlobals); };
+		inline TMrbLofNamedX * GetLofUserIncludes() { return(&fLofUserIncludes); };
+		inline TMrbLofNamedX * GetLofUserClasses() { return(&fLofUserClasses); };
+		inline TMrbLofNamedX * GetLofUserLibs() { return(&fLofUserLibs); };
 
 		Bool_t NameNotLegal(const Char_t * ObjType, const Char_t * ObjName) const;	// check if name is legal within MARaBOU
 
@@ -872,6 +874,7 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
 		TObjArray fLofHistoConditions;		// list of histogram booking conds
+		TObjArray fLofSpecialHits;			// list of special hit objects
 		
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent

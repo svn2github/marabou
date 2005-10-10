@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.18 2005-05-25 09:33:54 marabou Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.19 2005-10-10 06:30:06 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -114,6 +114,9 @@ TMrbSubevent::TMrbSubevent(const Char_t * SevtName, const Char_t * SevtTitle, In
 
 			fArrayMode = kFALSE;
 			
+			fSpecialHit = "";
+			fHitDataLength = 0;
+
 			fSoftModule = NULL;
 
 			fSerial = gMrbConfig->AssignSevtSerial();		// assign a unique id to be used by MBS
@@ -1878,4 +1881,49 @@ const Char_t * TMrbSubevent::GetLofParamsAsString(TString & LofParams) const {
 		}
 	}
 	return(LofParams.Data());
+}
+
+Bool_t TMrbSubevent::UseSpecialHit(const Char_t * HitName, Int_t DataLength) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent::SetHitDataLength
+// Purpose:        Define length of hit data
+// Arguments:      Int_t DataLength         -- length if hit data in words
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Defines how many data should be appended to hits.
+//                 Needs method NeedsHitBuffer() to return kTRUE.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t sts;
+	fSpecialHit = HitName;
+	fSpecialHit(0,1).ToUpper();
+	fSpecialHit.Prepend("TUsrHit");
+	fHitDataLength = DataLength;
+	if (this->NeedsHitBuffer()) {
+		TObjArray * lofHits = gMrbConfig->GetLofSpecialHits();
+		TMrbNamedX * spHit = (TMrbNamedX *) lofHits->FindObject(fSpecialHit.Data());
+		if (spHit) {
+			if (spHit->GetIndex() != fHitDataLength) {
+				fHitDataLength = spHit->GetIndex();
+				gMrbLog->Wrn()	<< this->GetName() << ": Length of hit data different - this =" << DataLength
+								<< " <--> previous = " << fHitDataLength
+								<< ", value changed to " << fHitDataLength << endl;
+				gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+			}
+			return(kTRUE);
+		} else {
+			lofHits->Add(new TMrbNamedX(fHitDataLength, fSpecialHit.Data(), "", this));
+		}
+		sts = kTRUE;
+	} else {
+		gMrbLog->Err()	<< this->GetName() << ": Subevent is not configured to use a hit buffer - special hit \""
+						<< fSpecialHit << "\" ignored" << endl;
+		gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+		fSpecialHit = "";
+		fHitDataLength = 0;
+		sts = kFALSE;
+	}
+	return(sts);
 }

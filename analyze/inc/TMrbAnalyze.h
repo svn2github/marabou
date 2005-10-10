@@ -7,7 +7,7 @@
 // Purpose:        Define base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.43 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.44 2005-10-10 06:29:55 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -548,7 +548,8 @@ class TUsrHitBuffer : public TObject {
 		inline void SetName(const Char_t * BufferName) { fBufName = BufferName; };
 		inline const Char_t * GetName() const { return fBufName.Data(); };
 
-		Int_t AllocClonesArray(Int_t NofEntries, Int_t HighWater);	// allocate TClonesArray to store hits
+		Int_t AllocClonesArray(const Char_t * HitObj, Int_t NofEntries, Int_t HighWater = 0);	// allocate TClonesArray to store hits
+		inline Int_t AllocClonesArray(Int_t NofEntries, Int_t HighWater = 0) { return(this->AllocClonesArray("TUsrHit", NofEntries, HighWater)); };
 
 		void Reset();												// reset hit list
 

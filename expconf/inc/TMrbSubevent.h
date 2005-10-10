@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.9 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.10 2005-10-10 06:30:06 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -167,6 +167,11 @@ class TMrbSubevent : public TNamed {
 		inline Bool_t IsInArrayMode() const { return(fArrayMode); };
 		inline Bool_t HasIndexedParams() const { return(fHasIndexedParams); };
 				
+		Bool_t UseSpecialHit(const Char_t * HitName, Int_t DataLength);				// define a special hit object ot be used
+		inline Bool_t UseSpecialHit(Int_t DataLength) { return(this->UseSpecialHit(this->GetName(), DataLength)); }; 	
+		inline const Char_t * GetNameOfSpecialHit() { return(fSpecialHit.Data()); };
+		inline Int_t GetHitDataLength() { return(fHitDataLength); };
+
 		virtual inline Bool_t NeedsHitBuffer() const { return(kFALSE); }; 			// no hit buffer needed
 		virtual inline Bool_t NeedsBranchMode() const { return(kFALSE); }; 			// may run with leaves or branches
 		virtual inline Bool_t NeedsModulesToBeAssigned() const { return(kTRUE); };	// normal subevents need modules
@@ -214,6 +219,9 @@ class TMrbSubevent : public TNamed {
 		
 		Bool_t fPrependPrefix;				// kTRUE if subevents has its own prefix
 		TString fPrefix;					// prefix to be prepended to params & histos
+
+		TString fSpecialHit;				// a special (extended) hit
+		Int_t fHitDataLength;				// length of hit data
 
 		TMrbModule * fSoftModule;			// internal module name, simulated by software
 				

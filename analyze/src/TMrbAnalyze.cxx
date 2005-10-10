@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.55 2005-06-28 11:35:09 rudi Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.56 2005-10-10 06:29:55 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4020,12 +4020,13 @@ const Char_t * TUsrHit::ChannelTime2Ascii(TString & TimeString) const {
 	return(TimeString.Data());
 }
 
-Int_t TUsrHitBuffer::AllocClonesArray(Int_t NofEntries, Int_t HighWater) {
+Int_t TUsrHitBuffer::AllocClonesArray(const Char_t * HitObj, Int_t NofEntries, Int_t HighWater) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           AllocClonesArray
 // Purpose:        Allocate TClonesArray
-// Arguments:      Int_t NofEntries      -- number of entries
+// Arguments:      Char_t * HitObj       -- name of hit to be cloned
+//                 Int_t NofEntries      -- number of entries
 //                 Int_t HighWater       -- high water limit
 // Results:        Int_t NofEntries      -- number of entries allocated
 // Exceptions:
@@ -4037,7 +4038,7 @@ Int_t TUsrHitBuffer::AllocClonesArray(Int_t NofEntries, Int_t HighWater) {
 	fNofEntries = NofEntries;
 	fOffset = 0;		// no longer in use -> see class TUsrHBX
 	fHighWater = (HighWater >= fNofEntries) ? 0 : HighWater;
-	fHits = new TClonesArray("TUsrHit", NofEntries);
+	fHits = new TClonesArray(HitObj, NofEntries);
 	this->Reset();
 	return(fNofEntries);
 }
