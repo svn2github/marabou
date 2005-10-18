@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.100 2005-10-18 11:02:56 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.100 2005-10-18 11:02:56 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.101 2005-10-18 11:52:49 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.101 2005-10-18 11:52:49 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2522,6 +2522,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						if (this->UserCodeToBeIncluded()) {
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t first = kTRUE;
+							Bool_t found = kFALSE;
 							while (icl) {
 								if (icl->GetIndex()) {
 									TMrbSystem ux;
@@ -2535,14 +2536,16 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 										} else {
 											anaStrm << "\t\t\t\t" << icl->GetName();
 										}
+										found = kTRUE;
 									}
 								}
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
-							anaStrm << " \\" << endl;
+							if (found) anaStrm << " \\" << endl;
 						}
 						break;
 					case TMrbConfig::kAnaMakeUlibHeaders:
+						anaStrm << "ULIB_HDRS\t=";
 						if (this->UserCodeToBeIncluded()) {
 							icl = (TMrbNamedX *) fLofUserIncludes.First();
 							Bool_t first = kTRUE;
@@ -2631,14 +2634,16 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						if (this->UserLibsToBeIncluded()) {
 							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
 							Bool_t first = kTRUE;
+							Bool_t found = kFALSE;
 							while (ulib) {
 								if (!first) anaStrm << " \\" << endl;
 								first = kFALSE;
 								anaStrm << "\t\t\t\tlib" << ulib->GetName() << ".so";
 								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
+								found = kTRUE;
 							}
 						}
-						anaStrm << " \\" << endl;
+						if (found) anaStrm << " \\" << endl;
 						break;
 					case TMrbConfig::kAnaMakeClean:
 						if (this->UserLibsToBeIncluded()) {
