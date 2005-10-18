@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.60 2005-10-10 06:30:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.61 2005-10-18 10:40:34 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -215,9 +215,13 @@ class TMrbConfig : public TNamed {
 									kAnaUserDefinedDefines,
 									kAnaMakeUserCxxFlags,
 									kAnaMakeUserHeaders,
+									kAnaMakeUlibHeaders,
 									kAnaMakeUserCode,
 									kAnaMakeUserLibs,
 									kAnaMakeUserRules,
+									kAnaMakeUlibRules,
+									kAnaMakeAll,
+									kAnaMakeClean,
 									kAnaMakeLibNew,
 									kAnaIncludeEvtSevtModGlobals,
 									kAnaInitializeEvtSevtMods,
@@ -663,9 +667,9 @@ class TMrbConfig : public TNamed {
 		};
 		inline Bool_t UserCodeToBeIncluded() const { return(fLofUserIncludes.Last() >= 0); };
 
-		Bool_t IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib);
-		inline Bool_t IncludeUserLib(const Char_t * UserLib) {
-			return(this->IncludeUserLib("", UserLib));
+		Bool_t IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib, Bool_t MakeIt = kFALSE);
+		inline Bool_t IncludeUserLib(const Char_t * UserLib, Bool_t MakeIt = kFALSE) {
+			return(this->IncludeUserLib("", UserLib, MakeIt));
 		}
 		inline Bool_t UserLibsToBeIncluded() const { return(fLofUserLibs.Last() >= 0); };
 

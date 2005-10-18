@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.98 2005-10-10 06:30:06 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.98 2005-10-10 06:30:06 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.99 2005-10-18 10:40:34 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.99 2005-10-18 10:40:34 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -309,9 +309,13 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaUserDefinedDefines,		"USER_DEFINED_DEFINES" 	 		},
 								{TMrbConfig::kAnaMakeUserCxxFlags,			"MAKE_USER_CXXFLAGS" 			},
 								{TMrbConfig::kAnaMakeUserHeaders,			"MAKE_USER_HEADERS" 			},
+								{TMrbConfig::kAnaMakeUlibHeaders,			"MAKE_ULIB_HEADERS" 			},
 								{TMrbConfig::kAnaMakeUserCode,				"MAKE_USER_CODE"	 			},
 								{TMrbConfig::kAnaMakeUserLibs,				"MAKE_USER_LIBS"	 			},
 								{TMrbConfig::kAnaMakeUserRules,				"MAKE_USER_RULES"	 			},
+								{TMrbConfig::kAnaMakeUlibRules,				"MAKE_ULIB_RULES"	 			},
+								{TMrbConfig::kAnaMakeAll,					"MAKE_ALL"	 					},
+								{TMrbConfig::kAnaMakeClean,					"MAKE_CLEAN"	 					},
 								{TMrbConfig::kAnaMakeLibNew,				"MAKE_LIBNEW"		 			},
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
@@ -2371,26 +2375,28 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						}
 						break;
 					case TMrbConfig::kAnaMakeClassNames:
-						found = kFALSE;
-						evt = (TMrbEvent *) fLofEvents.First();
-						while (evt) {
-							if (found) anaStrm << " \\" << endl;
-							found = kTRUE;
-							evtNameUC = evt->GetName();
-							evtNameUC(0,1).ToUpper();
-							anaStrm << "\t\t\t\tTUsrEvt" << evtNameUC;
-							evt = (TMrbEvent *) fLofEvents.After(evt);
+						{
+							evt = (TMrbEvent *) fLofEvents.First();
+							Bool_t first = kTRUE;
+							while (evt) {
+								evtNameUC = evt->GetName();
+								evtNameUC(0,1).ToUpper();
+								if (!first) anaStrm << " \\" << endl;
+								first = kFALSE;
+								anaStrm << "\t\t\t\tTUsrEvt" << evtNameUC;
+								evt = (TMrbEvent *) fLofEvents.After(evt);
+							}
+							sevt = (TMrbSubevent *) fLofSubevents.First();
+							while (sevt) {
+								sevtNameUC = sevt->GetName();
+								sevtNameUC(0,1).ToUpper();
+								if (!first) anaStrm << " \\" << endl;
+								first = kFALSE;
+								anaStrm << "\t\t\t\tTUsrSevt" << sevtNameUC;
+								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
+							}
+							anaStrm << endl;
 						}
-						sevt = (TMrbSubevent *) fLofSubevents.First();
-						while (sevt) {
-							if (found) anaStrm << " \\" << endl;
-							found = kTRUE;
-							sevtNameUC = sevt->GetName();
-							sevtNameUC(0,1).ToUpper();
-							anaStrm << "\t\t\t\tTUsrSevt" << sevtNameUC;
-							sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
-						}
-						anaStrm << endl;
 						break;
 					case TMrbConfig::kAnaVarDefinePointers:
 					case TMrbConfig::kAnaVarClassInstance:
@@ -2519,10 +2525,11 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							while (icl) {
 								if (icl->GetIndex()) {
 									TMrbSystem ux;
-									if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) != 0) {
+									if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) != 0
+									&& (icl->GetIndex() & TMrbConfig::kIclOptUserLib) == 0) {
+										TString iclPath = icl->GetTitle();
 										if (!first) anaStrm << " \\" << endl;
 										first = kFALSE;
-										TString iclPath = icl->GetTitle();
 										if (iclPath.Length() > 0) {
 											anaStrm << "\t\t\t\t" << icl->GetTitle() << "/" << icl->GetName();
 										} else {
@@ -2533,6 +2540,30 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
 							}
 							anaStrm << " \\" << endl;
+						}
+						break;
+					case TMrbConfig::kAnaMakeUlibHeaders:
+						if (this->UserCodeToBeIncluded()) {
+							icl = (TMrbNamedX *) fLofUserIncludes.First();
+							Bool_t first = kTRUE;
+							while (icl) {
+								if (icl->GetIndex()) {
+									TMrbSystem ux;
+									if ((icl->GetIndex() & TMrbConfig::kIclOptHeaderFile) != 0
+									&& (icl->GetIndex() & TMrbConfig::kIclOptUserLib) != 0) {
+										TString iclPath = icl->GetTitle();
+										if (!first) anaStrm << " \\" << endl;
+										first = kFALSE;
+										if (iclPath.Length() > 0) {
+											anaStrm << "\t\t\t\t" << icl->GetTitle() << "/" << icl->GetName();
+										} else {
+											anaStrm << "\t\t\t\t" << icl->GetName();
+										}
+									}
+								}
+								icl = (TMrbNamedX *) fLofUserIncludes.After(icl);
+							}
+							anaStrm << endl;
 						}
 						break;
 					case TMrbConfig::kAnaMakeUserCode:
@@ -2591,6 +2622,66 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 									anaStrm << " \\" << endl;
 									anaStrm << "\t\t\t\t-L" << ulib->GetTitle() << " -l" << ulib->GetName();
 								}
+								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
+							}
+						}
+						anaStrm << endl << endl;
+						break;
+					case TMrbConfig::kAnaMakeAll:
+						if (this->UserLibsToBeIncluded()) {
+							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
+							Bool_t first = kTRUE;
+							while (ulib) {
+								if (!first) anaStrm << " \\" << endl;
+								first = kFALSE;
+								anaStrm << "\t\t\t\tlib" << ulib->GetName() << ".so";
+								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
+							}
+						}
+						anaStrm << " \\" << endl;
+						break;
+					case TMrbConfig::kAnaMakeClean:
+						if (this->UserLibsToBeIncluded()) {
+							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
+							TMrbSystem ux;
+							while (ulib) {
+								TString mkFile = ulib->GetTitle();
+								mkFile += "/";
+								mkFile += ulib->GetName();
+								mkFile += ".mk";
+								if (ux.IsRegular(mkFile.Data())) {
+									mkFile = "-f ";
+									mkFile += ulib->GetName();
+									mkFile += ".mk";
+								} else {
+									mkFile = "";
+								}
+								anaStrm << "\t\t\t@cd " << ulib->GetTitle() << "; make " << mkFile << " clean" << endl;
+								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
+							}
+						}
+						break;
+					case TMrbConfig::kAnaMakeUlibRules:
+						if (this->UserLibsToBeIncluded()) {
+							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
+							TMrbSystem ux;
+							while (ulib) {
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$userLib", Form("lib%s.so", ulib->GetName()));
+								anaTmpl.Substitute("$ulibDir", ulib->GetTitle());
+								TString mkFile = ulib->GetTitle();
+								mkFile += "/";
+								mkFile += ulib->GetName();
+								mkFile += ".mk";
+								if (ux.IsRegular(mkFile.Data())) {
+									mkFile = "-f ";
+									mkFile += ulib->GetName();
+									mkFile += ".mk";
+								} else {
+									mkFile = "";
+								}
+								anaTmpl.Substitute("$ulibMake", mkFile);
+								anaTmpl.WriteCode(anaStrm);
 								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
 							}
 						}
@@ -4749,13 +4840,14 @@ Bool_t TMrbConfig::WriteUtilityProtos() {
 	return(kTRUE);
 }
 	
-Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib) {
+Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib, Bool_t MakeIt) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbConfig::IncludeUserLib
 // Purpose:        Specify user library to be included
 // Arguments:      const Char_t * IclPath      -- where to find user's includes
 //                 Char_t * UserLib            -- name of user library
+//                 Bool_t MakeIt               -- include entry in make if kTRUE
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Specifies user-definded library to be included.
@@ -4809,64 +4901,121 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 		libSoPath = userPath;
 		libSoPath += "/";
 		libSoPath = userLib;
-		gMrbLog->Err()	<< "User library not found - " << libSoPath << endl
-						<< "                              Has to be provided at load time" << endl;
+		if (MakeIt) {
+			gMrbLog->Wrn()	<< "User library not found - lib" << libSoPath << ".so" << endl
+							<< "                              Has to be provided at load time" << endl;
+		} else {
+			gMrbLog->Wrn()	<< "User library not found - " << libSoPath << endl
+							<< "                              Will be built during make step" << endl;
+		}
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	} else {
 		libSoPath = fileSpec;
 	}
 	libSoPath = ux.GetRelPath(libSoPath);
 
-	TString libH = userLib;
-	libH += ".h";
+	TString incPath = userPath;
+	TString srcPath = userPath;
+	Bool_t incX	= ux.IsDirectory(Form("%s/inc", userPath.Data()));
+	Bool_t srcX	= ux.IsDirectory(Form("%s/src", userPath.Data()));
+	if (incX) {
+		if (srcX) {
+			incPath = Form("%s/inc", userPath.Data());
+			srcPath = Form("%s/src", userPath.Data());
+		} else {
+			gMrbLog->Err()	<< "[" << UserLib << "] Found subdirectory \"" << userPath << "/inc\" but no \"" << userPath << "/src\" - can't continue" << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+			return(kFALSE);
+		}
+	}
 
-	fileSpec = gSystem->Which(userPath.Data(), libH.Data());
-	TString libHPath;
-	if (fileSpec.IsNull()) {
-		libHPath = userPath;
-		libHPath += "/";
-		libHPath += libH;
-		gMrbLog->Err()	<< "User header file not found - " << libHPath << endl;
+	TObjArray lofHfiles;
+	lofHfiles.Delete();
+	Int_t nofHfiles =  ux.FindFile(lofHfiles, "*.h", incPath.Data(), kTRUE);
+	if (nofHfiles == 0) {
+		gMrbLog->Err()	<< "No header file(s) found - " << incPath << "/*.h" << endl;
 		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 		return(kFALSE);
 	}
-	libHPath = fileSpec;
-	libHPath = ux.GetRelPath(libHPath);
 
-	ifstream f(libHPath.Data(), ios::in);
-	if (!f.good()) {
-		gMrbLog->Err() << gSystem->GetError() << " - "  << libHPath << endl;
-		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
-		return(kFALSE);
-	} else {
-		TString line;
-		for (;;) {
-			line.ReadLine(f, kFALSE);
-			if (f.eof()) {
-				f.close();
-				break;
+	for (Int_t i = 0; i < nofHfiles; i++) {
+		TString hFile = ((TObjString *) lofHfiles[i])->GetString();
+		ifstream f(hFile.Data(), ios::in);
+		if (!f.good()) {
+			gMrbLog->Err() << gSystem->GetError() << " - "  << hFile << " (skipped)" << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+			continue;
+		} else {
+			hFile = ux.GetRelPath(hFile, incPath.Data());
+			fLofUserIncludes.AddNamedX((Int_t) (TMrbConfig::kIclOptHeaderFile | TMrbConfig::kIclOptUserLib), hFile.Data(), incPath.Data());
+			if (verboseMode) {
+				gMrbLog->Out()  << "Using header file " << incPath << "/" << hFile << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 			}
-			if (line.Contains("class ")) {
-				Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
-				Int_t n2 = line.Index(":", n1);
-				if (n2 == -1) continue;
-				TString userClass = line(n1, n2 - n1);
-				userClass = userClass.Strip(TString::kBoth);
-				this->AddUserClass(TMrbConfig::kIclOptUserLib, userClass.Data());
+			TString line;
+			for (;;) {
+				line.ReadLine(f, kFALSE);
+				if (f.eof()) {
+					f.close();
+					break;
+				}
+				if (line.Contains("class ")) {
+					Int_t n1 = line.Index("class ", 0) + sizeof("class ") - 1;
+					Int_t n2 = line.Index(":", n1);
+					if (n2 == -1) continue;
+					TString userClass = line(n1, n2 - n1);
+					userClass = userClass.Strip(TString::kBoth);
+					this->AddUserClass(TMrbConfig::kIclOptUserLib, userClass.Data());
+					if (verboseMode) {
+						gMrbLog->Out()  << "Adding user class " << userClass << endl;
+						gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+					}
+				}
 			}
 		}
 	}
 
-	fLofUserLibs.AddNamedX(0, userLib.Data(), userPath.Data());
-	if (verboseMode) {
-		gMrbLog->Out()  << "Using user library " << libSoPath << endl;
-		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+	if (MakeIt) {
+		TString mkFile1 = userPath;
+		mkFile1 += "/";
+		mkFile1 += userLib;
+		mkFile1 += ".mk";
+		if (ux.IsRegular(mkFile1.Data())) {
+			if (verboseMode) {
+				gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile1 << endl;
+				gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+			}
+		} else {
+			TString mkFile2 = userPath;
+			mkFile2 += "/Makefile";
+			if (ux.IsRegular(mkFile2.Data())) {
+				if (verboseMode) {
+					gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile2 << endl;
+					gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+				}
+			} else {
+				TString mkFile3 = userPath;
+				mkFile3 += "/makefile";
+				if (ux.IsRegular(mkFile3.Data())) {
+					if (verboseMode) {
+						gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile3 << endl;
+						gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+					}
+				} else {
+					gMrbLog->Err()	<< "[" << UserLib << "] No makefile found - neither \"" << mkFile1
+									<< "\" nor \"" << mkFile2 << "\" nor \"" << mkFile3 << "\"" << endl;
+					gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+				}
+			}
+		}
 	}
 
-	fLofUserIncludes.AddNamedX((Int_t) TMrbConfig::kIclOptHeaderFile, libH.Data(), userPath.Data());
+	fLofUserLibs.AddNamedX(MakeIt ? 1 : 0, userLib.Data(), userPath.Data());
 	if (verboseMode) {
-		gMrbLog->Out()  << "Using header file " << libHPath << endl;
-		gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
+			gMrbLog->Out() << "Using user library " << libSoPath;
+			if (MakeIt) gMrbLog->Out() << " (will be rebuilt during make step)";
+			gMrbLog->Out() << endl;
+			gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 	}
 
 	return(kTRUE);
