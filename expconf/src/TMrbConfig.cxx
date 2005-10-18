@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.99 2005-10-18 10:40:34 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.99 2005-10-18 10:40:34 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.100 2005-10-18 11:02:56 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.100 2005-10-18 11:02:56 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2645,17 +2645,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TMrbNamedX * ulib = (TMrbNamedX *) fLofUserLibs.First();
 							TMrbSystem ux;
 							while (ulib) {
-								TString mkFile = ulib->GetTitle();
-								mkFile += "/";
-								mkFile += ulib->GetName();
-								mkFile += ".mk";
-								if (ux.IsRegular(mkFile.Data())) {
-									mkFile = "-f ";
-									mkFile += ulib->GetName();
-									mkFile += ".mk";
-								} else {
-									mkFile = "";
-								}
+								TObjString * mkf = (TObjString *) ulib->GetAssignedObject();
+								TString mkFile = mkf ? Form("-f %s", mkf->GetString().Data()) : "";
 								anaStrm << "\t\t\t@cd " << ulib->GetTitle() << "; make " << mkFile << " clean" << endl;
 								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
 							}
@@ -2669,17 +2660,8 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.InitializeCode();
 								anaTmpl.Substitute("$userLib", Form("lib%s.so", ulib->GetName()));
 								anaTmpl.Substitute("$ulibDir", ulib->GetTitle());
-								TString mkFile = ulib->GetTitle();
-								mkFile += "/";
-								mkFile += ulib->GetName();
-								mkFile += ".mk";
-								if (ux.IsRegular(mkFile.Data())) {
-									mkFile = "-f ";
-									mkFile += ulib->GetName();
-									mkFile += ".mk";
-								} else {
-									mkFile = "";
-								}
+								TObjString * mkf = (TObjString *) ulib->GetAssignedObject();
+								TString mkFile = mkf ? Form("-f %s", mkf->GetString().Data()) : "";
 								anaTmpl.Substitute("$ulibMake", mkFile);
 								anaTmpl.WriteCode(anaStrm);
 								ulib = (TMrbNamedX *) fLofUserLibs.After(ulib);
@@ -4975,27 +4957,24 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 		}
 	}
 
+	TObjString * mkf = NULL;
 	if (MakeIt) {
-		TString mkFile1 = userPath;
-		mkFile1 += "/";
-		mkFile1 += userLib;
-		mkFile1 += ".mk";
+		TString mkFile1 = Form("%s/%s.mk", userPath.Data(), userLib.Data());
 		if (ux.IsRegular(mkFile1.Data())) {
+			mkf = new TObjString(Form("%s.mk", userLib.Data()));
 			if (verboseMode) {
 				gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile1 << endl;
 				gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 			}
 		} else {
-			TString mkFile2 = userPath;
-			mkFile2 += "/Makefile";
+			TString mkFile2 = Form("%s/Makefile", userPath.Data());
 			if (ux.IsRegular(mkFile2.Data())) {
 				if (verboseMode) {
 					gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile2 << endl;
 					gMrbLog->Flush(this->ClassName(), "IncludeUserLib");
 				}
 			} else {
-				TString mkFile3 = userPath;
-				mkFile3 += "/makefile";
+				TString mkFile3 = Form("%s/makefile", userPath.Data());
 				if (ux.IsRegular(mkFile3.Data())) {
 					if (verboseMode) {
 						gMrbLog->Out()  << "[" << UserLib << "] Using makefile " << mkFile3 << endl;
@@ -5010,7 +4989,7 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 		}
 	}
 
-	fLofUserLibs.AddNamedX(MakeIt ? 1 : 0, userLib.Data(), userPath.Data());
+	fLofUserLibs.AddNamedX(MakeIt ? 1 : 0, userLib.Data(), userPath.Data(), mkf);
 	if (verboseMode) {
 			gMrbLog->Out() << "Using user library " << libSoPath;
 			if (MakeIt) gMrbLog->Out() << " (will be rebuilt during make step)";
