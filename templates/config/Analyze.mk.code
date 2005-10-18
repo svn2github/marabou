@@ -39,6 +39,9 @@ USER_HDRS	=	\
 				$(AFILE).h \
 				$(AFILE)Globals.h
 
+ULIB_HDRS	=	\
+%%MAKE_ULIB_HEADERS%%
+
 # User code to be compiled separately
 %%MAKE_USER_CODE%%
 
@@ -49,13 +52,15 @@ USER_HDRS	=	\
 DOCS		=	\
 %%MAKE_CLASS_NAMES%%
 
-PROGRAMS	=	M_analyze
+ALL			=	\
+%%MAKE_ALL%%
+				M_analyze
 
 .SUFFIXES:	.cxx .h
 
 #------------------------------------------------------------------------------
 
-all:		$(PROGRAMS)
+all:		$(ALL)
 
 M_analyze:	$(OBJPATH)/M_analyze.o lib$(AFILE).so
 			$(LD) $(LFLAGS) -o M_analyze $(OBJPATH)/M_analyze.o \
@@ -67,21 +72,28 @@ M_analyze:	$(OBJPATH)/M_analyze.o lib$(AFILE).so
 lib$(AFILE).so: $(USER_OBJS) $(AFILE).o $(AFILE)Dict.o
 			$(CXX) $(LDFLAGS) -shared $(AFILE).o $(AFILE)Dict.o $(USER_OBJS) -o lib$(AFILE).so
 
-$(AFILE).o: $(USER_HDRS) $(AFILE).cxx
+$(AFILE).o: $(USER_HDRS) $(ULIB_HDRS) $(AFILE).cxx
 			$(CXX) $(CXXFLAGS) $(AFILE).cxx
 
-$(AFILE)Dict.cxx: $(USER_HDRS) $(AFILE).cxx
-			rootcint -f $(AFILE)Dict.cxx -c $(INCLUDE) $(USER_HDRS) $(AFILE)LinkDef.h
+$(AFILE)Dict.cxx: $(USER_HDRS) $(ULIB_HDRS) $(AFILE).cxx
+			rootcint -f $(AFILE)Dict.cxx -c $(INCLUDE) $(ULIB_HDRS) $(USER_HDRS) $(AFILE)LinkDef.h
 
 $(AFILE)Dict.o:	$(AFILE)Dict.cxx
 			$(CXX) $(CXXFLAGS) $(AFILE)Dict.cxx
 
 %%BeginOfCode%%
-$userObj:	$(USER_HDRS) $userDir$userCode
+$userObj:	$(USER_HDRS) $(ULIB_HDRS) $userDir$userCode
 			$(CXX) $(CXXFLAGS) -o $userObj $userDir$userCode
 
 %%EndOfCode%%
 %%MAKE_USER_RULES%%
+
+%%BeginOfCode%%
+$userLib:	
+			@cd $ulibDir; make $ulibMake
+
+%%EndOfCode%%
+%%MAKE_ULIB_RULES%%
 
 doc:		$(AFILE).cxx
 			@if [ ! -d HTML ]; then mkdir HTML; fi
@@ -100,6 +112,7 @@ doc:		$(AFILE).cxx
 			@cd HTML/src; updhref *.html
 
 clean:
+			%%MAKE_CLEAN%%
 			rm -f *.o $(USER_OBJS) lib$(AFILE).so $(AFILE)Dict.cxx
 
 .cxx.o:
