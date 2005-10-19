@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.10 2005-09-07 14:06:56 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.11 2005-10-19 06:58:02 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -406,6 +406,27 @@ Bool_t TMrbCPTM::ResetMemory() {
 	return(kTRUE);
 }
 
+Bool_t TMrbCPTM::ResetLAM() {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbCPTM::ResetLAM
+// Purpose:        Reset lam
+// Arguments:      --
+// Results:        --
+// Exceptions:
+// Description:    Resets lam
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (!this->CheckConnect("ResetLAM")) return(kFALSE);
+	if (!fCamac.ExecCnaf(fCrate, fStation, A(1), F(10), kTRUE)) { 		// exec cnaf, 16 bit
+		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A1.F10 failed" << endl;
+		gMrbLog->Flush(this->ClassName(), "ResetLAM");
+		return(kFALSE);
+	}
+	return(kTRUE);
+}
+
 Bool_t TMrbCPTM::ResetDacs() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -448,7 +469,10 @@ Bool_t TMrbCPTM::Reset() {
 	this->ResetRead();				// read pointer
 	this->ResetWrite(); 			// write ...
 	this->ResetMemory();			// sram
+	this->ResetLAM();				// lam (busy?)
 
+	Int_t data = 10;
+	fCamac.ExecCnaf(fCrate, fStation, A(7), F(16), data, kTRUE);
 	return(kTRUE);
 }
 
@@ -878,13 +902,13 @@ Bool_t TMrbCPTM::SetMultiplicity(Int_t Mult) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (!this->CheckConnect("SetMultiplicity")) return(kFALSE);
-	if (!this->CheckValue(Mult, 4095/kMrbCptmMilliVoltsPerMult, "multVal", "SetMultiplicity")) return(kFALSE);
-	Int_t mult = kMrbCptmMilliVoltsPerMult * Mult - 10;
-	if (mult < 0) mult = 0;
+	if (!this->CheckValue(Mult, kMrbCptmMaxMult, "multVal", "SetMultiplicity")) return(kFALSE);
+	Int_t dacVal = kMrbCptmMultOffset +  Mult * kMrbCptmMilliVoltsPerMult - kMrbCptmMultThresh;
+	if (dacVal < kMrbCptmMultOffset) dacVal = kMrbCptmMultOffset;
 
 	TArrayI dac(4);
 	if (!this->ReadAllDacs(dac)) return(kFALSE);
-	dac[kMrbCptmDacNoMult] = mult;
+	dac[kMrbCptmDacNoMult] = dacVal;
 	return(this->WriteAllDacs(dac));
 }
 
@@ -904,8 +928,8 @@ Int_t TMrbCPTM::GetMultiplicity() {
 
 	TArrayI dac(4);
 	if (!this->ReadAllDacs(dac)) return(kFALSE);
-	Int_t mult = dac[kMrbCptmDacNoMult];
-	return((mult + kMrbCptmMilliVoltsPerMult - 1)/kMrbCptmMilliVoltsPerMult);
+	Int_t dacVal = dac[kMrbCptmDacNoMult];
+	return((dacVal - kMrbCptmMultOffset + kMrbCptmMilliVoltsPerMult - 1)/kMrbCptmMilliVoltsPerMult);
 }
 
 Int_t TMrbCPTM::GetReadAddr() {

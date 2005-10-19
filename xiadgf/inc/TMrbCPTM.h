@@ -8,7 +8,7 @@
 // Class:          TMrbCPTM            -- base class
 // Description:    Class definitions to operate "Clock and Programmable Trigger Module"
 // Author:         R. Lutter
-// Revision:       $Id: TMrbCPTM.h,v 1.8 2005-04-28 13:11:27 rudi Exp $       
+// Revision:       $Id: TMrbCPTM.h,v 1.9 2005-10-19 06:58:02 marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -81,7 +81,10 @@ class TMrbCPTM : public TNamed {
 
 	public:
 		enum	{	kMrbCptmMaxCodeSize 		=	128 * 1024	};
-		enum	{	kMrbCptmMilliVoltsPerMult	=	35	};
+		enum	{	kMrbCptmMultOffset			=	100	};
+		enum	{	kMrbCptmMultThresh			=	50	};
+		enum	{	kMrbCptmMilliVoltsPerMult	=	200	};
+		enum	{	kMrbCptmMaxMult				=	17	};
 		enum	{	kMrbCptmDacNoMult			=	1	};
 
 	public:
@@ -124,6 +127,7 @@ class TMrbCPTM : public TNamed {
 		Bool_t ResetWrite();
 		Bool_t ResetMemory();
 		Bool_t ResetDacs();
+		Bool_t ResetLAM();
 		Bool_t Reset();
 
 		Bool_t EnableSynch(Bool_t Reset = kFALSE);

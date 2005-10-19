@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.8 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.9 2005-10-19 06:58:02 marabou Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -266,7 +266,7 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		fMultFrame->AddFrame(fMultValueEntry, frameGC->LH());
 		fMultValueEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 		fMultValueEntry->SetText("0");
-		fMultValueEntry->SetRange(0, (4095 + 34) / 35);
+		fMultValueEntry->SetRange(0, 17);
 		fMultValueEntry->SetIncrement(1);
 		fMultValueEntry->AddToFocusList(&fFocusList);
 		fMultValueEntry->Associate(this);
@@ -281,8 +281,8 @@ DGFCptmPanel::DGFCptmPanel(TGCompositeFrame * TabFrame) :
 		fMultFrame->AddFrame(fMultDacEntry, frameGC->LH());
 		fMultDacEntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt);
 		fMultDacEntry->SetText("0");
-		fMultDacEntry->SetRange(0, 4095);
-		fMultDacEntry->SetIncrement(35);
+		fMultDacEntry->SetRange(0, TMrbCPTM::kMrbCptmMultOffset + TMrbCPTM::kMrbCptmMaxMult * TMrbCPTM::kMrbCptmMilliVoltsPerMult);
+		fMultDacEntry->SetIncrement(200);
 		fMultDacEntry->AddToFocusList(&fFocusList);
 		fMultDacEntry->Associate(this);
 
