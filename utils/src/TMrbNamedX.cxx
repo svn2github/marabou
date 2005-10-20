@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbNamedX.cxx,v 1.5 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbNamedX.cxx,v 1.6 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -60,15 +60,15 @@ Int_t TMrbNamedX::Compare(const TObject * Nx) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbNamedX * nx;
-
-	nx = (TMrbNamedX *) Nx;
+	Int_t s;
+	TMrbNamedX * nx = (TMrbNamedX *) Nx;
 	if (this->IsSortedByName()) {
 		TString nxm = this->GetName();
-		return(nxm.CompareTo(nx->GetName()));
+		s = nxm.CompareTo(nx->GetName());
 	} else {
-		return(this->GetIndex() - nx->GetIndex());		// compare indices
+		s = this->GetIndex() - nx->GetIndex();
 	}
+	return(s);
 }
 
 void TMrbNamedX::Print(ostream & Out, Int_t Base, Bool_t CrFlag) const {

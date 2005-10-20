@@ -8,7 +8,7 @@
 // Class:          TMrbSystem    -- extension to TSystem class
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSystem.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.h,v 1.7 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -27,10 +27,14 @@
 class TMrbSystem: public TObject {
 
 	public:
-		enum EMrbFileType		{	kMrbRegularFile		= 0,
-									kMrbExecutableFile	= BIT(0),
-									kMrbDirectory 		= BIT(1),
-									kMrbSpecialFile		= BIT(2)
+		enum EMrbFileType		{	kMrbRegularFile		= kS_IFREG,
+									kMrbDirectory 		= kS_IFDIR,
+									kMrbSymbolicLink 	= kS_IFLNK,
+									kMrbCharDev 	 	= kS_IFCHR,
+									kMrbBlockDev 	 	= kS_IFBLK,
+									kMrbFifo	 	 	= kS_IFIFO,
+									kMrbSocket	 	 	= kS_IFSOCK,
+									kMrbExecutable		= kS_IXUSR | kS_IXGRP | kS_IXOTH,
 								};
 	
 		enum EMrbDirMode		{	kMrbDirAsIs 		= 0,
@@ -56,20 +60,24 @@ class TMrbSystem: public TObject {
 		inline Bool_t ChangeDirectory(const Char_t * Path) const { return(gSystem->ChangeDirectory(Path)); };
 		
 																						// check file type
+		Int_t GetType(const Char_t * Path) const;
+
 		inline Bool_t IsRegular(const Char_t * Path) const { return(this->CheckType(Path, TMrbSystem::kMrbRegularFile)); };
-		inline Bool_t IsExecutable(const Char_t * Path) const { return(this->CheckType(Path, TMrbSystem::kMrbExecutableFile)); };
+		inline Bool_t IsExecutable(const Char_t * Path) const { return((this->GetType(Path) & TMrbSystem::kMrbExecutable) != 0); };
 		inline Bool_t IsDirectory(const Char_t * Path) const { return(this->CheckType(Path, TMrbSystem::kMrbDirectory)); };
-		inline Bool_t IsSpecial(const Char_t * Path) const { return(this->CheckType(Path, TMrbSystem::kMrbSpecialFile)); };
+		inline Bool_t IsSymbolicLink(const Char_t * Path) const { return(this->CheckType(Path, TMrbSystem::kMrbSymbolicLink)); };
 
 		inline Bool_t Exists(const Char_t * Path) const { return(this->CheckAccess(Path, kFileExists)); };
 		inline Bool_t HasReadPermission(const Char_t * Path) const { return(this->CheckAccess(Path, kReadPermission)); };
 		inline Bool_t HasWritePermission(const Char_t * Path) const { return(this->CheckAccess(Path, kWritePermission)); };
 		inline Bool_t HasExecutePermission(const Char_t * Path) const { return(this->CheckAccess(Path, kExecutePermission)); };
 		
+		const Char_t * GetSymbolicLink(TString & SymLink, const Char_t * Path);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
-		Bool_t CheckType(const Char_t * Path, EMrbFileType Type) const;
+		inline Bool_t CheckType(const Char_t * Path, EMrbFileType Type) const {	return((this->GetType(Path) & Type) == Type); };
 		Bool_t CheckAccess(const Char_t * Path, EAccessMode Mode) const;
 	
 	ClassDef(TMrbSystem, 1) 	// [Utils] Some extensions to TSystem class

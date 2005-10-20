@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.8 2004-12-14 13:33:34 rudi Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.9 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -304,31 +304,23 @@ const Char_t * TMrbSystem::GetRelPath(TString & Path, const Char_t * BaseDir) co
 	else								return(Path.Data() + baseDir.Length());
 }
 
-Bool_t TMrbSystem::CheckType(const Char_t * Path, EMrbFileType Type) const {
+Int_t TMrbSystem::GetType(const Char_t * Path) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSystem::CheckType
-// Purpose:        Check file type
+// Name:           TMrbSystem::GetType
+// Purpose:        Return file type
 // Arguments:      const Char_t * Path   -- path name
-//                 EMrbFileType Type     -- file type
-// Results:        kTRUE/kFALSE
+// Results:        Int_t Type            -- file type
 // Exceptions:     
-// Description:    Checks file type
+// Description:    Returns file type
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Long_t id;
-	Long64_t size;
-	Long_t flags;
-	Long_t modtime;
-	TString path;
-	
-	path = gSystem->ExpandPathName(Path);
+	FileStat_t stat;
+	TString path = gSystem->ExpandPathName(Path);
 		
-	gSystem->GetPathInfo(path.Data(), &id, &size, &flags, &modtime);
-	
-	if ((Type == TMrbSystem::kMrbRegularFile) && (flags == TMrbSystem::kMrbRegularFile)) return(kTRUE);
-	return((flags & Type) != 0);
+	gSystem->GetPathInfo(path.Data(), stat);
+	return(stat.fMode);
 }
 
 Bool_t TMrbSystem::CheckAccess(const Char_t * Path, EAccessMode Mode) const {
@@ -343,9 +335,33 @@ Bool_t TMrbSystem::CheckAccess(const Char_t * Path, EAccessMode Mode) const {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString path;
-	
-	path = gSystem->ExpandPathName(Path);
-		
+	TString path = gSystem->ExpandPathName(Path);
 	return(!gSystem->AccessPathName(path.Data(), Mode));
+}
+
+const Char_t * TMrbSystem::GetSymbolicLink(TString & SymLink, const Char_t * Path) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::GetSymbolicLink
+// Purpose:        Return symbolic link
+// Arguments:      TString & SymLink     -- Where to store link info
+//                 const Char_t * Path   -- path name
+// Results:        Char_t * SymLink     -- where the link is pointing to
+// Exceptions:     
+// Description:    Returns symbolic link information/
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (this->IsSymbolicLink(Path)) {
+		TString path = gSystem->ExpandPathName(Path);
+		FILE * p = gSystem->OpenPipe(Form("readlink %s", path.Data()), "r");
+		char sl[1000];
+		fgets(sl, 1000, p);
+		fclose(p);
+		SymLink = sl;
+		SymLink(SymLink.Length() - 1) = '\0';		
+	} else {
+		SymLink = "";
+	}
+	return(SymLink.Data());
 }

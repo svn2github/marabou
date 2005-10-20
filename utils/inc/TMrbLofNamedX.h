@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofNamedX.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.h,v 1.8 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -88,11 +88,6 @@ class TMrbLofNamedX: public TObjArray {
 
 		const Char_t * Pattern2String(TString & IndexString, UInt_t Pattern, const Char_t * Delim = ":") const;
 
-		void SortEntries(Bool_t SortIt = kTRUE, Bool_t SortByName = kFALSE); // sort entries?
-		inline Bool_t IsSorted() { return(fIsSorted); };
-		inline Bool_t IsSortedByName() { return(fSortedByName); };					// by name of by index?
-		inline void Sort(Int_t UpTo = kMaxInt) { if (fIsSorted) TObjArray::Sort(UpTo); };
-
 		UInt_t GetMask() const;											// return mask of all bits in list
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
@@ -104,12 +99,13 @@ class TMrbLofNamedX: public TObjArray {
 						UInt_t Mask = 0xffffffff,
 						Bool_t CrFlag = kTRUE) const;
 
+		inline virtual void Sort(Int_t UpTo) { TObjArray::Sort(UpTo); };
+		void Sort(Bool_t SortByName);						// sort entries by name or index
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
 		Bool_t fPatternMode;
-		Bool_t fIsSorted;
-		Bool_t fSortedByName;
 		TString fName;
 		TString fTitle;
 
