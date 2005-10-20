@@ -8,7 +8,7 @@
 // Class:          TMrbDGFData        -- data base to store DSP and FPGA data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFData.h,v 1.8 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.h,v 1.9 2005-10-20 13:09:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -254,6 +254,8 @@ class TMrbDGFData : public TObject {
 		
 		// parameter section
 		Int_t ReadNameTable(const Char_t * ParamFile = "", Bool_t Forced = kFALSE);		// read parameter names from file
+		Int_t AddToNameTable(const Char_t * ParamFile, const Char_t * Comment = NULL);
+		Int_t AddToNameTable(const Char_t * ParamName, Int_t Index, const Char_t * Comment = NULL);
 		inline TMrbNamedX * FindParam(const Char_t * ParamName) const { return((TMrbNamedX *) fParamNames.FindByName(ParamName)); };
 		inline TMrbNamedX * FindParam(Int_t Offset) const { return((TMrbNamedX *) fParamNames.FindByIndex(Offset)); };
 		TMrbNamedX * FindParam(Int_t Channel, const Char_t * ParamName);

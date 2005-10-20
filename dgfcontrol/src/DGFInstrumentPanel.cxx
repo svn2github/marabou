@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.25 2005-09-06 11:48:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.26 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -37,7 +37,6 @@
 const SMrbNamedX kDGFInstrumentModuleButtons[] =
 			{
 				{DGFInstrumentPanel::kDGFInstrButtonShowParams,		"Show params", 	"Show actual param settings"		},
-				{DGFInstrumentPanel::kDGFInstrButtonShowPsa,		"Show PSA params", 	"Show actual PSA settings"		},
 				{DGFInstrumentPanel::kDGFInstrButtonUpdateFPGAs,	"Update FPGAs", "Write params and update FPGAs"	},
 				{0, 												NULL,		NULL									}
 			};
@@ -676,11 +675,30 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSATFAEnergyCutoffEntry->AddToFocusList(&fFocusList);
 	fTraceUPSATFAEnergyCutoffEntry->Associate(this);
 
+	entryGC->SetLH(psaLayout);
+	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
+	fUserPsaCSREditButton->AssignObject(this);
+	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fTraceUPSAFrame, "UserPSA CSR",
+																200, kDGFInstrStatRegUserPsaCSREntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, NULL, kFALSE,
+																fUserPsaCSREditButton, buttonGC);
+	HEAP(fStatRegUserPsaCSREntry);
+	fTraceUPSAFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
+	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegUserPsaCSREntry->SetText(0);
+	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
+	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
+	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
+	fStatRegUserPsaCSREntry->Associate(this);
+
 // right: cfd
 	TGLayoutHints * cfdLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
 	gDGFControlData->SetLH(groupGC, frameGC, cfdLayout);
 	HEAP(cfdLayout);
-	fCFDFrame = new TGGroupFrame(fRightFrame, "CFD Settings", kHorizontalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
+	fCFDFrame = new TGGroupFrame(fRightFrame, "CFD Settings", kVerticalFrame, groupGC->GC(), groupGC->Font(), groupGC->BG());
 	HEAP(fCFDFrame);
 	fRightFrame->AddFrame(fCFDFrame, groupGC->LH());
 
@@ -769,6 +787,13 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fCFDFractionButton->SetState(DGFInstrumentPanel::kDGFInstrCFDFract00);
 	fCFDFractionButton->Associate(this);
 	fCFDDataFrame->AddFrame(fCFDFractionButton, frameGC->LH());
+
+// place an unvisible label to pad group frame vertically
+	dmyLayout = new TGLayoutHints(kLHintsLeft, 0, 0, 12, 0);
+	frameGC->SetLH(dmyLayout);
+	fDummyLabel = new TGLabel(fCFDFrame, "", frameGC->GC(), frameGC->Font(), kChildFrame, frameGC->BG());
+	HEAP(fDummyLabel);
+	fCFDFrame->AddFrame(fDummyLabel, frameGC->LH());
 
 // left: csra
 	TGLayoutHints * csraLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -864,27 +889,6 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fStatRunTaskEntry->ShowToolTip(kTRUE, kTRUE);
 	fStatRunTaskEntry->AddToFocusList(&fFocusList);
 	fStatRunTaskEntry->Associate(this);
-
-	TGLayoutHints * psacsrLayout = new TGLayoutHints(kLHintsLeft, 1, 1, 1, 1);
-	entryGC->SetLH(psacsrLayout);
-	HEAP(psacsrLayout);
-	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
-	fUserPsaCSREditButton->AssignObject(this);
-	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fStatRegEntryFrame, "UserPSA CSR",
-																200, kDGFInstrStatRegUserPsaCSREntry,
-																kLEWidth,
-																kLEHeight,
-																kEntryWidth,
-																frameGC, labelGC, entryGC, NULL, kFALSE,
-																fUserPsaCSREditButton, buttonGC);
-	HEAP(fStatRegUserPsaCSREntry);
-	fStatRegEntryFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
-	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
-	fStatRegUserPsaCSREntry->SetText(0);
-	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
-	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
-	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
-	fStatRegUserPsaCSREntry->Associate(this);
 
 // right: mca
 	TGLayoutHints * mcaLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
@@ -1073,10 +1077,7 @@ Bool_t DGFInstrumentPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Pa
                     		gDGFControlData->UpdateParamsAndFPGAs();
 							break;
 						case kDGFInstrButtonShowParams:
-                    		this->ShowModuleSettings(kFALSE);
-							break;
-						case kDGFInstrButtonShowPsa:
-                    		this->ShowModuleSettings(kTRUE);
+                    		this->ShowModuleSettings();
 							break;
 						case kDGFInstrDACGainEntry:
 							this->UpdateValue(kDGFInstrDACGainEntry,
@@ -1345,12 +1346,12 @@ Bool_t DGFInstrumentPanel::WriteDSP(DGFModule * Module, Int_t ChannelId) {
 	return(sts);
 }
 
-Bool_t DGFInstrumentPanel::ShowModuleSettings(Bool_t PsaFlag) {
+Bool_t DGFInstrumentPanel::ShowModuleSettings() {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFInstrumentPanel::ShowModuleSettings
 // Purpose:        Show module settings
-// Arguments:      Bool_t PsaFlag   -- show psa values if kTRUE
+// Arguments:      --
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Calls $EDITOR to show current module settings
@@ -1364,13 +1365,9 @@ Bool_t DGFInstrumentPanel::ShowModuleSettings(Bool_t PsaFlag) {
 	TMrbDGF * dgf = dgfModule->GetAddr();
 	if (dgf == NULL) return(kTRUE);
 
-	if (PsaFlag) {
-		tmpFile += ".psa";
-		dgf->WritePsaParamsToFile(tmpFile.Data());
-	} else {
-		tmpFile += ".par";
-		dgf->WriteParamsToFile(tmpFile.Data());
-	}
+	tmpFile += ".par";
+	dgf->WriteParamsToFile(tmpFile.Data());
+
 	TString cmd;
 	if (editor.CompareTo("nedit") == 0) cmd = "nedit -read ";
 	else								cmd = "xterm -geom 100x35 +sb -e view ";

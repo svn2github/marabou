@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.42 2005-09-09 07:18:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.43 2005-10-20 13:09:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1412,6 +1412,7 @@ Bool_t TMrbDGF::SetParValue(const Char_t * ParamName, Int_t Value, Bool_t Update
 	}
 
 	pOffset = param->GetIndex();						// offset has to be in the data region
+	if (pOffset < 0) pOffset = -pOffset;				// change index for shadow params
 	if (pOffset > TMrbDGFData::kNofDSPInputParams) {
 		TString pName = param->GetName();
 		if (pName.CompareTo("SYNCHDONE") != 0) {
@@ -1495,6 +1496,7 @@ Int_t TMrbDGF::GetParValue(const Char_t * ParamName, Bool_t ReadFromDSP) {
 	}
 
 	pOffset = param->GetIndex();						// offset has to be in the data region
+	if (pOffset < 0) pOffset = -pOffset;				// (may be shadowed)
 
 	pValue = fParams[pOffset] & 0xffff;					// incore value
 
@@ -1820,12 +1822,6 @@ Bool_t TMrbDGF::PrintParams(ostream & OutStrm, const Char_t * ParamName) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString pName;
-	Int_t pOffset;
-	TString pType;
-	TMrbNamedX * key;
-	Bool_t found;
-
 	TRegexp paramMask(ParamName, kTRUE);
 
 	if (!fDGFData->ParamNamesRead()) {
@@ -1834,44 +1830,33 @@ Bool_t TMrbDGF::PrintParams(ostream & OutStrm, const Char_t * ParamName) {
 		return(kFALSE);
 	}
 
-	key = fDGFData->FirstParam();
-	found = kFALSE;
+	TMrbNamedX * key = fDGFData->FirstParam();
+	Bool_t found = kFALSE;
 	while (key) {
-		pName = key->GetName();
-		if (pName.Index(paramMask) >= 0) {
-			if (!found) {
-				OutStrm	<< "===========================================================================================" << endl
-						<< " DGF-4C Param Section: Module " << this->GetTitle() << endl
-						<< "..........................................................................................." << endl;
-				OutStrm	<< setiosflags(ios::left) << setw(15) << " ParamName";
-				OutStrm	<< setiosflags(ios::left) << setw(10) << "Type";
-				OutStrm	<< resetiosflags(ios::left) << setw(10) << "Offset";
-				OutStrm	<< setw(10) << "Value" << endl;
-				OutStrm	<< "..........................................................................................." << endl;
-			}
-			found = kTRUE;
-			Int_t nofWords = ((pName.CompareTo("USERIN") == 0) || (pName.CompareTo("USEROUT") == 0)) ? 16 : 1;
-			pOffset = key->GetIndex();
-			for (Int_t nw = 0; nw < nofWords; nw++, pOffset++) {
-				pType = (pOffset < TMrbDGFData::kNofDSPInputParams) ? "Input" : "Output";
-				TMrbString pn;
-				if (nw > 0) {
-					pn = pName;
-					pn += "+";
-					pn += nw;
-				} else {
-					pn = pName;
+		if (key->GetIndex() >= 0) {
+			TString pName = key->GetName();
+			if (pName.Index(paramMask) >= 0) {
+				if (!found) {
+					OutStrm	<< "===========================================================================================" << endl
+							<< "DGF-4C Param Section: Module " << this->GetTitle() << endl
+							<< "..........................................................................................." << endl;
+					OutStrm << Form("%-15s%-10s%10s%10s%10s%5s%s", "ParamName", "Type", "Offset", "(dec)", "(hex)", "", "Comment") << endl;
+					OutStrm	<< "..........................................................................................." << endl;
 				}
-				OutStrm	<< " " << setiosflags(ios::left) << setw(14) << pn;
-				OutStrm	<< setiosflags(ios::left) << setw(10) << pType;
-				OutStrm	<< resetiosflags(ios::left) << setw(10) << pOffset;
+				found = kTRUE;
+				Int_t pOffset = key->GetIndex();
+				TString pCmt = key->GetTitle();
+				if (pCmt.Length() > 0) pCmt = Form("[%s]", pCmt.Data());
+				TString synNames;
+				pCmt += this->GetSynonyms(synNames, key);
+				TString pType = (pOffset < TMrbDGFData::kNofDSPInputParams) ? "Input" : "Output";
+				OutStrm << Form("%-15s%-10s%10d", pName.Data(), pType.Data(), pOffset);
 				if (this->ParamValuesRead()) {
-					OutStrm	<< setw(10) << (UShort_t) fParams[pOffset]
-							<< "    0x" << setbase(16) << (UShort_t) fParams[pOffset] << setbase(10);
+					OutStrm	<< Form("%10d%#10x", (UShort_t) fParams[pOffset], (UShort_t) fParams[pOffset]);
 				} else if (pOffset <= TMrbDGFData::kNofDSPInputParams) {
-					OutStrm	<< setw(10) << "undef";
+					OutStrm	<< Form("%-20s", "undef");
 				}
-				OutStrm	<< endl;
+				OutStrm	<< Form("%5s%s", "", pCmt.Data()) << endl;
 			}
 		}
 		key = fDGFData->NextParam(key);
@@ -1901,20 +1886,14 @@ Bool_t TMrbDGF::PrintParams(ostream & OutStrm, Int_t Channel) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString pName;
-	Int_t pOffset;
-	TString pType;
-	TMrbNamedX * key;
-	Bool_t found;
-	Int_t from, to;
-	TMrbString title;
-
 	if (!fDGFData->ParamNamesRead()) {
 		gMrbLog->Err() << "No param names read" << endl;
 		gMrbLog->Flush(this->ClassName(), "PrintParams");
 		return(kFALSE);
 	}
 
+	TString title;
+	Int_t from, to;
 	if (Channel == -1) { 			// output module params only (0 .. 63)
 		from = 0;
 		to = from + TMrbDGFData::kNofDSPInparModule - 1;
@@ -1930,34 +1909,32 @@ Bool_t TMrbDGF::PrintParams(ostream & OutStrm, Int_t Channel) {
 		return(kFALSE);
 	}
 
-	key = fDGFData->FirstParam();
-	found = kFALSE;
+	TMrbNamedX * key = fDGFData->FirstParam();
+	Bool_t found = kFALSE;
 	while (key) {
-		pOffset = key->GetIndex();
-		if (pOffset >= from && pOffset <= to) {
+		Int_t pOffset = key->GetIndex();
+		if (pOffset >= 0 && pOffset >= from && pOffset <= to) {
 			if (!found) {
 				OutStrm	<< "===========================================================================================" << endl
 						<< " DGF-4C Param Section: Module " << this->GetTitle()
 						<< " - " << title << endl
 						<< "..........................................................................................." << endl;
-				OutStrm	<< setiosflags(ios::left) << setw(15) << " ParamName";
-				OutStrm	<< setiosflags(ios::left) << setw(10) << "Type";
-				OutStrm	<< resetiosflags(ios::left) << setw(10) << "Offset";
-				OutStrm	<< setw(10) << "Value" << endl;
+				OutStrm << Form("%-15s%-10s%10s%10s%10s%5s%s", "ParamName", "Type", "Offset", "(dec)", "(hex)", "", "Comment") << endl;
 				OutStrm	<< "..........................................................................................." << endl;
 			}
 			found = kTRUE;
-			pName = key->GetName();
-			OutStrm	<< " " << setiosflags(ios::left) << setw(14) << pName;
-			OutStrm	<< setiosflags(ios::left) << setw(10) << "Input";
-			OutStrm	<< resetiosflags(ios::left) << setw(10) << pOffset;
+			TString pName = key->GetName();
+			TString pCmt = key->GetTitle();
+			if (pCmt.Length() > 0) pCmt = Form("[%s]", pCmt.Data());
+			TString synNames;
+			pCmt += this->GetSynonyms(synNames, key);
+			OutStrm << Form("%-15s%-10s%10d", pName.Data(), "Input", pOffset);
 			if (this->ParamValuesRead()) {
-				OutStrm	<< setw(10) << (UShort_t) fParams[pOffset]
-							<< "    0x" << setbase(16) << (UShort_t) fParams[pOffset] << setbase(10);
+				OutStrm	<< Form("%10d%#10x", (UShort_t) fParams[pOffset], (UShort_t) fParams[pOffset]);
 			} else {
-				OutStrm	<< setw(10) << "undef";
+				OutStrm	<< Form("%-20s", "undef");
 			}
-			OutStrm	<< endl;
+			OutStrm	<< Form("%5s%s", "", pCmt.Data()) << endl;
 		}
 		key = fDGFData->NextParam(key);
 	}
@@ -2323,7 +2300,7 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 // Exceptions:
 // Description:    Saves params to file (input params only).
 //                 Format is "unix style":
-//                       <name>:<offset>:<value>:<hexval>
+//                       <name>:<offset>:<value>:<hexval>:<comment>
 //                 Additional entries may be used to identify the module:
 //                       FileType:par
 //                       Module:<name>
@@ -2335,17 +2312,6 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 //                       XiaDate:<date>
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
-
-	Int_t pOffset;
-	UShort_t pValue;
-	TString pName;
-	TMrbNamedX * pKey;
-	ofstream pf;
-	Int_t nofParams;
-	TString paramFile;
-	TString paramPath;
-	TMrbString info;
-	TDatime dt;
 
 	if (!fDGFData->ParamNamesRead()) {
 		gMrbLog->Err() << "No param names read" << endl;
@@ -2364,14 +2330,15 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 		return(-1);
 	}
 
-	paramFile = ParamFile;
+	TString paramFile = ParamFile;
 	if (paramFile.Index("/") != 0 && paramFile.Index("./", 0) != 0) {
-		paramPath = gEnv->GetValue("TMrbDGF.SettingsPath", ".");
+		TString paramPath = gEnv->GetValue("TMrbDGF.SettingsPath", ".");
 		paramFile = paramPath + "/";
 		paramFile += ParamFile;
 	}
+	Int_t nofParams = 0;
 	if (paramFile.Index(".par") > 0) {			// write ascii data
-		pf.open(paramFile, ios::out);
+		ofstream pf(paramFile, ios::out);
 		if (!pf.good()) {
 			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
 			gMrbLog->Flush(this->ClassName(), "SaveParams");
@@ -2383,29 +2350,44 @@ Int_t TMrbDGF::SaveParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
 		pf << "# Contents      : Settings for DGF-4C "			<< this->GetName()
 																<< " in C" << this->GetCrate()
 																<< ".N" << this->GetStation() << endl;
+		TDatime dt;
 		pf << "# Creation date : " 								<< dt.AsString() << endl;
 		pf << "# Created by    : " 								<< gSystem->Getenv("USER") << endl;
 		pf << "#" << endl;
-		pf << "# Data format   : <name>:<offset>:<value>:<hexval>" << endl;
+		pf << "# Data format   : <name>:<offset>:<value>:<hexval> # <comment>" << endl;
 		pf << "#----------------------------------------------------------------------------------------" << endl;
 		pf << "#+FileType:par" << endl;
 		pf << "#+Module:"										<< this->GetName() << endl;
 		pf << "#+Revision:" 									<< this->GetRevision()->GetName() << endl;
 		pf << "#+Crate:"										<< this->GetCrate() << endl;
 		pf << "#+Station:" 										<< this->GetStation() << endl;
+		TMrbString info;
 		pf << "#+Cluster:"										<< this->GetClusterInfo(info) << endl;
 		pf << "#+XiaRelease:"									<< gEnv->GetValue("TMrbDGF.XiaRelease", "") << endl;
 		pf << "#+XiaDate:" 										<< gEnv->GetValue("TMrbDGF.XiaDate", "") << endl;
 		pf << "#........................................................................................" << endl;
 		pf << endl;
-		nofParams = 0;
-		pKey = fDGFData->FirstParam();
+		TMrbNamedX * pKey = fDGFData->FirstParam();
 		while (pKey != NULL) {
-			pOffset = pKey->GetIndex();
-			if (pOffset < TMrbDGFData::kNofDSPInputParams) {
-				pValue = fParams[pOffset];
-				pf << pKey->GetName() << ":" << pOffset << ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10) << endl;
-				nofParams++;
+			Int_t pOffset = pKey->GetIndex();
+			if (pOffset >= 0) { 				// skip shadow params
+				if (pOffset < TMrbDGFData::kNofDSPInputParams) {
+					TString pCmt = pKey->GetTitle();
+					if (pCmt.Length() > 0) pCmt = Form("[%s]", pCmt.Data());
+					TMrbNamedX * shadow = (TMrbNamedX *) pKey->GetAssignedObject();
+					while (shadow) {
+						pCmt += " =";
+						pCmt += shadow->GetName();
+						shadow = (TMrbNamedX *) shadow->GetAssignedObject();
+					}
+					Int_t pValue = fParams[pOffset];
+					pf	<< pKey->GetName()
+						<< ":" << pOffset
+						<< ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10);
+					if (pCmt.Length() > 0) pf << " # " << pCmt;
+					pf << endl;
+					nofParams++;
+				}
 			}
 			pKey = fDGFData->NextParam(pKey);
 		}
@@ -2551,13 +2533,14 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 
 	if (UpdateDSP && !this->IsOffline()) {
 		if (!this->CheckConnect("LoadPsaParams")) return(-1);
-		pKey = fDGFData->FindParam("USERIN");
+		pKey = fDGFData->FindParam("UserPsaData");
 		if (pKey == NULL) {
-			gMrbLog->Err() << "No such param - USERIN" << endl;
+			gMrbLog->Err() << "No such param - UserPsaData" << endl;
 			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
 			return(-1);
 		}
 		pOffset = pKey->GetIndex();
+		if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" is shadowed normally
 		for (Int_t i = 0; i < nofParams; i++) {
 			this->SetParValue(pOffset + i, psaVal[i]);
 		}
@@ -2569,238 +2552,6 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 	}
 
 	return(nofParams);
-}
-
-Int_t TMrbDGF::SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::SavePsaParams
-// Purpose:        Save PSA params to file
-// Arguments:      Char_t * ParamFile   -- file name
-//                 Bool_t ReadFromDSP   -- kTRUE if params to be read from DSP
-// Results:        Int_t NofParams      -- number of params written
-// Exceptions:
-// Description:    Saves PSA params to file. Param start at USERIN
-//                 Format is "unix style":
-//                       <name>:<offset>:<value>:<hexval>
-//                 Additional entries may be used to identify the module:
-//                       FileType:par
-//                       Module:<name>
-//                       Revision:<rev>
-//                       Crate:<crate>
-//                       Station:<station>
-//                       Cluster:<id>
-//                       XiaRelease:<release>
-//                       XiaDate:<date>
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	Int_t pOffset;
-	UShort_t pValue;
-	TString pName;
-	TMrbNamedX * pKey;
-	ofstream pf;
-	Int_t nofParams;
-	TString paramFile;
-	TString paramPath;
-	TMrbString info;
-	TDatime dt;
-
-	TMrbLofNamedX psaNames;
-		
-	psaNames.AddNamedX(kMrbPSANames);
-
-	if (!fDGFData->ParamNamesRead()) {
-		gMrbLog->Err() << "No param names read" << endl;
-		gMrbLog->Flush(this->ClassName(), "SaveParams");
-		return(-1);
-	}
-
-	if (ReadFromDSP && !this->IsOffline()) {
-		if (!this->CheckConnect("SaveParams")) return(-1);
-		this->ReadParamMemory(kTRUE, kTRUE);
-	}
-
-	if (!this->ParamValuesRead()) {
-		gMrbLog->Err() << "No param values read" << endl;
-		gMrbLog->Flush(this->ClassName(), "SaveParams");
-		return(-1);
-	}
-
-	paramFile = ParamFile;
-	if (paramFile.Index("/") != 0 && paramFile.Index("./", 0) != 0) {
-		paramPath = gEnv->GetValue("TMrbDGF.SettingsPath", ".");
-		paramFile = paramPath + "/";
-		paramFile += ParamFile;
-	}
-	if (paramFile.Index(".psa") > 0) {
-		pf.open(paramFile, ios::out);
-		if (!pf.good()) {
-			gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
-			gMrbLog->Flush(this->ClassName(), "SaveParams");
-			return(-1);
-		}
-
-		pf << "#----------------------------------------------------------------------------------------" << endl;
-		pf << "# Name          : "								<< paramFile << endl;
-		pf << "# Contents      : PSA settings for DGF-4C "		<< this->GetName()
-																<< " in C" << this->GetCrate()
-																<< ".N" << this->GetStation() << endl;
-		pf << "# Creation date : " 								<< dt.AsString() << endl;
-		pf << "# Created by    : " 								<< gSystem->Getenv("USER") << endl;
-		pf << "#" << endl;
-		pf << "# Data format   : <name>:<offset>:<value>:<hexval>" << endl;
-		pf << "#----------------------------------------------------------------------------------------" << endl;
-		pf << "#+FileType:psa" << endl;
-		pf << "#+Module:"										<< this->GetName() << endl;
-		pf << "#+Revision:" 									<< this->GetRevision()->GetName() << endl;
-		pf << "#+Crate:"										<< this->GetCrate() << endl;
-		pf << "#+Station:" 										<< this->GetStation() << endl;
-		pf << "#+Cluster:"										<< this->GetClusterInfo(info) << endl;
-		pf << "#+XiaRelease:"									<< gEnv->GetValue("TMrbDGF.XiaRelease", "") << endl;
-		pf << "#+XiaDate:" 										<< gEnv->GetValue("TMrbDGF.XiaDate", "") << endl;
-		pf << "#........................................................................................" << endl;
-		pf << endl;
-		nofParams = 0;
-		pKey = fDGFData->FindParam("USERIN");
-		if (pKey == NULL) {
-			gMrbLog->Err() << "No such param - USERIN" << endl;
-			gMrbLog->Flush(this->ClassName(), "SavePsaParams");
-			return(-1);
-		}
-
-		pOffset = pKey->GetIndex();
-		for (Int_t i = 0; i < 16; i++, pOffset++) {
-			pValue = fParams[pOffset];
-			pf << psaNames[i]->GetName() << ":" << pOffset << ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10) << endl;
-			nofParams++;
-		}
-		pf.close();
-	} else {
-		gMrbLog->Err() << "Wrong file extension - " << paramFile << " (should be .par)" << endl;
-		gMrbLog->Flush(this->ClassName(), "SavePsaParams");
-		return(-1);
-	}
-
-	if (gMrbDGFData->fVerboseMode) {
-		gMrbLog->Out() << nofParams << " PSA params written to " << paramFile << endl;
-		gMrbLog->Flush(this->ClassName(), "SavePsaParams", setblue);
-	}
-
-	return(nofParams);
-}
-
-Bool_t TMrbDGF::WritePsaParamsToFile(const Char_t * FileName) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::WritePsaParamsToFile
-// Purpose:        Output PSA params to file
-// Arguments:      Char_t * FileName    -- file name
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Outputs PSA params to file.
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	if (this->IsOffline()) return(kTRUE);
-
-	if (!fDGFData->ParamNamesRead()) {
-		gMrbLog->Err() << "No param names read" << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
-		return(kFALSE);
-	}
-
-	if (!this->ParamValuesRead()) {
-		gMrbLog->Err() << "No param values read" << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
-		return(kFALSE);
-	}
-
-	TString fileName = FileName;
-	fileName = fileName.Strip(TString::kBoth);
-	if (fileName.Length() == 0) fileName = this->GetName();
-	if (fileName.Index(".", 0) == -1) fileName += ".psa";
-	
-	ofstream paramOut;
-	paramOut.open(fileName.Data(), ios::out);
-	if (!paramOut.good()) {
-		gMrbLog->Err() << gSystem->GetError() << " - " << fileName << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
-		return(kFALSE);
-	}
-	
-	Bool_t sts = this->PrintPsaParams(paramOut);
-	paramOut.close();
-
-	if (sts && gMrbDGFData->fVerboseMode) {
-		gMrbLog->Out() << "PSA params written to " << fileName << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile", setblue);
-	}
-	return(kTRUE);
-}
-
-Bool_t TMrbDGF::PrintPsaParams(ostream & OutStrm) {
-//________________________________________________________________[C++ METHOD]
-//////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbDGF::PrintPsaParams
-// Purpose:        Print PSA params
-// Arguments:      ostream & OutStrm   -- output stream
-// Results:        kTRUE/kFALSE
-// Exceptions:
-// Description:    Prints PSA params. Param start at USERIN
-//                 Format is "unix style":
-//                       <name>:<offset>:<value>:<hexval>
-//                 Additional entries may be used to identify the module:
-//                       FileType:par
-//                       Module:<name>
-//                       Revision:<rev>
-//                       Crate:<crate>
-//                       Station:<station>
-//                       Cluster:<id>
-//                       XiaRelease:<release>
-//                       XiaDate:<date>
-// Keywords:
-//////////////////////////////////////////////////////////////////////////////
-
-	TMrbString info;
-	TDatime dt;
-
-	TMrbLofNamedX psaNames;
-	psaNames.AddNamedX(kMrbPSANames);
-
-	TMrbNamedX * pKey = fDGFData->FindParam("USERIN");
-	if (pKey == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
-		gMrbLog->Flush(this->ClassName(), "WritePsaParamsToFile");
-		return(kFALSE);
-	}
-
-	OutStrm << "#----------------------------------------------------------------------------------------" << endl;
-	OutStrm << "# Contents      : PSA settings for DGF-4C "		<< this->GetName()
-																<< " in C" << this->GetCrate()
-																<< ".N" << this->GetStation() << endl;
-	OutStrm << "# Creation date : " 							<< dt.AsString() << endl;
-	OutStrm << "# Created by    : " 							<< gSystem->Getenv("USER") << endl;
-	OutStrm << "#" << endl;
-	OutStrm << "# Data format   : <name>:<offset>:<value>:<hexval>" << endl;
-	OutStrm << "#----------------------------------------------------------------------------------------" << endl;
-	OutStrm << "#+FileType:psa" << endl;
-	OutStrm << "#+Module:"									<< this->GetName() << endl;
-	OutStrm << "#+Revision:" 								<< this->GetRevision()->GetName() << endl;
-	OutStrm << "#+Crate:"									<< this->GetCrate() << endl;
-	OutStrm << "#+Station:" 								<< this->GetStation() << endl;
-	OutStrm << "#+Cluster:"									<< this->GetClusterInfo(info) << endl;
-	OutStrm << "#+XiaRelease:"								<< gEnv->GetValue("TMrbDGF.XiaRelease", "") << endl;
-	OutStrm << "#+XiaDate:" 								<< gEnv->GetValue("TMrbDGF.XiaDate", "") << endl;
-	OutStrm << "#........................................................................................" << endl;
-	OutStrm << endl;
-
-	Int_t pOffset = pKey->GetIndex();
-	for (Int_t i = 0; i < 16; i++, pOffset++) {
-		UShort_t pValue = fParams[pOffset];
-		OutStrm << psaNames[i]->GetName() << ":" << pOffset << ":" << pValue << ":0x" << setbase(16) << pValue << setbase(10) << endl;
-	}
-	return(kTRUE);
 }
 
 Int_t TMrbDGF::SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP) {
@@ -3598,14 +3349,16 @@ Bool_t TMrbDGF::SetUserPsaCSR(Int_t Channel, UInt_t Bits, EMrbBitOp BitOp, Bool_
 	if (UpdateDSP && !this->CheckConnect("SetUserPsaCSR")) return(kFALSE);
 	if (!this->CheckChannel("SetUserPsaCSR", Channel)) return(kFALSE);
 
-	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Err() << "No such param - UserPsaData" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetUserPsaCSR");
 		return(kFALSE);
 	}
 
-	Int_t pOffset = param->GetIndex() + TMrbDGFData::kPsaPSACh0 + Channel;
+	Int_t pOffset = param->GetIndex();
+	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" is shadowed normally
+	pOffset += TMrbDGFData::kPsaPSACh0 + Channel;
 
 	switch (BitOp) {
 		case TMrbDGF::kBitSet:
@@ -3651,14 +3404,16 @@ UInt_t  TMrbDGF::GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP) {
 	if (ReadFromDSP && !this->CheckConnect("GetUserPsaCSR")) return(0xffffffff);
 	if (!this->CheckChannel("GetUserPsaCSR", Channel)) return(0xffffffff);
 
-	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Err() << "No such param - UserPsaData" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaCSR");
 		return(0xffffffff);
 	}
 
-	Int_t pOffset = param->GetIndex() + TMrbDGFData::kPsaPSACh0 + Channel;
+	Int_t pOffset = param->GetIndex();
+	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	pOffset += TMrbDGFData::kPsaPSACh0 + Channel;
 
 	UInt_t csr = this->GetParValue(pOffset, ReadFromDSP);
 	return(csr);
@@ -3669,7 +3424,7 @@ Int_t  TMrbDGF::GetUserPsaData4(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::GetUserPsaData4
 // Purpose:        Read psa data
-// Arguments:      Int_t Offset        -- offset from param USERIN
+// Arguments:      Int_t Offset        -- offset from param UserPsaData
 //                 Int_t Channel       -- channel number
 //                 Bool_t ReadFromDSP  -- kTRUE if data should be read from DSP
 // Results:        Int_t PsaData       -- data (4 bits)
@@ -3681,14 +3436,16 @@ Int_t  TMrbDGF::GetUserPsaData4(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 	if (ReadFromDSP && !this->CheckConnect("GetUserPsaData4")) return(0xffffffff);
 	if (!this->CheckChannel("GetUserPsaData4", Channel)) return(0xffffffff);
 
-	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Err() << "No such param - UserPsaData" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaData4");
 		return(0xffffffff);
 	}
 
-	Int_t pOffset = param->GetIndex() + Offset;
+	Int_t pOffset = param->GetIndex();
+	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	pOffset += Offset;
 	Int_t pVal = this->GetParValue(pOffset, ReadFromDSP);
 	return ((pVal >> (4 * (3 - Channel))) & 0xF);
 }
@@ -3698,7 +3455,7 @@ Int_t  TMrbDGF::GetUserPsaData8(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::GetUserPsaData8
 // Purpose:        Read psa data
-// Arguments:      Int_t Offset        -- offset from param USERIN
+// Arguments:      Int_t Offset        -- offset from param UserPsaData
 //                 Int_t Channel       -- channel number
 //                 Bool_t ReadFromDSP  -- kTRUE if data should be read from DSP
 // Results:        Int_t PsaData       -- data (8 bits)
@@ -3710,14 +3467,16 @@ Int_t  TMrbDGF::GetUserPsaData8(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 	if (ReadFromDSP && !this->CheckConnect("GetUserPsaData8")) return(0xffffffff);
 	if (!this->CheckChannel("GetUserPsaData8", Channel)) return(0xffffffff);
 
-	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Err() << "No such param - UserPsaData" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaData8");
 		return(0xffffffff);
 	}
 
-	Int_t pOffset = param->GetIndex() + Offset;
+	Int_t pOffset = param->GetIndex();
+	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	pOffset += Offset;
 	if (Channel > 1) {
 		pOffset++;
 		Channel -= 2;
@@ -3731,7 +3490,7 @@ Bool_t TMrbDGF::SetUserPsaData4(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::SetUserPsaData4
 // Purpose:        Write psa data
-// Arguments:      Int_t Offset        -- offset from param USERIN
+// Arguments:      Int_t Offset        -- offset from param UserPsaData
 //                 Int_t Channel       -- channel number
 //                 Int_t Value         -- data (4 bits)
 //                 Bool_t UpdateDSP    -- kTRUE if DSP has to be updated afterwards
@@ -3744,21 +3503,25 @@ Bool_t TMrbDGF::SetUserPsaData4(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 	if (UpdateDSP && !this->CheckConnect("SetUserPsaData4")) return(kFALSE);
 	if (!this->CheckChannel("SetUserPsaData4", Channel)) return(kFALSE);
 
-	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Err() << "No such param - UserPsaData" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetUserPsaData4");
 		return(kFALSE);
 	}
 
-	Int_t pOffset = param->GetIndex() + Offset;
+	Int_t pOffset = param->GetIndex();;
+	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	pOffset += Offset;
 	Int_t pVal = this->GetParValue(pOffset, UpdateDSP);
 
 	Int_t b4[4];
 	for (Int_t i = 3; i >= 0; i--, pVal >>= 4) b4[i] = pVal & 0xF;
 	b4[Channel] = Value & 0xF;
-	for (Int_t i = 0; i <= 3; i++, pVal <<= 4) pVal |= b4[i];
+	pVal = 0;
+	for (Int_t i = 0; i <= 3; i++) { pVal <<= 4; pVal |= b4[i]; }
 	this->SetParValue(pOffset, pVal, UpdateDSP);
+	pVal = this->GetParValue(pOffset, UpdateDSP);
 	return(kTRUE);
 }
 
@@ -3767,7 +3530,7 @@ Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::SetUserPsaData8
 // Purpose:        Write psa data
-// Arguments:      Int_t Offset        -- offset from param USERIN
+// Arguments:      Int_t Offset        -- offset from param UserPsaData
 //                 Int_t Channel       -- channel number
 //                 Int_t Value         -- data (8 bits)
 //                 Bool_t UpdateDSP    -- kTRUE if DSP has to be updated afterwards
@@ -3778,16 +3541,18 @@ Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 //////////////////////////////////////////////////////////////////////////////
 
 	if (UpdateDSP && !this->CheckConnect("SetUserPsaData8")) return(kFALSE);
-	if (!this->CheckChannel("SetUserPsaData4", Channel)) return(kFALSE);
+	if (!this->CheckChannel("SetUserPsaData8", Channel)) return(kFALSE);
 
-	TMrbNamedX * param = fDGFData->FindParam("USERIN"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - USERIN" << endl;
+		gMrbLog->Err() << "No such param - UserPsaData" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetUserPsaData8");
 		return(kFALSE);
 	}
 
-	Int_t pOffset = param->GetIndex() + Offset;
+	Int_t pOffset = param->GetIndex();
+	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	pOffset += Offset;
 	if (Channel > 1) {
 		pOffset++;
 		Channel -= 2;
@@ -3797,7 +3562,8 @@ Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 	Int_t b8[2];
 	for (Int_t i = 1; i >= 0; i--, pVal >>= 8) b8[i] = pVal & 0xFF;
 	b8[Channel] = Value & 0xFF;
-	for (Int_t i = 0; i <= 1; i++, pVal <<= 8) pVal |= b8[i];
+	pVal = 0;
+	for (Int_t i = 0; i <= 1; i++) { pVal <<= 8; pVal |= b8[i]; }
 	this->SetParValue(pOffset, pVal, UpdateDSP);
 	return(kTRUE);
 }
@@ -6642,3 +6408,25 @@ void TMrbDGF::SetVerboseMode(Bool_t VerboseFlag) {
 	if (gMrbDGFData) gMrbDGFData->SetVerboseMode(VerboseFlag);
 }
 
+const Char_t * TMrbDGF::GetSynonyms(TString & Synonyms, TMrbNamedX * Param) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::SetVerboseMode
+// Purpose:        Collect synonyms for a given param
+// Arguments:      TString & Synonyms  -- where to store synonyms
+//                 TMrbNamedX * Param  -- param
+// Results:        --
+// Exceptions:
+// Description:    Steps thru chain of synonyms if present.
+//                 Returns string with syn names.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = Param;
+	Synonyms = "";
+	while ((nx = (TMrbNamedX *) nx->GetAssignedObject())) {
+		Synonyms += " =";
+		Synonyms += nx->GetName();
+	}
+	return(Synonyms.Data());
+}

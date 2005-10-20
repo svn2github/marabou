@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.17 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.18 2005-10-20 13:09:51 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -175,11 +175,7 @@ class TMrbDGF : public TNamed {
 		Int_t SaveValues(const Char_t * ValueFile, Bool_t ReadFromDSP = kTRUE);		// save values to file
 
 		Int_t LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFile = "", Bool_t UpdateDSP = kTRUE);	// read psa params from file
-		Int_t SavePsaParams(const Char_t * ParamFile, Bool_t ReadFromDSP = kTRUE);	// save psa params to file
 
-		Bool_t WritePsaParamsToFile(const Char_t * FileName);			// output psa values to file
-		Bool_t PrintPsaParams(ostream & OutStrm);					 	// print psa values
-		
 		Bool_t SaveParams(TArrayS & TempStorage);									// save params temporarily
 		Bool_t RestoreParams(TArrayS & TempStorage);								// restore params temp storage
 		Bool_t SaveParams(EMrbDGFSaveIdx SaveIdx);
@@ -429,6 +425,8 @@ class TMrbDGF : public TNamed {
 		Int_t ReadHistogramBufferPage();
 
 		void SetRevision(Int_t ManufactIndex = TMrbDGFData::kRevUnknown);
+
+		const Char_t * GetSynonyms(TString & Synonyms, TMrbNamedX * Param);
 
 	public:
 		TMrbLofNamedX fLofDGFStatusMBits;								// soft status bits (module)

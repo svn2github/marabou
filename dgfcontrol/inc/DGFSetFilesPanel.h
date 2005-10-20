@@ -8,7 +8,7 @@
 // Class:          DGFSetFilesPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFSetFilesPanel.h,v 1.5 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFSetFilesPanel.h,v 1.6 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -49,6 +49,7 @@ class DGFSetFilesPanel : public TGCompositeFrame {
 									kDGFSetFilesSystemPath,
 									kDGFSetFilesSystemDSPCode,
 									kDGFSetFilesSystemDSPParams,
+									kDGFSetFilesSystemUPSAParams,
 									kDGFSetFilesSystemSystemFPGAConfig,
 									kDGFSetFilesSystemFippiFPGAConfig,
 									kDGFSetFilesSystemDgfSettings,
@@ -70,6 +71,7 @@ class DGFSetFilesPanel : public TGCompositeFrame {
 		TGGroupFrame * fSystemDgfFrame; 				// system (dgf)
 		TGMrbFileEntry * fSystemDSPCodeEntry;			//		DSP code
 		TGMrbFileEntry * fSystemDSPParamsEntry; 		//		params
+		TGMrbFileEntry * fSystemUPSAParamsEntry; 		//		... user psa
 		TGMrbFileEntry * fSystemSystemFPGAConfigEntry;	//		FPGA config (system)
 		TGMrbFileEntry * fSystemFippiFPGAConfig[TMrbDGFData::kNofRevs];	//		... (fippi, rev D, E)
 		TGMrbFileEntry * fSystemDgfSettingsEntry;		//		dgf settings
@@ -83,6 +85,7 @@ class DGFSetFilesPanel : public TGCompositeFrame {
 														// file info
 		TGFileInfo fSystemDSPCodeFileInfo;				//		DSP code
 		TGFileInfo fSystemDSPParamsFileInfo; 			//		params
+		TGFileInfo fSystemUPSAParamsFileInfo; 			//		... user psa
 		TGFileInfo fSystemSystemFPGAFileInfo;			//		FPGA config (system)
 		TGFileInfo fSystemFippiFPGAFileInfo[TMrbDGFData::kNofRevs];	//		... (fippi, revD, revE)
 		TGFileInfo fSystemDgfSettingsPathInfo;			//		dgf settings

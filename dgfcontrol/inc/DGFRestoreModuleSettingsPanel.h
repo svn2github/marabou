@@ -8,7 +8,7 @@
 // Class:          DGFRestoreModuleSettingsPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.h,v 1.8 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.h,v 1.9 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -53,6 +53,7 @@ class DGFRestoreModuleSettingsPanel : public TGCompositeFrame {
 
 		// cmd ids to dispatch over X events in this panel
 		enum EDGFRestoreModuleSettingsActionsId 	{	kDGFRestoreModuleSettingsRestore,
+														kDGFRestoreModuleSettingsRestorePSA,
 														kDGFRestoreModuleSettingsSelectAll,
 														kDGFRestoreModuleSettingsSelectNone,
 														kDGFRestoreModuleSettingsSelectColumn

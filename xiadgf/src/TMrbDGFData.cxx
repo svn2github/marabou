@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.9 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.10 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,7 @@ namespace std {} using namespace std;
 
 #include "Rtypes.h"
 #include "TEnv.h"
+#include "TObjString.h"
 
 #include "TMrbLogger.h"
 
@@ -780,21 +781,7 @@ Int_t TMrbDGFData::ReadNameTable(const Char_t * ParamFile, Bool_t Forced) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Int_t pOffset;
-	TString pName;
-	TMrbNamedX * pKey;
-	ifstream param;
-	Int_t nofParams;
-	TString dataPath;
-	TString paramFile;
-	TString pLine;
-
-	TString charU;
-
 	if (this->ParamNamesRead() && !Forced) return(fNofParams);
-
-	dataPath = gEnv->GetValue("TMrbDGF.LoadPath", ".:$(MARABOU)/data/xiadgf/v2.70");
-	gSystem->ExpandPathName(dataPath);
 
 	if (*ParamFile == '\0') ParamFile = gEnv->GetValue("TMrbDGF.ParamNames", "");
 	if (*ParamFile == '\0') {
@@ -803,50 +790,126 @@ Int_t TMrbDGFData::ReadNameTable(const Char_t * ParamFile, Bool_t Forced) {
 		return(-1);
 	}
 
-	paramFile = ParamFile;
+	fParamNames.Delete();		// clear name table
+	fNofParams = 0;
+
+	Int_t sts = this->AddToNameTable(ParamFile);
+	if (sts > 0) fStatusD |= kParamNamesRead;
+	return(sts);
+}
+
+Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamFile, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFData::AddToNameTable
+// Purpose:        Add params from file to name table
+// Arguments:      Char_t * ParamFile    -- file name
+//                 Char_t * Comment      -- comment to be stored in param title
+// Results:        Int_t NofParams       -- number of params read
+// Exceptions:
+// Description:    Reads params from file and adds to name table.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString dataPath = gEnv->GetValue("TMrbDGF.LoadPath", ".:$(MARABOU)/data/xiadgf/v2.70");
+	gSystem->ExpandPathName(dataPath);
+
+	TString paramFile = ParamFile;
 	if (!paramFile.BeginsWith("../") && !paramFile.BeginsWith("/")) {
 		TString fileSpec = gSystem->Which(dataPath.Data(), ParamFile);
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "No such file - " << ParamFile << ", searched on \"" << dataPath << "\"" << endl;
-			gMrbLog->Flush(this->ClassName(), "ReadNameTable");
+			gMrbLog->Flush(this->ClassName(), "AddToNameTable");
 			return(-1);
 		}
 		paramFile = fileSpec;
 	}
 
-	param.open(paramFile, ios::in);
+	ifstream param(paramFile, ios::in);
 	if (!param.good()) {
 		gMrbLog->Err() << gSystem->GetError() << " - " << paramFile << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadNameTable");
+		gMrbLog->Flush(this->ClassName(), "AddToNameTable");
 		return(-1);
 	}
 	fParamFile = paramFile;
 
-	nofParams = 0;
-	fParamNames.Delete();
+	Int_t nofParams = 0;
 	for (;;) {
+		TMrbString pLine;
 		pLine.ReadLine(param, kFALSE);
 		if (param.eof()) break;
 		pLine = pLine.Strip(TString::kBoth);
 		if (pLine.Length() == 0 || pLine(0) == '#') continue;
-		istringstream str(pLine.Data());
-		str >> pOffset >> pName;
-		pName = pName.Strip(TString::kBoth);
-		if (pName.Length() > 0) {
-			pKey = new TMrbNamedX(pOffset, pName.Data());
-			fParamNames.AddNamedX(pKey);
-			nofParams++;
+		TObjArray pl;
+		Int_t n = pLine.Split(pl, " ", kTRUE);
+		if (n == 2) {
+			Int_t pOffset = atoi(((TObjString *) pl[0])->GetString().Data());
+			TString pName = ((TObjString *) pl[1])->GetString().Data();
+			pName.Strip(TString::kBoth);
+			if (pName.Length() > 0) nofParams += this->AddToNameTable(pName.Data(), pOffset, Comment);
 		}
 	}
 	param.close();
-	fNofParams = nofParams;
-	fStatusD |= kParamNamesRead;
 
 	if (fVerboseMode) {
 		gMrbLog->Out() << nofParams << " params read from " << paramFile << endl;
-		gMrbLog->Flush(this->ClassName(), "ReadNameTable", setblue);
+		gMrbLog->Flush(this->ClassName(), "AddToNameTable", setblue);
 	}
 
+	return(nofParams);
+}
+
+Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamName, Int_t Offset, const Char_t * Comment) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGFData::AddToNameTable
+// Purpose:        Add params from file to name table
+// Arguments:      Char_t * ParamName    -- param name
+//                 Int_t Offset          -- offset
+//                 Char_t * Comment      -- comment to be stored in param title
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Adds param to name table.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = fParamNames.FindByName(ParamName);
+	Int_t nofParams = -1;
+	if (nx != NULL) {
+		if (nx->GetIndex() != Offset) {
+			gMrbLog->Wrn()	<< "Param name already defined - " << ParamName
+							<< ", offset = " << nx->GetIndex() << " (previous), "
+							<< Offset << " (now)" << endl;
+			gMrbLog->Flush(this->ClassName(), "AddToNameTable");
+			nx->Set(Offset, nx->GetName());
+		}
+		nofParams = 0;
+	}
+	if (nofParams != 0) {
+		nx = fParamNames.FindByIndex(Offset);
+		if (nx != NULL) {
+			TString pn = nx->GetName();
+			if (pn.CompareTo(ParamName) != 0) {
+				gMrbLog->Wrn()	<< "Param index already in use - " << Offset
+								<< ", name = " << nx->GetName() << " (previous), "
+								<< ParamName << " (now)" << endl;
+				gMrbLog->Flush(this->ClassName(), "AddToNameTable");
+				nx->Set(-Offset, nx->GetName());
+				nofParams = 1;
+			} else {
+				nofParams = 0;
+			}
+		}
+	}
+	if (nofParams != 0) {
+		TString cmt = (Comment != NULL && *Comment != '\0') ? Comment : "";
+		nx = new TMrbNamedX(Offset, ParamName, cmt.Data(), nx);
+		fParamNames.AddNamedX(nx);
+		fNofParams++;
+		nofParams = 1;
+	}
+
+	fParamNames.Sort(kFALSE);
 	return(nofParams);
 }
 

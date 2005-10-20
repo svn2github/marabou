@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.18 2005-07-26 07:12:13 rudi Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.19 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -50,6 +50,7 @@ static Char_t * kDGFFileTypesSettings[]	=	{
 const SMrbNamedX kDGFRestoreModuleSettingsActions[] =
 			{
 				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestore,		"Restore",			"Restore module params"	},
+				{DGFRestoreModuleSettingsPanel::kDGFRestoreModuleSettingsRestorePSA,	"Restore (+PSA)",	"Restore params + *OLD STYLE* PSA params"	},
 				{0, 									NULL,			NULL								}
 			};
 
@@ -231,6 +232,9 @@ Bool_t DGFRestoreModuleSettingsPanel::ProcessMessage(Long_t MsgId, Long_t Param1
 					if (Param1 < kDGFRestoreModuleSettingsSelectColumn) {
 						switch (Param1) {
 							case kDGFRestoreModuleSettingsRestore:
+								this->LoadDatabase(kFALSE);
+								break;
+							case kDGFRestoreModuleSettingsRestorePSA:
 								this->LoadDatabase(kTRUE);
 								break;
 							case kDGFRestoreModuleSettingsSelectAll:
@@ -366,10 +370,9 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 					if (dgf->IsConnected()) {
 						dgf->SetVerboseMode(gDGFControlData->IsVerbose());
 						dgf->Camac()->SetVerboseMode(gDGFControlData->IsDebug());
-						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
 						param = dgf->Data()->FirstParam();
 						while (param) {
-							if (param->GetIndex() < TMrbDGFData::kNofDSPInputParams) {
+							if (param->GetIndex() >= 0 && param->GetIndex() < TMrbDGFData::kNofDSPInputParams) {
 								paramName = param->GetName();
 								dgfResource = paramName;
 								parval = dgfEnv->GetValue(dgfResource.Data(), 0);

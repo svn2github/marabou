@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.13 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.14 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -124,6 +124,13 @@ DGFControlData::DGFControlData(const Char_t * RcFile) : TNamed("DGFControlData",
 		fDSPParamsFile += path;
 		gSystem->ExpandPathName(fDSPParamsFile);
 		this->CheckAccess(fDSPParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
+
+		fUPSAParamsFile = fLoadPath;
+		fUPSAParamsFile += "/";
+		env.Find(path, "DGFControl:TMrbDGF", "UPSAParams", "dsp/upsaParams.var");
+		fUPSAParamsFile += path;
+		gSystem->ExpandPathName(fUPSAParamsFile);
+		this->CheckAccess(fUPSAParamsFile.Data(), kDGFAccessRead, errMsg, kTRUE);
 
 		fSystemFPGAConfigFile = fLoadPath;
 		fSystemFPGAConfigFile += "/";

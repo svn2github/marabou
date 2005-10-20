@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.7 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetFilesPanel.cxx,v 1.8 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -168,9 +168,22 @@ DGFSetFilesPanel::DGFSetFilesPanel(TGCompositeFrame * TabFrame) :
 																5 * kEntryWidth,
 																&fSystemDSPParamsFileInfo, kFDOpen,
 																frameGC, labelGC, entryGC);
-	HEAP(fSystemDSPParamsEntry);
+	HEAP(fSystemUPSAParamsEntry);
 	fSystemDgfFrame->AddFrame(fSystemDSPParamsEntry, frameGC->LH());
 	fSystemDSPParamsEntry->SetText(gDGFControlData->fDSPParamsFile.Data());
+
+	fSystemUPSAParamsFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesDSPParams;
+	fSystemUPSAParamsFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);
+	fSystemUPSAParamsEntry = new TGMrbFileEntry(fSystemDgfFrame, "DSP Params Extension (User PSA)",
+																200, kDGFSetFilesSystemUPSAParams,
+																kLEWidth,
+																kLEHeight,
+																5 * kEntryWidth,
+																&fSystemUPSAParamsFileInfo, kFDOpen,
+																frameGC, labelGC, entryGC);
+	HEAP(fSystemUPSAParamsEntry);
+	fSystemDgfFrame->AddFrame(fSystemUPSAParamsEntry, frameGC->LH());
+	fSystemUPSAParamsEntry->SetText(gDGFControlData->fUPSAParamsFile.Data());
 
 	fSystemSystemFPGAFileInfo.fFileTypes = (const Char_t **) kDGFFileTypesFPGACode;
 	fSystemSystemFPGAFileInfo.fIniDir = StrDup(gDGFControlData->fLoadPath);

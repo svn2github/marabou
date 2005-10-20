@@ -8,7 +8,7 @@
 // Class:          DGFControlData
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFControlData.h,v 1.12 2005-08-25 14:32:17 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.h,v 1.13 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -199,6 +199,7 @@ class DGFControlData : public TNamed {
 		TString fLoadPath;						// where to load DSP/FPGA code from
 		TString fDSPCodeFile;						// ... DSP code
 		TString fDSPParamsFile;						// ... param table
+		TString fUPSAParamsFile;					// ... extension for user psa
 		TString fSystemFPGAConfigFile;				// ... FPGA config (system)
 		TString fFippiFPGAConfigFile[TMrbDGFData::kNofRevs];		// ...             (fippi, rev D,E)
 		TString fCptmCodeFile;						// where to load CPTM code from

@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.33 2005-10-19 06:58:02 marabou Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.34 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -485,6 +485,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 			DGFModule * dgfModule = gDGFControlData->FirstModule();
 			TGMrbProgressBar * pgb = new TGMrbProgressBar(fClient->GetRoot(), this, "Connecting ...", 400, "blue", NULL, kTRUE);
 			pgb->SetRange(0, gDGFControlData->GetNofModules());
+			Bool_t upsaLoaded = kFALSE;
 			while (dgfModule) {
 				if (gDGFControlData->ModuleInUse(dgfModule)) {
 					TMrbDGF * dgf = dgfModule->GetAddr();
@@ -507,6 +508,9 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 						dgfModule->SetTitle(dgf->GetTitle());
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
+						if (!upsaLoaded) {
+							if (dgf->Data()->AddToNameTable(gDGFControlData->fUPSAParamsFile, "UserPSA") > 0) upsaLoaded = kTRUE;
+						}
 						if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
 						if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
 						if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
@@ -637,6 +641,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 			UInt_t toBeLoaded = fCodes->GetActive();
 			for (Int_t cr = 0; cr < kNofCrates; cr++) lofDGFs[cr].Delete();
 			DGFModule * dgfModule = gDGFControlData->FirstModule();
+			Bool_t upsaLoaded = kFALSE;
 			while (dgfModule) {
 				if (gDGFControlData->ModuleInUse(dgfModule)) {
 					TMrbDGF * dgf = dgfModule->GetAddr();
@@ -661,6 +666,9 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 						dgfModule->SetTitle(dgf->GetTitle());
 						dgfModule->SetAddr(dgf);
 						if (dgf->Data()->ReadNameTable(gDGFControlData->fDSPParamsFile) <= 0) nerr++;
+						if (!upsaLoaded) {
+							if (dgf->Data()->AddToNameTable(gDGFControlData->fUPSAParamsFile, "UserPSA") > 0) upsaLoaded = kTRUE;
+						}
 					} else nerr++;
 				}
 				dgfModule = gDGFControlData->NextModule(dgfModule);

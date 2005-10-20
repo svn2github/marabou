@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.14 2005-05-06 08:43:43 rudi Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.15 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -279,7 +279,7 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 //////////////////////////////////////////////////////////////////////////////
 
 	TGFileInfo fileInfoSave;
-	TString saveDir, paramFile, psaFile, valueFile;
+	TString saveDir, paramFile, valueFile;
 	TMrbSystem uxSys;
 	TMrbEnv env;
 	Int_t nerr;
@@ -349,13 +349,10 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 				paramFile += "/";
 				paramFile += dgf->GetName();
 				valueFile = paramFile;
-				psaFile = paramFile;
 				paramFile += ".par";
 				valueFile += ".val";
-				psaFile += ".psa";
 				if (!dgf->SaveParams(paramFile.Data())) nerr++;
 				if (!dgf->SaveValues(valueFile.Data())) nerr++;
-				if (!dgf->SavePsaParams(psaFile.Data())) nerr++;
 				nofModules++;
 			}
 			pgb->Increment(1, dgfModule->GetName());

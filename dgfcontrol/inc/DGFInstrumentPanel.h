@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.15 2005-09-06 11:48:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.16 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -96,7 +96,6 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrMCABaselineBinsEntry,		//		combine bins
 									kDGFInstrButtonUpdateFPGAs,			//		update fpgas
 									kDGFInstrButtonShowParams,			//		show params
-									kDGFInstrButtonShowPsa,				//		show psa values
 								};
 
 		enum EDGFInstrCDFOnOff 	{
@@ -123,7 +122,7 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 	protected:
 		Bool_t WriteDSP(DGFModule * Module, Int_t ChannelId);					// update DSP
 		Bool_t ReadDSP(DGFModule * Module, Int_t ChannelId);					// read DSP
-		Bool_t ShowModuleSettings(Bool_t PsaFlag = kFALSE);						// show settings
+		Bool_t ShowModuleSettings();											// show settings
 		Bool_t UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t ChannelId);		// update entry value
 		void MoveFocus(Int_t EntryId);											// move focus to next entry
 		Bool_t SetGFLT(Bool_t OnFlag = kTRUE);									// set/clear gflt
