@@ -1411,8 +1411,9 @@ void HandleMenus::BuildMenus()
          fRootsMenuBar->RemovePopup("File");
       }
    }
+
    pm = fRootsMenuBar->GetPopup("Edit");
-   if (pm) {
+   if (pm && fFitHist == 0 ) {
       l = pm->GetListOfEntries();
       if (l) {
          TIter next(l);
@@ -1422,6 +1423,7 @@ void HandleMenus::BuildMenus()
          fRootsMenuBar->RemovePopup("Edit");
       }
    }
+
    pm = fRootsMenuBar->GetPopup("Classes");
    if (pm) {
       l = pm->GetListOfEntries();
@@ -1904,8 +1906,11 @@ void HandleMenus::BuildMenus()
    fOptionMenu->Associate((TGWindow*)this);
    fAttrMenu->Associate((TGWindow*)this);
    fAttrMenu->Associate((TGWindow*)this);
+   if (fFitHist) 
+      fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, fRootsMenuBar->GetPopup("Edit"));
+   else  
+      fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
 
-   fRootsMenuBar->AddPopup("&File",    fFileMenu,    fMenuBarItemLayout, pmi);
    fRootsMenuBar->AddPopup("&Hpr-Options", fOptionMenu,  fMenuBarItemLayout, pmi);
    fRootsMenuBar->AddPopup("Graphic_defaults", fAttrMenu,  fMenuBarItemLayout, pmi);
    if (fViewMenu) fRootsMenuBar->AddPopup("&View", fViewMenu,  fMenuBarItemLayout, pmi);
@@ -1929,9 +1934,9 @@ void HandleMenus::BuildMenus()
    }
    fRootCanvas->MapSubwindows();
 //   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
-//   fRootCanvas->ShowEditor(kFALSE);
-//   fRootCanvas->ShowToolBar(kFALSE);
-   fRootCanvas->MapWindow();
+   fRootCanvas->MapWindow(); 
+//   fRootCanvas->ShowToolBar(kFALSE); 
+   fRootCanvas->HideFrame((TGFrame*)(fRootCanvas->GetToolDock()));
    fRootCanvas->ForceUpdate();
    return;
 }

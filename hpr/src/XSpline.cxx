@@ -1264,6 +1264,7 @@ ControlGraph::ControlGraph (Int_t npoints, Double_t*  x, Double_t* y) :
    fSelectedY = 0;
    fSelectedPoint = -1;
    fSelectedShapeFactor = -1;
+   fChangeShapeFactorsConjointly = 1;
 };
 //_____________________________________________________________________________________
    
@@ -1432,6 +1433,8 @@ void ControlGraph::ControlGraphMixer()
    TOrdCollection * row_lab = new TOrdCollection;
 //   col_lab->Add(new TObjString("cc"));
    Int_t nrows = GetN();
+   if (fChangeShapeFactorsConjointly > 0) 
+      nrows = 1;
 
    TArrayI values(nrows);
    TArrayI minval(nrows);
@@ -1447,6 +1450,8 @@ void ControlGraph::ControlGraphMixer()
       Int_t iy = (Int_t)y[i];
       row_lab->Add(new TObjString(Form("%d, %d", ix, iy)));
    }
+   if (fChangeShapeFactorsConjointly > 0) 
+      values[0] = (Int_t) (100 * fShapeFactors[1]);
    TGMrbSliders * sliders = new TGMrbSliders("Set Shapefactors (*100)", nrows, 
                        minval.GetArray(), maxval.GetArray(), values.GetArray(),
                        row_lab, NULL, NULL);
@@ -1458,7 +1463,21 @@ void ControlGraph::ControlGraphMixer()
 void ControlGraph::SetShapeFactors(Int_t id, Int_t ip, Int_t val) 
 {
 //   cout << "SetShapeFactors: " << ip << " " << val << endl;
-   fShapeFactors[ip] = (Float_t)val / 100.;
+   if (fChangeShapeFactorsConjointly > 0) {
+      Int_t from, to;
+      if (fParent->IsClosed()) {
+         from = 0;
+         to = GetN() - 1;
+      } else {
+         from = 1;
+         to = GetN() - 2;
+      }
+      for (Int_t i = from; i <= to; i++) {
+         fShapeFactors[i] = (Float_t)val / 100.;
+      }
+   } else {
+      fShapeFactors[ip] = (Float_t)val / 100.;
+   }
    fParent->ComputeSpline();
 }
 //_____________________________________________________________________________________
@@ -1469,6 +1488,13 @@ TGraph* ControlGraph::AddPGraph(Double_t dist, Color_t color,
    if (fParent) return fParent->AddParallelGraph(dist, color, width, style);
    else         return NULL;
 }
+//_____________________________________________________________________________________
+
+void ControlGraph::SetChangeShapeFactorsConjointly(Int_t val) {
+        fChangeShapeFactorsConjointly = val;}; 
+
+Int_t  ControlGraph::GetChangeShapeFactorsConjointly() {
+        return fChangeShapeFactorsConjointly;}; 
 //_____________________________________________________________________________________
 
 RailwaySleeper::RailwaySleeper(Double_t * x, Double_t * y, 

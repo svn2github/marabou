@@ -159,6 +159,7 @@ public:
    void SetColor(Color_t color);
    void AddArrow(Int_t where, Double_t size, Double_t angle, Double_t indent_angle, Int_t filled);
    void PaintArrow(Int_t where);
+   Bool_t   IsClosed()    {return fClosed;};
    Int_t    GetArrowFill()   {return fArrowFill;};
    Double_t GetArrowLength() {return fArrowLength;};
    Double_t GetArrowAngle()  {return fArrowAngle;}; 

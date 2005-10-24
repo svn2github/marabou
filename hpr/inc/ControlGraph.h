@@ -11,10 +11,11 @@ class ControlGraph : public TGraph
 private:
    XSpline* fParent;
    TArrayF  fShapeFactors;
-   Int_t    fSelectedPoint;
-   Double_t fSelectedX;
-   Double_t fSelectedY;
-   Float_t  fSelectedShapeFactor;
+   Int_t    fSelectedPoint;                 //!
+   Double_t fSelectedX;                     //!
+   Double_t fSelectedY;                     //!
+   Float_t  fSelectedShapeFactor;           //!
+   Int_t   fChangeShapeFactorsConjointly;  //!
 
 public:
    ControlGraph (Int_t npoints = 0, Double_t*  x = NULL, Double_t* y = NULL);
@@ -36,8 +37,11 @@ public:
    virtual void ControlGraphMixer();    //  *MENU*
    virtual void Delete(Option_t *opt = " "); // *MENU*
    void SetShapeFactors(Int_t id, Int_t ip, Int_t val);
+   void SetChangeShapeFactorsConjointly(Int_t val = 1);  // *MENU* *ARGS={val=>fChangeShapeFactorsConjointly}
+   Int_t  GetChangeShapeFactorsConjointly(); 
+
    TGraph* AddPGraph(Double_t dist = 2, Color_t color=0, 
                             Width_t width=0, Style_t style=0);   // *MENU*
-   ClassDef(ControlGraph, 1)
+   ClassDef(ControlGraph, 2)
 };
 #endif

@@ -75,14 +75,32 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
       arr[4] = &wtopx; arr[5] = &wtopy; arr[6] = &ww; arr[7] = &wh;
       if ((*gThreadXAR)("CANV", 8, arr, NULL)) return;
    }
-
+   SetBit(kShowEventStatus,0);
+   SetBit(kAutoExec  	  ,0);
+   SetBit(kMenuBar		  ,0);
+   SetBit(kShowToolBar    ,0);
+   SetBit(kShowEditor	  ,0);
+   SetBit(kMoveOpaque	  ,0);
+   SetBit(kResizeOpaque   ,0); 
    Init();
+#if ROOTVERSION > 50000
+   SetBit(kMenuBar,1);
+   if (ww < 0) {
+      ww       = -ww;
+      SetBit(kMenuBar,0);
+   }
+   if (wtopx < 0) {
+      wtopx  = -wtopx;
+      SetBit(kMenuBar,0);
+   }
+#else
    fMenuBar = kTRUE;
-//   cout << wtopx << " " << wtopy << " " << ww << " " << wh << endl;
    if (wtopx < 0) {
       wtopx    = -wtopx;
       fMenuBar = kFALSE;
-   }
+   } 
+#endif
+
    fCw           = ww;
    fCh           = wh;
    fCanvasID = -1;
@@ -105,7 +123,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
 //      if (fMenuBar) cout << "HTCanvas: ctor fMenuBar TRUE" << endl;
 //      else          cout << "HTCanvas: ctor fMenuBar FALSE" << endl;
 
-      fCanvasImp->ShowMenuBar(fMenuBar);
+      fCanvasImp->ShowMenuBar(HasMenuBar());
+//      fCanvasImp->ShowMenuBar(HasMenuBar());
 //      fCanvasImp->Show();
       fBatch = kFALSE;
    }
@@ -143,7 +162,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    fCanvasImp->ShowEditor(kFALSE);
    fCanvasImp->ShowToolBar(kFALSE);
    fCanvasImp->ShowStatusBar(kFALSE);
-   fCanvasImp->ShowMenuBar(fMenuBar);
+   fCanvasImp->ShowMenuBar(HasMenuBar());
 
    // Popup canvas
    fCanvasImp->Show();
@@ -347,8 +366,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       fSelected->ExecuteEvent(event, px, py);
 
-      if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
-      if (fAutoExec)        RunAutoExec();
+      if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
+      if (GetAutoExec())        RunAutoExec();
 
       break;
 
@@ -430,7 +449,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
       }
 //OS end
       fSelected->ExecuteEvent(event, px, py);
-      if (fAutoExec)        RunAutoExec();
+      if (GetAutoExec())        RunAutoExec();
 
       break;
 
@@ -477,14 +496,14 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
             if (fSelected->InheritsFrom(TVirtualPad::Class()))
                resize = ((TVirtualPad*)fSelected)->IsBeingResized();
 
-            if ((!resize && fMoveOpaque) || (resize && fResizeOpaque)) {
+            if ((!resize && OpaqueMoving()) || (resize && OpaqueResizing())) {
                gPad = fPadSave;
                Update();
                FeedbackMode(kTRUE);
             }
          }
-         if (fAutoExec) RunAutoExec();
-//         if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
+         if (GetAutoExec()) RunAutoExec();
+//         if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
       }
 
       break;
@@ -528,8 +547,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
          fSelected->ExecuteEvent(event, px, py);
 
-         if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
-         if (fAutoExec)        RunAutoExec();
+         if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
+         if (GetAutoExec())        RunAutoExec();
          gPad     = this;
          fPadSave = this;
          padsave  = fPadSave;
@@ -612,7 +631,7 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
    case kButton3Up:
       if (fSelected) fSelected->ExecuteEvent(event, px, py);
-      if (fAutoExec)        RunAutoExec();
+      if (GetAutoExec())        RunAutoExec();
       break;
 
    case kButton3Double:
@@ -629,8 +648,8 @@ void HTCanvas::HandleInput(EEventType event, Int_t px, Int_t py)
 
       fSelected->ExecuteEvent(event, px, py);
 
-//      if (fShowEventStatus) DrawEventStatus(event, px, py, fSelected);
-      if (fAutoExec)        RunAutoExec();
+//      if (GetShowEventStatus()) DrawEventStatus(event, px, py, fSelected);
+      if (GetAutoExec())        RunAutoExec();
 
       break;
 
@@ -660,7 +679,7 @@ void HTCanvas::DrawEventStatus(Int_t event, Int_t px, Int_t py, TObject *selecte
    const Int_t kTMAX=256;
    static char atext[kTMAX];
 
-   if (!fShowEventStatus || !selected) return;
+   if (!GetShowEventStatus() || !selected) return;
 
    if (!fCanvasImp) return; //this may happen when closing a TAttCanvas
 
@@ -691,6 +710,11 @@ void HTCanvas::Build()
    if (fCw < fCh) fXsizeReal = fYsizeReal*Float_t(fCw)/Float_t(fCh);
    else           fYsizeReal = fXsizeReal*Float_t(fCh)/Float_t(fCw);
 
+   // Set Pad parameters
+   gPad            = this;
+   fCanvas         = this;
+   fMother         = (TPad*)gPad;
+
    if (!IsBatch()) {    //normal mode with a screen window
       // Set default physical canvas attributes
       gVirtualX->SelectWindow(fCanvasID);
@@ -714,13 +738,14 @@ void HTCanvas::Build()
       gVirtualX->GetGeometry(fCanvasID, dum1, dum2, fCw, fCh);
 
       fContextMenu = new TContextMenu("ContextMenu");
+   } else {
+      // Make sure that batch interactive canvas sizes are the same 
+      fCw -= 4;
+      fCh -= 28;
    }
+
    gROOT->GetListOfCanvases()->Add(this);
 
-   // Set Pad parameters
-   gPad            = this;
-   fCanvas         = this;
-   fMother         = (TPad*)gPad;
    if (!fPrimitives) {
       fPrimitives     = new TList;
       SetFillColor(gStyle->GetCanvasColor());
@@ -746,14 +771,21 @@ void HTCanvas::Build()
    // transient canvases have typically no menubar and should not get
    // by default the event status bar (if set by default)
 
-
-   if (fShowEventStatus && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowStatusBar(fShowEventStatus);
+   if (TestBit(kMenuBar) && fCanvasImp) {
+      if (TestBit(kShowEventStatus)) fCanvasImp->ShowStatusBar(kTRUE);
+      // ... and toolbar + editor
+      if (TestBit(kShowToolBar))     fCanvasImp->ShowToolBar(kTRUE);
+      if (TestBit(kShowEditor))      fCanvasImp->ShowEditor(kTRUE);
+   }
+/*
+   if (GetShowEventStatus() && HasMenuBar() && fCanvasImp)
+      fCanvasImp->ShowStatusBar(GetShowEventStatus());
    // ... and toolbar + editor
-   if (fShowToolBar && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowToolBar(fShowToolBar);
-   if (fShowEditor && fMenuBar && fCanvasImp)
-      fCanvasImp->ShowEditor(fShowEditor);
+   if (GetShowToolBar() && HasMenuBar() && fCanvasImp)
+      fCanvasImp->ShowToolBar(GetShowToolBar());
+   if (GetShowEditor() && HasMenuBar() && fCanvasImp)
+      fCanvasImp->ShowEditor(GetShowEditor());
+*/
 #if defined(WIN32) && !defined(GDK_WIN32)
    if (!strcmp(gVirtualX->GetName(), "Win32"))
       gVirtualX->UpdateWindow(1);
