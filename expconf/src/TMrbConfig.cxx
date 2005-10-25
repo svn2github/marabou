@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.101 2005-10-18 11:52:49 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.101 2005-10-18 11:52:49 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.102 2005-10-25 10:56:28 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.102 2005-10-25 10:56:28 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -6657,6 +6657,13 @@ Bool_t TMrbConfig::UpdateMbsSetup() {
 		mbsSetup->EvtBuilder()->SetType(procType.Data());
 		mbsSetup->ReadoutProc(0)->SetType(procType.Data());
 		gMrbLog->Out() << "Setting MBS proc type to \"" << procType << "\"" << endl;
+		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup", setblue);
+	}
+
+	TString trigMode = gEnv->GetValue("TMbsSetup.TriggerMode", "");
+	if (trigMode.Length() > 0) {
+		mbsSetup->ReadoutProc(0)->TriggerModule()->SetTriggerMode(trigMode.Data());
+		gMrbLog->Out() << "Setting MBS trigger mode to \"" << trigMode << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "UpdateMbsSetup", setblue);
 	}
 
