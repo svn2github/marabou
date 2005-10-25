@@ -8,7 +8,7 @@
 // Class:          TMrbString     -- a TString providing number conversion
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbString.h,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbString.h,v 1.7 2005-10-25 08:21:40 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -127,9 +127,13 @@ class TMrbString : public TString {
 		inline TMrbString & operator+=(const Int_t n) { return(AppendInteger(n)); };
 		inline TMrbString & operator+=(const Double_t d) { return(AppendDouble(d)); };
 
-		inline TMrbString & operator=(const Char_t * s) { return((TMrbString &) this->Replace(0, Length(), s, strlen(s))); };
+		inline TMrbString & operator=(const Char_t * s) {
+			if (s == NULL) s = ""; return((TMrbString &) this->Replace(0, Length(), s, strlen(s)));
+		};
 		inline TMrbString & operator=(const TMrbString & s) { return((TMrbString &) this->Replace(0, Length(), s.Data(), s.Length())); };
-		inline TMrbString & operator+=(const Char_t * s) { return((TMrbString &) this->Append(s, strlen(s))); };
+		inline TMrbString & operator+=(const Char_t * s) {
+			if (s == NULL) s = ""; return((TMrbString &) this->Append(s, strlen(s)));
+		};
 		inline TMrbString & operator+=(const TString & s) { return((TMrbString &) this->Append(s.Data(), s.Length())); };
 
 		inline TMrbString & operator=(const TSubString & s) { TString tmp = s; *this = tmp; return(*this); };
