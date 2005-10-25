@@ -39,7 +39,6 @@ USER_HDRS	=	\
 				$(AFILE).h \
 				$(AFILE)Globals.h
 
-ULIB_HDRS	=	\
 %%MAKE_ULIB_HEADERS%%
 
 # User code to be compiled separately
