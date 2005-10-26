@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.10 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.11 2005-10-26 06:47:23 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -867,16 +867,20 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamName, Int_t Offset, const 
 // Arguments:      Char_t * ParamName    -- param name
 //                 Int_t Offset          -- offset
 //                 Char_t * Comment      -- comment to be stored in param title
-// Results:        kTRUE/kFALSE
+// Results:        Int_t NofParams       -- 0 or 1
 // Exceptions:
 // Description:    Adds param to name table.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	if (Offset < 0) return(0);
+
 	TMrbNamedX * nx = fParamNames.FindByName(ParamName);
 	Int_t nofParams = -1;
 	if (nx != NULL) {
-		if (nx->GetIndex() != Offset) {
+		Int_t pOffset = nx->GetIndex();
+		if (pOffset < 0) pOffset = -pOffset;
+		if (pOffset != Offset) {
 			gMrbLog->Wrn()	<< "Param name already defined - " << ParamName
 							<< ", offset = " << nx->GetIndex() << " (previous), "
 							<< Offset << " (now)" << endl;
