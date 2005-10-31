@@ -1936,7 +1936,9 @@ void HandleMenus::BuildMenus()
 //   fRootCanvas->Resize(fRootCanvas->GetDefaultSize());
    fRootCanvas->MapWindow(); 
 //   fRootCanvas->ShowToolBar(kFALSE); 
+#if ROOTVERSION > 50500
    fRootCanvas->HideFrame((TGFrame*)(fRootCanvas->GetToolDock()));
+#endif
    fRootCanvas->ForceUpdate();
    return;
 }
