@@ -75,6 +75,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
       arr[4] = &wtopx; arr[5] = &wtopy; arr[6] = &ww; arr[7] = &wh;
       if ((*gThreadXAR)("CANV", 8, arr, NULL)) return;
    }
+#if ROOTVERSION > 50000
    SetBit(kShowEventStatus,0);
    SetBit(kAutoExec  	  ,0);
    SetBit(kMenuBar		  ,0);
@@ -83,6 +84,7 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetBit(kMoveOpaque	  ,0);
    SetBit(kResizeOpaque   ,0); 
    Init();
+#endif
 #if ROOTVERSION > 50000
    SetBit(kMenuBar,1);
    if (ww < 0) {
@@ -771,21 +773,22 @@ void HTCanvas::Build()
    // transient canvases have typically no menubar and should not get
    // by default the event status bar (if set by default)
 
+#if ROOTVERSION > 50000
    if (TestBit(kMenuBar) && fCanvasImp) {
       if (TestBit(kShowEventStatus)) fCanvasImp->ShowStatusBar(kTRUE);
       // ... and toolbar + editor
       if (TestBit(kShowToolBar))     fCanvasImp->ShowToolBar(kTRUE);
       if (TestBit(kShowEditor))      fCanvasImp->ShowEditor(kTRUE);
    }
-/*
-   if (GetShowEventStatus() && HasMenuBar() && fCanvasImp)
-      fCanvasImp->ShowStatusBar(GetShowEventStatus());
+#else
+   if (fShowEventStatus && fMenuBar && fCanvasImp)
+      fCanvasImp->ShowStatusBar(fShowEventStatus);
    // ... and toolbar + editor
-   if (GetShowToolBar() && HasMenuBar() && fCanvasImp)
-      fCanvasImp->ShowToolBar(GetShowToolBar());
-   if (GetShowEditor() && HasMenuBar() && fCanvasImp)
-      fCanvasImp->ShowEditor(GetShowEditor());
-*/
+   if (fShowToolBar && fMenuBar && fCanvasImp)
+      fCanvasImp->ShowToolBar(fShowToolBar);
+   if (fShowEditor && fMenuBar && fCanvasImp)
+      fCanvasImp->ShowEditor(fShowEditor);
+#endif
 #if defined(WIN32) && !defined(GDK_WIN32)
    if (!strcmp(gVirtualX->GetName(), "Win32"))
       gVirtualX->UpdateWindow(1);
