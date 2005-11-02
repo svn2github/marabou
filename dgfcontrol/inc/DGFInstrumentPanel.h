@@ -8,7 +8,7 @@
 // Class:          DGFInstrumentPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFInstrumentPanel.h,v 1.16 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.h,v 1.17 2005-11-02 08:37:05 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -63,7 +63,8 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 									kDGFInstrTraceDelayEntry, 			//		delay
 									kDGFInstrTraceXPSAOffsetEntry, 		//		xia-psa:	offset
 									kDGFInstrTraceXPSALengthEntry,		//					length
-									kDGFInstrTraceUPSABaselineEntry, 	//		user-psa:	baseline
+									kDGFInstrTraceUPSAOnOffButton, 		//		user-psa:	on/off
+									kDGFInstrTraceUPSABaselineEntry, 	//					baseline
 									kDGFInstrTraceUPSAEnergyCutoffEntry,	//				energy cutoff
 									kDGFInstrTraceUPSATriggerThreshEntry,	//				trigger threshold
 									kDGFInstrTraceUPSAT90ThreshEntry,	//					T90 threshold
@@ -108,6 +109,11 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 										kDGFInstrCFDFract01	=	BIT(1),
 										kDGFInstrCFDFract10	=	BIT(2),
 									};
+
+		enum EDGFInstrUPSAOnOff 	{
+										kDGFInstrUPSAOn 	=	BIT(0),
+										kDGFInstrUPSAOff	=	BIT(1)
+								};
 
 	public:
 		DGFInstrumentPanel(TGCompositeFrame * TabFrame);
@@ -160,6 +166,7 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 		TGMrbLabelEntry * fTraceXPSAOffsetEntry;	//					offset
 		TGMrbLabelEntry * fTraceXPSALengthEntry; 	//					length
 		TGGroupFrame * fTraceUPSAFrame;				//				user-psa
+		TGMrbRadioButtonList * fTraceUPSAOnOffButton;	//				on/off
 		TGMrbLabelEntry * fTraceUPSABaselineEntry; 	//					baseline
 		TGMrbLabelEntry * fTraceUPSAEnergyCutoffEntry; 	//				energy cutoff
 		TGMrbLabelEntry * fTraceUPSATriggerThreshEntry; 	//			trigger threshold
@@ -214,6 +221,7 @@ class DGFInstrumentPanel : public TGCompositeFrame {
 
 		TMrbLofNamedX fInstrChnActions;				// list of actions
 		TMrbLofNamedX fInstrModuleActions;
+		TMrbLofNamedX fInstrUPSAOnOff;
 		TMrbLofNamedX fInstrCFDOnOff;
 		TMrbLofNamedX fInstrCFDFraction;
 

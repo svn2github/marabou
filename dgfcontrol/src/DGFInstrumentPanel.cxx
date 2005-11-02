@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.26 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.27 2005-11-02 08:37:05 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -53,6 +53,13 @@ const SMrbNamedX kDGFInstrCFDFraction[] =
 				{DGFInstrumentPanel::kDGFInstrCFDFract00,	"0.5",		"Attenuation 0.5"},
 				{DGFInstrumentPanel::kDGFInstrCFDFract01,	"0.25",		"Attenuation 0.25"},
 				{DGFInstrumentPanel::kDGFInstrCFDFract10,	"0.125",	"Attenuation 0.125"},
+				{0, 			NULL,	NULL	}
+			};
+
+const SMrbNamedX kDGFInstrUPSAOnOff[] =
+			{
+				{DGFInstrumentPanel::kDGFInstrUPSAOn,		"on",		"Enable UserPSA"},
+				{DGFInstrumentPanel::kDGFInstrUPSAOff,		"off",		"Disable UserPSA"},
 				{0, 			NULL,	NULL	}
 			};
 
@@ -121,6 +128,10 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fInstrCFDFraction.SetName("CFD fraction");
 	fInstrCFDFraction.AddNamedX(kDGFInstrCFDFraction);
 	fInstrCFDFraction.SetPatternMode();
+
+	fInstrUPSAOnOff.SetName("UserPSA on/off");
+	fInstrUPSAOnOff.AddNamedX(kDGFInstrUPSAOnOff);
+	fInstrUPSAOnOff.SetPatternMode();
 
 	fLofChannels.SetName("DGF channels");
 	fLofChannels.AddNamedX(kDGFChannelNumbers);
@@ -556,6 +567,14 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceUPSAFrame);
 	fTraceRightFrame->AddFrame(fTraceUPSAFrame, groupGC->LH());
 
+	fTraceUPSAOnOffButton = new TGMrbRadioButtonList(fTraceUPSAFrame, "PSA enable", &fInstrUPSAOnOff, kDGFInstrTraceUPSAOnOffButton, 1, 
+													kTabWidth, kLEHeight,
+													frameGC, labelGC, comboGC);
+	HEAP(fTraceUPSAOnOffButton);
+	fTraceUPSAOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrUPSAOff);
+	fTraceUPSAOnOffButton->Associate(this);
+	fTraceUPSAFrame->AddFrame(fTraceUPSAOnOffButton, frameGC->LH());
+
 	entryGC->SetLH(psaLayout);
 	fTraceUPSABaselineEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Baseline",
 																200, kDGFInstrTraceUPSABaselineEntry,
@@ -625,6 +644,25 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAT90ThreshEntry->Associate(this);
 
 	entryGC->SetLH(psaLayout);
+	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
+	fUserPsaCSREditButton->AssignObject(this);
+	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fTraceUPSAFrame, "PSA CSR",
+																200, kDGFInstrStatRegUserPsaCSREntry,
+																kLEWidth,
+																kLEHeight,
+																kEntryWidth,
+																frameGC, labelGC, entryGC, NULL, kFALSE,
+																fUserPsaCSREditButton, buttonGC);
+	HEAP(fStatRegUserPsaCSREntry);
+	fTraceUPSAFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
+	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
+	fStatRegUserPsaCSREntry->SetText(0);
+	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
+	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
+	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
+	fStatRegUserPsaCSREntry->Associate(this);
+
+	entryGC->SetLH(psaLayout);
 	fTraceUPSAOffsetEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Offset",
 																200, kDGFInstrTraceUPSAOffsetEntry,
 																kLEWidth,
@@ -674,25 +712,6 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSATFAEnergyCutoffEntry->ShowToolTip(kTRUE, kTRUE);
 	fTraceUPSATFAEnergyCutoffEntry->AddToFocusList(&fFocusList);
 	fTraceUPSATFAEnergyCutoffEntry->Associate(this);
-
-	entryGC->SetLH(psaLayout);
-	fUserPsaCSREditButton = new TMrbNamedX(kDGFInstrStatRegUserPsaCSREditButton, "Edit");
-	fUserPsaCSREditButton->AssignObject(this);
-	fStatRegUserPsaCSREntry = new TGMrbLabelEntry(fTraceUPSAFrame, "UserPSA CSR",
-																200, kDGFInstrStatRegUserPsaCSREntry,
-																kLEWidth,
-																kLEHeight,
-																kEntryWidth,
-																frameGC, labelGC, entryGC, NULL, kFALSE,
-																fUserPsaCSREditButton, buttonGC);
-	HEAP(fStatRegUserPsaCSREntry);
-	fTraceUPSAFrame->AddFrame(fStatRegUserPsaCSREntry, frameGC->LH());
-	fStatRegUserPsaCSREntry->SetType(TGMrbLabelEntry::kGMrbEntryTypeInt, 4, ' ', 16);
-	fStatRegUserPsaCSREntry->SetText(0);
-	fStatRegUserPsaCSREntry->SetRange(0, 0xffff);
-	fStatRegUserPsaCSREntry->ShowToolTip(kTRUE, kTRUE);
-	fStatRegUserPsaCSREntry->AddToFocusList(&fFocusList);
-	fStatRegUserPsaCSREntry->Associate(this);
 
 // right: cfd
 	TGLayoutHints * cfdLayout = new TGLayoutHints(kLHintsLeft | kLHintsExpandX, 1, 1, 1, 1);
