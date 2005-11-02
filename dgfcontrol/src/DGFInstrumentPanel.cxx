@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.27 2005-11-02 08:37:05 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFInstrumentPanel.cxx,v 1.28 2005-11-02 09:08:52 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -567,6 +567,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	HEAP(fTraceUPSAFrame);
 	fTraceRightFrame->AddFrame(fTraceUPSAFrame, groupGC->LH());
 
+#if 0
 	fTraceUPSAOnOffButton = new TGMrbRadioButtonList(fTraceUPSAFrame, "PSA enable", &fInstrUPSAOnOff, kDGFInstrTraceUPSAOnOffButton, 1, 
 													kTabWidth, kLEHeight,
 													frameGC, labelGC, comboGC);
@@ -574,6 +575,7 @@ DGFInstrumentPanel::DGFInstrumentPanel(TGCompositeFrame * TabFrame) :
 	fTraceUPSAOnOffButton->SetState(DGFInstrumentPanel::kDGFInstrUPSAOff);
 	fTraceUPSAOnOffButton->Associate(this);
 	fTraceUPSAFrame->AddFrame(fTraceUPSAOnOffButton, frameGC->LH());
+#endif
 
 	entryGC->SetLH(psaLayout);
 	fTraceUPSABaselineEntry = new TGMrbLabelEntry(fTraceUPSAFrame, "Baseline",
@@ -1419,7 +1421,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 	dgf = gDGFControlData->GetModule(ModuleId)->GetAddr();
 	chn = gDGFControlData->GetChannel(ChannelId);
 
-	Bool_t updateLocalEnv = kFALSE;
+//	Bool_t updateLocalEnv = kFALSE;
 
 	switch (EntryId) {
 		case kDGFInstrEnergyPeakTimeEntry:
@@ -1470,8 +1472,8 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 			dblVal = fTraceLengthEntry->GetText2Double();
 			dgf->SetTraceLength(chn, dblVal);
 			intVal = dgf->GetParValue(chn, "TRACELENGTH");
-			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "TraceLength", intVal);
-			updateLocalEnv = kTRUE;
+//			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "TraceLength", intVal);
+//			updateLocalEnv = kTRUE;
 			break;
 		case kDGFInstrTraceDelayEntry:
 			dblVal = fTraceDelayEntry->GetText2Double();
@@ -1503,8 +1505,8 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 		case kDGFInstrStatRunTaskEntry:
 			intVal = fStatRunTaskEntry->GetText2Int();
 			dgf->SetParValue("RUNTASK", intVal);
-			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "RunTask", intVal);
-			updateLocalEnv = kTRUE;
+//			gDGFControlData->UpdateLocalEnv("DGFControl.Module", dgf->GetName(), "RunTask", intVal);
+//			updateLocalEnv = kTRUE;
 			break;
 		case kDGFInstrStatCoincPatternEntry:
 			intVal = fStatCoincPatternEntry->GetText2Int();
@@ -1544,7 +1546,7 @@ Bool_t DGFInstrumentPanel::UpdateValue(Int_t EntryId, Int_t ModuleId, Int_t Chan
 		case kDGFInstrMCABaselineBinsEntry:
 			break;
 	}
-	if (updateLocalEnv) gDGFControlData->WriteLocalEnv();
+//	if (updateLocalEnv) gDGFControlData->WriteLocalEnv();
 	return(kTRUE);
 }
 
