@@ -52,12 +52,12 @@ private:
    Double_t       fVisibleGridX;
    Double_t       fVisibleGridY;
    Bool_t         fUseEditGrid;
-   Bool_t         fInsertMacrosAsGroup;
-   Double_t       fMouseX;
-   Double_t       fMouseY;
-   TPad         * fMousePad;
-   Bool_t         fGetMouse;
-   Bool_t         fCommonRotate;
+   Bool_t         fInsertMacrosAsGroup;  
+   Double_t       fMouseX;               //! dont stream
+   Double_t       fMouseY;               //! dont stream
+   TPad         * fMousePad;             //! dont stream
+   Bool_t         fGetMouse;             //! dont stream
+   Bool_t         fCommonRotate;         //! dont stream
    UInt_t         fOrigWw;
    UInt_t         fOrigWh;
 

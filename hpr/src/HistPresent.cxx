@@ -3448,19 +3448,12 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
    } else {
       c=(HTCanvas*)gROOT->FindObject(name);
    }
-   if (!c) return;
+   gDirectory = gROOT;
+   if (!c)  return;
    if (!c->TestBit(HTCanvas::kIsAEditorPage)) {
       c->Draw();
       return;
    }
-/*
-   if (NofEditorPages() > 0) {
-      WarnBox("Currently only 1 open EditorPage allowed");
-      cout << "Currently only 1 open EditorPage allowed" << endl;
-      if (fRootFile) fRootFile->Close();
-      return;
-   }
-*/
    TString new_name(c->GetName());
    if (new_name == "dina4page") {
       new_name = "page_";
@@ -3515,8 +3508,10 @@ void HistPresent::ShowCanvas(const char* fname, const char* name, const char* bp
          if (obj->InheritsFrom("TPad")){
             lpads.Add(obj);
          } else {
+            obj->Dump();
             obj->SetDrawOption(obj->GetOption());
             obj->Draw(lnk->GetOption());
+            obj->Dump();
          }
       }
       lnk = (TObjOptLink*)lnk->Next();

@@ -452,125 +452,20 @@ void XSpline::Midpoint(Double_t phi1, Double_t phi2, Double_t x, Double_t y,
    *a = x + r * TMath::Cos(phi3);
    *b = y + r * TMath::Sin(phi3);
 }
-//_______________________________________________________________________________________
-
-Bool_t XSpline::ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, Double_t dist, Bool_t closed)
-{
-   Int_t n = ograph->GetN();
-
-   if (closed && ograph->GetN() <= 2) {
-      cout << "Closed graph must have more then 2 points" << endl;
-      return kFALSE;
-   }
-   if (pgraph->GetN() != ograph->GetN()) pgraph->Set(ograph->GetN());
-   Double_t phi1, phi2;
-   Double_t* xo = ograph->GetX();
-   Double_t* yo = ograph->GetY();
-   Double_t* xp = pgraph->GetX();
-   Double_t* yp = pgraph->GetY();
-
-   if (closed) {
-      Double_t d = TMath::Sqrt((xo[0]- xo[n-1])*(xo[0]- xo[n-1]) 
-                             + (yo[0]- yo[n-1])*(yo[0]- yo[n-1]));
-      if (d > 0.001 * TMath::Abs(dist)) {
-         cout << "Closed graph: 1. and last point dont coincide" << endl;
-         return kFALSE;
-      }
-   }
-   if (closed) {
-      phi1 = PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
-      phi2 = PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
-      Midpoint(phi1, phi2, xo[0], yo[0], dist, &xp[0], &yp[0]);
-      xp[n-1] = xp[0];
-      yp[n-1] = yp[0];
-   } else {
-      phi1 = PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
-      Endpoint(phi1, xo[0], yo[0], dist, &xp[0], &yp[0]);
-      phi1 = PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
-      Endpoint(phi1, xo[n-1], yo[n-1], dist, &xp[n-1], &yp[n-1]);
-   } 
-   for (Int_t i = 1; i <= n - 2; i++) {
-      phi1 = PhiOfLine(xo[i-1], yo[i-1], xo[i], yo[i]);
-      phi2 = PhiOfLine(xo[i], yo[i], xo[i+1], yo[i+1]);
-      Midpoint(phi1, phi2, xo[i], yo[i], dist, &xp[i], &yp[i]);
-   }
-
-//  no arrows with railway sleepers
-
-   if (fFilledLength > 0 && fEmptyLength > 0) return kTRUE;
-
-   Double_t chop, seglen, xm, ym;
-   Int_t ip = 0;
-   Double_t deg2rad = TMath::Pi() / 180;
-   Double_t p2 = 0.5 * fArrowAngle * deg2rad;
-   Double_t a2 = fArrowIndentAngle *deg2rad;
-   Double_t ay = fArrowLength * TMath::Tan(p2);
-   Double_t dabs = TMath::Abs(dist);  
-//   cout << ay << " " << dabs << endl;
-   Double_t reallength = fArrowLength  - ay * TMath::Tan(a2) 
-           * (1 - dabs / ay);
-
-   if (fPaintArrowAtEnd) {
-      chop = reallength ;
-      ip = n - 1;
-      while (1) {
-         seglen = Length(xp[ip], yp[ip], xp[ip-1], yp[ip-1] );
-//         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
-         if (chop <= seglen) {
-            xm = xp[ip-1] + (xp[ip] - xp[ip-1]) * (1 - chop/seglen);
-            ym = yp[ip-1] + (yp[ip] - yp[ip-1]) * (1 - chop/seglen);
-//            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
-            xp[ip] = xm;
-            yp[ip] = ym;
-            pgraph->Set(ip+1);
-            break;
-         } else {
-            chop -= seglen;
-            ip -= 1;
-            if (ip < 1) break;
-         }
-      }
-   }
-   xp = pgraph->GetX();
-   yp = pgraph->GetY();
-   n = pgraph->GetN();
-//   cout << "n " << n << endl;
-   if (fPaintArrowAtStart) {
-      chop = reallength;
-      ip = 0;
-      while (1) {
-         seglen = Length(xp[ip], yp[ip], xp[ip+1], yp[ip+1] );
-//         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
-         if (chop <= seglen) {
-            xm = xp[ip] + (xp[ip+1] - xp[ip]) * (chop/seglen);
-            ym = yp[ip] + (yp[ip+1] - yp[ip]) * (chop/seglen);
-//            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
-            xp[ip] = xm;
-            yp[ip] = ym;
-            break;
-         } else {
-            chop -= seglen;
-            ip += 1;
-            if (ip >= n-1) break;
-         }
-      }
-      if (ip > 0) {
-         Int_t nn = n - ip;
-         for (Int_t i = 0; i < nn ; i++) {
-            xp[i] = xp[ip]; 
-            yp[i] = yp[ip]; 
-            ip++;
-         }
-//         cout << "nn " << nn << endl;
-         pgraph->Set(nn);
-      }
-   }
-   return kTRUE;
-}
-
 //____________________________________________________________________________________
 
-XSpline::XSpline(Int_t npoints, Double_t* x, Double_t* y)
+XSpline::XSpline()
+{
+   fControlPointList = 0;
+   fShapeFactorList = 0;
+   fReady = kFALSE;
+   fComputeDone = kFALSE;
+   cout << "XSpline: def ctor npoints " << fNpoints << " " << endl;
+}
+//____________________________________________________________________________________
+
+XSpline::XSpline(Int_t npoints, Double_t *x, Double_t *y,
+         Float_t *sf, Float_t prec, Bool_t closed)
 {
 //*-*-*-*-*-*-*-*-*-*-*-*-*-*-*XSpline constructor-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*
 //*-*                          ===================
@@ -579,17 +474,17 @@ XSpline::XSpline(Int_t npoints, Double_t* x, Double_t* y)
    fControlPointList = 0;
    fShapeFactorList = 0;
    fReady = kFALSE;
-   fPrec = 0;
-   fClosed = kFALSE;
+   fPrec = prec;
+   fClosed = closed;
    fNofControlPoints = 0;
    fNpoints = 0;
    fReady = kFALSE;
-   fNeedReCompute = kFALSE;
-   fNP = 0;
+   fComputeDone = kFALSE;
+//   fNP = 0;
    fRailwaylike = 0;
    fFilledLength = 0;
    fEmptyLength = 0;
-   fMType = 20;
+   fMType = 24;
    fMSize = 2;
    fArrowAtStart = NULL;
    fArrowAtEnd   = NULL;
@@ -602,11 +497,14 @@ XSpline::XSpline(Int_t npoints, Double_t* x, Double_t* y)
    SetName("XSpline");
    fCPGraph.SetName("ControlGraph");
    fCPGraph.SetParent(this);
-   if (npoints > 0 && x != 0 && y != 0)SetControlPoints(npoints, x, y);
+   if (npoints > 0) {
+     if (x != NULL && y != NULL) SetControlPoints(npoints, x, y);
+     if (sf != NULL) SetShapeFactors(npoints, sf);
+   }
    gROOT->GetListOfCleanups()->Add(&fPGraphs);
    fPGraphs.Clear();
    fDPolyLines.Clear();
-//   cout << "XSpline: ctor npoints, fNP" << npoints << " " << fNP<< endl;
+   cout << "XSpline: ctor npoints, fNP" << npoints << " "<< endl;
 }
 //____________________________________________________________________________________
 
@@ -614,12 +512,6 @@ XSpline::~XSpline()
 {
    cout << "~XSpline(): "<< this  << endl << flush;
    gROOT->GetListOfCleanups()->Remove(&fPGraphs);
-//   gROOT->GetListOfCleanups()->Print();
-//   TIter next(gROOT->GetListOfCleanups());
-//   while (TObject* obj = next()) cout << "loc: " << obj << endl;
-//   gROOT->GetListOfCleanups()->Remove(this);
-//   TIter next1(gROOT->GetListOfCleanups());
- //  while (TObject* obj = next1()) cout << "loc: " << obj << endl;
    if (fArrowAtStart) {
       gPad->GetListOfPrimitives()->Remove(fArrowAtStart);
       delete fArrowAtStart;
@@ -635,14 +527,6 @@ XSpline::~XSpline()
    cout << "exit ~XSpline(): "<< this  << endl << flush;
 
 }
-//________________________________________________________________
-
-//void XSpline::RecursiveRemove(TObject * obj)
-//{
-//   cout << "XSpline::RecursiveRemove, this, obj " << this << " "  << obj << " "
- //       << obj->GetName() <<  endl << flush;
-//   if (fPGraphs.FindObject(obj)) fPGraphs.Remove(obj);
-//};
 //_____________________________________________________________________________________
 
 void XSpline::SetShapeFactors(Int_t npoints, Float_t* s)
@@ -714,6 +598,7 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
       fPrec = prec;
       fClosed = closed;
    }
+//   Dump();
    CopyControlPoints();
    if (fClosed) 
       cl_spline(fControlPointList, fShapeFactorList, fPrec);
@@ -721,15 +606,19 @@ Int_t XSpline::ComputeSpline(Float_t prec, Bool_t closed)
       op_spline(fControlPointList, fShapeFactorList, fPrec);
    SetGraph();
 //   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
-   if (fNP > 0) {
-      for (Int_t i = 0; i < fNP; i++) {
-         ParallelGraph * gr = NULL;
-//          cout << "fPGraphs.GetLast() " << fPGraphs.GetLast()<< endl;
-         if (fPGraphs.GetLast() >= i) gr = (ParallelGraph*)fPGraphs[i];
-         AddParallelGraphExt(gr, fPDists[i]);
+   if (fPGraphs.GetEntries() > 0) {
+      for (Int_t i = 0; i <= fPGraphs.GetLast(); i++) {
+         ParallelGraph * gr = (ParallelGraph*)fPGraphs[i];
+         if (gr) {
+            gr->Compute();
+            if ((fPaintArrowAtStart || fPaintArrowAtEnd) 
+                && (fFilledLength <= 0 || fEmptyLength  <= 0))
+              gr->CorrectForArrows( fArrowLength, fArrowAngle,fArrowIndentAngle,
+                                    fPaintArrowAtStart, fPaintArrowAtEnd);
+         }
       }
    }
-   fNeedReCompute = kTRUE;
+   fComputeDone = kFALSE;
 //   cout << "ComputeSpline  fNpoints: " << fNpoints << " fNP: " << fNP<< endl;
    gPad->Modified();
    gPad->Update();
@@ -883,6 +772,7 @@ void XSpline::DrawControlPoints(Int_t marker,  Size_t size)
    fCPGraph.SetMarkerStyle(fMType);
    if (size > 0)  fMSize = size;
    fCPGraph.SetMarkerSize(fMSize);
+    cout << "DrawControlPoints marker " << marker<< " fMType " << fMType<<endl; 
    fCPGraph.Draw("P");
    gPad->Update();
 }
@@ -896,58 +786,23 @@ void XSpline::EditControlGraph()
 
 ParallelGraph* XSpline::AddParallelGraph(Double_t dist, Color_t color, Width_t width, Style_t style)
 {
-   return AddParallelGraphExt(NULL, dist, color, width, style);
-}
-   
-//_____________________________________________________________________________________
-
-ParallelGraph* XSpline::AddParallelGraphExt(ParallelGraph* ngraph, Double_t dist, Color_t color, Width_t width, Style_t style)
-{
-// Add a line parallel to this graph, color, width, style may be given,
-// otherwise taken from this
-   ParallelGraph* pgraph = ngraph; 
-   if (pgraph == NULL) {
-      pgraph = new ParallelGraph(GetN());
-      pgraph->SetName("ParallelG");
-   } else {
-      if (pgraph->GetN() != this->GetN()) ngraph->Set(this->GetN());
-   }
-   pgraph->SetParent(this);
-//   cout << " XSpline, this, N, dist " << this << " " << GetN() << " " << dist << endl;
-//   this->Print(" ");
-//   cout << " AddParallelGraphExt, ngraph, N: " << ngraph << " " << GetN() << endl;
-//   pgraph->Print();
-   Bool_t ok = ComputeParallelGraph(this, pgraph, dist, fClosed);
-   if (!ok) {
-      cout << " AddParallelGraph failed" << endl;
-      return NULL;
-   }
-//   cout << "recalc AddParallelGraphExt, pgraph, N: " << pgraph << " " << GetN() << endl;
-//   pgraph->Print();
-   if (ngraph == NULL) {
- //     cout << "AddParallelGraphExt, ngraph, fNP: " << ngraph << " " << fNP << endl;
-      Int_t idx = fPGraphs.GetLast() + 1;
-      fPGraphs.AddAtAndExpand(pgraph, idx);
-      if (idx + 1 > fNP) {
-         fNP++;
-         fPDists.Set(fNP);
-         fPDists[idx]  = dist;
-      }
-      if (color <= 0) pgraph->SetLineColor(this->GetLineColor());
-      else            pgraph->SetLineColor(color);
-      if (width <= 0) pgraph->SetLineWidth(this->GetLineWidth());
-      else            pgraph->SetLineWidth(width);
-      if (style <= 0) pgraph->SetLineStyle(this->GetLineStyle());
-      else            pgraph->SetLineStyle(style);
-      pgraph->Draw("L");
-   }
+   ParallelGraph *pgraph = new ParallelGraph (this, dist, fClosed);
+   Int_t idx = fPGraphs.GetLast() + 1;
+   fPGraphs.AddAtAndExpand(pgraph, idx);
+   if (color <= 0) pgraph->SetLineColor(this->GetLineColor());
+   else            pgraph->SetLineColor(color);
+   if (width <= 0) pgraph->SetLineWidth(this->GetLineWidth());
+   else            pgraph->SetLineWidth(width);
+   if (style <= 0) pgraph->SetLineStyle(this->GetLineStyle());
+   else            pgraph->SetLineStyle(style);
+   pgraph->Draw("L");
    return pgraph;
 }
 //_____________________________________________________________________________________
 
 void  XSpline::DrawParallelGraphs()
 {
-   for (Int_t i = 0; i < fNP; i++) {
+   for (Int_t i = 0; i < fPGraphs.GetEntries(); i++) {
       TGraph* gr = (TGraph*)fPGraphs[i];
       if (gr) gr->Draw("L");
    }
@@ -956,9 +811,11 @@ void  XSpline::DrawParallelGraphs()
  
 void XSpline::Paint(Option_t * option)
 {
-//   TGraph::Paint(option);
-//   cout << "XSpline::Paint, fNP PGraphs.GetEntriesFast()" << fNP << " " <<fPGraphs.GetEntriesFast() << endl;
-//   if (fNP > 0 && fPGraphs.GetEntriesFast()  <= 0) ComputeSpline();
+//   cout << " XSpline::Paint fComputeDone = ";
+//   if (fComputeDone) cout << " true" ;
+//  else              cout << " false" ;
+//  cout << endl;
+
    if (fRailwaylike <= 0)  {
       TGraph::Paint(option);
       if (fArrowAtStart) { 
@@ -971,16 +828,19 @@ void XSpline::Paint(Option_t * option)
          if (fArrowAtEnd->GetFillStyle() != 0) 
             fArrowAtEnd->SetFillColor(GetLineColor());
       } 
-   }
-   if (!fNeedReCompute) return;
-//   cout << " XSpline::Paint " << endl;
-   fNeedReCompute = kFALSE;
+      gPad->Modified();
+      gPad->Update();
+
+   } 
+
+   if (fComputeDone) return;
+   fComputeDone = kTRUE;
 
    if (fArrowAtStart) {
 //      fArrowSize  = fArrowAtStart->GetArrowSize();
 //      fArrowAngle = fArrowAtStart->GetAngle();
-      if (fArrowAtStart->GetFillStyle() != 0) fArrowFill = kTRUE;
-      else                                    fArrowFill = kFALSE;
+ //     if (fArrowAtStart->GetFillStyle() != 0) fArrowFill = kTRUE;
+//      else                                    fArrowFill = kFALSE;
       gPad->GetListOfPrimitives()->Remove(fArrowAtStart);
       delete fArrowAtStart; 
       fArrowAtStart = NULL;
@@ -988,8 +848,8 @@ void XSpline::Paint(Option_t * option)
    if (fArrowAtEnd) {
 //      fArrowSize  = fArrowAtEnd->GetArrowSize();
 //      fArrowAngle = fArrowAtEnd->GetAngle();
-      if (fArrowAtEnd->GetFillStyle() != 0) fArrowFill = kTRUE;
-      else                                  fArrowFill = kFALSE;
+ //     if (fArrowAtEnd->GetFillStyle() != 0) fArrowFill = kTRUE;
+ //     else                                  fArrowFill = kFALSE;
       gPad->GetListOfPrimitives()->Remove(fArrowAtEnd);
       delete fArrowAtEnd; 
       fArrowAtEnd = NULL;
@@ -1003,14 +863,13 @@ void XSpline::Paint(Option_t * option)
    }
    
 //  draw railway sleepers
-   TGraph* lg = (TGraph*)fPGraphs[0];
-   TGraph* rg = (TGraph*)fPGraphs[1];
+   ParallelGraph* lg = (ParallelGraph*)fPGraphs[0];
+   ParallelGraph* rg = (ParallelGraph*)fPGraphs[1];
 //   cout << "XSpline::Paint " << lg << " " << rg  << endl;
    if (lg->GetN() != rg->GetN() || lg->GetN() < 4) {
       cout << "Not enough points on spline" << endl;
       return;
    }
-//   cout << "fDPolyLines.GetSize() " << fDPolyLines.GetSize() << endl;
 
    if (fDPolyLines.GetSize() > 0) {
       TIter next(&fDPolyLines);
@@ -1030,7 +889,9 @@ void XSpline::Paint(Option_t * option)
    Double_t * xr = rg->GetX();
    Double_t * yr = rg->GetY();
    Double_t needed = fFilledLength;
-   Double_t dist = TMath::Abs(fPDists[0]);
+
+//   Double_t dist = TMath::Abs(fPDists[0]);
+   Double_t dist = TMath::Abs(lg->GetDist());
    Double_t available = 0;
    Double_t phi, ax, ay, xcprev, ycprev, xccur, yccur;
    Bool_t   box_done = kFALSE;
@@ -1534,19 +1395,140 @@ void RailwaySleeper::SetSleeperColor(Color_t color)
 //_____________________________________________________________________________________
 //_____________________________________________________________________________________
 //
-// ControlGraph, a helper class for XSplines,
-// To profit from TGraphs methods the Controlpoints are stored
-// as a TGraph
 //
-ParallelGraph::ParallelGraph (Int_t npoints, Double_t*  x, Double_t* y) :
-              TGraph(npoints, x, y) {
-   fParent = NULL;
+ParallelGraph::ParallelGraph (TGraph *ograph, Double_t dist, Bool_t closed)
+               : fParent(ograph), fDist(dist),fClosed(closed)  
+{
+   Compute();
+}
+//_____________________________________________________________________________________
+
+void ParallelGraph::Compute()
+{
+   Int_t n = fParent->GetN();
+   if (fClosed && fParent->GetN() <= 2) {
+      cout << "Closed graph must have more then 2 points" << endl;
+      return;
+   }
+   Set(n);
+   Double_t phi1, phi2;
+   Double_t* xo = fParent->GetX();
+   Double_t* yo = fParent->GetY();
+   Double_t* xp = this->GetX();
+   Double_t* yp = this->GetY();
+
+   if (fClosed) {
+      Double_t d = TMath::Sqrt((xo[0]- xo[n-1])*(xo[0]- xo[n-1]) 
+                             + (yo[0]- yo[n-1])*(yo[0]- yo[n-1]));
+      if (d > 0.001 * TMath::Abs(fDist)) {
+         cout << "Closed graph: 1. and last point dont coincide" << endl;
+         return;
+      }
+   }
+   if (fClosed) {
+      phi1 = XSpline::PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
+      phi2 = XSpline::PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
+      XSpline::Midpoint(phi1, phi2, xo[0], yo[0], fDist, &xp[0], &yp[0]);
+      xp[n-1] = xp[0];
+      yp[n-1] = yp[0];
+   } else {
+      phi1 = XSpline::PhiOfLine(xo[0], yo[0], xo[1], yo[1]);
+      XSpline::Endpoint(phi1, xo[0], yo[0], fDist, &xp[0], &yp[0]);
+      phi1 = XSpline::PhiOfLine(xo[n-2], yo[n-2], xo[n-1], yo[n-1]);
+      XSpline::Endpoint(phi1, xo[n-1], yo[n-1], fDist, &xp[n-1], &yp[n-1]);
+   } 
+   for (Int_t i = 1; i <= n - 2; i++) {
+      phi1 = XSpline::PhiOfLine(xo[i-1], yo[i-1], xo[i], yo[i]);
+      phi2 = XSpline::PhiOfLine(xo[i], yo[i], xo[i+1], yo[i+1]);
+      XSpline::Midpoint(phi1, phi2, xo[i], yo[i], fDist, &xp[i], &yp[i]);
+   }
 };
+//_____________________________________________________________________________________
+
+void ParallelGraph::CorrectForArrows(Double_t alength, Double_t aangle,Double_t aindent_angle,
+                                     Bool_t at_start, Bool_t at_end)
+{
+//  no arrows with railway sleepers
+
+//   if (fFilledLength > 0 && fEmptyLength > 0) return kTRUE;
+
+   Double_t chop, seglen, xm, ym;
+   Int_t ip = 0;
+   Double_t deg2rad = TMath::Pi() / 180;
+   Double_t p2 = 0.5 * aangle * deg2rad;
+   Double_t a2 = aindent_angle *deg2rad;
+   Double_t ay = alength * TMath::Tan(p2);
+   Double_t dabs = TMath::Abs(fDist);  
+//   cout << ay << " " << dabs << endl;
+   Double_t reallength = alength  - ay * TMath::Tan(a2) 
+           * (1 - dabs / ay);
+   Double_t* xp = this->GetX();
+   Double_t* yp = this->GetY();
+   Int_t n = fParent->GetN();
+
+   if (at_end) {
+      chop = reallength ;
+      ip = n - 1;
+      while (1) {
+         seglen = XSpline::Length(xp[ip], yp[ip], xp[ip-1], yp[ip-1] );
+//         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
+         if (chop <= seglen) {
+            xm = xp[ip-1] + (xp[ip] - xp[ip-1]) * (1 - chop/seglen);
+            ym = yp[ip-1] + (yp[ip] - yp[ip-1]) * (1 - chop/seglen);
+//            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
+            xp[ip] = xm;
+            yp[ip] = ym;
+            this->Set(ip+1);
+            break;
+         } else {
+            chop -= seglen;
+            ip -= 1;
+            if (ip < 1) break;
+         }
+      }
+   }
+   xp = this->GetX();
+   yp = this->GetY();
+   n = this->GetN();
+//   cout << "n " << n << endl;
+   if (at_start) {
+      chop = reallength;
+      ip = 0;
+      while (1) {
+         seglen = XSpline::Length(xp[ip], yp[ip], xp[ip+1], yp[ip+1] );
+//         cout << ip << " " << yp[ip] << " " << chop << " " << seglen << " " << endl;
+         if (chop <= seglen) {
+            xm = xp[ip] + (xp[ip+1] - xp[ip]) * (chop/seglen);
+            ym = yp[ip] + (yp[ip+1] - yp[ip]) * (chop/seglen);
+//            cout << "yp[ip], ym  " << yp[ip] << " " << ym << endl;
+            xp[ip] = xm;
+            yp[ip] = ym;
+            break;
+         } else {
+            chop -= seglen;
+            ip += 1;
+            if (ip >= n-1) break;
+         }
+      }
+      if (ip > 0) {
+         Int_t nn = n - ip;
+         for (Int_t i = 0; i < nn ; i++) {
+            xp[i] = xp[ip]; 
+            yp[i] = yp[ip]; 
+            ip++;
+         }
+//         cout << "nn " << nn << endl;
+         this->Set(nn);
+      }
+   }
+   return;
+}
+
 //_____________________________________________________________________________________
    
 void ParallelGraph::Delete(Option_t *opt)
 {
-   cout << "Cant delete ParallelGraph, delete its XSpline" << endl; 
+   delete this; 
 }
 //_____________________________________________________________________________________
    
@@ -1554,10 +1536,3 @@ void ParallelGraph::ExecuteEvent(Int_t event, Int_t px, Int_t py) {
 //  execute 
    if (fParent) fParent->ExecuteEvent(event, px, py);
 }
-//_____________________________________________________________________________________
-   
-void ParallelGraph::SetParent(XSpline* parent) 
-{
-  fParent = parent;
-} 
-  

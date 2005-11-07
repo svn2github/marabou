@@ -4,12 +4,12 @@
 #include "TGraph.h"
 #include "iostream"
 
-class XSpline; 
+class XSpline;
 
 class ControlGraph : public TGraph
 {
 private:
-   XSpline* fParent;
+   XSpline *fParent;
    TArrayF  fShapeFactors;
    Int_t    fSelectedPoint;                 //!
    Double_t fSelectedX;                     //!
@@ -22,7 +22,7 @@ public:
    virtual ~ControlGraph() {std::cout << "dtor ControlGraph(): " << this << std::endl;};
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
    void SetParent(XSpline* parent); 
-   XSpline* GetParent(){return fParent;}; 
+   XSpline  *GetParent(){return fParent;}; 
    void SetAllShapeFactors(Int_t npoints, Float_t* sf);
    Float_t   GetShapeFactorByPointNumber(Int_t ipoint) {return fShapeFactors[ipoint];};
    Int_t     GetSelectedPoint() { return fSelectedPoint; };

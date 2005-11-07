@@ -66,15 +66,14 @@ protected:
    Int_t         fNofControlPoints;
    Int_t         fNpoints;           // number of used points
    Bool_t        fReady; 
-   Bool_t        fNeedReCompute;     //
+   Bool_t        fComputeDone;     // !
    TArrayD       fX;                 // result X
    TArrayD       fY;                 // result Y
    ControlGraph  fCPGraph;           // Controlpoints
-   Int_t         fNP;                // number of parallel graphs
-   Int_t         fMType;             // markertype
-   Size_t        fMSize;             // markersize
-   TObjArray     fPGraphs;           //! pointer list to parallel lines
-   TArrayD       fPDists;
+   Int_t         fMType;             // markertype for ControlGraph
+   Size_t        fMSize;             // markersize for ControlGraph
+   TObjArray     fPGraphs;           // pointer list to parallel lines
+ //  TArrayD       fPDists;
    Int_t         fRailwaylike;
    Double_t      fFilledLength;      // draw like railway in maps
    Double_t      fEmptyLength;       // space in between
@@ -82,10 +81,10 @@ protected:
    TGraph*       fArrowAtEnd;
    Bool_t        fPaintArrowAtStart;
    Bool_t        fPaintArrowAtEnd;
+   Int_t         fArrowFill;
    Double_t      fArrowLength;
    Double_t      fArrowAngle;
    Double_t      fArrowIndentAngle;
-   Int_t         fArrowFill;
    TList         fDPolyLines;        // !
 private:
    void point_adding(Double_t *A_blend, ControlPoint *p0, ControlPoint *p1, 
@@ -108,14 +107,16 @@ private:
    void CopyControlPoints();
 
 public:
-   XSpline(Int_t npoints = 0, Double_t* x = 0, Double_t* y = 0);
+   XSpline();
+   XSpline(Int_t npoints, Double_t *x, Double_t *y, 
+           Float_t *sf = 0, Float_t prec = 0.01, Bool_t closed = kFALSE);
    virtual ~XSpline();
    void Remove() { delete this; } // *MENU*
    void ExecuteEvent(Int_t event, Int_t px, Int_t py);
-//   void RecursiveRemove(TObject * obj);
+   void RecursiveRemove(TObject * obj) {fPGraphs.Remove(obj);};
    virtual void EditControlGraph();    //  *MENU*
    void Print(Option_t * opt = " ") const{TGraph::Print();};    //  *MENU*
-   void DrawControlPoints(Int_t marker = 20, Size_t size = 2); // *MENU* *ARGS={marker=>fMType, size=>fMSize}
+   void DrawControlPoints(Int_t marker = 24, Size_t size = 1); // *MENU* *ARGS={marker=>fMType, size=>fMSize}
    Int_t GetMType() {return fMType;};
    Size_t GetMSize() {return fMSize;};
    void SetMType(Int_t type) {fMType = type;};
@@ -128,18 +129,18 @@ public:
    Int_t GetResult(Double_t*& x, Double_t*& y);
    Int_t ComputeSpline(Float_t prec = -1, Bool_t open = kTRUE);
 
-   ParallelGraph* AddParallelGraphExt(ParallelGraph* ng = NULL, Double_t dist = 2, Color_t color=0, 
-                            Width_t width=0, Style_t style=0);
+//   ParallelGraph* AddParallelGraphExt(ParallelGraph* ng = NULL, Double_t dist = 2, Color_t color=0, 
+ //                           Width_t width=0, Style_t style=0);
    ParallelGraph* AddParallelGraph(Double_t dist = 2, Color_t color=0, 
                             Width_t width=0, Style_t style=0);   // *MENU*
    TObjArray* GetParallelGraphs() {return &fPGraphs;};
    void  DrawParallelGraphs();
-   Double_t* GetParallelDists() {return fPDists.GetArray();};
+//   Double_t* GetParallelDists() {return fPDists.GetArray();};
    ControlGraph* GetControlGraph() {return &fCPGraph;};
 
    void RemovePolyLines();
-   Bool_t ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, 
-                                Double_t dist, Bool_t closed);
+//   Bool_t ComputeParallelGraph(TGraph* ograph, ParallelGraph* pgraph, 
+//                                Double_t dist, Bool_t closed);
    static Double_t Length(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    static Double_t PhiOfLine(Double_t x1, Double_t y1, Double_t x2, Double_t y2);
    static void Nextpoint(Double_t phi, Double_t x, Double_t y, 
@@ -152,10 +153,10 @@ public:
    Int_t GetRailwaylike() {return fRailwaylike;};
    void  SetFilledLength(Double_t flen) {fFilledLength = flen;};
    void  SetEmptyLength(Double_t elen) {fEmptyLength = elen;};
-   Double_t SetFilledLength() {return fFilledLength;};
-   Double_t SetEmptyLength() {return fEmptyLength;};
+   Double_t GetFilledLength() {return fFilledLength;};
+   Double_t GetEmptyLength() {return fEmptyLength;};
    void Paint(Option_t * option = " ");
-   void SetNeedReCompute() {fNeedReCompute = kTRUE;};
+   void SetComputeDone(Bool_t done) {fComputeDone = done;};
    void SetColor(Color_t color);
    void AddArrow(Int_t where, Double_t size, Double_t angle, Double_t indent_angle, Int_t filled);
    void PaintArrow(Int_t where);

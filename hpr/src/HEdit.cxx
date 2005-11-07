@@ -1387,7 +1387,10 @@ void HTCanvas::DrawXSplinesParallelGraphs()
    TIter next(GetListOfPrimitives());
    TObject * obj;
    while ( (obj = next()) ){
-      if (obj->IsA() == XSpline::Class()) ((XSpline*)obj)->DrawParallelGraphs();
+      if (obj->IsA() == XSpline::Class()) {
+         ((XSpline*)obj)->SetComputeDone(kFALSE);
+         ((XSpline*)obj)->DrawParallelGraphs();
+      }
    }
    Update();
 }
@@ -2550,7 +2553,7 @@ void HTCanvas::PutObjectsOnGrid(TList* list)
             if (dox) x[i] = PutOnGridX(x[i]);
             if (doy) y[i] = PutOnGridY(y[i]);
          }
-         b->GetParent()->SetNeedReCompute();
+         b->GetParent()->SetComputeDone(kFALSE);
       } else if (obj->InheritsFrom("TGraph") 
                  && !(obj->InheritsFrom("XSpline"))
                  && !(obj->InheritsFrom("ControlGraph"))
@@ -3436,6 +3439,7 @@ tryagain:
    xsp->SetRailwaylike(railway);
    xsp->SetFilledLength(filled);
    xsp->SetEmptyLength(empty);
+   if (showcp > 0) xsp->DrawControlPoints(0, 0);
    xsp->Draw("L");
    if (railway > 0 && gage > 0) {
      xsp->AddParallelGraph( gage / 2, color, lwidth, lstyle); 
@@ -3447,7 +3451,7 @@ tryagain:
    if (arrow_at_start) xsp->AddArrow(0, arrow_size, arrow_angle, arrow_indent_angle, afilled);
    if (arrow_at_end)   xsp->AddArrow(1, arrow_size, arrow_angle, arrow_indent_angle, afilled);
    xsp->ComputeSpline(prec, closed_spline);
-   if (showcp > 0) xsp->DrawControlPoints(24, 0);
+//   if (showcp > 0) xsp->DrawControlPoints(24, 0);
    delete gr;
    Modified();
    Update();
