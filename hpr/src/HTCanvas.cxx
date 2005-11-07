@@ -83,8 +83,8 @@ HTCanvas::HTCanvas(const Text_t *name, const Text_t *title, Int_t wtopx, Int_t w
    SetBit(kShowEditor	  ,0);
    SetBit(kMoveOpaque	  ,0);
    SetBit(kResizeOpaque   ,0); 
-   Init();
 #endif
+   Init();
 #if ROOTVERSION > 50000
    SetBit(kMenuBar,1);
    if (ww < 0) {
