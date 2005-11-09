@@ -175,6 +175,7 @@ protected:
    TButton * fRebinSumAvg;
    TButton * fValButton;
    TButton * fCloseWindowsButton;
+   Bool_t    fCanvasClosing;
    TString * fHostToConnect;
    Bool_t    fConnectedOnce;
    Int_t     fSocketToConnect;

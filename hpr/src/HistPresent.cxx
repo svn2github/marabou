@@ -255,6 +255,7 @@ HistPresent::HistPresent(const Text_t *name, const Text_t *title)
    fApplyGraphCut = kFALSE;
    fApplyLeafCut = kFALSE;
    fApplyExpression = kFALSE;
+   fCanvasClosing = kFALSE;
 
    RestoreOptions();
    fCmdLine = new TList();
@@ -287,8 +288,14 @@ HistPresent::~HistPresent()
 //________________________________________________________________
 void HistPresent::RecursiveRemove(TObject * obj)
 {
-//   cout << "------> EnterHistPresent::RecursiveRemove for: " << obj<< endl;
+//   cout << "------> Enter HistPresent::RecursiveRemove for: " 
+//      << obj<<  endl;
    fCanvasList->Remove(obj);
+   if (fCanvasList->GetEntries() == 0 && fCanvasClosing) {
+      fCanvasClosing = kFALSE;
+      fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases();");
+//      cout << "------> HistPresent: all canvases closed" << endl;
+   }
    fAllCuts->Remove(obj);
    fAllWindows->Remove(obj);
    fAllFunctions->Remove(obj);
@@ -2927,22 +2934,22 @@ void HistPresent::CloseAllCanvases()
 {
 //     Cleaning all FitHist objects
 //   cout << "Enter CloseAllCanvases()" << endl;
-   fCloseWindowsButton->SetMethod(".p \"Please wait\"");
+   if (fHelpBrowser) fHelpBrowser->Clear();
+   if (fCanvasList->GetEntries() == 0) return;
+
+   fCloseWindowsButton->SetMethod(".! echo \"Please be patient\"");
+   fCanvasClosing = kTRUE;
    TIter next(fCanvasList);
    HTCanvas * htc;
    while ( (htc =(HTCanvas *)next()) ) {
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
       rc->ShowEditor(kFALSE);
       rc->SendCloseMessage();
-      gSystem->ProcessEvents();
-      gSystem->Sleep(50);
    }
    fNwindows= 0;
    fWincury = fWintopy;
    fWincurx = fWintopx;
    fNtupleSeqNr = 0;
-   if (fHelpBrowser) fHelpBrowser->Clear();
-   fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases();");
 //   cout << "Exit CloseAllCanvases()" << endl;
 }
 //_______________________________________________________________________
