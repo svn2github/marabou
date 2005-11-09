@@ -313,7 +313,8 @@ void HistPresent::ShowMain()
 //   SButton("ByTitle","ByName",this,1,1,dy,1, 0.8);
 //   CButton("OpenWorkFile",      "Open WorkFile",this,1,1,dy,0.5);
    b = CButton("CloseHistLists",    "Close HistLists",this,1,1,dy,0.5);
-   b = CButton("CloseAllCanvases",  "Close Windows",this,2,1,dy,0.5);
+   fCloseWindowsButton
+     = CButton("CloseAllCanvases",  "Close Windows",this,2,1,dy,0.5);
    b = CButton("ListSelect",        "List Hists,Cuts",this,1,2,dy,0.5);
    b = CButton("ClearSelect",       "Clear Select",this,2,2,dy,0.5);
    b = CButton("Editrootrc",        "Edit .rootrc",this,1,3,dy,0.5);
@@ -2925,19 +2926,24 @@ FitHist * HistPresent::ShowHist(TH1* hist, const char* hname)
 void HistPresent::CloseAllCanvases() 
 {
 //     Cleaning all FitHist objects
-    
+//   cout << "Enter CloseAllCanvases()" << endl;
+   fCloseWindowsButton->SetMethod(".p \"Please wait\"");
    TIter next(fCanvasList);
    HTCanvas * htc;
    while ( (htc =(HTCanvas *)next()) ) {
       TRootCanvas *rc = (TRootCanvas*)htc->GetCanvasImp();
       rc->ShowEditor(kFALSE);
       rc->SendCloseMessage();
+      gSystem->ProcessEvents();
+      gSystem->Sleep(50);
    }
    fNwindows= 0;
    fWincury = fWintopy;
    fWincurx = fWintopx;
    fNtupleSeqNr = 0;
    if (fHelpBrowser) fHelpBrowser->Clear();
+   fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases();");
+//   cout << "Exit CloseAllCanvases()" << endl;
 }
 //_______________________________________________________________________
   

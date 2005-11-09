@@ -174,6 +174,7 @@ protected:
    TButton * fRebinOth;
    TButton * fRebinSumAvg;
    TButton * fValButton;
+   TButton * fCloseWindowsButton;
    TString * fHostToConnect;
    Bool_t    fConnectedOnce;
    Int_t     fSocketToConnect;
