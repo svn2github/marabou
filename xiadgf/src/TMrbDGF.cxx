@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGF.cxx,v 1.43 2005-10-20 13:09:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.cxx,v 1.44 2005-11-10 09:07:08 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -508,7 +508,7 @@ Bool_t TMrbDGF::DownloadFPGACode(const Char_t * FPGAType) {
 	return(this->DownloadFPGACode((TMrbDGFData::EMrbFPGAType) sysfip->GetIndex()));
 }
 
-Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix) {
+Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix, TEnv * Env) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::SetSwitchBusDefault
@@ -528,6 +528,8 @@ Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix) {
 	TString resource, segmentID;
 	Bool_t terminate;
 
+	TEnv * env = Env ? Env : gEnv;
+
 	if (!this->CheckConnect("SetSwitchBusDefault")) return(kFALSE);
 
 	if (IndiFlag) {
@@ -537,7 +539,7 @@ Bool_t TMrbDGF::SetSwitchBusDefault(Bool_t IndiFlag, const Char_t * Prefix) {
 		resource.Prepend(".Module.");
 		resource.Prepend(Prefix);
 		resource += ".SwitchBusTerm";
-		terminate = gEnv->GetValue(resource.Data(), kFALSE);
+		terminate = env->GetValue(resource.Data(), kFALSE);
 	} else {
 		segmentID = this->GetClusterID()->GetTitle();
 		terminate = (segmentID.Index("c", 0) >= 0);
@@ -2433,11 +2435,8 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 	Int_t line;
 	Int_t nFields;
 	TMrbSystem uxSys;
-	TMrbLofNamedX psaNames;
 		
 	Int_t psaVal[16];
-
-	psaNames.AddNamedX(kMrbPSANames);
 
 	if (!fDGFData->ParamNamesRead()) {
 		gMrbLog->Err() << "No param names read" << endl;
@@ -2478,25 +2477,24 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 				continue;
 			}
 			pName = ((TObjString *) pFields[0])->GetString();
-			pKey = psaNames.FindByName(pName.Data());
+			pKey = fDGFData->FindParam(pName.Data());
+			pStr = ((TObjString *) pFields[1])->GetString();
+			pStr.ToInteger(pOffset);
+			if (pOffset0 == -1) pOffset0 = pOffset;
 			if (pKey == NULL) {
-				gMrbLog->Err() << paramFile << " (line " << line << "): No such PSA name - " << pName << endl;
+				gMrbLog->Wrn()	<< paramFile << " (line " << line << "): No such PSA name - " << pName
+								<< ", using param index = " << pOffset << " instead" << endl;
+				gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
+			}
+			if (pOffset - pOffset0 > 16) {
+				gMrbLog->Err() << paramFile << " (line " << line << "): [" << pName << "] PSA offset > 16" << endl;
 				gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
 				continue;
-			} else {
-				pStr = ((TObjString *) pFields[1])->GetString();
-				pStr.ToInteger(pOffset);
-				if (pOffset0 == -1) pOffset0 = pOffset;
-				if (pOffset - pOffset0 > 16) {
-					gMrbLog->Err() << paramFile << " (line " << line << "): [" << pName << "] PSA offset > 16" << endl;
-					gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
-					continue;
-				}
-				pStr = ((TObjString *) pFields[2])->GetString();
-				pStr.ToInteger(pValue);				
-				psaVal[pOffset - pOffset0] = pValue;
-				nofParams++;
 			}
+			pStr = ((TObjString *) pFields[2])->GetString();
+			pStr.ToInteger(pValue);				
+			psaVal[pOffset - pOffset0] = pValue;
+			nofParams++;
 		}
 		pf.close();
 	} else if (uxSys.CheckExtension(paramFile.Data(), ".psadmp")) {
@@ -2533,14 +2531,14 @@ Int_t TMrbDGF::LoadPsaParams(const Char_t * ParamFile, const Char_t * AltParamFi
 
 	if (UpdateDSP && !this->IsOffline()) {
 		if (!this->CheckConnect("LoadPsaParams")) return(-1);
-		pKey = fDGFData->FindParam("UserPsaData");
+		pKey = fDGFData->FindParam("USERPSADATA");
 		if (pKey == NULL) {
-			gMrbLog->Err() << "No such param - UserPsaData" << endl;
+			gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 			gMrbLog->Flush(this->ClassName(), "LoadPsaParams");
 			return(-1);
 		}
 		pOffset = pKey->GetIndex();
-		if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" is shadowed normally
+		if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" is shadowed normally
 		for (Int_t i = 0; i < nofParams; i++) {
 			this->SetParValue(pOffset + i, psaVal[i]);
 		}
@@ -3349,15 +3347,15 @@ Bool_t TMrbDGF::SetUserPsaCSR(Int_t Channel, UInt_t Bits, EMrbBitOp BitOp, Bool_
 	if (UpdateDSP && !this->CheckConnect("SetUserPsaCSR")) return(kFALSE);
 	if (!this->CheckChannel("SetUserPsaCSR", Channel)) return(kFALSE);
 
-	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("USERPSADATA"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - UserPsaData" << endl;
+		gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetUserPsaCSR");
 		return(kFALSE);
 	}
 
 	Int_t pOffset = param->GetIndex();
-	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" is shadowed normally
+	if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" is shadowed normally
 	pOffset += TMrbDGFData::kPsaPSACh0 + Channel;
 
 	switch (BitOp) {
@@ -3404,15 +3402,15 @@ UInt_t  TMrbDGF::GetUserPsaCSR(Int_t Channel, Bool_t ReadFromDSP) {
 	if (ReadFromDSP && !this->CheckConnect("GetUserPsaCSR")) return(0xffffffff);
 	if (!this->CheckChannel("GetUserPsaCSR", Channel)) return(0xffffffff);
 
-	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("USERPSADATA"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - UserPsaData" << endl;
+		gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaCSR");
 		return(0xffffffff);
 	}
 
 	Int_t pOffset = param->GetIndex();
-	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" may be shadowed
 	pOffset += TMrbDGFData::kPsaPSACh0 + Channel;
 
 	UInt_t csr = this->GetParValue(pOffset, ReadFromDSP);
@@ -3436,15 +3434,15 @@ Int_t  TMrbDGF::GetUserPsaData4(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 	if (ReadFromDSP && !this->CheckConnect("GetUserPsaData4")) return(0xffffffff);
 	if (!this->CheckChannel("GetUserPsaData4", Channel)) return(0xffffffff);
 
-	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("USERPSADATA"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - UserPsaData" << endl;
+		gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaData4");
 		return(0xffffffff);
 	}
 
 	Int_t pOffset = param->GetIndex();
-	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" may be shadowed
 	pOffset += Offset;
 	Int_t pVal = this->GetParValue(pOffset, ReadFromDSP);
 	return ((pVal >> (4 * (3 - Channel))) & 0xF);
@@ -3467,15 +3465,15 @@ Int_t  TMrbDGF::GetUserPsaData8(Int_t Offset, Int_t Channel, Bool_t ReadFromDSP)
 	if (ReadFromDSP && !this->CheckConnect("GetUserPsaData8")) return(0xffffffff);
 	if (!this->CheckChannel("GetUserPsaData8", Channel)) return(0xffffffff);
 
-	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("USERPSADATA"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - UserPsaData" << endl;
+		gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetUserPsaData8");
 		return(0xffffffff);
 	}
 
 	Int_t pOffset = param->GetIndex();
-	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" may be shadowed
 	pOffset += Offset;
 	if (Channel > 1) {
 		pOffset++;
@@ -3503,15 +3501,15 @@ Bool_t TMrbDGF::SetUserPsaData4(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 	if (UpdateDSP && !this->CheckConnect("SetUserPsaData4")) return(kFALSE);
 	if (!this->CheckChannel("SetUserPsaData4", Channel)) return(kFALSE);
 
-	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("USERPSADATA"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - UserPsaData" << endl;
+		gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetUserPsaData4");
 		return(kFALSE);
 	}
 
 	Int_t pOffset = param->GetIndex();;
-	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" may be shadowed
 	pOffset += Offset;
 	Int_t pVal = this->GetParValue(pOffset, UpdateDSP);
 
@@ -3543,15 +3541,15 @@ Bool_t TMrbDGF::SetUserPsaData8(Int_t Offset, Int_t Channel, Int_t Value, Bool_t
 	if (UpdateDSP && !this->CheckConnect("SetUserPsaData8")) return(kFALSE);
 	if (!this->CheckChannel("SetUserPsaData8", Channel)) return(kFALSE);
 
-	TMrbNamedX * param = fDGFData->FindParam("UserPsaData"); 			// find param offset by param name
+	TMrbNamedX * param = fDGFData->FindParam("USERPSADATA"); 			// find param offset by param name
 	if (param == NULL) {
-		gMrbLog->Err() << "No such param - UserPsaData" << endl;
+		gMrbLog->Err() << "No such param - USERPSADATA" << endl;
 		gMrbLog->Flush(this->ClassName(), "SetUserPsaData8");
 		return(kFALSE);
 	}
 
 	Int_t pOffset = param->GetIndex();
-	if (pOffset < 0) pOffset = -pOffset;		// param "UserPsaData" may be shadowed
+	if (pOffset < 0) pOffset = -pOffset;		// param "USERPSADATA" may be shadowed
 	pOffset += Offset;
 	if (Channel > 1) {
 		pOffset++;
@@ -4785,6 +4783,7 @@ Bool_t TMrbDGF::AccuHist_Init(UInt_t ChannelPattern) {
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbDGF::AccuHist_Init
 // Purpose:        Initialize histogramming
+// Arguments:      UInt_t ChannelPattern  -- pattern of active channels
 // Results:        kTRUE/kFALSE
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4798,14 +4797,29 @@ Bool_t TMrbDGF::AccuHist_Init(UInt_t ChannelPattern) {
 
 	for (chn = 0; chn < TMrbDGFData::kNofChannels; chn++) {
 		if (ChannelPattern & (1 << chn)) {
-			csr =	TMrbDGFData::kEnableTrigger | TMrbDGFData::kCorrBallDeficit | TMrbDGFData::kHistoEnergies;
-			this->SetChanCSRA(chn, csr, TMrbDGF::kBitOr, kTRUE);
+			if (this->IsCore(chn)) {
+				csr =		TMrbDGFData::kGroupTriggerOnly
+						|	TMrbDGFData::kEnableTrigger
+						|	TMrbDGFData::kTriggerPositive
+						|	TMrbDGFData::kGoodChannel
+						|	TMrbDGFData::kHistoEnergies;
+			} else {
+				csr =		TMrbDGFData::kGroupTriggerOnly
+						|	TMrbDGFData::kReadAlways
+						|	TMrbDGFData::kGoodChannel
+						|	TMrbDGFData::kHistoEnergies;
+			}
+			this->SetChanCSRA(chn, csr, TMrbDGF::kBitSet, kTRUE);
 		} else {
 			this->SetChanCSRA(chn, TMrbDGFData::kChanCSRAMask, TMrbDGF::kBitClear, kTRUE);
 		}
-		this->SetParValue(chn, "TRACELENGTH", 64);
+		this->SetParValue(chn, "TRACELENGTH", 0);
+		this->SetParValue(chn, "TRIGGERDELAY", 1);
+		this->SetParValue(chn, "PAFLENGTH", 9);
 	}
 
+ 	this->SetParValue("MODCSRA", 0);
+ 	this->SetParValue("MODCSRB", 0);
  	this->SetParValue("MAXEVENTS", 0);
  	this->SetParValue("SYNCHWAIT", 0);
  	this->SetParValue("INSYNCH", 1);
@@ -6332,6 +6346,24 @@ const Char_t * TMrbDGF::GetClusterInfo(TMrbString & Info) {
 	Info += this->GetClusterSegments();
 	Info += ")";
 	return(Info.Data());
+}
+
+Bool_t TMrbDGF::IsCore(Int_t Channel) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbDGF::IsCore
+// Purpose:        Check if channel is core channel
+// Arguments:      Int_t Channel    -- channel number
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Decodes cluster id - something like A<csss>
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString id = fClusterID.GetTitle();
+	Int_t idx = id.Index("<", 0);
+	if (idx == -1) return(kFALSE);
+	return(id(idx + 1 + Channel) == 'c');
 }
 
 void TMrbDGF::SetRevision(Int_t ManufactIndex) {

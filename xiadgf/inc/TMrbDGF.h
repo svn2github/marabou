@@ -8,7 +8,7 @@
 // Class:          TMrbDGF            -- base class
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGF.h,v 1.18 2005-10-20 13:09:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGF.h,v 1.19 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -112,7 +112,7 @@ class TMrbDGF : public TNamed {
 		Bool_t FPGACodeLoaded(TMrbDGFData::EMrbFPGAType FPGAType);		// test if download ok
 		Bool_t FPGACodeLoaded(const Char_t * FPGAType);
 
-		Bool_t SetSwitchBusDefault(Bool_t IndiFlag = kFALSE, const Char_t * Prefix = NULL);	// set switch bus register
+		Bool_t SetSwitchBusDefault(Bool_t IndiFlag = kFALSE, const Char_t * Prefix = NULL, TEnv * Env = NULL);	// set switch bus register
 		Bool_t SetSwitchBus(UInt_t Bits = 0, TMrbDGF::EMrbBitOp BitOp = kBitSet);
 		Bool_t SetSwitchBus(const Char_t * DSPTrigger, const Char_t * FastTrigger = NULL);
 		UInt_t GetSwitchBus(); // get
@@ -309,7 +309,7 @@ class TMrbDGF : public TNamed {
  		Int_t ReadEventBuffer(TMrbDGFEventBuffer & Buffer); 				// get data from event buffer
 
 		Bool_t AccuHistograms(Int_t Time, const Char_t * Scale = "secs",
-													UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);	// accumulate histogram
+									UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);	// accumulate histogram
 			Bool_t AccuHist_Init(UInt_t ChannelPattern = TMrbDGFData::kChannelPattern);
 			Bool_t AccuHist_Start(Bool_t ClearMCA = kTRUE);
 			Bool_t AccuHist_Stop(Int_t SecsToWait = 10);
@@ -352,6 +352,7 @@ class TMrbDGF : public TNamed {
 		inline const Char_t * GetClusterColor() const { return(fClusterID.GetName()); };	// index <- serial, name <- color
 		inline const Char_t * GetClusterSegments() const { return(fClusterID.GetTitle()); };	// title <- segment info
 		const Char_t * GetClusterInfo(TMrbString & Info);
+		Bool_t IsCore(Int_t Channel);
 		
 		TMrbNamedX * GetRevision(Bool_t Renew = kFALSE); 							// module revision
 

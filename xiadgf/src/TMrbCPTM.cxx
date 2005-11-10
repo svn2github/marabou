@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCPTM.cxx,v 1.11 2005-10-19 06:58:02 marabou Exp $       
+// Revision:       $Id: TMrbCPTM.cxx,v 1.12 2005-11-10 09:07:08 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -30,15 +30,15 @@ namespace std {} using namespace std;
 extern TMrbLogger * gMrbLog;
 
 const SMrbNamedX kMrbCptmMaskBits[] = {
-			{	BIT(0), "E2"	},
-			{	BIT(1), "T2"	},
-			{	BIT(2), "T1"	},
-			{	BIT(3), "Q4"	},
-			{	BIT(4), "Q3"	},
-			{	BIT(5), "Q2"	},
-			{	BIT(6), "Q1",	},
-			{	BIT(7), "Ge"	},
-			{	0,		 NULL	}
+			{	BIT(0), "E2",	"E2"	},
+			{	BIT(1), "T2",	"T2"	},
+			{	BIT(2), "T1",	"T1"	},
+			{	BIT(3), "Q4",	"Aux detector 4"	},
+			{	BIT(4), "Q3",	"Aux detector 3" 	},
+			{	BIT(5), "Q2",	"Aux detector 2" 	},
+			{	BIT(6), "Q1",	"Aux detector 1"	},
+			{	BIT(7), "Ge",	"Ge-Mult"			},
+			{	0,		 NULL,	NULL				}
 		};
 
 ClassImp(TMrbCPTM)
@@ -838,6 +838,9 @@ Bool_t TMrbCPTM::EnableSynch(Bool_t Reset) {
 
 	if (!this->CheckConnect("EnableSynch")) return(kFALSE);
 	Int_t enaSynch = 	Reset ? A(5) : A(4);
+	this->ResetRead();
+	this->ResetWrite();
+	this->ResetMemory();
 	if (!fCamac.ExecCnaf(fCrate, fStation, enaSynch, F(8), kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A4/5.F8 failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "EnableSynch");
@@ -946,7 +949,7 @@ Int_t TMrbCPTM::GetReadAddr() {
 
 	if (!this->CheckConnect("GetReadAddr")) return(-1);
 	Int_t addr;
-	if (!fCamac.ExecCnaf(fCrate, fStation, A(14), F(0), addr, kTRUE)) { 		// exec cnaf, 16 bit
+	if (!fCamac.ExecCnaf(fCrate, fStation, A(12), F(0), addr, kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A14.F0 failed" << endl;
 		gMrbLog->Flush(this->ClassName(), "GetReadAddr");
 		return(-1);
@@ -1371,6 +1374,7 @@ Int_t TMrbCPTM::ReadNext() {
 
 	if (!this->CheckConnect("ReadNext")) return(-1);
 
+#if 0
 	Int_t wc = this->GetWordCount();
 	if (wc == -1) return(-1);
 	if (wc == 0) {
@@ -1378,6 +1382,7 @@ Int_t TMrbCPTM::ReadNext() {
 		gMrbLog->Flush(this->ClassName(), "ReadNext");
 		return(-1);
 	}
+#endif
 	Int_t data;
 	if (!fCamac.ExecCnaf(fCrate, fStation, A(6), F(0), data, kTRUE)) { 		// exec cnaf, 16 bit
 		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation << ": A6.F0 failed" << endl;
@@ -1460,16 +1465,14 @@ Int_t TMrbCPTM::CheckWordCount(const Char_t * Method) {
 
 	Int_t wc = this->GetWordCount();
 	if (wc % 10) {
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ": out of phase (wc = " << wc << ")" << endl;
+		gMrbLog->Wrn()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": Out of phase (wc = " << wc << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEvent");
-		return(-1);
 	}
 	if (wc < 10) {
-		gMrbLog->Err()	<< fName << " in C" << fCrate << ".N" << fStation
-						<< ": no more events (wc = " << wc << ")" << endl;
+		gMrbLog->Wrn()	<< fName << " in C" << fCrate << ".N" << fStation
+						<< ": Too few data (wc = " << wc << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadEvent");
-		return(-1);
 	}
 	return(wc);
 }

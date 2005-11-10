@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFControlData.cxx,v 1.14 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFControlData.cxx,v 1.15 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -907,7 +907,7 @@ void DGFControlData::UpdateParamsAndFPGAs() {
 			if (module) {
 				TMrbDGF * dgf = module->GetAddr();
 				if (dgf) {
-					cout << dgf->GetName() << " " << endl;
+					cout << setmagenta << dgf->GetName() << " " << ends;
 					dgf->WriteParamMemory(kTRUE);
 				}
 			}

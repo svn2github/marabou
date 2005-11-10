@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.32 2005-08-02 08:54:04 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.33 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -151,6 +151,8 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 			fEvtBuilder = new TMbsEvtBuilder(); 	// create an event builder
 
 			fReadoutError = new TMbsReadoutProc(-1);	// alloc readout proc for errors
+
+			fVerbose = gEnv->GetValue("TMbsSetup.VerboseMode", kFALSE);
 
 			nofReadouts = this->GetNofReadouts();
 			nofReadouts = 1;
@@ -707,15 +709,19 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
 				}
 				once = kTRUE;
-				gMrbLog->Err()	<< "Got short host name \"" << hName
-								<< "\" while expecting full host addr - only SHORT name written to .rhosts file" << endl;
-				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				if (this->IsVerbose()) {
+					gMrbLog->Err()	<< "Got short host name \"" << hName
+									<< "\" while expecting full host addr - only SHORT name written to .rhosts file" << endl;
+					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				}
 				rhosts << hName << " " << userName << endl;
 				nofHosts++;
 			} else {
-				gMrbLog->Out()	<< "Got short host name \"" << hName
-								<< "\" while expecting full host addr - appending default domain \"." << domain << "\"" << endl;
-				gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				if (this->IsVerbose()) {
+					gMrbLog->Wrn()	<< "Got short host name \"" << hName
+									<< "\" while expecting full host addr - appending default domain \"." << domain << "\"" << endl;
+					gMrbLog->Flush(this->ClassName(), "WriteRhostsFile");
+				}
 				hAddr = hName;
 				hAddr += ".";
 				hAddr += domain;
@@ -724,6 +730,9 @@ Bool_t TMbsSetup::WriteRhostsFile(TString & RhostsFile) {
 				nofHosts++;
 			}
 		} else {
+			hAddr.ReplaceAll("\t", " ");
+			Int_t blank = hAddr.Index(" ", 0);
+			if (blank != -1) hAddr.Resize(blank);
 			domain = hAddr(hAddr.Index(".", 0) + 1, 1000);
 			rhosts << hName << " " << userName << endl;
 			rhosts << hAddr << " " << userName << endl;

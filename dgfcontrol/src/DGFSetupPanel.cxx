@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSetupPanel.cxx,v 1.34 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSetupPanel.cxx,v 1.35 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -512,7 +512,7 @@ Bool_t DGFSetupPanel::ConnectToEsone() {
 							if (dgf->Data()->AddToNameTable(gDGFControlData->fUPSAParamsFile, "UserPSA") > 0) upsaLoaded = kTRUE;
 						}
 						if(!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-						if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+						if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv())) nerr++;
 						if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
 						gDGFControlData->fDeltaT = dgf->GetDeltaT();
 						Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
@@ -742,7 +742,7 @@ Bool_t DGFSetupPanel::ReloadDGFs() {
 							TMrbDGF * dgf = dgfModule->GetAddr();
 							if (dgf->IsConnected()) {
 								if (!dgf->ReadParamMemory(kTRUE, kTRUE)) nerr++;
-								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+								if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv())) nerr++;
 								if (!this->TurnUserPSAOnOff(dgfModule, gDGFControlData->fUserPSA)) nerr++;
 								gDGFControlData->fDeltaT = dgf->GetDeltaT();
 								Bool_t synchWait = ((fDGFFrame->GetActive() & DGFControlData::kDGFSimulStartStop) != 0);
@@ -1031,7 +1031,7 @@ Bool_t DGFSetupPanel::SetSwitchBus(Bool_t IndivFlag) {
 		if (((fCluster[cl]->GetActive() & bits) == bits ) && dgfModule->IsActive()) {
 			if (!offlineMode) {
 				TMrbDGF * dgf = dgfModule->GetAddr();
-				if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl")) nerr++;
+				if (!dgf->SetSwitchBusDefault(gDGFControlData->fIndivSwitchBusTerm, "DGFControl", gDGFControlData->GetEnv())) nerr++;
 			}
 			found = kTRUE;
 			pgb->Increment(1, dgfModule->GetName());

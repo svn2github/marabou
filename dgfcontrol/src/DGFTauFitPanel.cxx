@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFTauFitPanel.cxx,v 1.10 2005-09-08 13:56:38 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFTauFitPanel.cxx,v 1.11 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -26,6 +26,7 @@
 
 #include "TMrbDGFData.h"
 #include "TMrbDGFHistogramBuffer.h"
+#include "TGMrbProgressBar.h"
 
 #include "DGFControlData.h"
 #include "DGFTauFitPanel.h"
@@ -445,11 +446,33 @@ Bool_t DGFTauFitPanel::TauFit() {
 
 	nofHistos = 0;
 	TFile * taufitFile = NULL;
-	Double_t tau = tauStart;
-	Bool_t initFlag = kTRUE;
-	while (tau <= tauStop) {
+	Double_t tauUp = tauStart;
+	Double_t tauDown = tauStop;
+	Int_t nofTaus = (Int_t) ((tauStop - tauStart + .5) / tauStep) + 1;
+	TArrayD tauList(nofTaus);
+	Int_t n = 0;
+	while (tauUp < tauDown) {
+		tauList[n] = tauUp;
+		tauList[n + 1] = tauDown;
+		tauUp += tauStep;
+		tauDown -= tauStep;
+		n += 2;
+	}
+	nofTaus = n;
+
+	TGMrbProgressBar * pgb1;
+	TGMrbProgressBar * pgb2;
+
+	pgb1 = new TGMrbProgressBar(fClient->GetRoot(), this, "Starting TAU fit ...", 400, "blue", NULL, kTRUE);
+	pgb2 = new TGMrbProgressBar(fClient->GetRoot(), this, "Starting TAU fit ...", 400, "blue", NULL, kTRUE);
+	pgb1->SetRange(0, nofTaus);
+ 	Bool_t initFlag = kTRUE;
+	for (Int_t i = 0; i < nofTaus; i++) {
+		Double_t tau = tauList[i];
 		dgfModule = gDGFControlData->FirstModule();
 		nofModules = 0;
+		TString tauVal = Form("tau=%5.2f (%d out of %d)", tau, i + 1, nofTaus);
+		pgb1->Increment(1, tauVal.Data());
 		while (dgfModule) {
 			cl = nofModules / kNofModulesPerCluster;
 			modNo = nofModules - cl * kNofModulesPerCluster;
@@ -475,10 +498,15 @@ Bool_t DGFTauFitPanel::TauFit() {
 
 		initFlag = kFALSE;
 
-		cout << "[Tau: " << tau << " - accumulating " << accuTime << " " << tp->GetName() << "(s) - wait ... " << ends << flush;
 		abortAccu = kFALSE;
 		if (offlineMode) secsToWait = 1;
+		TString accuMsg = Form("Starting accu for tau=%5.2f", tau);
+		pgb2->SetWindowName(accuMsg.Data());
+		pgb2->SetRange(0, secsToWait);
+		pgb2->Reset();
 		for (Int_t i = 0; i < secsToWait; i++) {
+			TString timMsg = Form("%d out of %d secs", i + 1, secsToWait);
+			pgb2->Increment(1, timMsg.Data());
 			sleep(1);
 			gSystem->ProcessEvents();
 			if (abortAccu) {
@@ -487,7 +515,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 				break;
 			}	
 		}
-		if (abortAccu) break; else cout << "done]" << endl;
+		if (abortAccu) break;
 
 		nofModules = 0;
 		dgfModule = gDGFControlData->FirstModule();
@@ -508,12 +536,9 @@ Bool_t DGFTauFitPanel::TauFit() {
 									if (taufitFile == NULL) taufitFile = new TFile("tau.root", "RECREATE");
 									histoBuffer.FillHistogram(chn);
 									TH1F * h = histoBuffer.Histogram(chn);
-									TMrbString hName = h->GetName();
-									hName += ".tau";
-									hName += tau;
-									TMrbString hTitle = h->GetTitle();
-									hTitle += "; tau = ";
-									hTitle += tau;
+									TString hName = Form("%s.tau_%5.2f", h->GetName(), tau);
+									TString hTitle = Form("%s; tau = %5.2f", h->GetTitle(), tau);
+									hName.ReplaceAll(".", "_");
 									h->SetName(hName.Data());
 									h->SetTitle(hTitle.Data());
 									h->Fill((Axis_t) 0, tau);
@@ -532,8 +557,9 @@ Bool_t DGFTauFitPanel::TauFit() {
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 			nofModules++;
 		}
-		tau += tauStep;
 	}
+	delete pgb1;
+	delete pgb2;
 
 	nofModules = 0;
 	dgfModule = gDGFControlData->FirstModule();
@@ -551,6 +577,7 @@ Bool_t DGFTauFitPanel::TauFit() {
 	}
 
 	if (nofHistos > 0) taufitFile->Close();
+
 	if (offlineMode || (nofHistos > 0)) {
 		gMrbLog->Out()	<< nofHistos << " histogram(s) written to file tau.root (tau = " << tauStart
 						<< " ... " << tauStep << " ... " << tauStop << ")" << endl;

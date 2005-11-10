@@ -8,7 +8,7 @@
 // Class:          TMbsSetup            -- base class
 // Description:    Class definitions to generate a MBS setup.
 // Author:         R. Lutter
-// Revision:       $Id: TMbsSetup.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.h,v 1.6 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -77,6 +77,8 @@ class TMbsSetup : public TMrbEnv {
 		const Char_t * EncodeArray(TArrayI & Data, Int_t NofEntries, Int_t Base = 10);	// convert array data to string
 		const Char_t * EncodeArray(Int_t Data, Int_t Index, Int_t NofEntries, Int_t Base = 10);
 
+		inline Bool_t IsVerbose() { return(fVerbose); };
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	protected:
@@ -93,6 +95,8 @@ class TMbsSetup : public TMrbEnv {
 		TMrbLofNamedX fLofSetupTags;	 		// ... setup tags
 
 	protected:
+		Bool_t fVerbose;						// verbose mode
+
 		TString fTemplatePath; 					// where to find template files
 
 		TMbsEvtBuilder * fEvtBuilder;			//! event builder (master)

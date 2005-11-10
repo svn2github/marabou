@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCptmPanel.cxx,v 1.9 2005-10-19 06:58:02 marabou Exp $       
+// Revision:       $Id: DGFCptmPanel.cxx,v 1.10 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -39,7 +39,9 @@ const SMrbNamedX kDGFCptmButtons[] =
 				{DGFCptmPanel::kDGFCptmButtonRestore,			"Restore", 		"Restore settings from file"	},
 				{DGFCptmPanel::kDGFCptmButtonSynchEnable,		"Synch", 		"Enable synch"					},
 				{DGFCptmPanel::kDGFCptmButtonSynchEnableReset,	"Synch+Reset", 	"Enable synch and reset clock"	},
-				{DGFCptmPanel::kDGFCptmButtonShowBuffer,		"Show", 		"Show buffer contents"			},
+				{DGFCptmPanel::kDGFCptmButtonShowEvent,			"Show Event", 	"Show next event"				},
+				{DGFCptmPanel::kDGFCptmButtonShowBuffer,		"Show Buffer", 	"Show buffer contents"			},
+				{DGFCptmPanel::kDGFCptmButtonResetAddr, 		"Reset Pointers", 	"Reset read & write pointers"			},
 				{DGFCptmPanel::kDGFCptmButtonUpdateAddr,		"Update", 		"Update addr pointers"			},
 				{0, 											NULL,		NULL								}
 			};
@@ -383,7 +385,23 @@ Bool_t DGFCptmPanel::ProcessMessage(Long_t MsgId, Long_t Param1, Long_t Param2) 
 							this->EnableSynch(fCptmIndex, kTRUE);
 							break;
 						case kDGFCptmButtonShowBuffer:
-							this->ShowBuffer(fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrWriteEntry, fCptmIndex);
+							this->ShowBuffer(fCptmIndex, "cptm.dat");
+							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrWriteEntry, fCptmIndex);
+							break;
+						case kDGFCptmButtonShowEvent:
+							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrWriteEntry, fCptmIndex);
+							this->ShowNextEvent(fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrWriteEntry, fCptmIndex);
+							break;
+						case kDGFCptmButtonResetAddr:
+							this->ResetAddrPointers(fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
+							this->UpdateValue(kDGFCptmAddrWriteEntry, fCptmIndex);
 							break;
 						case kDGFCptmButtonUpdateAddr:
 							this->UpdateValue(kDGFCptmAddrReadEntry, fCptmIndex);
@@ -850,12 +868,38 @@ Bool_t DGFCptmPanel::DownloadCode(Int_t ModuleIndex) {
 	return(kTRUE);
 }
 
-void DGFCptmPanel::ShowBuffer(Int_t ModuleIndex) {
+void DGFCptmPanel::ShowNextEvent(Int_t ModuleIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCptmPanel::ShowNextEvent
+// Purpose:        Show next 10 words
+// Arguments:      Int_t ModuleIndex -- module index
+// Results:        --
+// Exceptions:     
+// Description:    Reads next event (10 words) from memory
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = (TMrbNamedX *) fLofCptmModules[ModuleIndex];
+	TMrbCPTM * cptm = (TMrbCPTM *) nx->GetAssignedObject();
+
+	Int_t rAddr = cptm->GetReadAddr();
+
+	cout << "CPTM module " << cptm->GetTitle() << endl;
+	cout << "Read addr         : " << rAddr << endl;
+	for (Int_t i = 0; i < 10; i++, rAddr++) {
+		Int_t data = cptm->ReadNext();
+		cout << Form("%6d: %8d %0x\n", rAddr, data, data);
+	}
+}
+
+void DGFCptmPanel::ShowBuffer(Int_t ModuleIndex, const Char_t * FileName) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           DGFCptmPanel::ShowBuffer
 // Purpose:        Show buffer data
 // Arguments:      Int_t ModuleIndex -- module index
+//                 Char_t * FileName -- file where to write the output
 // Results:        --
 // Exceptions:     
 // Description:    Reads ram subsequently
@@ -865,17 +909,52 @@ void DGFCptmPanel::ShowBuffer(Int_t ModuleIndex) {
 	TMrbNamedX * nx = (TMrbNamedX *) fLofCptmModules[ModuleIndex];
 	TMrbCPTM * cptm = (TMrbCPTM *) nx->GetAssignedObject();
 
+	cptm->ResetRead();
 	Int_t rAddr = cptm->GetReadAddr();
 	Int_t wAddr = cptm->GetWriteAddr();
 
-	cout << "CPTM module " << cptm->GetTitle() << endl;
-	cout << "Read addr         : " << rAddr << endl;
-	cout << "Write addr        : " << wAddr << endl;
-	Int_t wc = cptm->CheckWordCount();
-	for (Int_t i = 0; i < wc; i++) {
-		Int_t data = cptm->ReadNext();
-		cout << Form("%6d: %8d %0x\n", i, data, data);
+	if (FileName != NULL && *FileName != '\0') {
+		TString ofile = FileName;
+		ofstream f(ofile.Data(), ios::out);
+		f << "CPTM module " << cptm->GetTitle() << endl;
+		f << "Read addr         : " << rAddr << endl;
+		f << "Write addr        : " << wAddr << endl;
+		for (Int_t i = 0; i < wAddr; i++, rAddr++) {
+			Int_t data = cptm->ReadNext();
+			f << Form("%6d: %8d %0x\n", rAddr, data, data);
+		}
+		f.close();
+		gMrbLog->Out()	<< "[" << cptm->GetName() << "]: SRAM written to file " << ofile
+						<< " (" << wAddr << " words)" << endl;
+		gMrbLog->Flush(this->ClassName(), "DownloadCode", setblue);
+	} else {
+		cout << "CPTM module " << cptm->GetTitle() << endl;
+		cout << "Read addr         : " << rAddr << endl;
+		cout << "Write addr        : " << wAddr << endl;
+		for (Int_t i = 0; i < wAddr; i++, rAddr++) {
+			Int_t data = cptm->ReadNext();
+			cout << Form("%6d: %8d %0x\n", rAddr, data, data);
+		}
 	}
+}
+
+void DGFCptmPanel::ResetAddrPointers(Int_t ModuleIndex) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           DGFCptmPanel::ResetAddrPointers
+// Purpose:        Reset read & write pointers
+// Arguments:      Int_t ModuleIndex -- module index
+// Results:        --
+// Exceptions:     
+// Description:    Resets pointers & clears memory
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+	TMrbNamedX * nx = (TMrbNamedX *) fLofCptmModules[ModuleIndex];
+	TMrbCPTM * cptm = (TMrbCPTM *) nx->GetAssignedObject();
+	cptm->ResetRead();
+	cptm->ResetWrite();
+	cptm->ResetMemory();
 }
 
 void DGFCptmPanel::MoveFocus(Int_t EntryId) {

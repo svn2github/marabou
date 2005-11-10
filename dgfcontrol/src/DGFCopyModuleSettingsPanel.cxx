@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.6 2005-04-28 10:27:14 rudi Exp $       
+// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.7 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -48,6 +48,7 @@ const SMrbNamedXShort kDGFCopyModuleSettingsBits[] =
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitMCA,			"MCA"			},
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitThresh,			"Threshold"		},
 								{DGFCopyModuleSettingsPanel::kDGFCopyBitTau,			"Tau"			},
+								{DGFCopyModuleSettingsPanel::kDGFCopyBitUserPSA,		"User PSA"		},
 								{0, 													NULL			}
 							};
 
@@ -480,7 +481,7 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitThresh) {
 								if (gDGFControlData->IsDebug()) {
 									cout	<< thisDgf->GetName() << "(chn" << thisChannel <<
-											") Tau=" << thisDgf->GetThreshold(thisChannel)
+											") Thresh=" << thisDgf->GetThreshold(thisChannel)
 											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
 								}
 								dgf->SetThreshold(i, thisDgf->GetThreshold(thisChannel));
@@ -493,6 +494,9 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 											<< "-> " << dgf->GetName() << "(chn" << i << ")" << endl;
 								}
 								dgf->SetTau(i, thisDgf->GetTau(thisChannel));
+								isCopied = kTRUE;
+							}
+							if (fCopyBits->GetActive() & DGFCopyModuleSettingsPanel::kDGFCopyBitUserPSA) {
 								isCopied = kTRUE;
 							}
 						}

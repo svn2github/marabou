@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.15 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFSaveModuleSettingsPanel.cxx,v 1.16 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -354,8 +354,8 @@ Bool_t DGFSaveModuleSettingsPanel::SaveDatabase() {
 				if (!dgf->SaveParams(paramFile.Data())) nerr++;
 				if (!dgf->SaveValues(valueFile.Data())) nerr++;
 				nofModules++;
+				pgb->Increment(1, dgfModule->GetName());
 			}
-			pgb->Increment(1, dgfModule->GetName());
 			gSystem->ProcessEvents();
 			dgfModule = gDGFControlData->NextModule(dgfModule);
 		}

@@ -8,7 +8,7 @@
 // Class:          DGFCopyModuleSettingsPanel
 // Description:    A GUI to operate a XIA DGF-4C
 // Author:         R. Lutter
-// Revision:       $Id: DGFCopyModuleSettingsPanel.h,v 1.5 2004-09-28 13:47:32 rudi Exp $       
+// Revision:       $Id: DGFCopyModuleSettingsPanel.h,v 1.6 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -73,7 +73,8 @@ class DGFCopyModuleSettingsPanel : public TGCompositeFrame {
 													kDGFCopyBitCoinc		= BIT(9),
 													kDGFCopyBitMCA			= BIT(10),
 													kDGFCopyBitThresh		= BIT(11),
-													kDGFCopyBitTau			= BIT(12)
+													kDGFCopyBitTau			= BIT(12),
+													kDGFCopyBitUserPSA		= BIT(13)
 												};
 
 	public:

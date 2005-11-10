@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.19 2005-10-20 13:09:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFRestoreModuleSettingsPanel.cxx,v 1.20 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -395,8 +395,8 @@ Bool_t DGFRestoreModuleSettingsPanel::LoadDatabase(Bool_t LoadPSA) {
 						dgf->WriteParamMemory(kTRUE);
 					}
 				} else nerr++;
+				pgb->Increment(1, module->GetName());
 			}
-			pgb->Increment(1, module->GetName());
 			gSystem->ProcessEvents();
 			module = gDGFControlData->NextModule(module);
 		}
