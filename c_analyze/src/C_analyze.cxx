@@ -1826,6 +1826,11 @@ Bool_t FhMainFrame::ClearMbs(){
                                                  fMbsVersion->Data(),
                                                   fTbDir->GetString());
    fM_Status = M_ABSENT;
+   if (fMessageServer) {
+      fMessageServer->Disconnect();
+      delete fMessageServer;
+      fMessageServer = NULL;
+   }
    fStartStopButton->SetState(kButtonDisabled);
    fPauseButton->SetState(kButtonDisabled);
    Int_t nb=fMbsControl->GetNofMbsProcs();

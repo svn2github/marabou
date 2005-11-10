@@ -195,7 +195,14 @@ protected:
    Int_t fLogLevel;
 public:
    MessageServer(const Char_t * msgnode, Long_t ms, Bool_t synch);
-   ~MessageServer(){if(fMessageSocket) delete fMessageSocket;};
+   ~MessageServer() {
+      if(fMessageSocket) {
+         fMessageSocket->Close();
+         delete fMessageSocket;
+         fMessageSocket = NULL;
+      } 
+   };
+   Bool_t DisConnect();
    void   SetLogLevel(Int_t ll){fLogLevel = ll;};
    Int_t  GetLogLevel(){return fLogLevel;};
    Bool_t Notify();

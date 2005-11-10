@@ -680,17 +680,32 @@ Int_t TMbsNode::PrintProcesses(){
 //
 MessageServer::MessageServer(const char *msgnode, Long_t ms, Bool_t synch)
               :TTimer(ms,synch){
-   cout << "Init Message timer,  rep rate: " << ms << " msec"<< endl;
    fMessageSocket = new TSocket(msgnode, kMessagePort);
    if(fMessageSocket->IsValid()){
       fMessageSocket->SetOption(kNoBlock, 1);
       gSystem->AddTimer(this);
+      cout << "MessageServer ctor: Init Message timer,  rep rate: " << ms << " msec"<< endl;
       fLogLevel = 1;
    } else {
+      cout << "MessageServer ctor: Socket not valid" << endl;
       fLogLevel = -1;
       if(fMessageSocket){delete fMessageSocket; fMessageSocket=0;}
    }
 
+}
+//_________________________________________________________________________________________
+
+Bool_t MessageServer::DisConnect(){
+   if(fMessageSocket){
+      cout << setblue<< "c_mbs: Close connection to : "  <<fMessageSocket  << setblack<< endl;
+      fMessageSocket->Close();
+      delete fMessageSocket;
+      fMessageSocket = 0;
+      return kTRUE;
+   } else {
+      cout << setred << "c_mbs: No connection open to: " << fMessageSocket << setblack<< endl;
+      return kFALSE;
+   }
 }
 //_________________________________________________________________________________________
 
