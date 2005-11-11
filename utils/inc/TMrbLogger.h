@@ -8,7 +8,7 @@
 // Class:          TMrbLogger    -- message/error logging
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLogger.h,v 1.9 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.h,v 1.10 2005-11-11 09:58:47 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -145,12 +145,26 @@ class TMrbLogger: public TNamed {
 				
 		const Char_t * Prefix(const Char_t * Identifier = "*", const Char_t * ProgName = NULL); 	// line prefix
 		
+		inline Bool_t Out(const Char_t * Msg, const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL) {
+				return(this->OutputMessage(TMrbLogMessage::kMrbMsgMessage, Msg, ClassName, Method, Color));
+		};
+		inline Bool_t Err(const Char_t * Msg, const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL) {
+				return(this->OutputMessage(TMrbLogMessage::kMrbMsgError, Msg, ClassName, Method, Color));
+		};
+		inline Bool_t Wrn(const Char_t * Msg, const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL) {
+				return(this->OutputMessage(TMrbLogMessage::kMrbMsgWarning, Msg, ClassName, Method, Color));
+		};
+	
 		inline ostringstream & Out() { return(*fOut); };
 		inline ostringstream & Err() { return(*fErr); };
 		inline ostringstream & Wrn() { return(*fWrn); };
 		inline ofstream & Log() { return(*fLog); };
 				
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
+
+	protected:
+		Bool_t OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
+									const Char_t * ClassName = "", const Char_t * Method = "", const Char_t * Color = NULL);
 
 	protected:
 

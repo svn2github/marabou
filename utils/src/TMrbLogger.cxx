@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.7 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.8 2005-11-11 09:58:47 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -248,7 +248,7 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Outputs contents of out and err strings
-//                 to log file, cout, cerr, resp.::Flush
+//                 to log file, cout, cerr, resp.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -290,6 +290,46 @@ Bool_t TMrbLogger::Flush(const Char_t * ClassName, const Char_t * Method, const 
 
 	if (fGUI) fGUI->Notify();		// trigger GUI object
 		
+	return(kTRUE);
+}
+
+Bool_t TMrbLogger::OutputMessage(TMrbLogMessage::EMrbMsgType MsgType, const Char_t * Msg,
+						const Char_t * ClassName, const Char_t * Method, const Char_t * Color) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbLogger::OutputMessage
+// Purpose:        Output message(s).
+// Arguments:      EMrbMsgType MsgType   -- message type (message, error, warning)
+//                 Char_t * Msg          -- text
+//                 Char_t * ClassName    -- calling class
+//                 Char_t * Method       -- calling method
+//                 Char_t * Color        -- text color to be used	
+// Results:        kTRUE/kFALSE
+// Exceptions:     
+// Description:    Outputs message directly
+//                 to log file, cout, cerr, resp.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString str = Msg;
+	TMrbLogMessage * msg;
+		
+	if (MsgType == TMrbLogMessage::kMrbMsgMessage) {
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgMessage, Color, ClassName, Method, str);
+		fLofMessages.Add(msg);
+		if (fEnabled & TMrbLogger::kMrbMsgCout) cout << msg->Get(str, "", kFALSE, kTRUE) << endl;
+		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName, kTRUE, kFALSE) << endl;
+	} else if (MsgType == TMrbLogMessage::kMrbMsgError) {
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgError, Color, ClassName, Method, str);
+		fLofMessages.Add(msg);
+		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << endl;
+		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << endl;
+	} else if (MsgType == TMrbLogMessage::kMrbMsgWarning) {
+		msg = new TMrbLogMessage(TMrbLogMessage::kMrbMsgWarning, Color, ClassName, Method, str);
+		fLofMessages.Add(msg);
+		if (fEnabled & TMrbLogger::kMrbMsgCerr) cerr << msg->Get(str, "", kFALSE, kTRUE) << endl;
+		if (fEnabled & TMrbLogger::kMrbMsgLog && fLog && fLog->good()) *fLog << msg->Get(str, fProgName.Data(), kTRUE, kFALSE) << endl;
+	}
 	return(kTRUE);
 }
 
