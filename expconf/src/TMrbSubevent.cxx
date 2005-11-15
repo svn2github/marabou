@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.19 2005-10-10 06:30:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.20 2005-11-15 14:01:48 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -286,7 +286,8 @@ Bool_t TMrbSubevent::Use(const Char_t * ModuleName, const Char_t * Assignment) {
 
 		if (!this->CheckModuleID(module)) {
 			gMrbLog->Err()	<< "Module " << ModuleName << " has wrong ID "
-							<< setbase(16) << module->GetModuleID()->GetIndex() << setbase(10)
+							<< module->GetModuleID()->GetName()
+							<< " (" << setbase(16) << module->GetModuleID()->GetIndex() << ")" << setbase(10)
 							<< " - can't be stored in a subevent of type ["
 							<< fSevtType << "," << fSevtSubtype << "]" << endl;
 			gMrbLog->Flush(this->ClassName(), "Use");
