@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCaen_V879.cxx,v 1.1 2005-11-15 11:34:24 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCaen_V879.cxx,v 1.2 2005-11-15 11:58:20 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -288,9 +288,6 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			fCodeTemplates.Substitute("$mnemoUC", mnemoUC);
 			fCodeTemplates.Substitute("$baseAddr", (Int_t) this->GetBaseAddr(), 16);
 			fCodeTemplates.WriteCode(RdoStrm);
-			fCodeTemplates.InitializeCode("%CST%");
-			fCodeTemplates.Substitute("$moduleName", this->GetName());
-			fCodeTemplates.WriteCode(RdoStrm);
 			fCodeTemplates.InitializeCode("%ZSP%");
 			if (this->HasZeroSuppression()) {
 				fCodeTemplates.Substitute("$onOrOff", "ON");
@@ -311,6 +308,15 @@ Bool_t TMrbCaen_V879::MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModule
 			}
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.WriteCode(RdoStrm);
+
+			if (this->IsTac()) {
+				fCodeTemplates.InitializeCode("%TAC%");
+				fCodeTemplates.Substitute("$rangeSlope", this->GetRangeSlope());
+				fCodeTemplates.Substitute("$rangeOffset", this->GetRangeOffset());
+				fCodeTemplates.Substitute("$moduleName", this->GetName());
+				fCodeTemplates.WriteCode(RdoStrm);
+			}
+
 			fCodeTemplates.InitializeCode("%E%");
 			fCodeTemplates.Substitute("$moduleName", this->GetName());
 			fCodeTemplates.WriteCode(RdoStrm);
