@@ -9,7 +9,7 @@
 //                                                 an entry
 // Description:    Graphic utilities for the MARaBOU GUI.
 // Author:         R. Lutter
-// Revision:       $Id: TGMrbLabelEntry.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TGMrbLabelEntry.h,v 1.8 2005-11-16 08:51:31 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -24,6 +24,7 @@
 
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
+#include "TGMrbTextButton.h"
 #include "TGMrbFocusList.h"
 #include "TGMrbObject.h"
 #include "TGMrbLayout.h"

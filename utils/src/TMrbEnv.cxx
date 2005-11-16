@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEnv.cxx,v 1.11 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbEnv.cxx,v 1.12 2005-11-16 08:51:31 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -182,6 +182,8 @@ void TMrbEnv::Save(Bool_t Verbose) {
 		this->SetPrefix("");
 		if (!fIsSystemEnv) this->Set("TMrbEnv.Info.Modified", dt.AsString());
 		fCurEnv->SaveLevel(kEnvLocal);	// write to file
+		fCurEnv->SaveLevel(kEnvUser);
+		fCurEnv->SaveLevel(kEnvChange);
 		if (Verbose) {
 			gMrbLog->Out()	<< "Resource data saved to file " << fCurFile << endl;
 			gMrbLog->Flush(this->ClassName(), "Save", setblue);
