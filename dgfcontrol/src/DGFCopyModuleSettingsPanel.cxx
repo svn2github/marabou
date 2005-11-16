@@ -6,7 +6,7 @@
 // Modules:        
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.7 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: DGFCopyModuleSettingsPanel.cxx,v 1.8 2005-11-16 13:47:20 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -218,7 +218,7 @@ DGFCopyModuleSettingsPanel::DGFCopyModuleSettingsPanel(TGCompositeFrame * TabFra
 																kVerticalFrame);
 	HEAP(fCopyBits);
 	fVFrame->AddFrame(fCopyBits, groupGC->LH());
-	fCopyBits->SetState(0xffffffff, kButtonDown);
+	fCopyBits->SetState(0xffffffff, kButtonUp);
 	
 	fChannels = new TGMrbCheckButtonGroup(fVFrame, "to Channels",	&fLofChannels, -1, 1,
 																groupGC, buttonGC,
@@ -361,7 +361,6 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 
 	Int_t chnId;
 	Int_t nofModules, cl;
-	Bool_t selectOk;
 	Bool_t isCopied;
 			
 	Bool_t offlineMode = gDGFControlData->IsOffline();
@@ -376,7 +375,11 @@ Bool_t DGFCopyModuleSettingsPanel::CopyModuleSettings() {
 		return(kFALSE);
 	}
 		
-	selectOk = kFALSE;
+	if ((fCopyBits->GetActive() & 0xFFFF) == 0) {
+		new TGMsgBox(fClient->GetRoot(), this, "DGFControl: Error", "You have to select at least one check bit", kMBIconStop);
+		return(kFALSE);
+	}
+
 	dgfModule = gDGFControlData->FirstModule();
 	isCopied = kFALSE;
 	nofModules = 0;
