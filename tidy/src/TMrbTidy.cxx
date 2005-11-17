@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.27 2005-11-17 09:53:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.28 2005-11-17 11:58:03 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -93,7 +93,7 @@ TMrbTidyDoc::TMrbTidyDoc() : TNamed("TidyDoc", "Tidy document") {
 	this->AddToList();
 }
 		
-TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName) : TNamed(DocName, "Tidy document") {
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName) : TNamed(DocName, "") {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc
@@ -110,7 +110,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName) : TNamed(DocName, "Tidy documen
 	this->AddToList();
 }		
 		
-TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, const Char_t * DocFile, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, const Char_t * DocFile, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, DocFile) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc
@@ -136,7 +136,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, const Char_t * DocFile, Bool_t 
 	if (!this->IsZombie()) this->AddToList();
 }		
 		
-TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, istream & Stream, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, istream & Stream, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "") {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc
@@ -164,7 +164,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, istream & Stream, Bool_t Repair
 	}
 }		
 		
-TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, TString & Buffer, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "Tidy document") {
+TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, TString & Buffer, Bool_t Repair, const Char_t * CfgFile) : TNamed(DocName, "") {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyDoc
@@ -190,7 +190,7 @@ TMrbTidyDoc::TMrbTidyDoc(const Char_t * DocName, TString & Buffer, Bool_t Repair
 	}
 }		
 
-TMrbTidyOption::TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyOption OptHandle, TObject * Doc)
+TMrbTidyOption::TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyOption OptHandle, TMrbTidyDoc * Doc)
 																		: TMrbNamedX((Int_t) OptId, OptName) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -199,7 +199,7 @@ TMrbTidyOption::TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyO
 // Arguments:      TidyOptionId OptId  	  -- option id
 //                 Char_t * OptName       -- name
 //                 TidyOption OptHandle   -- ptr to tidy struct
-//                 TObject * Doc          -- link to document
+//                 TMrbTidyDoc * Doc          -- link to document
 // Description:    Ctor to instantiate a tidy option
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -210,7 +210,7 @@ TMrbTidyOption::TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyO
 	fType = tidyOptGetType(OptHandle);
 }
 
-TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TObject * Doc)
+TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TMrbTidyDoc * Doc)
 																		: TMrbNamedX((Int_t) NodeId, NodeName) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -220,7 +220,7 @@ TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNo
 //                 Char_t * NodeName      -- name
 //                 TMrbTidyNode * Parent  -- link to parent node
 //                 TidyOption NodeHandle  -- ptr to tidy struct
-//                 TObject * Doc          -- link to document
+//                 TMrbTidyDoc * Doc          -- link to document
 // Description:    Ctor to instantiate a tidy node
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
@@ -238,7 +238,7 @@ TMrbTidyNode::TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNo
 	this->CheckMnode();
 }
 
-TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyAttr AttrHandle, TObject * Node)
+TMrbTidyAttr::TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyAttr AttrHandle, TMrbTidyNode * Node)
 																	: TMrbNamedX((Int_t) AttrId, AttrName) {
 //__________________________________________________________________[C++ CTOR]
 //////////////////////////////////////////////////////////////////////////////
@@ -398,6 +398,7 @@ Bool_t TMrbTidyDoc::ParseFile(const Char_t * DocFile, Bool_t Repair) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
+	this->SetTitle(DocFile);
 	fDocFile.Resize(0); 							// no document
 	TString docFile = DocFile;
 	gSystem->ExpandPathName(docFile);
@@ -545,6 +546,30 @@ Bool_t TMrbTidyDoc::AddToList() {
 	return(kTRUE);
 }
 
+const Char_t * TMrbTidyDoc::GetDocName(Bool_t LongFlag) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyDoc::GetDocName
+// Purpose:        Return name
+// Arguments:      Bool_t LongFlag    -- long output
+// Results:        Char_t * DocName   -- name
+// Exceptions:
+// Description:    Runs diagnostics via tidyRunDiagnostics().
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString docName;
+	if (LongFlag && fDocFile.Length() > 0) {
+		TMrbSystem ux;
+		ux.GetBaseName(docName, fDocFile.Data());
+		docName.Prepend(":");
+		docName.Prepend(this->GetName());
+	} else {
+		docName = this->GetName();
+	}
+	return(docName.Data());
+}
+
 const Char_t * TMrbTidyNode::GetText(TString & Buffer) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -561,9 +586,9 @@ const Char_t * TMrbTidyNode::GetText(TString & Buffer) {
 	Bool_t hasText = (this->IsText() || this->HasText());
 	if (hasText) {		// is there any text in this node?
 		TidyBuffer buf = {'\0'};
-		tidyNodeGetText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle, &buf);	// fetch it
+		tidyNodeGetText(fTidyDoc->GetHandle(), fHandle, &buf);	// fetch it
 		Buffer = buf.bp;		// fill buffer
-		if (((TMrbTidyDoc *) fTidyDoc)->TextToBeStripped() && (Buffer(0) == '\n') && (Buffer(Buffer.Length() - 1) == '\n')) {
+		if (fTidyDoc->TextToBeStripped() && (Buffer(0) == '\n') && (Buffer(Buffer.Length() - 1) == '\n')) {
 			Buffer.Resize(Buffer.Length() - 1);
 			Buffer = Buffer(1, Buffer.Length() - 1);
 		}
@@ -704,7 +729,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 
 	fLofChilds.Delete();
 	if (tidyGetChild(fHandle) > 0) {
-		gMrbLog->Err() << "[" << this->GetDocName() << "] No childs allowed for <mi> nodes" << endl;
+		gMrbLog->Err() << "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] No childs allowed for <mi> nodes" << endl;
 		gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
 		this->TraceBack(cerr, 3);
 		return(NULL);
@@ -714,7 +739,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	if (File == NULL || *File == '\0') {
 		TMrbTidyAttr * mfile = (TMrbTidyAttr *) fLofAttr.FindByName("mfile");
 		if (mfile == NULL) {
-			gMrbLog->Err() << "[" << this->GetDocName() << "] Tag missing in <mi> node - \"mfile=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Tag missing in <mi> node - \"mfile=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
 			this->TraceBack(cerr, 3);
 			return(NULL);
@@ -722,7 +747,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 		fileStr = mfile->GetValue();
 		fileStr = fileStr.Strip(TString::kBoth);
 		if (fileStr.IsNull()) {
-			gMrbLog->Err() << "[" << this->GetDocName() << "] Empty tag in <mi> node - \"mfile=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Empty tag in <mi> node - \"mfile=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
 			this->TraceBack(cerr, 3);
 			return(NULL);
@@ -735,7 +760,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	if (Mtag == NULL || *Mtag == '\0') {
 		TMrbTidyAttr * mtag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
 		if (mtag == NULL) {
-			gMrbLog->Err() << "[" << this->GetDocName() << "] Tag missing in <mi> node - \"mtag=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Tag missing in <mi> node - \"mtag=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
 			this->TraceBack(cerr, 3);
 			return(NULL);
@@ -743,7 +768,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 		tagStr = mtag->GetValue();
 		tagStr = tagStr.Strip(TString::kBoth);
 		if (tagStr.IsNull()) {
-			gMrbLog->Err() << "[" << this->GetDocName() << "] Empty tag in <mi> node - \"mtag=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Empty tag in <mi> node - \"mtag=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
 			this->TraceBack(cerr, 3);
 			return(NULL);
@@ -760,7 +785,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	if (nx) {
 		iDoc = (TMrbTidyDoc *) nx->GetAssignedObject();
 	} else {
-		iDoc = new TMrbTidyDoc(iName.Data(), fileStr.Data(), kFALSE, ((TMrbTidyDoc *) this->GetTidyDoc())->GetCfgFile());
+		iDoc = new TMrbTidyDoc(iName.Data(), fileStr.Data(), kFALSE, this->GetTidyDoc()->GetCfgFile());
 	}
 	TMrbTidyNode * node = this->ScanTidyTree(iDoc->GetRoot()->GetHandle(), "mtag", tagStr.Data(), iDoc);	// low level scan method
 	if (node == NULL) {
@@ -771,7 +796,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	return(node);
 }
 
-TMrbTidyNode * TMrbTidyNode::ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TObject * Doc) {
+TMrbTidyNode * TMrbTidyNode::ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TMrbTidyDoc * Doc) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyNode::ScanTidyTree()
@@ -786,7 +811,7 @@ TMrbTidyNode * TMrbTidyNode::ScanTidyTree(TidyNode Node, const Char_t * AttrName
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TObject * doc = Doc ? Doc : this->GetTidyDoc();
+	TMrbTidyDoc * doc = Doc ? Doc : this->GetTidyDoc();
 	TMrbTidyNode * node;
 	Char_t * sp = tidyNodeGetName(Node);
 	for (TidyNode child = tidyGetChild(Node); child; child = tidyGetNext(child)) {
@@ -863,13 +888,13 @@ Bool_t TMrbTidyNode::CheckMnode() {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->GetIndex() == TidyTag_UNKNOWN) {
-		TMrbNamedX * nx = ((TMrbTidyDoc *) this->GetTidyDoc())->GetLofMnodes()->FindByName(this->GetName());
+		TMrbNamedX * nx = this->GetTidyDoc()->GetLofMnodes()->FindByName(this->GetName());
 		if (nx == NULL) {
 			fIsMnode = kFALSE;
 		} else {
 			fIsMnode = kTRUE;
 			this->ChangeIndex(nx->GetIndex());
-			((TMrbTidyDoc *) this->GetTidyDoc())->SetMnodeFlag();
+			this->GetTidyDoc()->SetMnodeFlag();
 		}
 	} else {
 		fIsMnode = kFALSE;
@@ -981,36 +1006,36 @@ Bool_t TMrbTidyOption::GetDefault(Bool_t & Flag) {
 };
 
 Bool_t TMrbTidyOption::GetValue(TString & String) {
-	if (fType == TidyString) String = tidyOptGetValue(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex());
+	if (fType == TidyString) String = tidyOptGetValue(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex());
 	return(fType == TidyString);
 };
 
 Bool_t TMrbTidyOption::GetValue(Int_t & Value) {
-	if (fType == TidyInteger) Value = tidyOptGetInt(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex());
+	if (fType == TidyInteger) Value = tidyOptGetInt(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex());
 	return(fType == TidyInteger);
 };
 
 Bool_t TMrbTidyOption::GetValue(Bool_t & Flag) {
-	if (fType == TidyBoolean) Flag = tidyOptGetBool(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex());
+	if (fType == TidyBoolean) Flag = tidyOptGetBool(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex());
 	return(fType == TidyBoolean);
 };
 
 Bool_t TMrbTidyOption::SetValue(Char_t * String) {
-	if (fType == TidyString) tidyOptSetValue(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex(), String);
+	if (fType == TidyString) tidyOptSetValue(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex(), String);
 	return(fType == TidyString);
 };
 
 Bool_t TMrbTidyOption::SetValue(Int_t Value) {
-	if (fType == TidyInteger) tidyOptSetInt(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex(), Value);
+	if (fType == TidyInteger) tidyOptSetInt(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex(), Value);
 	return(fType == TidyInteger);
 };
 
 Bool_t TMrbTidyOption::SetValue(Bool_t Flag) {
-	if (fType == TidyBoolean) tidyOptSetBool(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex(), Flag);
+	if (fType == TidyBoolean) tidyOptSetBool(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex(), Flag);
 	return(fType == TidyBoolean);
 };
 
-void TMrbTidyOption::Reset()  { tidyOptResetToDefault(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), (TidyOptionId) this->GetIndex()); };
+void TMrbTidyOption::Reset()  { tidyOptResetToDefault(fTidyDoc->GetHandle(), (TidyOptionId) this->GetIndex()); };
 
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1021,9 +1046,9 @@ void TMrbTidyOption::Reset()  { tidyOptResetToDefault(((TMrbTidyDoc *) fTidyDoc)
 //////////////////////////////////////////////////////////////////////////////
 
 Bool_t TMrbTidyNode::IsText() { return(tidyNodeIsText(fHandle)); };
-Bool_t TMrbTidyNode::IsProp() { return(tidyNodeIsProp(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)); };
+Bool_t TMrbTidyNode::IsProp() { return(tidyNodeIsProp(fTidyDoc->GetHandle(), fHandle)); };
 Bool_t TMrbTidyNode::IsHeader() { return(tidyNodeIsHeader(fHandle)); };
-Bool_t TMrbTidyNode::HasText() { return(tidyNodeHasText(((TMrbTidyDoc *) fTidyDoc)->GetHandle(), fHandle)); };
+Bool_t TMrbTidyNode::HasText() { return(tidyNodeHasText(fTidyDoc->GetHandle(), fHandle)); };
 Bool_t TMrbTidyNode::IsHTML() { return(tidyNodeIsHTML(fHandle)); };
 Bool_t TMrbTidyNode::IsHEAD() { return(tidyNodeIsHEAD(fHandle)); };
 Bool_t TMrbTidyNode::IsTITLE() { return(tidyNodeIsTITLE(fHandle)); };
@@ -1739,7 +1764,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 #endif
 	Out << "<div class=\"" << cssClass << "\">" << endl;
-	TMrbNamedX * nx = ((TMrbTidyDoc *) this->GetTidyDoc())->GetLofMnodes()->FindByName(this->GetName());
+	TMrbNamedX * nx = this->GetTidyDoc()->GetLofMnodes()->FindByName(this->GetName());
 	if (nx) {
 		Out << "<b>[" << fTreeLevel << "] &lt;" << this->GetName() << "&gt; [" << nx->GetTitle() << "]</b><br>" << endl;
 	} else {
@@ -1754,8 +1779,8 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 	Bool_t isMbody = (this->GetIndex() == TidyTag_MNODE_MB);
 	if (isMbody) {
-		Out << "<tr><td>Input from:</td><td colspan=\"3\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetDocFile() << "</td></tr>" << endl;
-		Out << "<tr><td>Tidy config from:</td><td colspan=\"3\">" << ((TMrbTidyDoc *) this->GetTidyDoc())->GetCfgFile() << "</td></tr>" << endl;
+		Out << "<tr><td>Input from:</td><td colspan=\"3\">" << this->GetTidyDoc()->GetDocFile() << "</td></tr>" << endl;
+		Out << "<tr><td>Tidy config from:</td><td colspan=\"3\">" << this->GetTidyDoc()->GetCfgFile() << "</td></tr>" << endl;
 	}
 	TString method = "";
 	Bool_t isMethod = (mType.CompareTo("C++ METHOD") == 0);
@@ -1844,7 +1869,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	TMrbTidyAttr * aCase = (TMrbTidyAttr *) fLofAttr.FindByName("mcase");
 	if (aCase) {
 		if (fParent->GetIndex() != TidyTag_MNODE_MS) {
-			gMrbLog->Wrn()	<< "[" << this->GetDocName() << "] Attr \"mcase\" outside of <ms> tag" << endl;
+			gMrbLog->Wrn()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Attr \"mcase\" outside of <ms> tag" << endl;
 			gMrbLog->Flush(this->ClassName(), "ProcessMnodeHeader");
 			this->TraceBack(cerr, 3);
 		}
@@ -1857,7 +1882,7 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 				<< "</pre></td></tr>" << endl;
 		}
 	} else if (fParent->GetIndex() == TidyTag_MNODE_MS) {
-		gMrbLog->Wrn()	<< "[" << this->GetDocName() << "] Attr \"mcase\" missing inside <ms> tag" << endl;
+		gMrbLog->Wrn()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Attr \"mcase\" missing inside <ms> tag" << endl;
 		gMrbLog->Flush(this->ClassName(), "ProcessMnodeHeader");
 		this->TraceBack(cerr, 3);
 	}
@@ -2341,7 +2366,7 @@ Bool_t TMrbTidyNode::CheckSubstitutions(Bool_t Recursive, Bool_t VerboseMode) {
 			if ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) {
 				if (VerboseMode) {
 					if (ok) {
-						gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName() << "\" (level " << this->GetTreeLevel()
+						gMrbLog->Err()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Node \"" << this->GetName() << "\" (level " << this->GetTreeLevel()
 										<< "): Subst missing for param(s) >> ";
 					} else {
 						gMrbLog->Err()	<< ",";
@@ -2407,7 +2432,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, const Char_t * ParamVa
 			((TObjString *) nx->GetAssignedObject())->SetString(ParamValue);
 			ok = kTRUE;
 		} else if (Verbose) {
-			gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName()
+			gMrbLog->Err()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Node \"" << this->GetName()
 							<< "\" (level " << this->GetTreeLevel()
 							<< "): Param not found - " << ParamName << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
@@ -2453,7 +2478,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Int_t ParamValue, Int_
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
 			ok = kTRUE;
 		} else if (Verbose) {
-			gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName()
+			gMrbLog->Err()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Node \"" << this->GetName()
 							<< "\" (level " << this->GetTreeLevel()
 							<< "): Param not found - " << ParamName << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
@@ -2498,7 +2523,7 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Double_t ParamValue, B
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
 			ok = kTRUE;
 		} else if (Verbose) {
-			gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName()
+			gMrbLog->Err()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Node \"" << this->GetName()
 							<< "\" (level " << this->GetTreeLevel()
 							<< "): Param not found - " << ParamName << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
@@ -2601,7 +2626,7 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 					subst = ((TObjString *) nx->GetAssignedObject())->GetString();
 					buf.ReplaceAll(param, subst);
 				} else {
-					gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName() << "\" (level "
+					gMrbLog->Err()	<< "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Node \"" << this->GetName() << "\" (level "
 									<< this->GetTreeLevel() << "): param \"" << nx->GetName() << "\" used but not substituted" << endl;
 					gMrbLog->Flush(this->ClassName(), "OutputSubstituted");
 					this->TraceBack(cerr, 3);
@@ -2954,7 +2979,7 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 			if (attr.Length() > 0) {
 				Int_t n = attr.Index("=", 0);
 				if (n <= 0) {
-					gMrbLog->Err() << "[" << this->GetDocName() << "] Syntax error in attr string - " << attr << " (ignored)" << endl;
+					gMrbLog->Err() << "[" << this->GetTidyDoc()->GetDocName(kTRUE) << "] Syntax error in attr string - " << attr << " (ignored)" << endl;
 					gMrbLog->Flush(this->ClassName(), "DecodeAttrString");
 					this->TraceBack(cerr, 3);
 					continue;

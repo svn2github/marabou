@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.19 2005-11-17 09:53:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.20 2005-11-17 11:58:03 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -24,6 +24,11 @@
 
 #include "tidy_protos.h"
 
+class TMrbTidyOption;
+class TMrbTidyAttr;
+class TMrbTidyNode;
+class TMrbTidyDoc;
+
 //______________________________________________________[C++ CLASS DEFINITION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbTidyOption
@@ -35,7 +40,7 @@
 class TMrbTidyOption : public TMrbNamedX {
 
  	public:
-		TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyOption OptHandle, TObject * Doc);
+		TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyOption OptHandle, TMrbTidyDoc * Doc);
 		virtual ~TMrbTidyOption() {};
 
 		inline TidyOptionId GetId() { return((TidyOptionId) this->GetIndex()); };
@@ -62,13 +67,13 @@ class TMrbTidyOption : public TMrbNamedX {
 
 		inline TidyOption GetHandle() { return(fHandle); };
 
-		inline TObject * GetTidyDoc() { return(fTidyDoc); };
+		inline TMrbTidyDoc * GetTidyDoc() { return(fTidyDoc); };
 
 	protected:
 		TidyOption fHandle; 			// tidy option handle
 		TidyOptionType fType;			// option type
 
-		TObject * fTidyDoc;				// associated tidy document
+		TMrbTidyDoc * fTidyDoc;				// associated tidy document
 
 	ClassDef(TMrbTidyOption, 1) 		// [Utils] Tidy interface: option
 };
@@ -84,7 +89,7 @@ class TMrbTidyOption : public TMrbNamedX {
 class TMrbTidyAttr : public TMrbNamedX {
 
  	public:
-		TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyOption OptHandle, TObject * Node);
+		TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyOption OptHandle, TMrbTidyNode * Node);
 		virtual ~TMrbTidyAttr() {};
 
 		inline void SetValue(const Char_t * Value) { fValue = Value; };
@@ -170,7 +175,7 @@ class TMrbTidyNode : public TMrbNamedX {
 								};
 
  	public:
-		TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TObject * Doc);
+		TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TMrbTidyDoc * Doc);
 		virtual ~TMrbTidyNode() {};
 
 		inline TidyNodeType GetType() { return(fType); };
@@ -179,8 +184,8 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		inline TMrbTidyNode * GetFirst() { return((TMrbTidyNode *) fLofChilds.First()); };
 		inline TMrbTidyNode * GetParent() { return(fParent); };
-		inline TMrbTidyNode * GetNext(TMrbTidyNode * Child) { return((TMrbTidyNode *) fLofChilds.After((TObject *) Child)); };
-		inline TMrbTidyNode * GetPrev(TMrbTidyNode * Child) { return((TMrbTidyNode *) fLofChilds.Before((TObject *) Child)); };
+		inline TMrbTidyNode * GetNext(TMrbTidyNode * Child) { return((TMrbTidyNode *) fLofChilds.After((TMrbTidyNode *) Child)); };
+		inline TMrbTidyNode * GetPrev(TMrbTidyNode * Child) { return((TMrbTidyNode *) fLofChilds.Before((TMrbTidyNode *) Child)); };
 
 		const Char_t * GetText(TString & Buffer);
 
@@ -297,7 +302,7 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		inline TMrbTidyAttr * GetAttribute(TidyAttrId AttrId) { return((TMrbTidyAttr *) fLofAttr.FindByIndex((Int_t) AttrId)); };
 		inline TMrbTidyAttr * GetAttrFirst() { return((TMrbTidyAttr *) fLofAttr.First()); };
-		inline TMrbTidyAttr * GetAttrNext(TMrbTidyAttr * Attr) { return((TMrbTidyAttr *) fLofAttr.After((TObject *) Attr)); };
+		inline TMrbTidyAttr * GetAttrNext(TMrbTidyAttr * Attr) { return((TMrbTidyAttr *) fLofAttr.After((TMrbTidyAttr *) Attr)); };
 
 		TMrbTidyAttr * GetAttrHREF();
 		TMrbTidyAttr * GetAttrSRC();
@@ -396,8 +401,7 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		inline void AddChild(TMrbTidyNode * Child) { fLofChilds.Add(Child); };
 
-		inline TObject * GetTidyDoc() { return(fTidyDoc); };
-		inline const Char_t * GetDocName() { return(((TNamed *) fTidyDoc)->GetName()); };
+		inline TMrbTidyDoc * GetTidyDoc() { return(fTidyDoc); };
 
 	protected:
 		Int_t ReadAttr();
@@ -419,7 +423,7 @@ class TMrbTidyNode : public TMrbNamedX {
 
 		const Char_t * Emphasize(TMrbString & String, Bool_t Remove = kFALSE);
 
-		TMrbTidyNode * ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TObject * Doc = NULL);
+		TMrbTidyNode * ScanTidyTree(TidyNode Node, const Char_t * AttrName, const Char_t * AttrString, TMrbTidyDoc * Doc = NULL);
 
 	protected:
 		TidyNode fHandle; 					// tidy node handle
@@ -431,7 +435,7 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t fHasEndTag;					// kTRUE if end tag needed
 
 		TMrbTidyNode * fParent; 			// parent node
-		TObject * fTidyDoc;					// associated tidy document
+		TMrbTidyDoc * fTidyDoc;					// associated tidy document
 
 		TMrbLofNamedX fLofChilds;			// child nodes
 		TMrbLofNamedX fLofAttr; 			// list of attributes
@@ -530,6 +534,8 @@ class TMrbTidyDoc : public TNamed {
 		Bool_t OutputHtml(ostream & Out = cout);
 
 		Bool_t AddToList(); 			// add to list of documents
+
+		const Char_t * GetDocName(Bool_t LongFlag = kFALSE);
 
 	protected:
 		Int_t ReadOptions();
