@@ -17,7 +17,7 @@
 // Purpose:        Common defs for tidy interface
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidyCommon.h,v 1.4 2005-07-14 11:41:32 rudi Exp $       
+// Revision:       $Id: TMrbTidyCommon.h,v 1.5 2005-11-17 09:53:48 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -172,7 +172,8 @@ enum					{	TidyTag_MNODE_MH  = TidyTag_MNODE,
 							TidyTag_MNODE_MB,
 							TidyTag_MNODE_MX,
 							TidyTag_MNODE_MC,
-							TidyTag_MNODE_MI
+							TidyTag_MNODE_MI,
+							TidyTag_MNODE_MS
 						};
 
 const SMrbNamedX kMrbTidyMnodeIds[] =
@@ -182,6 +183,7 @@ const SMrbNamedX kMrbTidyMnodeIds[] =
 							{TidyTag_MNODE_MX,		"mx",		"expand"		},
 							{TidyTag_MNODE_MC,		"mc",		"code"			},
 							{TidyTag_MNODE_MI,		"mi",		"include"		},
+							{TidyTag_MNODE_MS,		"ms",		"switch"		},
 							{0, 					NULL,		NULL			}
 						};
 

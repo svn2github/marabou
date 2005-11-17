@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.26 2005-10-10 12:06:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.27 2005-11-17 09:53:48 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -325,7 +325,7 @@ Bool_t TMrbTidyDoc::LoadConfig(const Char_t * CfgFile) {
 		TString cfgFile = CfgFile;
 		gSystem->ExpandPathName(cfgFile);
 		if (gSystem->AccessPathName(cfgFile.Data())) { 	// check if file exists
-			gMrbLog->Err()	<< "Can't access config file - " << CfgFile << endl;
+			gMrbLog->Err()	<< "[" << this->GetName() << "] Can't access config file - " << CfgFile << endl;
 			gMrbLog->Flush(this->ClassName(), "LoadConfig");
 			return(kFALSE);
 		}
@@ -402,13 +402,13 @@ Bool_t TMrbTidyDoc::ParseFile(const Char_t * DocFile, Bool_t Repair) {
 	TString docFile = DocFile;
 	gSystem->ExpandPathName(docFile);
 	if (gSystem->AccessPathName(docFile.Data())) { 		// check if file exists
-		gMrbLog->Err()	<< "Can't access document file - " << docFile << endl;
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Can't access document file - " << docFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ParseFile");
 		return(kFALSE);
 	}
 	ifstream docStrm(docFile.Data(), ios::in); 			// try to open file
 	if (!docStrm.good()) {							// some error
-		gMrbLog->Err() << gSystem->GetError() << " - " << docFile << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] " << gSystem->GetError() << " - " << docFile << endl;
 		gMrbLog->Flush(this->ClassName(), "ParseFile");
 		return(kFALSE);
 	}
@@ -433,7 +433,7 @@ Bool_t TMrbTidyDoc::ParseBuffer(const Char_t * Buffer, Bool_t Repair) {
 //////////////////////////////////////////////////////////////////////////////
 
 	if (this->HasNodes()) {					// document tree has to be empty
-		gMrbLog->Err() << "Document tree already filled - can't proceed" << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] Document tree already filled - can't proceed" << endl;
 		gMrbLog->Flush(this->ClassName(), "ParseBuffer");
 		return(kFALSE);
 	}
@@ -479,7 +479,7 @@ Bool_t TMrbTidyDoc::CleanAndRepair() {
 		fRepair = kTRUE;
 		ok = kTRUE;
 	} else {
-		gMrbLog->Err() << "Document tree is empty - can't proceed" << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] Document tree is empty - can't proceed" << endl;
 		gMrbLog->Flush(this->ClassName(), "CleanAndRepair");
 		ok = kFALSE;
 	}
@@ -504,12 +504,12 @@ Bool_t TMrbTidyDoc::RunDiagnostics() {
 			tidyRunDiagnostics(fHandle);
 			ok = kTRUE;
 		} else {
-			gMrbLog->Err() << "Document tree is empty - can't proceed" << endl;
+			gMrbLog->Err() << "[" << this->GetName() << "] Document tree is empty - can't proceed" << endl;
 			gMrbLog->Flush(this->ClassName(), "RunDiagnostics");
 			ok = kFALSE;
 		}
 	} else {
-		gMrbLog->Err() << "Can't perform diagnostics step - call method \"CleanAndRepair()\" first" << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] Can't perform diagnostics step - call method \"CleanAndRepair()\" first" << endl;
 		gMrbLog->Flush(this->ClassName(), "RunDiagnostics");
 		ok = kFALSE;
 	}
@@ -535,7 +535,7 @@ Bool_t TMrbTidyDoc::AddToList() {
 	}
 
 	if (gMrbLofTidyDocs->FindByName(this->GetName())) {
-		gMrbLog->Err() << "Document already in list - " << this->GetName() << " (ignored)" << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] Document already in list - ignored" << endl;
 		gMrbLog->Flush(this->ClassName(), "AddToList");
 		return(kFALSE);
 	}
@@ -704,8 +704,9 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 
 	fLofChilds.Delete();
 	if (tidyGetChild(fHandle) > 0) {
-		gMrbLog->Err() << "No childs allowed for <mi> nodes" << endl;
+		gMrbLog->Err() << "[" << this->GetDocName() << "] No childs allowed for <mi> nodes" << endl;
 		gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+		this->TraceBack(cerr, 3);
 		return(NULL);
 	}
 
@@ -713,15 +714,17 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	if (File == NULL || *File == '\0') {
 		TMrbTidyAttr * mfile = (TMrbTidyAttr *) fLofAttr.FindByName("mfile");
 		if (mfile == NULL) {
-			gMrbLog->Err() << "Tag missing in <mi> node - \"mfile=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetDocName() << "] Tag missing in <mi> node - \"mfile=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			this->TraceBack(cerr, 3);
 			return(NULL);
 		}
 		fileStr = mfile->GetValue();
 		fileStr = fileStr.Strip(TString::kBoth);
 		if (fileStr.IsNull()) {
-			gMrbLog->Err() << "Empty tag in <mi> node - \"mfile=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetDocName() << "] Empty tag in <mi> node - \"mfile=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			this->TraceBack(cerr, 3);
 			return(NULL);
 		}
 	} else {
@@ -732,15 +735,17 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	if (Mtag == NULL || *Mtag == '\0') {
 		TMrbTidyAttr * mtag = (TMrbTidyAttr *) fLofAttr.FindByName("mtag");
 		if (mtag == NULL) {
-			gMrbLog->Err() << "Tag missing in <mi> node - \"mtag=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetDocName() << "] Tag missing in <mi> node - \"mtag=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			this->TraceBack(cerr, 3);
 			return(NULL);
 		}
 		tagStr = mtag->GetValue();
 		tagStr = tagStr.Strip(TString::kBoth);
 		if (tagStr.IsNull()) {
-			gMrbLog->Err() << "Empty tag in <mi> node - \"mtag=...\"" << endl;
+			gMrbLog->Err() << "[" << this->GetDocName() << "] Empty tag in <mi> node - \"mtag=...\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+			this->TraceBack(cerr, 3);
 			return(NULL);
 		}
 	} else {
@@ -761,6 +766,7 @@ TMrbTidyNode * TMrbTidyNode::ImplantTreeFromFile(const Char_t * File, const Char
 	if (node == NULL) {
 		gMrbLog->Err() << "[" << fileStr << "] No such attr - mtag=\"" << tagStr << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "ImplantTreeFromFile");
+		this->TraceBack(cerr, 3);
 	}
 	return(node);
 }
@@ -1225,7 +1231,7 @@ void TMrbTidyDoc::Print(const Char_t * File, Bool_t Verbose, Bool_t HtmlFlag) {
 
 	ofstream of(File, ios::out);
 	if (!of.good()) {
-		gMrbLog->Err() << gSystem->GetError() << " - " << File << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] " << gSystem->GetError() << " - " << File << endl;
 		gMrbLog->Flush(this->ClassName(), "Print");
 	} else {
 		this->Print(of, Verbose, HtmlFlag);
@@ -1286,7 +1292,7 @@ Bool_t TMrbTidyDoc::OutputHtml(const Char_t * HtmlFile) {
 		if (this->HasMnodes()) {
 			ofstream of(htmlFile.Data(), ios::out);
 			if (!of.good()) {
-				gMrbLog->Err() << gSystem->GetError() << " - " << HtmlFile << endl;
+				gMrbLog->Err() << "[" << this->GetName() << "] " << gSystem->GetError() << " - " << HtmlFile << endl;
 				gMrbLog->Flush(this->ClassName(), "OutputHtml");
 				ok = kFALSE;
 			} else {
@@ -1298,7 +1304,7 @@ Bool_t TMrbTidyDoc::OutputHtml(const Char_t * HtmlFile) {
 			tidySaveFile(fHandle, (Char_t *) htmlFile.Data());				
 		}
 	} else {
-		gMrbLog->Err() << "Document tree empty - no html code to process" << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] Document tree empty - no html code to process" << endl;
 		gMrbLog->Flush(this->ClassName(), "OutputHtml");
 		ok = kFALSE;
 	}
@@ -1329,7 +1335,7 @@ Bool_t TMrbTidyDoc::OutputHtml(ostream & Out) {
 			Out << tbuf.bp << endl;
 		}
 	} else {
-		gMrbLog->Err() << "Document tree empty - no html code to process" << endl;
+		gMrbLog->Err() << "[" << this->GetName() << "] Document tree empty - no html code to process" << endl;
 		gMrbLog->Flush(this->ClassName(), "OutputHtml");
 		ok = kFALSE;
 	}
@@ -1464,6 +1470,31 @@ void TMrbTidyNode::Print(ostream & Out, Bool_t Verbose, Bool_t HtmlFlag) {
 	Out << endl;
 }
 
+void TMrbTidyNode::TraceBack(ostream & Out, Int_t NofLevels) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::TraceBack
+// Purpose:        Output backtrace
+// Arguments:      ostream & Out    -- output stream
+//                 Int_t NofLevels  -- number of levels
+// Results:        --
+// Exceptions:
+// Description:    Prints backtrace data
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Out << "At node " << ends; this->Print(Out, kTRUE);
+	TMrbTidyNode * parent = this->GetParent();
+	TString indent = "";
+	if (NofLevels == 0) NofLevels = 1000000;
+	for (Int_t l = 0; l < NofLevels; l++) {
+		indent += "  ";
+		Out << indent << "child of " << ends; parent->Print(Out, kTRUE);
+		parent = parent->GetParent();
+		if (parent == NULL) return;
+	}		
+}
+
 void TMrbTidyNode::OutputHtmlTree(ostream & Out) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
@@ -1565,6 +1596,8 @@ Bool_t TMrbTidyNode::OutputHtmlForMnodes(ostream & Out) {
 		popUp = this->OutputHtmlForMC(Out);
 	} else if (this->GetIndex() == TidyTag_MNODE_MI) {
 		popUp = this->OutputHtmlForMI(Out);
+	} else if (this->GetIndex() == TidyTag_MNODE_MS) {
+		popUp = this->OutputHtmlForMS(Out);
 	}
 	return(popUp);
 }
@@ -1645,6 +1678,22 @@ Bool_t TMrbTidyNode::OutputHtmlForMC(ostream & Out) {
 // Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
 // Exceptions:
 // Description:    Outputs html data for <mc>...</mc> [code]
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	this->ProcessMnodeHeader(Out, "header2", fTreeLevel - 4);
+	return(kFALSE);
+}
+
+Bool_t TMrbTidyNode::OutputHtmlForMS(ostream & Out) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbTidyNode::OutputHtmlForMS
+// Purpose:        Special html output for node <ms>
+// Arguments:      ostream & Out    -- output stream
+// Results:        Bool_t PopUp     -- kTRUE if there is no need to process childs
+// Exceptions:
+// Description:    Outputs html data for <ms>...</ms> [switch]
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1794,6 +1843,11 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 	}
 	TMrbTidyAttr * aCase = (TMrbTidyAttr *) fLofAttr.FindByName("mcase");
 	if (aCase) {
+		if (fParent->GetIndex() != TidyTag_MNODE_MS) {
+			gMrbLog->Wrn()	<< "[" << this->GetDocName() << "] Attr \"mcase\" outside of <ms> tag" << endl;
+			gMrbLog->Flush(this->ClassName(), "ProcessMnodeHeader");
+			this->TraceBack(cerr, 3);
+		}
 		TString aVal, aCmt;
 		if (aCase->GetValue(aVal, aCmt)) {
 			Out << "<tr><td>Case:</td><td><pre class=\"mtag\">" << aVal
@@ -1802,7 +1856,12 @@ void TMrbTidyNode::ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, In
 			Out << "<tr><td>Case:</td><td><pre class=\"mtag\">" << aVal
 				<< "</pre></td></tr>" << endl;
 		}
+	} else if (fParent->GetIndex() == TidyTag_MNODE_MS) {
+		gMrbLog->Wrn()	<< "[" << this->GetDocName() << "] Attr \"mcase\" missing inside <ms> tag" << endl;
+		gMrbLog->Flush(this->ClassName(), "ProcessMnodeHeader");
+		this->TraceBack(cerr, 3);
 	}
+
 	if (this->HasTextChildsOnly()) {
 		TMrbLofNamedX lofSubst;
 		this->CollectSubstUsedByChilds(lofSubst);
@@ -2282,7 +2341,7 @@ Bool_t TMrbTidyNode::CheckSubstitutions(Bool_t Recursive, Bool_t VerboseMode) {
 			if ((nx->GetIndex() & kMrbTidySubstValueSet) == 0) {
 				if (VerboseMode) {
 					if (ok) {
-						gMrbLog->Err()	<< "Node \"" << this->GetName() << "\" (level " << this->GetTreeLevel()
+						gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName() << "\" (level " << this->GetTreeLevel()
 										<< "): Subst missing for param(s) >> ";
 					} else {
 						gMrbLog->Err()	<< ",";
@@ -2296,6 +2355,7 @@ Bool_t TMrbTidyNode::CheckSubstitutions(Bool_t Recursive, Bool_t VerboseMode) {
 		if (VerboseMode && !ok) {
 			gMrbLog->Err() << " <<" << endl;
 			gMrbLog->Flush(this->ClassName(), "CheckSubstitutions");
+			this->TraceBack(cerr, 3);
 		}
 	}
 	if (Recursive) {
@@ -2347,10 +2407,11 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, const Char_t * ParamVa
 			((TObjString *) nx->GetAssignedObject())->SetString(ParamValue);
 			ok = kTRUE;
 		} else if (Verbose) {
-			gMrbLog->Err()	<< "Node \"" << this->GetName()
+			gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName()
 							<< "\" (level " << this->GetTreeLevel()
 							<< "): Param not found - " << ParamName << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
+			this->TraceBack(cerr, 3);
 			ok = kFALSE;
 		}
 	}
@@ -2392,10 +2453,11 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Int_t ParamValue, Int_
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
 			ok = kTRUE;
 		} else if (Verbose) {
-			gMrbLog->Err()	<< "Node \"" << this->GetName()
+			gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName()
 							<< "\" (level " << this->GetTreeLevel()
 							<< "): Param not found - " << ParamName << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
+			this->TraceBack(cerr, 3);
 			ok = kFALSE;
 		}
 	}
@@ -2436,10 +2498,11 @@ Bool_t TMrbTidyNode::Substitute(const Char_t * ParamName, Double_t ParamValue, B
 			((TObjString *) nx->GetAssignedObject())->SetString(val.Data());
 			ok = kTRUE;
 		} else if (Verbose) {
-			gMrbLog->Err()	<< "Node \"" << this->GetName()
+			gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName()
 							<< "\" (level " << this->GetTreeLevel()
 							<< "): Param not found - " << ParamName << endl;
 			gMrbLog->Flush(this->ClassName(), "Substitute");
+			this->TraceBack(cerr, 3);
 			ok = kFALSE;
 		}
 	}
@@ -2538,9 +2601,10 @@ Bool_t TMrbTidyNode::OutputSubstituted(TObjArray & LofCaseStrings, ostream & Out
 					subst = ((TObjString *) nx->GetAssignedObject())->GetString();
 					buf.ReplaceAll(param, subst);
 				} else {
-					gMrbLog->Err()	<< "Node \"" << this->GetName() << "\" (level "
+					gMrbLog->Err()	<< "[" << this->GetDocName() << "] Node \"" << this->GetName() << "\" (level "
 									<< this->GetTreeLevel() << "): param \"" << nx->GetName() << "\" used but not substituted" << endl;
 					gMrbLog->Flush(this->ClassName(), "OutputSubstituted");
+					this->TraceBack(cerr, 3);
 				}
 			}
 			nx = (TMrbNamedX *) fLofSubstitutions.After(nx);
@@ -2890,8 +2954,9 @@ Int_t TMrbTidyNode::DecodeAttrString(TObjArray & LofAttr, const Char_t * NodeAtt
 			if (attr.Length() > 0) {
 				Int_t n = attr.Index("=", 0);
 				if (n <= 0) {
-					gMrbLog->Err() << "Syntax error in attr string - " << attr << " (ignored)" << endl;
+					gMrbLog->Err() << "[" << this->GetDocName() << "] Syntax error in attr string - " << attr << " (ignored)" << endl;
 					gMrbLog->Flush(this->ClassName(), "DecodeAttrString");
+					this->TraceBack(cerr, 3);
 					continue;
 				}
 				TString attrVal = attr(n + 1, attr.Length() - n - 1);

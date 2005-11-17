@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.18 2005-10-10 12:06:58 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.19 2005-11-17 09:53:48 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -371,6 +371,8 @@ class TMrbTidyNode : public TMrbNamedX {
 		void Print(ostream & Out = cout, Bool_t Verbose = kFALSE, Bool_t HtmlFlag = kFALSE);
 		void PrintTree(ostream & Out = cout, Bool_t Verbose = kFALSE, Bool_t HtmlFlag = kFALSE);
 
+		void TraceBack(ostream & Out = cout, Int_t NofLevels = 0);
+
 		Bool_t OutputHtml(ostream & Out = cout);
 		Bool_t OutputHtmlForMnodes(ostream & Out = cout);
 		void OutputHtmlTree(ostream & Out = cout);
@@ -395,6 +397,7 @@ class TMrbTidyNode : public TMrbNamedX {
 		inline void AddChild(TMrbTidyNode * Child) { fLofChilds.Add(Child); };
 
 		inline TObject * GetTidyDoc() { return(fTidyDoc); };
+		inline const Char_t * GetDocName() { return(((TNamed *) fTidyDoc)->GetName()); };
 
 	protected:
 		Int_t ReadAttr();
@@ -406,6 +409,7 @@ class TMrbTidyNode : public TMrbNamedX {
 		Bool_t OutputHtmlForMX(ostream & Out = cout);
 		Bool_t OutputHtmlForMC(ostream & Out = cout);
 		Bool_t OutputHtmlForMI(ostream & Out = cout);
+		Bool_t OutputHtmlForMS(ostream & Out = cout);
 
 		void ProcessMnodeHeader(ostream & Out, const Char_t * CssClass, Int_t Level);
 		const Char_t * MarkSubstitutions(TString & Buffer);
