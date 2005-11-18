@@ -291,7 +291,11 @@ void HistPresent::RecursiveRemove(TObject * obj)
 //   cout << "------> Enter HistPresent::RecursiveRemove for: " 
 //      << obj<<  endl;
    fCanvasList->Remove(obj);
-   if (fCanvasList->GetEntries() == 0 && fCanvasClosing) {
+#if ROOTVERSION > 40302
+   if (fCanvasList->GetEntries() == 0 && fCanvasClosing) {;
+#else
+   if (fCanvasList->GetSize() == 0 && fCanvasClosing) {;
+#endif
       fCanvasClosing = kFALSE;
       fCloseWindowsButton->SetMethod("mypres->CloseAllCanvases();");
 //      cout << "------> HistPresent: all canvases closed" << endl;
@@ -2935,8 +2939,11 @@ void HistPresent::CloseAllCanvases()
 //     Cleaning all FitHist objects
 //   cout << "Enter CloseAllCanvases()" << endl;
    if (fHelpBrowser) fHelpBrowser->Clear();
+#if ROOTVERSION > 40302
    if (fCanvasList->GetEntries() == 0) return;
-
+#else
+   if (fCanvasList->GetSize() == 0) return;
+#endif
    fCloseWindowsButton->SetMethod(".! echo \"Please be patient\"");
    fCanvasClosing = kTRUE;
    TIter next(fCanvasList);
