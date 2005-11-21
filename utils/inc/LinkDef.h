@@ -39,4 +39,5 @@
 #pragma link C++ class TMrbNamedArrayI+;
 #pragma link C++ class TMrbNamedArrayF+;
 #pragma link C++ class TMrbNamedArrayD+;
+#pragma link C++ class TMrbNamedDouble+;
 #endif
