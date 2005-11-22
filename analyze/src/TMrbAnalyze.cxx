@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.56 2005-10-10 06:29:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.57 2005-11-22 13:00:55 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -193,8 +193,8 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 //                             -*                  don't change params
 //                             none                no params at all
 //                 histo                        name of file to save histograms:
-//                             +*                  don't save, add to current mmap file
-//                             <file>              save contents of mmap file to <file> (ext .root)
+//                             <file>              clear histo space on start, save histos to <file> (ext .root)
+//                             +*                  don't clear histo space, add data to current histos
 //                 output                       name of file to store tree data
 //                             none                don't write tree data
 //                             +*                  append to current file
@@ -204,36 +204,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbIOSpec * ioSpec;
-	TMrbIOSpec * lastIOSpec;
-
-	ifstream fileList;
-	TString line;
-
-	TString inputFile;
-	TString startEvent;
-	Int_t startValue;
-	Bool_t startTimeFlag;
-	TString stopEvent;
-	Int_t stopValue;
-	Bool_t stopTimeFlag;
-
-	TString paramFile;
-	TString histoFile;
-	TString outputFile;
-	TString dummy;
-
-	TMrbIOSpec::EMrbInputMode inputMode;
-	TMrbIOSpec::EMrbParamMode paramMode, lastpMode;
-	TMrbIOSpec::EMrbHistoMode histoMode, lasthMode;
-	TMrbIOSpec::EMrbOutputMode outputMode, lastoMode;
-
-	Int_t errCnt, lerrCnt;
-	Int_t lineCnt;
-	Int_t nofEntries;
-	Bool_t lineHdr;
-
-	fileList.open(FileList.Data(), ios::in);
+	ifstream fileList(FileList.Data(), ios::in);
 	if (!fileList.good()) {
 		gMrbLog->Err()	<< gSystem->GetError() << " - " << FileList << endl;
 		gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -244,35 +215,54 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 	TRegexp rxmed("\\.med$");
 	TRegexp rxlmd("\\.lmd$");
 
-	errCnt = 0;
-	lerrCnt = 0;
-	lineCnt = 0;
-	nofEntries = 0;
-	inputMode = DefaultIOSpec->GetInputMode();
-//	fLofIOSpecs.Delete();
+	Int_t errCnt = 0;
+	Int_t lerrCnt = 0;
+	Int_t lineCnt = 0;
+	Int_t nofEntries = 0;
+	TMrbIOSpec::EMrbInputMode inputMode = DefaultIOSpec->GetInputMode();
 
-	lastIOSpec = DefaultIOSpec;
-   lastIOSpec->Print();
+	TMrbIOSpec * lastIOSpec = DefaultIOSpec;
+	TMrbString line;
 	for (;;) {
 		line.ReadLine(fileList, kFALSE);
 		if (fileList.eof()) break;
 		lineCnt++;
-		lineHdr = kFALSE;
+		Bool_t lineHdr = kFALSE;
 		line = line.Strip(TString::kBoth);
 		if (line.Length() == 0 || line(0) == '#') continue;
-		istringstream decode(line.Data());
-
+		TObjArray splitLine;
+		Int_t nArgs = line.Split(splitLine, " ", kTRUE);
+		if (nArgs < 6) {
+			if (!lineHdr) {
+				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
+				gMrbLog->Flush(this->ClassName(), "OpenFileList");
+				lineHdr = kTRUE;
+			}
+			gMrbLog->Err()	<< "Too few arguments - " << nArgs << " (should be 6)" << endl;
+			gMrbLog->Flush(this->ClassName(), "OpenFileList");
+			errCnt++;
+			continue;
+		} else if (nArgs > 6) {
+			TString dummy = ((TObjString *) splitLine[6])->GetString();
+			if (dummy(0) != '#') {
+				if (!lineHdr) {
+					gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
+					gMrbLog->Flush(this->ClassName(), "OpenFileList");
+					lineHdr = kTRUE;
+				}
+				gMrbLog->Wrn()	<< "Exceeding arguments - " << nArgs << " (should be 6) - ignored" << endl;
+				gMrbLog->Flush(this->ClassName(), "OpenFileList");
+			}
+		}
+		
 // decode line
 // input file
-		decode >> inputFile;	
+		TString inputFile = ((TObjString *) splitLine[0])->GetString();
 		gSystem->ExpandPathName(inputFile);
-		if (inputFile.Index(rxroot, 0) != -1) {
-			inputMode = TMrbIOSpec::kInputRoot;
-		} else if (inputFile.Index(rxmed, 0) != -1) {
-			inputMode = TMrbIOSpec::kInputMED;
-		} else if (inputFile.Index(rxlmd, 0) != -1) {
-			inputMode = TMrbIOSpec::kInputLMD;
-		} else {
+		if (inputFile.Index(rxroot, 0) != -1)		inputMode = TMrbIOSpec::kInputRoot;
+		else if (inputFile.Index(rxmed, 0) != -1)	inputMode = TMrbIOSpec::kInputMED;
+		else if (inputFile.Index(rxlmd, 0) != -1)	inputMode = TMrbIOSpec::kInputLMD;
+		else {
 			if (!lineHdr) {
 				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
 				gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -292,8 +282,10 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			errCnt++;
 		}
 // start / stop
-		decode >> startEvent;
-		if (!decode.good() || !DefaultIOSpec->CheckStartStop(startEvent, startValue, startTimeFlag)) {
+		TString startEvent = ((TObjString *) splitLine[1])->GetString();
+		Int_t startValue;
+		Bool_t startTimeFlag;
+		if (!DefaultIOSpec->CheckStartStop(startEvent, startValue, startTimeFlag)) {
 			if (!lineHdr) {
 				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
 				gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -304,8 +296,10 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			errCnt++;
 		}
 
-		decode >> stopEvent;
-		if (!decode.good() || !DefaultIOSpec->CheckStartStop(stopEvent, stopValue, stopTimeFlag)) {
+		TString stopEvent = ((TObjString *) splitLine[2])->GetString();
+		Int_t stopValue;
+		Bool_t stopTimeFlag;
+		if (!DefaultIOSpec->CheckStartStop(stopEvent, stopValue, stopTimeFlag)) {
 			if (!lineHdr) {
 				gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
 				gMrbLog->Flush(this->ClassName(), "OpenFileList");
@@ -340,10 +334,11 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 				errCnt++;
 			}
 		}
+
 // parm file
-		decode >> paramFile;
-		lastpMode = lastIOSpec->GetParamMode();
-		paramMode = TMrbIOSpec::kParamNone;
+		TString paramFile = ((TObjString *) splitLine[3])->GetString();
+		TMrbIOSpec::EMrbParamMode lastpMode = lastIOSpec->GetParamMode();
+		TMrbIOSpec::EMrbParamMode paramMode = TMrbIOSpec::kParamNone;
 		if (paramFile.CompareTo("none") != 0) {
 			if (paramFile.CompareTo("-") == 0) {
 				paramFile = lastIOSpec->GetParamFile();
@@ -376,14 +371,14 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			gMrbLog->Flush(this->ClassName(), "OpenFileList");
 			errCnt++;
 		}
+
 // histo file
-		decode >> histoFile;
-		histoMode = TMrbIOSpec::kHistoNone;
-		lasthMode = lastIOSpec->GetHistoMode();
+		TString histoFile = ((TObjString *) splitLine[4])->GetString();
+		TMrbIOSpec::EMrbHistoMode histoMode = TMrbIOSpec::kHistoNone;
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
 				histoFile = lastIOSpec->GetHistoFile();
-				histoMode = TMrbIOSpec::kHistoAdd;
+				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoAdd);
 			} else if (histoFile.Index(".root", 0) > 0) {
 				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
 			} else {
@@ -397,10 +392,11 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 				errCnt++;
 			}
 		}
+
 // output file
-		decode >> outputFile;
-		outputMode = TMrbIOSpec::kOutputNone;
-		lastoMode = lastIOSpec->GetOutputMode();
+		TString outputFile = ((TObjString *) splitLine[5])->GetString();
+		TMrbIOSpec::EMrbOutputMode outputMode = TMrbIOSpec::kOutputNone;
+		TMrbIOSpec::EMrbOutputMode lastoMode = lastIOSpec->GetOutputMode();
 		if (outputFile.CompareTo("none") != 0) {
 			if (outputFile.CompareTo("+") == 0) {
 				outputFile = lastIOSpec->GetOutputFile();
@@ -438,24 +434,11 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 				errCnt++;
 			}
 		}
-// check if end of argument list
-		decode >> dummy;
-		if (decode.good()) {
-			if (dummy(0) != '#') {
-				if (!lineHdr) {
-					gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
-					gMrbLog->Flush(this->ClassName(), "OpenFileList");
-					lineHdr = kTRUE;
-				}
-				gMrbLog->Err()	<< "Exceeding argument at end of line - " << dummy << endl;
-				gMrbLog->Flush(this->ClassName(), "OpenFileList");
-				errCnt++;
-			}
-		}
+
 // fill i/o spec (if w/o errors)
 		if (errCnt == lerrCnt) {
 			nofEntries++;
-			ioSpec = new TMrbIOSpec();
+			TMrbIOSpec * ioSpec = new TMrbIOSpec();
 			ioSpec->SetInputFile(inputFile.Data(), inputMode);
 			ioSpec->SetStartStop(startTimeFlag, startValue, stopValue);
 			ioSpec->SetOutputFile(outputFile.Data(), outputMode);
@@ -466,15 +449,16 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		}
 		lerrCnt = errCnt;
 	}
+
 // check if errors
 	if (errCnt > 0) {
 		gMrbLog->Err()	<< "Found " << errCnt << " error(s) in file list " << FileList << endl;
 		gMrbLog->Flush(this->ClassName(), "OpenFileList");
 		return(0);
 	}
-    cout << "fLofIOSpecs.GetSize() " << fLofIOSpecs.GetSize()<< endl;
-    cout << "nofEntries            " << nofEntries           << endl;
+
     if(fLofIOSpecs.GetSize() > 1)fLofIOSpecs.Remove(DefaultIOSpec);
+
 	return(nofEntries);
 }
 
@@ -496,22 +480,20 @@ Int_t TMrbAnalyze::ProcessFileList() {
 	ioSpec = (TMrbIOSpec *) fLofIOSpecs.First();
 	nofEntries = 0;
 	while (ioSpec && this->TestRunStatus()) {
-		if (this->IsVerbose()) {
-			cout	<< setblue << this->ClassName() << "::ProcessFileList(): " << endl;
-			cout << "        "; ioSpec->Print(cout);
-			cout	<< setblack << endl;
-		}
+		gMrbLog->Out() << "[" << nofEntries + 1 << "] ";
+		ioSpec->Print(gMrbLog->Out());
+		gMrbLog->Flush(this->ClassName(), "ProcessFileList", setgreen);
+
 		TMrbIOSpec::EMrbInputMode inputMode = ioSpec->GetInputMode();
 
 		if (inputMode == TMrbIOSpec::kInputRoot) {
 			if (this->OpenRootFile(ioSpec)) {
 				this->ReloadParams(ioSpec);
 				if (this->WriteRootTree(ioSpec)) {
+					this->ClearHistograms("*", ioSpec);
 					this->ReplayEvents(ioSpec);
 					this->CloseRootTree(ioSpec);
-					if (this->SaveHistograms("*", ioSpec) != -1) {
-						this->ClearHistograms("*", ioSpec);
-					}
+					this->SaveHistograms("*", ioSpec);
 					nofEntries++;
 				}
 				if (!fFakeMode) {
@@ -532,14 +514,15 @@ Int_t TMrbAnalyze::ProcessFileList() {
 						gMrbLog->Err()	<< "[" << ioSpec->GetInputFile() << "] Start event != 0" << endl;
 						gMrbLog->Flush(this->ClassName(), "ProcessFileList");
 					}
-                	this->WriteRootTree(ioSpec);
-					gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
-					if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
-					else									gMrbTransport->CloseLMDFile();
-					this->CloseRootTree(ioSpec);
-					if (this->SaveHistograms("*", ioSpec) != -1) {
+                	if (this->WriteRootTree(ioSpec)) {
 						this->ClearHistograms("*", ioSpec);
+						gMrbTransport->ReadEvents(ioSpec->GetStopEvent());
+						if (inputMode == TMrbIOSpec::kInputMED) gMrbTransport->CloseMEDFile();
+						else									gMrbTransport->CloseLMDFile();
+						this->CloseRootTree(ioSpec);
+						this->SaveHistograms("*", ioSpec);
 					}
+					this->SetRunStatus(TMrbAnalyze::M_RUNNING); 	// for some (unknown) reason we end up with status "PAUSING", so we have to revive it.
 				}
 				nofEntries++;
 			} else {
@@ -1018,7 +1001,7 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
 	if (pattern.CompareTo("*") == 0) rexp = new TRegexp(pattern.Data(), kTRUE);
 // generate a versioned filename
 	histoFile = IOSpec->GetHistoFile();
-   histoFileVersioned = histoFile;
+	histoFileVersioned = histoFile;
 	histoFileVersioned += ".";
 	histoFileVersioned += fHistFileVersion++;
 	
@@ -1076,9 +1059,8 @@ Int_t TMrbAnalyze::SaveHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) {
          }
       }
    }
-	if (this->IsVerbose()) cout	<< setblue
-			<< this->ClassName() << "::SaveHistograms(): " << count << " histogram(s) saved to " << histoFile
-			<< setblack << endl;
+	gMrbLog->Out()	<< count << " histogram(s) saved to " << histoFile << endl;
+	gMrbLog->Flush(this->ClassName(), "SaveHistograms", setblue);
 //System->Sleep(15000);
 //out << setgreen << "end of sleep" << setblack << endl;
 	hf->Close();
@@ -1177,9 +1159,8 @@ Int_t TMrbAnalyze::ClearHistograms(const Char_t * Pattern, TMrbIOSpec * IOSpec) 
 	}
 	if(kUseMap)fMapFile->Update(); 	// clear map file
 	pthread_mutex_unlock(&global_data_mutex);
-	cout	<< setblue
-			<< this->ClassName() << "::ClearHistograms(): " << count << " histogram(s) zeroed"
-			<< setblack << endl;
+	gMrbLog->Out()	<< count << " histogram(s) zeroed" << endl;
+	gMrbLog->Flush(this->ClassName(), "ClearHistograms", setblue);
 	if (rexp) delete rexp;
 	return(count);
 }
@@ -1911,9 +1892,9 @@ void TMrbIOSpec::Print(ostream & out) const {
 	else if (fParamMode & TMrbIOSpec::kParamReload) 		out << "; params reloaded from " << fParamFile;
 	else													out << "; params unchanged";
 
-	if (fHistoMode & TMrbIOSpec::kHistoSave)				out << "; histos saved to file " << fHistoFile;
-	else if (fHistoMode & TMrbIOSpec::kHistoAdd) 			out << "; histos added to mmap file";
-	if (fHistoMode & TMrbIOSpec::kHistoClear)				out << "; mmap data cleared";
+	if (fHistoMode & TMrbIOSpec::kHistoClear)				out << "; histo space cleared on start";
+	else if (fHistoMode & TMrbIOSpec::kHistoAdd) 			out << "; accumulation of histos continuing";
+	if (fHistoMode & TMrbIOSpec::kHistoSave)				out << "; histos to be saved to file " << fHistoFile;
 	out << ";" << endl;
 }
 
