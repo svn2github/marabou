@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.58 2005-11-22 13:12:59 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.59 2005-11-22 13:38:02 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -175,11 +175,6 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 // Results:        Int_t NofEntries            -- number of entries in file, 0 if error
 // Exceptions:     
 // Description:    Reads a set of i/o specs.
-//Begin_Html
-/*
-<a href="FileListFormat.pdf".
-/*
-//End_Html
 //                 Format is
 //                      input  start  stop  param  histo  output
 //
