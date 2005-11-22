@@ -2298,13 +2298,25 @@ void FitHist::Superimpose(Int_t mode)
       if (mode == 1 && !is2dim(fSelHist)) {	// scale
          cout << "!!!!!!!!!!!!!!!!" << endl;
          Stat_t maxy = 0;
-         Axis_t x, xmin, xmax;
-         xmin = fSelHist->GetXaxis()->GetXmin();
-         xmax = fSelHist->GetXaxis()->GetXmax();
-         for (Int_t i = 1; i <= hist->GetNbinsX(); i++) {
-            x = hist->GetBinCenter(i);
-            if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
-               maxy = hist->GetBinContent(i);
+         if (fSelHist->GetXaxis()->GetNbins() != hist->GetXaxis()->GetNbins()) {
+//  case expanded histogram
+            Axis_t x, xmin, xmax;
+            xmin = fSelHist->GetXaxis()->GetXmin();
+            xmax = fSelHist->GetXaxis()->GetXmax();
+            for (Int_t i = 1; i <= hist->GetXaxis()->GetNbins(); i++) {
+               x = hist->GetBinCenter(i);
+               if (x >= xmin && x < xmax && hist->GetBinContent(i) > maxy)
+                  maxy = hist->GetBinContent(i);
+            }
+         } else {
+//  case zoomed histogram
+            for (Int_t i = fSelHist->GetXaxis()->GetFirst(); 
+                    i <= fSelHist->GetXaxis()->GetLast(); 
+                    i++) {
+                if (hist->GetBinContent(i) > maxy)
+                  maxy = hist->GetBinContent(i);
+            }
+
          }
          if (fSelHist->GetMaximum() > 0 && maxy > 0) {
             hdisp = (TH1 *) hist->Clone();
