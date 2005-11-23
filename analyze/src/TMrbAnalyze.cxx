@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.60 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.61 2005-11-23 14:05:53 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -161,31 +161,38 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 // Exceptions:     
 // Description:    Reads a set of i/o specs.
 //                 Format is
-//                      input  start  stop  param  histo  output
+//                      inputFile  startEvent  stopEvent  paramFile  histoFile  outputFile
 //
-//                 where       value (*=dflt)   meaning       
+//                 where       value            meaning       
 //                 ---------------------------------------------------------------------------------
-//                 input       n/a              name of input file (.root)
-//                 start                        event / time stamp to start with
-//                             0*                  read from beginning
-//                 stop                         event / time stamp to end with
-//                             0*                  read till end of data
-//                                                 (time stamps have formats :nnnnnn or hh:mm:ss[:xxx])
-//                 param                        name of param file:
-//                             <file>              reload params from file <file>
-//                                                     (.root -> standard ROOT,
-//                                                      .par  -> ascii)
-//                             -*                  don't change params
-//                             none                no params at all
-//                 histo                        name of file to save histograms:
-//                             <file>              clear histo space on start, save histos to <file> (ext .root)
-//                             +*                  don't clear histo space, add data to current histos
-//                 output                       name of file to store tree data
+//                 inputFile                    name of input file
+//                             xyz.root                file contains ROOT trees
+//                             xyz.lmd                 file contains MBS list mode data
+//                             xyz.med                 file contains MBS event data (as used by miniball)
+//                 startEvent                   event / time stamp to start with
+//                             N                       event number
+//                             hh.mm.ss[:xxx]          time stamp in standard format
+//                             :nnnnnn                 time stamp in seconds from start
+//                             0                       read data from begin of file
+//                 stopEvent                    event / time stamp to end with
+//                             N                       event number
+//                             hh.mm.ss[:xxx]          time stamp in standard format
+//                             :nnnnnn                 time stamp in seconds from start
+//                             0                       read data to end of file
+//                 paramFile                    name of file where to reload params from
+//                             xyz.root                file contains ROOT objects
+//                             xyz.par                 file contains ASCII text
+//                             -                   params remain unchanged
+//                             none                don't load any params
+//                 histoFile                    name of file to save histograms
+//                             xyz.root                clear histo space on start, save histos to file at end
+//                             +*                      don't clear histo space, add data to current histos,
+//                                                     save to file currently open
+//                 outputFile                   name of file to store tree data
 //                             none                don't write tree data
-//                             +*                  append to current file
-//                             <file>              open <file> for output (ext .root)          
+//                             +                   append to current file
+//                             xyz.root            open file for output         
 //                                                         
-//                 If trailing args are omitted default values will be substituted
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
