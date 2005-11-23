@@ -411,7 +411,7 @@ int main(int argc, char **argv) {
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap name:   " << mmap_name << endl;
 	Int_t mmap_size;
 	argNo++;
-	if(argc > argNo)	mmap_size = kMB * atoi(argv[argNo]);
+	if(argc > argNo)	mmap_size = TMrbAnalyze::kMB * atoi(argv[argNo]);
 	else				mmap_size = 0;
 	if (verboseMode) cout << "M_analyze: [Arg" << argNo << "] TMap size:   " << mmap_size << endl;
 
@@ -546,13 +546,13 @@ int main(int argc, char **argv) {
 //
 	// check if map file size greater than size of mapped objects
 		Int_t mobj_size = u_analyze->GetSizeOfMappedObjects(M_prod);
-		mobj_size += kMB;			// quick hack: seems to be calculated too small by TMapfile!
+		mobj_size += TMrbAnalyze::kMB;			// quick hack: seems to be calculated too small by TMapfile!
 		if (mobj_size > mmap_size) {
-			Float_t xmb = ((Float_t) mobj_size) / kMB + .5;
+			Float_t xmb = ((Float_t) mobj_size) / TMrbAnalyze::kMB + .5;
 			cerr	<< setred
 					<< "M_analyze: Size of mapped objects ("
 					<< setiosflags(ios::fixed) << setprecision(1) << xmb << " MB) > size of map file ("
-					<< (mmap_size / kMB) << " MB)"
+					<< (mmap_size / TMrbAnalyze::kMB) << " MB)"
 					<< endl;
 			cerr	<< "M_analyze: Sorry, can't run ... Start over with MMapFile Size = "
 					<< (Int_t) (xmb + .99) << ""

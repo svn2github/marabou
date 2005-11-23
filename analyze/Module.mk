@@ -19,8 +19,8 @@ MRBADL      := $(MODDIRI)/LinkDef.h
 MRBADS      := $(MODDIRS)/G__$(MRBA)Dict.cxx
 MRBADO      := $(MRBADS:.cxx=.o)
 
-MRBAS       := $(MODDIRS)/$(MRBA).cxx
-MRBAH       := $(MODDIRI)/$(MRBA).h
+MRBAS       := $(filter-out $(MODDIRS)/G__%,$(wildcard $(MODDIRS)/*.cxx))
+MRBAH       := $(filter-out $(MODDIRI)/LinkDef%,$(wildcard $(MODDIRI)/*.h))
 MRBAO       := $(MRBAS:.cxx=.o)
 
 MUTEXS      := $(MODDIRS)/$(MUTEX).cxx
@@ -41,7 +41,7 @@ ALLLIBS     += $(MRBALIB)
 ALLLIBS     += $(MUTEXLIB)
 
 # used in the main Makefile
-ALLHDRS     += include/$(MRBA).h
+ALLHDRS     += $(patsubst $(MODDIRI)/%.h,include/%.h,$(MRBAH))
 ALLOBJS     += obj/$(AN).o
 
 # include all dependency files
