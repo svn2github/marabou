@@ -6,8 +6,167 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbIOSpec.cxx,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbIOSpec.cxx,v 1.2 2005-11-23 13:10:16 Rudolf.Lutter Exp $       
 // Date:           
+
+//Begin_Html
+/*
+<h2>Format of a file list entry</h2>
+
+A file list (extension .list) may be used as input to <b>C_analyze</b>.
+It will be read by <b>TMrbAnalyze::OpenFileList()</b>, and processed by <b>TMrbAnalyze::ProcessFileList()</b>.
+Data will be stored in a <b>TMrbIOspec</b> object.
+
+<p>
+Format is<br>
+<pre>
+<b>inputFile</b> <b>startEvent</b> <b>stopEvent</b> <b>paramFile</b> <b>histoFile</b> <b>outputFile</b>
+</pre>
+
+</p>
+<table border="1">
+  <thead>
+    <tr>
+      <th scope=col>Item</th>
+      <th scope=col>Value  </th>
+      <th scope=col>Meaning</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><pre><b>inputFile</b></pre></td>
+      <td>  </td>
+      <td>name of input file</td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.root</td>
+      <td><div align="right">contains ROOT trees</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.lmd</td>
+      <td><div align="right">contains MBS list mode data</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.med</td>
+      <td><div align="right">contains MBS event data</div></td>
+    </tr>
+    <tr>
+      <td><pre><b>startEvent</b></pre></td>
+      <td>  </td>
+      <td>event or time stamp to start with</td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>N</td>
+      <td><div align="right">event number</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>hh:mm:ss</td>
+      <td><div align="right">time stamp</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>:nnnnnnnn</td>
+      <td><div align="right">time stamp</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>0</td>
+      <td><div align="right">read from begin of file</div></td>
+    </tr>
+    <tr>
+      <td><pre><b>stopEvent</b></pre></td>
+      <td>  </td>
+      <td>event or time stamp to stop with</td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>N</td>
+      <td><div align="right">event number</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>hh:mm:ss[:xxx]</td>
+      <td><div align="right">time stamp</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>:nnnnnnnn</td>
+      <td><div align="right">time stamp</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>0</td>
+      <td><div align="right">read to end of file</div></td>
+    </tr>
+    <tr>
+      <td><pre><b>paramFile</b></pre></td>
+      <td>  </td>
+      <td>file to reload params from</td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.root</td>
+      <td><div align="right">contains ROOT objects</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.par</td>
+      <td><div align="right">contains ASCII text</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>-</td>
+      <td><div align="right">params remain unchanged</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>none</td>
+      <td><div align="right">don't load params</div></td>
+    </tr>
+    <tr>
+      <td><pre><b>histoFile</b></pre></td>
+      <td>  </td>
+      <td>file to store histograms</td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.root</td>
+      <td><div align="right">clear histos in memory on start<br>save histos to file at EOF</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>+</td>
+      <td><div align="right">don't clear histos<br>continue accumulation<br>save to file currently in use</div></td>
+    </tr>
+     <tr>
+      <td><pre><b>name of outputFile</b></pre></td>
+      <td>  </td>
+      <td>output file</td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>xyz.root</td>
+      <td><div align="right">write ROOT trees to file</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>+</td>
+      <td><div align="right">append ROOT trees to file currently open</div></td>
+    </tr>
+    <tr>
+      <td>  </td>
+      <td>none</td>
+      <td><div align="right">don't output tree data</div></td>
+    </tr>
+ </tbody>
+</table>
+*/
+//End_Html
 //////////////////////////////////////////////////////////////////////////////
 
 #include "TSystem.h"
