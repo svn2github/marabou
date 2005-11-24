@@ -3277,17 +3277,18 @@ void FhMainFrame::Runloop(){
    Int_t nobs; 
    fM_Status = IsAnalyzeRunning(0);
    if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
-      gSystem->GetPathInfo(fOutputFile->Data(),
-                           &id, &size, &flags, &modtime);
-      fOutSize->SetText(new TGString(Form("%d", size)));
-      gClient->NeedRedraw(fOutSize);
-      if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
-         cout << setred << "outfile size (Mbyte): " << size/1000000 
-              << " exceeds MaxFileSize: " << fMaxFileSize << endl;
-         cout << "force StopDAQ" << setblack << endl;
-         fForcedStop = kTRUE;
-         this->StopDAQ();
-         return;
+      Int_t sts = gSystem->GetPathInfo(fOutputFile->Data(), &id, &size, &flags, &modtime);
+      if (sts) {
+         fOutSize->SetText(new TGString(Form("%d", size)));
+         gClient->NeedRedraw(fOutSize);
+         if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
+            cout << setred << fOutputFile << ": size of output file = " << size/1000000 
+                 << "MB exceeds MaxFileSize = " << fMaxFileSize << " MB" << endl;
+            cout << "force StopDAQ" << setblack << endl;
+            fForcedStop = kTRUE;
+            this->StopDAQ();
+            return;
+         }
       } 
    }
    if(fM_Status == M_RUNNING && (!fForcedStop && fMaxRunTime > 0)){

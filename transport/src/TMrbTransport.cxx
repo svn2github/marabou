@@ -8,7 +8,7 @@
 //
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTransport.cxx,v 1.13 2004-09-28 13:47:33 rudi Exp $       
+// Revision:       $Id: TMrbTransport.cxx,v 1.14 2005-11-24 13:25:43 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -83,6 +83,8 @@ TMrbTransport::TMrbTransport(const Char_t * XptName, const Char_t * XptTitle) {
 	fTransportMode = kUndefined;
 	fBufferSize = -1;
 	fMBSDataIO = NULL;
+
+	fStopFlag = kFALSE;
 
 	mbs_pass_errors(mbs_error_string);	// pass mbsio errors to local buffer
 
