@@ -692,10 +692,10 @@ Double_t gaus_cbg(Double_t * x, Double_t * par)
       arg = (x[0] - par[8]) / (sqrt2 * par[2]);
       fitval += gBinW / (sqrt2pi * par[2]) * par[7] * exp(-arg * arg);
    }
-   return fitval;
+   return gBinW * fitval;
 }
 
-//____________________________________________________________________________________ 
+//____________________________________________________________________________ 
 
 Double_t gaus_lbg(Double_t * x, Double_t * par)
 {
@@ -717,19 +717,19 @@ Double_t gaus_lbg(Double_t * x, Double_t * par)
       par[2] = 1;               //  force widths /= 0
    arg = (x[0] - par[4]) / (sqrt2 * par[2]);
    Double_t fitval = par[0] + x[0] * par[1]
-       + gBinW / (sqrt2pi * par[2]) * par[3] * exp(-arg * arg);
+       +  par[3] * exp(-arg * arg) / (sqrt2pi * par[2]);
    if (nPeaks > 1) {
       arg = (x[0] - par[6]) / (sqrt2 * par[2]);
-      fitval += gBinW / (sqrt2pi * par[2]) * par[5] * exp(-arg * arg);
+      fitval +=  par[5] * exp(-arg * arg) / (sqrt2pi * par[2]);
    }
    if (nPeaks > 2) {
       arg = (x[0] - par[8]) / (sqrt2 * par[2]);
-      fitval += gBinW / (sqrt2pi * par[2]) * par[7] * exp(-arg * arg);
+      fitval += par[7] * exp(-arg * arg)/ (sqrt2pi * par[2]);
    }
-   return fitval;
+   return gBinW * fitval;
 }
 
-//____________________________________________________________________________________ 
+//_____________________________________________________________________________ 
 
 Double_t gaus_tail(Double_t * x, Double_t * par)
 {
@@ -817,7 +817,7 @@ Double_t tailf(Double_t * x, Double_t * par)
 Double_t backf(Double_t * x, Double_t * par)
 {
    Double_t fitval = par[0] + x[0] * par[1];
-   return fitval;
+   return gBinW * fitval;
 //   return gBinW*fitval;
 }
 
@@ -1257,7 +1257,7 @@ void FitHist::FitGBg(Int_t with_tail, Int_t force_zero_bg)
    if (hp->GetShowFittedCurves() && force_zero_bg == 0) {
       double fdpar[4];
       if (with_tail > 0) {
-         fdpar[0] = upar[2];
+         fdpar[0] = upar[2] ;
          fdpar[1] = upar[3];
       } else {
          fdpar[0] = upar[0];

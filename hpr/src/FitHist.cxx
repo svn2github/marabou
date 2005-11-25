@@ -1556,7 +1556,7 @@ to the file.";
    else
       values->Add(new TObjString("CheckButton_Up"));
 
-   Int_t ret,  itemwidth=150, nrows = values->GetSize(); 
+   Int_t ret = 0,  itemwidth=150, nrows = values->GetSize(); 
    new TGMrbTableFrame(mycanvas, &ret, "Write hist as ASCII-file", 
                         itemwidth, 1, nrows, values,
                         0, row_lab, 0, 0, helpText);

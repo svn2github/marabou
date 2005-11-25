@@ -338,7 +338,7 @@ void HistPresent::ShowMain()
    b->SetToolTipText("Rebin a selected histogram",hint_delay);
    fRebin2 = SButton("SetRebinValue(2);", "2",this,3,4,dy,1,0.125);
    fRebin2->SetToolTipText("Set rebin value to 2",hint_delay);
-   fRebin4 = SButton("SetRebinValue(4);", "4",this,4,4,dy,0,0.125);
+   fRebin4 = SButton("SetRebinValue(32);", "32",this,4,4,dy,0,0.125);
    fRebin4->SetToolTipText("Set rebin value to 4",hint_delay);
 //   SButton("SetRebinValue(8);", "8",this,5,4,dy,0,0.1);
    fRebinOth = SButton("SetRebinValue(0);", "oth",this,3,4,dy,0,0.25);
@@ -1697,7 +1697,7 @@ void HistPresent::SetRebinValue(Int_t val)
       fRebin=val;
       fRebinOth->SetFillColor(2);
       if (val == 2) {fRebin4->SetFillColor(2); fRebin2->SetFillColor(3);}
-      if (val == 4) {fRebin4->SetFillColor(3); fRebin2->SetFillColor(2);}
+      if (val == 32) {fRebin4->SetFillColor(3); fRebin2->SetFillColor(2);}
    }
    fRebinOth->Modified(kTRUE); 
    fRebin2->Modified(kTRUE);
