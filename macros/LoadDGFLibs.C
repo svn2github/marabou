@@ -3,5 +3,6 @@
 	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
 	gSystem->Load("$MARABOU/lib/libEsoneClient.so");
 	gSystem->Load("$MARABOU/lib/libTMrbEsone.so");
+	gSystem->Load("$MARABOU/lib/libTMrbDGFCommon.so");
 	gSystem->Load("$MARABOU/lib/libTMrbDGF.so");
 }

@@ -42,6 +42,10 @@ ifeq ($(shell if [ -d analyze ] ; then echo yes; fi), yes)
 MODULES      += expconf c_analyze analyze mbssetup mbsio transport
 endif
 
+ifeq ($(shell if [ -d dgfcomm ] ; then echo yes; fi), yes)
+MODULES      += dgfcomm
+endif
+
 # if online data acquisition is needed in addition
 
 ifeq ($(shell if [ -d camcli  ] ; then echo yes; fi), yes)
