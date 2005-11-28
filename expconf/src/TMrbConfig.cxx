@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.104 2005-11-28 09:41:39 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.104 2005-11-28 09:41:39 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.105 2005-11-28 10:05:12 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.105 2005-11-28 10:05:12 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4471,6 +4471,8 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		cmd += (Int_t) Strm;
 		cmd += ", (TMrbConfig *) ";
 		cmd += (Int_t) this;
+		cmd += ", (TObject *) ";
+		cmd += (Int_t) CfgObject;
 		cmd += ", \"";
 		cmd += TagWord;
 		cmd += "\", (Bool_t *) ";
