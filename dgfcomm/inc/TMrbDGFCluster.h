@@ -8,7 +8,7 @@
 // Class:          TMrbDGFCluster            -- cluster data
 // Description:    Class definitions to operate the XIA DGF-4C module.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbDGFCluster.h,v 1.4 2005-05-12 19:21:24 marabou Exp $       
+// Revision:       $Id: TMrbDGFCluster.h,v 1.1 2005-11-28 12:10:11 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
