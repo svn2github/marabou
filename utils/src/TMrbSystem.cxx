@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.9 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.10 2005-11-28 13:16:26 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -319,7 +319,26 @@ Int_t TMrbSystem::GetType(const Char_t * Path) const {
 	FileStat_t stat;
 	TString path = gSystem->ExpandPathName(Path);
 		
+#if ROOTVERSION < 40104
+	struct stat sbuf;
+	if (lstat(path.Data(), &sbuf) == 0) {
+		stat.fIsLink = S_ISLNK(sbuf.st_mode);
+		if (stat.fIsLink) {
+			if (stat(path.Data(), &sbuf) == -1) return 1;
+		}
+		stat.fDev	= sbuf.st_dev;
+		stat.fIno	= sbuf.st_ino;
+		stat.fMode  = sbuf.st_mode;
+		stat.fUid	= sbuf.st_uid;
+		stat.fGid	= sbuf.st_gid;
+		stat.fSize  = sbuf.st_size;
+		stat.fMtime = sbuf.st_mtime;
+	} else {
+		return(1);
+	}
+#else
 	gSystem->GetPathInfo(path.Data(), stat);
+#endif
 	return(stat.fMode);
 }
 

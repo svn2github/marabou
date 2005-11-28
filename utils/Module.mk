@@ -45,7 +45,7 @@ $(UTILSDS):     $(UTILSH) $(UTILSL)
 		$(ROOTCINT) -f $@ -c -Iinclude $(UTILSH) $(UTILSL)
 
 $(UTILSDO):     $(UTILSDS)
-		$(CXX) $(NOOPT) $(CXXFLAGS) -I. -o $@ -c $<
+		$(CXX) $(NOOPT) $(CXXFLAGS) -DROOTVERSION=$(ROOTVERS) -I. -o $@ -c $<
 
 all-utils:       $(UTILSLIB)
 

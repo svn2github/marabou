@@ -8,7 +8,7 @@
 // Class:          TMrbLofNamedX    -- a list of named indices
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofNamedX.h,v 1.8 2005-10-20 14:16:12 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofNamedX.h,v 1.9 2005-11-28 13:16:26 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -91,6 +91,7 @@ class TMrbLofNamedX: public TObjArray {
 		UInt_t GetMask() const;											// return mask of all bits in list
 
 		void Print(Option_t * Option) const { TObject::Print(Option); }
+		void Print(Option_t * Wildcard, Option_t * Option) const { TCollection::Print(Wildcard, Option); }
 		void Print(ostream & Out, const Char_t * Prefix = "", UInt_t Mask = 0xffffffff) const;	// show list of indices
 		inline void Print() const { Print(cout, "", 0xffffffff); };
 
