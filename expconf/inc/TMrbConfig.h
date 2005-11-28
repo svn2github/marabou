@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.62 2005-11-15 14:01:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.63 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -554,9 +554,10 @@ class TMrbConfig : public TNamed {
 
 		Bool_t ExecRootMacro(const Char_t * Macro);
 
-		void Print(Char_t * File) const;
+  		void Print(Option_t * Option) const { TNamed::Print(Option); };
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;			// show data
 		inline virtual void Print() const { Print(cout, ""); };
+		void PrintToFile(Char_t * File) const;
 		Int_t GetNofErrors() const;							// number of errors
 		Int_t PrintErrors(Bool_t ErrorsOnly = kTRUE) const; // print error summary
 		

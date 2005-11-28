@@ -8,7 +8,7 @@
 // Class:          TMrbSis_3600        -- VME pattern unit
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSis_3600.h,v 1.6 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSis_3600.h,v 1.7 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -48,6 +48,8 @@ class TMrbSis_3600 : public TMrbVMEModule {
 		~TMrbSis_3600() {};												// default dtor
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex);  	// generate part of code
+		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex,
+												TMrbTemplate & Template, const Char_t * Prefix = NULL) { return(kTRUE); };
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbModuleTag TagIndex, TObject * Channel, Int_t Value = 0);  	// generate code for given channel
 
 		virtual inline const Char_t * GetMnemonic() const { return("sis_3600"); }; 	// module mnemonic

@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.6 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.7 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -52,7 +52,7 @@ class TMrbEvent : public TNamed {
 			fLofSubevents.Delete();
  		};
 
-		TMrbEvent(const TMrbEvent &) {};					// default copy ctor
+		TMrbEvent(const TMrbEvent &) : TNamed() {};					// default copy ctor
 
 		Bool_t HasSubevent(const Char_t * Assignment);		// add subevent(s)
 		Bool_t ShareSubevents(TMrbEvent * Event);			// share subevent(s) with another event

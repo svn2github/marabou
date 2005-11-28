@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.10 2005-10-10 06:30:06 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.11 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -56,7 +56,7 @@ class TMrbSubevent : public TNamed {
 			fLofModules.Delete();
 		};
 
-		TMrbSubevent(const TMrbSubevent &) {};			// default copy ctor
+		TMrbSubevent(const TMrbSubevent &) : TNamed() {};			// default copy ctor
 
 		inline void AddEvent(TObject * Evt) {		 	// add a parent event
 			fLofEvents.Add(Evt);

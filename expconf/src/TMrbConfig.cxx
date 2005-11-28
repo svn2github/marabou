@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.103 2005-11-15 14:01:48 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.103 2005-11-15 14:01:48 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.104 2005-11-28 09:41:39 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.104 2005-11-28 09:41:39 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -4471,8 +4471,6 @@ Bool_t TMrbConfig::ExecUserMacro(ofstream * Strm, TObject * CfgObject, const Cha
 		cmd += (Int_t) Strm;
 		cmd += ", (TMrbConfig *) ";
 		cmd += (Int_t) this;
-		cmd += ", (TObject *) ";
-		cmd += (Int_t) CfgObject;
 		cmd += ", \"";
 		cmd += TagWord;
 		cmd += "\", (Bool_t *) ";
@@ -5339,10 +5337,10 @@ Bool_t TMrbConfig::ExecRootMacro(const Char_t * Macro) {
 	return(kTRUE);
 }
 
-void TMrbConfig::Print(Char_t * File) const {
+void TMrbConfig::PrintToFile(Char_t * File) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::Print
+// Name:           TMrbConfig::PrintToFile
 // Purpose:        Output current config to file
 // Arguments:      Char_t * File  -- file name
 // Results:        --
@@ -7128,7 +7126,13 @@ void TMrbConfig::MakeDefined(const Char_t * Name, Bool_t Defined, const Char_t *
 			gMrbLog->Flush(this->ClassName(), "MakeDefined");
 		}
 	} else {
-		gMrbLog->Out()  << "[" << dName << "] " << dComment.Data() << " : "<< (Defined ? "TRUE" : "FALSE") << endl;
+		TString trueStr = setblue;
+		trueStr += "TRUE";
+		trueStr += setblack;
+		TString falseStr = setred;
+		falseStr += "FALSE";
+		falseStr += setblack;
+		gMrbLog->Out()  << "[" << dName << "] " << dComment.Data() << " : "<< (Defined ? trueStr : falseStr) << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeDefined", setgreen);
 		dComment.Prepend("Bool_t|");
 	}
