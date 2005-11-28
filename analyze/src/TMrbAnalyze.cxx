@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.62 2005-11-24 13:25:43 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.63 2005-11-28 09:39:11 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -327,7 +327,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 			}
 		}
 
-// parm file
+// param file
 		TString paramFile = ((TObjString *) splitLine[3])->GetString();
 		TMrbIOSpec::EMrbParamMode lastpMode = lastIOSpec->GetParamMode();
 		TMrbIOSpec::EMrbParamMode paramMode = TMrbIOSpec::kParamNone;
@@ -370,7 +370,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
 				histoFile = lastIOSpec->GetHistoFile();
-				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoAdd);
+				histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
 			} else if (histoFile.Index(".root", 0) > 0) {
 				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
 			} else {
