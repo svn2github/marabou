@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLogger.cxx,v 1.9 2005-11-11 10:12:40 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLogger.cxx,v 1.10 2005-12-06 14:00:25 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -145,6 +145,7 @@ TMrbLogger::TMrbLogger(const Char_t * ProgName, const Char_t * LogFile) {
 	if (fLog) this->Open(LogFile);
 	this->SetName((fProgName.Length() > 0) ? fProgName.Data() : fLogFile.Data());
 	this->SetTitle("MARaBOU's (error) message logger");
+	gROOT->Append(this);
 }
 
 void TMrbLogger::SetProgName(const Char_t * ProgName) {

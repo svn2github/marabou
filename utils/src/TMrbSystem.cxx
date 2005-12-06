@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.10 2005-11-28 13:16:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.11 2005-12-06 14:00:25 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -20,6 +20,7 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TRegexp.h"
+#include "TEnv.h"
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TMrbSystem.h"
@@ -364,8 +365,8 @@ const Char_t * TMrbSystem::GetSymbolicLink(TString & SymLink, const Char_t * Pat
 // Name:           TMrbSystem::GetSymbolicLink
 // Purpose:        Return symbolic link
 // Arguments:      TString & SymLink     -- Where to store link info
-//                 const Char_t * Path   -- path name
-// Results:        Char_t * SymLink     -- where the link is pointing to
+//                 Char_t * Path         -- path name
+// Results:        Char_t * SymLink      -- where the link is pointing to
 // Exceptions:     
 // Description:    Returns symbolic link information/
 // Keywords:
@@ -384,3 +385,98 @@ const Char_t * TMrbSystem::GetSymbolicLink(TString & SymLink, const Char_t * Pat
 	}
 	return(SymLink.Data());
 }
+
+const Char_t * TMrbSystem::Which(TString & Result, const Char_t * Search, const Char_t * File, EAccessMode Mode) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::Which
+// Purpose:        TSystem::Which(), improved
+// Arguments:      TString & Result      -- resulting path
+//                 Char_t * Search       -- unix-like search path, :-separated
+//                 Char_t * File         -- file name to be searched for
+//                 EAccessMode Mode      -- access mode
+// Results:        Char_t * ResPath      -- smae as Result.Data()
+// Exceptions:     
+// Description:    Performs TSystem::Which().
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	const Char_t * s = gSystem->ExpandPathName(Search);
+	const Char_t * r = gSystem->Which(s, File, Mode);
+	Result = r;
+	delete s;
+	delete r;
+	return(Result.Data());
+}
+
+Int_t TMrbSystem::Load(const Char_t * Module, const Char_t * Entry, Bool_t System) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::Load
+// Purpose:        TSystem::Load() + Printout
+// Arguments:      Char_t * Module       -- library module to be loaded
+//                 Char_t * Entry        -- lib entry to be searched for
+//                 Bool_t System         -- kTRUE if it is a system lib
+// Results:        Int_t Status          -- -1, 0, 1
+// Exceptions:     
+// Description:    Performs TSystem::Load and prints result
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	TString path;
+	this->Which(path, "$LD_LIBRARY_PATH", Module);
+	if (path.IsNull()) {
+		gMrbLog->Err()	<< "No such library - " << Module << " (searched on $LD_LIBRARY_PATH)" << endl;
+		gMrbLog->Flush(this->ClassName(), "Load");
+		return(-1);
+	}
+
+	Int_t sts = gSystem->Load(path.Data(), Entry, System);
+	this->PrintLoadPath(sts, Module, path.Data(), Entry, System);
+	return(sts);
+}
+
+void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t * Path, const Char_t * Entry, Bool_t System) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSystem::PrintLoadPath
+// Purpose:        Print load path to cout
+// Arguments:      Int_t Status          -- result of TSystem::Load()
+//                 Char_t * Module       -- library module to be loaded
+//                 CHar_t * Path         -- path library was found on
+//                 Char_t * Entry        -- lib entry to be searched for
+//                 Bool_t System         -- kTRUE if it is a system lib
+// Results:        --
+// Exceptions:     
+// Description:    Outputs load path to cout.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	Bool_t printIt = gEnv->GetValue("TMrbUtils.PrintLoadPath", kFALSE);
+	Bool_t hasEntry = (Entry != NULL && *Entry != '\0');
+	Bool_t hasPath = (Path != NULL && *Path != '\0');
+
+	TString libType = System ? "SystemLib" : "Library";
+
+	TString path;
+	if (hasPath)	path = Path;
+	else			this->Which(path, "$LD_LIBRARY_PATH", Module);
+
+	if (printIt) {
+		if (Status == 0) {
+			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (entry " << Entry << ") loaded from " << path << endl;
+			else			gMrbLog->Out()	<< libType << " " << Module << " loaded from " << path << endl;
+		} else if (Status == 1) {
+			if (hasEntry)	gMrbLog->Wrn()	<< libType << " " << Module << " (entry " << Entry << ") already loaded" << endl;
+			else			gMrbLog->Wrn()	<< libType << " " << Module << " already loaded" << endl;
+		} else if (Status == -1) {
+			if (hasEntry) {
+				this->Which(path, "$LD_LIBRARY_PATH", Module);
+				if (path.IsNull())	gMrbLog->Err()	<< libType << " " << Module << " not found on $LD_LIBRARY_PATH" << endl;
+				else				gMrbLog->Err()	<< "[" << libType << " " << Module << "] Entry " << Entry << "not found" << endl;
+			} else					gMrbLog->Err()	<< libType << " " << Module << " not found on $LD_LIBRARY_PATH" << endl;
+		}
+		gMrbLog->Flush(this->ClassName(), "Load");
+	}
+}
+			

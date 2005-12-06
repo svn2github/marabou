@@ -57,7 +57,7 @@ struct FileStat_t {
 // Class:          TMrbSystem    -- extension to TSystem class
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSystem.h,v 1.8 2005-11-28 13:16:26 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.h,v 1.9 2005-12-06 14:00:25 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -122,6 +122,11 @@ class TMrbSystem: public TObject {
 		inline Bool_t HasExecutePermission(const Char_t * Path) const { return(this->CheckAccess(Path, kExecutePermission)); };
 		
 		const Char_t * GetSymbolicLink(TString & SymLink, const Char_t * Path);
+
+		inline const Char_t * Which(TString & Result, const Char_t * Search, const Char_t * File, EAccessMode Mode = kFileExists);
+
+		Int_t Load(const char * Module, const char * Entry = "", Bool_t System = kFALSE);
+		void PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t * Path = "", const Char_t * Entry = "", Bool_t System = kFALSE);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
