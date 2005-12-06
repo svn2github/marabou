@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.11 2005-12-06 14:00:25 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.12 2005-12-06 14:20:30 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -467,8 +467,8 @@ void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t
 			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (entry " << Entry << ") loaded from " << path << endl;
 			else			gMrbLog->Out()	<< libType << " " << Module << " loaded from " << path << endl;
 		} else if (Status == 1) {
-			if (hasEntry)	gMrbLog->Wrn()	<< libType << " " << Module << " (entry " << Entry << ") already loaded" << endl;
-			else			gMrbLog->Wrn()	<< libType << " " << Module << " already loaded" << endl;
+			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (entry " << Entry << ") already loaded" << endl;
+			else			gMrbLog->Out()	<< libType << " " << Module << " already loaded" << endl;
 		} else if (Status == -1) {
 			if (hasEntry) {
 				this->Which(path, "$LD_LIBRARY_PATH", Module);
