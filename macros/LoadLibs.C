@@ -1,21 +1,22 @@
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// @(#)Name:         %M%
-// @(#)Purpose:      Load MARaBOU's standard libraries
-// Description:      Loads MARaBOU libraries from /usr/local/marabou
-// @(#)Author:       MBS and ROOT Based Online Offline Utility
-// @(#)Revision:     SCCS:  %W%
-// @(#)Date:         Tue Aug 10 14:00:16 1999
-// URL:              
-// Keywords:
+// Name:             LoadLibs.C
+// Purpose:          Load MARaBOU's standard libraries
+// Description:      Loads standard libraries via LD_LIBRARY_PATH
+// Author:           R. Lutter
+// Mailto:           <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:         $Id: LoadLibs.C,v 1.3 2005-12-06 14:01:25 Rudolf.Lutter Exp $       
+// Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 {
-	cout << "[Loading MARaBOU libs from " << gSystem->ExpandPathName("$MARABOU/lib") << "]" << endl;
-	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
-	gSystem->Load("$ROOTSYS/lib/libGed.so");
-	gSystem->Load("$MARABOU/lib/libTGMrbUtils.so");
-	gSystem->Load("$MARABOU/lib/libHelpBrowser.so");
-	gSystem->Load("$MARABOU/lib/libMutex.so");
-	gSystem->Load("$MARABOU/lib/libTMrbAnalyze.so");
+	cout << "[Loading MARaBOU libs]" << endl;
+	Int_t sts = gSystem->Load("libTMrbUtils.so");
+	TMrbSystem ux;
+	ux.PrintLoadPath(sts, "libTMrbUtils.so");
+	ux.Load("libGed.so");
+	ux.Load("libTGMrbUtils.so");
+	ux.Load("libHelpBrowser.so");
+	ux.Load("libMutex.so");
+	ux.Load("libTMrbAnalyze.so");
 }

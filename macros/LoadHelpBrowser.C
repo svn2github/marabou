@@ -1,17 +1,18 @@
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// @(#)Name:         %M%
-// @(#)Purpose:      Load MARaBOU's help browser
-// Description:      Loads help browser lib from /usr/local/marabou
-// @(#)Author:       MBS and ROOT Based Online Offline Utility
-// @(#)Revision:     SCCS:  %W%
-// @(#)Date:         Tue Aug 10 14:00:16 1999
-// URL:              
-// Keywords:
+// Name:             LoadHelpBrowser.C
+// Purpose:          Load libraries needed for the help browser
+// Description:      Loads browser libraries via LD_LIBRARY_PATH
+// Author:           R. Lutter
+// Mailto:           <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:         $Id: LoadHelpBrowser.C,v 1.2 2005-12-06 14:01:25 Rudolf.Lutter Exp $       
+// Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 {
-	cout << "[Loading MARaBOU's help browser libs from " << gSystem->ExpandPathName("$MARABOU/lib") << "]" << endl;
-	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
-	gSystem->Load("$MARABOU/lib/libHelpBrowser.so");
+	cout << "[Loading MARaBOU's help browser libs]" << endl;
+	Int_t sts = gSystem->Load("libTMrbUtils.so");
+	TMrbSystem ux;
+	ux.PrintLoadPath(sts, "libTMrbUtils.so");
+	ux.Load("libHelpBrowser.so");
 }

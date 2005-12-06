@@ -1,20 +1,19 @@
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// @(#)Name:         %M%
-// @(#)Purpose:      Load libraries needed to run MARaBOU's config
-// Description:      Loads config libraries from /usr/local/marabou
-// @(#)Author:       MBS and ROOT Based Online Offline Utility
-// @(#)Revision:     SCCS:  %W%
-// @(#)Date:         Tue Aug 10 14:00:16 1999
-// URL:              
-// Keywords:
+// Name:             LoadConfigLibs.C
+// Purpose:          Load MARaBOU's config libraries
+// Description:      Loads config libraries via LD_LIBRARY_PATH
+// Author:           R. Lutter
+// Mailto:           <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:         $Id: LoadConfigLibs.C,v 1.4 2005-12-06 14:01:25 Rudolf.Lutter Exp $       
+// Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 {
-	cout << "[Loading MARaBOU's config libs from " << gSystem->ExpandPathName("$MARABOU/lib") << "]" << endl;
-	gSystem->Load("$MARABOU/lib/libTMrbUtils.so");
-	gSystem->Load("$ROOTSYS/lib/libGed.so");
-	gSystem->Load("$MARABOU/lib/libTGMrbUtils.so");
-	gSystem->Load("$MARABOU/lib/libTMbsSetup.so");
-	gSystem->Load("$MARABOU/lib/libTMrbConfig.so");
+	cout << "[Loading MARaBOU's config libs]" << endl;
+	gSystem->Load("libTMrbUtils.so");
+	gSystem->Load("libGed.so");
+	gSystem->Load("libTGMrbUtils.so");
+	gSystem->Load("libTMbsSetup.so");
+	gSystem->Load("libTMrbConfig.so");
 }

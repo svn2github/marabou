@@ -1,14 +1,12 @@
 //________________________________________________________________[ROOT MACRO]
 //////////////////////////////////////////////////////////////////////////////
-// @(#)Name:         %M%
-// @(#)Purpose:      Load foreground colors
-// Description:      Defines ESC sequences to set foreground colors
-//                   in vt100-style outputs
-// @(#)Author:       MBS and ROOT Based Online Offline Utility
-// @(#)Revision:     SCCS:  %W%
-// @(#)Date:         Tue Aug 10 14:00:16 1999
-// URL:              
-// Keywords:
+// Name:             LoadColors.C
+// Purpose:          Define VT100-like strings to output colored text
+// Description:      VT100-like sequences to output colored text
+// Author:           R. Lutter
+// Mailto:           <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
+// Revision:         $Id: LoadColors.C,v 1.2 2005-12-06 14:01:25 Rudolf.Lutter Exp $       
+// Date:           
 //////////////////////////////////////////////////////////////////////////////
 
 {
