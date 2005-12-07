@@ -5,7 +5,7 @@
 # Authors: O.Schaile
 
 if [ -z $INSTDIR ] ; then
-   echo WARNING, INSTDIR not defined
+   echo "WARNING, INSTDIR not defined"
    echo setting to: `pwd`
    INSTDIR=`pwd`
 fi
@@ -30,12 +30,12 @@ echo "BINDIR         := $INSTDIR/bin      " >> $MAKEOUT
 echo "LIBDIR         := $INSTDIR/lib      " >> $MAKEOUT
 echo "OBJDIR         := $INSTDIR/obj      " >> $MAKEOUT
 echo "INCDIR         := $INSTDIR/include  " >> $MAKEOUT
-echo "ETCDIR         := $INSTDIR          " >> $MAKEOUT
-echo "DATADIR		   := $INSTDIR          " >> $MAKEOUT
+echo "ETCDIR         := $INSTDIR/etc      " >> $MAKEOUT
+echo "DATADIR		   := $INSTDIR/data     " >> $MAKEOUT
 echo "MACRODIR  	   := $INSTDIR/macros   " >> $MAKEOUT
 echo "SRCDIR 		   := $INSTDIR/src      " >> $MAKEOUT
 echo "ICONPATH  	   := $INSTDIR/icons    " >> $MAKEOUT
-echo "DOCDIR 		   := $INSTDIR          " >> $MAKEOUT
+echo "DOCDIR 		   := $INSTDIR/doc      " >> $MAKEOUT
 echo "TESTDIR		   := $INSTDIR/test     " >> $MAKEOUT
 echo "TUTDIR 		   := $INSTDIR/tutorials" >> $MAKEOUT
 

@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.11 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.12 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -185,6 +185,8 @@ class TMrbSubevent : public TNamed {
 		const Char_t * GetLofModulesAsString(TString & LofModules) const;
 		inline TObjArray * GetLofParams() { return(&fLofParams); };
 		const Char_t * GetLofParamsAsString(TString & LofParams) const;
+
+		void Browse(TBrowser * Browser);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

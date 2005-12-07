@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsReadoutProc.cxx,v 1.17 2005-09-06 11:52:02 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsReadoutProc.cxx,v 1.18 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,7 @@ namespace std {} using namespace std;
 #include "Rtypes.h"
 
 #include "TMrbLogger.h"
+#include "TMrbSystem.h"
 
 #include "TMbsSetup.h"
 #include "TMbsReadoutProc.h"
@@ -839,7 +840,10 @@ Bool_t TMbsReadoutProc::CopyMakefile(const Char_t * SrcDir) {
 	srcPath += "/";
 
 	fname = mkFile + ".mk";
-	if (gSystem->Which(srcDir.Data(), fname.Data()) == NULL) {
+	TString fpath;
+	TMrbSystem ux;
+	ux.Which(fpath, srcDir.Data(), fname.Data());
+	if (fpath.IsNull()) {
 		gMrbLog->Err() << "No such file - " << fname << endl;
 		gMrbLog->Flush(this->ClassName(), "CopyMakefile");
 		isOK = kFALSE;
@@ -936,7 +940,10 @@ Bool_t TMbsReadoutProc::CompileReadout(const Char_t * Version) {
 	if (!isOK) return(kFALSE);
 
 	mkFile = codeName + ".mk";
-	if (gSystem->Which(srcPath.Data(), mkFile.Data()) == NULL) {
+	TMrbSystem ux;
+	TString mkpath;
+	ux.Which(mkpath, srcPath.Data(), mkFile.Data());
+	if (mkpath.IsNull()) {
 		gMrbLog->Err() << "No such file - " << mkFile << " (searched on " << srcPath << ")" << endl;
 		gMrbLog->Flush(this->ClassName(), "CompileReadout");
 		isOK = kFALSE;

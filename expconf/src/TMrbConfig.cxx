@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.105 2005-11-28 10:05:12 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.105 2005-11-28 10:05:12 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.106 2005-12-07 15:05:10 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.106 2005-12-07 15:05:10 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1364,11 +1364,13 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 		tf = pp->GetT();
 		tf.Prepend(prefix.Data());
 		tf1 = tf;
-		TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			tf = pp->GetT();
 			tf2 = tf;
-			fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+			ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		}
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "Template file not found -" << endl;
@@ -2119,11 +2121,13 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 		tf = pp->GetT();
 		tf.Prepend(prefix.Data());
 		tf1 = tf;
-		TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			tf = pp->GetT();
 			tf2 = tf;
-			fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+			ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		}
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "Template file not found -" << endl;
@@ -3521,11 +3525,12 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 	gSystem->ExpandPathName(templatePath);
 
 	TString fileSpec = "";
+	TMrbSystem ux;
 	if (CodeFile != NULL) {
 		tf = CodeFile;
 		tf += Extension;
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) {
 		tf = ClassName;
@@ -3533,7 +3538,7 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 		tf += "_Common";
 		tf += Extension;
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) return(kTRUE);
 
@@ -3708,11 +3713,13 @@ Bool_t TMrbConfig::MakeConfigCode(const Char_t * CodeFile, Option_t * Options) {
 		tf = pp->GetT();
 		tf.Prepend(prefix.Data());
 		tf1 = tf;
-		TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			tf = pp->GetT();
 			tf2 = tf;
-			fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+			ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		}
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "Template file not found -" << endl;
@@ -4062,11 +4069,13 @@ Bool_t TMrbConfig::MakeRcFile(const Char_t * CodeFile, const Char_t * ResourceNa
 		tf = pp->GetT();
 		tf.Prepend(prefix.Data());
 		tf1 = tf;
-		TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			tf = pp->GetT();
 			tf2 = tf;
-			fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+			ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		}
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "Template file not found -" << endl;
@@ -4289,7 +4298,9 @@ Bool_t TMrbConfig::CallUserMacro(const Char_t * MacroName, Bool_t AclicFlag) {
 	
 	TString macroPath = gEnv->GetValue("Root.MacroPath", ".:$HOME/rootmacros:$MARABOU/macros");
 	gSystem->ExpandPathName(macroPath);
-	TString fileSpec = gSystem->Which(macroPath.Data(), fUserMacro.Data());
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, macroPath.Data(), fUserMacro.Data());
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err()	<< "User macro not found -" << endl;
 		gMrbLog->Flush(this->ClassName(), "CallUserMacro");
@@ -4395,7 +4406,9 @@ Bool_t TMrbConfig::CreateUserMacro() {
 
 	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
-	TString fileSpec = gSystem->Which(templatePath.Data(), "UserMacro.C.code");
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, templatePath.Data(), "UserMacro.C.code");
 	if (!fileSpec.IsNull()) {
 		ofstream macroStrm(fUserMacro.Data(), ios::out);
 		TMrbTemplate macroTmpl;
@@ -4548,6 +4561,8 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 	TString userFile = UserFile;
 	TMrbLofNamedX iclOptions;
 
+	TMrbSystem ux;
+
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetConfigOptions() & kCfgOptVerbose) != 0);
     iclOptions.AddNamedX(kMrbIncludeOptions);
 
@@ -4563,7 +4578,8 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 		return(kFALSE);
 	}
 
-	TString fileSpec = gSystem->Which(userPath.Data(), userFile.Data());
+	TString fileSpec;
+	ux.Which(fileSpec, userPath.Data(), userFile.Data());
 
 	if (fileSpec.IsNull()) {
 		if (AutoGenFlag && (userFile.Index(rxh, 0) >= 0)) {
@@ -4579,7 +4595,6 @@ Bool_t TMrbConfig::IncludeUserCode(const Char_t * IclPath, const Char_t * UserFi
 		}
 	}
 
-	TMrbSystem ux;
 	ux.GetDirName(userPath, fileSpec.Data());
 	userPath = ux.GetRelPath(userPath);
 
@@ -4882,7 +4897,8 @@ Bool_t TMrbConfig::IncludeUserLib(const Char_t * IclPath, const Char_t * UserLib
 	if (userPath.Length() == 0) userPath = gSystem->WorkingDirectory();
 	else gSystem->ExpandPathName(userPath);
 
-	TString fileSpec = gSystem->Which(userPath.Data(), libSo.Data());
+	TString fileSpec;
+	ux.Which(fileSpec, userPath.Data(), libSo.Data());
 
 	TString libSoPath;
 	if (fileSpec.IsNull()) {
@@ -5041,7 +5057,9 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 	Int_t n = (uevtName.EndsWith(".cxx")) ? 4 : 2;
 	uevtName.Resize(uevtName.Length() - n);
 
-	TString fileSpec = gSystem->Which(userPath.Data(), userFile.Data());
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, userPath.Data(), userFile.Data());
 
 	EMrbIncludeOptions classOpt = UserDefinedEvent ? TMrbConfig::kIclOptUserDefinedEvent : TMrbConfig::kIclOptUserClass;
 
@@ -5120,7 +5138,6 @@ Bool_t TMrbConfig::IncludeUserClass(const Char_t * IclPath, const Char_t * UserF
 		gMrbLog->Flush(this->ClassName(), "IncludeUserClass");
 	}
 
-	TMrbSystem ux;
 	userPath = ux.GetRelPath(userPath);
 	userFile.ReplaceAll(".h", ".cxx");
 	fLofUserIncludes.AddNamedX(classOpt, userFile.Data(), userPath.Data());
@@ -5216,7 +5233,9 @@ Bool_t TMrbConfig::CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent,
 		tmplFile = "UserEventUser.cxx.code";
 	}
 
-	TString fileSpec = gSystem->Which(templatePath.Data(), tmplFile.Data());
+	TString fileSpec ;
+	TMrbSystem ux;
+	ux.Which(fileSpec, templatePath.Data(), tmplFile.Data());
 	if (!fileSpec.IsNull()) {
 		TMrbTemplate uevtTmpl;
 		if (uevtTmpl.Open(fileSpec.Data(), &fLofUserEventTags)) {			
@@ -5329,7 +5348,9 @@ Bool_t TMrbConfig::ExecRootMacro(const Char_t * Macro) {
 
 	TString macroPath = gEnv->GetValue("Unix.*.Root.MacroPath", ".:macros:$(MARABOU)/macros");
 	gSystem->ExpandPathName(macroPath);
-	TString macroFile = gSystem->Which(macroPath.Data(), Macro);
+	TString macroFile;
+	TMrbSystem ux;
+	ux.Which(macroFile, macroPath.Data(), Macro);
 	if (macroFile.IsNull()) {
         gMrbLog->Err() << "Macro file not found - " << Macro << " (searched on .rootrc:Unix.*.Root.MacroPath)" << endl;
 		gMrbLog->Flush(this->ClassName(), "ExecRootMacro");

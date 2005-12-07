@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.20 2005-11-15 14:01:48 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.21 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -20,7 +20,10 @@ namespace std {} using namespace std;
 #include <fstream>
 
 #include "TEnv.h"
+#include "TRootBrowser.h"
+#include "TGLabel.h"
 
+#include "TMrbSystem.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
@@ -572,13 +575,14 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 	gSystem->ExpandPathName(templatePath);
 
 	TString fileSpec = "";
+	TMrbSystem ux;
 	if (this->HasPrivateCode()) {
 		tf = "Subevent_";
 		tf += sevtNameUC;
 		tf += Extension;
 		tf += ".code";
 		tf1 = tf;
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
@@ -586,7 +590,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				tf += Extension;
 				tf += ".code";
 				tf2 = tf;
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 			if (fileSpec.IsNull()) {
 				tf = this->ClassName();
@@ -594,7 +598,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				tf += ".code";
 				tf.ReplaceAll("TMrb", "");
 				tf3 = tf;
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 		}
 	}
@@ -603,7 +607,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 		tf += Extension;
 		tf += ".code";
 		tf4 = tf;
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err()	<< "Template file not found -" << endl;
@@ -1927,4 +1931,8 @@ Bool_t TMrbSubevent::UseSpecialHit(const Char_t * HitName, Int_t DataLength) {
 		sts = kFALSE;
 	}
 	return(sts);
+}
+
+
+void TMrbSubevent::Browse(TBrowser * Browser) {
 }

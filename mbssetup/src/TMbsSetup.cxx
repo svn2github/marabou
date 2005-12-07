@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMbsSetup.cxx,v 1.33 2005-11-10 09:07:07 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMbsSetup.cxx,v 1.34 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //
 // ************************************************************************************************************************
@@ -67,6 +67,7 @@ namespace std {} using namespace std;
 
 #include "TMrbTemplate.h"
 #include "TMrbLogger.h"
+#include "TMrbSystem.h"
 
 #include "TMbsSetup.h"
 
@@ -129,7 +130,8 @@ TMbsSetup::TMbsSetup(const Char_t * SetupFile) : TMrbEnv() {
 		this->Open(setupFile.Data());			// open resource file
 
 		gSystem->ExpandPathName(defaultSetupPath);
-		defaultSetupFile = gSystem->Which(defaultSetupPath.Data(), "mbssetup_default");
+		TMrbSystem ux;
+		ux.Which(defaultSetupFile, defaultSetupPath.Data(), "mbssetup_default");
 		if (defaultSetupFile.IsNull()) {
 			gMrbLog->Err() << "No such file - mbssetup_default (path = " << defaultSetupPath << ")" << endl;
 			gMrbLog->Flush(this->ClassName());

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.12 2005-09-19 09:06:29 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.13 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -376,13 +376,14 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 	evtNameUC(0,1).ToUpper();
 
 	TString fileSpec = "";
+	TMrbSystem ux;
 	if (this->HasPrivateCode()) {
 		tf = "Event_";
 		tf += evtNameUC;
 		tf += Extension;
 		tf += ".code";
 		tf1 = tf;
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
@@ -390,7 +391,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 				tf += Extension;
 				tf += ".code";
 				tf2 = tf;
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 			if (fileSpec.IsNull()) {
 				tf = this->ClassName();
@@ -398,7 +399,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 				tf += ".code";
 				tf.ReplaceAll("TMrb", "");
 				tf3 = tf;
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 		}
 	}
@@ -407,7 +408,7 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 		tf += Extension;
 		tf += ".code";
 		tf3 = tf;
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err()	<< "Template file not found -" << endl;

@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCologne_CPTM.cxx,v 1.1 2005-04-21 07:18:04 rudi Exp $       
+// Revision:       $Id: TMrbCologne_CPTM.cxx,v 1.2 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -21,6 +21,7 @@ namespace std {} using namespace std;
 #include "TDirectory.h"
 #include "TEnv.h"
 
+#include "TMrbSystem.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
@@ -340,26 +341,27 @@ Bool_t TMrbCologne_CPTM::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAna
 	if (ext(0) != '.') ext.Prepend("_");
 
 	TString fileSpec = "";
+	TMrbSystem ux;
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += ext.Data();
 				tf += ".code";
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 			if (fileSpec.IsNull()) {
 				tf = "Module_";
 				tf += className;
 				tf += ext.Data();
 				tf += ".code";
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 		}
 	}
@@ -367,7 +369,7 @@ Bool_t TMrbCologne_CPTM::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAna
 		tf = "Module";
 		tf += ext.Data();
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) return(kTRUE);
 	
@@ -440,7 +442,9 @@ Bool_t TMrbCologne_CPTM::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag
 	tf += this->ClassName();
 	tf.ReplaceAll("TMrb", "");
 	tf += ".rc.code";
-	TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	if (fileSpec.IsNull()) return(kTRUE);
 
 	if (verboseMode) {

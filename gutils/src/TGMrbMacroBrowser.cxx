@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.10 2005-05-18 16:58:57 marabou Exp $       
+// Revision:       $Id: TGMrbMacroBrowser.cxx,v 1.11 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 // Layout:
 //Begin_Html
@@ -2287,7 +2287,8 @@ Bool_t TGMrbMacroEdit::SaveMacro(const Char_t * FileName) {
 		return(kFALSE);
 	}
 
-	TString fileSpec = gSystem->Which(templatePath.Data(), "MacroBrowserTemplate.C");
+	TString fileSpec;
+	ux.Which(fileSpec, templatePath.Data(), "MacroBrowserTemplate.C");
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err() << "No such file - " << templatePath << "/" << "MacroBrowserTemplate.C"	<< endl;
 		gMrbLog->Flush(this->ClassName(), "Savemacro");

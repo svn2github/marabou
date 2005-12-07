@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.11 2005-10-26 06:47:23 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.12 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -24,6 +24,7 @@ namespace std {} using namespace std;
 #include "TObjString.h"
 
 #include "TMrbLogger.h"
+#include "TMrbSystem.h"
 
 #include "TMrbDGFData.h"
 #include "TMrbDGF.h"
@@ -266,7 +267,9 @@ Int_t TMrbDGFData::ReadFPGACodeBinary(EMrbFPGAType FPGAType, const Char_t * Code
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, dataPath.Data(), CodeFile);
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "[" << sysfip << "FPGA] No such file - " << CodeFile << endl;
 			gMrbLog->Err() << "(Searched on path " << dataPath << ")" << endl;
@@ -403,7 +406,9 @@ Int_t TMrbDGFData::ReadFPGACodeAscii(EMrbFPGAType FPGAType, const Char_t * CodeF
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, dataPath.Data(), CodeFile);
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "[" << sysfip << "FPGA] No such file - " << CodeFile << endl;
 			gMrbLog->Err() << "(Searched on path " << dataPath << ")" << endl;
@@ -598,7 +603,9 @@ Int_t TMrbDGFData::ReadDSPCodeBinary(const Char_t * CodeFile, Bool_t Forced) {
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, dataPath.Data(), CodeFile);
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "No such file - " << CodeFile << endl
 							<< "(Searched on path " << dataPath << ")" << endl;
@@ -696,7 +703,9 @@ Int_t TMrbDGFData::ReadDSPCodeAscii(const Char_t * CodeFile, Bool_t Forced) {
 
 	codeFile = CodeFile;
 	if (!codeFile.BeginsWith("../") && !codeFile.BeginsWith("/")) {
-		TString fileSpec = gSystem->Which(dataPath.Data(), CodeFile);
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, dataPath.Data(), CodeFile);
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "No such file - " << CodeFile << endl
 							<< "(Searched on path " << dataPath << ")" << endl;
@@ -816,7 +825,9 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamFile, const Char_t * Comme
 
 	TString paramFile = ParamFile;
 	if (!paramFile.BeginsWith("../") && !paramFile.BeginsWith("/")) {
-		TString fileSpec = gSystem->Which(dataPath.Data(), ParamFile);
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, dataPath.Data(), ParamFile);
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err() << "No such file - " << ParamFile << ", searched on \"" << dataPath << "\"" << endl;
 			gMrbLog->Flush(this->ClassName(), "AddToNameTable");

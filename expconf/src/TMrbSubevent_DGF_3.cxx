@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.7 2005-05-25 09:33:54 marabou Exp $       
+// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.8 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -25,6 +25,7 @@ namespace std {} using namespace std;
 #include "TMrbTemplate.h"
 #include "TMrbConfig.h"
 #include "TMrbModule.h"
+#include "TMrbSystem.h"
 #include "TMrbModuleChannel.h"
 #include "TMrbSubevent_DGF_3.h"
 
@@ -241,7 +242,9 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 	tf = this->ClassName();
 	tf.ReplaceAll("TMrb", "");
 	tf += ".rc.code";
-	TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, templatePath.Data(), tf.Data());
 
 	if (fileSpec.IsNull()) return(kTRUE);
 

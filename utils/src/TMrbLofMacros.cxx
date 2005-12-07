@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbLofMacros.cxx,v 1.6 2004-11-16 13:30:27 rudi Exp $       
+// Revision:       $Id: TMrbLofMacros.cxx,v 1.7 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -173,7 +173,9 @@ Bool_t TMrbLofMacros::AddMacro(const Char_t * MacroName) {
 		return(kTRUE);
 	} else {
 		if (searchIt) {
-			TString fileSpec = gSystem->Which(fPath, macroName.Data());
+			TString fileSpec;
+			TMrbSystem ux;
+			ux.Which(fileSpec, fPath, macroName.Data());
 			if (!fileSpec.IsNull()) {
 				macroPath = fileSpec;
 			} else {

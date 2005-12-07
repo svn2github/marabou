@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.14 2005-04-19 08:32:16 rudi Exp $       
+// Revision:       $Id: TMrbXia_DGF_4C.cxx,v 1.15 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -24,6 +24,7 @@ namespace std {} using namespace std;
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
+#include "TMrbSystem.h"
 #include "TMrbConfig.h"
 #include "TMrbCamacChannel.h"
 #include "TMrbCamacRegister.h"
@@ -380,7 +381,9 @@ Bool_t TMrbXia_DGF_4C::ReadNameTable() {
 		return(kFALSE);
 	}
 
-	TString fileSpec = gSystem->Which(dataPath.Data(), paramFile.Data());
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, dataPath.Data(), paramFile.Data());
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err() << "No such file - " << paramFile << ", searched on \"" << dataPath << "\"" << endl;
 		gMrbLog->Flush(this->ClassName(), "ReadNameTable");
@@ -505,26 +508,27 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 	if (ext(0) != '.') ext.Prepend("_");
 
 	TString fileSpec = "";
+	TMrbSystem ux;
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += ext.Data();
 				tf += ".code";
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 			if (fileSpec.IsNull()) {
 				tf = "Module_";
 				tf += className;
 				tf += ext.Data();
 				tf += ".code";
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 		}
 	}
@@ -532,7 +536,7 @@ Bool_t TMrbXia_DGF_4C::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnaly
 		tf = "Module";
 		tf += ext.Data();
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) return(kTRUE);
 	
@@ -703,7 +707,9 @@ Bool_t TMrbXia_DGF_4C::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileTag T
 	tf += this->ClassName();
 	tf.ReplaceAll("TMrb", "");
 	tf += ".rc.code";
-	TString fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	if (fileSpec.IsNull()) return(kTRUE);
 
 	if (verboseMode) {

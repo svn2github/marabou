@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.12 2005-12-06 14:20:30 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.13 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -24,6 +24,7 @@ namespace std {} using namespace std;
 #include "TObjArray.h"
 #include "TObjString.h"
 #include "TMrbSystem.h"
+#include "TMrbString.h"
 #include "TMrbLogger.h"
 
 #include "SetColor.h"
@@ -409,34 +410,49 @@ const Char_t * TMrbSystem::Which(TString & Result, const Char_t * Search, const 
 	return(Result.Data());
 }
 
-Int_t TMrbSystem::Load(const Char_t * Module, const Char_t * Entry, Bool_t System) {
+Int_t TMrbSystem::Load(const Char_t * Module, const Char_t * Entry, Bool_t SystemFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::Load
 // Purpose:        TSystem::Load() + Printout
 // Arguments:      Char_t * Module       -- library module to be loaded
 //                 Char_t * Entry        -- lib entry to be searched for
-//                 Bool_t System         -- kTRUE if it is a system lib
+//                 Bool_t SystemFlag     -- kTRUE if it is a system lib
 // Results:        Int_t Status          -- -1, 0, 1
 // Exceptions:     
 // Description:    Performs TSystem::Load and prints result
+//                 Argument 'Module' may be a :-separated list of libraries
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TString path;
-	this->Which(path, "$LD_LIBRARY_PATH", Module);
-	if (path.IsNull()) {
-		gMrbLog->Err()	<< "No such library - " << Module << " (searched on $LD_LIBRARY_PATH)" << endl;
+	TString ldLibPath = gSystem->Getenv("LD_LIBRARY_PATH");
+	if (ldLibPath.IsNull()) {
+		gMrbLog->Err()	<< "Environment not set - LD_LIBRARY_PATH" << endl;
 		gMrbLog->Flush(this->ClassName(), "Load");
 		return(-1);
 	}
 
-	Int_t sts = gSystem->Load(path.Data(), Entry, System);
-	this->PrintLoadPath(sts, Module, path.Data(), Entry, System);
-	return(sts);
+	TObjArray lofLibs;
+	TMrbString module = Module;
+	Int_t nofLibs = module.Split(lofLibs, ":");
+	Int_t sts = 0;
+	for (Int_t i = 0; i < nofLibs; i++) {
+		TString path;
+		TString mod = ((TObjString *) lofLibs[i])->GetString().Data();
+		this->Which(path, "$LD_LIBRARY_PATH", mod);
+		if (path.IsNull()) {
+			gMrbLog->Err()	<< "No such library - " << mod << " (searched on $LD_LIBRARY_PATH)" << endl;
+			gMrbLog->Flush(this->ClassName(), "Load");
+			return(-1);
+		}
+		sts = gSystem->Load(path.Data(), Entry, SystemFlag);
+		this->PrintLoadPath(sts, mod.Data(), path.Data(), Entry, SystemFlag);
+		if (sts == -1) return(-1);
+	}
+	return((nofLibs == 1) ? sts : 0);
 }
 
-void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t * Path, const Char_t * Entry, Bool_t System) {
+void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t * Path, const Char_t * Entry, Bool_t SystemFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::PrintLoadPath
@@ -445,7 +461,7 @@ void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t
 //                 Char_t * Module       -- library module to be loaded
 //                 CHar_t * Path         -- path library was found on
 //                 Char_t * Entry        -- lib entry to be searched for
-//                 Bool_t System         -- kTRUE if it is a system lib
+//                 Bool_t SystemFlag     -- kTRUE if it is a system lib
 // Results:        --
 // Exceptions:     
 // Description:    Outputs load path to cout.
@@ -456,7 +472,7 @@ void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t
 	Bool_t hasEntry = (Entry != NULL && *Entry != '\0');
 	Bool_t hasPath = (Path != NULL && *Path != '\0');
 
-	TString libType = System ? "SystemLib" : "Library";
+	TString libType = SystemFlag ? "SystemLib" : "Library";
 
 	TString path;
 	if (hasPath)	path = Path;

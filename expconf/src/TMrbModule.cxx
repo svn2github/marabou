@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.11 2004-11-05 12:25:26 marabou Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.12 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -20,6 +20,7 @@ namespace std {} using namespace std;
 
 #include "TEnv.h"
 
+#include "TMrbSystem.h"
 #include "TMrbNamedX.h"
 #include "TMrbLofNamedX.h"
 #include "TMrbLogger.h"
@@ -552,26 +553,26 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	if (ext(0) != '.') ext.Prepend("_");
 
 	TString fileSpec = "";
+	TMrbSystem ux;
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += ext.Data();
-				tf += ".code";
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 			if (fileSpec.IsNull()) {
 				tf = "Module_";
 				tf += className;
 				tf += ext.Data();
 				tf += ".code";
-				fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 		}
 	}
@@ -579,7 +580,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 		tf = "Module";
 		tf += ext.Data();
 		tf += ".code";
-		fileSpec = gSystem->Which(templatePath.Data(), tf.Data());
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
 	if (fileSpec.IsNull()) return(kTRUE);
 	
@@ -634,7 +635,9 @@ Bool_t TMrbModule::LoadCodeTemplates(const Char_t * TemplateFile) {
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/modules");
 
 	gSystem->ExpandPathName(templatePath);
-	TString fileSpec = gSystem->Which(templatePath.Data(), TemplateFile);
+	TString fileSpec;
+	TMrbSystem ux;
+	ux.Which(fileSpec, templatePath.Data(), TemplateFile);
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err() << "No such file - " << templatePath << "/" << TemplateFile << endl;
 		gMrbLog->Flush(this->ClassName(), "LoadCodeTemplates");
