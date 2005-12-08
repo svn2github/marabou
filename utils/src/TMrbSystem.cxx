@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSystem.cxx,v 1.13 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSystem.cxx,v 1.14 2005-12-08 09:33:52 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -410,18 +410,21 @@ const Char_t * TMrbSystem::Which(TString & Result, const Char_t * Search, const 
 	return(Result.Data());
 }
 
-Int_t TMrbSystem::Load(const Char_t * Module, const Char_t * Entry, Bool_t SystemFlag) {
+Int_t TMrbSystem::Load(const Char_t * LofModules, Bool_t SystemFlag) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TMrbSystem::Load
 // Purpose:        TSystem::Load() + Printout
-// Arguments:      Char_t * Module       -- library module to be loaded
-//                 Char_t * Entry        -- lib entry to be searched for
+// Arguments:      Char_t * LofModules   -- library module to be loaded
 //                 Bool_t SystemFlag     -- kTRUE if it is a system lib
 // Results:        Int_t Status          -- -1, 0, 1
 // Exceptions:     
 // Description:    Performs TSystem::Load and prints result
-//                 Argument 'Module' may be a :-separated list of libraries
+//                 Argument 'LofModules' is expected to be a :-separated list
+//                 of library modules:
+//                    lib1:lib2:....
+//                 An entry point may be specified by appending it in parens:
+//                    lib1(entry1):lib2(entry2)
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
@@ -433,20 +436,32 @@ Int_t TMrbSystem::Load(const Char_t * Module, const Char_t * Entry, Bool_t Syste
 	}
 
 	TObjArray lofLibs;
-	TMrbString module = Module;
-	Int_t nofLibs = module.Split(lofLibs, ":");
+	TMrbString lofModules = LofModules;
+	Int_t nofLibs = lofModules.Split(lofLibs, ":");
 	Int_t sts = 0;
 	for (Int_t i = 0; i < nofLibs; i++) {
 		TString path;
 		TString mod = ((TObjString *) lofLibs[i])->GetString().Data();
+		TString entry = "";
+		Int_t lparen = mod.Index("(", 0);
+		Int_t rparen = mod.Index(")", 0);
+		Bool_t err = (lparen == -1 && rparen != -1) || (lparen != -1 && rparen == -1) || (lparen > rparen);
+		if (err) {
+			mod.Resize(lparen);
+			gMrbLog->Err()	<< "[" << mod << "] Wrong entry spec - ignored" << endl;
+			gMrbLog->Flush(this->ClassName(), "Load");
+		} else if (lparen != -1) {
+			entry = mod(lparen + 1, rparen - lparen - 1);
+			mod.Resize(lparen);
+		}
 		this->Which(path, "$LD_LIBRARY_PATH", mod);
 		if (path.IsNull()) {
 			gMrbLog->Err()	<< "No such library - " << mod << " (searched on $LD_LIBRARY_PATH)" << endl;
 			gMrbLog->Flush(this->ClassName(), "Load");
 			return(-1);
 		}
-		sts = gSystem->Load(path.Data(), Entry, SystemFlag);
-		this->PrintLoadPath(sts, mod.Data(), path.Data(), Entry, SystemFlag);
+		sts = gSystem->Load(path.Data(), entry, SystemFlag);
+		this->PrintLoadPath(sts, mod.Data(), path.Data(), entry, SystemFlag);
 		if (sts == -1) return(-1);
 	}
 	return((nofLibs == 1) ? sts : 0);
@@ -480,16 +495,16 @@ void TMrbSystem::PrintLoadPath(Int_t Status, const Char_t * Module, const Char_t
 
 	if (printIt) {
 		if (Status == 0) {
-			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (entry " << Entry << ") loaded from " << path << endl;
+			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (with entry " << Entry << ") loaded from " << path << endl;
 			else			gMrbLog->Out()	<< libType << " " << Module << " loaded from " << path << endl;
 		} else if (Status == 1) {
-			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (entry " << Entry << ") already loaded" << endl;
+			if (hasEntry)	gMrbLog->Out()	<< libType << " " << Module << " (with entry " << Entry << ") already loaded" << endl;
 			else			gMrbLog->Out()	<< libType << " " << Module << " already loaded" << endl;
 		} else if (Status == -1) {
 			if (hasEntry) {
 				this->Which(path, "$LD_LIBRARY_PATH", Module);
 				if (path.IsNull())	gMrbLog->Err()	<< libType << " " << Module << " not found on $LD_LIBRARY_PATH" << endl;
-				else				gMrbLog->Err()	<< "[" << libType << " " << Module << "] Entry " << Entry << "not found" << endl;
+				else				gMrbLog->Err()	<< "[" << libType << " " << Module << "] Entry " << Entry << " not found" << endl;
 			} else					gMrbLog->Err()	<< libType << " " << Module << " not found on $LD_LIBRARY_PATH" << endl;
 		}
 		gMrbLog->Flush(this->ClassName(), "Load");
