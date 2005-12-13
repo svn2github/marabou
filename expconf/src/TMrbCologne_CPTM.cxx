@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbCologne_CPTM.cxx,v 1.2 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbCologne_CPTM.cxx,v 1.3 2005-12-13 12:46:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -342,12 +342,15 @@ Bool_t TMrbCologne_CPTM::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAna
 
 	TString fileSpec = "";
 	TMrbSystem ux;
+	TObjArray err;
+	err.Delete();
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
@@ -355,6 +358,7 @@ Bool_t TMrbCologne_CPTM::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAna
 				tf += ext.Data();
 				tf += ".code";
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
+				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
 			if (fileSpec.IsNull()) {
 				tf = "Module_";
@@ -362,7 +366,17 @@ Bool_t TMrbCologne_CPTM::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAna
 				tf += ext.Data();
 				tf += ".code";
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
+				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
+		}
+		if (fileSpec.IsNull() && verboseMode) {
+			gMrbLog->Wrn() << "Can't find code file(s):";
+			for (Int_t i = 0; i < err.GetLast(); i++) {
+				gMrbLog->Wrn() << ((i == 0) ? " neither " : " nor ");
+				gMrbLog->Wrn() << ((TObjString *) err[i])->GetString();
+			}
+			gMrbLog->Wrn() << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
 	}
 	if (fileSpec.IsNull()) {

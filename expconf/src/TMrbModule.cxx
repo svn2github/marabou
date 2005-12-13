@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.13 2005-12-13 09:41:36 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.14 2005-12-13 12:46:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -524,8 +524,6 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	TString templatePath;
 	TString anaTemplateFile;
 
-	TString className;
-	TString tf;
 	const Char_t * pcf;
 
 	TString line;
@@ -545,21 +543,25 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 	templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	className = this->ClassName();
+	TString className = this->ClassName();
 	className.ReplaceAll("TMrb", "");
 	className(0,1).ToUpper();
 
 	TString ext = Extension;
 	if (ext(0) != '.') ext.Prepend("_");
 
+	TString tf;
 	TString fileSpec = "";
 	TMrbSystem ux;
+	TObjArray err;
+	err.Delete();
 	if (this->HasPrivateCode()) {
 		tf = "Module_";
 		tf += moduleNameUC;
 		tf += ext.Data();
 		tf += ".code";
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
@@ -567,6 +569,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 				tf += ext.Data();
 				tf += ".code";
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
+				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
 			if (fileSpec.IsNull()) {
 				tf = "Module_";
@@ -574,7 +577,17 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 				tf += ext.Data();
 				tf += ".code";
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
+				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
+		}
+		if (fileSpec.IsNull() && verboseMode) {
+			gMrbLog->Wrn() << "Can't find code file(s):";
+			for (Int_t i = 0; i < err.GetLast(); i++) {
+				gMrbLog->Wrn() << ((i == 0) ? " neither " : " nor ");
+				gMrbLog->Wrn() << ((TObjString *) err[i])->GetString();
+			}
+			gMrbLog->Wrn() << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
 	}
 	if (fileSpec.IsNull()) {

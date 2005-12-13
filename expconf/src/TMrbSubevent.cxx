@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.21 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.22 2005-12-13 12:46:45 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -576,6 +576,8 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 
 	TString fileSpec = "";
 	TMrbSystem ux;
+	TObjArray err;
+	err.Delete();
 	if (this->HasPrivateCode()) {
 		tf = "Subevent_";
 		tf += sevtNameUC;
@@ -583,6 +585,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 		tf += ".code";
 		tf1 = tf;
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 		if (fileSpec.IsNull()) {
 			pcf = this->GetPrivateCodeFile();
 			if (pcf != NULL) {
@@ -591,6 +594,7 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				tf += ".code";
 				tf2 = tf;
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
+			if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
 			if (fileSpec.IsNull()) {
 				tf = this->ClassName();
@@ -599,7 +603,17 @@ Bool_t TMrbSubevent::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyze
 				tf.ReplaceAll("TMrb", "");
 				tf3 = tf;
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
+				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
+		}
+		if (fileSpec.IsNull() && verboseMode) {
+			gMrbLog->Wrn() << "Can't find code file(s):";
+			for (Int_t i = 0; i < err.GetLast(); i++) {
+				gMrbLog->Wrn() << ((i == 0) ? " neither " : " nor ");
+				gMrbLog->Wrn() << ((TObjString *) err[i])->GetString();
+			}
+			gMrbLog->Wrn() << endl;
+			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
 	}
 	if (fileSpec.IsNull()) {
