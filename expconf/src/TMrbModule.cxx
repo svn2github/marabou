@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.12 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.13 2005-12-13 09:41:36 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -565,6 +565,7 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 			if (pcf != NULL) {
 				tf = pcf;
 				tf += ext.Data();
+				tf += ".code";
 				ux.Which(fileSpec, templatePath.Data(), tf.Data());
 			}
 			if (fileSpec.IsNull()) {
