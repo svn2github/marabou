@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.14 2005-12-13 12:46:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.15 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -407,15 +407,6 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 				if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 			}
 		}
-		if (fileSpec.IsNull() && verboseMode) {
-			gMrbLog->Wrn() << "Can't find code file(s):";
-			for (Int_t i = 0; i < err.GetLast(); i++) {
-				gMrbLog->Wrn() << ((i == 0) ? " neither " : " nor ");
-				gMrbLog->Wrn() << ((TObjString *) err[i])->GetString();
-			}
-			gMrbLog->Wrn() << endl;
-			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
-		}
 	}
 	if (fileSpec.IsNull()) {
 		tf = "Event";
@@ -423,7 +414,9 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 		tf += ".code";
 		tf3 = tf;
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) err.Add(new TObjString(tf.Data()));
 	}
+
 	if (fileSpec.IsNull()) {
 		gMrbLog->Err()	<< "Template file not found -" << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");

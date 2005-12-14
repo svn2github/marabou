@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbModule.cxx,v 1.14 2005-12-13 12:46:45 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbModule.cxx,v 1.15 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -581,12 +581,13 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 			}
 		}
 		if (fileSpec.IsNull() && verboseMode) {
-			gMrbLog->Wrn() << "Can't find code file(s):";
-			for (Int_t i = 0; i < err.GetLast(); i++) {
-				gMrbLog->Wrn() << ((i == 0) ? " neither " : " nor ");
+			gMrbLog->Wrn() << "Can't find code file(s): ";
+			Int_t n = err.GetEntriesFast();
+			for (Int_t i = 0; i < n; i++) {
+				if (n > 1) gMrbLog->Wrn() << endl << ((i == 0) ? "\t\t\t\t\tneither " : "\t\t\t\t\tnor ");
 				gMrbLog->Wrn() << ((TObjString *) err[i])->GetString();
 			}
-			gMrbLog->Wrn() << endl;
+			gMrbLog->Wrn() << endl << "\t\t\t\t\t(may lead to compiling problems!)" << endl;
 			gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
 		}
 	}
@@ -596,8 +597,9 @@ Bool_t TMrbModule::MakeAnalyzeCode(ofstream & AnaStrm, TMrbConfig::EMrbAnalyzeTa
 		tf += ".code";
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 	}
+
 	if (fileSpec.IsNull()) return(kTRUE);
-	
+
 	if (verboseMode) {
 		gMrbLog->Out()  << "[" << moduleNameLC << "] Using template file " << fileSpec << endl;
 		gMrbLog->Flush(this->ClassName(), "MakeAnalyzeCode");
