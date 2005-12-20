@@ -23,6 +23,7 @@ SONSTIGES
 
 static char sccs_id[] = "%W%";
 
+#include <string.h>
 #include "byte_order.h"
 
 /*BIBLIOTHEKSFUNKTION*********************************************************
@@ -99,7 +100,7 @@ char *bto_get_short(short *out, char *in, int cnt, int bytord) {
 									x.b[1] = *in++;
 									*out++ = x.s;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_REV:
 		case BYTE_ORDER_BSW:	for (i = 0; i < cnt; i++)
@@ -108,8 +109,9 @@ char *bto_get_short(short *out, char *in, int cnt, int bytord) {
 									x.b[0] = *in++;
 									*out++ = x.s;
 								}
-								return(in);
+								break;
 	}
+	return(in);
 }
 
 char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
@@ -130,7 +132,7 @@ char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[3] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_BSW:	for (i = 0; i < cnt; i++)
 								{
@@ -140,7 +142,7 @@ char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[2] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_LSW:	for (i = 0; i < cnt; i++)
 								{
@@ -150,7 +152,7 @@ char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[1] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_REV:	for (i = 0; i < cnt; i++)
 								{
@@ -160,15 +162,15 @@ char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[0] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 	}
+	return(in);
 }
 
 char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 
 	register int i;
 	register char b;
-	int stop;
 
 	switch (bytord)
 	{
@@ -205,6 +207,7 @@ char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 									}
 								}
 	}
+	return(in); 		/* will not be reached */
 }
 
 char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
@@ -225,7 +228,7 @@ char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[3] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_BSW:	for (i = 0; i < cnt; i++)
 								{
@@ -235,7 +238,7 @@ char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[2] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_LSW:	for (i = 0; i < cnt; i++)
 								{
@@ -245,7 +248,7 @@ char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[1] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 
 		case BYTE_ORDER_REV:	for (i = 0; i < cnt; i++)
 								{
@@ -255,7 +258,8 @@ char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
 									x.b[0] = *in++;
 									*out++ = x.l;
 								}
-								return(in);
+								break;
 	}
+	return(in);
 }
 

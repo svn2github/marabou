@@ -414,6 +414,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	}
 
 	bps = 1;
+	fno = 0;
 	if (ctype & (MBS_CTYPE_SYNC | MBS_CTYPE_ASYNC)) {
 		strcpy(host, device);
 		fno = _mbs_connect_to_server(host, ctype);
@@ -570,6 +571,7 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
 	bpp = NULL;
+	buffer_type = 0;
 	while (bpp == NULL) {
 		bpp = _mbs_find_subseq_buffer(mbs);
 		if (bpp == NULL) {
@@ -653,6 +655,7 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	if (bpp == NULL) return(MBS_BTYPE_ABORT);
 	mbs->poolpt = bpp;
 
+	bytes_read = 0;
 	if (mbs->connection & MBS_CTYPE_FILE) {
 		if (mbs->connection & MBS_CTYPE_REMOTE) {
 			sprintf(loc_errbuf, "?NO_REM-[_mbs_read_buffer]- %s: No REMOTE tape access",
