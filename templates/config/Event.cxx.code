@@ -337,13 +337,13 @@ Bool_t TUsrEvt%%EVT_NAME_UC%%::ReplayTreeData(TMrbIOSpec * IOSpec) {
 	return(kTRUE);
 }
 
-Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, const MBSDataIO * BaseAddr) {
+Bool_t TUsrEvt%%EVT_NAME_UC%%::FillEvent(const s_vehe * EventData, MBSDataIO * BaseAddr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvt%%EVT_NAME_UC%%::FillEvent
 // Purpose:        Fill local event instance with MBS data
 // Arguments:      const s_vehe * EventData   -- pointer to MBS event structure
-//                 const MBSDataIO * BaseAddr -- pointer to MBS data base
+//                 MBSDataIO * BaseAddr -- pointer to MBS data base
 // Results:        kTRUE/kFALSE
 // Exceptions:     
 // Description:    Decodes the event header,

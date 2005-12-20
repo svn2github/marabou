@@ -483,7 +483,7 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	const MBSDataIO * BaseAddr; 		// base addr of MBS data
+	MBSDataIO * BaseAddr; 		// base addr of MBS data
 	Bool_t sts;
 
 	if (!gMrbAnalyze->TestRunStatus()) return(kFALSE);		// run is stopped (maybe after pausing)

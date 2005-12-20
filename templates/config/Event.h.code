@@ -23,7 +23,7 @@ class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
 		~TUsrEvt%%EVT_NAME_UC%%() {};		// default dtor
 
 		Int_t SetupLofSubevents();								// build list of subevents
-		Bool_t FillEvent(const s_vehe *, const MBSDataIO *);	// event filling function supplied by system
+		Bool_t FillEvent(const s_vehe *, MBSDataIO *);			// event filling function supplied by system
 		Bool_t BookParams();									// book params for this event
 		Bool_t BookHistograms();								// book histograms for this event
 		Bool_t FillHistograms();								// fill histograms
