@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a user-defined event
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrEvent.h,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.h,v 1.2 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -36,9 +36,9 @@ class TUsrEvent : public TObject {
 		TUsrEvent(); 								// default ctor
 		~TUsrEvent() { fLofSubevents.Delete(); fLofHBXs.Delete(); };	// dtor
 
-		const UShort_t * NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE) const;	// get next subevent
-		UInt_t NextSubeventHeader(const MBSDataIO * BaseAddr) const;
-		const UShort_t * NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE) const;
+		const UShort_t * NextSubevent(MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE) const;	// get next subevent
+		UInt_t NextSubeventHeader(MBSDataIO * BaseAddr) const;
+		const UShort_t * NextSubeventData(MBSDataIO * BaseAddr, Int_t NofWords = 0, Bool_t RawMode = kFALSE) const;
 
 		inline void SetScaleDown(Int_t ScaleDown) { fScaleDown = ScaleDown; }; // set individual scale down
 		inline Int_t GetScaleDown() const { return(fScaleDown); };	// get current scale down

@@ -8,7 +8,7 @@
 //
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTransport.cxx,v 1.14 2005-11-24 13:25:43 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTransport.cxx,v 1.15 2005-12-20 14:26:47 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -114,7 +114,7 @@ Bool_t TMrbTransport::Open(const Char_t * File, const Char_t * Mode, Int_t Buffe
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	const MBSDataIO *mbs;
+	MBSDataIO *mbs;
 	TMrbNamedX * pmod;
 
 	ClearError();
@@ -131,7 +131,7 @@ Bool_t TMrbTransport::Open(const Char_t * File, const Char_t * Mode, Int_t Buffe
 		gMrbLog->Flush(this->ClassName(), "Open");
 		SetError();
 		return(kFALSE);
-	} else if ((mbs = mbs_open_file(File, pmod->GetName(), BufferSize, NULL)) != NULL) {
+	} else if ((mbs = mbs_open_file((Char_t *) File, (Char_t *) pmod->GetName(), BufferSize, NULL)) != NULL) {
 		fInputFile = File;
 		fTransportMode = (TMrbTransport::EMrbTransportMode) pmod->GetIndex();
 		fBufferSize = BufferSize;
@@ -632,16 +632,10 @@ Bool_t TMrbTransport::SetDumpInterval(Int_t NofRecs) {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t sts;
-
 	ClearError();
 
-	sts = mbs_set_dump(fMBSDataIO, NofRecs);
-	if (!sts) {
-		PrintMbsIoError("SetDumpInterval");
-		SetError();
-	}
-	return(sts);
+	mbs_set_dump(fMBSDataIO, NofRecs);
+	return(kTRUE);
 }
 
 Bool_t TMrbTransport::OpenMEDFile(const Char_t * MEDFile) {
@@ -683,19 +677,12 @@ Bool_t TMrbTransport::CloseMEDFile() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t sts;
-
 	ClearError();
 
-	sts = mbs_close_med();
-	if (sts) {
-		gMrbLog->Out()	<< "MED file closed" << endl;
-		gMrbLog->Flush(this->ClassName(), "CloseMEDFile", setblue);
-	} else {
-		PrintMbsIoError("CloseMEDFile");
-		SetError();
-	}
-	return(sts);
+	mbs_close_med();
+	gMrbLog->Out()	<< "MED file closed" << endl;
+	gMrbLog->Flush(this->ClassName(), "CloseMEDFile", setblue);
+	return(kTRUE);
 }
 
 Bool_t TMrbTransport::OpenLMDFile(const Char_t * LMDFile) {
@@ -737,19 +724,12 @@ Bool_t TMrbTransport::CloseLMDFile() {
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t sts;
-
 	ClearError();
 
-	sts = mbs_close_lmd();
-	if (sts) {
-		gMrbLog->Out()	<< "LMD file closed" << endl;
-		gMrbLog->Flush(this->ClassName(), "CloseLMDFile", setblue);
-	} else {
-		PrintMbsIoError("CloseLMDFile");
-		SetError();
-	}
-	return(sts);
+	mbs_close_lmd();
+	gMrbLog->Out()	<< "LMD file closed" << endl;
+	gMrbLog->Flush(this->ClassName(), "CloseLMDFile", setblue);
+	return(kTRUE);
 }
 
 Bool_t TMrbTransport::OpenLogFile(const Char_t * LogFile) {

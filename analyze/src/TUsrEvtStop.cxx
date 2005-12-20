@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvtStop.cxx,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvtStop.cxx,v 1.2 2005-12-20 14:26:47 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -59,7 +59,7 @@ Bool_t TUsrEvtStop::CreateTree() {
 	return(kTRUE);
 }
 
-Bool_t TUsrEvtStop::ExtractTimeStamp(const s_vehe * EventData, const MBSDataIO * BaseAddr) {
+Bool_t TUsrEvtStop::ExtractTimeStamp(const s_vehe * EventData, MBSDataIO * BaseAddr) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvtStop::ExtractTimeStamp

@@ -11,7 +11,7 @@
 // ROOT classes:   TNamed
 // Keywords:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTransport.h,v 1.8 2005-09-09 06:59:14 Rudolf.Lutter Exp $                  
+// Revision:       $Id: TMrbTransport.h,v 1.9 2005-12-20 14:26:47 Rudolf.Lutter Exp $                  
 //////////////////////////////////////////////////////////////////////////////
 
 namespace std {} using namespace std;
@@ -96,7 +96,7 @@ class TMrbTransport : public TNamed {
 		inline UInt_t SubeventWC() { return(fMBSDataIO->sevt_wc); }; 	// return current wc
 		inline UInt_t SubeventID() { return(fMBSDataIO->sevt_id); }; 	// return current id
 
-		inline const MBSDataIO * GetMbsBase() { return(fMBSDataIO); };	// return base addr
+		inline MBSDataIO * GetMbsBase() { return(fMBSDataIO); };	// return base addr
 
 		Bool_t OpenMEDFile(const Char_t * MEDFile); 		// write data as MBS event data
 		Bool_t CloseMEDFile();		
@@ -147,7 +147,7 @@ class TMrbTransport : public TNamed {
 		Int_t fBufferSize;									// buffer size
 		TString fErrorString;								// error message
 
-		const MBSDataIO *fMBSDataIO;						// i/o data base
+		MBSDataIO *fMBSDataIO;						// i/o data base
 
 		Bool_t fErrorFlag;									// error indicator
 

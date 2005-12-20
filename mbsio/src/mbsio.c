@@ -13,8 +13,10 @@
 /* include files needed by mbsio */
 
 #include <stdio.h>
+#include <stdlib.h>
 #include <fcntl.h>
 #include <errno.h>
+#include <time.h>
 #include <ctype.h>
 #include "byte_order.h"
 
@@ -22,6 +24,9 @@
 #define FALSE	0
 
 #include "mbsio.h"
+
+#define C_STYLE_PROTOS
+#include "mbsio_protos.h"
 
 /* include files needed by m.muench's tcp package */
 
@@ -77,16 +82,16 @@ static MBSBufferElem buffer_types[] = {
 					sizeof(s_filhe),		// size
 					0,						// hits
 					NULL,					// proc to unpack
-					_mbs_show_fheader,		// proc to show data
-					_mbs_copy_fheader		// proc to convert data
+					(void *) _mbs_show_fheader,		// proc to show data
+					(void *) _mbs_copy_fheader		// proc to convert data
 				},
 				{	MBS_BTYPE_VME,
 					"VME buffer",
 					sizeof(s_bufhe),
 					0,
 					NULL,
-					_mbs_show_bheader,
-					_mbs_convert_bheader
+					(void *) _mbs_show_bheader,
+					(void *) _mbs_convert_bheader
 				},
 				{0, "", 0,  0,  NULL,   NULL,   NULL}
 			};
@@ -97,8 +102,8 @@ static MBSBufferElem event_types[] = {
 					sizeof(s_vehe),
 					0,
 					NULL,
-					_mbs_show_evhe_10_1,
-					_mbs_convert_eheader
+					(void *) _mbs_show_evhe_10_1,
+					(void *) _mbs_convert_eheader
 				},
 				{0, "", 0,  0,  NULL,   NULL,   NULL}
 			};
@@ -108,169 +113,169 @@ static MBSBufferElem sevent_types[] = {
 					"Chn + Data",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_1,
-					_mbs_show_sev_10_1,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_1,
+					(void *) _mbs_show_sev_10_1,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_WO_ID_1,
 					"Data w/o Chn",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_2,
 					"Chn + Data",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_1,
-					_mbs_show_sev_10_1,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_1,
+					(void *) _mbs_show_sev_10_1,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_WO_ID_2,
 					"Data w/o Chn",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_TIME_STAMP,
 					"Time stamp",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_9000_X,
-					_mbs_show_sev_9000_1,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_9000_X,
+					(void *) _mbs_show_sev_9000_1,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DEAD_TIME,
 					"Dead time",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_9000_X,
-					_mbs_show_sev_9000_2,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_9000_X,
+					(void *) _mbs_show_sev_9000_2,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_DGF_1,
 					"XIA DGF-4C (1)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_DGF_2,
 					"XIA DGF-4C (2)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_DGF_3,
 					"XIA DGF-4C (3, time stamp)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_SILENA_1,
 					"Silena 4418 (1, zero suppr)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_CAMAC_SILENA_2,
 					"Silena 4418 (2, zero suppr)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_CAEN_1,
 					"Caen VME ADCs/TDCs (1)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_CAEN_2,
 					"Caen VME ADCs/TDCs (2)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_CAEN_3,
 					"Caen VME ADCs/TDCs (3)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_SIS_1,
 					"SIS VME modules (1)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_SIS_2,
 					"SIS VME modules (2)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_VME_SIS_3,
 					"SIS VME modules (3)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DATA_SHORT,
 					"Plain data (16 bit)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DATA_INT,
 					"Plain data (32 bit)",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_11,
-					_mbs_show_sev_10_11,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_11,
+					(void *) _mbs_show_sev_10_11,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_DUMMY,
 					"MBS dummy",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_10_1,
-					_mbs_show_sev_10_1,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_10_1,
+					(void *) _mbs_show_sev_10_1,
+					(void *) _mbs_convert_sheader
 				},
 				{	MBS_STYPE_RAW,
 					"Raw data",
 					sizeof(s_veshe),
 					0,
-					_mbs_unpack_sev_raw,
-					_mbs_show_sev_raw,
-					_mbs_convert_sheader
+					(void *) _mbs_unpack_sev_raw,
+					(void *) _mbs_show_sev_raw,
+					(void *) _mbs_convert_sheader
 				},
 				{0, "", 0,  0,  NULL,   NULL,   NULL}
 			};
@@ -284,19 +289,20 @@ static MBSBufferElem buffer_type_error =
 					"Illegal buffer type",
 					0,
 					0,
-					_mbs_type_error,
-					_mbs_type_error,
-					_mbs_type_error
+					(void *) _mbs_type_error,
+					(void *) _mbs_type_error,
+					(void *) _mbs_type_error
 				};
 
+#if 0
 static MBSBufferElem event_type_error =
 				{	MBS_ETYPE_ERROR,
 					"Illegal event type",
 					0,
 					0,
-					_mbs_type_error,
-					_mbs_type_error,
-					_mbs_type_error
+					(void *) _mbs_type_error,
+					(void *) _mbs_type_error,
+					(void *) _mbs_type_error
 				};
 
 static MBSBufferElem sevent_type_error =
@@ -304,10 +310,11 @@ static MBSBufferElem sevent_type_error =
 					"Illegal subevent type",
 					0,
 					0,
-					_mbs_type_error,
-					_mbs_type_error,
-					_mbs_type_error
+					(void *) _mbs_type_error,
+					(void *) _mbs_type_error,
+					(void *) _mbs_type_error
 				};
+#endif
 
 MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) {
 /*________________________________________________________[C PUBLIC FUNCTION]
@@ -324,7 +331,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 // Keywords:
 /////////////////////////////////////////////////////////////////////////// */
 
-	register FILE *input;
+	FILE *input;
 	MBSDataIO *mbs;
 	char cmode;
 	char *dev;
@@ -340,14 +347,6 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	char host[MBS_L_STR];
 	MBSServerInfo server_info;
 
-	char *calloc();
-	MBSServerInfo * _mbs_read_server_info();
-	void _mbs_output_error();
-	void _mbs_init_pool(mbs);
-	unsigned int _mbs_next_buffer(mbs);
-	void _mbs_init_hit(buffer_types);
-	void _mbs_init_triggers();
-		
 	if (sevent_type_raw == NULL) {
 		tlist = sevent_types;
 		while (tlist->type != 0) {
@@ -360,6 +359,8 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	}	
 
 	cmode = tolower(*connection);
+
+	input = NULL;
 
 	if (cmode == 'f') {
 		ctype = MBS_CTYPE_FILE;
@@ -440,12 +441,12 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 		return(NULL);
 	}
 
-	strcpy(mbs->id, MBS_ID_WORD);
+	strcpy((char *) mbs->id, (char *) MBS_ID_WORD);
 	mbs->input = input;
 	mbs->fileno = fno;
 	mbs->cur_bufno_stream = bps;
-	strcpy(mbs->device, device);
-	strcpy(mbs->host, host);
+	strcpy((char *) mbs->device, (char *) device);
+	strcpy((char *) mbs->host, (char *) host);
 	mbs->connection = ctype;
 	mbs->bufsiz = bufsiz;
 	mbs->bufno_mbs = -1;
@@ -503,8 +504,6 @@ int mbs_close_file(MBSDataIO *mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 	
-	void _mbs_output_log();
-	
 	if (!_mbs_check_active(mbs)) return(FALSE);
 
 	if (mbs->connection & MBS_CTYPE_FILE) {
@@ -538,8 +537,6 @@ int mbs_free_dbase(MBSDataIO * mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 	
-	void _mbs_free_pool(mbs);
-	
 	if (mbs != NULL) {
 		free(mbs->hdr_data);
 		free(mbs->evt_data);
@@ -568,10 +565,7 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 	unsigned int buffer_type;
 	s_bufhe * bh;
 
-	MBSBufferPool * _mbs_find_subseq_buffer();
-	void _mbs_output_error();
 	void (*s)();
-	unsigned int _mbs_read_buffer(mbs);
 	
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
@@ -590,7 +584,7 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 						_mbs_output_error();
 					}
 				} else {
-					bh = (mbs->poolpt)->data;
+					bh = (s_bufhe *) (mbs->poolpt)->data;
 					mbs->bufno_mbs = bh->l_buf;
 					bpp = mbs->poolpt;
 				}
@@ -615,13 +609,13 @@ unsigned int _mbs_next_buffer(MBSDataIO *mbs) {
 
 		sc = mbs->show_elems[MBS_X_FHEADER].redu;
 		if (sc > 0) {
-			s = (mbs->buftype)->show;			// show file header
+			s = (void *) (mbs->buftype)->show;			// show file header
 			if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_FHEADER].out);
 		}
 	} else {
 		sc = mbs->show_elems[MBS_X_BUFFER].redu;
 		if (sc > 0 && ((mbs->nof_buffers % sc) == 0)) {
-			s = (mbs->buftype)->show;			// show buffer header
+			s = (void *) (mbs->buftype)->show;			// show buffer header
 			if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_BUFFER].out);
 		}
 
@@ -650,12 +644,6 @@ unsigned int _mbs_read_buffer(MBSDataIO *mbs) {
 	int bytes_read;
 	unsigned int buffer_type;
 
-	MBSBufferPool * _mbs_get_pool_pointer();
-	void _mbs_output_error();
-	void _mbs_store_bufno(mbs);
-	void _mbs_store_time_stamp(mbs);
-	void _mbs_dump_buffer(mbs);
-	unsigned int _mbs_convert_data(mbs);
 			
 	if (!_mbs_check_active(mbs)) return(MBS_BTYPE_ABORT);
 
@@ -740,9 +728,6 @@ unsigned int mbs_next_event(MBSDataIO *mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	unsigned int _mbs_next_med_event(MBSDataIO *);
-	unsigned int _mbs_next_lmd_event(MBSDataIO *);
-
 	if (!_mbs_check_active(mbs)) return(MBS_ETYPE_ABORT);
 
 	if ((mbs->connection & MBS_CTYPE_FILE_MED) == MBS_CTYPE_FILE_MED)	return(_mbs_next_med_event(mbs));
@@ -787,14 +772,10 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	int sc;
 	unsigned int (*s)();
 
-	MBSBufferElem *_mbs_check_type();
-	char *calloc();
-	void _mbs_output_error();
-
 	unsigned char eHdr[sizeof(s_vehe)];
 	int ehs;
 
-	bh = mbs->bufpt;
+	bh = (s_bufhe *) mbs->bufpt;
 	bo = mbs->byte_order;
 
 	if (mbs->evtpt == NULL || mbs->evtno == bh->l_evt) {
@@ -802,7 +783,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 			btype = _mbs_next_buffer(mbs);
 			if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ABORT || btype == MBS_BTYPE_EOF) return(btype);
 			bo = mbs->byte_order;
-			bh = mbs->bufpt;
+			bh = (s_bufhe *) mbs->bufpt;
 			mbs->cur_bufno = bh->l_buf;
 		}
 
@@ -819,7 +800,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	} else if (mbs->evtno == 1 && bh->h_begin == 1) {
 		mbs->evtpt = mbs->bufpt + sizeof(s_bufhe);
 		eh = (s_evhe *) mbs->evtpt;
-		bto_get_int32(&evl, &eh->l_dlen, 1, bo);
+		bto_get_int32(&evl, (char *) &eh->l_dlen, 1, bo);
 		mbs->evtpt += evl * sizeof(unsigned short) + sizeof(s_evhe);
 		mbs->evtno++;
 	} else {
@@ -832,9 +813,9 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 
 	if (mbs->evtno == bh->l_evt && bh->h_end == 1) {
 		evl = bh->l_free[1];
-		bto_get_int32(&frag1, &eh->l_dlen, 1, bo);
+		bto_get_int32(&frag1, (char *) &eh->l_dlen, 1, bo);
 	} else {
-		bto_get_int32(&evl, &eh->l_dlen, 1, bo);
+		bto_get_int32(&evl, (char *) &eh->l_dlen, 1, bo);
 		frag1 = evl;
 	}
 
@@ -853,13 +834,13 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
  	memcpy(mbs->evt_data, mbs->evtpt, frag1);
 
 	eh = (s_evhe *) mbs->evt_data;
-	bto_get_int32(&etype, &eh->i_subtype, 1, bo);
+	bto_get_int32(&etype, (char *) &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 	etype = (mbs->evttype)->type;
 	if (etype == MBS_ETYPE_ERROR || etype == MBS_ETYPE_ABORT) {
 		sprintf(loc_errbuf,
-		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Not a legal event type - %#lx",
+		"?EVTERR-[_mbs_next_lmd_event]- %s (buf %d, evt %d): Not a legal event type - %#x",
 					mbs->device, mbs->cur_bufno, mbs->evtno, etype);
 		_mbs_output_error();
 		return(etype);
@@ -867,7 +848,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 
 	memcpy(eHdr, mbs->evt_data, sizeof(s_vehe)); 	/* save header ###unswapped### */
 
-	s = (mbs->evttype)->convert;
+	s = (void *) (mbs->evttype)->convert;
 	(*s)(mbs);
 
 	frag2 = 0;
@@ -875,7 +856,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	while (frag1 < evl) {
 		btype = _mbs_next_buffer(mbs);
 		if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_EOF) return(btype);
-		bh = mbs->bufpt;
+		bh = (s_bufhe *) mbs->bufpt;
 		mbs->cur_bufno = bh->l_buf;
 
 		if (bh->h_begin != 1) {
@@ -889,7 +870,7 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 		mbs->evtpt = mbs->bufpt + sizeof(s_bufhe);
 		mbs->evtno = 1;
 		eh = (s_evhe *) mbs->evtpt;
-		bto_get_int32(&frag2, &eh->l_dlen, 1, bo);
+		bto_get_int32(&frag2, (char *) &eh->l_dlen, 1, bo);
 		frag2 *= sizeof(unsigned short);
 
 		memcpy(mbs->evt_data + frag1, mbs->evtpt + sizeof(s_evhe), frag2);
@@ -914,7 +895,9 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 	if (!_mbs_check_sequence(mbs, MBS_TY_EVENT)) {
 		sprintf(loc_errbuf,
 		"?ILLSEQ-[_mbs_next_lmd_event]- %s (buf %d): Illegal event sequence - last=%d <> this=%d",
-						mbs->device, mbs->evtno_mbs, ((s_vehe *) mbs->evt_data)->l_count);
+						mbs->device, mbs->evtno_mbs,
+						((s_vehe *) mbs->evt_data)->l_count,
+						mbs->evtno_mbs);
 			_mbs_output_error();
 		return(MBS_ETYPE_ERROR);
 	}
@@ -927,13 +910,13 @@ unsigned int _mbs_next_lmd_event(MBSDataIO *mbs) {
 
 	sc = mbs->show_elems[MBS_X_EVENT].redu;
 	if (sc > 0 && ((mbs->nof_events % sc) == 0)) {
-		s = (mbs->evttype)->show;
+		s = (void *) (mbs->evttype)->show;
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_EVENT].out);
 	}
 
 	if (med_out) {
-		eh = eHdr;
-		bto_get_int32(&eh->l_dlen, &evlsv, 1, bo);
+		eh = (s_evhe *) eHdr;
+		bto_get_int32(&eh->l_dlen, (char *) &evlsv, 1, bo);
 		ehs = sizeof(s_vehe);
 		fwrite(eHdr, 1, ehs, med_out);								/* write event header - take unswapped data */
 		fwrite((char *) mbs->evt_data + ehs, 1, mbs->evtsiz - ehs, med_out);	/* write subevent data unswapped */
@@ -958,15 +941,11 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	s_evhe *eh;
 	s_vehe *vh;
 	unsigned int bo;
-	unsigned int btype, etype;
+	unsigned int etype;
 	int evl;
 	int sc;
 	unsigned int (*s)();
 	int bytes_read, bytes_requested;
-
-	MBSBufferElem *_mbs_check_type();
-	char *calloc();
-	void _mbs_output_error();
 
 	off_t filepos;
 
@@ -997,8 +976,8 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	total += bytes_read;
 
-	eh = eHdr;
-	bto_get_int32(&evl, &eh->l_dlen, 1, bo);
+	eh = (s_evhe *) eHdr;
+	bto_get_int32(&evl, (char *) &eh->l_dlen, 1, bo);
 
 	evl = evl * sizeof(unsigned short) + sizeof(s_evhe);
 
@@ -1025,20 +1004,20 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 	total += bytes_read;
 
 	eh = (s_evhe *) mbs->evt_data;
-	bto_get_int32(&etype, &eh->i_subtype, 1, bo);
+	bto_get_int32(&etype, (char *) &eh->i_subtype, 1, bo);
 
 	mbs->evttype = _mbs_check_type(etype, mbs->evttype, event_types);
 
 	etype = (mbs->evttype)->type;
 	if (etype == MBS_ETYPE_ERROR || etype == MBS_ETYPE_ABORT) {
 		sprintf(loc_errbuf,
-		"?EVTERR-[_mbs_next_med_event]- %s (evt %d): Not a legal event type - %#lx",
+		"?EVTERR-[_mbs_next_med_event]- %s (evt %d): Not a legal event type - %#x",
 														mbs->device, mbs->evtno, etype);
 		_mbs_output_error();
 		return(etype);
 	}
 
-	s = (mbs->evttype)->convert;
+	s = (void *) (mbs->evttype)->convert;
 	(*s)(mbs);
 
 	mbs->nof_events++;
@@ -1056,7 +1035,7 @@ unsigned int _mbs_next_med_event(MBSDataIO *mbs) {
 
 	sc = mbs->show_elems[MBS_X_EVENT].redu;
 	if (sc > 0 && ((mbs->nof_events % sc) == 0)) {
-		s = (mbs->evttype)->show;
+		s = (void *) (mbs->evttype)->show;
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_EVENT].out);
 	}
 
@@ -1080,11 +1059,9 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 	unsigned int bo;
 	unsigned int stype;
 
-	MBSBufferElem *_mbs_check_type();
-
 	if (!_mbs_check_active(mbs)) return(MBS_STYPE_ABORT);
 
-	eh = mbs->evt_data;
+	eh = (s_evhe *) mbs->evt_data;
 	bo = mbs->byte_order;
 
 	if (mbs->sevtpt == NULL) {
@@ -1105,7 +1082,7 @@ unsigned int mbs_next_sheader(MBSDataIO *mbs) {
 	return(stype);
 }
 
-unsigned int mbs_get_sevent_subtype(MBSDataIO *mbs) {
+unsigned int mbs_get_sevent_subtypef(MBSDataIO *mbs) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_get_sevent_subtype
@@ -1162,7 +1139,7 @@ unsigned short * mbs_get_sevent_dataptr(MBSDataIO *mbs) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	return(mbs->sevt_data);
+	return((unsigned short *) mbs->sevt_data);
 }
 
 unsigned int mbs_next_sdata(MBSDataIO *mbs) {
@@ -1186,12 +1163,12 @@ unsigned int mbs_next_sdata(MBSDataIO *mbs) {
 	(mbs->sevttype)->hit++;
 	mbs->sevt_wc = 0;
 
-	s = (mbs->sevttype)->unpack;
+	s = (void *) (mbs->sevttype)->unpack;
 	(*s)(mbs);
 
 	sc = mbs->show_elems[MBS_X_SUBEVENT].redu;
 	if (sc > 0 && ((mbs->nof_events % sc) == 0)) {
-		s = (mbs->sevttype)->show;			// show subevent
+		s = (void *) (mbs->sevttype)->show;			// show subevent
 		if (s != NULL) (*s)(mbs, mbs->show_elems[MBS_X_SUBEVENT].out);
 	}
 
@@ -1239,8 +1216,6 @@ unsigned int mbs_next_sevent(MBSDataIO *mbs) {
 
 	unsigned int stype;
 	unsigned int stp, sstp;
-
-	void _mbs_output_error();
 
 	stype = mbs_next_sheader(mbs);
 	if (stype == MBS_STYPE_ABORT || stype == MBS_STYPE_EOE) return(stype);
@@ -1300,13 +1275,13 @@ int mbs_pass_sevent(MBSDataIO *mbs, unsigned short *data) {
 	return(mbs->sevt_wc);
 }
 
-void mbs_set_sevt_minwc(MBSDataIO *mbs, unsigned int wc) {
+void mbs_set_sevt_minwc(MBSDataIO *mbs, int wc) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_sevt_minwc
 // Purpose:        Define min subevent length
 // Arguments:      MBSDataIO * mbs        -- ptr as returned by mbs_open_file
-//                 unsigned int wc        -- minimal word count
+//                 int wc                 -- minimal word count
 // Results:        
 // Exceptions:     
 // Description:    Sets the minimal length of a subevent.
@@ -1425,11 +1400,10 @@ int mbs_show_stat(MBSDataIO *mbs, FILE *out) {
 	}
 	fprintf(out, "==============================================================================\n");
 	fprintf(out, "\n");
-	
 	return(TRUE);
 }
 
-int mbs_show(MBSDataIO *mbs, char *show_elem, FILE *out) {
+int mbs_show(MBSDataIO *mbs, const char *show_elem, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_show
@@ -1445,7 +1419,6 @@ int mbs_show(MBSDataIO *mbs, char *show_elem, FILE *out) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	void _mbs_output_error();
 	void (*s)();
 
 	if (!_mbs_check_dbase(mbs)) return(FALSE);
@@ -1453,10 +1426,10 @@ int mbs_show(MBSDataIO *mbs, char *show_elem, FILE *out) {
 	if (out == NULL) out = stdout;
 
 	switch (toupper(*show_elem)) {
-		case 'F':	_mbs_show_fheader(mbs, out); return;
-		case 'B':	s = (mbs->buftype)->show; break;
-		case 'E':	s = (mbs->evttype)->show; break;
-		case 'S':	s = (mbs->sevttype)->show; break;
+		case 'F':	_mbs_show_fheader(mbs, out); return(TRUE);
+		case 'B':	s = (void *) (mbs->buftype)->show; break;
+		case 'E':	s = (void *) (mbs->evttype)->show; break;
+		case 'S':	s = (void *) (mbs->sevttype)->show; break;
 		default:
 			sprintf(loc_errbuf,
 				"?ILLFMT-[_mbs_show]- %s: Illegal show specs - %s",
@@ -1468,7 +1441,7 @@ int mbs_show(MBSDataIO *mbs, char *show_elem, FILE *out) {
 	return(TRUE);
 }
 
-int mbs_set_show(MBSDataIO *mbs, char *show_elems, int redu, FILE *out) {
+int mbs_set_show(MBSDataIO *mbs, const char *show_elems, int redu, FILE *out) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_show
@@ -1492,7 +1465,7 @@ int mbs_set_show(MBSDataIO *mbs, char *show_elems, int redu, FILE *out) {
 
 	if (!_mbs_check_dbase(mbs)) return(FALSE);
 
-	while (c = toupper(*show_elems++)) {
+	while ((c = toupper(*show_elems++))) {
 		switch (c) {
 			case 'F':	x = MBS_X_FHEADER; break;
 			case 'B':	x = MBS_X_BUFFER; break;
@@ -1510,7 +1483,7 @@ int mbs_set_show(MBSDataIO *mbs, char *show_elems, int redu, FILE *out) {
 	return(TRUE);
 }
 
-int mbs_set_dump(MBSDataIO *mbs, int count) {
+void mbs_set_dump(MBSDataIO *mbs, int count) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_set_dump
@@ -1524,7 +1497,6 @@ int mbs_set_dump(MBSDataIO *mbs, int count) {
 /////////////////////////////////////////////////////////////////////////// */
 
 	mbs->buf_to_be_dumped = count;
-	return(TRUE);
 }
 
 int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
@@ -1555,7 +1527,7 @@ int mbs_set_stream(MBSDataIO *mbs, int nstreams, int slow_down) {
 	return(TRUE);
 }
 
-int mbs_open_log(char *logfile) {
+int mbs_open_log(const char *logfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_log
@@ -1579,7 +1551,7 @@ int mbs_open_log(char *logfile) {
 	return(TRUE);
 }
 
-int mbs_open_med(char *medfile) {
+int mbs_open_med(const char *medfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_med
@@ -1603,7 +1575,7 @@ int mbs_open_med(char *medfile) {
 	return(TRUE);
 }
 
-int mbs_close_med() {
+void mbs_close_med() {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_close_med
@@ -1616,10 +1588,9 @@ int mbs_close_med() {
 /////////////////////////////////////////////////////////////////////////// */
 
 	if (med_out) fclose(med_out);
-	return(TRUE);
 }
 
-int mbs_open_lmd(char *lmdfile) {
+int mbs_open_lmd(const char *lmdfile) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_open_lmd
@@ -1643,7 +1614,7 @@ int mbs_open_lmd(char *lmdfile) {
 	return(TRUE);
 }
 
-int mbs_close_lmd() {
+void mbs_close_lmd() {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_close_lmd
@@ -1656,10 +1627,9 @@ int mbs_close_lmd() {
 /////////////////////////////////////////////////////////////////////////// */
 
 	if (lmd_out) fclose(lmd_out);
-	return(TRUE);
 }
 
-void mbs_pass_errors(char * errbuf) {
+void mbs_pass_errors(const char * errbuf) {
 /*_________________________________________________________[C PUBLIC FUNCTION]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           mbs_pass_errors
@@ -1672,7 +1642,7 @@ void mbs_pass_errors(char * errbuf) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	rem_errbuf = errbuf;
+	rem_errbuf = (char *) errbuf;
 }
 
 void _mbs_show_fheader(MBSDataIO *mbs, FILE *out) {
@@ -1694,7 +1664,7 @@ void _mbs_show_fheader(MBSDataIO *mbs, FILE *out) {
 
 	char *mbs_xfht();
 
-	fh = mbs->hdr_data;
+	fh = (s_filhe *) mbs->hdr_data;
 
 	if (out == NULL) out = stdout;
 
@@ -1753,14 +1723,11 @@ void _mbs_show_bheader(MBSDataIO *mbs, FILE *out) {
 // Keywords:       
 /////////////////////////////////////////////////////////////////////////// */
 
-	long long ts;
 	s_bufhe *bh;
-
-	char *mbs_xfht();
 
 	if (out == NULL) out = stdout;
 
-	bh = (mbs->poolpt)->data;
+	bh = (s_bufhe *) (mbs->poolpt)->data;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  BUFFER HEADER: %s, buf# %d (%d)", mbs->device, mbs->nof_buffers, mbs->cur_bufno);
@@ -1813,7 +1780,7 @@ void _mbs_show_evhe_10_1(MBSDataIO *mbs, FILE *out) {
 
 	if (out == NULL) out = stdout;
 
-	eh = mbs->evt_data;
+	eh = (s_vehe *) mbs->evt_data;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  EVENT HEADER: %s, buf# %d (%d), evt# %d", mbs->device, mbs->nof_buffers, mbs->cur_bufno, mbs->evtno);
@@ -1849,7 +1816,7 @@ void _mbs_show_sev_10_1(MBSDataIO *mbs, FILE *out) {
 
 	if (out == NULL) out = stdout;
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  SUBEVENT HEADER: %s, buf# %d (%d), evt# %d, sevt# %d",
@@ -1899,14 +1866,14 @@ unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
 	int wc;
 	int maxaddr, addrspace;
 
-	if (mbs->sevt_wc > 0) return(mbs->sevt_data);
+	if (mbs->sevt_wc > 0) return((unsigned int *) mbs->sevt_data);
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 	wc = (sh->l_dlen
 			- (sizeof(s_veshe) - sizeof(s_evhe)) / sizeof(unsigned short)) / 2;
 	mbs->sevt_wc = wc;
 	idp = mbs->sevtpt + sizeof(s_veshe);
-	bto_get_short(idp, idp, wc * 2, mbs->byte_order);
+	bto_get_short((short *) idp, idp, wc * 2, mbs->byte_order);
 
 	cp = (MBSCamacDataSW *) idp;
 	maxaddr = mbs->sevt_minwc;
@@ -1932,7 +1899,7 @@ unsigned int *_mbs_unpack_sev_10_1(MBSDataIO *mbs) {
 		sdp = (unsigned short *) odp;
 		*sdp = cp->data;
 	}
-	return(mbs->sevt_data);
+	return((unsigned int *) mbs->sevt_data);
 }
 
 void _mbs_show_sev_10_11(MBSDataIO *mbs, FILE *out) {
@@ -1954,7 +1921,7 @@ void _mbs_show_sev_10_11(MBSDataIO *mbs, FILE *out) {
 
 	if (out == NULL) out = stdout;
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  SUBEVENT HEADER: %s, buf# %d (%d), evt# %d, sevt# %d",
@@ -1997,13 +1964,13 @@ unsigned int *_mbs_unpack_sev_10_11(MBSDataIO *mbs) {
 	int wc;
 	int mwc;
 
-	if (mbs->sevt_wc > 0) return(mbs->sevt_data);
+	if (mbs->sevt_wc > 0) return((unsigned int *) mbs->sevt_data);
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 	wc = (sh->l_dlen - (sizeof(s_veshe) - sizeof(s_evhe)) / sizeof(unsigned short));
 	mbs->sevt_wc = wc;
 	dp = mbs->sevtpt + sizeof(s_veshe);
-	bto_get_short(dp, dp, wc, mbs->byte_order);
+	bto_get_short((short *) dp, dp, wc, mbs->byte_order);
 
 	mwc = mbs->sevt_minwc;
 	if (mwc < wc) mwc = wc;
@@ -2018,7 +1985,7 @@ unsigned int *_mbs_unpack_sev_10_11(MBSDataIO *mbs) {
 
 	memcpy(mbs->sevt_data, dp, wc * sizeof(unsigned short));
 
-	return(mbs->sevt_data);
+	return((unsigned int *) mbs->sevt_data);
 }
 
 unsigned int *_mbs_unpack_sev_raw(MBSDataIO *mbs) {
@@ -2038,9 +2005,9 @@ unsigned int *_mbs_unpack_sev_raw(MBSDataIO *mbs) {
 	int wc;
 	int mwc;
 
-	if (mbs->sevt_wc > 0) return(mbs->sevt_data);
+	if (mbs->sevt_wc > 0) return((unsigned int *) mbs->sevt_data);
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 	wc = (sh->l_dlen - (sizeof(s_veshe) - sizeof(s_evhe)) / sizeof(unsigned short));
 	mbs->sevt_wc = wc;
 	dp = mbs->sevtpt + sizeof(s_veshe);
@@ -2058,7 +2025,7 @@ unsigned int *_mbs_unpack_sev_raw(MBSDataIO *mbs) {
 
 	memcpy(mbs->sevt_data, dp, wc * sizeof(unsigned short));
 
-	return(mbs->sevt_data);
+	return((unsigned int *) mbs->sevt_data);
 }
 
 void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
@@ -2081,7 +2048,7 @@ void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
 
 	if (out == NULL) out = stdout;
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 
 	dp = (unsigned long *) mbs->sevt_data;
 
@@ -2098,7 +2065,7 @@ void _mbs_show_sev_9000_1(MBSDataIO *mbs, FILE *out) {
 	sec = *dp++;
 	fprintf(out, "  Seconds              : %ld\n", sec);
 	fprintf(out, "  Nano seconds         : %ld\n", *dp++);
-	strftime(tstr, 100, "%e-%b-%y %H:%M:%S", localtime(&sec));
+	strftime(tstr, 100, "%e-%b-%Y %H:%M:%S", localtime(&sec));
 	fprintf(out, "  Time stamp           : %s\n", tstr);
 	fprintf(out, "------------------------------------------------------------------------------\n");
 }
@@ -2119,15 +2086,15 @@ unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
 	char *dp;
 	int wc, wc2;
 
-	if (mbs->sevt_wc > 0) return(mbs->sevt_data);
+	if (mbs->sevt_wc > 0) return((unsigned int *) mbs->sevt_data);
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 	wc = (sh->l_dlen
 			- (sizeof(s_veshe) - sizeof(s_evhe)) / sizeof(unsigned short)) / 2;
 	wc2 = wc * 2;
 	mbs->sevt_wc = wc2;
 	dp = mbs->sevtpt + sizeof(s_veshe);
-	bto_get_int32(dp, dp, wc, mbs->byte_order);
+	bto_get_int32((int *) dp, dp, wc, mbs->byte_order);
 
 	if (wc2 <= mbs->sevtsiz) {
 		if (mbs->sevt_data == NULL) mbs->sevt_data = calloc(wc, sizeof(unsigned short));
@@ -2140,7 +2107,7 @@ unsigned int *_mbs_unpack_sev_9000_X(MBSDataIO *mbs) {
 
 	memcpy(mbs->sevt_data, dp, wc * sizeof(unsigned long));
 
-	return(mbs->sevt_data);
+	return((unsigned int *) mbs->sevt_data);
 }
 
 void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
@@ -2166,7 +2133,7 @@ void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
 
 	if (out == NULL) out = stdout;
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 
 	dp = (unsigned long *) mbs->sevt_data;
 
@@ -2183,7 +2150,7 @@ void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
 	sec = *dp++;
 	fprintf(out, "  Seconds              : %ld\n", sec);
 	fprintf(out, "  Nano seconds         : %ld\n", *dp++);
-	strftime(tstr, 100, "%e-%b-%y %H:%M:%S", localtime(&sec));
+	strftime(tstr, 100, "%e-%b-%Y %H:%M:%S", localtime(&sec));
 	fprintf(out, "  Time stamp           : %s\n", tstr);
 	fprintf(out, "  Events since start   : %ld\n", *dp++);
 	dtevc = *dp++;
@@ -2191,7 +2158,7 @@ void _mbs_show_sev_9000_2(MBSDataIO *mbs, FILE *out) {
 	scacon = *dp++;
 	fprintf(out, "  Scaler contents      : %ld\n", scacon);
 	dtime = (1. - (float) dtevc / (float) scacon) * 100.;
-	fprintf(out, "  Dead time            : %f4.2 %\n", dtime);
+	fprintf(out, "  Dead time            : %4.2f %%\n", dtime);
 	fprintf(out, "------------------------------------------------------------------------------\n");
 }
 
@@ -2214,7 +2181,7 @@ void _mbs_show_sev_raw(MBSDataIO *mbs, FILE *out) {
 
 	if (out == NULL) out = stdout;
 
-	sh = mbs->sevtpt;
+	sh = (s_veshe *) mbs->sevtpt;
 
 	fprintf(out, "\n==============================================================================\n");
 	fprintf(out, "  SUBEVENT HEADER: %s, buf# %d (%d), evt# %d, sevt# %d",
@@ -2257,7 +2224,6 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	unsigned int btype;
 	s_bufhe *bh;
 
-	void _mbs_output_error();
 	unsigned int (*s)();
 
 	MBSBufferElem *_mbs_check_type();
@@ -2267,13 +2233,13 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	bo_tag = bh->l_free[0];
 	if (bo_tag == 0 && mbs->nof_buffers == 1) {
 		byte_order = BYTE_ORDER_1_TO_1;
-		bto_get_int32(&btype, &bh->i_subtype, 1, byte_order);
+		bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
 		if (btype != MBS_BTYPE_HEADER) {
 			byte_order = BYTE_ORDER_REV;
-			bto_get_int32(&btype, &bh->i_subtype, 1, byte_order);
+			bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
 			if (btype != MBS_BTYPE_HEADER) {
 				sprintf(loc_errbuf,
-"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#lx",
+"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#x",
 									mbs->device, mbs->nof_buffers, bh->l_free[0]);
 				_mbs_output_error();
 				mbs->buftype = &buffer_type_error;
@@ -2283,12 +2249,12 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 	} else if (bo_tag == 1) {
 		byte_order = BYTE_ORDER_1_TO_1;
 	} else {
-		bto_get_int32(&bo_tag, &bh->l_free[0], 1, BYTE_ORDER_REV);
+		bto_get_int32((int *) &bo_tag, (char *) &bh->l_free[0], 1, BYTE_ORDER_REV);
 		if (bo_tag == 1) {
 			byte_order = BYTE_ORDER_REV;
 		} else {
 			sprintf(loc_errbuf,
-	"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#lx",
+	"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Can't determine byte ordering - %#x",
 										mbs->device, mbs->nof_buffers, bh->l_free[0]);
 			_mbs_output_error();
 			mbs->buftype = &buffer_type_error;
@@ -2298,19 +2264,19 @@ unsigned int _mbs_convert_data(MBSDataIO *mbs) {
 
 	mbs->byte_order = byte_order;
 
-	bto_get_int32(&btype, &bh->i_subtype, 1, byte_order);
+	bto_get_int32(&btype, (char *) &bh->i_subtype, 1, byte_order);
 	mbs->buftype = _mbs_check_type(btype, mbs->buftype, buffer_types);
 	btype = (mbs->buftype)->type;
 	if (btype == MBS_BTYPE_ERROR || btype == MBS_BTYPE_ABORT) {
 		sprintf(loc_errbuf,
-		"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Not a legal buffer type - %#lx",
+		"?ILLFMT-[_mbs_convert_data]- %s (buf %d): Not a legal buffer type - %#x",
 										mbs->device, mbs->nof_buffers, btype);
 		_mbs_output_error();
 		mbs->buftype = &buffer_type_error;
 		return(MBS_BTYPE_ABORT);
 	}
 
-	s = (mbs->buftype)->convert;
+	s = (void *) (mbs->buftype)->convert;
 	(*s)(mbs);
 
 	(mbs->buftype)->hit++;
@@ -2405,10 +2371,10 @@ int _mbs_check_sequence(MBSDataIO *mbs, unsigned int type) {
 	s_vehe *eh;
 
 	if (type == MBS_TY_BUFFER) {
-		bh = (mbs->poolpt)->data;
+		bh = (s_bufhe *) (mbs->poolpt)->data;
 		if ((mbs->bufno_mbs > 0) && (bh->l_buf != mbs->bufno_mbs + 1)) return(FALSE);
 	} else if (type == MBS_TY_EVENT) {
-		eh = mbs->evt_data;
+		eh = (s_vehe *) mbs->evt_data;
 		if ((mbs->evtno_mbs >= 0) && (eh->l_count != mbs->evtno_mbs + 1)) return(FALSE);
 	}
 	return(TRUE);
@@ -2439,8 +2405,8 @@ void _mbs_copy_fheader(MBSDataIO *mbs) {
 	if (bo == BYTE_ORDER_1_TO_1) {
 		memcpy(mbs->hdr_data, (mbs->poolpt)->data, mbs->bufsiz);
 	} else {
-		bto_get_short(&fh->filhe_tlen, bh, 6, bo);
-		ipnt = bto_get_short(&fh->filhe_label_l, &bh->filhe_label_l, 1, bo);
+		bto_get_short(&fh->filhe_tlen, (char *) bh, 6, bo);
+		ipnt = bto_get_short(&fh->filhe_label_l, (char *) &bh->filhe_label_l, 1, bo);
 		ipnt = bto_get_string(fh->filhe_label, ipnt, 30, bo);
 		ipnt = bto_get_short(&fh->filhe_file_l, ipnt, 1, bo);
 		ipnt = bto_get_string(fh->filhe_file, ipnt, 86, bo);
@@ -2481,9 +2447,9 @@ void _mbs_convert_bheader(MBSDataIO *mbs) {
 
 	bh = (s_bufhe *) (mbs->poolpt)->data;
 
-	ipnt = bto_get_int32(&bh->l_dlen, &bh->l_dlen, 1, bo);
+	ipnt = bto_get_int32(&bh->l_dlen, (char *) &bh->l_dlen, 1, bo);
 	ipnt = bto_get_short(&bh->i_subtype, ipnt, 2, bo);
-	ipnt = bto_get_short(&bh->h_begin, ipnt, 1, bo);
+	ipnt = bto_get_short((short *) &bh->h_begin, ipnt, 1, bo);
 	ipnt = bto_get_short(&bh->i_used, ipnt, 1, bo);
 	ipnt = bto_get_int32(&bh->l_buf, ipnt, 9, bo);
 }
@@ -2509,7 +2475,7 @@ void _mbs_convert_eheader(MBSDataIO *mbs) {
 
 	eh = (s_vehe *) mbs->evt_data;
 
-	ipnt = bto_get_int32(&eh->l_dlen, &eh->l_dlen, 1, bo);
+	ipnt = bto_get_int32(&eh->l_dlen, (char *) &eh->l_dlen, 1, bo);
 	ipnt = bto_get_short(&eh->i_subtype, ipnt, 2, bo);
 	ipnt = bto_get_short(&eh->i_trigger, ipnt, 2, bo);
 	ipnt = bto_get_int32(&eh->l_count, ipnt, 1, bo);
@@ -2536,9 +2502,9 @@ void _mbs_convert_sheader(MBSDataIO *mbs) {
 
 	seh = (s_veshe *) mbs->sevtpt;
 
-	ipnt = bto_get_int32(&seh->l_dlen, &seh->l_dlen, 1, bo);
+	ipnt = bto_get_int32(&seh->l_dlen, (char *) &seh->l_dlen, 1, bo);
 	ipnt = bto_get_short(&seh->i_subtype, ipnt, 2, bo);
-	ipnt = bto_get_short(&seh->h_control, ipnt, 2, bo);
+	ipnt = bto_get_short((short *) &seh->h_control, ipnt, 2, bo);
 	mbs->sevt_otype = (seh->i_subtype << 16) | seh->i_type;
 	mbs->sevt_id = seh->i_procid;
 }
@@ -2617,7 +2583,7 @@ void _mbs_output_error() {
 	}
 	if (log_out) {
 		time(&now);
-		strftime(datestr, MBS_L_STR, "%e-%b-%y %H:%M:%S", localtime(&now));
+		strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
 		fprintf(log_out, "%-18s: %s\n", datestr, loc_errbuf);
 	}
 }
@@ -2639,7 +2605,7 @@ void _mbs_output_log() {
 
 	if (log_out) {
 		now = time(NULL);
-		strftime(datestr, MBS_L_STR, "%e-%b-%y %H:%M:%S", localtime(&now));
+		strftime(datestr, MBS_L_STR, "%e-%b-%Y %H:%M:%S", localtime(&now));
 		fprintf(log_out, "%-18s: %s\n", datestr, loc_logbuf);
 	}
 }
@@ -2695,7 +2661,7 @@ int _mbs_connect_to_server(char * host, unsigned int server_type) {
 		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", strerror(errno), errno);
 		return(-1);
 	}
-	if(connect(s, &sa, sizeof sa) < 0) {
+	if(connect(s, (struct sockaddr *) &sa, sizeof sa) < 0) {
 		sprintf(loc_errbuf, "?SYSERR-[mbs_connect_to_server]- %s (%d)", strerror(errno), errno);
 		return(-1);
 	}
@@ -2725,7 +2691,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 	if (infoWord == 1) {
 		info->is_swapped = FALSE;
 	} else {
-		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		if (swInfoWord == 1) {
 			info->is_swapped = TRUE;
 		} else {
@@ -2737,7 +2703,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
-		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_size = swInfoWord;
 	} else {
 		info->buf_size = infoWord;
@@ -2745,7 +2711,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
-		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->buf_p_stream = swInfoWord;
 	} else {
 		info->buf_p_stream = infoWord;
@@ -2753,7 +2719,7 @@ MBSServerInfo * _mbs_read_server_info(int fildes, MBSServerInfo *info) {
 
 	read(fildes, &infoWord, sizeof(infoWord));
 	if (info->is_swapped) {
-		bto_get_int32(&swInfoWord, &infoWord, 1, BYTE_ORDER_REV);
+		bto_get_int32((int *) &swInfoWord, (char *) &infoWord, 1, BYTE_ORDER_REV);
 		info->nof_streams = swInfoWord;
 	} else {
 		info->nof_streams = infoWord;
@@ -2959,9 +2925,9 @@ void _mbs_store_time_stamp(MBSDataIO * mbs) {
 /////////////////////////////////////////////////////////////////////////// */
 
 	s_bufhe *bh;
-	bh = (mbs->poolpt)->data;
+	bh = (s_bufhe *) (mbs->poolpt)->data;
 
-	mbs->buf_ts = bh->l_time[0] << 32 | bh->l_time[1];
+	mbs->buf_ts = ((long long) bh->l_time[0]) << 32 | ((long long) bh->l_time[1]);
 	if (mbs->buf_ts_start == 0) mbs->buf_ts_start = mbs->buf_ts;
 }
 

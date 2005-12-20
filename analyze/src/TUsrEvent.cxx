@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TUsrEvent.cxx,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrEvent.cxx,v 1.2 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -46,7 +46,7 @@ TUsrEvent::TUsrEvent() {
 	fLofSubevents.Delete();
 }
 
-const UShort_t * TUsrEvent::NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) const {
+const UShort_t * TUsrEvent::NextSubevent(MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::NextSubevent
@@ -75,7 +75,7 @@ const UShort_t * TUsrEvent::NextSubevent(const MBSDataIO * BaseAddr, Int_t NofWo
 	}
 }
 
-UInt_t TUsrEvent::NextSubeventHeader(const MBSDataIO * BaseAddr) const {
+UInt_t TUsrEvent::NextSubeventHeader(MBSDataIO * BaseAddr) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::NextSubeventHeader
@@ -93,7 +93,7 @@ UInt_t TUsrEvent::NextSubeventHeader(const MBSDataIO * BaseAddr) const {
 	else															return(BaseAddr->sevt_otype);
 }
 
-const UShort_t * TUsrEvent::NextSubeventData(const MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) const {
+const UShort_t * TUsrEvent::NextSubeventData(MBSDataIO * BaseAddr, Int_t NofWords, Bool_t RawMode) const {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
 // Name:           TUsrEvent::NextSubeventData

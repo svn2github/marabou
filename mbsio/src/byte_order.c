@@ -82,14 +82,8 @@ SONSTIGES
 
 *****************************************************************************/
 
-char *bto_get_short(out, in, cnt, bytord)
+char *bto_get_short(short *out, char *in, int cnt, int bytord) {
 
-short *out;
-char *in;
-int cnt;
-int bytord;
-
-{
 	register int i;
 	union x {
 		short s;
@@ -118,14 +112,8 @@ int bytord;
 	}
 }
 
-char *bto_get_int32(out, in, cnt, bytord)
+char *bto_get_int32(int *out, char *in, int cnt, int bytord) {
 
-int *out;
-char *in;
-int cnt;
-int bytord;
-
-{
 	register int i;
 	union x {
 		int l;
@@ -176,13 +164,8 @@ int bytord;
 	}
 }
 
-char *bto_get_string(out, in, cnt, bytord)
+char *bto_get_string(char *out, char *in, int cnt, int bytord) {
 
-char *out;
-char *in;
-int bytord;
-
-{
 	register int i;
 	register char b;
 	int stop;
@@ -224,14 +207,8 @@ int bytord;
 	}
 }
 
-char *bto_put_int32(out, in, cnt, bytord)
+char *bto_put_int32(int *out, char *in, int cnt, int bytord) {
 
-int *out;
-char *in;
-int cnt;
-int bytord;
-
-{
 	register int i;
 	union x {
 		int l;
