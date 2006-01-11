@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.12 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.13 2006-01-11 12:24:55 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -886,13 +886,18 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamName, Int_t Offset, const 
 
 	if (Offset < 0) return(0);
 
-	TMrbNamedX * nx = fParamNames.FindByName(ParamName);
+	TString paramName = ParamName;
+	paramName = paramName.Strip(TString::kBoth);
+	paramName = paramName.Strip(TString::kBoth, '\r');
+	if (paramName.IsNull()) return(0);
+
+	TMrbNamedX * nx = fParamNames.FindByName(paramName.Data());
 	Int_t nofParams = -1;
 	if (nx != NULL) {
 		Int_t pOffset = nx->GetIndex();
 		if (pOffset < 0) pOffset = -pOffset;
 		if (pOffset != Offset) {
-			gMrbLog->Wrn()	<< "Param name already defined - " << ParamName
+			gMrbLog->Wrn()	<< "Param name already defined - " << paramName
 							<< ", offset = " << nx->GetIndex() << " (previous), "
 							<< Offset << " (now)" << endl;
 			gMrbLog->Flush(this->ClassName(), "AddToNameTable");
@@ -904,10 +909,10 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamName, Int_t Offset, const 
 		nx = fParamNames.FindByIndex(Offset);
 		if (nx != NULL) {
 			TString pn = nx->GetName();
-			if (pn.CompareTo(ParamName) != 0) {
+			if (pn.CompareTo(paramName.Data()) != 0) {
 				gMrbLog->Wrn()	<< "Param index already in use - " << Offset
 								<< ", name = " << nx->GetName() << " (previous), "
-								<< ParamName << " (now)" << endl;
+								<< paramName << " (now)" << endl;
 				gMrbLog->Flush(this->ClassName(), "AddToNameTable");
 				nx->Set(-Offset, nx->GetName());
 				nofParams = 1;
@@ -918,7 +923,7 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamName, Int_t Offset, const 
 	}
 	if (nofParams != 0) {
 		TString cmt = (Comment != NULL && *Comment != '\0') ? Comment : "";
-		nx = new TMrbNamedX(Offset, ParamName, cmt.Data(), nx);
+		nx = new TMrbNamedX(Offset, paramName.Data(), cmt.Data(), nx);
 		fParamNames.AddNamedX(nx);
 		fNofParams++;
 		nofParams = 1;
