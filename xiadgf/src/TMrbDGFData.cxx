@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbDGFData.cxx,v 1.13 2006-01-11 12:24:55 marabou Exp $       
+// Revision:       $Id: TMrbDGFData.cxx,v 1.14 2006-01-11 12:33:05 marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -850,6 +850,7 @@ Int_t TMrbDGFData::AddToNameTable(const Char_t * ParamFile, const Char_t * Comme
 		pLine.ReadLine(param, kFALSE);
 		if (param.eof()) break;
 		pLine = pLine.Strip(TString::kBoth);
+		pLine = pLine.Strip(TString::kBoth, '\r');
 		if (pLine.Length() == 0 || pLine(0) == '#') continue;
 		TObjArray pl;
 		Int_t n = pLine.Split(pl, " ", kTRUE);
