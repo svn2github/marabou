@@ -11,7 +11,7 @@
 // Purpose:        C interface to mbsio calls
 // Description:    C prototypes for mbsio
 // Author:         R. Lutter
-// Revision:       $Id: mbsio_protos.h,v 1.6 2005-12-20 14:26:46 Rudolf.Lutter Exp $       
+// Revision:       $Id: mbsio_protos.h,v 1.7 2006-01-13 08:09:49 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -76,3 +76,5 @@ XC	void _mbs_store_time_stamp(MBSDataIO * mbs);
 XC	unsigned int _mbs_next_med_event(MBSDataIO * mbs);
 XC	unsigned int _mbs_next_lmd_event(MBSDataIO * mbs);
 XC	MBSBufferElem *_mbs_check_type(unsigned int btype, MBSBufferElem * ltdescr, MBSBufferElem * tlist);
+
+XC	void _mbs_show_fheader(MBSDataIO * mbs, FILE * out);

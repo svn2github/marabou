@@ -57,7 +57,6 @@ FILE * lmd_out = NULL;
 		
 int total = 0;
 
-void _mbs_show_fheader();
 void _mbs_show_bheader();
 void _mbs_show_evhe_10_1();
 void _mbs_show_sev_10_1();
@@ -82,7 +81,7 @@ static MBSBufferElem buffer_types[] = {
 					sizeof(s_filhe),		// size
 					0,						// hits
 					NULL,					// proc to unpack
-					(void *) _mbs_show_fheader,		// proc to show data
+					_mbs_show_fheader,		// proc to show data
 					(void *) _mbs_copy_fheader		// proc to convert data
 				},
 				{	MBS_BTYPE_VME,
@@ -361,6 +360,7 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	cmode = tolower(*connection);
 
 	input = NULL;
+	fno = 0;
 
 	if (cmode == 'f') {
 		ctype = MBS_CTYPE_FILE;
@@ -414,7 +414,6 @@ MBSDataIO *mbs_open_file(char *device, char *connection, int bufsiz, FILE *out) 
 	}
 
 	bps = 1;
-	fno = 0;
 	if (ctype & (MBS_CTYPE_SYNC | MBS_CTYPE_ASYNC)) {
 		strcpy(host, device);
 		fno = _mbs_connect_to_server(host, ctype);
