@@ -3278,7 +3278,7 @@ void FhMainFrame::Runloop(){
    fM_Status = IsAnalyzeRunning(0);
    if(fM_Status == M_RUNNING && (!fForcedStop && fWriteOutput && fOutputFile->Length() > 1)){
       Int_t sts = gSystem->GetPathInfo(fOutputFile->Data(), &id, &size, &flags, &modtime);
-      if (sts) {
+      if (sts == 0) {
          fOutSize->SetText(new TGString(Form("%d", size)));
          gClient->NeedRedraw(fOutSize);
          if (fMaxFileSize > 0 && size/1000000 > fMaxFileSize) {
