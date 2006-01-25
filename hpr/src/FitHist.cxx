@@ -3253,7 +3253,7 @@ void FitHist::Draw1Dim()
       drawopt = "hist";
    if (hp->fShowErrors)
       drawopt += "e1";
-   if (hp->fFill1Dim) {
+   if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {
       fSelHist->SetFillStyle(1001);
       fSelHist->SetFillColor(hp->f1DimFillColor);
    } else
@@ -3451,7 +3451,7 @@ void FitHist::UpdateDrawOptions()
       	drawopt = "";
    	if (hp->fShowErrors)
       	drawopt += "e1";
-   	if (hp->fFill1Dim) {
+   	if (hp->fFill1Dim && fSelHist->GetNbinsX() < 50000) {
       	fSelHist->SetFillStyle(1001);
       	fSelHist->SetFillColor(hp->f1DimFillColor);
    	} else

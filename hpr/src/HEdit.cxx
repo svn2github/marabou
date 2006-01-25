@@ -115,7 +115,14 @@ void HTCanvas::InitEditCommands()
    Int_t win_width = 160;
    TList * labels = new TList;
    TList * methods = new TList;
-
+   Bool_t has_xgrabsc = kFALSE;
+   char * xgrabsc = gSystem->Which(gSystem->Getenv("PATH"), "xgrabsc");
+   if (xgrabsc != NULL) {
+      has_xgrabsc = kTRUE;
+      delete xgrabsc;
+   }
+   if (has_xgrabsc) 
+      labels->Add(new TObjString("Grab image from screen"));
    labels->Add(new TObjString("Insert image (gif, jpg"));
    labels->Add(new TObjString("Insert histogram "));
    labels->Add(new TObjString("Insert graph"));
@@ -137,6 +144,8 @@ void HTCanvas::InitEditCommands()
    labels->Add(new TObjString("Zoom Out"));
    labels->Add(new TObjString("UnZoom"));
 
+   if (has_xgrabsc) 
+      methods->Add(new TObjString("GrabImage()"));
    methods->Add(new TObjString("InsertImage()"));
    methods->Add(new TObjString("InsertHist()"));
    methods->Add(new TObjString("InsertGraph()"));
@@ -1692,11 +1701,174 @@ void HTCanvas::InsertGraph()
 
 //______________________________________________________________________________
 
+void HTCanvas::GrabImage()
+{
+   TList *row_lab = new TList(); 
+   TList *values  = new TList();
+
+   row_lab->Add(new TObjString("Fixed size"));
+   row_lab->Add(new TObjString("Alignment"));
+   row_lab->Add(new TObjString("Delay [sec]"));
+   row_lab->Add(new TObjString("X Width"));
+   row_lab->Add(new TObjString("Y Width"));
+   row_lab->Add(new TObjString("Picture name"));
+   row_lab->Add(new TObjString("Ask for ok after grab"));
+   
+   static Int_t fix_size = 1;
+   static Int_t align    = 11;
+   static Int_t delay    = 1;
+   static Int_t xw = 100;
+   static Int_t yw = 100;
+   static Int_t sernr = 0;
+   static Int_t query_ok = 1;
+
+   TString pname("pict_");
+   pname += sernr;
+   pname += ".gif";
+  
+   AddObjString(fix_size, values, kAttCheckB);
+   AddObjString(align, values, kAttAlign);
+   AddObjString(delay, values);
+   AddObjString(xw, values);
+   AddObjString(yw, values);
+   AddObjString(pname.Data(), values);
+   AddObjString(query_ok, values, kAttCheckB);
+
+   Int_t itemwidth = 320;
+   Bool_t ok = kFALSE;
+
+   ok = GetStringExt("Grab picture", NULL, itemwidth, fRootCanvas,
+                   NULL, NULL, row_lab, values);
+   if (!ok) return;
+
+   Int_t vp = 0;
+   fix_size = GetInt(values,  vp++);
+   align    = GetInt(values,  vp++);
+   delay    = GetInt(values,  vp++);
+   xw = GetInt(values,  vp++);
+   yw = GetInt(values,  vp++);
+   pname     = GetText(values, vp++);
+   query_ok = GetInt(values,  vp++);
+ 
+   cout << "Mark pick area" << endl;
+
+   TString cmd("xgrabsc -ppm -verbose 1> /dev/null 2> xgrabsc.log");
+   gSystem->Exec(cmd.Data());
+
+   Int_t xleg = 0, yleg = 0, xwg = 0, ywg = 0;
+   ifstream str("xgrabsc.log");
+   TString line;
+   TString number;
+   while (1) {
+      line.ReadLine(str);
+      if(str.eof()) break;
+      if (!line.Contains("bounding box")) continue;
+      Int_t ip;  
+      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
+      number = line(0,ip);
+      xleg = number.Atoi();
+
+      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
+      number = line(0,ip);
+      yleg = number.Atoi();
+  
+      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index(" ");
+      number = line(0,ip);
+      xwg = number.Atoi();
+
+      ip = line.Index("="); line.Remove(0, ip+1); ip = line.Index("]");
+      number = line(0,ip);
+      ywg = number.Atoi();
+      break;
+   }
+//   str.close();
+   if (xwg == 0) {
+      cout << "Couldnt get coords" << endl;
+      return;
+   }
+// alignment
+   if (fix_size != 0) {
+      if        (align%10 == 1) {
+         yleg = yleg + ywg - yw;
+      } else if (align%10 == 2) {
+         yleg = yleg + (ywg - yw) / 2;
+      }
+      if        (align/10 == 3) {
+         xleg = xleg + xwg - xw;
+      } else if (align/10 == 2) {
+         xleg = xleg + (xwg - xw) / 2;
+      }
+      xwg = xw;
+      ywg = yw;
+   }
+   
+   cmd = "xgrabsc -ppm -coords ";
+   cmd += xwg; cmd += "x"; cmd += ywg; 
+   cmd += "+";  cmd += xleg;  
+   cmd += "+"; cmd += yleg; 
+   cmd += " | convert - ";
+   cmd += pname.Data();
+   cmd += " &";
+
+   cout << "Cmd: " << cmd << endl;
+   if (delay > 0) {
+      cout << "Waiting " << delay << " seconds before grab" << endl;
+      Int_t wt = 10 * delay;
+      while (wt-- >= 0) {
+         gSystem->ProcessEvents();
+         gSystem->Sleep(100);
+      }
+   }
+   gSystem->Exec(cmd.Data());
+   gSystem->ProcessEvents();
+
+   if (query_ok != 0) {
+      gSystem->Exec(cmd.Data());
+      cmd = "kuickshow ";
+      cmd += pname.Data();
+      cmd += "&";
+      gSystem->Exec(cmd.Data());
+      Bool_t accept = QuestionBox("Is it ok?",fRootCanvas);
+      cmd = "killall kuickshow";
+      gSystem->Exec(cmd.Data());
+      if (!accept) return;
+   }
+   cout << "Mark position where to put (lower left corner)" << endl; 
+   TObject * obj = gPad->WaitPrimitive("TMarker");
+
+   if (obj->IsA() == TMarker::Class()) {
+      TMarker * ma = (TMarker*)obj;
+      Double_t x1, y1, x2, y2, xr1, yr1, xr2, yr2;
+      x1 = ma->GetX();
+      y1 = ma->GetY();
+      delete ma;
+      x2 = x1 + AbsPixeltoX(xwg);
+      y2 = y1 + AbsPixeltoY(ywg);
+
+      gPad->GetRange(xr1, yr1, xr2, yr2);
+      x1 = (x1 - xr1) / (xr2 - xr1);
+      y1 = (y1 - yr1) / (yr2 - yr1);
+      x2 = x1 + (Double_t) xwg / (Double_t)gPad->GetWw();
+      y2 = y1 + (Double_t) ywg / (Double_t)gPad->GetWh();
+
+      TPad * pad = new TPad(pname.Data(), "For HprImage", 
+                            x1, y1, x2, y2); 
+      pad->Draw(); 
+      HprImage * hprimg = new HprImage(pname.Data(), pad);
+      gROOT->SetSelectedPad(pad);
+      pad->cd();
+      hprimg->Draw("xxx");
+      this->cd();
+      Update();
+   }
+}
+//______________________________________________________________________________
+
 void HTCanvas::InsertImage()
 {
    TPad* pad = 0;
    const char hist_file[] = {"images_hist.txt"};
-   Bool_t ok;
+   Bool_t ok = kFALSE;
    static TString name;
    Int_t itemwidth = 320;
    ofstream hfile(hist_file);
