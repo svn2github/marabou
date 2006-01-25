@@ -8,7 +8,7 @@
 // Class:          TMrbTail    -- tail utility
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTail.h,v 1.8 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTail.h,v 1.9 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,6 +36,7 @@ namespace std {} using namespace std;
 class TMrbTail: public TMrbLogger {
 
 	public:
+		TMrbTail() {};												 	// default ctor
 		TMrbTail(const Char_t * TailName, const Char_t * TailFile); 	// ctor
 		virtual ~TMrbTail() {};						// dtor
 

@@ -9,7 +9,7 @@
 //                 Provides wrapper classes for tidy structures
 //                    TidyDoc, TidyNode, TidyOption, and TidyAttr
 // Author:         R. Lutter
-// Revision:       $Id: TMrbTidy.h,v 1.20 2005-11-17 11:58:03 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbTidy.h,v 1.21 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -40,6 +40,7 @@ class TMrbTidyDoc;
 class TMrbTidyOption : public TMrbNamedX {
 
  	public:
+		TMrbTidyOption() {};
 		TMrbTidyOption(TidyOptionId OptId, const Char_t * OptName, TidyOption OptHandle, TMrbTidyDoc * Doc);
 		virtual ~TMrbTidyOption() {};
 
@@ -89,6 +90,7 @@ class TMrbTidyOption : public TMrbNamedX {
 class TMrbTidyAttr : public TMrbNamedX {
 
  	public:
+		TMrbTidyAttr() {};
 		TMrbTidyAttr(TidyAttrId AttrId, const Char_t * AttrName, TidyOption OptHandle, TMrbTidyNode * Node);
 		virtual ~TMrbTidyAttr() {};
 
@@ -175,6 +177,7 @@ class TMrbTidyNode : public TMrbNamedX {
 								};
 
  	public:
+		TMrbTidyNode() {};
 		TMrbTidyNode(TidyTagId NodeId, const Char_t * NodeName, TMrbTidyNode * Parent, TidyNode NodeHandle, TMrbTidyDoc * Doc);
 		virtual ~TMrbTidyNode() {};
 

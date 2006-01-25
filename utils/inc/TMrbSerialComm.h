@@ -8,7 +8,7 @@
 // Description:    Class definitions to control I/O from/to a serial port.
 //                 Inspired by a class c_SerialComm written by Mario Schubert
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSerialComm.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSerialComm.h,v 1.6 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -36,6 +36,7 @@ class TMrbSerialComm : public TNamed {
 							};
 
  	public:
+		TMrbSerialComm() {};
 		TMrbSerialComm(const Char_t * Device);
 		virtual ~TMrbSerialComm() { this->Close(); };
 

@@ -8,7 +8,7 @@
 // Class:          TMrbLofData    -- a list of (structured) data
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbLofData.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbLofData.h,v 1.6 2006-01-25 12:21:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -29,6 +29,7 @@
 class TMrbLofData: public TNamed {
 
 	public:
+		TMrbLofData() {};													 	// default ctor
 		TMrbLofData(const Char_t * Name, Int_t NofEntries, Int_t EntrySize); 	// ctor
 
 		~TMrbLofData() { if (fData) delete [] fData; };							// dtor: delete data area
