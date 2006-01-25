@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbTidy.cxx,v 1.29 2005-11-22 14:20:25 marabou Exp $       
+// Revision:       $Id: TMrbTidy.cxx,v 1.30 2006-01-25 11:42:34 Rudolf.Lutter Exp $       
 // Date:           
 //Begin_Html
 /*
@@ -88,7 +88,6 @@ TMrbTidyDoc::TMrbTidyDoc() : TNamed("TidyDoc", "Tidy document") {
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	this->Reset();
 	fHandle = tidyCreate();
-	cout << this->ClassName() << ": " << setbase(16) << this << " handle=" << fHandle << setbase(10) << endl;
 	tidySetErrorBuffer(fHandle, &fErrorBuffer);
 	this->AddToList();
 }
