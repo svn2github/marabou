@@ -7,7 +7,7 @@
 // Purpose:        Class to describe a hit
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TUsrHit.h,v 1.1 2005-11-23 11:51:53 Rudolf.Lutter Exp $       
+// Revision:       $Id: TUsrHit.h,v 1.2 2006-01-25 12:16:09 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -131,17 +131,18 @@ class TUsrHit : public TObject {
 			for (Int_t i = 0; i < NofData; i++) fData[i + Offset] = *dp++;
 		};
 
-		inline void Reset() {
+		inline virtual Int_t GetNofData() { return(fNofData); };
+
+		inline virtual void Reset() {
 			fBufferNumber = -1;
 			fEventNumber = -1;
 			fModuleNumber = -1;
 			fChannel = -1;
 			fChannelTime = 0LL;
-			fNofData = 0;
 			this->ClearData();
 		};
 
-		inline void ClearData() { memset(fData, 0, kMaxHitData * sizeof(UShort_t)); };	// clear data
+		inline virtual void ClearData() { memset(fData, 0, kMaxHitData * sizeof(UShort_t)); };	// clear data
 
 	protected:		
 		Int_t fBufferNumber; 			// buffer number

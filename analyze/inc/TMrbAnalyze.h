@@ -7,7 +7,7 @@
 // Purpose:        Base class for user's analyze process
 // Description:
 // Author:         R. Lutter
-// Revision:       $Id: TMrbAnalyze.h,v 1.45 2005-11-23 11:51:52 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.h,v 1.46 2006-01-25 12:16:09 Rudolf.Lutter Exp $       
 // Date:           
 // URL:            
 // Keywords:       
@@ -68,7 +68,8 @@ class TMrbAnalyze : public TObject {
 							};
 
 	public:
-		TMrbAnalyze(TMrbIOSpec * IOSpec);						// default ctor
+		TMrbAnalyze() {};										// default ctor
+		TMrbAnalyze(TMrbIOSpec * IOSpec);						// ctor
 		~TMrbAnalyze() { fLofIOSpecs.Delete(); };				// dtor
 
 		TMrbAnalyze(const TMrbAnalyze &) {};					// dummy copy ctor

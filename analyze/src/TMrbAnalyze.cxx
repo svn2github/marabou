@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.63 2005-11-28 09:39:11 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.64 2006-01-25 12:16:09 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -497,9 +497,9 @@ Int_t TMrbAnalyze::ProcessFileList() {
 			if (gMrbTransport == NULL) {
 				gMrbTransport = new TMrbTransport("M_analyze", "Connection to MBS");
 				gMrbTransport->Version();
-				gMrbTransport->SetStopFlag(kFALSE);
 			}
 			if (gMrbTransport) {
+				gMrbTransport->SetStopFlag(kFALSE);
 			 	if (gMrbTransport->Open(ioSpec->GetInputFile(), "F")) {
 					gMrbTransport->OpenLogFile("M_analyze.log");
 					this->ReloadParams(ioSpec);
