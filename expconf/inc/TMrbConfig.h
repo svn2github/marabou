@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.64 2006-01-25 11:19:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.65 2006-01-25 11:53:27 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -225,9 +225,7 @@ class TMrbConfig : public TNamed {
 									kAnaMakeLibNew,
 									kAnaIncludeEvtSevtModGlobals,
 									kAnaInitializeEvtSevtMods,
-									kAnaLoadUserLibs,
-									kAnaSpecialHitDef,
-									kAnaSpecialHitMethods
+									kAnaLoadUserLibs
 								};
 
 		enum EMrbConfigTag  	{	kCfgFile				=	1,		// config tags

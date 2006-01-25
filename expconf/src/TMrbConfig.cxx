@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.107 2006-01-25 11:19:55 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.107 2006-01-25 11:19:55 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.108 2006-01-25 11:53:27 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.108 2006-01-25 11:53:27 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -320,8 +320,6 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
 								{TMrbConfig::kAnaLoadUserLibs,				"LOAD_USER_LIBS"			 	},
-								{TMrbConfig::kAnaSpecialHitDef,				"SPECIAL_HIT_DEFINITION"	 	},
-								{TMrbConfig::kAnaSpecialHitMethods,			"SPECIAL_HIT_METHODS"		 	},
 								{0, 										NULL							}
 							};
 
@@ -3585,18 +3583,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(ofstream & AnaStrm, const Char_t * ClassName,
 		if (TagIndex == analyzeTag->GetIndex()) {
 			if (!this->ExecUserMacro(&AnaStrm, this, analyzeTag->GetName())) {
 				switch (TagIndex) {
-					case kAnaSpecialHitDef:
-					case kAnaSpecialHitMethods:
-						{
-							TMrbNamedX * spHit = (TMrbNamedX *) fLofSpecialHits.FindObject(ClassName);
-							if (spHit) {
-								anaTmpl.InitializeCode();
-								anaTmpl.Substitute("$hitClass", spHit->GetName());
-								anaTmpl.Substitute("$dataLength", spHit->GetIndex());
-								anaTmpl.WriteCode(AnaStrm);
-							}
-						}
-						break;
 					default:
 						anaTmpl.InitializeCode();
 						anaTmpl.WriteCode(AnaStrm);

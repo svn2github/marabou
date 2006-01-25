@@ -467,8 +467,6 @@ void TMrbAnalyze::SetScaleDown(Int_t ScaleDown) {
 
 %%EVT_USER_CLASS_METHODS%%				include methods for user-defined event classes here
 
-%%SPECIAL_HIT_METHODS%% 				include methods for used-defined hit objects
-
 Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////

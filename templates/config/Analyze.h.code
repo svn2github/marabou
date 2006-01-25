@@ -37,6 +37,4 @@
 //%%SEVT_CLASS_DEFINITION%%			define user-specific SUBEVENT classes here
 
 //%%EVT_CLASS_DEFINITION%%			define user-specific EVENT classes here
-
-//%%SPECIAL_HIT_DEFINITION%%		define special hit objects
 #endif
