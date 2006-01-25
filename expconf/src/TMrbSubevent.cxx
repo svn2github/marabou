@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent.cxx,v 1.23 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.cxx,v 1.24 2006-01-25 11:19:55 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -1896,46 +1896,115 @@ const Char_t * TMrbSubevent::GetLofParamsAsString(TString & LofParams) const {
 Bool_t TMrbSubevent::UseSpecialHit(const Char_t * HitName, Int_t DataLength) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbSubevent::SetHitDataLength
-// Purpose:        Define length of hit data
-// Arguments:      Int_t DataLength         -- length if hit data in words
+// Name:           TMrbSubevent::UseSpecialHit
+// Purpose:        Define a special hit to be used instead of TUsrHit
+// Arguments:      Char_t * HitName         -- name to be used
+//                 Int_t DataLength         -- length if additional hit data in words
 // Results:        kTRUE/kFALSE
 // Exceptions:
-// Description:    Defines how many data should be appended to hits.
-//                 Needs method NeedsHitBuffer() to return kTRUE.
+// Description:    Defines a new object inherited from normal TUsrHit.
+//                 Adds some additional data (i.e. trace data).
+//                 Code will be generated automatically depending on argument DataLength.
+//                 If DataLength is missing (or = -1) no code generation will take place,
+//                 it is then up to the user to provide his own class.
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	Bool_t sts;
+	Bool_t verboseMode = (gMrbConfig->IsVerbose() || (gMrbConfig->GetAnalyzeOptions() & TMrbConfig::kAnaOptVerbose) != 0);
+
+	TMrbNamedX * spHit = NULL;
+	Bool_t rewriteCode = kFALSE;
+	Bool_t needUserClass = kFALSE;
+
+	TString prefix = gMrbConfig->GetName();
+	prefix(0,1).ToUpper();
+	prefix += "SpHit";
 	fSpecialHit = HitName;
 	fSpecialHit(0,1).ToUpper();
-	fSpecialHit.Prepend("TUsrHit");
+	fSpecialHit.Prepend(prefix.Data());
 	fHitDataLength = DataLength;
 	if (this->NeedsHitBuffer()) {
-		TObjArray * lofHits = gMrbConfig->GetLofSpecialHits();
-		TMrbNamedX * spHit = (TMrbNamedX *) lofHits->FindObject(fSpecialHit.Data());
-		if (spHit) {
-			if (spHit->GetIndex() != fHitDataLength) {
-				fHitDataLength = spHit->GetIndex();
-				gMrbLog->Wrn()	<< this->GetName() << ": Length of hit data different - this =" << DataLength
-								<< " <--> previous = " << fHitDataLength
-								<< ", value changed to " << fHitDataLength << endl;
-				gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
-			}
-			return(kTRUE);
+		if (fHitDataLength != -1 && fHitDataLength <= 0) {
+			gMrbLog->Err()	<< "[" << this->GetName() << "] Illegal hit data length - " << fHitDataLength << " (should be > 0)" << endl;
+			gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+			spHit = NULL;
 		} else {
-			lofHits->Add(new TMrbNamedX(fHitDataLength, fSpecialHit.Data(), "", this));
+			TObjArray * lofHits = gMrbConfig->GetLofSpecialHits();
+			spHit = (TMrbNamedX *) lofHits->FindObject(fSpecialHit.Data());
+			if (spHit) {
+				if (spHit->GetIndex() != fHitDataLength) {
+					if (fHitDataLength == -1) {
+						gMrbLog->Err()	<< "[" << this->GetName() << "] Special hit \"" << fSpecialHit
+										<< "\" (auto mode) can't be replaced by a user-defined one" << endl;
+						gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+						spHit = NULL;
+					} else {
+						fHitDataLength = spHit->GetIndex();
+						gMrbLog->Wrn()	<< "[" << this->GetName() << "] Length of hit data different - this =" << DataLength
+										<< " <--> previous = " << fHitDataLength
+										<< ", value changed to " << fHitDataLength << endl;
+						gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+						TObjArray * lofSevts = (TObjArray *) spHit->GetAssignedObject();
+						lofSevts->Add(this);
+						rewriteCode = kTRUE;
+					}
+				} else {
+					TObjArray * lofSevts = (TObjArray *) spHit->GetAssignedObject();
+					if (lofSevts->FindObject(this) == NULL) lofSevts->Add(this);
+					rewriteCode = kFALSE;
+				}
+			} else {
+				TObjArray * lofSevts = new TObjArray();
+				lofSevts->Add(this);
+				spHit = new TMrbNamedX(fHitDataLength, fSpecialHit.Data(), "", lofSevts);
+				lofHits->Add(spHit);
+				if (verboseMode) {
+					if (fHitDataLength == -1) {
+						gMrbLog->Out()  << "[" << this->GetName() << "] Using special hit " << fSpecialHit
+										<< " (auto mode), data length = " << fHitDataLength << endl;
+					} else {
+						gMrbLog->Out()  << "[" << this->GetName() << "] Using special hit " << fSpecialHit
+										<< " (user defined)" << endl;
+					}
+					gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+				}
+				needUserClass = kTRUE;
+				rewriteCode = kTRUE;			}
 		}
-		sts = kTRUE;
 	} else {
-		gMrbLog->Err()	<< this->GetName() << ": Subevent is not configured to use a hit buffer - special hit \""
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Subevent is not configured to use a hit buffer - special hit \""
 						<< fSpecialHit << "\" ignored" << endl;
 		gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+		spHit = NULL;
+	}
+	if (spHit) {
+		if (!rewriteCode) {
+			TString spHitFile = fSpecialHit;
+			spHitFile += ".cxx";
+			rewriteCode = (gSystem->AccessPathName(spHitFile.Data()) != 0);
+		}
+		if (!rewriteCode) {
+			TString spHitFile = fSpecialHit;
+			spHitFile += ".h";
+			rewriteCode = (gSystem->AccessPathName(spHitFile.Data()) != 0);
+		}
+		if (rewriteCode) {
+			if (spHit->GetIndex() == -1) {
+				gMrbLog->Out() << "Generating prototype for special hit \"" << spHit->GetName() << "\" (auto mode, has to be edited)" << endl;
+				gMrbLog->Flush(this->ClassName(), "UseSpecialHit");
+			}
+			gMrbConfig->CreateSpecialHit(spHit);
+			if (needUserClass) {
+				TString spHitFile = fSpecialHit;
+				spHitFile += ".cxx";
+				gMrbConfig->IncludeUserClass(spHitFile.Data(), kFALSE);
+			}
+		}
+	} else {
 		fSpecialHit = "";
 		fHitDataLength = 0;
-		sts = kFALSE;
 	}
-	return(sts);
+	return(spHit != NULL);
 }
 
 

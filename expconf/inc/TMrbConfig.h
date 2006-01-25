@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.63 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.64 2006-01-25 11:19:55 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -273,6 +273,17 @@ class TMrbConfig : public TNamed {
 									kUevTitle,
 									kUevAuthor,
 									kUevCreationDate
+								};
+
+		enum EMrbSpHitTag 		 {	kSpHitFile				=	1,		// user event tags
+									kSpHitNameLC,
+									kSpHitNameUC,
+									kSpHitConfigLC,
+									kSpHitConfigUC,
+									kSpHitTitle,
+									kSpHitAuthor,
+									kSpHitCreationDate,
+									kSpHitDataLength
 								};
 
 		enum					{	kNoOptionSpecified		= 0x80000000	};
@@ -796,6 +807,10 @@ class TMrbConfig : public TNamed {
 		Bool_t IsDefined(const Char_t * Name, Int_t & Value) const;
 		Bool_t IsDefined(const Char_t * Name) const;
 
+		Bool_t CreateUserMacro();
+		Bool_t CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart);
+		Bool_t CreateSpecialHit(TMrbNamedX * SpecialHit);
+
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
 	public: 									// public lists of key words:
@@ -809,6 +824,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofRcFileTags;			//! ... rc file tags
 		TMrbLofNamedX fLofUserMacroTags;		//! ... user macro tags
 		TMrbLofNamedX fLofUserEventTags;		//! ... user event tags
+		TMrbLofNamedX fLofSpHitTags;			//! ... special hit tags
 		TMrbLofNamedX fCNAFNames;				//! ... cnaf key words
 		TMrbLofNamedX fLofModuleTags;			//! ... camac tags
 		TMrbLofNamedX fLofModuleIDs;			//! ... camac modules available
@@ -817,8 +833,6 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofDefines;				//! list of #define statements
 
 	protected:
-		Bool_t CreateUserMacro();
-		Bool_t CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart);
 		Bool_t DefineVarOrWdw(TMrbNamedX * VarType, TObject * VarProto, const Char_t * VarDefs);
 		Bool_t WriteUtilityProtos();
 		Bool_t CheckConfig();

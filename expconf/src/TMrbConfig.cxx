@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.106 2005-12-07 15:05:10 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.106 2005-12-07 15:05:10 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.107 2006-01-25 11:19:55 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.107 2006-01-25 11:19:55 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -315,7 +315,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaMakeUserRules,				"MAKE_USER_RULES"	 			},
 								{TMrbConfig::kAnaMakeUlibRules,				"MAKE_ULIB_RULES"	 			},
 								{TMrbConfig::kAnaMakeAll,					"MAKE_ALL"	 					},
-								{TMrbConfig::kAnaMakeClean,					"MAKE_CLEAN"	 					},
+								{TMrbConfig::kAnaMakeClean,					"MAKE_CLEAN"	 				},
 								{TMrbConfig::kAnaMakeLibNew,				"MAKE_LIBNEW"		 			},
 								{TMrbConfig::kAnaIncludeEvtSevtModGlobals,	"INCLUDE_EVT_SEVT_MOD_GLOBALS"	},
 								{TMrbConfig::kAnaInitializeEvtSevtMods,		"INITIALIZE_EVT_SEVT_MODS"	 	},
@@ -374,7 +374,7 @@ const SMrbNamedXShort kMrbLofUserMacroTags[] =
 								{0, 										NULL							}
 							};
 
-//_________________________________________________________________________________________________________ tag words in CreatePrototypeForUserEvent()
+//_________________________________________________________________________________________________________ tag words in CreateUserEvent()
 
 const SMrbNamedXShort kMrbLofUserEventTags[] =
 							{
@@ -386,6 +386,22 @@ const SMrbNamedXShort kMrbLofUserEventTags[] =
 								{TMrbConfig::kUevTitle, 					"USER_EVENT_TITLE" 				},
 								{TMrbConfig::kUevCreationDate,				"CREATION_DATE" 				},
 								{TMrbConfig::kUevAuthor,					"AUTHOR"						},
+								{0, 										NULL							}
+							};
+
+//_________________________________________________________________________________________________________ tag words in CreateSpecialHit()
+
+const SMrbNamedXShort kMrbLofSpHitTags[] =
+							{
+								{TMrbConfig::kSpHitFile,					"SPECIAL_HIT_FILE"				},
+								{TMrbConfig::kSpHitNameLC,					"SPECIAL_HIT_NAME_LC"			},
+								{TMrbConfig::kSpHitNameUC,					"SPECIAL_HIT_NAME_UC"			},
+								{TMrbConfig::kSpHitConfigLC,				"SPECIAL_HIT_CONFIG_LC"			},
+								{TMrbConfig::kSpHitConfigUC,				"SPECIAL_HIT_CONFIG_UC"			},
+								{TMrbConfig::kSpHitTitle, 					"SPECIAL_HIT_TITLE" 			},
+								{TMrbConfig::kSpHitCreationDate,			"CREATION_DATE" 				},
+								{TMrbConfig::kSpHitAuthor,					"AUTHOR"						},
+								{TMrbConfig::kSpHitDataLength, 				"SPECIAL_HIT_DATA_LENGTH" 		},
 								{0, 										NULL							}
 							};
 
@@ -612,6 +628,9 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 
 		fLofUserEventTags.SetName("UserEvent Tags");  			// ... user event tags
 		fLofUserEventTags.AddNamedX(kMrbLofUserEventTags);
+
+		fLofSpHitTags.SetName("SpecialHit Tags");  				// ... special hit tags
+		fLofSpHitTags.AddNamedX(kMrbLofSpHitTags);
 
 		fCNAFNames.SetName("CNAF Names"); 						// ... cnaf key words
 		fCNAFNames.SetPatternMode();
@@ -3343,16 +3362,6 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							anaTmpl.WriteCode(anaStrm);
 						}
 						break;
-					case TMrbConfig::kAnaSpecialHitDef:
-					case TMrbConfig::kAnaSpecialHitMethods:
-						{
-							TMrbNamedX * spHit = (TMrbNamedX *) fLofSpecialHits.First();
-							while (spHit) {
-								this->MakeAnalyzeCode(anaStrm, spHit->GetName(), "SpecialHit", tagIdx, pp->GetX());
-								spHit = (TMrbNamedX *) fLofSpecialHits.After(spHit);
-							}
-						}
-						break;
 				}
 			}
 		}
@@ -5290,6 +5299,139 @@ Bool_t TMrbConfig::CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent,
 		return(kFALSE);
 	}
 	return(kFALSE);
+}
+	
+Bool_t TMrbConfig::CreateSpecialHit(TMrbNamedX * SpecialHit) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbConfig::CreateSpecialHit
+// Purpose:        Create files/methods for a user-defined hit class
+// Arguments:      TMrbNamedX * SpecialHit   -- hit specs
+// Results:        kTRUE/kFALSE
+// Exceptions:
+// Description:    Creates files & methods for a user-defined hit.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	ofstream outStrm;
+
+	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
+	gSystem->ExpandPathName(templatePath);
+
+	TMrbTemplate spHitTmpl;
+
+	TObjArray filesToCreate;
+	TString cf, tf;
+
+	Bool_t verboseMode = (this->IsVerbose() || (this->GetAnalyzeOptions() & kAnaOptVerbose) != 0) ;
+
+	packNames acxx(SpecialHit->GetName(), "SpecialHit.cxx.code", ".cxx", "Special hit (code)");
+	filesToCreate.Add((TObject *) &acxx);
+
+	packNames ah(SpecialHit->GetName(), "SpecialHit.h.code", ".h", "Special hit (prototypes)");
+	filesToCreate.Add((TObject *) &ah);
+
+	packNames * pp = (packNames *) filesToCreate.First();
+	while (pp) {
+		cf = pp->GetF() + pp->GetX();
+		outStrm.open(cf, ios::out);
+		if (!outStrm.good()) {	
+			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			pp = (packNames *) filesToCreate.After((TObject *) pp);
+			continue;
+		}
+
+		tf = pp->GetT();
+		TString fileSpec;
+		TMrbSystem ux;
+		ux.Which(fileSpec, templatePath.Data(), tf.Data());
+		if (fileSpec.IsNull()) {
+			gMrbLog->Err()	<< "Template file not found - " << tf << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			gMrbLog->Err()	<< "            Searching on path " << templatePath << endl;
+			gMrbLog->Flush();
+			pp = (packNames *) filesToCreate.After((TObject *) pp);
+			outStrm.close();
+			continue;
+		}
+
+		if (verboseMode) {
+			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+		}
+	
+		TString spHitTemplateFile = fileSpec;
+
+		if (!spHitTmpl.Open(spHitTemplateFile, &fLofSpHitTags)) {
+			pp = (packNames *) filesToCreate.After((TObject *) pp);
+			if (verboseMode) {
+				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
+				gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			}
+			continue;
+		} else if (verboseMode) {
+			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
+			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+		}
+
+		for (;;) {
+			TString line;
+			TMrbNamedX * spHitTag = spHitTmpl.Next(line);
+			if (spHitTmpl.IsEof()) break;
+			if (spHitTmpl.IsError()) continue;
+			if (spHitTmpl.Status() & TMrbTemplate::kNoTag) {
+				if (line.Index("#-") != 0) outStrm << line << endl;
+			} else {
+				switch (spHitTag->GetIndex()) {
+					case TMrbConfig::kSpHitNameLC:
+						{
+							TString nameLC = SpecialHit->GetName();
+							nameLC(0,1).ToLower();
+							outStrm << spHitTmpl.Encode(line,nameLC) << endl;
+						}
+						break;
+					case TMrbConfig::kSpHitNameUC:
+						{
+							TString nameUC = SpecialHit->GetName();
+							nameUC(0,1).ToUpper();
+							outStrm << spHitTmpl.Encode(line, nameUC) << endl;
+						}
+						break;
+					case TMrbConfig::kSpHitConfigLC:
+						outStrm << spHitTmpl.Encode(line, this->GetName()) << endl;
+						break;
+					case TMrbConfig::kSpHitConfigUC:
+						{
+							TString nameUC = this->GetName();
+							nameUC(0,1).ToUpper();
+							outStrm << spHitTmpl.Encode(line, nameUC) << endl;
+						}
+						break;
+					case TMrbConfig::kSpHitTitle:
+						outStrm << spHitTmpl.Encode(line, this->GetTitle()) << endl;
+						break;
+					case TMrbConfig::kSpHitAuthor:
+						outStrm << spHitTmpl.Encode(line, fAuthor) << endl;
+						break;
+					case TMrbConfig::kSpHitCreationDate:
+						outStrm << spHitTmpl.Encode(line, fCreationDate) << endl;
+						break;
+					case TMrbConfig::kSpHitDataLength:
+						{
+							TMrbString dl = SpecialHit->GetIndex();
+							outStrm << spHitTmpl.Encode(line, dl.Data()) << endl;
+						}
+						break;
+				}
+			}
+		}	
+		outStrm.close();
+		gMrbLog->Out() << "[" << cf << ": " << pp->GetC() << "]" << endl;
+		gMrbLog->Flush("", "", setblue);
+		pp = (packNames *) filesToCreate.After((TObject *) pp);
+	}
+	return(kTRUE);
 }
 	
 void TMrbConfig::AddToTagList(const Char_t * CodeFile, Int_t TagIndex) {
