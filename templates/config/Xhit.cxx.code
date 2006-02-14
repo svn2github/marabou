@@ -1,0 +1,100 @@
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%EXTENDED_HIT_NAME_UC%%.cxx
+// Purpose:        User-defined hit class for data analysis
+// Description:    
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TMrbLogger.h"
+#include "TMrbAnalyze.h"
+
+#include "%%EXTENDED_HIT_NAME_UC%%.h"
+
+extern TMrbLogger * gMrbLog;					// message logger
+extern TMrbAnalyze * gMrbAnalyze;				// user's base class
+
+ClassImp(%%EXTENDED_HIT_NAME_UC%%)
+ClassImp(%%EXTENDED_HIT_NAME_UC%%Buffer)
+
+TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
+										UShort_t * Hdata, Int_t NofHdata,
+										UShort_t * Xdata, Int_t NofXdata) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::AddXhit
+// Purpose:        Add data to hit buffer
+// Arguments:      Int_t EventNumber      -- event index within buffer
+//                 Int_t ModuleNumber     -- module serial
+//                 Int_t Channel          -- channel number
+//                 UShort_t BufferTimeHi  -- event time, hi order
+//                 UShort_t EventTimeHi   -- ..., middle
+//                 UShort_t FastTrigTime  -- ..., low
+//                 UShort_t * Hdata       -- hit data (header), length depending on format
+//                 Int_t NofHdata         -- number of header words
+//                 UShort_t * Xdata       -- hit data (trace)
+//                 Int_t NofXdata         -- number of trace data words
+// Results:        TUsrXhit * Hit         -- pointer to hit object
+// Exceptions:
+// Description:    Adds a new item to hit list.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fNofHits >= fNofEntries) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddHit");
+		return(NULL);
+	}
+	TClonesArray &hits = * fHits;
+	TUsrXhit * hit = new(hits[fNofHits]) TUsrXhit(gMrbAnalyze->GetEventsProcessed(),
+																			EventNumber,
+																			ModuleNumber, Channel,
+																			BufferTimeHi, EventTimeHi, FastTrigTime,
+																			Hdata, NofHdata, Xdata, NofXdata);
+	fNofHits++;
+	return(hit);
+}
+
+TUsrXhit * TUsrXhitBuffer::AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
+										UShort_t * ChannelTime,
+										UShort_t * Hdata, Int_t NofHdata,
+										UShort_t * Xdata, Int_t NofXdata) {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TUsrHitBuffer::AddXhit
+// Purpose:        Add data to hit buffer
+// Arguments:      Int_t EventNumber      -- event index within buffer
+//                 Int_t ModuleNumber     -- module serial
+//                 Int_t Channel          -- channel number
+//                 UShort_t ChannelTime   -- channel time
+//                 UShort_t * Hdata       -- hit data (header), length depending on format
+//                 Int_t NofHdata         -- number of header words
+//                 UShort_t * Xdata       -- hit data (trace)
+//                 Int_t NofXdata         -- number of trace data words
+// Results:        TUsrXhit * Hit         -- pointer to hit object
+// Exceptions:
+// Description:    Adds a new item to hit list.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fNofHits >= fNofEntries) {
+		gMrbLog->Err()	<< "[" << this->GetName() << "] Buffer overflow - " << fNofEntries << " entries max" << endl;
+		gMrbLog->Flush(this->ClassName(), "AddHit");
+		return(NULL);
+	}
+	TClonesArray &hits = * fHits;
+	TUsrXhit * hit = new(hits[fNofHits]) TUsrXhit(gMrbAnalyze->GetEventsProcessed(),
+																			EventNumber,
+																			ModuleNumber, Channel,
+																			ChannelTime,
+																			Hdata, NofHdata, Xdata, NofXdata);
+	fNofHits++;
+	return(hit);
+}
+

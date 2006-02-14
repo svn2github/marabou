@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.108 2006-01-25 11:53:27 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.108 2006-01-25 11:53:27 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.109 2006-02-14 15:57:09 Marabou Exp $       $Id: TMrbConfig.cxx,v 1.109 2006-02-14 15:57:09 Marabou Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -205,6 +205,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaAuthor,					"AUTHOR"						},
 								{TMrbConfig::kAnaUser,						"USER"	 						},
 								{TMrbConfig::kAnaHtmlMakeSetup,				"HTML_MAKE_SETUP" 				},
+								{TMrbConfig::kAnaIncludeXhitDefs,			"INCLUDE_XHIT_DEFS" 		 	},
 								{TMrbConfig::kAnaIncludesAndDefs,			"INCLUDES_AND_DEFS_ANALYZE" 	},
 								{TMrbConfig::kAnaPragmaLinkClasses, 		"PRAGMA_LINK_CLASSES"			},
 								{TMrbConfig::kAnaClassImp,					"IMPLEMENT_CLASSES" 			},
@@ -280,6 +281,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtFillHistograms,		"SEVT_FILL_HISTOGRAMS"			},
 								{TMrbConfig::kAnaSevtInitializeBranch,		"SEVT_INITIALIZE_BRANCH"		},
 								{TMrbConfig::kAnaSevtResetData,				"SEVT_RESET_DATA"				},
+								{TMrbConfig::kAnaSevtXhitClass,			"SEVT_SPHIT_CLASS"				},
 								{TMrbConfig::kAnaModuleIdEnum,				"MODULE_ID_ENUM"				},
 								{TMrbConfig::kAnaModuleSerialEnum,			"MODULE_SERIAL_ENUM"			},
 								{TMrbConfig::kAnaModuleSpecialEnum,			"MODULE_SPECIAL_ENUM"			},
@@ -387,19 +389,19 @@ const SMrbNamedXShort kMrbLofUserEventTags[] =
 								{0, 										NULL							}
 							};
 
-//_________________________________________________________________________________________________________ tag words in CreateSpecialHit()
+//_________________________________________________________________________________________________________ tag words in CreateXhit()
 
-const SMrbNamedXShort kMrbLofSpHitTags[] =
+const SMrbNamedXShort kMrbLofXhitTags[] =
 							{
-								{TMrbConfig::kSpHitFile,					"SPECIAL_HIT_FILE"				},
-								{TMrbConfig::kSpHitNameLC,					"SPECIAL_HIT_NAME_LC"			},
-								{TMrbConfig::kSpHitNameUC,					"SPECIAL_HIT_NAME_UC"			},
-								{TMrbConfig::kSpHitConfigLC,				"SPECIAL_HIT_CONFIG_LC"			},
-								{TMrbConfig::kSpHitConfigUC,				"SPECIAL_HIT_CONFIG_UC"			},
-								{TMrbConfig::kSpHitTitle, 					"SPECIAL_HIT_TITLE" 			},
-								{TMrbConfig::kSpHitCreationDate,			"CREATION_DATE" 				},
-								{TMrbConfig::kSpHitAuthor,					"AUTHOR"						},
-								{TMrbConfig::kSpHitDataLength, 				"SPECIAL_HIT_DATA_LENGTH" 		},
+								{TMrbConfig::kXhitFile,					"EXTENDED_HIT_FILE"				},
+								{TMrbConfig::kXhitNameLC,					"EXTENDED_HIT_NAME_LC"			},
+								{TMrbConfig::kXhitNameUC,					"EXTENDED_HIT_NAME_UC"			},
+								{TMrbConfig::kXhitConfigLC,				"EXTENDED_HIT_CONFIG_LC"		},
+								{TMrbConfig::kXhitConfigUC,				"EXTENDED_HIT_CONFIG_UC"		},
+								{TMrbConfig::kXhitTitle, 					"EXTENDED_HIT_TITLE" 			},
+								{TMrbConfig::kXhitCreationDate,			"CREATION_DATE" 				},
+								{TMrbConfig::kXhitAuthor,					"AUTHOR"						},
+								{TMrbConfig::kXhitDataLength, 				"EXTENDED_HIT_DATA_LENGTH" 		},
 								{0, 										NULL							}
 							};
 
@@ -627,8 +629,8 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofUserEventTags.SetName("UserEvent Tags");  			// ... user event tags
 		fLofUserEventTags.AddNamedX(kMrbLofUserEventTags);
 
-		fLofSpHitTags.SetName("SpecialHit Tags");  				// ... special hit tags
-		fLofSpHitTags.AddNamedX(kMrbLofSpHitTags);
+		fLofXhitTags.SetName("ExtendedHIt Tags");  				// ... special hit tags
+		fLofXhitTags.AddNamedX(kMrbLofXhitTags);
 
 		fCNAFNames.SetName("CNAF Names"); 						// ... cnaf key words
 		fCNAFNames.SetPatternMode();
@@ -664,7 +666,7 @@ TMrbConfig::TMrbConfig(const Char_t * CfgName, const Char_t * CfgTitle) : TNamed
 		fLofHistoArrays.Delete();								// init list of histogram arrays
 		fLofHistoConditions.Delete();							// init list of histogram booking conds
 		fLofOnceOnlyTags.Delete();								// init list of once-only code files		
-		fLofSpecialHits.Delete();								// init list of special hits		
+		fLofXhits.Delete(); 									// init list of special hits		
 		fUserMacroToBeCalled = kFALSE;							// don't call user macro per default
 		
 		fLofUserIncludes.SetName("User code to be included");
@@ -2296,6 +2298,17 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							}   
 						}
 						break;
+					case TMrbConfig::kAnaIncludeXhitDefs:
+						{
+							TMrbNamedX * xhit = (TMrbNamedX *) fLofXhits.First();
+							while (xhit) {
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$xhit", xhit->GetName());
+								anaTmpl.WriteCode(anaStrm);
+								xhit = (TMrbNamedX *) fLofXhits.After(xhit);
+							}
+						}
+						break;
 					case TMrbConfig::kAnaIncludesAndDefs:
 					case TMrbConfig::kAnaModuleSpecialEnum:
 						{
@@ -3140,10 +3153,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							sevt = (TMrbSubevent *) fLofSubevents.First();
 							while (sevt) {
-								if (onceOnly.FindObject(sevt->ClassName()) == NULL) {
+								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, sevt->ClassName(), sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
-								onceOnly.Add(new TNamed(sevt->ClassName(), ""));
+								onceOnly.Add(new TNamed(sevt->GetCommonCodeFile(), ""));
 								sevt->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
 								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
@@ -3156,10 +3169,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							evt = (TMrbEvent *) fLofEvents.First();
 							while (evt) {
-								if (onceOnly.FindObject(evt->ClassName()) == NULL) {
+								if (onceOnly.FindObject(evt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, evt->ClassName(), evt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
-								onceOnly.Add(new TNamed(evt->ClassName(), ""));
+								onceOnly.Add(new TNamed(evt->GetCommonCodeFile(), ""));
 								evt->MakeAnalyzeCode(anaStrm, tagIdx, pp->GetX());
 								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
@@ -3302,28 +3315,28 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 							TList onceOnly;
 							evt = (TMrbEvent *) fLofEvents.First();
 							while (evt) {
-								if (onceOnly.FindObject(evt->ClassName()) == NULL) {
+								if (onceOnly.FindObject(evt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, evt->ClassName(), evt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
-								onceOnly.Add(new TNamed(evt->ClassName(), ""));
+								onceOnly.Add(new TNamed(evt->GetCommonCodeFile(), ""));
 								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							onceOnly.Delete();
 							sevt = (TMrbSubevent *) fLofSubevents.First();
 							while (sevt) {
-								if (onceOnly.FindObject(sevt->ClassName()) == NULL) {
+								if (onceOnly.FindObject(sevt->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, sevt->ClassName(), sevt->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
-								onceOnly.Add(new TNamed(sevt->ClassName(), ""));
+								onceOnly.Add(new TNamed(sevt->GetCommonCodeFile(), ""));
 								sevt = (TMrbSubevent *) fLofSubevents.After(sevt);
 							}
 							onceOnly.Delete();
 							module = (TMrbModule *) fLofModules.First();
 							while (module) {
-								if (onceOnly.FindObject(module->ClassName()) == NULL) {
+								if (onceOnly.FindObject(module->GetCommonCodeFile()) == NULL) {
 									this->MakeAnalyzeCode(anaStrm, module->ClassName(), module->GetCommonCodeFile(), tagIdx, pp->GetX());
 								}
-								onceOnly.Add(new TNamed(module->ClassName(), ""));
+								onceOnly.Add(new TNamed(module->GetCommonCodeFile(), ""));
 								module = (TMrbModule *) fLofModules.After(module);
 							}
 							onceOnly.Delete();
@@ -5287,12 +5300,12 @@ Bool_t TMrbConfig::CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent,
 	return(kFALSE);
 }
 	
-Bool_t TMrbConfig::CreateSpecialHit(TMrbNamedX * SpecialHit) {
+Bool_t TMrbConfig::CreateXhit(TMrbNamedX * Xhit) {
 //________________________________________________________________[C++ METHOD]
 //////////////////////////////////////////////////////////////////////////////
-// Name:           TMrbConfig::CreateSpecialHit
+// Name:           TMrbConfig::CreateXhit
 // Purpose:        Create files/methods for a user-defined hit class
-// Arguments:      TMrbNamedX * SpecialHit   -- hit specs
+// Arguments:      TMrbNamedX * Xhit   -- hit specs
 // Results:        kTRUE/kFALSE
 // Exceptions:
 // Description:    Creates files & methods for a user-defined hit.
@@ -5304,17 +5317,17 @@ Bool_t TMrbConfig::CreateSpecialHit(TMrbNamedX * SpecialHit) {
 	TString templatePath = gEnv->GetValue("TMrbConfig.TemplatePath", ".:config:$(MARABOU)/templates/config");
 	gSystem->ExpandPathName(templatePath);
 
-	TMrbTemplate spHitTmpl;
+	TMrbTemplate xHitTmpl;
 
 	TObjArray filesToCreate;
 	TString cf, tf;
 
 	Bool_t verboseMode = (this->IsVerbose() || (this->GetAnalyzeOptions() & kAnaOptVerbose) != 0) ;
 
-	packNames acxx(SpecialHit->GetName(), "SpecialHit.cxx.code", ".cxx", "Special hit (code)");
+	packNames acxx(Xhit->GetName(), "Xhit.cxx.code", ".cxx", "Extended hit (code)");
 	filesToCreate.Add((TObject *) &acxx);
 
-	packNames ah(SpecialHit->GetName(), "SpecialHit.h.code", ".h", "Special hit (prototypes)");
+	packNames ah(Xhit->GetName(), "Xhit.h.code", ".h", "Extended hit (protos)");
 	filesToCreate.Add((TObject *) &ah);
 
 	packNames * pp = (packNames *) filesToCreate.First();
@@ -5323,7 +5336,7 @@ Bool_t TMrbConfig::CreateSpecialHit(TMrbNamedX * SpecialHit) {
 		outStrm.open(cf, ios::out);
 		if (!outStrm.good()) {	
 			gMrbLog->Err() << gSystem->GetError() << " - " << cf << endl;
-			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			continue;
 		}
@@ -5334,7 +5347,7 @@ Bool_t TMrbConfig::CreateSpecialHit(TMrbNamedX * SpecialHit) {
 		ux.Which(fileSpec, templatePath.Data(), tf.Data());
 		if (fileSpec.IsNull()) {
 			gMrbLog->Err()	<< "Template file not found - " << tf << endl;
-			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 			gMrbLog->Err()	<< "            Searching on path " << templatePath << endl;
 			gMrbLog->Flush();
 			pp = (packNames *) filesToCreate.After((TObject *) pp);
@@ -5344,69 +5357,69 @@ Bool_t TMrbConfig::CreateSpecialHit(TMrbNamedX * SpecialHit) {
 
 		if (verboseMode) {
 			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
-			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 		}
 	
-		TString spHitTemplateFile = fileSpec;
+		TString xHitTemplateFile = fileSpec;
 
-		if (!spHitTmpl.Open(spHitTemplateFile, &fLofSpHitTags)) {
+		if (!xHitTmpl.Open(xHitTemplateFile, &fLofXhitTags)) {
 			pp = (packNames *) filesToCreate.After((TObject *) pp);
 			if (verboseMode) {
 				gMrbLog->Err()  << "Skipping template file " << fileSpec << endl;
-				gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+				gMrbLog->Flush(this->ClassName(), "CreateXhit");
 			}
 			continue;
 		} else if (verboseMode) {
 			gMrbLog->Out()  << "Using template file " << fileSpec << endl;
-			gMrbLog->Flush(this->ClassName(), "CreateSpecialHit");
+			gMrbLog->Flush(this->ClassName(), "CreateXhit");
 		}
 
 		for (;;) {
 			TString line;
-			TMrbNamedX * spHitTag = spHitTmpl.Next(line);
-			if (spHitTmpl.IsEof()) break;
-			if (spHitTmpl.IsError()) continue;
-			if (spHitTmpl.Status() & TMrbTemplate::kNoTag) {
+			TMrbNamedX * xHitTag = xHitTmpl.Next(line);
+			if (xHitTmpl.IsEof()) break;
+			if (xHitTmpl.IsError()) continue;
+			if (xHitTmpl.Status() & TMrbTemplate::kNoTag) {
 				if (line.Index("#-") != 0) outStrm << line << endl;
 			} else {
-				switch (spHitTag->GetIndex()) {
-					case TMrbConfig::kSpHitNameLC:
+				switch (xHitTag->GetIndex()) {
+					case TMrbConfig::kXhitNameLC:
 						{
-							TString nameLC = SpecialHit->GetName();
+							TString nameLC = Xhit->GetName();
 							nameLC(0,1).ToLower();
-							outStrm << spHitTmpl.Encode(line,nameLC) << endl;
+							outStrm << xHitTmpl.Encode(line,nameLC) << endl;
 						}
 						break;
-					case TMrbConfig::kSpHitNameUC:
+					case TMrbConfig::kXhitNameUC:
 						{
-							TString nameUC = SpecialHit->GetName();
+							TString nameUC = Xhit->GetName();
 							nameUC(0,1).ToUpper();
-							outStrm << spHitTmpl.Encode(line, nameUC) << endl;
+							outStrm << xHitTmpl.Encode(line, nameUC) << endl;
 						}
 						break;
-					case TMrbConfig::kSpHitConfigLC:
-						outStrm << spHitTmpl.Encode(line, this->GetName()) << endl;
+					case TMrbConfig::kXhitConfigLC:
+						outStrm << xHitTmpl.Encode(line, this->GetName()) << endl;
 						break;
-					case TMrbConfig::kSpHitConfigUC:
+					case TMrbConfig::kXhitConfigUC:
 						{
 							TString nameUC = this->GetName();
 							nameUC(0,1).ToUpper();
-							outStrm << spHitTmpl.Encode(line, nameUC) << endl;
+							outStrm << xHitTmpl.Encode(line, nameUC) << endl;
 						}
 						break;
-					case TMrbConfig::kSpHitTitle:
-						outStrm << spHitTmpl.Encode(line, this->GetTitle()) << endl;
+					case TMrbConfig::kXhitTitle:
+						outStrm << xHitTmpl.Encode(line, this->GetTitle()) << endl;
 						break;
-					case TMrbConfig::kSpHitAuthor:
-						outStrm << spHitTmpl.Encode(line, fAuthor) << endl;
+					case TMrbConfig::kXhitAuthor:
+						outStrm << xHitTmpl.Encode(line, fAuthor) << endl;
 						break;
-					case TMrbConfig::kSpHitCreationDate:
-						outStrm << spHitTmpl.Encode(line, fCreationDate) << endl;
+					case TMrbConfig::kXhitCreationDate:
+						outStrm << xHitTmpl.Encode(line, fCreationDate) << endl;
 						break;
-					case TMrbConfig::kSpHitDataLength:
+					case TMrbConfig::kXhitDataLength:
 						{
-							TMrbString dl = SpecialHit->GetIndex();
-							outStrm << spHitTmpl.Encode(line, dl.Data()) << endl;
+							TMrbString dl = Xhit->GetIndex();
+							outStrm << xHitTmpl.Encode(line, dl.Data()) << endl;
 						}
 						break;
 				}

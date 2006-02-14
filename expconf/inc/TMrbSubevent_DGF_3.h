@@ -9,7 +9,7 @@
 //                                         dedicated format for XIA DGF-4C modules
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent_DGF_3.h,v 1.5 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_DGF_3.h,v 1.6 2006-02-14 15:57:09 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -70,7 +70,7 @@ class TMrbSubevent_DGF_3 : public TMrbSubevent {
 		inline Bool_t NeedsHitBuffer() const { return(kTRUE); };  					// allocate hit buffer
 		inline Bool_t HasPrivateCode() const { return(kTRUE); }; 						// use private code files
 		inline Bool_t NeedsBranchMode() const { return(kTRUE); }; 					// needs branch mode
-		inline const Char_t * GetCommonCodeFile() const { return("Subevent_DGF_Common"); };
+		virtual const Char_t * GetCommonCodeFile() const; 									// common code to be loaded
 		
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 

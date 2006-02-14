@@ -7,7 +7,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.8 2005-12-07 15:05:10 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent_DGF_3.cxx,v 1.9 2006-02-14 15:57:09 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -126,7 +126,6 @@ TMrbSubevent_DGF_3::TMrbSubevent_DGF_3(const Char_t * SevtName, const Char_t * S
 		fSevtSubtype = 23;
 		if (*SevtTitle == '\0') this->SetTitle(Form("Subevent [%d,%d]: %s", fSevtType, fSevtSubtype, fSevtDescr.Data()));
 		fLegalDataTypes = TMrbConfig::kDataUShort;		// only 16 bit words
-		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_DGF");	// we need this base class
 		gDirectory->Append(this);
 	}
 }
@@ -282,4 +281,25 @@ Bool_t TMrbSubevent_DGF_3::MakeRcFile(ofstream & RcStrm, TMrbConfig::EMrbRcFileT
 		}
 	}
 	return(kTRUE);
+}
+
+const Char_t * TMrbSubevent_DGF_3::GetCommonCodeFile() const {
+//________________________________________________________________[C++ METHOD]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_DGF_3::GetCommonCodeFile
+// Purpose:        Specify common code to be loaded
+// Arguments:      --
+// Results:        Char_t * CommonCodeFile   -- file containing common code
+// Exceptions:
+// Description:    Returns name of common code file to be used.
+// Keywords:
+//////////////////////////////////////////////////////////////////////////////
+
+	if (fHitDataLength > 0) {
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_DGF_Xhit");
+		return("Subevent_DGF_Xhit");
+	} else {
+		gMrbConfig->AddUserClass(TMrbConfig::kIclOptUserClass, "TMrbSubevent_DGF");
+		return("Subevent_DGF_Common");
+	}
 }

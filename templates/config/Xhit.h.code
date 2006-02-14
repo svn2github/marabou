@@ -1,0 +1,102 @@
+#ifndef __%%EXTENDED_HIT_NAME_UC%%_h__
+#define __%%EXTENDED_HIT_NAME_UC%%_h__
+
+//_________________________________________________[C++ CLASS DEFINITION FILE]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           %%EXTENDED_HIT_NAME_UC%%.h
+// Purpose:        Define an extended hit
+// Description:    Class def to manage extended hits and hit buffers
+//
+// Author:         %%AUTHOR%%
+// Revision:         
+// Date:           %%CREATION_DATE%%
+// URL:            
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+#include "TUsrHit.h"
+#include "TUsrHitBuffer.h"
+
+class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
+
+	public:
+		%%EXTENDED_HIT_NAME_UC%%() : TUsrHit() { 						// default ctor
+			fXdataLength = %%EXTENDED_HIT_DATA_LENGTH%%;
+			this->ClearXdata();
+		};
+
+		%%EXTENDED_HIT_NAME_UC%%(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel,
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
+										UShort_t * Hdata, Int_t NofHdata,
+										UShort_t * Xdata, Int_t NofXdata)
+					: TUsrHit(BufferNumber, EventNumber, ModuleNumber, Channel,
+										BufferTimeHi, EventTimeHi, FastTrigTime,
+										Hdata, NofHdata) {
+			fXdataLength = %%EXTENDED_HIT_DATA_LENGTH%%;
+			this->CopyXdata(Xdata, NofXdata);
+		};
+
+		%%EXTENDED_HIT_NAME_UC%%(Int_t BufferNumber, Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, UShort_t * ChannelTime,
+										UShort_t * Hdata, Int_t NofHdata, UShort_t * Xdata, Int_t NofXdata)
+					: TUsrHit(BufferNumber, EventNumber, ModuleNumber, Channel, ChannelTime,
+										Hdata, NofHdata) {
+			fXdataLength = %%EXTENDED_HIT_DATA_LENGTH%%;
+			this->CopyXdata(Xdata, NofXdata);
+		};
+
+		~%%EXTENDED_HIT_NAME_UC%%() {};								// default dtor
+		
+		inline UShort_t * GetXdataAddr() { return(fXdata); };
+		inline UShort_t GetXdata(Int_t Index) const { return(fXdata[Index]); };
+
+		inline void CopyXdata(UShort_t * Data, Int_t NofData, Int_t Offset = 0) {			// copy extra hit data
+			if (Data) for (Int_t i = 0; i < NofData; i++) fXdata[i + Offset] = *Data++;
+		};
+
+		inline void ClearXdata() { memset(fXdata, 0, %%EXTENDED_HIT_DATA_LENGTH%% * sizeof(UShort_t)); };	// clear extra hit data
+
+		inline virtual void Reset() {
+			TUsrHit::Reset();
+			this->ClearXdata();
+		};
+
+		inline virtual void ClearData() {
+			TUsrHit::ClearData();
+			this->ClearXdata();
+		};
+
+		inline Int_t GetNofXData() { return(fXdataLength); };
+
+	protected:		
+		Int_t fXdataLength; 			// length of extra data array
+		UShort_t fXdata[%%EXTENDED_HIT_DATA_LENGTH%%]; 	// extension: special data
+		
+	ClassDef(%%EXTENDED_HIT_NAME_UC%%, 1)				// [Analyze] An extension to TUsrHit object
+};
+
+class %%EXTENDED_HIT_NAME_UC%%Buffer : public TUsrHitBuffer {
+
+	public:
+		%%EXTENDED_HIT_NAME_UC%%Buffer(Int_t NofEntries = 2500) {
+   			fNofEntries = NofEntries;
+   			fNofHits = 0;
+   			fHits = NULL;
+		};
+
+		virtual ~%%EXTENDED_HIT_NAME_UC%%Buffer() {
+			if (fHits) delete fHits;
+		};										// default dtor
+
+
+		TUsrXhit * AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 			// add a new hit
+										UShort_t BufferTimeHi, UShort_t EventTimeHi, UShort_t FastTrigTime,
+										UShort_t * Hdata, Int_t NofHdata,
+										UShort_t * Xdata, Int_t NofXdata);
+		TUsrXhit * AddXhit(Int_t EventNumber, Int_t ModuleNumber, Int_t Channel, 
+										UShort_t * ChannelTime,
+										UShort_t * Hdata, Int_t NofHdata, UShort_t * Xdata, Int_t NofXdata);
+
+	ClassDef(%%EXTENDED_HIT_NAME_UC%%Buffer, 1)				// [Analyze] An extension to TUsrHitBuffer object
+};
+
+#endif

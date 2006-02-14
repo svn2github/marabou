@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.15 2005-12-14 08:33:51 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.16 2006-02-14 15:57:09 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -558,12 +558,13 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 							sevtNameLC = sevt->GetName();
 							sevtNameUC = sevtNameLC;
 							sevtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode("%S%");
+							anaTmpl.InitializeCode(sevt->HasXhit() ? "%SPH%" : "%S%");
 							anaTmpl.Substitute("$evtNameLC", evtNameLC);
 							anaTmpl.Substitute("$evtNameUC", evtNameUC);
 							anaTmpl.Substitute("$sevtNameLC", sevtNameLC);
 							anaTmpl.Substitute("$sevtNameUC", sevtNameUC);
 							anaTmpl.Substitute("$sevtTitle", sevt->GetTitle());
+							anaTmpl.Substitute("$sevtXhit", sevt->GetNameOfXhit());
 							anaTmpl.WriteCode(ana);
 						}
 						sevt = (TMrbSubevent *) fLofSubevents.After(sevt);

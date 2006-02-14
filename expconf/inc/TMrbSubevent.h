@@ -8,7 +8,7 @@
 // Class:          TMrbSubevent         -- base class for subevents
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbSubevent.h,v 1.13 2006-01-25 11:19:55 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbSubevent.h,v 1.14 2006-02-14 15:57:09 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -167,10 +167,11 @@ class TMrbSubevent : public TNamed {
 		inline Bool_t IsInArrayMode() const { return(fArrayMode); };
 		inline Bool_t HasIndexedParams() const { return(fHasIndexedParams); };
 				
-		Bool_t UseSpecialHit(const Char_t * HitName, Int_t DataLength = -1);			// define a special hit object to be used
-		inline Bool_t UseSpecialHit(Int_t DataLength) { return(this->UseSpecialHit(this->GetName(), DataLength)); }; 	
-		inline const Char_t * GetNameOfSpecialHit() { return(fSpecialHit.Data()); };
+		Bool_t UseXhit(const Char_t * HitName, Int_t DataLength = -1);			// define a special hit object to be used
+		inline Bool_t UseXhit(Int_t DataLength) { return(this->UseXhit("Xhit", DataLength)); }; 	
+		inline const Char_t * GetNameOfXhit() { return(fXhit.Data()); };
 		inline Int_t GetHitDataLength() { return(fHitDataLength); };
+		inline Bool_t HasXhit() { return(fHitDataLength > 0); };
 
 		virtual inline Bool_t NeedsHitBuffer() const { return(kFALSE); }; 			// no hit buffer needed
 		virtual inline Bool_t NeedsBranchMode() const { return(kFALSE); }; 			// may run with leaves or branches
@@ -222,7 +223,7 @@ class TMrbSubevent : public TNamed {
 		Bool_t fPrependPrefix;				// kTRUE if subevents has its own prefix
 		TString fPrefix;					// prefix to be prepended to params & histos
 
-		TString fSpecialHit;				// a special (extended) hit
+		TString fXhit;						// a special (extended) hit
 		Int_t fHitDataLength;				// length of hit data
 
 		TMrbModule * fSoftModule;			// internal module name, simulated by software

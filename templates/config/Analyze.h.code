@@ -32,6 +32,11 @@
 
 #include "%%ANALYZE_NAME_UC%%CommonIndices.h"
 
+%%BeginOfCode%%
+#include "$xhit.h"
+%%EndOfCode%%
+%%INCLUDE_XHIT_DEFS%%
+
 //%%INCLUDES_AND_DEFS_ANALYZE%% 	include special definitions here
 
 //%%SEVT_CLASS_DEFINITION%%			define user-specific SUBEVENT classes here

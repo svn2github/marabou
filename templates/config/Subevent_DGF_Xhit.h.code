@@ -1,0 +1,39 @@
+%%BeginOfCode%%
+//______________________________________________________[C++ CLASS DEFINITION]
+//////////////////////////////////////////////////////////////////////////////
+// Name:           TMrbSubevent_DGF_Xhit
+// Purpose:        Base class for subevents containing DGF data
+// Description:    Provides basic methods for DGF subevents
+// Keywords:       
+//////////////////////////////////////////////////////////////////////////////
+
+class TMrbSubevent_DGF_Xhit : public TObject {
+
+	public:
+		TMrbSubevent_DGF_Xhit() {};						// ctor
+		~TMrbSubevent_DGF_Xhit() {};						// default dtor
+
+		Bool_t FillSubevent(const UShort_t * SevtData, Int_t SevtWC, Int_t TimeStamp);	// fill subevent from MBS data
+
+		inline TUsrXhitBuffer * AllocHitBuffer(const Char_t * Name, Int_t NofEntries, Int_t HighWater = 0) {	// allocate buffer space
+			fHitBuffer.SetName(Name);
+			fHitBuffer.AllocClonesArray("TUsrXhit", NofEntries, HighWater);
+			return(&fHitBuffer);
+		};
+		inline TUsrXhitBuffer * GetHitBuffer() { return(&fHitBuffer); };
+		
+	protected:
+		inline void SetTimeStamp(Int_t TimeStamp) { SetUniqueID(TimeStamp); };
+
+	protected:
+		TObject * fMyAddr;						//! ptr to subevent to be used in TTree::Branch() (online)
+		TBranch * fBranch;						//! branch address (replay only)
+
+		Int_t fTimeStamp;						// time stamp, same as fUniqueID
+
+		TUsrXhitBuffer fHitBuffer; 				// hit buffer to store subevent data
+
+	ClassDef(TMrbSubevent_DGF_Xhit, 1)			// [Analyze] Base class for subvents: store DGF data (including traces) in hit buffer
+};
+%%EndOfCode%%
+%%SEVT_CLASS_DEFINITION%%

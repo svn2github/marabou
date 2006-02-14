@@ -7,7 +7,8 @@
 // Keywords:       
 //////////////////////////////////////////////////////////////////////////////
 
-class TUsrSevt%%SEVT_NAME_UC%% : public TMrbSubevent_DGF {
+class TUsrSevt%%SEVT_NAME_UC%% :
+								 public TMrbSubevent_DGF%%SEVT_SPHIT_CLASS%% {
 
 // declare all parent events as friends
 // so user may address subevent data directly from event level

@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.65 2006-01-25 11:53:27 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.66 2006-02-14 15:57:09 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -111,6 +111,7 @@ class TMrbConfig : public TNamed {
 									kAnaAuthor,
 									kAnaUser,
 									kAnaHtmlMakeSetup,
+									kAnaIncludeXhitDefs,
 									kAnaIncludesAndDefs,
 									kAnaPragmaLinkClasses,
 									kAnaClassImp,
@@ -185,6 +186,7 @@ class TMrbConfig : public TNamed {
 									kAnaSevtBookHistograms,
 									kAnaSevtFillHistograms,
 									kAnaSevtInitializeBranch,
+									kAnaSevtXhitClass,
 									kAnaSevtResetData,
 									kAnaModuleIdEnum,
 									kAnaModuleSerialEnum,
@@ -273,15 +275,15 @@ class TMrbConfig : public TNamed {
 									kUevCreationDate
 								};
 
-		enum EMrbSpHitTag 		 {	kSpHitFile				=	1,		// user event tags
-									kSpHitNameLC,
-									kSpHitNameUC,
-									kSpHitConfigLC,
-									kSpHitConfigUC,
-									kSpHitTitle,
-									kSpHitAuthor,
-									kSpHitCreationDate,
-									kSpHitDataLength
+		enum EMrbXhitTag 		 {	kXhitFile				=	1,		// extended hit tags
+									kXhitNameLC,
+									kXhitNameUC,
+									kXhitConfigLC,
+									kXhitConfigUC,
+									kXhitTitle,
+									kXhitAuthor,
+									kXhitCreationDate,
+									kXhitDataLength
 								};
 
 		enum					{	kNoOptionSpecified		= 0x80000000	};
@@ -765,7 +767,7 @@ class TMrbConfig : public TNamed {
 		inline TObjArray * GetLofModules() { return(&fLofModules); };
 		inline TObjArray * GetLofScalers(){ return(&fLofScalers); };
 		inline TObjArray * GetLofUserHistograms() { return(&fLofUserHistograms); };
-		inline TObjArray * GetLofSpecialHits(){ return(&fLofSpecialHits); };
+		inline TObjArray * GetLofXhits(){ return(&fLofXhits); };
 		inline TMrbLofNamedX * GetLofModuleIDs() { return(&fLofModuleIDs); };
 		inline TMrbLofNamedX * GetLofModuleTypes() { return(&fLofModuleTypes); };
 		inline TMrbLofNamedX * GetLofDataTypes() { return(&fLofDataTypes); };
@@ -807,7 +809,7 @@ class TMrbConfig : public TNamed {
 
 		Bool_t CreateUserMacro();
 		Bool_t CreateUserEvent(ofstream & OutStrm, const Char_t * UserEvent, Bool_t CreateProto, Bool_t SystemPart);
-		Bool_t CreateSpecialHit(TMrbNamedX * SpecialHit);
+		Bool_t CreateXhit(TMrbNamedX * Xhit);
 
 		inline void Help() { gSystem->Exec(Form("mrbHelp %s", this->ClassName())); };
 
@@ -822,7 +824,7 @@ class TMrbConfig : public TNamed {
 		TMrbLofNamedX fLofRcFileTags;			//! ... rc file tags
 		TMrbLofNamedX fLofUserMacroTags;		//! ... user macro tags
 		TMrbLofNamedX fLofUserEventTags;		//! ... user event tags
-		TMrbLofNamedX fLofSpHitTags;			//! ... special hit tags
+		TMrbLofNamedX fLofXhitTags;				//! ... special hit tags
 		TMrbLofNamedX fCNAFNames;				//! ... cnaf key words
 		TMrbLofNamedX fLofModuleTags;			//! ... camac tags
 		TMrbLofNamedX fLofModuleIDs;			//! ... camac modules available
@@ -892,7 +894,7 @@ class TMrbConfig : public TNamed {
 		TObjArray fLofUserHistograms;		// list of user-defined histograms
 		TObjArray fLofHistoArrays;			// list of histogram arrays
 		TObjArray fLofHistoConditions;		// list of histogram booking conds
-		TObjArray fLofSpecialHits;			// list of special hit objects
+		TObjArray fLofXhits;				// list of special hit objects
 		
 		Bool_t fConfigChecked;				// kTRUE if consistency check done
 		Bool_t fConfigOk;					// kTRUE config consistent
