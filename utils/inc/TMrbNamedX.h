@@ -8,7 +8,7 @@
 // Class:          TMrbNamedX    -- a TNamed with an index assigned
 // Description:    Common class definitions to be used within MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbNamedX.h,v 1.7 2005-09-09 06:59:14 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbNamedX.h,v 1.8 2006-02-14 15:56:42 Marabou Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -91,15 +91,16 @@ class TMrbNamedX: public TNamed {
 		inline void AssignObject(TObject * Obj) { fObject = Obj; }; 			// assign an object to this index
 		inline TObject * GetAssignedObject() const { return(fObject); };				// return addr of assigned object
 
-		inline void Set(Int_t Index, const Char_t * ShortName, const Char_t * LongName = NULL) { // set values
+		inline void Set(Int_t Index, const Char_t * ShortName = NULL, const Char_t * LongName = NULL) { // set values
 			fHasTitle = (LongName != NULL);
 			fIndex = Index;
-			this->SetName(ShortName);
-			this->SetTitle(LongName ? LongName : ShortName);
+			if (ShortName) this->SetName(ShortName);
+			this->SetTitle(LongName ? LongName : this->GetName());
 		};
 		inline void Set(TMrbNamedX * NamedX) {
 			this->Set(NamedX->GetIndex(), NamedX->GetName(), NamedX->GetTitle());
 		};
+		inline void SetIndex(Int_t Index) { fIndex = Index; };
 
 		inline Bool_t HasTitle() const { return(fHasTitle); }; 				// title (long name) given?
 
