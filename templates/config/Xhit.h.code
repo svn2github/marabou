@@ -21,7 +21,6 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 
 	public:
 		%%EXTENDED_HIT_NAME_UC%%() : TUsrHit() { 						// default ctor
-			fXdataLength = %%EXTENDED_HIT_DATA_LENGTH%%;
 			this->ClearXdata();
 		};
 
@@ -32,7 +31,7 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 					: TUsrHit(BufferNumber, EventNumber, ModuleNumber, Channel,
 										BufferTimeHi, EventTimeHi, FastTrigTime,
 										Hdata, NofHdata) {
-			fXdataLength = %%EXTENDED_HIT_DATA_LENGTH%%;
+			fXdataLength = NofXdata;
 			this->CopyXdata(Xdata, NofXdata);
 		};
 
@@ -40,7 +39,7 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 										UShort_t * Hdata, Int_t NofHdata, UShort_t * Xdata, Int_t NofXdata)
 					: TUsrHit(BufferNumber, EventNumber, ModuleNumber, Channel, ChannelTime,
 										Hdata, NofHdata) {
-			fXdataLength = %%EXTENDED_HIT_DATA_LENGTH%%;
+			fXdataLength = NofXdata;
 			this->CopyXdata(Xdata, NofXdata);
 		};
 
@@ -53,7 +52,10 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 			if (Data) for (Int_t i = 0; i < NofData; i++) fXdata[i + Offset] = *Data++;
 		};
 
-		inline void ClearXdata() { memset(fXdata, 0, %%EXTENDED_HIT_DATA_LENGTH%% * sizeof(UShort_t)); };	// clear extra hit data
+		inline void ClearXdata() {									// clear extra hit data
+			fXdataLength = 0;
+			memset(fXdata, 0, %%EXTENDED_HIT_DATA_LENGTH%% * sizeof(UShort_t));
+		};
 
 		inline virtual void Reset() {
 			TUsrHit::Reset();
@@ -65,11 +67,12 @@ class %%EXTENDED_HIT_NAME_UC%% : public TUsrHit {
 			this->ClearXdata();
 		};
 
+		inline Int_t GetMaxData() { return(%%EXTENDED_HIT_DATA_LENGTH%%); };
 		inline Int_t GetNofXData() { return(fXdataLength); };
 
 	protected:		
-		Int_t fXdataLength; 			// length of extra data array
-		UShort_t fXdata[%%EXTENDED_HIT_DATA_LENGTH%%]; 	// extension: special data
+		Int_t fXdataLength; 							// actual length of extended data
+		UShort_t fXdata[%%EXTENDED_HIT_DATA_LENGTH%%]; 	// data
 		
 	ClassDef(%%EXTENDED_HIT_NAME_UC%%, 1)				// [Analyze] An extension to TUsrHit object
 };
