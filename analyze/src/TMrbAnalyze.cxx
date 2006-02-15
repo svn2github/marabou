@@ -9,7 +9,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbAnalyze.cxx,v 1.64 2006-01-25 12:16:09 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbAnalyze.cxx,v 1.65 2006-02-15 08:27:53 Marabou Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -215,6 +215,7 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 
 	TMrbIOSpec * lastIOSpec = DefaultIOSpec;
 	TMrbString line;
+	Bool_t clearFlag = kTRUE;
 	for (;;) {
 		line.ReadLine(fileList, kFALSE);
 		if (fileList.eof()) break;
@@ -370,9 +371,19 @@ Int_t TMrbAnalyze::OpenFileList(TString & FileList, TMrbIOSpec * DefaultIOSpec) 
 		if (histoFile.CompareTo("none") != 0) {
 			if (histoFile.CompareTo("+") == 0) {
 				histoFile = lastIOSpec->GetHistoFile();
-				histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
+				if (clearFlag) {
+					histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoAdd | TMrbIOSpec::kHistoClear);
+				} else {
+					histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoAdd;
+				}
+				clearFlag = kFALSE;
 			} else if (histoFile.Index(".root", 0) > 0) {
-				histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
+				if (clearFlag) {
+					histoMode = (TMrbIOSpec::EMrbHistoMode) (TMrbIOSpec::kHistoSave | TMrbIOSpec::kHistoClear);
+				} else {
+					histoMode = (TMrbIOSpec::EMrbHistoMode) TMrbIOSpec::kHistoSave;
+				}
+				clearFlag = kTRUE;
 			} else {
 				if (!lineHdr) {
 					gMrbLog->Err()	<< "In file " << FileList << ", line " << lineCnt << ":" << endl;
