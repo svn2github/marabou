@@ -8,8 +8,17 @@
 	<pre>cvs -d :pserver:mbuser@cvs.mll-muenchen.de:/home/cvs/marabou checkout marabou</pre>
 	<LI>
 	to look for recent changes<br>
-	<pre>cvs -n update 2>/dev/null | grep '^[MPUC]'</pre>
+	<pre>cvs -d :pserver:mbuser@cvs.mll-muenchen.de:/home/cvs/marabou -n update 2>/dev/null | grep '^[MPUC]'</pre>
 	<LI>
 	to update an existing MARaBOU installation:<br>
-	<pre>cvs update</pre>
+	<pre>cvs -d :pserver:mbuser@cvs.mll-muenchen.de:/home/cvs/marabou update</pre>
 </UL>
+<br>
+<h3>How to compile MARaBOU after download or update</h3>
+<ul>
+	<li>Adjust file <strong>iniMrbPath</strong> in MARaBOU's top directory (<strong>SYSMODE=y</strong>, <strong>MARABOU=`pwd`</strong>, <strong>ROOTSYS</strong> set properly)</li>
+	<li>Execute "<strong>. iniMrbPath</strong>" to activate environment settings</li>
+	<li>Do a <strong>make</strong> to recompile MARaBOU</li>
+	<li>Maybe a <strong>make install</strong> is needed to make it accessible to others</li>
+	<li>Provide a modified <strong>iniMrbPath</strong> for users (<strong>SYSMODE=n</strong>, <strong>MARABOU=</strong>MARaBOU's top dir)</li>
+</ul>
