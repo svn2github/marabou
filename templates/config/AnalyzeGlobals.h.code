@@ -30,7 +30,7 @@
 //////////////////////////////////////////////////////////////////////////////
 
 %%BeginOfCode%%
-%E%GLOBAL(TUsrEvt$evtNameUC *,g$evtNameUC,g$evtNameUC = NULL);	// event $evtNameLC, trigger $trigNo
+%E%GLOBAL(TUsrEvt$evtNameUC *,g$pointerName,g$pointerName = NULL);	// event $evtNameLC, trigger $trigNo
 %U%GLOBAL($classNameUC *,g$classNameUC,g$classNameUC = NULL);	// user-defined event $classNameLC
 %%EndOfCode%%
 %%EVT_DEFINE_POINTERS%%

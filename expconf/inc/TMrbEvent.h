@@ -8,7 +8,7 @@
 // Class:          TMrbEvent            -- event connected to a trigger
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEvent.h,v 1.7 2005-11-28 09:41:39 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEvent.h,v 1.8 2006-02-22 12:15:39 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -65,6 +65,10 @@ class TMrbEvent : public TNamed {
 		inline Int_t GetTrigger() const { return(fTrigger); };							// return trigger number
 		inline TMrbConfig::EMrbTriggerStatus GetTriggerStatus() const { return(fTriggerStatus); };	// return trigger status
 
+		inline void SetBaseClass(const Char_t * BaseClass) { fBaseClass = BaseClass; };			// base class
+		inline const Char_t * GetBaseClass() { return(fBaseClass.Data()); };
+		inline void SetPointerName(const Char_t * PointerName) { fPointerName = PointerName; };	// name of ptr to obj
+		inline const Char_t * GetPointerName() { return(fPointerName.Data()); };
 
 		Bool_t MakeReadoutCode(ofstream & RdoStrm, TMrbConfig::EMrbReadoutTag TagIndex, TMrbTemplate & Template, const Char_t * Prefix = NULL); // generate readout code
 
@@ -113,6 +117,10 @@ class TMrbEvent : public TNamed {
 		inline void SetAutoSave(Int_t AutoSave = TMrbConfig::kAutoSave) { fAutoSave = AutoSave; }; 	// auto save mechanism
 		inline Int_t GetAutoSave() const { return(fAutoSave); };
 			
+		inline Bool_t IsStartEvent() { return(fTrigger == TMrbConfig::kTriggerStartAcq); };
+		inline Bool_t IsStopEvent() { return(fTrigger == TMrbConfig::kTriggerStopAcq); };
+		inline Bool_t IsReservedEvent() { return(this->IsStartEvent() || this->IsStopEvent()); };	// start or stop event?
+
 		void Print(Option_t * Option) const { TObject::Print(Option); }
 		void Print(ostream & OutStrm, const Char_t * Prefix = "") const;	// show data
 		inline virtual void Print() const { Print(cout, ""); };
@@ -128,6 +136,9 @@ class TMrbEvent : public TNamed {
 
 		Int_t fNofSubevents;				// list of subevents
 		TMrbLofNamedX fLofSubevents;
+
+		TString fBaseClass; 				// name of base class
+		TString fPointerName;				// name of ptr to event
 
 		UInt_t fReadoutOptions; 			// options used in MakeReadoutCode()
 		UInt_t fAnalyzeOptions; 			// ... in MakeAnalyzeCode()

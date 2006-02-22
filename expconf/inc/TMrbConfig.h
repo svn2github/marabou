@@ -8,7 +8,7 @@
 // Class:          TMrbConfig           -- generate MARaBOU configuration
 // Description:    Class definitions to implement a configuration front-end for MARaBOU
 // Author:         R. Lutter
-// Revision:       $Id: TMrbConfig.h,v 1.66 2006-02-14 15:57:09 Marabou Exp $       
+// Revision:       $Id: TMrbConfig.h,v 1.67 2006-02-22 12:15:39 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -115,6 +115,7 @@ class TMrbConfig : public TNamed {
 									kAnaIncludesAndDefs,
 									kAnaPragmaLinkClasses,
 									kAnaClassImp,
+									kAnaReservedEvents,
 									kAnaMakeClassNames,
 									kAnaInitializeLists,
 									kAnaModuleTimeOffset,
@@ -160,6 +161,7 @@ class TMrbConfig : public TNamed {
 									kAnaEventFirstSubevent,
 									kAnaEventAnalyze,
 									kAnaEvtResetData,
+									kAnaEvtBaseClass,
 									kAnaSevtNameLC,
 									kAnaSevtNameUC,
 									kAnaSevtTitle,
@@ -581,7 +583,7 @@ class TMrbConfig : public TNamed {
 			return (fLofEvents.FindObject(EvtName));
 		};
 
-		TObject * FindEvent(Int_t Trigger) const;									// find event by its trigger
+		TObject * FindEvent(Int_t Trigger) const;								// find event by its trigger
 
 		inline Int_t GetNofEvents() { return(fNofEvents); };
 

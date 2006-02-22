@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbEvent.cxx,v 1.16 2006-02-14 15:57:09 Marabou Exp $       
+// Revision:       $Id: TMrbEvent.cxx,v 1.17 2006-02-22 12:15:39 Rudolf.Lutter Exp $       
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -75,9 +75,6 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-	TMrbEvent * evt;
-	TMrbConfig::EMrbTriggerStatus trigStat;
-
 	if (gMrbLog == NULL) gMrbLog = new TMrbLogger();
 	
 	if (gMrbConfig == NULL) {
@@ -88,40 +85,90 @@ TMrbEvent::TMrbEvent(Int_t Trigger, const Char_t * EvtName, const Char_t * EvtTi
 		this->MakeZombie();
 	}
 
+	TString evtName = EvtName;
+	TString evtTitle = EvtTitle;
+
 	fLofSubevents.Delete();
 
-	trigStat = gMrbConfig->GetTriggerStatus(Trigger);
+	TMrbConfig::EMrbTriggerStatus trigStat = gMrbConfig->GetTriggerStatus(Trigger);
 
 	if (trigStat == TMrbConfig::kTriggerOutOfRange) {
 		gMrbLog->Err() << "Trigger out of range - " << Trigger << endl;
 		gMrbLog->Flush(this->ClassName());
 		this->MakeZombie();
-	}
-
-	if (trigStat == TMrbConfig::kTriggerReserved) {
-		gMrbLog->Err() << "Illegal trigger assignment - " << Trigger << " is reserved" << endl;
-		gMrbLog->Flush(this->ClassName());
-		this->MakeZombie();
-	}
-
-	if (trigStat == TMrbConfig::kTriggerAssigned) {
-		evt = (TMrbEvent *) gMrbConfig->FindEvent(Trigger);
+	} else if (trigStat == TMrbConfig::kTriggerAssigned) {
+		TMrbEvent * evt = (TMrbEvent *) gMrbConfig->FindEvent(Trigger);
 		gMrbLog->Err() << "Trigger \"" << Trigger << "\" already assigned to event \"" << evt->GetName() << "\"" << endl;
 		gMrbLog->Flush(this->ClassName());
 		this->MakeZombie();
 	}
 
 	if (!this->IsZombie()) {
-		if (*EvtName == '\0') {
-			TMrbString evtName("Trig", Trigger);
-			this->SetName(evtName.Data());
+		if (evtName.IsNull()) {
+			if (Trigger == TMrbConfig::kTriggerStartAcq) evtName = "xstart";
+			else if (Trigger == TMrbConfig::kTriggerStopAcq) evtName = "xstop";
+			else evtName = Form("Trig%d", Trigger);
 		}
+		this->SetName(evtName.Data());
 
-		if (*EvtTitle == '\0') {
-			TMrbString evtTitle("Event associated with trigger ", Trigger);
+		if (evtTitle.IsNull()) {
+			evtTitle = Form("Event associated with trigger %d", Trigger);
 			this->SetTitle(evtTitle.Data());
 		}
 
+		this->SetBaseClass("TUsrEvent");
+		TString evtNameUC = evtName;
+		evtNameUC(0,1).ToUpper();
+		this->SetPointerName(evtNameUC.Data());
+
+		Bool_t isStart = evtName.CompareTo("start") == 0 || evtName.CompareTo("xstart") == 0;
+		Bool_t isStop = evtName.CompareTo("stop") == 0 || evtName.CompareTo("xstop") == 0;
+
+		if (trigStat == TMrbConfig::kTriggerReserved) {
+			if (!isStart && !isStop) {
+				gMrbLog->Err() << "Illegal trigger assignment - " << Trigger << " is reserved" << endl;
+				gMrbLog->Flush(this->ClassName());
+				this->MakeZombie();
+			} else if (isStart) {
+				if (Trigger == TMrbConfig::kTriggerStartAcq) {
+					evtName = "xstart";
+					evtTitle = Form("start acquisition, trigger %d, user-defined", TMrbConfig::kTriggerStartAcq);
+					this->SetTitle(evtTitle.Data());
+					this->SetBaseClass("TUsrEvtStart");
+					this->SetPointerName("StartEvent");
+				} else {
+					gMrbLog->Err()	<< "Illegal trigger assignment - "
+									<< evtName << ":" << Trigger
+									<< " (should be " << TMrbConfig::kTriggerStartAcq << ")" << endl;
+					gMrbLog->Flush(this->ClassName());
+					this->MakeZombie();
+				}
+			} else if (isStop) {
+				if (Trigger == TMrbConfig::kTriggerStopAcq) {
+					evtName = "xstop";
+					this->SetName(evtName.Data());
+					evtTitle = Form("stop acquisition, trigger %d, user-defined", TMrbConfig::kTriggerStopAcq);
+					this->SetTitle(evtTitle.Data());
+					this->SetBaseClass("TUsrEvtStop");
+					this->SetPointerName("StopEvent");
+				} else {
+					gMrbLog->Err()	<< "Illegal trigger assignment - "
+									<< evtName << ":" << Trigger
+									<< " (should be " << TMrbConfig::kTriggerStopAcq << ")" << endl;
+					gMrbLog->Flush(this->ClassName());
+					this->MakeZombie();
+				}
+			}
+		} else {
+			if (isStart || isStop) {
+				gMrbLog->Err() << "Illegal event name - " << evtName << " is reserved" << endl;
+				gMrbLog->Flush(this->ClassName());
+				this->MakeZombie();
+			}
+		}
+	}
+
+	if (!this->IsZombie()) {
 		fLofSubevents.SetObject("Subevents", "List of subevents");
 		fNofSubevents = 0;
 		
@@ -749,6 +796,19 @@ Bool_t TMrbEvent::MakeAnalyzeCode(ofstream & ana, TMrbConfig::EMrbAnalyzeTag Tag
 					}
 					anaTmpl.InitializeCode("%R%");
 					anaTmpl.WriteCode(ana);
+					break;
+				case TMrbConfig::kAnaEvtBaseClass:
+					if (this->IsReservedEvent()) {
+						if (this->GetTrigger() == TMrbConfig::kTriggerStartAcq) {
+							ana << anaTmpl.Encode(line, "TUsrEvtStart") << endl;
+						} else if (this->GetTrigger() == TMrbConfig::kTriggerStopAcq) {
+							ana << anaTmpl.Encode(line, "TUsrEvtStop") << endl;
+						} else {
+							ana << anaTmpl.Encode(line, "TUsrEvent") << endl;
+						}
+					} else {
+						ana << anaTmpl.Encode(line, "TUsrEvent") << endl;
+					}
 					break;
 				case TMrbConfig::kAnaSevtDispatchOverType:
 					foundSevt = kFALSE;

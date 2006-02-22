@@ -7,7 +7,8 @@
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
 
-class TUsrEvt%%EVT_NAME_UC%% : public TUsrEvent {
+class TUsrEvt%%EVT_NAME_UC%% :
+								public %%EVT_BASE_CLASS%% {
 
 	public:
 		TUsrEvt%%EVT_NAME_UC%%() {			// ctor

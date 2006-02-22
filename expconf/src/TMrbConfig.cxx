@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.109 2006-02-14 15:57:09 Marabou Exp $       $Id: TMrbConfig.cxx,v 1.109 2006-02-14 15:57:09 Marabou Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.110 2006-02-22 12:15:39 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.110 2006-02-22 12:15:39 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -209,6 +209,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaIncludesAndDefs,			"INCLUDES_AND_DEFS_ANALYZE" 	},
 								{TMrbConfig::kAnaPragmaLinkClasses, 		"PRAGMA_LINK_CLASSES"			},
 								{TMrbConfig::kAnaClassImp,					"IMPLEMENT_CLASSES" 			},
+								{TMrbConfig::kAnaReservedEvents,			"RESERVED_EVENTS"	 			},
 								{TMrbConfig::kAnaMakeClassNames,			"MAKE_CLASS_NAMES"				},
 								{TMrbConfig::kAnaInitializeLists,		 	"INITIALIZE_LISTS"	 			},
 								{TMrbConfig::kAnaModuleTimeOffset,		 	"MODULE_TIME_OFFSET" 			},
@@ -254,6 +255,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaEventSetBranchStatus,		"EVT_SET_BRANCH_STATUS" 		},
 								{TMrbConfig::kAnaEventAnalyze,				"EVT_ANALYZE"			 		},
 								{TMrbConfig::kAnaEvtResetData,				"EVT_RESET_DATA"				},
+								{TMrbConfig::kAnaEvtBaseClass,				"EVT_BASE_CLASS"				},
 								{TMrbConfig::kAnaSevtNameLC,				"SEVT_NAME_LC"					},
 								{TMrbConfig::kAnaSevtNameUC,				"SEVT_NAME_UC"					},
 								{TMrbConfig::kAnaSevtTitle, 				"SEVT_TITLE"					},
@@ -281,7 +283,7 @@ const SMrbNamedXShort kMrbLofAnalyzeTags[] =
 								{TMrbConfig::kAnaSevtFillHistograms,		"SEVT_FILL_HISTOGRAMS"			},
 								{TMrbConfig::kAnaSevtInitializeBranch,		"SEVT_INITIALIZE_BRANCH"		},
 								{TMrbConfig::kAnaSevtResetData,				"SEVT_RESET_DATA"				},
-								{TMrbConfig::kAnaSevtXhitClass,			"SEVT_SPHIT_CLASS"				},
+								{TMrbConfig::kAnaSevtXhitClass,				"SEVT_XHIT_CLASS"				},
 								{TMrbConfig::kAnaModuleIdEnum,				"MODULE_ID_ENUM"				},
 								{TMrbConfig::kAnaModuleSerialEnum,			"MODULE_SERIAL_ENUM"			},
 								{TMrbConfig::kAnaModuleSpecialEnum,			"MODULE_SPECIAL_ENUM"			},
@@ -1741,7 +1743,7 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kRdoOnTriggerXX:
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
-							evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
+							if (!evt->IsReservedEvent()) evt->MakeReadoutCode(rdoStrm, tagIdx, rdoTmpl);
 							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						break;
@@ -1818,6 +1820,14 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 								rdoTmpl.Substitute("$crateNo", crate);
 								rdoTmpl.WriteCode(rdoStrm);
 							}
+							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStartAcq);
+							if (evt) {
+								sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
+								while (sevt) {
+									sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
+									sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
+								}
+							}
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
 							crate = this->FindCrate(crate);
@@ -1860,6 +1870,14 @@ Bool_t TMrbConfig::MakeReadoutCode(const Char_t * CodeFile, Option_t * Options) 
 							while (module) {
 								module->MakeReadoutCode(rdoStrm, kModuleStopAcquisition);
 								module = (TMrbModule *) this->FindModuleByCrate(crate, module);
+							}
+							evt = (TMrbEvent *) this->FindEvent(TMrbConfig::kTriggerStopAcq);
+							if (evt) {
+								sevt = (TMrbSubevent *) evt->GetLofSubevents()->First();
+								while (sevt) {
+									sevt->MakeReadoutCode(rdoStrm, TMrbConfig::kRdoOnTriggerXX, rdoTmpl);
+									sevt = (TMrbSubevent *) evt->GetLofSubevents()->After(sevt);
+								}
 							}
 							rdoTmpl.InitializeCode("%CE%");
 							rdoTmpl.WriteCode(rdoStrm);
@@ -2296,6 +2314,37 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								}
 								ucl = (TMrbNamedX *) fLofUserClasses.After(ucl);
 							}   
+						}
+						break;
+					case TMrbConfig::kAnaReservedEvents:
+						{
+							evt = (TMrbEvent *) fLofEvents.First();
+							while (evt) {
+								if (evt->IsReservedEvent()) {
+									anaTmpl.InitializeCode();
+									evtNameUC = evt->GetName();
+									evtNameUC(0,1).ToUpper();
+									anaTmpl.Substitute("$className", evtNameUC.Data());
+									anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
+									anaTmpl.WriteCode(anaStrm);
+								}
+								evt = (TMrbEvent *) fLofEvents.After(evt);
+							}
+							if (this->FindEvent(TMrbConfig::kTriggerStartAcq) == NULL) {
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$className", "Start");
+								anaTmpl.Substitute("$evtTitle", "start acquisition, trigger 14");
+								anaTmpl.Substitute("$pointerName", "StartEvent");
+								anaTmpl.WriteCode(anaStrm);
+							}
+							if (this->FindEvent(TMrbConfig::kTriggerStopAcq) == NULL) {
+								anaTmpl.InitializeCode();
+								anaTmpl.Substitute("$className", "Stop");
+								anaTmpl.Substitute("$evtTitle", "stop acquisition, trigger 15");
+								anaTmpl.Substitute("$pointerName", "StopEvent");
+								anaTmpl.WriteCode(anaStrm);
+							}
 						}
 						break;
 					case TMrbConfig::kAnaIncludeXhitDefs:
@@ -2749,15 +2798,18 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.Substitute("$evtNameUC", evtNameUC);
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
 								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
 								anaTmpl.WriteCode(anaStrm);
 								anaTmpl.InitializeCode("%HB%");
 								anaTmpl.Substitute("$evtNameUC", evtNameUC);
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 								anaTmpl.WriteCode(anaStrm);
 								anaTmpl.InitializeCode("%E%");
 								anaTmpl.Substitute("$evtNameUC", evtNameUC);
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 								anaTmpl.WriteCode(anaStrm);
 								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
@@ -2797,15 +2849,18 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 						{
 							evt = (TMrbEvent *) fLofEvents.First();
 							while (evt) {
-								evtNameLC = evt->GetName();
-								evtNameUC = evtNameLC;
-								evtNameUC(0,1).ToUpper();
-								anaTmpl.InitializeCode("%E%");
-								anaTmpl.Substitute("$evtNameUC", evtNameUC);
-								anaTmpl.Substitute("$evtNameLC", evtNameLC);
-								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-								anaTmpl.WriteCode(anaStrm);
+								if (!evt->IsReservedEvent()) {
+									evtNameLC = evt->GetName();
+									evtNameUC = evtNameLC;
+									evtNameUC(0,1).ToUpper();
+									anaTmpl.InitializeCode("%E%");
+									anaTmpl.Substitute("$evtNameUC", evtNameUC);
+									anaTmpl.Substitute("$evtNameLC", evtNameLC);
+									anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+									anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+									anaTmpl.Substitute("$pointerName", evt->GetPointerName());
+									anaTmpl.WriteCode(anaStrm);
+								}
 								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 							TMrbNamedX * ucl = (TMrbNamedX *) fLofUserClasses.First();
@@ -2841,61 +2896,107 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 					case TMrbConfig::kAnaEventDispatchOverTrigger:
 						evt = (TMrbEvent *) fLofEvents.First();
 						while (evt) {
-							evtNameLC = evt->GetName();
-							evtNameUC = evtNameLC;
-							evtNameUC(0,1).ToUpper();
-							anaTmpl.InitializeCode("%B%");
-							anaTmpl.Substitute("$evtNameUC", evtNameUC);
-							anaTmpl.Substitute("$evtNameLC", evtNameLC);
-							anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-							anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-							anaTmpl.WriteCode(anaStrm);
-							anaTmpl.InitializeCode("%P%");
-							Bool_t udc = kFALSE;
-							if (gMrbConfig->UserCodeToBeIncluded()) {
-								TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
-								while (icl) {
-									if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
-										TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
-										TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
-										while (nx) {
-											if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
-												anaTmpl.Substitute("$evtNameLC", evtNameLC);
-												anaTmpl.Substitute("$evtNameUC", evtNameUC);
-												anaTmpl.Substitute("$evtTitle", evt->GetTitle());
-												anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-												TString method = nx->GetName();
-												Int_t n = method.Index("::", 0);
-												if (n >= 0) method = method(n + 2, method.Length() - n - 2);
-												anaTmpl.Substitute("$processEvent", method.Data());
-												anaTmpl.WriteCode(anaStrm);
-												udc = kTRUE;
-												break;
-											}
-											nx = (TMrbNamedX *) lofMethods->After(nx);
-										}
-									}
-									if (udc) break;
-									icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
-								}
-							}
-							if (!udc) {
+							if (!evt->IsReservedEvent()) {
+								evtNameLC = evt->GetName();
+								evtNameUC = evtNameLC;
+								evtNameUC(0,1).ToUpper();
+								anaTmpl.InitializeCode("%B%");
 								anaTmpl.Substitute("$evtNameUC", evtNameUC);
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
 								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
 								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
-								anaTmpl.Substitute("$processEvent", "Analyze");
+								anaTmpl.WriteCode(anaStrm);
+								anaTmpl.InitializeCode("%P%");
+								Bool_t udc = kFALSE;
+								TString method = "Analyze";
+								if (gMrbConfig->UserCodeToBeIncluded()) {
+									TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
+									while (icl) {
+										if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+											TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+											TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
+											while (nx) {
+												if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+													TString m = nx->GetName();
+													Int_t n = m.Index("::", 0);
+													if (n > 0) {
+														TString cl = m(0, n);
+														TString evtClass = evtNameUC;
+														evtClass.Prepend("TUsrEvt");
+														if (evtClass.CompareTo(cl.Data()) == 0) {
+															method = m(n + 2, m.Length() - n - 2);
+															udc = kTRUE;
+															break;
+														}
+													}
+												}
+												nx = (TMrbNamedX *) lofMethods->After(nx);
+											}
+										}
+										if (udc) break;
+										icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+									}
+								}
+								anaTmpl.Substitute("$evtNameUC", evtNameUC);
+								anaTmpl.Substitute("$evtNameLC", evtNameLC);
+								anaTmpl.Substitute("$evtTitle", evt->GetTitle());
+								anaTmpl.Substitute("$trigNo", (Int_t) evt->GetTrigger());
+								anaTmpl.Substitute("$processEvent", method.Data());
+								anaTmpl.WriteCode(anaStrm);
+								anaTmpl.InitializeCode("%E%");
 								anaTmpl.WriteCode(anaStrm);
 							}
-							anaTmpl.InitializeCode("%E%");
-							anaTmpl.WriteCode(anaStrm);
 							evt = (TMrbEvent *) fLofEvents.After(evt);
 						}
 						break;
 					case TMrbConfig::kAnaEventTriggerStartAcq:
 					case TMrbConfig::kAnaEventTriggerStopAcq:
-						anaTmpl.InitializeCode();
-						anaTmpl.WriteCode(anaStrm);
+						{
+							anaTmpl.InitializeCode("%B%");
+							anaTmpl.WriteCode(anaStrm);
+							Int_t trig = (tagIdx == TMrbConfig::kAnaEventTriggerStartAcq) ? TMrbConfig::kTriggerStartAcq : TMrbConfig::kTriggerStopAcq;
+							evt = (TMrbEvent *) this->FindEvent(trig);
+							if (evt) {
+								anaTmpl.InitializeCode("%SF%");
+								anaTmpl.WriteCode(anaStrm);
+								Bool_t udc = kFALSE;
+								TString method = "Analyze";
+								if (gMrbConfig->UserCodeToBeIncluded()) {
+									TMrbNamedX * icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->First();
+									while (icl) {
+										if ((icl->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+											TMrbLofNamedX * lofMethods = (TMrbLofNamedX *) icl->GetAssignedObject();
+											TMrbNamedX * nx = (TMrbNamedX *) lofMethods->First();
+											while (nx) {
+												if ((nx->GetIndex() & TMrbConfig::kIclOptProcessEvent) == TMrbConfig::kIclOptProcessEvent) {
+													TString m = nx->GetName();
+													Int_t n = m.Index("::", 0);
+													if (n > 0) {
+														TString cl = m(0, n);
+														TString evtClass = evt->IsStartEvent() ? "TUsrEvtStart" : "TUsrEvtStop";
+														if (evtClass.CompareTo(cl.Data()) == 0) {
+															method = m(n + 2, m.Length() - n - 2);
+															udc = kTRUE;
+															break;
+														}
+													}
+												}
+												nx = (TMrbNamedX *) lofMethods->After(nx);
+											}
+										}
+										if (udc) break;
+										icl = (TMrbNamedX *) gMrbConfig->GetLofUserIncludes()->After(icl);
+									}
+								}
+								if (udc) {
+									anaTmpl.InitializeCode("%SP%");
+									anaTmpl.Substitute("$processEvent", method.Data());
+									anaTmpl.WriteCode(anaStrm);
+								}
+							}
+							anaTmpl.InitializeCode("%E%");
+							anaTmpl.WriteCode(anaStrm);
+						}
 						break;
 					case TMrbConfig::kAnaEventIgnoreTrigger:
 						ignTrigger = kFALSE;

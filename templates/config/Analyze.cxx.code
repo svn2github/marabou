@@ -49,7 +49,7 @@
 %%BeginOfCode%%
 ClassImp($className)
 %%EndOfCode%%
-%%IMPLEMENT_CLASSES%%INCLUDE_USER
+%%IMPLEMENT_CLASSES%%
 
 extern pthread_mutex_t global_data_mutex;		// global pthread mutex to protect TMapped data
 
@@ -58,8 +58,10 @@ extern TMrbLogger * gMrbLog;					// MARaBOU's logging mechanism
 extern TMrbTransport * gMrbTransport;			// base class for MBS transport
 extern TMrbAnalyze * gMrbAnalyze;				// base class for user's analysis
 
-extern TUsrEvtStart * gStartEvent;				// start + stop events
-extern TUsrEvtStop * gStopEvent;
+%%BeginOfCode%%
+extern TUsrEvt$className * g$pointerName;				// $evtTitle
+%%EndOfCode%%
+%%RESERVED_EVENTS%%
 extern TUsrDeadTime * gDeadTime;				// dead-time data
 
 extern TMrbLofUserVars * gMrbLofUserVars;		// list of user vars/wdws
@@ -119,13 +121,13 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 
 %%BeginOfCode%%
 %B%// instantiate event classes and book histograms
-%C%	if (g$evtNameUC == NULL) {		// event $evtNameLC, trigger $trigNo
-%C%		g$evtNameUC = new TUsrEvt$evtNameUC();
-%C% 		Bool_t err = g$evtNameUC->IsZombie();
+%C%	if (g$pointerName == NULL) {		// event $evtNameLC, trigger $trigNo
+%C%		g$pointerName = new TUsrEvt$evtNameUC();
+%C% 		Bool_t err = g$pointerName->IsZombie();
 %C% 		if (!err) {
-%C%			err |= !g$evtNameUC->BookParams();
-%C%			err |= !g$evtNameUC->BookHistograms();
-%HB%			err |= !g$evtNameUC->AllocHitBuffers();
+%C%			err |= !g$pointerName->BookParams();
+%C%			err |= !g$pointerName->BookHistograms();
+%HB%			err |= !g$pointerName->AllocHitBuffers();
 %E% 		}
 %E% 		if (err) {
 %E% 			gMrbLog->Err()	<< "Something went wrong while creating event \"$evtNameLC\"" << endl;
@@ -283,17 +285,24 @@ Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 	fRootFileOut->SetCompressionLevel(1);
 	fWriteRootTree = kTRUE;
 
-// create ROOT trees for each event
+// create trees for start/stop info
+	gStartEvent->CreateTree();
+	gStopEvent->CreateTree();
+
+// create tree to hold dead-time data
+	gDeadTime->CreateTree();
+
+// create ROOT trees for each user event
 %%BeginOfCode%%
-%E% 	g$evtNameUC->CreateTree();
+%E% 	g$pointerName->CreateTree();
 %U% 	g$classNameUC->CreateTree();
 %%EndOfCode%%
 %%EVT_CREATE_TREE%%
 
 // control output of tree data individually for each event
 %%BeginOfCode%%
-%E% 	g$evtNameUC->WriteTree(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.WriteTree"), kTRUE));
-%E% 	if (!g$evtNameUC->TreeToBeWritten()) {
+%E% 	g$pointerName->WriteTree(gEnv->GetValue(gMrbAnalyze->GetResource("Event.$evtNameUC.WriteTree"), kTRUE));
+%E% 	if (!g$pointerName->TreeToBeWritten()) {
 %E% 		gMrbLog->Wrn()	<< "Output of tree data TURNED OFF for event \"$evtNameLC\"" << endl;
 %E% 		gMrbLog->Flush(this->ClassName(), "WriteRootTree");
 %E% 	}
@@ -304,13 +313,6 @@ Bool_t TMrbAnalyze::WriteRootTree(TMrbIOSpec * IOSpec) {
 %U% 	}
 %%EndOfCode%%
 %%EVT_SET_WRITE_TREE%%
-
-// create trees for start/stop info
-	gStartEvent->CreateTree();
-	gStopEvent->CreateTree();
-
-// create tree to hold dead-time data
-	gDeadTime->CreateTree();
 
 	return(kTRUE);
 }
@@ -506,20 +508,24 @@ Bool_t TMrbTransport::ProcessEvent(s_vehe * EventData) {
 %%EVT_IGNORE_TRIGGER%%
 
 %%BeginOfCode%%
-		case kMrbTriggerStartAcquisition:					// start acquisition (trigger 14)
-			gStartEvent->ExtractTimeStamp(EventData, BaseAddr);
-			gStartEvent->Print();
-			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STARTING);
-			return(kTRUE);
+%B%		case kMrbTriggerStartAcquisition:					// start acquisition (trigger 14)
+%B%			gStartEvent->ExtractTimeStamp(EventData, BaseAddr);
+%B%			gStartEvent->Print();
+%SF%			gStartEvent->FillEvent(EventData, BaseAddr);
+%SP%			sts = gStartEvent->$processEvent();
+%E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_STARTING);
+%E%			return(kTRUE);
 %%EndOfCode%%
 %%EVT_TRIGGER_START_ACQUISITION%%
 
 %%BeginOfCode%%
-		case kMrbTriggerStopAcquisition:					// stop acquisition (trigger 15)
-			gStopEvent->ExtractTimeStamp(EventData, BaseAddr);
-			gStopEvent->Print();
-			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
-			return(kFALSE);
+%B%		case kMrbTriggerStopAcquisition:					// stop acquisition (trigger 15)
+%B%			gStopEvent->ExtractTimeStamp(EventData, BaseAddr);
+%B%			gStopEvent->Print();
+%SF%			gStopEvent->FillEvent(EventData, BaseAddr);
+%SP%			sts = gStopEvent->$processEvent();
+%E%			gMrbAnalyze->SetRunStatus(TMrbAnalyze::M_PAUSING);
+%E%			return(kFALSE);
 %%EndOfCode%%
 %%EVT_TRIGGER_STOP_ACQUISITION%%
 

@@ -9,7 +9,7 @@
 // Description:    Class definitions to establish an
 //                 ESONE client/server connection.
 // Author:         R. Lutter
-// Revision:       $Id: TMrbEsone.h,v 1.8 2005-09-09 06:59:13 Rudolf.Lutter Exp $       
+// Revision:       $Id: TMrbEsone.h,v 1.9 2006-02-22 12:15:38 Rudolf.Lutter Exp $       
 // Date:           
 // Keywords:
 //////////////////////////////////////////////////////////////////////////////
@@ -152,6 +152,8 @@ class TMrbEsone : public TObject {
 		inline Bool_t IsMarabouServer() { return(fServerType.GetIndex() == kES_MARABOU); };
 		inline Bool_t IsMbsServer() { return(fServerType.GetIndex() == kES_MBS); };
 		
+		inline TSocket * GetSocket() { return(fSocket); };
+
 		inline const Char_t * GetControllerName() { return(fController.GetName()); };	// name/index of camac controller used
 		inline Int_t GetControllerIndex() { return(fController.GetIndex()); };
 		
@@ -228,6 +230,8 @@ class TMrbEsone : public TObject {
 		TString fHost;								// host name
 		TString fHostInet;							// full inet address
 		Int_t fHostAddr;							// ESONE host address
+		TString fSetupPath;							// where to fond setup files
+		TString fServerPath;						// where to start server from
 		TString fServerProg;						// server program
 		TSocket * fSocket;							//! connection to server
 		Int_t fPort;								// port number
