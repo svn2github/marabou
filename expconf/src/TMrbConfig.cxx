@@ -6,7 +6,7 @@
 // Keywords:
 // Author:         R. Lutter
 // Mailto:         <a href=mailto:rudi.lutter@physik.uni-muenchen.de>R. Lutter</a>
-// Revision:       $Id: TMrbConfig.cxx,v 1.110 2006-02-22 12:15:39 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.110 2006-02-22 12:15:39 Rudolf.Lutter Exp $
+// Revision:       $Id: TMrbConfig.cxx,v 1.111 2006-02-23 14:57:18 Rudolf.Lutter Exp $       $Id: TMrbConfig.cxx,v 1.111 2006-02-23 14:57:18 Rudolf.Lutter Exp $
 // Date:           
 //////////////////////////////////////////////////////////////////////////////
 
@@ -2794,6 +2794,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								evtNameLC = evt->GetName();
 								evtNameUC = evtNameLC;
 								evtNameUC(0,1).ToUpper();
+								if (!evt->IsReservedEvent()) {
+									anaTmpl.InitializeCode("%CX%");
+									anaTmpl.WriteCode(anaStrm);
+								}
 								anaTmpl.InitializeCode("%C%");
 								anaTmpl.Substitute("$evtNameUC", evtNameUC);
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
@@ -2811,6 +2815,10 @@ Bool_t TMrbConfig::MakeAnalyzeCode(const Char_t * CodeFile, Option_t * Options) 
 								anaTmpl.Substitute("$evtNameLC", evtNameLC);
 								anaTmpl.Substitute("$pointerName", evt->GetPointerName());
 								anaTmpl.WriteCode(anaStrm);
+								if (!evt->IsReservedEvent()) {
+									anaTmpl.InitializeCode("%EX%");
+									anaTmpl.WriteCode(anaStrm);
+								}
 								evt = (TMrbEvent *) fLofEvents.After(evt);
 							}
 						}

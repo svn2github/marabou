@@ -121,8 +121,8 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 
 %%BeginOfCode%%
 %B%// instantiate event classes and book histograms
-%C%	if (g$pointerName == NULL) {		// event $evtNameLC, trigger $trigNo
-%C%		g$pointerName = new TUsrEvt$evtNameUC();
+%CX%	if (g$pointerName == NULL) {
+%C%		g$pointerName = new TUsrEvt$evtNameUC();		// event $evtNameLC, trigger $trigNo
 %C% 		Bool_t err = g$pointerName->IsZombie();
 %C% 		if (!err) {
 %C%			err |= !g$pointerName->BookParams();
@@ -133,7 +133,7 @@ Bool_t TMrbAnalyze::Initialize(TMrbIOSpec * IOSpec) {
 %E% 			gMrbLog->Err()	<< "Something went wrong while creating event \"$evtNameLC\"" << endl;
 %E% 			gMrbLog->Flush(this->ClassName(), "Initialize");
 %E% 		}
-%E%	}
+%EX%	}
 %%EndOfCode%%
 %%EVT_CLASS_INSTANCE%%
 
